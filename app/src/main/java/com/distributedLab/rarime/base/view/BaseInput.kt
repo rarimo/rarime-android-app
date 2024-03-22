@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.base
+package com.distributedLab.rarime.base.view
 
 import androidx.compose.runtime.Composable
 

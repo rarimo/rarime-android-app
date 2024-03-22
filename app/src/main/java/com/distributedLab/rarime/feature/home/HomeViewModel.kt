@@ -7,9 +7,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewMode @Inject constructor(
+class HomeViewModel @Inject constructor(
     private val templateRepository: TemplateRepository,
-    savedState: SavedStateHandle
 ): ViewModel() {
 
     val templateData: Result<List<String>>
