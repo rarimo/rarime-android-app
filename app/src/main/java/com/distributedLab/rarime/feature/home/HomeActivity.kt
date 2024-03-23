@@ -1,19 +1,26 @@
 package com.distributedLab.rarime.feature.home
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.theme.AppTheme
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,7 +34,7 @@ class HomeActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = RarimeTheme.colors.backgroundPrimary
                 ) {
-                    Greeting()
+                    List()
                 }
             }
         }
@@ -35,26 +42,39 @@ class HomeActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(
-    modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel()
-) {
-
+fun List(homeViewModel: HomeViewModel = viewModel()) {
     LazyColumn {
         items(homeViewModel.templateData.getOrThrow()) { item ->
-            Text(
-                text = "Hello, Rarime $item!",
-                color = RarimeTheme.colors.textPrimary,
-                style = RarimeTheme.typography.subtitle1
-            )
+            Greeting(item)
         }
     }
-
 }
 
-@Preview(showBackground = true)
+@Composable
+fun Greeting(item: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_rarime),
+            contentDescription = "",
+            modifier = Modifier.size(24.dp),
+            tint = RarimeTheme.colors.textPrimary
+        )
+        Text(
+            text = "Hello, Rarime $item!",
+            modifier = Modifier.padding(4.dp, 0.dp),
+            color = RarimeTheme.colors.textPrimary,
+            style = RarimeTheme.typography.subtitle1
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun GreetingPreview() {
     AppTheme {
-        Greeting()
+        Surface(color = RarimeTheme.colors.backgroundPrimary) {
+            Greeting(item = "user")
+        }
     }
 }

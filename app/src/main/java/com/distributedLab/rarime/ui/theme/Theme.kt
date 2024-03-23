@@ -10,11 +10,11 @@ import androidx.compose.runtime.remember
 fun AppTheme(
     typography: RarimeTypography = RarimeTheme.typography,
     colors: RarimeColors = RarimeTheme.colors,
-    darkColors: RarimeColors? = null,
+    darkColors: RarimeColors = darkColors(),
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    val currentColors = remember { if (darkColors != null && darkTheme) darkColors else colors }
+    val currentColors = remember { if (darkTheme) darkColors else colors }
     val rememberedColors = remember { currentColors.copy() }.apply { updateColorsFrom(currentColors) }
     CompositionLocalProvider(
         LocalColors provides rememberedColors,
