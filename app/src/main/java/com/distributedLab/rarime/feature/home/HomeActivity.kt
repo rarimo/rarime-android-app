@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.distributedLab.rarime.ui.theme.AppTheme
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,9 +22,9 @@ class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            RarimeTheme {
+            AppTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize(), color = RarimeTheme.colors.backgroundPrimary
                 ) {
                     Greeting()
                 }
@@ -40,7 +41,9 @@ fun Greeting(
     LazyColumn {
         items(homeViewModel.templateData.getOrThrow()) { item ->
             Text(
-                text = "Hello ${item}!", modifier = modifier
+                text = "Hello, Rarime $item!",
+                color = RarimeTheme.colors.textPrimary,
+                style = RarimeTheme.typography.subtitle1
             )
         }
     }
@@ -50,7 +53,7 @@ fun Greeting(
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    RarimeTheme {
+    AppTheme {
         Greeting()
     }
 }
