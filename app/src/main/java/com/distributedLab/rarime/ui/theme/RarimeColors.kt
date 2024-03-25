@@ -1,13 +1,15 @@
 package com.distributedLab.rarime.ui.theme
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.graphics.Color
 
-@Immutable
+@Stable
 class RarimeColors(
     // primary
     primaryDarker: Color,
@@ -70,128 +72,88 @@ class RarimeColors(
     additionalLayerBorder: Color,
     additionalPureDark: Color,
 ) {
-    var primaryDarker by mutableStateOf(primaryDarker)
-        private set
-
-    var primaryDark by mutableStateOf(primaryDark)
-        private set
-
-    var primaryMain by mutableStateOf(primaryMain)
-        private set
-
-    var primaryLight by mutableStateOf(primaryLight)
-        private set
-
-    var primaryLighter by mutableStateOf(primaryLighter)
-        private set
-
-    var secondaryDarker by mutableStateOf(secondaryDarker)
-        private set
-
-    var secondaryDark by mutableStateOf(secondaryDark)
-        private set
-
-    var secondaryMain by mutableStateOf(secondaryMain)
-        private set
-
-    var secondaryLight by mutableStateOf(secondaryLight)
-        private set
-
-    var secondaryLighter by mutableStateOf(secondaryLighter)
-        private set
-
-    var successDarker by mutableStateOf(successDarker)
-        private set
-
-    var successDark by mutableStateOf(successDark)
-        private set
-
-    var successMain by mutableStateOf(successMain)
-        private set
-
-    var successLight by mutableStateOf(successLight)
-        private set
-
-    var successLighter by mutableStateOf(successLighter)
-        private set
-
-    var errorDarker by mutableStateOf(errorDarker)
-        private set
-
-    var errorDark by mutableStateOf(errorDark)
-        private set
-
-    var errorMain by mutableStateOf(errorMain)
-        private set
-
-    var errorLight by mutableStateOf(errorLight)
-        private set
-
-    var errorLighter by mutableStateOf(errorLighter)
-        private set
-
-    var warningDarker by mutableStateOf(warningDarker)
-        private set
-
-    var warningDark by mutableStateOf(warningDark)
-        private set
-
-    var warningMain by mutableStateOf(warningMain)
-        private set
-
-    var warningLight by mutableStateOf(warningLight)
-        private set
-
-    var warningLighter by mutableStateOf(warningLighter)
-        private set
-
-    var textPrimary by mutableStateOf(textPrimary)
-        private set
-
-    var textSecondary by mutableStateOf(textSecondary)
-        private set
-
-    var textPlaceholder by mutableStateOf(textPlaceholder)
-        private set
-
-    var textDisabled by mutableStateOf(textDisabled)
-        private set
-
-    var componentPrimary by mutableStateOf(componentPrimary)
-        private set
-
-    var componentHovered by mutableStateOf(componentHovered)
-        private set
-
-    var componentPressed by mutableStateOf(componentPressed)
-        private set
-
-    var componentSelected by mutableStateOf(componentSelected)
-        private set
-
-    var componentDisabled by mutableStateOf(componentDisabled)
-        private set
-
-    var backgroundPrimary by mutableStateOf(backgroundPrimary)
-        private set
-
-    var backgroundOpacity by mutableStateOf(backgroundOpacity)
-        private set
-
-    var backgroundPure by mutableStateOf(backgroundPure)
-        private set
-
-    var baseBlack by mutableStateOf(baseBlack)
-        private set
-
-    var baseWhite by mutableStateOf(baseWhite)
-        private set
-
-    var additionalLayerBorder by mutableStateOf(additionalLayerBorder)
-        private set
-
-    var additionalPureDark by mutableStateOf(additionalPureDark)
-        private set
+    var primaryDarker by mutableStateOf(primaryDarker, structuralEqualityPolicy())
+        internal set
+    var primaryDark by mutableStateOf(primaryDark, structuralEqualityPolicy())
+        internal set
+    var primaryMain by mutableStateOf(primaryMain, structuralEqualityPolicy())
+        internal set
+    var primaryLight by mutableStateOf(primaryLight, structuralEqualityPolicy())
+        internal set
+    var primaryLighter by mutableStateOf(primaryLighter, structuralEqualityPolicy())
+        internal set
+    var secondaryDarker by mutableStateOf(secondaryDarker, structuralEqualityPolicy())
+        internal set
+    var secondaryDark by mutableStateOf(secondaryDark, structuralEqualityPolicy())
+        internal set
+    var secondaryMain by mutableStateOf(secondaryMain, structuralEqualityPolicy())
+        internal set
+    var secondaryLight by mutableStateOf(secondaryLight, structuralEqualityPolicy())
+        internal set
+    var secondaryLighter by mutableStateOf(secondaryLighter, structuralEqualityPolicy())
+        internal set
+    var successDarker by mutableStateOf(successDarker, structuralEqualityPolicy())
+        internal set
+    var successDark by mutableStateOf(successDark, structuralEqualityPolicy())
+        internal set
+    var successMain by mutableStateOf(successMain, structuralEqualityPolicy())
+        internal set
+    var successLight by mutableStateOf(successLight, structuralEqualityPolicy())
+        internal set
+    var successLighter by mutableStateOf(successLighter, structuralEqualityPolicy())
+        internal set
+    var errorDarker by mutableStateOf(errorDarker, structuralEqualityPolicy())
+        internal set
+    var errorDark by mutableStateOf(errorDark, structuralEqualityPolicy())
+        internal set
+    var errorMain by mutableStateOf(errorMain, structuralEqualityPolicy())
+        internal set
+    var errorLight by mutableStateOf(errorLight, structuralEqualityPolicy())
+        internal set
+    var errorLighter by mutableStateOf(errorLighter, structuralEqualityPolicy())
+        internal set
+    var warningDarker by mutableStateOf(warningDarker, structuralEqualityPolicy())
+        internal set
+    var warningDark by mutableStateOf(warningDark, structuralEqualityPolicy())
+        internal set
+    var warningMain by mutableStateOf(warningMain, structuralEqualityPolicy())
+        internal set
+    var warningLight by mutableStateOf(warningLight, structuralEqualityPolicy())
+        internal set
+    var warningLighter by mutableStateOf(warningLighter, structuralEqualityPolicy())
+        internal set
+    var textPrimary by mutableStateOf(textPrimary, structuralEqualityPolicy())
+        internal set
+    var textSecondary by mutableStateOf(textSecondary, structuralEqualityPolicy())
+        internal set
+    var textPlaceholder by mutableStateOf(textPlaceholder, structuralEqualityPolicy())
+        internal set
+    var textDisabled by mutableStateOf(textDisabled, structuralEqualityPolicy())
+        internal set
+    var componentPrimary by mutableStateOf(componentPrimary, structuralEqualityPolicy())
+        internal set
+    var componentHovered by mutableStateOf(componentHovered, structuralEqualityPolicy())
+        internal set
+    var componentPressed by mutableStateOf(componentPressed, structuralEqualityPolicy())
+        internal set
+    var componentSelected by mutableStateOf(componentSelected, structuralEqualityPolicy())
+        internal set
+    var componentDisabled by mutableStateOf(componentDisabled, structuralEqualityPolicy())
+        internal set
+    var backgroundPrimary by mutableStateOf(backgroundPrimary, structuralEqualityPolicy())
+        internal set
+    var backgroundOpacity by mutableStateOf(backgroundOpacity, structuralEqualityPolicy())
+        internal set
+    var backgroundPure by mutableStateOf(backgroundPure, structuralEqualityPolicy())
+        internal set
+    var baseBlack by mutableStateOf(baseBlack, structuralEqualityPolicy())
+        internal set
+    var baseWhite by mutableStateOf(baseWhite, structuralEqualityPolicy())
+        internal set
+    var additionalLayerBorder by mutableStateOf(additionalLayerBorder, structuralEqualityPolicy())
+        internal set
+    var additionalPureDark by mutableStateOf(additionalPureDark, structuralEqualityPolicy())
+        internal set
 
     fun copy(
         primaryDarker: Color = this.primaryDarker,

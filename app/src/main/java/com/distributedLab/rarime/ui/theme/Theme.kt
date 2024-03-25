@@ -20,6 +20,6 @@ fun AppTheme(
         LocalColors provides rememberedColors,
         LocalTypography provides RarimeTypography(),
     ) {
-        ProvideTextStyle(typography.body3.copy(color = RarimeTheme.colors.textPrimary), content = content)
+        ProvideTextStyle(value = typography.body3.copy(color = RarimeTheme.colors.textPrimary), content = content)
     }
 }
