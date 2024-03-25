@@ -17,6 +17,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -25,7 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.components.UiButton
-import com.distributedLab.rarime.ui.components.UiButtonColor
+import com.distributedLab.rarime.ui.components.UiButtonSize
+import com.distributedLab.rarime.ui.components.UiTextField
 import com.distributedLab.rarime.ui.theme.AppTheme
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,20 +41,41 @@ class HomeActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(), color = RarimeTheme.colors.backgroundPrimary
-                ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                        List()
-                        UiButton(
-                            color = UiButtonColor.Tertiary,
-                            modifier = Modifier.fillMaxWidth(),
-                            text="Rarime Button",
-                            leftIcon = R.drawable.ic_rarime,
-                            onClick = { /*TODO*/ }) {}
-                    }
-                }
+                AppScreen()
             }
+        }
+    }
+}
+
+@Composable
+fun AppScreen () {
+    var textFieldValue by remember { mutableStateOf("") }
+    var textFieldErrorMessage by remember { mutableStateOf("") }
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = RarimeTheme.colors.backgroundPrimary
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.padding(20.dp)
+        ) {
+            List()
+            UiTextField(
+                value = textFieldValue,
+                label = "Text Field",
+                placeholder = "Enter some text",
+                errorMessage = textFieldErrorMessage,
+                onValueChange = { textFieldValue = it },
+            )
+            UiButton(
+                modifier = Modifier.fillMaxWidth(),
+                size = UiButtonSize.Large,
+                text="Rarime Button",
+                leftIcon = R.drawable.ic_rarime,
+                onClick = {
+                    textFieldErrorMessage = "Some error message"
+                })
         }
     }
 }
@@ -73,7 +99,7 @@ fun Greeting(item: String) {
             tint = RarimeTheme.colors.textPrimary
         )
         Text(
-            text = "Hello, Rarime $item!",
+            text = item,
             modifier = Modifier.padding(4.dp, 0.dp),
             color = RarimeTheme.colors.textPrimary,
             style = RarimeTheme.typography.subtitle1

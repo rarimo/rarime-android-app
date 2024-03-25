@@ -47,7 +47,7 @@ fun UiButton(
     @DrawableRes leftIcon: Int? = null,
     @DrawableRes rightIcon: Int? = null,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    content: @Composable RowScope.() -> Unit
+    content: @Composable RowScope.() -> Unit = {}
 ) {
     val colors = when (color) {
         UiButtonVariant.Primary -> ButtonDefaults.buttonColors(
@@ -144,37 +144,37 @@ fun UiButtonPreview() {
             size = UiButtonSize.Large,
             modifier = Modifier.fillMaxWidth(),
             text = "Primary Large",
-            onClick = { }) {}
+            onClick = { })
         UiButton(color = UiButtonVariant.Secondary,
             size = UiButtonSize.Large,
             modifier = Modifier.fillMaxWidth(),
             leftIcon = R.drawable.ic_arrow_left,
             rightIcon = R.drawable.ic_arrow_right,
             text = "Secondary Large",
-            onClick = { }) {}
+            onClick = { })
         UiButton(color = UiButtonVariant.Tertiary,
             size = UiButtonSize.Large,
             modifier = Modifier.fillMaxWidth(),
             leftIcon = R.drawable.ic_arrow_left,
             rightIcon = R.drawable.ic_arrow_right,
             text = "Tertiary Large",
-            onClick = { }) {}
+            onClick = { })
         UiButton(enabled = false,
             size = UiButtonSize.Large,
             modifier = Modifier.fillMaxWidth(),
             leftIcon = R.drawable.ic_arrow_left,
             text = "Disabled",
-            onClick = { }) {}
+            onClick = { })
         UiButton(color = UiButtonVariant.Primary,
             size = UiButtonSize.Medium,
             leftIcon = R.drawable.ic_arrow_left,
             text = "Size Medium",
-            onClick = { }) {}
+            onClick = { })
         UiButton(color = UiButtonVariant.Secondary,
             size = UiButtonSize.Small,
             rightIcon = R.drawable.ic_arrow_right,
             text = "Size Small",
-            onClick = { }) {}
+            onClick = { })
         UiButton(modifier = Modifier
             .height(64.dp)
             .width(220.dp), onClick = { }) {
