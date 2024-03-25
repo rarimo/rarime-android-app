@@ -105,12 +105,10 @@ fun UiButton(
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             leftIcon?.let {
-                Icon(
-                    painter = painterResource(id = it),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(iconSize)
-                        .align(Alignment.CenterVertically),
+                UiIcon(
+                    id = it,
+                    size = iconSize,
+                    modifier = Modifier.align(Alignment.CenterVertically),
                 )
             }
             text?.let {
@@ -121,12 +119,10 @@ fun UiButton(
                 )
             }
             rightIcon?.let {
-                Icon(
-                    painter = painterResource(id = it),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(iconSize)
-                        .align(Alignment.CenterVertically),
+                UiIcon(
+                    id = it,
+                    size = iconSize,
+                    modifier = Modifier.align(Alignment.CenterVertically),
                 )
             }
             content()

@@ -30,6 +30,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.components.UiButton
 import com.distributedLab.rarime.ui.components.UiButtonSize
+import com.distributedLab.rarime.ui.components.UiIcon
 import com.distributedLab.rarime.ui.components.UiTextField
 import com.distributedLab.rarime.ui.theme.AppTheme
 import com.distributedLab.rarime.ui.theme.RarimeTheme
@@ -92,10 +93,9 @@ fun List(homeViewModel: HomeViewModel = viewModel()) {
 @Composable
 fun Greeting(item: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_rarime),
-            contentDescription = "",
-            modifier = Modifier.size(24.dp),
+        UiIcon(
+            id = R.drawable.ic_rarime,
+            size = 24.dp,
             tint = RarimeTheme.colors.textPrimary
         )
         Text(
