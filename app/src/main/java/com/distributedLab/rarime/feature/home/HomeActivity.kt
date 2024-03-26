@@ -10,10 +10,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -31,6 +28,7 @@ import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.components.UiButton
 import com.distributedLab.rarime.ui.components.UiButtonSize
 import com.distributedLab.rarime.ui.components.UiIcon
+import com.distributedLab.rarime.ui.components.UiSwitch
 import com.distributedLab.rarime.ui.components.UiTextField
 import com.distributedLab.rarime.ui.theme.AppTheme
 import com.distributedLab.rarime.ui.theme.RarimeTheme
@@ -51,6 +49,7 @@ class HomeActivity : ComponentActivity() {
 @Composable
 fun AppScreen () {
     var textFieldValue by remember { mutableStateOf("") }
+    var checkedValue by remember { mutableStateOf(false) }
     var textFieldErrorMessage by remember { mutableStateOf("") }
 
     Surface(
@@ -69,6 +68,15 @@ fun AppScreen () {
                 errorMessage = textFieldErrorMessage,
                 onValueChange = { textFieldValue = it },
             )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                UiSwitch(checked = checkedValue, onCheckedChange = { checkedValue = it })
+                Text(
+                    text = "Switch",
+                    modifier = Modifier.padding(8.dp, 0.dp),
+                    color = RarimeTheme.colors.textPrimary,
+                    style = RarimeTheme.typography.subtitle4
+                )
+            }
             UiButton(
                 modifier = Modifier.fillMaxWidth(),
                 size = UiButtonSize.Large,
