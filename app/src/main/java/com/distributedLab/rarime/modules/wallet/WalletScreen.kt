@@ -18,6 +18,9 @@ fun WalletScreen() {
             .background(RarimeTheme.colors.backgroundPrimary)
             .padding(20.dp)
     ) {
-        Text("Wallet")
+        Text(
+            text = "Wallet",
+            style = RarimeTheme.typography.subtitle1
+        )
     }
 }

@@ -18,6 +18,9 @@ fun RewardsScreen() {
             .background(RarimeTheme.colors.backgroundPrimary)
             .padding(20.dp)
     ) {
-        Text("Rewards")
+        Text(
+            text = "Rewards",
+            style = RarimeTheme.typography.subtitle1
+        )
     }
 }

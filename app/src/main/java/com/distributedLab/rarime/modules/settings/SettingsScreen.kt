@@ -18,6 +18,9 @@ fun SettingsScreen() {
             .background(RarimeTheme.colors.backgroundPrimary)
             .padding(20.dp)
     ) {
-        Text("Settings")
+        Text(
+            text = "Settings",
+            style = RarimeTheme.typography.subtitle1
+        )
     }
 }

@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.modules.main
 
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -25,11 +26,44 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
+enum class BottomTab(
+    val route: String,
+    @DrawableRes val icon: Int,
+    @DrawableRes val activeIcon: Int
+) {
+    Home(
+        Screen.Main.Home.route,
+        R.drawable.ic_house_simple,
+        R.drawable.ic_house_simple_fill
+    ),
+    Rewards(
+        Screen.Main.Rewards.route,
+        R.drawable.ic_gift,
+        R.drawable.ic_gift_fill
+    ),
+    Wallet(
+        Screen.Main.Wallet.route,
+        R.drawable.ic_wallet,
+        R.drawable.ic_wallet_filled
+    ),
+    Credentials(
+        Screen.Main.Credentials.route,
+        R.drawable.ic_identification_card,
+        R.drawable.ic_identification_card_fill
+    ),
+    Settings(
+        Screen.Main.Settings.route,
+        R.drawable.ic_dots_three_outline,
+        R.drawable.ic_dots_three_outline
+    )
+}
+
 @Composable
-fun BottomTabBar(tabs: List<MainTab>, selectedTab: MainTab, onTabSelected: (MainTab) -> Unit) {
+fun BottomTabBar(currentRoute: String?, onRouteSelected: (String) -> Unit) {
     Box(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -42,8 +76,12 @@ fun BottomTabBar(tabs: List<MainTab>, selectedTab: MainTab, onTabSelected: (Main
                 .padding(4.dp)
                 .height(48.dp)
         ) {
-            for (tab in tabs) {
-                TabItem(tab, tab == selectedTab, onTabSelected)
+            BottomTab.entries.forEach { tab ->
+                TabItem(
+                    tab = tab,
+                    isSelected = currentRoute == tab.route,
+                    onTabSelected = { onRouteSelected(it.route) }
+                )
             }
         }
     }
@@ -51,9 +89,9 @@ fun BottomTabBar(tabs: List<MainTab>, selectedTab: MainTab, onTabSelected: (Main
 
 @Composable
 private fun TabItem(
-    tab: MainTab,
+    tab: BottomTab,
     isSelected: Boolean,
-    onTabSelected: (MainTab) -> Unit,
+    onTabSelected: (BottomTab) -> Unit,
 ) {
     val animatedColor by animateColorAsState(
         if (isSelected) RarimeTheme.colors.primaryMain else Color.Transparent,
@@ -85,10 +123,9 @@ private fun TabItem(
 @Preview
 @Composable
 private fun BottomTabBarPreview() {
-    var selectedTab by remember { mutableStateOf<MainTab>(MainTab.Home) }
+    var selectedTab by remember { mutableStateOf(BottomTab.Home) }
     BottomTabBar(
-        tabs = mainTabs,
-        selectedTab = selectedTab,
-        onTabSelected = { selectedTab = it }
+        currentRoute = selectedTab.route,
+        onRouteSelected = { route -> selectedTab = BottomTab.entries.first { it.route == route } }
     )
 }

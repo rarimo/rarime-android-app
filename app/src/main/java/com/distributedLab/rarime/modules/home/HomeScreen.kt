@@ -44,6 +44,10 @@ fun HomeScreen() {
             .padding(20.dp)
             .padding(bottom = 80.dp)
     ) {
+        Text(
+            text = "Home",
+            style = RarimeTheme.typography.subtitle1
+        )
         AppTextField(
             state = textFieldState,
             label = "Text Field",

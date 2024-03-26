@@ -18,6 +18,9 @@ fun CredentialsScreen() {
             .background(RarimeTheme.colors.backgroundPrimary)
             .padding(20.dp)
     ) {
-        Text("Credentials")
+        Text(
+            text = "Credentials",
+            style = RarimeTheme.typography.subtitle1
+        )
     }
 }
