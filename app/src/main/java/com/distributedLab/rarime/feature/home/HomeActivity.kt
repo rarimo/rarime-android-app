@@ -15,10 +15,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,6 +26,8 @@ import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.AppSwitch
 import com.distributedLab.rarime.ui.components.AppTextField
 import com.distributedLab.rarime.ui.components.PrimaryButton
+import com.distributedLab.rarime.ui.components.rememberAppSwitchState
+import com.distributedLab.rarime.ui.components.rememberAppTextFieldState
 import com.distributedLab.rarime.ui.theme.AppTheme
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,10 +45,9 @@ class HomeActivity : ComponentActivity() {
 }
 
 @Composable
-fun AppScreen () {
-    var textFieldValue by remember { mutableStateOf("") }
-    var checkedValue by remember { mutableStateOf(false) }
-    var textFieldErrorMessage by remember { mutableStateOf("") }
+fun AppScreen() {
+    val textFieldState = rememberAppTextFieldState("")
+    var switchState = rememberAppSwitchState()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -62,14 +59,12 @@ fun AppScreen () {
         ) {
             List()
             AppTextField(
-                value = textFieldValue,
+                state = textFieldState,
                 label = "Text Field",
                 placeholder = "Enter some text",
-                errorMessage = textFieldErrorMessage,
-                onValueChange = { textFieldValue = it },
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
-                AppSwitch(checked = checkedValue, onCheckedChange = { checkedValue = it })
+                AppSwitch(state = switchState)
                 Text(
                     text = "Switch",
                     modifier = Modifier.padding(8.dp, 0.dp),
@@ -80,10 +75,10 @@ fun AppScreen () {
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 size = ButtonSize.Large,
-                text="Rarime Button",
+                text = "Rarime Button",
                 leftIcon = R.drawable.ic_rarime,
                 onClick = {
-                    textFieldErrorMessage = "Some error message"
+                    textFieldState.updateErrorMessage("Some error message")
                 })
         }
     }
@@ -125,7 +120,7 @@ fun GreetingPreview() {
                 Greeting(item = "user")
                 PrimaryButton(
                     modifier = Modifier.fillMaxWidth(),
-                    text="Rarime Button",
+                    text = "Rarime Button",
                     leftIcon = R.drawable.ic_rarime,
                     onClick = { /*TODO*/ }) {}
             }

@@ -10,7 +10,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,18 +21,41 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
+class AppSwitchState(initialChecked: Boolean = false) {
+    var checked by mutableStateOf(initialChecked)
+        private set
+
+    fun updateChecked(newChecked: Boolean) {
+        checked = newChecked
+    }
+
+    companion object {
+        val Saver: Saver<AppSwitchState, *> = listSaver(
+            save = { listOf(it.checked) },
+            restore = {
+                AppSwitchState(initialChecked = it[0])
+            }
+        )
+    }
+}
+
+@Composable
+fun rememberAppSwitchState(checked: Boolean = false) =
+    rememberSaveable(checked, saver = AppSwitchState.Saver) {
+        AppSwitchState(checked)
+    }
+
 @Composable
 fun AppSwitch(
     modifier: Modifier = Modifier,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
+    state: AppSwitchState = rememberAppSwitchState(),
     enabled: Boolean = true,
 ) {
     Switch(
         modifier = modifier,
         enabled = enabled,
-        checked = checked,
-        onCheckedChange = onCheckedChange,
+        checked = state.checked,
+        onCheckedChange = { state.updateChecked(it) },
         thumbContent = {},
         colors = SwitchDefaults.colors(
             uncheckedThumbColor = RarimeTheme.colors.baseWhite,
@@ -55,16 +80,13 @@ fun AppSwitch(
 @Preview(showBackground = true)
 @Composable
 private fun AppSwitchPreview() {
-    var checkedValue by remember { mutableStateOf(false) }
+    val checkedState = rememberAppSwitchState()
 
     Column(
         modifier = Modifier.padding(12.dp, 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            AppSwitch(
-                checked = checkedValue,
-                onCheckedChange = { checkedValue = it },
-            )
+            AppSwitch(state = checkedState)
             Text(
                 text = "Regular",
                 modifier = Modifier.padding(8.dp, 0.dp),
@@ -73,9 +95,8 @@ private fun AppSwitchPreview() {
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             AppSwitch(
-                checked = checkedValue,
+                state = checkedState,
                 enabled = false,
-                onCheckedChange = { checkedValue = it },
             )
             Text(
                 text = "Disabled",
