@@ -1,217 +1,126 @@
 package com.distributedLab.rarime.modules.main
 
 import android.annotation.SuppressLint
+import androidx.annotation.DrawableRes
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import com.distributedLab.rarime.ui.theme.RarimeTheme
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.modules.credentials.CredentialsView
+import com.distributedLab.rarime.modules.home.HomeView
+import com.distributedLab.rarime.modules.rewards.RewardsView
+import com.distributedLab.rarime.modules.settings.SettingsView
+import com.distributedLab.rarime.modules.wallet.WalletView
+import com.distributedLab.rarime.ui.components.AppIcon
+import com.distributedLab.rarime.ui.theme.RarimeTheme
 
-sealed class Destinations(
+sealed class MainTab(
     val route: String,
-    val title: String? = null,
-    val icon: ImageVector? = null
+    @DrawableRes val icon: Int,
+    @DrawableRes val activeIcon: Int,
 ) {
-    object HomeScreen : Destinations(
-        route = "home_screen",
-        title = "Home",
-        icon = Icons.Outlined.Home
+    data object Home : MainTab(
+        route = "home",
+        icon = R.drawable.ic_house_simple,
+        activeIcon = R.drawable.ic_house_simple_fill
     )
 
-    object Favourite : Destinations(
-        route = "favourite_screen",
-        title = "Favorite",
-        icon = Icons.Outlined.Favorite
+    data object Rewards : MainTab(
+        route = "rewards",
+        icon = R.drawable.ic_gift,
+        activeIcon = R.drawable.ic_gift_fill
     )
 
-    object Notification : Destinations(
-        route = "notification_screen",
-        title = "Notification",
-        icon = Icons.Outlined.Notifications
+    data object Wallet : MainTab(
+        route = "wallet",
+        icon = R.drawable.ic_wallet,
+        activeIcon = R.drawable.ic_wallet_filled
     )
 
-}
-
-@Composable
-fun HomeScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color.DarkGray)
-            .wrapContentSize(Alignment.Center)
-    ) {
-        Text(
-            text = "Home Screen",
-            style = MaterialTheme.typography.titleLarge,
-            color = Color.White,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            textAlign = TextAlign.Center,
-        )
-    }
-}
-
-@Composable
-fun FavouriteScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color.Magenta)
-            .wrapContentSize(Alignment.Center)
-    ) {
-        Text(
-            text = "Favourite Screen",
-            style = MaterialTheme.typography.titleLarge,
-            color = Color.White,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            textAlign = TextAlign.Center,
-        )
-    }
-}
-
-@Composable
-fun NotificationScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color.Blue)
-            .wrapContentSize(Alignment.Center)
-    ) {
-        Text(
-            text = "Notification Screen",
-            style = MaterialTheme.typography.titleLarge,
-            color = Color.White,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            textAlign = TextAlign.Center,
-        )
-    }
-}
-
-@Composable
-fun NavigationGraph(navController: NavHostController) {
-    NavHost(navController, startDestination = Destinations.HomeScreen.route) {
-        composable(Destinations.HomeScreen.route) {
-            HomeScreen()
-        }
-        composable(Destinations.Favourite.route) {
-            FavouriteScreen()
-        }
-        composable(Destinations.Notification.route) {
-            NotificationScreen()
-        }
-    }
-}
-
-@Composable
-fun BottomBar(
-    navController: NavHostController, state: MutableState<Boolean>, modifier: Modifier = Modifier
-) {
-    val screens = listOf(
-        Destinations.HomeScreen, Destinations.Favourite, Destinations.Notification
+    data object Credentials : MainTab(
+        route = "credentials",
+        icon = R.drawable.ic_identification_card,
+        activeIcon = R.drawable.ic_identification_card_fill
     )
 
-    NavigationBar(
-        modifier = modifier,
-        containerColor = Color.LightGray,
-    ) {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
-
-        screens.forEach { screen ->
-
-            NavigationBarItem(
-                label = {
-                    Text(text = screen.title!!)
-                },
-                icon = {
-                    Icon(imageVector = screen.icon!!, contentDescription = "")
-                },
-                selected = currentRoute == screen.route,
-                onClick = {
-                    navController.navigate(screen.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    unselectedTextColor = Color.Gray, selectedTextColor = Color.White
-                ),
-            )
-        }
-    }
+    data object Settings : MainTab(
+        route = "settings",
+        icon = R.drawable.ic_dots_three_outline,
+        activeIcon = R.drawable.ic_dots_three_outline
+    )
 }
 
+val mainTabs = listOf(
+    MainTab.Home,
+    MainTab.Rewards,
+    MainTab.Wallet,
+    MainTab.Credentials,
+    MainTab.Settings
+)
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainView(
     navController: NavHostController = rememberNavController()
 ) {
-    var buttonsVisible = remember { mutableStateOf(true) }
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    val selectedTab = mainTabs.find { it.route == currentRoute } ?: mainTabs.first()
 
     Scaffold(
         bottomBar = {
-            BottomBar(
-                navController = navController,
-                state = buttonsVisible,
-                modifier = Modifier
-            )
-        }) { paddingValues ->
-        Box(
-            modifier = Modifier.padding(paddingValues)
+            BottomTabBar(tabs = mainTabs, selectedTab = selectedTab) {
+                navController.navigate(it.route) {
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+        },
+    ) {
+        NavHost(
+            navController,
+            startDestination = MainTab.Home.route,
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None },
         ) {
-            NavigationGraph(navController = navController)
+            composable(MainTab.Home.route) { HomeView() }
+            composable(MainTab.Rewards.route) { RewardsView() }
+            composable(MainTab.Wallet.route) { WalletView() }
+            composable(MainTab.Credentials.route) { CredentialsView() }
+            composable(MainTab.Settings.route) { SettingsView() }
         }
     }
 }
 
 @Preview
 @Composable
-fun MainViewPreview() {
+private fun MainViewPreview() {
     MainView()
 }
