@@ -1,9 +1,5 @@
-package com.distributedLab.rarime.feature.home
+package com.distributedLab.rarime.modules.home
 
-import android.content.res.Configuration
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,24 +26,10 @@ import com.distributedLab.rarime.ui.components.UiButtonSize
 import com.distributedLab.rarime.ui.components.UiIcon
 import com.distributedLab.rarime.ui.components.UiSwitch
 import com.distributedLab.rarime.ui.components.UiTextField
-import com.distributedLab.rarime.ui.theme.AppTheme
 import com.distributedLab.rarime.ui.theme.RarimeTheme
-import dagger.hilt.android.AndroidEntryPoint
-
-@AndroidEntryPoint
-class HomeActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme {
-                AppScreen()
-            }
-        }
-    }
-}
 
 @Composable
-fun AppScreen () {
+fun HomeView () {
     var textFieldValue by remember { mutableStateOf("") }
     var checkedValue by remember { mutableStateOf(false) }
     var textFieldErrorMessage by remember { mutableStateOf("") }
@@ -115,20 +97,8 @@ fun Greeting(item: String) {
     }
 }
 
-@Preview(showBackground = true, name = "Light Mode")
-@Preview(showBackground = true, name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    AppTheme {
-        Surface(color = RarimeTheme.colors.backgroundPrimary) {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Greeting(item = "user")
-                UiButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    text="Rarime Button",
-                    leftIcon = R.drawable.ic_rarime,
-                    onClick = { /*TODO*/ }) {}
-            }
-        }
-    }
+    HomeView()
 }
