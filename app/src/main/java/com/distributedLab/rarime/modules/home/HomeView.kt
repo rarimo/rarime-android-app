@@ -11,10 +11,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,15 +39,13 @@ fun HomeView () {
             modifier = Modifier.padding(20.dp)
         ) {
             List()
-            UiTextField(
-                value = textFieldValue,
+            AppTextField(
+                state = textFieldState,
                 label = "Text Field",
                 placeholder = "Enter some text",
-                errorMessage = textFieldErrorMessage,
-                onValueChange = { textFieldValue = it },
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
-                UiSwitch(checked = checkedValue, onCheckedChange = { checkedValue = it })
+                AppSwitch(state = switchState)
                 Text(
                     text = "Switch",
                     modifier = Modifier.padding(8.dp, 0.dp),
@@ -59,13 +53,13 @@ fun HomeView () {
                     style = RarimeTheme.typography.subtitle4
                 )
             }
-            UiButton(
+            PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
-                size = UiButtonSize.Large,
-                text="Rarime Button",
+                size = ButtonSize.Large,
+                text = "Rarime Button",
                 leftIcon = R.drawable.ic_rarime,
                 onClick = {
-                    textFieldErrorMessage = "Some error message"
+                    textFieldState.updateErrorMessage("Some error message")
                 })
         }
     }
@@ -83,7 +77,7 @@ fun List(homeViewModel: HomeViewModel = viewModel()) {
 @Composable
 fun Greeting(item: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        UiIcon(
+        AppIcon(
             id = R.drawable.ic_rarime,
             size = 24.dp,
             tint = RarimeTheme.colors.textPrimary

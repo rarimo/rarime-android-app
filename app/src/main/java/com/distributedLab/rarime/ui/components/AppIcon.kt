@@ -18,7 +18,7 @@ import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun UiIcon(
+fun AppIcon(
     modifier: Modifier = Modifier,
     @DrawableRes id: Int,
     size: Dp = 20.dp,
@@ -35,14 +35,13 @@ fun UiIcon(
 
 @Preview(showBackground = true)
 @Composable
-fun UiIconPreview() {
+private fun AppIconPreview() {
     Row(
         modifier = Modifier.padding(12.dp, 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        UiIcon(id = R.drawable.ic_bell_fill)
-        UiIcon(id = R.drawable.ic_qr_code, size = 24.dp)
-        UiIcon(id = R.drawable.ic_cardholder, size = 32.dp, tint = RarimeTheme.colors.errorMain)
-
+        AppIcon(id = R.drawable.ic_bell_fill)
+        AppIcon(id = R.drawable.ic_qr_code, size = 24.dp)
+        AppIcon(id = R.drawable.ic_cardholder, size = 32.dp, tint = RarimeTheme.colors.errorMain)
     }
 }

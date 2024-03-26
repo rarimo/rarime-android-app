@@ -11,7 +11,9 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,15 +21,51 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
+class AppTextFieldState(initialText: String, initialErrorMessage: String = "") {
+    var text by mutableStateOf(initialText)
+        private set
+
+    var errorMessage by mutableStateOf(initialErrorMessage)
+        private set
+
+    fun updateText(newText: String) {
+        text = newText
+        errorMessage = ""
+    }
+
+    fun updateErrorMessage(newErrorMessage: String) {
+        errorMessage = newErrorMessage
+    }
+
+    val isError: Boolean
+        get() = errorMessage.isNotEmpty()
+
+    companion object {
+        val Saver: Saver<AppTextFieldState, *> = listSaver(
+            save = { listOf(it.text, it.errorMessage) },
+            restore = {
+                AppTextFieldState(
+                    initialText = it[1],
+                    initialErrorMessage = it[0],
+                )
+            }
+        )
+    }
+}
+
 @Composable
-fun UiTextField(
+fun rememberAppTextFieldState(initialText: String, initialErrorMessage: String = "") =
+    rememberSaveable(initialText, initialErrorMessage, saver = AppTextFieldState.Saver) {
+        AppTextFieldState(initialText, initialErrorMessage)
+    }
+
+@Composable
+fun AppTextField(
     modifier: Modifier = Modifier,
-    value: String,
-    onValueChange: (String) -> Unit,
+    state: AppTextFieldState = rememberAppTextFieldState(""),
     enabled: Boolean = true,
     label: String = "",
     placeholder: String = "",
-    errorMessage: String = "",
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         if (label.isNotEmpty()) {
@@ -38,8 +76,8 @@ fun UiTextField(
             )
         }
         OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
+            value = state.text,
+            onValueChange = { state.updateText(it) },
             placeholder = {
                 Text(
                     text = placeholder,
@@ -47,7 +85,7 @@ fun UiTextField(
                 )
             },
             enabled = enabled,
-            isError = errorMessage.isNotEmpty(),
+            isError = state.isError,
             textStyle = RarimeTheme.typography.body3,
             singleLine = true,
             colors = TextFieldDefaults.colors(
@@ -77,9 +115,9 @@ fun UiTextField(
             shape = RoundedCornerShape(12.dp),
             modifier = modifier.fillMaxWidth()
         )
-        if (errorMessage.isNotEmpty()) {
+        if (state.isError) {
             Text(
-                text = errorMessage,
+                text = state.errorMessage,
                 style = RarimeTheme.typography.caption2,
                 color = RarimeTheme.colors.errorMain
             )
@@ -89,31 +127,28 @@ fun UiTextField(
 
 @Preview(showBackground = true)
 @Composable
-fun UiTextFieldPreview() {
-    var textFieldValue by remember { mutableStateOf("") }
+private fun AppTextFieldPreview() {
+    val textFieldState = rememberAppTextFieldState("")
+    val errorTextFieldState = rememberAppTextFieldState("", "Error message")
 
     Column(
         modifier = Modifier.padding(12.dp, 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        UiTextField(
-            value = textFieldValue,
+        AppTextField(
+            state = textFieldState,
             label = "Regular",
             placeholder = "Placeholder",
-            onValueChange = { textFieldValue = it }
         )
-        UiTextField(
-            value = textFieldValue,
+        AppTextField(
+            state = textFieldState,
             label = "Disabled",
             placeholder = "Placeholder",
             enabled = false,
-            onValueChange = { textFieldValue = it }
         )
-        UiTextField(
-            value = textFieldValue,
+        AppTextField(
+            state = errorTextFieldState,
             label = "Error",
             placeholder = "Placeholder",
-            errorMessage = "Error message",
-            onValueChange = { textFieldValue = it }
         )
     }
 }
