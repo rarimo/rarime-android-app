@@ -3,7 +3,7 @@ package com.distributedLab.rarime
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.distributedLab.rarime.modules.main.MainView
+import com.distributedLab.rarime.modules.main.MainScreen
 import com.distributedLab.rarime.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                MainView()
+                MainScreen()
             }
         }
     }

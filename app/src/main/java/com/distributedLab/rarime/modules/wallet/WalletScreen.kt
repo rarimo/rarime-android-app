@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.settings
+package com.distributedLab.rarime.modules.wallet
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -11,13 +11,13 @@ import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun SettingsView() {
+fun WalletScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary)
             .padding(20.dp)
     ) {
-        Text("Settings")
+        Text("Wallet")
     }
 }
