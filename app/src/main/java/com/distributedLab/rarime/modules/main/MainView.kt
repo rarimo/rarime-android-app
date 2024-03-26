@@ -98,6 +98,7 @@ fun MainView(
         bottomBar = {
             BottomTabBar(tabs = mainTabs, selectedTab = selectedTab) {
                 navController.navigate(it.route) {
+                    popUpTo(navController.graph.startDestinationId)
                     launchSingleTop = true
                     restoreState = true
                 }
