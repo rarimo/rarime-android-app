@@ -21,7 +21,7 @@ import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun TertiaryButton(
+private fun TertiaryButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     enabled: Boolean = true,

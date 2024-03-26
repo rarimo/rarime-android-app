@@ -51,7 +51,7 @@ fun SecondaryButton(
 
 @Preview(showBackground = true)
 @Composable
-fun SecondaryButtonPreview() {
+private fun SecondaryButtonPreview() {
     Column(
         modifier = Modifier.padding(12.dp, 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {

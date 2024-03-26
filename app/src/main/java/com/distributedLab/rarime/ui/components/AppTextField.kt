@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun UiTextField(
+fun AppTextField(
     modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
@@ -89,26 +89,26 @@ fun UiTextField(
 
 @Preview(showBackground = true)
 @Composable
-fun UiTextFieldPreview() {
+private fun AppTextFieldPreview() {
     var textFieldValue by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier.padding(12.dp, 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        UiTextField(
+        AppTextField(
             value = textFieldValue,
             label = "Regular",
             placeholder = "Placeholder",
             onValueChange = { textFieldValue = it }
         )
-        UiTextField(
+        AppTextField(
             value = textFieldValue,
             label = "Disabled",
             placeholder = "Placeholder",
             enabled = false,
             onValueChange = { textFieldValue = it }
         )
-        UiTextField(
+        AppTextField(
             value = textFieldValue,
             label = "Error",
             placeholder = "Placeholder",

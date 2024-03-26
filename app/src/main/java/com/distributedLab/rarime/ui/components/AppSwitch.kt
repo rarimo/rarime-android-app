@@ -20,50 +20,48 @@ import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun UiSwitch(
+fun AppSwitch(
     modifier: Modifier = Modifier,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     enabled: Boolean = true,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Switch(
-            modifier = modifier,
-            enabled = enabled,
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            thumbContent = {},
-            colors = SwitchDefaults.colors(
-                uncheckedThumbColor = RarimeTheme.colors.baseWhite,
-                uncheckedTrackColor = RarimeTheme.colors.componentHovered,
-                uncheckedBorderColor = Color.Transparent,
+    Switch(
+        modifier = modifier,
+        enabled = enabled,
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+        thumbContent = {},
+        colors = SwitchDefaults.colors(
+            uncheckedThumbColor = RarimeTheme.colors.baseWhite,
+            uncheckedTrackColor = RarimeTheme.colors.componentHovered,
+            uncheckedBorderColor = Color.Transparent,
 
-                checkedThumbColor = RarimeTheme.colors.baseWhite,
-                checkedTrackColor = RarimeTheme.colors.successMain,
-                checkedBorderColor = Color.Transparent,
+            checkedThumbColor = RarimeTheme.colors.baseWhite,
+            checkedTrackColor = RarimeTheme.colors.successMain,
+            checkedBorderColor = Color.Transparent,
 
-                disabledUncheckedThumbColor = RarimeTheme.colors.componentHovered,
-                disabledUncheckedTrackColor = RarimeTheme.colors.componentDisabled,
-                disabledUncheckedBorderColor = Color.Transparent,
+            disabledUncheckedThumbColor = RarimeTheme.colors.componentHovered,
+            disabledUncheckedTrackColor = RarimeTheme.colors.componentDisabled,
+            disabledUncheckedBorderColor = Color.Transparent,
 
-                disabledCheckedThumbColor = RarimeTheme.colors.componentHovered,
-                disabledCheckedTrackColor = RarimeTheme.colors.componentDisabled,
-                disabledCheckedBorderColor = Color.Transparent,
-            )
+            disabledCheckedThumbColor = RarimeTheme.colors.componentHovered,
+            disabledCheckedTrackColor = RarimeTheme.colors.componentDisabled,
+            disabledCheckedBorderColor = Color.Transparent,
         )
-    }
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
-fun UiSwitchPreview() {
+private fun AppSwitchPreview() {
     var checkedValue by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.padding(12.dp, 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            UiSwitch(
+            AppSwitch(
                 checked = checkedValue,
                 onCheckedChange = { checkedValue = it },
             )
@@ -74,7 +72,7 @@ fun UiSwitchPreview() {
             )
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            UiSwitch(
+            AppSwitch(
                 checked = checkedValue,
                 enabled = false,
                 onCheckedChange = { checkedValue = it },
@@ -83,7 +81,7 @@ fun UiSwitchPreview() {
                 text = "Disabled",
                 modifier = Modifier.padding(8.dp, 0.dp),
                 style = RarimeTheme.typography.subtitle4,
-                color =  RarimeTheme.colors.textSecondary
+                color = RarimeTheme.colors.textSecondary
             )
         }
     }

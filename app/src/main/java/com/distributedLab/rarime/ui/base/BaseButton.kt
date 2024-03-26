@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.ui.components.UiIcon
+import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 enum class ButtonSize {
@@ -74,7 +74,7 @@ fun BaseButton(
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             leftIcon?.let {
-                UiIcon(
+                AppIcon(
                     id = it,
                     size = iconSize,
                     modifier = Modifier.align(Alignment.CenterVertically),
@@ -88,7 +88,7 @@ fun BaseButton(
                 )
             }
             rightIcon?.let {
-                UiIcon(
+                AppIcon(
                     id = it,
                     size = iconSize,
                     modifier = Modifier.align(Alignment.CenterVertically),
@@ -101,7 +101,7 @@ fun BaseButton(
 
 @Preview(showBackground = true)
 @Composable
-fun BaseButtonPreview() {
+private fun BaseButtonPreview() {
     Column(
         modifier = Modifier.padding(12.dp, 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {

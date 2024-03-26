@@ -25,12 +25,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.ui.base.BaseButton
 import com.distributedLab.rarime.ui.base.ButtonSize
-import com.distributedLab.rarime.ui.base.PrimaryButton
-import com.distributedLab.rarime.ui.components.UiIcon
-import com.distributedLab.rarime.ui.components.UiSwitch
-import com.distributedLab.rarime.ui.components.UiTextField
+import com.distributedLab.rarime.ui.components.AppIcon
+import com.distributedLab.rarime.ui.components.AppSwitch
+import com.distributedLab.rarime.ui.components.AppTextField
+import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.theme.AppTheme
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -62,7 +61,7 @@ fun AppScreen () {
             modifier = Modifier.padding(20.dp)
         ) {
             List()
-            UiTextField(
+            AppTextField(
                 value = textFieldValue,
                 label = "Text Field",
                 placeholder = "Enter some text",
@@ -70,7 +69,7 @@ fun AppScreen () {
                 onValueChange = { textFieldValue = it },
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
-                UiSwitch(checked = checkedValue, onCheckedChange = { checkedValue = it })
+                AppSwitch(checked = checkedValue, onCheckedChange = { checkedValue = it })
                 Text(
                     text = "Switch",
                     modifier = Modifier.padding(8.dp, 0.dp),
@@ -102,7 +101,7 @@ fun List(homeViewModel: HomeViewModel = viewModel()) {
 @Composable
 fun Greeting(item: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        UiIcon(
+        AppIcon(
             id = R.drawable.ic_rarime,
             size = 24.dp,
             tint = RarimeTheme.colors.textPrimary
@@ -124,7 +123,7 @@ fun GreetingPreview() {
         Surface(color = RarimeTheme.colors.backgroundPrimary) {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Greeting(item = "user")
-                BaseButton(
+                PrimaryButton(
                     modifier = Modifier.fillMaxWidth(),
                     text="Rarime Button",
                     leftIcon = R.drawable.ic_rarime,
