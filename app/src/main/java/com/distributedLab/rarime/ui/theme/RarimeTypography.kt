@@ -87,24 +87,28 @@ data class RarimeTypography(
         fontWeight = FontWeight.Normal,
         fontSize = 20.sp,
         lineHeight = 24.sp,
+        letterSpacing = 0.4.sp,
     ),
     val body2: TextStyle = TextStyle(
         fontFamily = interFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 20.sp,
+        letterSpacing = 0.32.sp,
     ),
     val body3: TextStyle = TextStyle(
         fontFamily = interFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         lineHeight = 20.sp,
+        letterSpacing = 0.28.sp,
     ),
     val body4: TextStyle = TextStyle(
         fontFamily = interFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
         lineHeight = 16.sp,
+        letterSpacing = 0.24.sp,
     ),
     val buttonLarge: TextStyle = TextStyle(
         fontFamily = interFontFamily,
