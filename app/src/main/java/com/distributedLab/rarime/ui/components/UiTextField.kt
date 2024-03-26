@@ -71,7 +71,7 @@ fun UiTextField(
                 errorPlaceholderColor = RarimeTheme.colors.textSecondary,
                 errorTextColor = RarimeTheme.colors.textPrimary,
 
-                cursorColor = RarimeTheme.colors.primaryMain,
+                cursorColor = RarimeTheme.colors.textPrimary,
 
                 ),
             shape = RoundedCornerShape(12.dp),
