@@ -1,7 +1,6 @@
-package com.distributedLab.rarime.ui.components
+package com.distributedLab.rarime.ui.base
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,83 +12,55 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.ui.components.UiIcon
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
-enum class UiButtonSize {
+enum class ButtonSize {
     Small, Medium, Large
 }
 
-enum class UiButtonVariant {
-    Primary, Secondary, Tertiary
-}
-
 @Composable
-fun UiButton(
+fun BaseButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     enabled: Boolean = true,
-    size: UiButtonSize = UiButtonSize.Medium,
-    color: UiButtonVariant = UiButtonVariant.Primary,
+    size: ButtonSize = ButtonSize.Medium,
+    colors: ButtonColors = ButtonDefaults.buttonColors(),
     text: String? = null,
     @DrawableRes leftIcon: Int? = null,
     @DrawableRes rightIcon: Int? = null,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable RowScope.() -> Unit = {}
 ) {
-    val colors = when (color) {
-        UiButtonVariant.Primary -> ButtonDefaults.buttonColors(
-            containerColor = RarimeTheme.colors.primaryMain,
-            contentColor = RarimeTheme.colors.baseBlack,
-            disabledContainerColor = RarimeTheme.colors.componentDisabled,
-            disabledContentColor = RarimeTheme.colors.textDisabled
-        )
-
-        UiButtonVariant.Secondary -> ButtonDefaults.buttonColors(
-            containerColor = RarimeTheme.colors.componentPrimary,
-            contentColor = RarimeTheme.colors.textPrimary,
-            disabledContainerColor = RarimeTheme.colors.componentDisabled,
-            disabledContentColor = RarimeTheme.colors.textDisabled
-        )
-
-        UiButtonVariant.Tertiary -> ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent,
-            contentColor = RarimeTheme.colors.textSecondary,
-            disabledContainerColor = Color.Transparent,
-            disabledContentColor = RarimeTheme.colors.textDisabled
-        )
-    }
-
     val height = when (size) {
-        UiButtonSize.Small -> 24.dp
-        UiButtonSize.Medium -> 40.dp
-        UiButtonSize.Large -> 48.dp
+        ButtonSize.Small -> 24.dp
+        ButtonSize.Medium -> 40.dp
+        ButtonSize.Large -> 48.dp
     }
 
     val padding = when (size) {
-        UiButtonSize.Small -> PaddingValues(16.dp, 0.dp)
-        UiButtonSize.Medium -> PaddingValues(24.dp, 0.dp)
-        UiButtonSize.Large -> PaddingValues(32.dp, 0.dp)
+        ButtonSize.Small -> PaddingValues(16.dp, 0.dp)
+        ButtonSize.Medium -> PaddingValues(24.dp, 0.dp)
+        ButtonSize.Large -> PaddingValues(32.dp, 0.dp)
     }
 
     val textStyle = when (size) {
-        UiButtonSize.Small -> RarimeTheme.typography.buttonSmall
-        UiButtonSize.Medium -> RarimeTheme.typography.buttonMedium
-        UiButtonSize.Large -> RarimeTheme.typography.buttonLarge
+        ButtonSize.Small -> RarimeTheme.typography.buttonSmall
+        ButtonSize.Medium -> RarimeTheme.typography.buttonMedium
+        ButtonSize.Large -> RarimeTheme.typography.buttonLarge
     }
 
     val iconSize = when (size) {
-        UiButtonSize.Small -> 16.dp
-        UiButtonSize.Medium, UiButtonSize.Large -> 20.dp
+        ButtonSize.Small -> 16.dp
+        ButtonSize.Medium, ButtonSize.Large -> 20.dp
     }
 
     Button(
@@ -99,7 +70,6 @@ fun UiButton(
             .height(height)
             .defaultMinSize(minWidth = 96.dp, minHeight = height),
         enabled = enabled,
-        interactionSource = interactionSource,
         colors = colors,
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -131,48 +101,37 @@ fun UiButton(
 
 @Preview(showBackground = true)
 @Composable
-fun UiButtonPreview() {
+fun BaseButtonPreview() {
     Column(
         modifier = Modifier.padding(12.dp, 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        UiButton(color = UiButtonVariant.Primary,
-            size = UiButtonSize.Large,
-            modifier = Modifier.fillMaxWidth(),
-            text = "Primary Large",
-            onClick = { })
-        UiButton(color = UiButtonVariant.Secondary,
-            size = UiButtonSize.Large,
+        BaseButton(
+            size = ButtonSize.Large,
             modifier = Modifier.fillMaxWidth(),
             leftIcon = R.drawable.ic_arrow_left,
             rightIcon = R.drawable.ic_arrow_right,
-            text = "Secondary Large",
+            text = "Large",
             onClick = { })
-        UiButton(color = UiButtonVariant.Tertiary,
-            size = UiButtonSize.Large,
-            modifier = Modifier.fillMaxWidth(),
-            leftIcon = R.drawable.ic_arrow_left,
-            rightIcon = R.drawable.ic_arrow_right,
-            text = "Tertiary Large",
-            onClick = { })
-        UiButton(enabled = false,
-            size = UiButtonSize.Large,
+        BaseButton(enabled = false,
+            size = ButtonSize.Large,
             modifier = Modifier.fillMaxWidth(),
             leftIcon = R.drawable.ic_arrow_left,
             text = "Disabled",
             onClick = { })
-        UiButton(color = UiButtonVariant.Primary,
-            size = UiButtonSize.Medium,
+        BaseButton(
+            size = ButtonSize.Medium,
             leftIcon = R.drawable.ic_arrow_left,
-            text = "Size Medium",
+            text = "Medium",
             onClick = { })
-        UiButton(color = UiButtonVariant.Secondary,
-            size = UiButtonSize.Small,
+        BaseButton(
+            size = ButtonSize.Small,
             rightIcon = R.drawable.ic_arrow_right,
-            text = "Size Small",
+            text = "Small",
             onClick = { })
-        UiButton(modifier = Modifier
-            .height(64.dp)
-            .width(220.dp), onClick = { }) {
+        BaseButton(
+            modifier = Modifier
+                .height(64.dp)
+                .width(220.dp), onClick = { }) {
             Text(
                 text = "Custom content",
                 color = RarimeTheme.colors.errorDark,

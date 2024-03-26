@@ -25,8 +25,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.ui.components.UiButton
-import com.distributedLab.rarime.ui.components.UiButtonSize
+import com.distributedLab.rarime.ui.base.BaseButton
+import com.distributedLab.rarime.ui.base.ButtonSize
+import com.distributedLab.rarime.ui.base.PrimaryButton
 import com.distributedLab.rarime.ui.components.UiIcon
 import com.distributedLab.rarime.ui.components.UiSwitch
 import com.distributedLab.rarime.ui.components.UiTextField
@@ -77,9 +78,9 @@ fun AppScreen () {
                     style = RarimeTheme.typography.subtitle4
                 )
             }
-            UiButton(
+            PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
-                size = UiButtonSize.Large,
+                size = ButtonSize.Large,
                 text="Rarime Button",
                 leftIcon = R.drawable.ic_rarime,
                 onClick = {
@@ -123,7 +124,7 @@ fun GreetingPreview() {
         Surface(color = RarimeTheme.colors.backgroundPrimary) {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Greeting(item = "user")
-                UiButton(
+                BaseButton(
                     modifier = Modifier.fillMaxWidth(),
                     text="Rarime Button",
                     leftIcon = R.drawable.ic_rarime,
