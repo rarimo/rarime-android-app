@@ -22,7 +22,7 @@ import com.distributedLab.rarime.ui.base.TextButtonColors
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun SecondaryTextButton(
+fun PrimaryTextButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     enabled: Boolean = true,
@@ -38,8 +38,8 @@ fun SecondaryTextButton(
         enabled = enabled,
         size = size,
         colors = TextButtonColors(
-            contentColor = RarimeTheme.colors.textSecondary,
-            pressedColor = RarimeTheme.colors.textPrimary,
+            contentColor = RarimeTheme.colors.textPrimary,
+            pressedColor = RarimeTheme.colors.textPlaceholder,
             disabledColor = RarimeTheme.colors.textDisabled
         ),
         text = text,
@@ -55,28 +55,28 @@ private fun SecondaryTextButtonPreview() {
     Column(
         modifier = Modifier.padding(12.dp, 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        SecondaryTextButton(
+        PrimaryTextButton(
             size = ButtonSize.Large,
             leftIcon = R.drawable.ic_arrow_left,
             rightIcon = R.drawable.ic_arrow_right,
             text = "Large",
             onClick = { })
-        SecondaryTextButton(enabled = false,
+        PrimaryTextButton(enabled = false,
             size = ButtonSize.Large,
             leftIcon = R.drawable.ic_arrow_left,
             text = "Disabled",
             onClick = { })
-        SecondaryTextButton(
+        PrimaryTextButton(
             size = ButtonSize.Medium,
             leftIcon = R.drawable.ic_arrow_left,
             text = "Medium",
             onClick = { })
-        SecondaryTextButton(
+        PrimaryTextButton(
             size = ButtonSize.Small,
             rightIcon = R.drawable.ic_arrow_right,
             text = "Small",
             onClick = { })
-        SecondaryTextButton(onClick = { }) {
+        PrimaryTextButton(onClick = { }) {
             Text(
                 text = "Custom content",
                 color = RarimeTheme.colors.errorDark,

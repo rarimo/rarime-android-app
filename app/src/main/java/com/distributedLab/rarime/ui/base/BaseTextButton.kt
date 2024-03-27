@@ -1,8 +1,10 @@
 package com.distributedLab.rarime.ui.base
 
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,24 +23,46 @@ import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
+data class TextButtonColors(
+    val contentColor: Color,
+    val pressedColor: Color,
+    val disabledColor: Color
+)
+
 @Composable
 fun BaseTextButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     enabled: Boolean = true,
-    color: Color = RarimeTheme.colors.textPrimary,
+    colors: TextButtonColors = TextButtonColors(
+        contentColor = RarimeTheme.colors.textPrimary,
+        pressedColor = RarimeTheme.colors.textPlaceholder,
+        disabledColor = RarimeTheme.colors.textDisabled
+    ),
     size: ButtonSize = ButtonSize.Medium,
     text: String? = null,
     @DrawableRes leftIcon: Int? = null,
     @DrawableRes rightIcon: Int? = null,
     content: @Composable RowScope.() -> Unit = {}
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val pressed by interactionSource.collectIsPressedAsState()
+
+    val animatedTextColor by animateColorAsState(
+        if (enabled) {
+            if (pressed) colors.pressedColor else colors.contentColor
+        } else {
+            colors.disabledColor
+        },
+        label = "base_text_button_color"
+    )
+
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
             .clickable(
                 enabled = enabled,
-                interactionSource = remember { MutableInteractionSource() },
+                interactionSource = interactionSource,
                 indication = null,
                 onClick = onClick,
             )
@@ -46,7 +71,7 @@ fun BaseTextButton(
             AppIcon(
                 id = it,
                 size = size.iconSize(),
-                tint = color,
+                tint = animatedTextColor,
                 modifier = Modifier.align(Alignment.CenterVertically),
             )
         }
@@ -54,7 +79,7 @@ fun BaseTextButton(
             Text(
                 text = it,
                 style = size.textStyle(),
-                color = color,
+                color = animatedTextColor,
                 modifier = Modifier.align(Alignment.CenterVertically),
             )
         }
@@ -62,7 +87,7 @@ fun BaseTextButton(
             AppIcon(
                 id = it,
                 size = size.iconSize(),
-                tint = color,
+                tint = animatedTextColor,
                 modifier = Modifier.align(Alignment.CenterVertically),
             )
         }
