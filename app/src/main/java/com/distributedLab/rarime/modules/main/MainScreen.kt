@@ -1,0 +1,88 @@
+package com.distributedLab.rarime.modules.main
+
+import android.annotation.SuppressLint
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.navigation
+import androidx.navigation.compose.rememberNavController
+import com.distributedLab.rarime.modules.credentials.CredentialsScreen
+import com.distributedLab.rarime.modules.home.HomeScreen
+import com.distributedLab.rarime.modules.intro.IntroScreen
+import com.distributedLab.rarime.modules.rewards.RewardsScreen
+import com.distributedLab.rarime.modules.settings.SettingsScreen
+import com.distributedLab.rarime.modules.wallet.WalletScreen
+
+sealed class Screen(val route: String) {
+    data object Intro : Screen("intro")
+    data object Main : Screen("main") {
+        data object Home : Screen("home")
+        data object Rewards : Screen("rewards")
+        data object Wallet : Screen("wallet")
+        data object Credentials : Screen("credentials")
+        data object Settings : Screen("settings")
+    }
+}
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
+fun MainScreen(navController: NavHostController = rememberNavController()) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    val isBottomBarVisible = currentRoute != null && currentRoute != Screen.Intro.route
+
+    Scaffold(
+        bottomBar = {
+            if (isBottomBarVisible) {
+                BottomTabBar(
+                    currentRoute = currentRoute,
+                    onRouteSelected = {
+                        navController.navigate(it) {
+                            popUpTo(Screen.Main.route) { inclusive = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
+            }
+        },
+    ) {
+        NavHost(
+            navController,
+            startDestination = Screen.Intro.route,
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None },
+        ) {
+            composable(Screen.Intro.route) {
+                IntroScreen {
+                    navController.navigate(it) {
+                        popUpTo(Screen.Intro.route) { inclusive = true }
+                    }
+                }
+            }
+            navigation(
+                startDestination = Screen.Main.Home.route,
+                route = Screen.Main.route
+            ) {
+                composable(Screen.Main.Home.route) { HomeScreen() }
+                composable(Screen.Main.Rewards.route) { RewardsScreen() }
+                composable(Screen.Main.Wallet.route) { WalletScreen() }
+                composable(Screen.Main.Credentials.route) { CredentialsScreen() }
+                composable(Screen.Main.Settings.route) { SettingsScreen() }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun MainViewPreview() {
+    MainScreen()
+}
