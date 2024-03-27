@@ -1,9 +1,7 @@
-package com.distributedLab.rarime.feature.home
+package com.distributedLab.rarime.modules.home
 
 import android.content.res.Configuration
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,56 +29,51 @@ import com.distributedLab.rarime.ui.components.rememberAppSwitchState
 import com.distributedLab.rarime.ui.components.rememberAppTextFieldState
 import com.distributedLab.rarime.ui.theme.AppTheme
 import com.distributedLab.rarime.ui.theme.RarimeTheme
-import dagger.hilt.android.AndroidEntryPoint
-
-@AndroidEntryPoint
-class HomeActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme {
-                AppScreen()
-            }
-        }
-    }
-}
 
 @Composable
-fun AppScreen() {
+fun HomeScreen() {
     val textFieldState = rememberAppTextFieldState("")
-    var switchState = rememberAppSwitchState()
+    val switchState = rememberAppSwitchState()
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = RarimeTheme.colors.backgroundPrimary
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(RarimeTheme.colors.backgroundPrimary)
+            .verticalScroll(rememberScrollState())
+            .padding(20.dp)
+            .padding(bottom = 80.dp)
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.padding(20.dp)
-        ) {
-            List()
-            AppTextField(
-                state = textFieldState,
-                label = "Text Field",
-                placeholder = "Enter some text",
+        Text(
+            text = "Home",
+            style = RarimeTheme.typography.subtitle1,
+            color = RarimeTheme.colors.textPrimary
+        )
+        AppTextField(
+            state = textFieldState,
+            label = "Text Field",
+            placeholder = "Enter some text",
+        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            AppSwitch(state = switchState)
+            Text(
+                text = "Switch",
+                modifier = Modifier.padding(8.dp, 0.dp),
+                color = RarimeTheme.colors.textPrimary,
+                style = RarimeTheme.typography.subtitle4
             )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                AppSwitch(state = switchState)
-                Text(
-                    text = "Switch",
-                    modifier = Modifier.padding(8.dp, 0.dp),
-                    color = RarimeTheme.colors.textPrimary,
-                    style = RarimeTheme.typography.subtitle4
-                )
-            }
-            PrimaryButton(
-                modifier = Modifier.fillMaxWidth(),
-                size = ButtonSize.Large,
-                text = "Rarime Button",
-                leftIcon = R.drawable.ic_rarime,
-                onClick = {
-                    textFieldState.updateErrorMessage("Some error message")
-                })
+        }
+        PrimaryButton(
+            modifier = Modifier.fillMaxWidth(),
+            size = ButtonSize.Large,
+            text = "Rarime Button",
+            leftIcon = R.drawable.ic_rarime,
+            onClick = {
+                textFieldState.updateErrorMessage("Some error message")
+            })
+
+        for (i in 0..20) {
+            Text("Lorem ipsum dolor sit amet, consectetur adipiscing $i")
         }
     }
 }
@@ -87,8 +81,8 @@ fun AppScreen() {
 @Composable
 fun List(homeViewModel: HomeViewModel = viewModel()) {
     LazyColumn {
-        items(homeViewModel.templateData.getOrThrow()) { item ->
-            Greeting(item)
+        items(10) { item ->
+            Greeting(item.toString())
         }
     }
 }

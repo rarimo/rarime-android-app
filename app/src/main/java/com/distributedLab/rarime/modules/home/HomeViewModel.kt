@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.feature.home
+package com.distributedLab.rarime.modules.home
 
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.data.TemplateRepository
