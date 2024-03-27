@@ -19,13 +19,40 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 enum class ButtonSize {
-    Small, Medium, Large
+    Small,
+    Medium,
+    Large;
+
+    fun height(): Dp = when (this) {
+        Small -> 24.dp
+        Medium -> 40.dp
+        Large -> 48.dp
+    }
+
+    fun padding(): PaddingValues = when (this) {
+        Small -> PaddingValues(16.dp, 0.dp)
+        Medium -> PaddingValues(24.dp, 0.dp)
+        Large -> PaddingValues(32.dp, 0.dp)
+    }
+
+    @Composable
+    fun textStyle() = when (this) {
+        Small -> RarimeTheme.typography.buttonSmall
+        Medium -> RarimeTheme.typography.buttonMedium
+        Large -> RarimeTheme.typography.buttonLarge
+    }
+
+    fun iconSize(): Dp = when (this) {
+        Small -> 16.dp
+        Medium, Large -> 20.dp
+    }
 }
 
 @Composable
@@ -40,35 +67,12 @@ fun BaseButton(
     @DrawableRes rightIcon: Int? = null,
     content: @Composable RowScope.() -> Unit = {}
 ) {
-    val height = when (size) {
-        ButtonSize.Small -> 24.dp
-        ButtonSize.Medium -> 40.dp
-        ButtonSize.Large -> 48.dp
-    }
-
-    val padding = when (size) {
-        ButtonSize.Small -> PaddingValues(16.dp, 0.dp)
-        ButtonSize.Medium -> PaddingValues(24.dp, 0.dp)
-        ButtonSize.Large -> PaddingValues(32.dp, 0.dp)
-    }
-
-    val textStyle = when (size) {
-        ButtonSize.Small -> RarimeTheme.typography.buttonSmall
-        ButtonSize.Medium -> RarimeTheme.typography.buttonMedium
-        ButtonSize.Large -> RarimeTheme.typography.buttonLarge
-    }
-
-    val iconSize = when (size) {
-        ButtonSize.Small -> 16.dp
-        ButtonSize.Medium, ButtonSize.Large -> 20.dp
-    }
-
     Button(
         onClick = onClick,
-        contentPadding = padding,
+        contentPadding = size.padding(),
         modifier = modifier
-            .height(height)
-            .defaultMinSize(minWidth = 96.dp, minHeight = height),
+            .height(size.height())
+            .defaultMinSize(minWidth = 96.dp, minHeight = size.height()),
         enabled = enabled,
         colors = colors,
     ) {
@@ -76,21 +80,21 @@ fun BaseButton(
             leftIcon?.let {
                 AppIcon(
                     id = it,
-                    size = iconSize,
+                    size = size.iconSize(),
                     modifier = Modifier.align(Alignment.CenterVertically),
                 )
             }
             text?.let {
                 Text(
                     text = it,
-                    style = textStyle,
+                    style = size.textStyle(),
                     modifier = Modifier.align(Alignment.CenterVertically),
                 )
             }
             rightIcon?.let {
                 AppIcon(
                     id = it,
-                    size = iconSize,
+                    size = size.iconSize(),
                     modifier = Modifier.align(Alignment.CenterVertically),
                 )
             }
