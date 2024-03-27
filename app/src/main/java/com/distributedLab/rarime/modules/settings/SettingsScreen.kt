@@ -20,7 +20,8 @@ fun SettingsScreen() {
     ) {
         Text(
             text = "Settings",
-            style = RarimeTheme.typography.subtitle1
+            style = RarimeTheme.typography.subtitle1,
+            color = RarimeTheme.colors.textPrimary
         )
     }
 }

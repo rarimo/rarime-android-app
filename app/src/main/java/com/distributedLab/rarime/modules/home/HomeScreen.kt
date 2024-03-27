@@ -46,7 +46,8 @@ fun HomeScreen() {
     ) {
         Text(
             text = "Home",
-            style = RarimeTheme.typography.subtitle1
+            style = RarimeTheme.typography.subtitle1,
+            color = RarimeTheme.colors.textPrimary
         )
         AppTextField(
             state = textFieldState,

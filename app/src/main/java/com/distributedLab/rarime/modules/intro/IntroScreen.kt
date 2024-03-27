@@ -29,7 +29,8 @@ fun IntroScreen(navigateTo: (route: String) -> Unit) {
         ) {
             Text(
                 text = "Intro Screen",
-                style = RarimeTheme.typography.subtitle1
+                style = RarimeTheme.typography.subtitle1,
+                color = RarimeTheme.colors.textPrimary
             )
             PrimaryButton(
                 text = "Open main",

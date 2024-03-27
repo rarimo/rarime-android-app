@@ -20,7 +20,8 @@ fun RewardsScreen() {
     ) {
         Text(
             text = "Rewards",
-            style = RarimeTheme.typography.subtitle1
+            style = RarimeTheme.typography.subtitle1,
+            color = RarimeTheme.colors.textPrimary
         )
     }
 }

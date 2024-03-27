@@ -20,7 +20,8 @@ fun WalletScreen() {
     ) {
         Text(
             text = "Wallet",
-            style = RarimeTheme.typography.subtitle1
+            style = RarimeTheme.typography.subtitle1,
+            color = RarimeTheme.colors.textPrimary
         )
     }
 }
