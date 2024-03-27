@@ -3,6 +3,6 @@
     <style name="Theme.Rarime" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@color/background_primary</item>
         <item name="android:navigationBarColor">@color/background_primary</item>
-        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowLightNavigationBar">false</item>
     </style>
 </resources>
