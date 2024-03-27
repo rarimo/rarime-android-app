@@ -3,9 +3,13 @@ package com.distributedLab.rarime.modules.main
 import android.annotation.SuppressLint
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -19,6 +23,7 @@ import com.distributedLab.rarime.modules.intro.IntroScreen
 import com.distributedLab.rarime.modules.rewards.RewardsScreen
 import com.distributedLab.rarime.modules.settings.SettingsScreen
 import com.distributedLab.rarime.modules.wallet.WalletScreen
+import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 sealed class Screen(val route: String) {
     data object Intro : Screen("intro")
@@ -54,6 +59,9 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
             }
         },
     ) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(RarimeTheme.colors.backgroundPrimary))
         NavHost(
             navController,
             startDestination = Screen.Intro.route,
