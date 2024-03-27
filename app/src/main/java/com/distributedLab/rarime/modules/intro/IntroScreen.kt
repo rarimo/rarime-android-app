@@ -8,23 +8,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,14 +29,10 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.main.Screen
-import com.distributedLab.rarime.ui.components.AppBottomSheet
-import com.distributedLab.rarime.ui.components.AppIcon
-import com.distributedLab.rarime.ui.components.AppSheetState
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.SecondaryTextButton
@@ -84,14 +74,14 @@ private val introSteps = listOf(
     IntroStep.Rewards
 )
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun IntroScreen(navigateTo: (route: String) -> Unit) {
-    val stepState = rememberPagerState(initialPage = 3, pageCount = { introSteps.size })
-    val coroutineScope = rememberCoroutineScope()
-    val isLastStep = stepState.currentPage == introSteps.size - 1
-
+    val stepState = rememberPagerState(pageCount = { introSteps.size })
     val sheetState = rememberAppSheetState()
+    val coroutineScope = rememberCoroutineScope()
+
+    val isLastStep = stepState.currentPage == introSteps.size - 1
 
     Surface(color = RarimeTheme.colors.backgroundPrimary) {
         Column(
@@ -131,10 +121,7 @@ fun IntroScreen(navigateTo: (route: String) -> Unit) {
                     PrimaryButton(
                         text = stringResource(R.string.get_started_btn),
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            sheetState.show()
-                            // navigateTo(Screen.Main.route)
-                        }
+                        onClick = { sheetState.show() }
                     )
                 } else {
                     Row(
@@ -160,107 +147,15 @@ fun IntroScreen(navigateTo: (route: String) -> Unit) {
             }
         }
 
-        GetStartedBottomSheet(sheetState, navigateTo)
-    }
-}
-
-@Composable
-private fun GetStartedBottomSheet(
-    sheetState: AppSheetState,
-    navigateTo: (route: String) -> Unit
-) {
-    AppBottomSheet(state = sheetState) {
-        Column {
-            Text(
-                text = "Get Started",
-                modifier = Modifier.fillMaxWidth(),
-                style = RarimeTheme.typography.h5,
-                color = RarimeTheme.colors.textPrimary,
-                textAlign = TextAlign.Center
-            )
-            Text(
-                text = "Select Authorisation Method",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp),
-                style = RarimeTheme.typography.body2,
-                color = RarimeTheme.colors.textSecondary,
-                textAlign = TextAlign.Center
-            )
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 32.dp)
-            ) {
-                GetStartedButton(
-                    title = "Create new Identity",
-                    text = "Description text here",
-                    icon = {
-                        AppIcon(
-                            id = R.drawable.ic_user_plus,
-                            tint = RarimeTheme.colors.textPrimary
-                        )
-                    },
-                    onClick = { navigateTo(Screen.Main.route) }
-                )
-                GetStartedButton(
-                    title = "Import from MetaMask Snap",
-                    text = "Description text here",
-                    icon = {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_metamask),
-                            contentDescription = null,
-                            contentScale = ContentScale.FillWidth,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    },
-                    onClick = { navigateTo(Screen.Main.route) }
-                )
+        GetStartedSheet(
+            sheetState = sheetState,
+            onCreateClick = {
+                navigateTo(Screen.Main.route)
+            },
+            onImportClick = {
+                navigateTo(Screen.Main.route)
             }
-        }
-    }
-}
-
-@Composable
-private fun GetStartedButton(
-    icon: @Composable () -> Unit,
-    title: String,
-    text: String,
-    onClick: () -> Unit,
-) {
-    Button(
-        shape = RoundedCornerShape(16.dp),
-        modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = RarimeTheme.colors.componentPrimary),
-        onClick = onClick
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Box(
-                modifier = Modifier
-                    .background(RarimeTheme.colors.backgroundOpacity, CircleShape)
-                    .padding(10.dp)
-            ) {
-                icon()
-            }
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(
-                    text = title,
-                    style = RarimeTheme.typography.buttonMedium,
-                    color = RarimeTheme.colors.textPrimary
-                )
-                Text(
-                    text = text,
-                    style = RarimeTheme.typography.body4,
-                    color = RarimeTheme.colors.textSecondary
-                )
-            }
-        }
+        )
     }
 }
 
