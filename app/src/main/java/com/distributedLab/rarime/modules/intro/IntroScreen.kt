@@ -1,6 +1,7 @@
 package com.distributedLab.rarime.modules.intro
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,40 +25,43 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.main.Screen
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
+import com.distributedLab.rarime.ui.components.SecondaryTextButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import kotlinx.coroutines.launch
 
 private enum class IntroStep(
-    val title: String,
-    val description: String,
+    @StringRes val title: Int,
+    @StringRes val text: Int,
     @DrawableRes val image: Int
 ) {
     Welcome(
-        title = "Welcome",
-        description = "This is an app where your digital identity lives and enables you to connect with rest of the web in a fully private mode",
+        title = R.string.intro_step_1_title,
+        text = R.string.intro_step_1_text,
         image = R.drawable.intro_app
     ),
     Identity(
-        title = "Plug your identity",
-        description = "Convert existing identity documents into anonymous credentials",
+        title = R.string.intro_step_2_title,
+        text = R.string.intro_step_2_text,
         image = R.drawable.intro_identity
     ),
     Privacy(
-        title = "Use them",
-        description = "Login and access special parts of the web",
+        title = R.string.intro_step_3_title,
+        text = R.string.intro_step_3_text,
         image = R.drawable.intro_privacy
     ),
     Rewards(
-        title = "Get rewarded",
-        description = "Create a profile, add various credentials, and invite others to earn rewards in the process",
+        title = R.string.intro_step_4_title,
+        text = R.string.intro_step_4_text,
         image = R.drawable.intro_gifts
     )
 }
@@ -74,6 +78,7 @@ private val introSteps = listOf(
 fun IntroScreen(navigateTo: (route: String) -> Unit) {
     val stepState = rememberPagerState(pageCount = { introSteps.size })
     val coroutineScope = rememberCoroutineScope()
+    val isLastStep = stepState.currentPage == introSteps.size - 1
 
     Surface(color = RarimeTheme.colors.backgroundPrimary) {
         Column(
@@ -83,13 +88,17 @@ fun IntroScreen(navigateTo: (route: String) -> Unit) {
                 .verticalScroll(rememberScrollState())
         ) {
             Column {
-                Text(
-                    text = "Skip",
-                    style = RarimeTheme.typography.buttonMedium,
-                    color = RarimeTheme.colors.textSecondary,
+                SecondaryTextButton(
+                    text = stringResource(R.string.skip_btn),
                     modifier = Modifier
                         .padding(top = 20.dp, bottom = 10.dp, end = 24.dp)
                         .align(Alignment.End)
+                        .alpha(if (isLastStep) 0f else 1f),
+                    onClick = {
+                        coroutineScope.launch {
+                            stepState.animateScrollToPage(introSteps.size - 1)
+                        }
+                    },
                 )
                 HorizontalPager(
                     state = stepState,
@@ -105,29 +114,37 @@ fun IntroScreen(navigateTo: (route: String) -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 HorizontalDivider()
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    StepIndicator(
-                        itemsCount = introSteps.size,
-                        selectedIndex = stepState.currentPage
-                    )
+                if (isLastStep) {
                     PrimaryButton(
-                        text = "Next",
-                        rightIcon = R.drawable.ic_arrow_right,
-                        onClick = {
-                            val nextIndex = stepState.currentPage + 1
-                            if (nextIndex < introSteps.size) {
-                                coroutineScope.launch {
-                                    stepState.animateScrollToPage(nextIndex)
-                                }
-                            } else {
-                                navigateTo(Screen.Main.route)
-                            }
-                        }
+                        text = stringResource(R.string.get_started_btn),
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { navigateTo(Screen.Main.route) }
                     )
+                } else {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        StepIndicator(
+                            itemsCount = introSteps.size,
+                            selectedIndex = stepState.currentPage
+                        )
+                        PrimaryButton(
+                            text = stringResource(R.string.next_btn),
+                            rightIcon = R.drawable.ic_arrow_right,
+                            onClick = {
+                                val nextIndex = stepState.currentPage + 1
+                                if (nextIndex < introSteps.size) {
+                                    coroutineScope.launch {
+                                        stepState.animateScrollToPage(nextIndex)
+                                    }
+                                } else {
+                                    navigateTo(Screen.Main.route)
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -148,12 +165,12 @@ private fun StepView(step: IntroStep) {
             modifier = Modifier.padding(horizontal = 24.dp)
         ) {
             Text(
-                text = step.title,
+                text = stringResource(step.title),
                 style = RarimeTheme.typography.h4,
                 color = RarimeTheme.colors.textPrimary
             )
             Text(
-                text = step.description,
+                text = stringResource(step.text),
                 style = RarimeTheme.typography.body2,
                 color = RarimeTheme.colors.textSecondary
             )
