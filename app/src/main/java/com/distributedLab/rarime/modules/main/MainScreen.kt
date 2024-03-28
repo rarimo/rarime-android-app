@@ -77,18 +77,20 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
     val currentRoute = navBackStackEntry?.destination?.route
     val isBottomBarVisible = currentRoute != null && currentRoute in mainRoutes
 
+    fun navigateWithPopUp(route: String) {
+        navController.navigate(route) {
+            popUpTo(navController.graph.id) { inclusive = true }
+            restoreState = true
+            launchSingleTop = true
+        }
+    }
+
     Scaffold(
         bottomBar = {
             if (isBottomBarVisible) {
                 BottomTabBar(
                     currentRoute = currentRoute,
-                    onRouteSelected = {
-                        navController.navigate(it) {
-                            popUpTo(Screen.Main.route) { inclusive = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
+                    onRouteSelected = { navigateWithPopUp(it) }
                 )
             }
         },
@@ -121,12 +123,12 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                 }
                 composable(Screen.Register.VerifyPhrase.route) {
                     VerifyPhraseScreen(
-                        onNext = { navController.navigate(Screen.Security.EnablePasscode.route) },
+                        onNext = { navigateWithPopUp(Screen.Security.EnablePasscode.route) },
                         onBack = { navController.popBackStack() }
                     )
                 }
                 composable(Screen.Register.ImportPhrase.route) {
-                    ImportPhraseScreen { navController.navigate(Screen.Security.EnablePasscode.route) }
+                    ImportPhraseScreen { navigateWithPopUp(Screen.Security.EnablePasscode.route) }
                 }
             }
 
@@ -137,17 +139,17 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                 composable(Screen.Security.EnablePasscode.route) {
                     EnablePasscodeScreen(
                         onNext = { navController.navigate(Screen.Security.EnterPasscode.route) },
-                        onSkip = { navController.navigate(Screen.Security.EnableBiometrics.route) }
+                        onSkip = { navigateWithPopUp(Screen.Security.EnableBiometrics.route) }
                     )
                 }
                 composable(Screen.Security.EnterPasscode.route) {
                     EnterPasscodeScreen { navController.navigate(Screen.Security.RepeatPasscode.route) }
                 }
                 composable(Screen.Security.RepeatPasscode.route) {
-                    RepeatPasscodeScreen { navController.navigate(Screen.Security.EnableBiometrics.route) }
+                    RepeatPasscodeScreen { navigateWithPopUp(Screen.Security.EnableBiometrics.route) }
                 }
                 composable(Screen.Security.EnableBiometrics.route) {
-                    EnableBiometricsScreen { navController.navigate(Screen.Main.route) }
+                    EnableBiometricsScreen { navigateWithPopUp(Screen.Main.route) }
                 }
             }
 
