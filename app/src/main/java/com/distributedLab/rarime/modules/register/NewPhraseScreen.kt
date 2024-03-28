@@ -22,9 +22,11 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.CardContainer
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.InfoAlert
+import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.PrimaryTextButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import kotlinx.coroutines.delay
@@ -61,9 +63,16 @@ fun NewPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
     PhraseStepScaffold(
         step = 1,
         title = stringResource(R.string.new_phrase_title),
-        nextButtonText = stringResource(R.string.continue_btn),
-        onNext = onNext,
         onBack = onBack,
+        nextButton = {
+            PrimaryButton(
+                modifier = Modifier.fillMaxWidth(),
+                size = ButtonSize.Large,
+                text = stringResource(R.string.continue_btn),
+                rightIcon = R.drawable.ic_arrow_right,
+                onClick = onNext
+            )
+        }
     ) {
         CardContainer {
             Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {

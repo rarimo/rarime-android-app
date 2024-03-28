@@ -14,8 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.ui.base.ButtonSize
-import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.PrimaryTextButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
@@ -26,9 +24,8 @@ const val totalSteps = 2
 fun PhraseStepScaffold(
     step: Int,
     title: String,
-    nextButtonText: String,
-    onNext: () -> Unit,
     onBack: () -> Unit,
+    nextButton: @Composable () -> Unit,
     content: @Composable () -> Unit,
 ) {
     Column(
@@ -64,13 +61,7 @@ fun PhraseStepScaffold(
                 .padding(horizontal = 20.dp)
                 .padding(top = 16.dp, bottom = 32.dp)
         ) {
-            PrimaryButton(
-                modifier = Modifier.fillMaxWidth(),
-                size = ButtonSize.Large,
-                text = nextButtonText,
-                rightIcon = R.drawable.ic_arrow_right,
-                onClick = onNext
-            )
+            nextButton()
         }
     }
 }

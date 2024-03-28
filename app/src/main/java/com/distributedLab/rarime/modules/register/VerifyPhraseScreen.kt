@@ -15,7 +15,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +27,7 @@ import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppBottomSheet
 import com.distributedLab.rarime.ui.components.AppIcon
+import com.distributedLab.rarime.ui.components.AppSheetState
 import com.distributedLab.rarime.ui.components.CardContainer
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
@@ -34,91 +35,66 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
 fun VerifyPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
+    // TODO: Replace with actual word numbers and options
+    val wordNumbers = listOf(2, 5, 10)
+    val wordOptions = listOf(
+        listOf("domain", "explore", "club"),
+        listOf("apple", "music", "features"),
+        listOf("party", "engage", "features")
+    )
+
+    val selectedWords = remember { mutableStateListOf("", "", "") }
     val sheetState = rememberAppSheetState()
-    val isCorrect = remember {
-        mutableStateOf(false)
+
+    fun validateWords(): Boolean {
+        // TODO: Replace with actual phrase validation
+        return selectedWords.toList() == listOf("explore", "apple", "features")
     }
 
     PhraseStepScaffold(
         step = 2,
         title = stringResource(R.string.verify_phrase_title),
-        nextButtonText = stringResource(R.string.next_btn),
-        onNext = {
-            if (isCorrect.value) {
-                onNext()
-            } else {
-                sheetState.show()
-                isCorrect.value = true
-            }
-        },
         onBack = onBack,
+        nextButton = {
+            PrimaryButton(
+                modifier = Modifier.fillMaxWidth(),
+                size = ButtonSize.Large,
+                text = stringResource(R.string.next_btn),
+                rightIcon = R.drawable.ic_arrow_right,
+                enabled = selectedWords.all { it.isNotEmpty() },
+                onClick = {
+                    if (validateWords()) {
+                        onNext()
+                    } else {
+                        sheetState.show()
+                    }
+                }
+            )
+        }
     ) {
         CardContainer {
             Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
-                WordSelector(
-                    wordNumber = 2,
-                    options = listOf("domain", "explore", "club")
-                )
-                WordSelector(
-                    wordNumber = 5,
-                    options = listOf("apple", "music", "features")
-                )
-                WordSelector(
-                    wordNumber = 10,
-                    options = listOf("party", "engage", "features")
-                )
-            }
-        }
-
-        AppBottomSheet(
-            state = sheetState,
-            bottomBar = { hide ->
-                PrimaryButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    size = ButtonSize.Large,
-                    text = stringResource(R.string.try_again_btn),
-                    onClick = hide
-                )
-            }
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .background(RarimeTheme.colors.errorLighter, CircleShape)
-                        .padding(20.dp)
-                ) {
-                    AppIcon(
-                        id = R.drawable.ic_info,
-                        size = 32.dp,
-                        tint = RarimeTheme.colors.errorMain
+                for ((index, word) in selectedWords.withIndex()) {
+                    WordSelector(
+                        wordNumber = wordNumbers[index],
+                        selectedWord = word,
+                        wordOptions = wordOptions[index],
+                        onWordSelected = { selectedWords[index] = it }
                     )
                 }
-
-                Text(
-                    modifier = Modifier.padding(top = 24.dp),
-                    text = stringResource(R.string.incorrect_selection_title),
-                    style = RarimeTheme.typography.h5,
-                    color = RarimeTheme.colors.textPrimary,
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    modifier = Modifier.padding(top = 12.dp),
-                    text = stringResource(R.string.incorrect_selection_text),
-                    style = RarimeTheme.typography.body2,
-                    color = RarimeTheme.colors.textSecondary
-                )
             }
         }
+        IncorrectSelectionSheet(sheetState)
     }
 }
 
 @Composable
-private fun WordSelector(wordNumber: Int, options: List<String>) {
-    val selectedWord = remember { mutableStateOf("") }
-
+private fun WordSelector(
+    wordNumber: Int,
+    selectedWord: String,
+    wordOptions: List<String>,
+    onWordSelected: (String) -> Unit
+) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
             text = stringResource(R.string.word_number, wordNumber),
@@ -126,14 +102,13 @@ private fun WordSelector(wordNumber: Int, options: List<String>) {
             color = RarimeTheme.colors.textPrimary
         )
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            options.forEach {
+            wordOptions.forEach {
                 WordButton(
                     modifier = Modifier.weight(1f),
                     word = it,
-                    selected = it == selectedWord.value,
-                ) {
-                    selectedWord.value = it
-                }
+                    selected = it == selectedWord,
+                    onClick = { onWordSelected(it) }
+                )
             }
         }
     }
@@ -166,6 +141,53 @@ private fun WordButton(
         )
     }
 }
+
+@Composable
+private fun IncorrectSelectionSheet(sheetState: AppSheetState) {
+    AppBottomSheet(
+        state = sheetState,
+        bottomBar = { hide ->
+            PrimaryButton(
+                modifier = Modifier.fillMaxWidth(),
+                size = ButtonSize.Large,
+                text = stringResource(R.string.try_again_btn),
+                onClick = hide
+            )
+        }
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Box(
+                modifier = Modifier
+                    .background(RarimeTheme.colors.errorLighter, CircleShape)
+                    .padding(20.dp)
+            ) {
+                AppIcon(
+                    id = R.drawable.ic_info,
+                    size = 32.dp,
+                    tint = RarimeTheme.colors.errorMain
+                )
+            }
+
+            Text(
+                modifier = Modifier.padding(top = 24.dp),
+                text = stringResource(R.string.incorrect_selection_title),
+                style = RarimeTheme.typography.h5,
+                color = RarimeTheme.colors.textPrimary,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                modifier = Modifier.padding(top = 12.dp),
+                text = stringResource(R.string.incorrect_selection_text),
+                style = RarimeTheme.typography.body2,
+                color = RarimeTheme.colors.textSecondary
+            )
+        }
+    }
+}
+
 
 @Preview
 @Composable
