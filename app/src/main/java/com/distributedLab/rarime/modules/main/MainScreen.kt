@@ -26,9 +26,12 @@ import com.distributedLab.rarime.modules.home.HomeScreen
 import com.distributedLab.rarime.modules.intro.IntroScreen
 import com.distributedLab.rarime.modules.register.ImportPhraseScreen
 import com.distributedLab.rarime.modules.register.NewPhraseScreen
-import com.distributedLab.rarime.modules.register.PasscodeScreen
 import com.distributedLab.rarime.modules.register.VerifyPhraseScreen
 import com.distributedLab.rarime.modules.rewards.RewardsScreen
+import com.distributedLab.rarime.modules.security.EnableBiometricsScreen
+import com.distributedLab.rarime.modules.security.EnablePasscodeScreen
+import com.distributedLab.rarime.modules.security.EnterPasscodeScreen
+import com.distributedLab.rarime.modules.security.RepeatPasscodeScreen
 import com.distributedLab.rarime.modules.settings.SettingsScreen
 import com.distributedLab.rarime.modules.wallet.WalletScreen
 import com.distributedLab.rarime.ui.theme.RarimeTheme
@@ -39,7 +42,13 @@ sealed class Screen(val route: String) {
         data object NewPhrase : Screen("new_phrase")
         data object VerifyPhrase : Screen("verify_phrase")
         data object ImportPhrase : Screen("import_phrase")
-        data object Passcode : Screen("passcode")
+    }
+
+    data object Security : Screen("security") {
+        data object EnablePasscode : Screen("enable_passcode")
+        data object EnterPasscode : Screen("enter_passcode")
+        data object RepeatPasscode : Screen("repeat_passcode")
+        data object EnableBiometrics : Screen("enable_biometrics")
     }
 
     data object Main : Screen("main") {
@@ -90,7 +99,7 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
         )
         NavHost(
             navController,
-            startDestination = Screen.Intro.route,
+            startDestination = Screen.Security.route,
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
         ) {
@@ -110,19 +119,33 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                 }
                 composable(Screen.Register.VerifyPhrase.route) {
                     VerifyPhraseScreen(
-                        onNext = { navController.navigate(Screen.Register.Passcode.route) },
+                        onNext = { navController.navigate(Screen.Security.EnablePasscode.route) },
                         onBack = { navController.popBackStack() }
                     )
                 }
                 composable(Screen.Register.ImportPhrase.route) {
-                    ImportPhraseScreen { navController.navigate(Screen.Register.Passcode.route) }
+                    ImportPhraseScreen { navController.navigate(Screen.Security.EnablePasscode.route) }
                 }
-                composable(Screen.Register.Passcode.route) {
-                    PasscodeScreen {
-                        navController.navigate(Screen.Main.Home.route) {
-                            popUpTo(Screen.Intro.route) { inclusive = true }
-                        }
-                    }
+            }
+
+            navigation(
+                startDestination = Screen.Security.EnablePasscode.route,
+                route = Screen.Security.route
+            ) {
+                composable(Screen.Security.EnablePasscode.route) {
+                    EnablePasscodeScreen(
+                        onNext = { navController.navigate(Screen.Security.EnterPasscode.route) },
+                        onSkip = { navController.navigate(Screen.Security.EnableBiometrics.route) }
+                    )
+                }
+                composable(Screen.Security.EnterPasscode.route) {
+                    EnterPasscodeScreen { navController.navigate(Screen.Security.RepeatPasscode.route) }
+                }
+                composable(Screen.Security.RepeatPasscode.route) {
+                    RepeatPasscodeScreen { navController.navigate(Screen.Security.EnableBiometrics.route) }
+                }
+                composable(Screen.Security.EnableBiometrics.route) {
+                    EnableBiometricsScreen { navController.navigate(Screen.Main.route) }
                 }
             }
 

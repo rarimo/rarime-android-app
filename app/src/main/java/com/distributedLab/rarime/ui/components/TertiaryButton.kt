@@ -21,7 +21,7 @@ import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
-private fun TertiaryButton(
+fun TertiaryButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     enabled: Boolean = true,
@@ -38,7 +38,7 @@ private fun TertiaryButton(
         size = size,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
-            contentColor = RarimeTheme.colors.textSecondary,
+            contentColor = RarimeTheme.colors.textPrimary,
             disabledContainerColor = Color.Transparent,
             disabledContentColor = RarimeTheme.colors.textDisabled
         ),
@@ -51,7 +51,7 @@ private fun TertiaryButton(
 
 @Preview(showBackground = true)
 @Composable
-fun TertiaryButtonPreview() {
+private fun TertiaryButtonPreview() {
     Column(
         modifier = Modifier.padding(12.dp, 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {

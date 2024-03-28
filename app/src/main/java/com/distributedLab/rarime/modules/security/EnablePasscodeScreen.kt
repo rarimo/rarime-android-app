@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.register
+package com.distributedLab.rarime.modules.security
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,10 +14,11 @@ import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.PrimaryButton
+import com.distributedLab.rarime.ui.components.TertiaryButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun PasscodeScreen(onNext: () -> Unit) {
+fun EnablePasscodeScreen(onNext: () -> Unit, onSkip: () -> Unit) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
@@ -30,11 +31,22 @@ fun PasscodeScreen(onNext: () -> Unit) {
             style = RarimeTheme.typography.subtitle1,
             color = RarimeTheme.colors.textPrimary
         )
-        PrimaryButton(
-            text = stringResource(R.string.enable_btn),
-            size = ButtonSize.Large,
-            modifier = Modifier.fillMaxWidth(),
-            onClick = onNext
-        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            PrimaryButton(
+                text = stringResource(R.string.enable_btn),
+                size = ButtonSize.Large,
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onNext
+            )
+            TertiaryButton(
+                text = "Maybe Later",
+                size = ButtonSize.Large,
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onSkip
+            )
+        }
     }
 }
