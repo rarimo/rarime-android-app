@@ -16,11 +16,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.base.BaseButton
+import com.distributedLab.rarime.ui.base.BaseTextButton
 import com.distributedLab.rarime.ui.base.ButtonSize
+import com.distributedLab.rarime.ui.base.TextButtonColors
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun SecondaryButton(
+fun SecondaryTextButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     enabled: Boolean = true,
@@ -30,16 +32,15 @@ fun SecondaryButton(
     @DrawableRes rightIcon: Int? = null,
     content: @Composable RowScope.() -> Unit = {}
 ) {
-    BaseButton(
+    BaseTextButton(
         modifier = modifier,
         onClick = onClick,
         enabled = enabled,
         size = size,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = RarimeTheme.colors.componentPrimary,
-            contentColor = RarimeTheme.colors.textPrimary,
-            disabledContainerColor = RarimeTheme.colors.componentDisabled,
-            disabledContentColor = RarimeTheme.colors.textDisabled
+        colors = TextButtonColors(
+            contentColor = RarimeTheme.colors.textSecondary,
+            pressedColor = RarimeTheme.colors.textPrimary,
+            disabledColor = RarimeTheme.colors.textDisabled
         ),
         text = text,
         leftIcon = leftIcon,
@@ -50,37 +51,32 @@ fun SecondaryButton(
 
 @Preview(showBackground = true)
 @Composable
-private fun SecondaryButtonPreview() {
+private fun SecondaryTextButtonPreview() {
     Column(
         modifier = Modifier.padding(12.dp, 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        SecondaryButton(
+        SecondaryTextButton(
             size = ButtonSize.Large,
-            modifier = Modifier.fillMaxWidth(),
             leftIcon = R.drawable.ic_arrow_left,
             rightIcon = R.drawable.ic_arrow_right,
             text = "Large",
             onClick = { })
-        SecondaryButton(enabled = false,
+        SecondaryTextButton(enabled = false,
             size = ButtonSize.Large,
-            modifier = Modifier.fillMaxWidth(),
             leftIcon = R.drawable.ic_arrow_left,
             text = "Disabled",
             onClick = { })
-        SecondaryButton(
+        SecondaryTextButton(
             size = ButtonSize.Medium,
             leftIcon = R.drawable.ic_arrow_left,
             text = "Medium",
             onClick = { })
-        SecondaryButton(
+        SecondaryTextButton(
             size = ButtonSize.Small,
             rightIcon = R.drawable.ic_arrow_right,
             text = "Small",
             onClick = { })
-        SecondaryButton(
-            modifier = Modifier
-                .height(64.dp)
-                .width(220.dp), onClick = { }) {
+        SecondaryTextButton(onClick = { }) {
             Text(
                 text = "Custom content",
                 color = RarimeTheme.colors.errorDark,
