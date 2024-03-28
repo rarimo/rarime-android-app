@@ -11,9 +11,14 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
@@ -22,6 +27,8 @@ import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.InfoAlert
 import com.distributedLab.rarime.ui.components.PrimaryTextButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
 // TODO: Replace with actual wordlist
 val wordlist = listOf(
@@ -41,6 +48,16 @@ val wordlist = listOf(
 
 @Composable
 fun NewPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
+    val clipboardManager = LocalClipboardManager.current
+    val isCopied = remember { mutableStateOf(false) }
+
+    if (isCopied.value) {
+        LaunchedEffect(Unit) {
+            delay(3.seconds)
+            isCopied.value = false
+        }
+    }
+
     PhraseStepScaffold(
         step = 1,
         title = stringResource(R.string.new_phrase_title),
@@ -88,9 +105,16 @@ fun NewPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     PrimaryTextButton(
-                        leftIcon = R.drawable.ic_copy_simple,
-                        text = stringResource(R.string.copy_to_clipboard_btn),
-                        onClick = { /*TODO*/ }
+                        leftIcon = if (isCopied.value) R.drawable.ic_check else R.drawable.ic_copy_simple,
+                        text = if (isCopied.value) {
+                            stringResource(R.string.copied_text)
+                        } else {
+                            stringResource(R.string.copy_to_clipboard_btn)
+                        },
+                        onClick = {
+                            clipboardManager.setText(AnnotatedString(wordlist.joinToString(" ")))
+                            isCopied.value = true
+                        }
                     )
                 }
                 HorizontalDivider()

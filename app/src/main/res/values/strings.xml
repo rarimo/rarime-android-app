@@ -25,6 +25,7 @@
     <string name="step_indicator">Step %1$s/%2$s</string>
     <string name="new_phrase_title">New recovery phrase</string>
     <string name="copy_to_clipboard_btn">Copy to clipboard</string>
+    <string name="copied_text">Copied</string>
     <string name="new_phrase_warning">Don’t share your recovery phrase with anyone</string>
 
     <string name="verify_phrase_title">Verify recovery phrase</string>

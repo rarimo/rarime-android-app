@@ -20,7 +20,7 @@ import com.distributedLab.rarime.ui.components.PrimaryTextButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 
-val totalSteps = 2
+const val totalSteps = 2
 
 @Composable
 fun PhraseStepScaffold(
