@@ -85,7 +85,7 @@ fun EnableScreenLayout(
                 onClick = onEnable
             )
             TertiaryButton(
-                text = "Maybe Later",
+                text = stringResource(R.string.maybe_later_btn),
                 size = ButtonSize.Large,
                 modifier = Modifier.fillMaxWidth(),
                 onClick = onSkip
