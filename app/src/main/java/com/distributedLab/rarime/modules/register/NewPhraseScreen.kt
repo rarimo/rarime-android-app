@@ -2,10 +2,8 @@ package com.distributedLab.rarime.modules.register
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -18,14 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.CardContainer
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.InfoAlert
-import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.PrimaryTextButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
+// TODO: Replace with actual wordlist
 val wordlist = listOf(
     "domain",
     "explore",
@@ -46,16 +43,9 @@ fun NewPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
     PhraseStepScaffold(
         step = 1,
         title = "New recovery phrase",
+        nextButtonText = "Continue",
+        onNext = onNext,
         onBack = onBack,
-        nextButton = {
-            PrimaryButton(
-                modifier = Modifier.fillMaxWidth(),
-                size = ButtonSize.Large,
-                text = "Continue",
-                rightIcon = R.drawable.ic_arrow_right,
-                onClick = onNext
-            )
-        },
     ) {
         CardContainer {
             Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
@@ -108,53 +98,6 @@ fun NewPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
         }
     }
 }
-
-@Composable
-fun PhraseStepScaffold(
-    step: Int,
-    title: String,
-    onBack: () -> Unit,
-    nextButton: @Composable () -> Unit,
-    content: @Composable () -> Unit,
-) {
-    Column(
-        verticalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
-    ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                PrimaryTextButton(leftIcon = R.drawable.ic_caret_left, onClick = onBack)
-                Text(
-                    text = "Step ${step}/2",
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.textSecondary
-                )
-            }
-            Text(
-                modifier = Modifier.padding(top = 24.dp),
-                text = title,
-                style = RarimeTheme.typography.subtitle2,
-                color = RarimeTheme.colors.textPrimary
-            )
-            content()
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(RarimeTheme.colors.backgroundPure)
-                .padding(horizontal = 20.dp)
-                .padding(top = 16.dp, bottom = 32.dp)
-        ) {
-            nextButton()
-        }
-    }
-}
-
 
 @Preview
 @Composable

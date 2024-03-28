@@ -148,8 +148,11 @@ fun NavigationBarColor(route: String) {
     )
 
     val view = LocalView.current
-    val color =
-        if (route in pureBgRoutes) RarimeTheme.colors.backgroundPure else RarimeTheme.colors.backgroundPrimary
+    val color = if (route in pureBgRoutes) {
+        RarimeTheme.colors.backgroundPure
+    } else {
+        RarimeTheme.colors.backgroundPrimary
+    }
 
     if (!view.isInEditMode) {
         SideEffect {

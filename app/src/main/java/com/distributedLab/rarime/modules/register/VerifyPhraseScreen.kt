@@ -41,23 +41,16 @@ fun VerifyPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
     PhraseStepScaffold(
         step = 2,
         title = "Verify recovery phrase",
-        onBack = onBack,
-        nextButton = {
-            PrimaryButton(
-                modifier = Modifier.fillMaxWidth(),
-                size = ButtonSize.Large,
-                text = "Next",
-                rightIcon = R.drawable.ic_arrow_right,
-                onClick = {
-                    if (isCorrect.value) {
-                        onNext()
-                    } else {
-                        sheetState.show()
-                        isCorrect.value = true
-                    }
-                }
-            )
+        nextButtonText = "Next",
+        onNext = {
+            if (isCorrect.value) {
+                onNext()
+            } else {
+                sheetState.show()
+                isCorrect.value = true
+            }
         },
+        onBack = onBack,
     ) {
         CardContainer {
             Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
