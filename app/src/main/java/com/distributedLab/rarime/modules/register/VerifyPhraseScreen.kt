@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,8 +41,8 @@ fun VerifyPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
 
     PhraseStepScaffold(
         step = 2,
-        title = "Verify recovery phrase",
-        nextButtonText = "Next",
+        title = stringResource(R.string.verify_phrase_title),
+        nextButtonText = stringResource(R.string.next_btn),
         onNext = {
             if (isCorrect.value) {
                 onNext()
@@ -75,7 +76,7 @@ fun VerifyPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
                 PrimaryButton(
                     modifier = Modifier.fillMaxWidth(),
                     size = ButtonSize.Large,
-                    text = "Try Again",
+                    text = stringResource(R.string.try_again_btn),
                     onClick = hide
                 )
             }
@@ -98,14 +99,14 @@ fun VerifyPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
 
                 Text(
                     modifier = Modifier.padding(top = 24.dp),
-                    text = "Incorrect",
+                    text = stringResource(R.string.incorrect_selection_title),
                     style = RarimeTheme.typography.h5,
                     color = RarimeTheme.colors.textPrimary,
                     textAlign = TextAlign.Center
                 )
                 Text(
                     modifier = Modifier.padding(top = 12.dp),
-                    text = "Selections not matched. please try again",
+                    text = stringResource(R.string.incorrect_selection_text),
                     style = RarimeTheme.typography.body2,
                     color = RarimeTheme.colors.textSecondary
                 )
@@ -120,7 +121,7 @@ private fun WordSelector(wordNumber: Int, options: List<String>) {
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
-            text = "Word #$wordNumber",
+            text = stringResource(R.string.word_number, wordNumber),
             style = RarimeTheme.typography.subtitle4,
             color = RarimeTheme.colors.textPrimary
         )

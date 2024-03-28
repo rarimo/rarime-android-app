@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.base.ButtonSize
@@ -43,7 +44,7 @@ fun PhraseStepScaffold(
             ) {
                 PrimaryTextButton(leftIcon = R.drawable.ic_caret_left, onClick = onBack)
                 Text(
-                    text = "Step ${step}/${totalSteps}",
+                    text = stringResource(R.string.step_indicator, step, totalSteps),
                     style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.textSecondary
                 )

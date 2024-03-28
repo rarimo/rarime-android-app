@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
@@ -42,8 +43,8 @@ val wordlist = listOf(
 fun NewPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
     PhraseStepScaffold(
         step = 1,
-        title = "New recovery phrase",
-        nextButtonText = "Continue",
+        title = stringResource(R.string.new_phrase_title),
+        nextButtonText = stringResource(R.string.continue_btn),
         onNext = onNext,
         onBack = onBack,
     ) {
@@ -88,12 +89,12 @@ fun NewPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
                 ) {
                     PrimaryTextButton(
                         leftIcon = R.drawable.ic_copy_simple,
-                        text = "Copy to clipboard",
+                        text = stringResource(R.string.copy_to_clipboard_btn),
                         onClick = { /*TODO*/ }
                     )
                 }
                 HorizontalDivider()
-                InfoAlert(text = "Don’t share your recovery phrase with anyone")
+                InfoAlert(text = stringResource(R.string.new_phrase_warning))
             }
         }
     }

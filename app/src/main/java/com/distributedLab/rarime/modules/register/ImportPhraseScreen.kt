@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
@@ -24,12 +26,12 @@ fun ImportPhraseScreen(onNext: () -> Unit) {
             .padding(20.dp)
     ) {
         Text(
-            text = "Import recovery phrase",
+            text = stringResource(R.string.import_phrase_title),
             style = RarimeTheme.typography.subtitle1,
             color = RarimeTheme.colors.textPrimary
         )
         PrimaryButton(
-            text = "Next",
+            text = stringResource(R.string.next_btn),
             size = ButtonSize.Large,
             modifier = Modifier.fillMaxWidth(),
             onClick = onNext
