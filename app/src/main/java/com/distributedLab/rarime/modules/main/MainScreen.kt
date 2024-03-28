@@ -68,6 +68,8 @@ val mainRoutes = listOf(
     Screen.Main.Settings.route
 )
 
+// We have a floating tab bar at the bottom of the screen,
+// so no need to use scaffold padding
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen(navController: NavHostController = rememberNavController()) {
@@ -99,7 +101,7 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
         )
         NavHost(
             navController,
-            startDestination = Screen.Security.route,
+            startDestination = Screen.Intro.route,
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
         ) {
