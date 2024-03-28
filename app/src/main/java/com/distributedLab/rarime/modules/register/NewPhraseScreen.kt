@@ -60,7 +60,7 @@ fun NewPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
         }
     }
 
-    PhraseStepScaffold(
+    PhraseStepLayout(
         step = 1,
         title = stringResource(R.string.new_phrase_title),
         onBack = onBack,
