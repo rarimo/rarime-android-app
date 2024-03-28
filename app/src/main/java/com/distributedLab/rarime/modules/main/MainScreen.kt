@@ -1,6 +1,7 @@
 package com.distributedLab.rarime.modules.main
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.background
@@ -8,8 +9,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -78,6 +82,7 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
             }
         },
     ) {
+        NavigationBarColor(route = currentRoute ?: "")
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -114,7 +119,7 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                 }
                 composable(Screen.Register.Passcode.route) {
                     PasscodeScreen {
-                        navController.navigate(Screen.Main.Home.route)  {
+                        navController.navigate(Screen.Main.Home.route) {
                             popUpTo(Screen.Intro.route) { inclusive = true }
                         }
                     }
@@ -131,6 +136,26 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                 composable(Screen.Main.Credentials.route) { CredentialsScreen() }
                 composable(Screen.Main.Settings.route) { SettingsScreen() }
             }
+        }
+    }
+}
+
+@Composable
+fun NavigationBarColor(route: String) {
+    val pureBgRoutes = listOf(
+        Screen.Register.NewPhrase.route,
+        Screen.Register.VerifyPhrase.route,
+        Screen.Register.ImportPhrase.route,
+    )
+
+    val view = LocalView.current
+    val color =
+        if (route in pureBgRoutes) RarimeTheme.colors.backgroundPure else RarimeTheme.colors.backgroundPrimary
+
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.navigationBarColor = color.toArgb()
         }
     }
 }
