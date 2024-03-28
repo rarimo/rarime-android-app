@@ -12,8 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.PrimaryTextButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
@@ -21,7 +23,7 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 const val totalSteps = 2
 
 @Composable
-fun PhraseStepScaffold(
+fun PhraseStepLayout(
     step: Int,
     title: String,
     onBack: () -> Unit,
@@ -63,5 +65,20 @@ fun PhraseStepScaffold(
         ) {
             nextButton()
         }
+    }
+}
+
+@Preview
+@Composable
+private fun PhraseStepLayoutPreview() {
+    PhraseStepLayout(
+        step = 1,
+        title = "Title",
+        onBack = {},
+        nextButton = {
+            PrimaryButton(text = "Button", onClick = { /*TODO*/ })
+        },
+    ) {
+        Text("Content")
     }
 }

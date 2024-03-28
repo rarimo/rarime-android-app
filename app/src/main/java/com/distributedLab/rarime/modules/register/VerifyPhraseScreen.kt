@@ -51,7 +51,7 @@ fun VerifyPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
         return selectedWords.toList() == listOf("explore", "apple", "features")
     }
 
-    PhraseStepScaffold(
+    PhraseStepLayout(
         step = 2,
         title = stringResource(R.string.verify_phrase_title),
         onBack = onBack,
@@ -137,7 +137,7 @@ private fun WordButton(
         Text(
             text = word,
             style = RarimeTheme.typography.body3,
-            color = RarimeTheme.colors.textPrimary
+            color = if (selected) RarimeTheme.colors.baseBlack else RarimeTheme.colors.textPrimary
         )
     }
 }
