@@ -145,7 +145,6 @@ fun NavigationBarColor(route: String) {
     val pureBgRoutes = listOf(
         Screen.Register.NewPhrase.route,
         Screen.Register.VerifyPhrase.route,
-        Screen.Register.ImportPhrase.route,
     )
 
     val view = LocalView.current
