@@ -47,12 +47,20 @@ sealed class Screen(val route: String) {
     }
 }
 
+val mainRoutes = listOf(
+    Screen.Main.Home.route,
+    Screen.Main.Rewards.route,
+    Screen.Main.Wallet.route,
+    Screen.Main.Credentials.route,
+    Screen.Main.Settings.route
+)
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen(navController: NavHostController = rememberNavController()) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val isBottomBarVisible = currentRoute != null && currentRoute != Screen.Intro.route
+    val isBottomBarVisible = currentRoute != null && currentRoute in mainRoutes
 
     Scaffold(
         bottomBar = {
@@ -90,10 +98,16 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                 route = Screen.Register.route
             ) {
                 composable(Screen.Register.NewPhrase.route) {
-                    NewPhraseScreen { navController.navigate(Screen.Register.VerifyPhrase.route) }
+                    NewPhraseScreen(
+                        onNext = { navController.navigate(Screen.Register.VerifyPhrase.route) },
+                        onBack = { navController.popBackStack() }
+                    )
                 }
                 composable(Screen.Register.VerifyPhrase.route) {
-                    VerifyPhraseScreen { navController.navigate(Screen.Register.Passcode.route) }
+                    VerifyPhraseScreen(
+                        onNext = { navController.navigate(Screen.Register.Passcode.route) },
+                        onBack = { navController.popBackStack() }
+                    )
                 }
                 composable(Screen.Register.ImportPhrase.route) {
                     ImportPhraseScreen { navController.navigate(Screen.Register.Passcode.route) }
