@@ -43,6 +43,80 @@ val wordlist = listOf(
 
 @Composable
 fun NewPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
+    PhraseStepScaffold(
+        step = 1,
+        title = "New recovery phrase",
+        onBack = onBack,
+        nextButton = {
+            PrimaryButton(
+                modifier = Modifier.fillMaxWidth(),
+                size = ButtonSize.Large,
+                text = "Continue",
+                rightIcon = R.drawable.ic_arrow_right,
+                onClick = onNext
+            )
+        },
+    ) {
+        CardContainer {
+            Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    for ((index, value) in wordlist.withIndex()) {
+                        item {
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .background(
+                                        RarimeTheme.colors.componentPrimary,
+                                        RoundedCornerShape(8.dp)
+                                    )
+                                    .padding(vertical = 6.dp)
+                                    .fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = "${index + 1}.",
+                                    style = RarimeTheme.typography.subtitle5,
+                                    color = RarimeTheme.colors.textPrimary
+                                )
+                                Text(
+                                    text = value,
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    style = RarimeTheme.typography.body3,
+                                    color = RarimeTheme.colors.textPrimary
+                                )
+                            }
+                        }
+                    }
+                }
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    PrimaryTextButton(
+                        leftIcon = R.drawable.ic_copy_simple,
+                        text = "Copy to clipboard",
+                        onClick = { /*TODO*/ }
+                    )
+                }
+                HorizontalDivider()
+                InfoAlert(text = "Don’t share your recovery phrase with anyone")
+            }
+        }
+    }
+}
+
+@Composable
+fun PhraseStepScaffold(
+    step: Int,
+    title: String,
+    onBack: () -> Unit,
+    nextButton: @Composable () -> Unit,
+    content: @Composable () -> Unit,
+) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
@@ -56,66 +130,18 @@ fun NewPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
             ) {
                 PrimaryTextButton(leftIcon = R.drawable.ic_caret_left, onClick = onBack)
                 Text(
-                    text = "Step 1/2",
+                    text = "Step ${step}/2",
                     style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.textSecondary
                 )
             }
             Text(
                 modifier = Modifier.padding(top = 24.dp),
-                text = "New recovery phrase",
+                text = title,
                 style = RarimeTheme.typography.subtitle2,
                 color = RarimeTheme.colors.textPrimary
             )
-            CardContainer {
-                Column(verticalArrangement = Arrangement.spacedBy(20.dp),) {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(20.dp)
-                    ) {
-                        for ((index, value) in wordlist.withIndex()) {
-                            item {
-                                Row(
-                                    horizontalArrangement = Arrangement.Center,
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier
-                                        .background(
-                                            RarimeTheme.colors.componentPrimary,
-                                            RoundedCornerShape(8.dp)
-                                        )
-                                        .padding(vertical = 6.dp)
-                                        .fillMaxWidth()
-                                ) {
-                                    Text(
-                                        text = "${index + 1}.",
-                                        style = RarimeTheme.typography.subtitle5,
-                                        color = RarimeTheme.colors.textPrimary
-                                    )
-                                    Text(
-                                        text = value,
-                                        modifier = Modifier.padding(start = 8.dp),
-                                        style = RarimeTheme.typography.body3,
-                                        color = RarimeTheme.colors.textPrimary
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        PrimaryTextButton(
-                            leftIcon = R.drawable.ic_copy_simple,
-                            text = "Copy to clipboard",
-                            onClick = { /*TODO*/ }
-                        )
-                    }
-                    HorizontalDivider()
-                    InfoAlert(text = "Don’t share your recovery phrase with anyone")
-                }
-            }
+            content()
         }
         Box(
             modifier = Modifier
@@ -124,19 +150,14 @@ fun NewPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
                 .padding(horizontal = 20.dp)
                 .padding(top = 16.dp, bottom = 32.dp)
         ) {
-            PrimaryButton(
-                modifier = Modifier.fillMaxWidth(),
-                size = ButtonSize.Large,
-                text = "Continue",
-                rightIcon = R.drawable.ic_arrow_right,
-                onClick = onNext
-            )
+            nextButton()
         }
     }
 }
 
+
 @Preview
 @Composable
-private fun NewPhraseScreenPreview () {
+private fun NewPhraseScreenPreview() {
     NewPhraseScreen(onNext = {}, onBack = {})
 }
