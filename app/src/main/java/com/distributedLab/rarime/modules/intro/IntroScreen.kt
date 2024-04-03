@@ -150,10 +150,10 @@ fun IntroScreen(navigateTo: (route: String) -> Unit) {
         GetStartedSheet(
             sheetState = sheetState,
             onCreateClick = {
-                navigateTo(Screen.Main.route)
+                navigateTo(Screen.Register.NewPhrase.route)
             },
             onImportClick = {
-                navigateTo(Screen.Main.route)
+                navigateTo(Screen.Register.ImportPhrase.route)
             }
         )
     }
