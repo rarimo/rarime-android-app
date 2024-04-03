@@ -143,10 +143,25 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                     )
                 }
                 composable(Screen.Security.EnterPasscode.route) {
-                    EnterPasscodeScreen { navController.navigate(Screen.Security.RepeatPasscode.route) }
+                    EnterPasscodeScreen(
+                        onNext = { navController.navigate(Screen.Security.RepeatPasscode.route) },
+                        onBack = { navController.popBackStack() }
+                    )
                 }
                 composable(Screen.Security.RepeatPasscode.route) {
-                    RepeatPasscodeScreen { navigateWithPopUp(Screen.Security.EnableBiometrics.route) }
+                    RepeatPasscodeScreen(
+                        onNext = { navigateWithPopUp(Screen.Security.EnableBiometrics.route) },
+                        onBack = {
+                            navController.popBackStack()
+                            // TODO: clear passcode field
+                        },
+                        onClose = {
+                            navController.popBackStack(
+                                Screen.Security.EnablePasscode.route,
+                                false
+                            )
+                        }
+                    )
                 }
                 composable(Screen.Security.EnableBiometrics.route) {
                     EnableBiometricsScreen { navigateWithPopUp(Screen.Main.route) }

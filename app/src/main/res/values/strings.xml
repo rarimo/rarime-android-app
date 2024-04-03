@@ -43,4 +43,6 @@
     <string name="passcodes_mismatch_error">Passcodes do not match</string>
     <string name="enable_biometrics_title">Enable\nBiometrics</string>
     <string name="enable_biometrics_text">Enable Fingerprint Authentication</string>
+    <string name="invalid_passcode">Invalid Passcode</string>
+    <string name="try_again">Try Again</string>
 </resources>

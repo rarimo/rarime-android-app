@@ -7,18 +7,19 @@ import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.components.rememberAppTextFieldState
 
 @Composable
-fun EnterPasscodeScreen(onNext: () -> Unit) {
+fun EnterPasscodeScreen(onNext: () -> Unit, onBack: () -> Unit) {
     val passcodeState = rememberAppTextFieldState("")
 
     PasscodeScreenLayout(
         title = stringResource(R.string.enter_passcode_title),
         passcodeState = passcodeState,
-        onPasscodeFilled = onNext
+        onPasscodeFilled = onNext,
+        onClose = onBack
     )
 }
 
 @Preview
 @Composable
 private fun EnterPasscodeScreenPreview() {
-    EnterPasscodeScreen(onNext = {})
+    EnterPasscodeScreen(onNext = {}, onBack = {})
 }
