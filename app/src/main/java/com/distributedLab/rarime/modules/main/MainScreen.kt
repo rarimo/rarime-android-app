@@ -1,6 +1,7 @@
 package com.distributedLab.rarime.modules.main
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.background
@@ -8,8 +9,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -20,6 +24,10 @@ import androidx.navigation.compose.rememberNavController
 import com.distributedLab.rarime.modules.credentials.CredentialsScreen
 import com.distributedLab.rarime.modules.home.HomeScreen
 import com.distributedLab.rarime.modules.intro.IntroScreen
+import com.distributedLab.rarime.modules.register.ImportPhraseScreen
+import com.distributedLab.rarime.modules.register.NewPhraseScreen
+import com.distributedLab.rarime.modules.register.PasscodeScreen
+import com.distributedLab.rarime.modules.register.VerifyPhraseScreen
 import com.distributedLab.rarime.modules.rewards.RewardsScreen
 import com.distributedLab.rarime.modules.settings.SettingsScreen
 import com.distributedLab.rarime.modules.wallet.WalletScreen
@@ -27,6 +35,13 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 sealed class Screen(val route: String) {
     data object Intro : Screen("intro")
+    data object Register : Screen("register") {
+        data object NewPhrase : Screen("new_phrase")
+        data object VerifyPhrase : Screen("verify_phrase")
+        data object ImportPhrase : Screen("import_phrase")
+        data object Passcode : Screen("passcode")
+    }
+
     data object Main : Screen("main") {
         data object Home : Screen("home")
         data object Rewards : Screen("rewards")
@@ -36,12 +51,20 @@ sealed class Screen(val route: String) {
     }
 }
 
+val mainRoutes = listOf(
+    Screen.Main.Home.route,
+    Screen.Main.Rewards.route,
+    Screen.Main.Wallet.route,
+    Screen.Main.Credentials.route,
+    Screen.Main.Settings.route
+)
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen(navController: NavHostController = rememberNavController()) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val isBottomBarVisible = currentRoute != null && currentRoute != Screen.Intro.route
+    val isBottomBarVisible = currentRoute != null && currentRoute in mainRoutes
 
     Scaffold(
         bottomBar = {
@@ -59,9 +82,12 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
             }
         },
     ) {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary))
+        NavigationBarColor(route = currentRoute ?: "")
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(RarimeTheme.colors.backgroundPrimary)
+        )
         NavHost(
             navController,
             startDestination = Screen.Intro.route,
@@ -69,12 +95,37 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
             exitTransition = { ExitTransition.None },
         ) {
             composable(Screen.Intro.route) {
-                IntroScreen {
-                    navController.navigate(it) {
-                        popUpTo(Screen.Intro.route) { inclusive = true }
+                IntroScreen { navController.navigate(it) }
+            }
+
+            navigation(
+                startDestination = Screen.Register.NewPhrase.route,
+                route = Screen.Register.route
+            ) {
+                composable(Screen.Register.NewPhrase.route) {
+                    NewPhraseScreen(
+                        onNext = { navController.navigate(Screen.Register.VerifyPhrase.route) },
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+                composable(Screen.Register.VerifyPhrase.route) {
+                    VerifyPhraseScreen(
+                        onNext = { navController.navigate(Screen.Register.Passcode.route) },
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+                composable(Screen.Register.ImportPhrase.route) {
+                    ImportPhraseScreen { navController.navigate(Screen.Register.Passcode.route) }
+                }
+                composable(Screen.Register.Passcode.route) {
+                    PasscodeScreen {
+                        navController.navigate(Screen.Main.Home.route) {
+                            popUpTo(Screen.Intro.route) { inclusive = true }
+                        }
                     }
                 }
             }
+
             navigation(
                 startDestination = Screen.Main.Home.route,
                 route = Screen.Main.route
@@ -85,6 +136,28 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                 composable(Screen.Main.Credentials.route) { CredentialsScreen() }
                 composable(Screen.Main.Settings.route) { SettingsScreen() }
             }
+        }
+    }
+}
+
+@Composable
+fun NavigationBarColor(route: String) {
+    val pureBgRoutes = listOf(
+        Screen.Register.NewPhrase.route,
+        Screen.Register.VerifyPhrase.route,
+    )
+
+    val view = LocalView.current
+    val color = if (route in pureBgRoutes) {
+        RarimeTheme.colors.backgroundPure
+    } else {
+        RarimeTheme.colors.backgroundPrimary
+    }
+
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.navigationBarColor = color.toArgb()
         }
     }
 }
