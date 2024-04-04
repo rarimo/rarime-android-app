@@ -45,10 +45,7 @@ fun ScanPassportScreen(onClose: () -> Unit) {
             }
 
             ScanPassportState.GenerateProof -> {
-                GenerateProofStep(
-                    onNext = { onClose() },
-                    onClose = onClose
-                )
+                GenerateProofStep(onClose = onClose)
             }
         }
     }
