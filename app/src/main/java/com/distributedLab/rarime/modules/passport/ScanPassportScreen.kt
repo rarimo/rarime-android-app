@@ -54,26 +54,6 @@ fun ScanPassportScreen(onClose: () -> Unit) {
     }
 }
 
-@Composable
-fun GenerateProofStep(onNext: () -> Unit, onClose: () -> Unit) {
-    ScanPassportLayout(
-        step = 4,
-        title = "Generate Proof",
-        text = "Generating proof of your Passport data",
-        onClose = onClose
-    )
-}
-
-@Composable
-fun SelectDataStep(onNext: () -> Unit, onClose: () -> Unit) {
-    ScanPassportLayout(
-        step = 3,
-        title = "Select Data",
-        text = "Select data to share",
-        onClose = onClose
-    )
-}
-
 @Preview
 @Composable
 private fun ScanPassportScreenPreview() {

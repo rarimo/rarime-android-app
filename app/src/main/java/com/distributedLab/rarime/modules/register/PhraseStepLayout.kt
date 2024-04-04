@@ -49,7 +49,9 @@ fun PhraseStepLayout(
                 )
             }
             Text(
-                modifier = Modifier.padding(top = 24.dp),
+                modifier = Modifier
+                    .padding(top = 24.dp)
+                    .padding(bottom = 32.dp),
                 text = title,
                 style = RarimeTheme.typography.subtitle2,
                 color = RarimeTheme.colors.textPrimary
