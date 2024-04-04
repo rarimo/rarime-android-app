@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.rewards
+package com.distributedLab.rarime.modules.passport
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

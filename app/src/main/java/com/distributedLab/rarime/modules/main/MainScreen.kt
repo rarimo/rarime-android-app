@@ -24,6 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import com.distributedLab.rarime.modules.credentials.CredentialsScreen
 import com.distributedLab.rarime.modules.home.HomeScreen
 import com.distributedLab.rarime.modules.intro.IntroScreen
+import com.distributedLab.rarime.modules.passport.ScanPassportScreen
 import com.distributedLab.rarime.modules.register.ImportPhraseScreen
 import com.distributedLab.rarime.modules.register.NewPhraseScreen
 import com.distributedLab.rarime.modules.register.VerifyPhraseScreen
@@ -38,6 +39,8 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 sealed class Screen(val route: String) {
     data object Intro : Screen("intro")
+    data object ScanPassport : Screen("scan_passport")
+
     data object Register : Screen("register") {
         data object NewPhrase : Screen("new_phrase")
         data object VerifyPhrase : Screen("verify_phrase")
@@ -103,12 +106,16 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
         )
         NavHost(
             navController,
-            startDestination = Screen.Intro.route,
+            startDestination = Screen.Main.route,
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
         ) {
             composable(Screen.Intro.route) {
                 IntroScreen { navController.navigate(it) }
+            }
+
+            composable(Screen.ScanPassport.route) {
+                ScanPassportScreen { navController.popBackStack() }
             }
 
             navigation(
@@ -169,11 +176,13 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
             }
 
             navigation(
-                startDestination = Screen.Main.Home.route,
+                startDestination = Screen.Main.Rewards.route,
                 route = Screen.Main.route
             ) {
                 composable(Screen.Main.Home.route) { HomeScreen() }
-                composable(Screen.Main.Rewards.route) { RewardsScreen() }
+                composable(Screen.Main.Rewards.route) {
+                    RewardsScreen { navController.navigate(Screen.ScanPassport.route) }
+                }
                 composable(Screen.Main.Wallet.route) { WalletScreen() }
                 composable(Screen.Main.Credentials.route) { CredentialsScreen() }
                 composable(Screen.Main.Settings.route) { SettingsScreen() }
