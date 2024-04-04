@@ -64,7 +64,7 @@ fun AppBottomSheet(
     bottomBar: @Composable ((hide: () -> Unit) -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
 
     val hide = {
