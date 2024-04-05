@@ -26,9 +26,12 @@ import com.distributedLab.rarime.modules.home.HomeScreen
 import com.distributedLab.rarime.modules.intro.IntroScreen
 import com.distributedLab.rarime.modules.register.ImportPhraseScreen
 import com.distributedLab.rarime.modules.register.NewPhraseScreen
-import com.distributedLab.rarime.modules.register.PasscodeScreen
 import com.distributedLab.rarime.modules.register.VerifyPhraseScreen
 import com.distributedLab.rarime.modules.rewards.RewardsScreen
+import com.distributedLab.rarime.modules.security.EnableBiometricsScreen
+import com.distributedLab.rarime.modules.security.EnablePasscodeScreen
+import com.distributedLab.rarime.modules.security.EnterPasscodeScreen
+import com.distributedLab.rarime.modules.security.RepeatPasscodeScreen
 import com.distributedLab.rarime.modules.settings.SettingsScreen
 import com.distributedLab.rarime.modules.wallet.WalletScreen
 import com.distributedLab.rarime.ui.theme.RarimeTheme
@@ -39,7 +42,13 @@ sealed class Screen(val route: String) {
         data object NewPhrase : Screen("new_phrase")
         data object VerifyPhrase : Screen("verify_phrase")
         data object ImportPhrase : Screen("import_phrase")
-        data object Passcode : Screen("passcode")
+    }
+
+    data object Security : Screen("security") {
+        data object EnablePasscode : Screen("enable_passcode")
+        data object EnterPasscode : Screen("enter_passcode")
+        data object RepeatPasscode : Screen("repeat_passcode")
+        data object EnableBiometrics : Screen("enable_biometrics")
     }
 
     data object Main : Screen("main") {
@@ -59,6 +68,8 @@ val mainRoutes = listOf(
     Screen.Main.Settings.route
 )
 
+// We have a floating tab bar at the bottom of the screen,
+// so no need to use scaffold padding
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen(navController: NavHostController = rememberNavController()) {
@@ -66,18 +77,20 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
     val currentRoute = navBackStackEntry?.destination?.route
     val isBottomBarVisible = currentRoute != null && currentRoute in mainRoutes
 
+    fun navigateWithPopUp(route: String) {
+        navController.navigate(route) {
+            popUpTo(navController.graph.id) { inclusive = true }
+            restoreState = true
+            launchSingleTop = true
+        }
+    }
+
     Scaffold(
         bottomBar = {
             if (isBottomBarVisible) {
                 BottomTabBar(
                     currentRoute = currentRoute,
-                    onRouteSelected = {
-                        navController.navigate(it) {
-                            popUpTo(Screen.Main.route) { inclusive = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
+                    onRouteSelected = { navigateWithPopUp(it) }
                 )
             }
         },
@@ -110,19 +123,48 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                 }
                 composable(Screen.Register.VerifyPhrase.route) {
                     VerifyPhraseScreen(
-                        onNext = { navController.navigate(Screen.Register.Passcode.route) },
+                        onNext = { navigateWithPopUp(Screen.Security.EnablePasscode.route) },
                         onBack = { navController.popBackStack() }
                     )
                 }
                 composable(Screen.Register.ImportPhrase.route) {
-                    ImportPhraseScreen { navController.navigate(Screen.Register.Passcode.route) }
+                    ImportPhraseScreen { navigateWithPopUp(Screen.Security.EnablePasscode.route) }
                 }
-                composable(Screen.Register.Passcode.route) {
-                    PasscodeScreen {
-                        navController.navigate(Screen.Main.Home.route) {
-                            popUpTo(Screen.Intro.route) { inclusive = true }
+            }
+
+            navigation(
+                startDestination = Screen.Security.EnablePasscode.route,
+                route = Screen.Security.route
+            ) {
+                composable(Screen.Security.EnablePasscode.route) {
+                    EnablePasscodeScreen(
+                        onNext = { navController.navigate(Screen.Security.EnterPasscode.route) },
+                        onSkip = { navigateWithPopUp(Screen.Security.EnableBiometrics.route) }
+                    )
+                }
+                composable(Screen.Security.EnterPasscode.route) {
+                    EnterPasscodeScreen(
+                        onNext = { navController.navigate(Screen.Security.RepeatPasscode.route) },
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+                composable(Screen.Security.RepeatPasscode.route) {
+                    RepeatPasscodeScreen(
+                        onNext = { navigateWithPopUp(Screen.Security.EnableBiometrics.route) },
+                        onBack = {
+                            navController.popBackStack()
+                            // TODO: clear passcode field
+                        },
+                        onClose = {
+                            navController.popBackStack(
+                                Screen.Security.EnablePasscode.route,
+                                false
+                            )
                         }
-                    }
+                    )
+                }
+                composable(Screen.Security.EnableBiometrics.route) {
+                    EnableBiometricsScreen { navigateWithPopUp(Screen.Main.route) }
                 }
             }
 

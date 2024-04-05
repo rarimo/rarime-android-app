@@ -14,6 +14,7 @@
     <string name="get_started_btn">Get Started</string>
     <string name="continue_btn">Continue</string>
     <string name="enable_btn">Enable</string>
+    <string name="maybe_later_btn">Maybe Later</string>
 
     <string name="get_started_title">Get Started</string>
     <string name="get_started_text">Select Authorization Method</string>
@@ -33,7 +34,15 @@
     <string name="incorrect_selection_title">Incorrect</string>
     <string name="incorrect_selection_text">Selections not matched. please try again</string>
     <string name="try_again_btn">Try Again</string>
-
     <string name="import_phrase_title">Import recovery phrase</string>
-    <string name="enable_passcode_title">Enable Passcode</string>
+
+    <string name="enable_passcode_title">Enable\nPasscode</string>
+    <string name="enable_passcode_text">Enable Passcode Authentication</string>
+    <string name="enter_passcode_title">Enter Passcode</string>
+    <string name="repeat_passcode_title">Repeat Passcode</string>
+    <string name="passcodes_mismatch_error">Passcodes do not match</string>
+    <string name="enable_biometrics_title">Enable\nBiometrics</string>
+    <string name="enable_biometrics_text">Enable Fingerprint Authentication</string>
+    <string name="invalid_passcode">Invalid Passcode</string>
+    <string name="try_again">Try Again</string>
 </resources>
