@@ -1,6 +1,5 @@
 package com.distributedLab.rarime.modules.passport
 
-import CirclesLoader
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppIcon
+import com.distributedLab.rarime.ui.components.CirclesLoader
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.ProcessingChip
@@ -102,9 +102,11 @@ private fun GeneralProcessingStatus(status: ProcessingStatus) {
         ProcessingStatus.FAILURE -> "Please try again later"
     }
 
-    Box(modifier = Modifier
-        .background(bgColor, CircleShape)
-        .padding(28.dp)) {
+    Box(
+        modifier = Modifier
+            .background(bgColor, CircleShape)
+            .padding(28.dp)
+    ) {
         if (status == ProcessingStatus.PROCESSING) {
             CirclesLoader(size = 24.dp, color = iconColor)
         } else {

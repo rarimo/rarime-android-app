@@ -106,6 +106,7 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
         )
         NavHost(
             navController,
+            // TODO: Set startDestination using saved state
             startDestination = Screen.Main.route,
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
@@ -176,7 +177,7 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
             }
 
             navigation(
-                startDestination = Screen.Main.Rewards.route,
+                startDestination = Screen.Main.Home.route,
                 route = Screen.Main.route
             ) {
                 composable(Screen.Main.Home.route) { HomeScreen() }

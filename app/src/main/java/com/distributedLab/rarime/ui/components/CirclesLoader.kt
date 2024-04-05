@@ -1,3 +1,5 @@
+package com.distributedLab.rarime.ui.components
+
 import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.StartOffset

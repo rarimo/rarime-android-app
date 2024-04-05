@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
-
 enum class ProcessingStatus {
     PROCESSING,
     SUCCESS,

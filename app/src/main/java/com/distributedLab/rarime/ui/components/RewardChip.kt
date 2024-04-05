@@ -16,10 +16,7 @@ import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun RewardChip(
-    reward: Int,
-    isActive: Boolean = false
-) {
+fun RewardChip(reward: Int, isActive: Boolean = false) {
     val bgColor =
         if (isActive) RarimeTheme.colors.warningLight else RarimeTheme.colors.componentPrimary
     val contentColor =
