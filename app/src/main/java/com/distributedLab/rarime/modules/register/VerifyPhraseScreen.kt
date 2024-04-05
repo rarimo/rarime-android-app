@@ -151,7 +151,7 @@ private fun IncorrectSelectionSheet(sheetState: AppSheetState) {
                 modifier = Modifier.fillMaxWidth(),
                 size = ButtonSize.Large,
                 text = stringResource(R.string.try_again_btn),
-                onClick = hide
+                onClick = { hide {} }
             )
         }
     ) {

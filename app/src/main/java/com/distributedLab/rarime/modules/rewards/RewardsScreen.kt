@@ -41,10 +41,7 @@ fun RewardsScreen(onPassportScan: () -> Unit) {
 
         PassportIntroSheet(
             sheetState = sheetState,
-            onStart = {
-                sheetState.hide()
-                onPassportScan()
-            }
+            onStart = onPassportScan
         )
     }
 }

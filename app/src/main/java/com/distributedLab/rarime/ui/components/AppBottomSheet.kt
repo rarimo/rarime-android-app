@@ -61,14 +61,15 @@ fun rememberAppSheetState(showSheet: Boolean = false) =
 fun AppBottomSheet(
     modifier: Modifier = Modifier,
     state: AppSheetState = rememberAppSheetState(false),
-    bottomBar: @Composable ((hide: () -> Unit) -> Unit)? = null,
+    bottomBar: @Composable ((hide: (cb: () -> Unit) -> Unit) -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
 
-    val hide = {
+    fun hide(cb: (() -> Unit)? = null) {
         coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
+            cb?.invoke()
             if (!sheetState.isVisible) {
                 state.hide()
             }
@@ -116,7 +117,7 @@ fun AppBottomSheet(
                                     .padding(top = 16.dp)
                                     .padding(horizontal = 20.dp)
                             ) {
-                                it.invoke { hide() }
+                                it { cb -> hide(cb) }
                             }
                         }
                     }
