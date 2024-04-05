@@ -45,8 +45,8 @@ class AppTextFieldState(initialText: String, initialErrorMessage: String = "") {
             save = { listOf(it.text, it.errorMessage) },
             restore = {
                 AppTextFieldState(
-                    initialText = it[1],
-                    initialErrorMessage = it[0],
+                    initialText = it[0],
+                    initialErrorMessage = it[1],
                 )
             }
         )
