@@ -12,17 +12,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
 fun ScanMRZStep(onNext: () -> Unit, onClose: () -> Unit) {
     ScanPassportLayout(
         step = 1,
-        title = "Scan your Passport",
-        text = "Passport data is stored only on this device",
+        title = stringResource(R.string.scan_your_passport_title),
+        text = stringResource(R.string.scan_your_passport_text),
         onClose = onClose
     ) {
         Column(
@@ -40,7 +42,7 @@ fun ScanMRZStep(onNext: () -> Unit, onClose: () -> Unit) {
                     .clickable { onNext() }
             )
             Text(
-                text = "Move your PASSPORT page inside the border",
+                text = stringResource(R.string.scan_your_passport_hint),
                 style = RarimeTheme.typography.body3,
                 color = RarimeTheme.colors.textSecondary,
                 modifier = Modifier.width(250.dp),

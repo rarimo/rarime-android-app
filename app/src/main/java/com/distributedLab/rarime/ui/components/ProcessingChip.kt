@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
@@ -44,9 +45,9 @@ fun ProcessingChip(status: ProcessingStatus) {
     )
 
     val text = when (status) {
-        ProcessingStatus.PROCESSING -> "PROCESSING"
-        ProcessingStatus.SUCCESS -> "DONE"
-        ProcessingStatus.FAILURE -> "FAILED"
+        ProcessingStatus.PROCESSING -> stringResource(R.string.status_processing)
+        ProcessingStatus.SUCCESS -> stringResource(R.string.status_done)
+        ProcessingStatus.FAILURE -> stringResource(R.string.status_failed)
     }
 
     val icon = when (status) {

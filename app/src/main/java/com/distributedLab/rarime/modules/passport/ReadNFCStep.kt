@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,8 +27,8 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 fun ReadNFCStep(onNext: () -> Unit, onClose: () -> Unit) {
     ScanPassportLayout(
         step = 2,
-        title = "NFC reader",
-        text = "Reading Passport data",
+        title = stringResource(R.string.nfc_reader_title),
+        text = stringResource(R.string.nfc_reader_text),
         onClose = onClose
     ) {
         Column(
@@ -48,7 +49,7 @@ fun ReadNFCStep(onNext: () -> Unit, onClose: () -> Unit) {
                         .padding(horizontal = 50.dp)
                 )
                 Text(
-                    text = "Place your passport cover to the back of your phone",
+                    text = stringResource(R.string.nfc_reader_hint),
                     style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.textSecondary,
                     modifier = Modifier.width(250.dp),
@@ -62,7 +63,7 @@ fun ReadNFCStep(onNext: () -> Unit, onClose: () -> Unit) {
             ) {
                 HorizontalDivider()
                 PrimaryButton(
-                    text = "Start",
+                    text = stringResource(R.string.start_btn),
                     onClick = onNext,
                     size = ButtonSize.Large,
                     modifier = Modifier

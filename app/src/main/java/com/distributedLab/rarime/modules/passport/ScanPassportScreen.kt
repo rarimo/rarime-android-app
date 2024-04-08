@@ -11,40 +11,40 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
 private enum class ScanPassportState {
-    ScanMRZ,
-    ReadNFC,
-    SelectData,
-    GenerateProof
+    SCAN_MRZ,
+    READ_NFC,
+    SELECT_DATA,
+    GENERATE_PROOF
 }
 
 @Composable
 fun ScanPassportScreen(onClose: () -> Unit) {
-    var state by remember { mutableStateOf(ScanPassportState.ScanMRZ) }
+    var state by remember { mutableStateOf(ScanPassportState.SCAN_MRZ) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         when (state) {
-            ScanPassportState.ScanMRZ -> {
+            ScanPassportState.SCAN_MRZ -> {
                 ScanMRZStep(
-                    onNext = { state = ScanPassportState.ReadNFC },
+                    onNext = { state = ScanPassportState.READ_NFC },
                     onClose = onClose
                 )
             }
 
-            ScanPassportState.ReadNFC -> {
+            ScanPassportState.READ_NFC -> {
                 ReadNFCStep(
-                    onNext = { state = ScanPassportState.SelectData },
+                    onNext = { state = ScanPassportState.SELECT_DATA },
                     onClose = onClose
                 )
             }
 
-            ScanPassportState.SelectData -> {
+            ScanPassportState.SELECT_DATA -> {
                 SelectDataStep(
-                    onNext = { state = ScanPassportState.GenerateProof },
+                    onNext = { state = ScanPassportState.GENERATE_PROOF },
                     onClose = onClose
                 )
             }
 
-            ScanPassportState.GenerateProof -> {
+            ScanPassportState.GENERATE_PROOF -> {
                 GenerateProofStep(onClose = onClose)
             }
         }

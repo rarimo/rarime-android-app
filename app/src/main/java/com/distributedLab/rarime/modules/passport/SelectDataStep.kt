@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,8 +32,8 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 fun SelectDataStep(onNext: () -> Unit, onClose: () -> Unit) {
     ScanPassportLayout(
         step = 3,
-        title = "Select your data",
-        text = "Selected data can be used as anonymised proofs",
+        title = stringResource(R.string.select_your_data_title),
+        text = stringResource(R.string.select_your_data_text),
         onClose = onClose
     ) {
         Column {
@@ -82,7 +83,7 @@ fun SelectDataStep(onNext: () -> Unit, onClose: () -> Unit) {
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Text(
-                                    text = "Must Data",
+                                    text = stringResource(R.string.must_data),
                                     style = RarimeTheme.typography.subtitle3,
                                     color = RarimeTheme.colors.textPrimary
                                 )
@@ -90,9 +91,9 @@ fun SelectDataStep(onNext: () -> Unit, onClose: () -> Unit) {
                             }
 
                             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                                MustDataRow("Document class mode", "P")
-                                MustDataRow("Issuing state code", "USA")
-                                MustDataRow("Document number", "00AA00000")
+                                MustDataRow(stringResource(R.string.document_class_mode), "P")
+                                MustDataRow(stringResource(R.string.issuing_state_code), "USA")
+                                MustDataRow(stringResource(R.string.document_number), "00AA00000")
                             }
                         }
                     }
@@ -101,7 +102,7 @@ fun SelectDataStep(onNext: () -> Unit, onClose: () -> Unit) {
                     CardContainer(modifier = Modifier.padding(bottom = 20.dp)) {
                         Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                             Text(
-                                text = "Additional Data",
+                                text = stringResource(R.string.additional_data),
                                 style = RarimeTheme.typography.subtitle3,
                                 color = RarimeTheme.colors.textPrimary
                             )
@@ -117,7 +118,7 @@ fun SelectDataStep(onNext: () -> Unit, onClose: () -> Unit) {
                                     ) {
                                         AppSwitch()
                                         Text(
-                                            text = "Select All",
+                                            text = stringResource(R.string.select_all),
                                             style = RarimeTheme.typography.subtitle4,
                                             color = RarimeTheme.colors.textSecondary
                                         )
@@ -126,17 +127,17 @@ fun SelectDataStep(onNext: () -> Unit, onClose: () -> Unit) {
                                 }
                                 HorizontalDivider()
                                 DataItemSelector(
-                                    label = "Expiry date",
+                                    label = stringResource(R.string.expiry_date),
                                     value = "03/14/2060",
                                     reward = 5
                                 )
                                 DataItemSelector(
-                                    label = "Date of issue",
+                                    label = stringResource(R.string.date_of_issue),
                                     value = "03/14/2024",
                                     reward = 5
                                 )
                                 DataItemSelector(
-                                    label = "Nationality",
+                                    label = stringResource(R.string.nationality),
                                     value = "USA",
                                     reward = 20
                                 )
@@ -154,9 +155,9 @@ fun SelectDataStep(onNext: () -> Unit, onClose: () -> Unit) {
                     .padding(vertical = 12.dp, horizontal = 20.dp)
             ) {
                 val text = buildAnnotatedString {
-                    append("You will claim ")
+                    append(stringResource(R.string.you_will_claim))
                     withStyle(RarimeTheme.typography.subtitle5.toSpanStyle()) {
-                        append("80 / ")
+                        append(" 80 / ")
                     }
                     append("85 RMO")
                 }
@@ -178,7 +179,7 @@ fun SelectDataStep(onNext: () -> Unit, onClose: () -> Unit) {
                     )
                 }
                 PrimaryButton(
-                    text = "Continue",
+                    text = stringResource(R.string.continue_btn),
                     size = ButtonSize.Large,
                     onClick = onNext,
                     modifier = Modifier.fillMaxWidth()
@@ -189,11 +190,7 @@ fun SelectDataStep(onNext: () -> Unit, onClose: () -> Unit) {
 }
 
 @Composable
-private fun DataItemSelector(
-    label: String = "Date of issue",
-    value: String = "03/14/2024",
-    reward: Int = 10
-) {
+private fun DataItemSelector(label: String, value: String, reward: Int) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,

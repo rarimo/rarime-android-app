@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,18 +49,33 @@ fun GenerateProofStep(onClose: () -> Unit) {
             GeneralProcessingStatus(ProcessingStatus.SUCCESS)
             HorizontalDivider()
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                ProcessingItem(label = "Document class model", status = ProcessingStatus.SUCCESS)
-                ProcessingItem(label = "Issuing state code", status = ProcessingStatus.SUCCESS)
-                ProcessingItem(label = "Document number", status = ProcessingStatus.SUCCESS)
-                ProcessingItem(label = "Expiry date", status = ProcessingStatus.SUCCESS)
-                ProcessingItem(label = "Nationality", status = ProcessingStatus.SUCCESS)
+                ProcessingItem(
+                    label = stringResource(R.string.document_class_model),
+                    status = ProcessingStatus.SUCCESS
+                )
+                ProcessingItem(
+                    label = stringResource(R.string.issuing_state_code),
+                    status = ProcessingStatus.SUCCESS
+                )
+                ProcessingItem(
+                    label = stringResource(R.string.document_number),
+                    status = ProcessingStatus.SUCCESS
+                )
+                ProcessingItem(
+                    label = stringResource(R.string.expiry_date),
+                    status = ProcessingStatus.SUCCESS
+                )
+                ProcessingItem(
+                    label = stringResource(R.string.nationality),
+                    status = ProcessingStatus.SUCCESS
+                )
             }
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             HorizontalDivider()
             PrimaryButton(
-                text = "Back to Rewards",
+                text = stringResource(R.string.back_to_rewards_btn),
                 onClick = onClose,
                 size = ButtonSize.Large,
                 modifier = Modifier
@@ -91,15 +107,15 @@ private fun GeneralProcessingStatus(status: ProcessingStatus) {
     )
 
     val title = when (status) {
-        ProcessingStatus.PROCESSING -> "Please Wait..."
-        ProcessingStatus.SUCCESS -> "All Done!"
-        ProcessingStatus.FAILURE -> "Error"
+        ProcessingStatus.PROCESSING -> stringResource(R.string.processing_status_title)
+        ProcessingStatus.SUCCESS -> stringResource(R.string.success_status_title)
+        ProcessingStatus.FAILURE -> stringResource(R.string.failure_status_title)
     }
 
     val text = when (status) {
-        ProcessingStatus.PROCESSING -> "Creating anonymized identity proof"
-        ProcessingStatus.SUCCESS -> "Your passport proof is ready"
-        ProcessingStatus.FAILURE -> "Please try again later"
+        ProcessingStatus.PROCESSING -> stringResource(R.string.processing_status_text)
+        ProcessingStatus.SUCCESS -> stringResource(R.string.success_status_text)
+        ProcessingStatus.FAILURE -> stringResource(R.string.failure_status_text)
     }
 
     Box(

@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,7 +35,7 @@ fun PassportIntroSheet(
         state = sheetState,
         bottomBar = { hide ->
             PrimaryButton(
-                text = "Let's Start",
+                text = stringResource(R.string.lets_start_btn),
                 modifier = Modifier.fillMaxWidth(),
                 size = ButtonSize.Large,
                 onClick = { hide { onStart() } }
@@ -56,14 +57,14 @@ fun PassportIntroSheet(
             )
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
-                    text = "Passport",
+                    text = stringResource(R.string.passport_intro_title),
                     modifier = Modifier.fillMaxWidth(),
                     style = RarimeTheme.typography.h5,
                     color = RarimeTheme.colors.textPrimary,
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    text = "You’ll need a biometric document",
+                    text = stringResource(R.string.passport_intro_text),
                     modifier = Modifier.fillMaxWidth(),
                     style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.textSecondary,
@@ -72,10 +73,10 @@ fun PassportIntroSheet(
             }
             HorizontalDivider()
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                DescriptionStepRow("1.", "Personal data never leaves the device ")
-                DescriptionStepRow("2.", "Convert your data into ZK proofs")
-                DescriptionStepRow("3.", "Use proofs across the ecosystem")
-                DescriptionStepRow("\uD83C\uDF81", "Get rewarded with 50 RRMO")
+                DescriptionStepRow("1.", stringResource(R.string.passport_intro_step_1))
+                DescriptionStepRow("2.", stringResource(R.string.passport_intro_step_2))
+                DescriptionStepRow("3.", stringResource(R.string.passport_intro_step_3))
+                DescriptionStepRow("\uD83C\uDF81", stringResource(R.string.passport_intro_step_4))
             }
         }
     }
