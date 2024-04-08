@@ -40,7 +40,7 @@ fun GetStartedSheet(
     onImportClick: () -> Unit
 ) {
     AppBottomSheet(state = sheetState) {
-        Column {
+        Column(modifier = Modifier.padding(horizontal = 20.dp)) {
             Text(
                 text = stringResource(R.string.get_started_title),
                 modifier = Modifier.fillMaxWidth(),

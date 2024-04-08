@@ -56,21 +56,23 @@ fun rememberAppSheetState(showSheet: Boolean = false) =
         AppSheetState(showSheet)
     }
 
+typealias HideSheetFn = (cb: () -> Unit) -> Unit
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBottomSheet(
     modifier: Modifier = Modifier,
     state: AppSheetState = rememberAppSheetState(false),
-    bottomBar: @Composable ((hide: () -> Unit) -> Unit)? = null,
-    content: @Composable () -> Unit
+    content: @Composable (HideSheetFn) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState()
+    val modalState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
 
-    val hide = {
-        coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
-            if (!sheetState.isVisible) {
+    fun hide(cb: () -> Unit) {
+        coroutineScope.launch { modalState.hide() }.invokeOnCompletion {
+            if (!modalState.isVisible) {
                 state.hide()
+                cb()
             }
         }
     }
@@ -78,7 +80,7 @@ fun AppBottomSheet(
     if (state.showSheet) {
         ModalBottomSheet(
             modifier = modifier,
-            sheetState = sheetState,
+            sheetState = modalState,
             dragHandle = null,
             containerColor = RarimeTheme.colors.backgroundPure,
             onDismissRequest = { state.hide() }
@@ -96,29 +98,16 @@ fun AppBottomSheet(
                 ) {
                     PrimaryTextButton(
                         leftIcon = R.drawable.ic_close,
-                        onClick = { hide() }
+                        onClick = { hide {} }
                     )
                 }
                 Column {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
                             .padding(top = 32.dp)
                     ) {
-                        content()
-                    }
-                    bottomBar?.let {
-                        Box(modifier = Modifier.padding(top = 32.dp)) {
-                            HorizontalDivider()
-                            Box(
-                                modifier = Modifier
-                                    .padding(top = 16.dp)
-                                    .padding(horizontal = 20.dp)
-                            ) {
-                                it.invoke { hide() }
-                            }
-                        }
+                        content { cb -> hide(cb) }
                     }
                 }
             }
