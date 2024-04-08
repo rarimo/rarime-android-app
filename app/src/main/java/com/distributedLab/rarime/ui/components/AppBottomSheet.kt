@@ -65,12 +65,12 @@ fun AppBottomSheet(
     state: AppSheetState = rememberAppSheetState(false),
     content: @Composable (HideSheetFn) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val modalState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
 
     fun hide(cb: () -> Unit) {
-        coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
-            if (!sheetState.isVisible) {
+        coroutineScope.launch { modalState.hide() }.invokeOnCompletion {
+            if (!modalState.isVisible) {
                 state.hide()
                 cb()
             }
@@ -80,7 +80,7 @@ fun AppBottomSheet(
     if (state.showSheet) {
         ModalBottomSheet(
             modifier = modifier,
-            sheetState = sheetState,
+            sheetState = modalState,
             dragHandle = null,
             containerColor = RarimeTheme.colors.backgroundPure,
             onDismissRequest = { state.hide() }
