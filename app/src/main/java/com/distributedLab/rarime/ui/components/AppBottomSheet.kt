@@ -56,22 +56,23 @@ fun rememberAppSheetState(showSheet: Boolean = false) =
         AppSheetState(showSheet)
     }
 
+typealias HideSheetFn = (cb: () -> Unit) -> Unit
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBottomSheet(
     modifier: Modifier = Modifier,
     state: AppSheetState = rememberAppSheetState(false),
-    bottomBar: @Composable ((hide: (cb: () -> Unit) -> Unit) -> Unit)? = null,
-    content: @Composable () -> Unit
+    content: @Composable (HideSheetFn) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
 
-    fun hide(cb: (() -> Unit)? = null) {
+    fun hide(cb: () -> Unit) {
         coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
-            cb?.invoke()
             if (!sheetState.isVisible) {
                 state.hide()
+                cb()
             }
         }
     }
@@ -97,29 +98,16 @@ fun AppBottomSheet(
                 ) {
                     PrimaryTextButton(
                         leftIcon = R.drawable.ic_close,
-                        onClick = { hide() }
+                        onClick = { hide {} }
                     )
                 }
                 Column {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
                             .padding(top = 32.dp)
                     ) {
-                        content()
-                    }
-                    bottomBar?.let {
-                        Box(modifier = Modifier.padding(top = 32.dp)) {
-                            HorizontalDivider()
-                            Box(
-                                modifier = Modifier
-                                    .padding(top = 16.dp)
-                                    .padding(horizontal = 20.dp)
-                            ) {
-                                it { cb -> hide(cb) }
-                            }
-                        }
+                        content { cb -> hide(cb) }
                     }
                 }
             }

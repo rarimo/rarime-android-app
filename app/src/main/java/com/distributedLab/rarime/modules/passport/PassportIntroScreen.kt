@@ -19,32 +19,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.base.ButtonSize
-import com.distributedLab.rarime.ui.components.AppBottomSheet
-import com.distributedLab.rarime.ui.components.AppSheetState
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
-import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun PassportIntroSheet(
-    sheetState: AppSheetState,
-    onStart: () -> Unit
-) {
-    AppBottomSheet(
-        state = sheetState,
-        bottomBar = { hide ->
-            PrimaryButton(
-                text = stringResource(R.string.lets_start_btn),
-                modifier = Modifier.fillMaxWidth(),
-                size = ButtonSize.Large,
-                onClick = { hide { onStart() } }
-            )
-        }
-    ) {
+fun PassportIntroScreen(onStart: () -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(120.dp)) {
         Column(
             verticalArrangement = Arrangement.spacedBy(24.dp),
-            modifier = Modifier.padding(bottom = 80.dp)
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.passport),
@@ -79,6 +64,18 @@ fun PassportIntroSheet(
                 DescriptionStepRow("\uD83C\uDF81", stringResource(R.string.passport_intro_step_4))
             }
         }
+
+        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            HorizontalDivider()
+            PrimaryButton(
+                text = stringResource(R.string.lets_start_btn),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                size = ButtonSize.Large,
+                onClick = onStart
+            )
+        }
     }
 }
 
@@ -105,11 +102,8 @@ fun DescriptionStepRow(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-private fun PassportIntroSheetPreview() {
-    PassportIntroSheet(
-        sheetState = rememberAppSheetState(true),
-        onStart = {}
-    )
+private fun PassportIntroScreenPreview() {
+    PassportIntroScreen(onStart = {})
 }

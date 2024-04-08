@@ -9,8 +9,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.distributedLab.rarime.modules.passport.PassportIntroSheet
+import com.distributedLab.rarime.modules.passport.PassportIntroScreen
 import com.distributedLab.rarime.ui.base.ButtonSize
+import com.distributedLab.rarime.ui.components.AppBottomSheet
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
@@ -39,9 +40,8 @@ fun RewardsScreen(onPassportScan: () -> Unit) {
             onClick = { sheetState.show() }
         )
 
-        PassportIntroSheet(
-            sheetState = sheetState,
-            onStart = onPassportScan
-        )
+        AppBottomSheet(state = sheetState) { hide ->
+            PassportIntroScreen(onStart = { hide(onPassportScan) })
+        }
     }
 }
