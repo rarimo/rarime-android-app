@@ -40,15 +40,15 @@ enum class BottomTab(
         R.drawable.ic_house_simple,
         R.drawable.ic_house_simple_fill
     ),
-    Rewards(
-        Screen.Main.Rewards.route,
-        R.drawable.ic_gift,
-        R.drawable.ic_gift_fill
-    ),
     Wallet(
         Screen.Main.Wallet.route,
         R.drawable.ic_wallet,
         R.drawable.ic_wallet_filled
+    ),
+    Rewards(
+        Screen.Main.Rewards.route,
+        R.drawable.ic_gift,
+        R.drawable.ic_gift_fill
     ),
     Credentials(
         Screen.Main.Credentials.route,

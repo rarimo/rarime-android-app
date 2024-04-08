@@ -29,6 +29,7 @@ import com.distributedLab.rarime.ui.components.AppBottomSheet
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.AppSheetState
 import com.distributedLab.rarime.ui.components.CardContainer
+import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
@@ -144,46 +145,52 @@ private fun WordButton(
 
 @Composable
 private fun IncorrectSelectionSheet(sheetState: AppSheetState) {
-    AppBottomSheet(
-        state = sheetState,
-        bottomBar = { hide ->
-            PrimaryButton(
-                modifier = Modifier.fillMaxWidth(),
-                size = ButtonSize.Large,
-                text = stringResource(R.string.try_again_btn),
-                onClick = hide
-            )
-        }
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Box(
+    AppBottomSheet(state = sheetState) { hide ->
+        Column(verticalArrangement = Arrangement.spacedBy(32.dp)) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .background(RarimeTheme.colors.errorLighter, CircleShape)
-                    .padding(20.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
             ) {
-                AppIcon(
-                    id = R.drawable.ic_info,
-                    size = 32.dp,
-                    tint = RarimeTheme.colors.errorMain
+                Box(
+                    modifier = Modifier
+                        .background(RarimeTheme.colors.errorLighter, CircleShape)
+                        .padding(20.dp)
+                ) {
+                    AppIcon(
+                        id = R.drawable.ic_info,
+                        size = 32.dp,
+                        tint = RarimeTheme.colors.errorMain
+                    )
+                }
+
+                Text(
+                    modifier = Modifier.padding(top = 24.dp),
+                    text = stringResource(R.string.incorrect_selection_title),
+                    style = RarimeTheme.typography.h5,
+                    color = RarimeTheme.colors.textPrimary,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    modifier = Modifier.padding(top = 12.dp),
+                    text = stringResource(R.string.incorrect_selection_text),
+                    style = RarimeTheme.typography.body2,
+                    color = RarimeTheme.colors.textSecondary
                 )
             }
 
-            Text(
-                modifier = Modifier.padding(top = 24.dp),
-                text = stringResource(R.string.incorrect_selection_title),
-                style = RarimeTheme.typography.h5,
-                color = RarimeTheme.colors.textPrimary,
-                textAlign = TextAlign.Center
-            )
-            Text(
-                modifier = Modifier.padding(top = 12.dp),
-                text = stringResource(R.string.incorrect_selection_text),
-                style = RarimeTheme.typography.body2,
-                color = RarimeTheme.colors.textSecondary
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                HorizontalDivider()
+                PrimaryButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    size = ButtonSize.Large,
+                    text = stringResource(R.string.try_again_btn),
+                    onClick = { hide {} }
+                )
+            }
         }
     }
 }

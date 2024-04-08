@@ -25,7 +25,6 @@ fun CardContainer(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 32.dp)
             .background(RarimeTheme.colors.backgroundPure, RoundedCornerShape(24.dp))
             .padding(20.dp),
         content = content
