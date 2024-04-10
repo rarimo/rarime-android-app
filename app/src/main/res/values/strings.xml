@@ -82,4 +82,8 @@
     <string name="processing_status_text">Creating anonymized identity proof</string>
     <string name="success_status_text">Your passport proof is ready</string>
     <string name="failure_status_text">Please try again later</string>
+    <string name="camera_permission_title">Camera permission</string>
+    <string name="camera_permission_description">Grant permission to use the camera</string>
+    <string name="confirm">Confirm</string>
+    <string name="dismiss">Dismiss</string>
 </resources>
