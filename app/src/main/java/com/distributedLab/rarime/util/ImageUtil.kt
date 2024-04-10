@@ -15,12 +15,11 @@
  */
 package com.distributedLab.rarime.util
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
-import com.gemalto.jp2.JP2Decoder
 import com.distributedLab.rarime.modules.passport.models.Image
+import com.gemalto.jp2.JP2Decoder
 import org.jmrtd.lds.AbstractImageInfo
 import org.jnbis.WsqDecoder
 import java.io.ByteArrayInputStream
@@ -30,7 +29,7 @@ import java.io.InputStream
 import java.util.Locale
 
 object ImageUtil {
-    fun getImage(context: Context?, imageInfo: AbstractImageInfo): Image {
+    fun getImage(imageInfo: AbstractImageInfo): Image {
         val image = Image()
         val imageLength = imageInfo.imageLength
         val dataInputStream = DataInputStream(imageInfo.imageInputStream)
@@ -38,7 +37,7 @@ object ImageUtil {
         try {
             dataInputStream.readFully(buffer, 0, imageLength)
             val inputStream: InputStream = ByteArrayInputStream(buffer, 0, imageLength)
-            val bitmapImage = decodeImage(context, imageInfo.mimeType, inputStream)
+            val bitmapImage = decodeImage(imageInfo.mimeType, inputStream)
             image.bitmapImage = bitmapImage
             val base64Image = Base64.encodeToString(buffer, Base64.DEFAULT)
             image.base64Image = base64Image
@@ -60,30 +59,36 @@ object ImageUtil {
     }
 
     @Throws(IOException::class)
-    fun decodeImage(context: Context?, mimeType: String, inputStream: InputStream?): Bitmap {
+    fun decodeImage(mimeType: String, inputStream: InputStream?): Bitmap {
         val mimeTypeLower = mimeType.lowercase(Locale.getDefault())
-        return if (mimeTypeLower == "image/jp2" || mimeTypeLower == "image/jpeg2000") {
-            JP2Decoder(inputStream).decode()
-        } else if (mimeTypeLower == "image/x-wsq") {
-            val wsqDecoder = WsqDecoder()
-            val bitmap = wsqDecoder.decode(inputStream)
-            val byteData = bitmap.pixels
-            val intData = IntArray(byteData.size)
-            for (j in byteData.indices) {
-                intData[j] = -0x1000000 or
-                        (byteData[j].toInt() and (0xFF shl 16)) or
-                        (byteData[j].toInt() and (0xFF shl 8)) or (byteData[j].toInt() and 0xFF)
+        return when (mimeTypeLower) {
+            "image/jp2", "image/jpeg2000" -> {
+                JP2Decoder(inputStream).decode()
             }
-            Bitmap.createBitmap(
-                intData,
-                0,
-                bitmap.width,
-                bitmap.width,
-                bitmap.height,
-                Bitmap.Config.ARGB_8888
-            )
-        } else {
-            BitmapFactory.decodeStream(inputStream)
+
+            "image/x-wsq" -> {
+                val wsqDecoder = WsqDecoder()
+                val bitmap = wsqDecoder.decode(inputStream)
+                val byteData = bitmap.pixels
+                val intData = IntArray(byteData.size)
+                for (j in byteData.indices) {
+                    intData[j] = -0x1000000 or
+                            (byteData[j].toInt() and (0xFF shl 16)) or
+                            (byteData[j].toInt() and (0xFF shl 8)) or (byteData[j].toInt() and 0xFF)
+                }
+                Bitmap.createBitmap(
+                    intData,
+                    0,
+                    bitmap.width,
+                    bitmap.width,
+                    bitmap.height,
+                    Bitmap.Config.ARGB_8888
+                )
+            }
+
+            else -> {
+                BitmapFactory.decodeStream(inputStream)
+            }
         }
     }
 }

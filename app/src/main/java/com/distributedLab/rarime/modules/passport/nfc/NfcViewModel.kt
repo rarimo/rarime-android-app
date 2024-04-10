@@ -22,7 +22,7 @@ class NfcViewModel : ViewModel() {
         val birthDate = mrzInfo.dateOfBirth
         val expirationDate = mrzInfo.dateOfExpiry
         val passportNumber = mrzInfo.documentNumber
-        if (passportNumber == null || passportNumber!!.isEmpty() || expirationDate == null || expirationDate!!.isEmpty() || birthDate == null || birthDate!!.isEmpty()) {
+        if (passportNumber == null || passportNumber.isEmpty() || expirationDate == null || expirationDate.isEmpty() || birthDate == null || birthDate.isEmpty()) {
             throw Exception("recheck mrz")
         }
 

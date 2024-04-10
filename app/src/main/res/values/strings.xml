@@ -76,7 +76,7 @@
     <string name="you_will_claim">You will claim</string>
     <string name="back_to_rewards_btn">Back to Rewards</string>
     <string name="document_class_model">Document class model</string>
-    <string name="processing_status_title">Please Wait...</string>
+    <string name="processing_status_title">Please Wait…</string>
     <string name="success_status_title">All Done!</string>
     <string name="failure_status_title">Error</string>
     <string name="processing_status_text">Creating anonymized identity proof</string>

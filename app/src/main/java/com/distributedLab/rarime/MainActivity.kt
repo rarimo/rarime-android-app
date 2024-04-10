@@ -10,7 +10,6 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.distributedLab.rarime.modules.main.MainScreen
 import com.distributedLab.rarime.modules.passport.nfc.NfcViewModel
 import com.distributedLab.rarime.ui.theme.AppTheme
@@ -48,7 +47,6 @@ class MainActivity : ComponentActivity() {
         val filter = arrayOf(arrayOf("android.nfc.tech.IsoDep"))
         adapter.enableForegroundDispatch(this, pendingIntent, null, filter)
     }
-
 
 
     private fun disableNFCForegroundDispatch() {
