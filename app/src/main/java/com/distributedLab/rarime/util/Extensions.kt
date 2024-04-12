@@ -1,9 +1,5 @@
 package com.distributedLab.rarime.util
 
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-
 fun String.decodeHexString(): ByteArray {
     check(length % 2 == 0) {
         "Must have an even length"

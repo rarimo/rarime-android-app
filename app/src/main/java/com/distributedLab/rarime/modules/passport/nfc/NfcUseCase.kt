@@ -144,13 +144,13 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec) {
         val mrzInfo = dg1File.mrzInfo
         personDetails.name = mrzInfo.secondaryIdentifier.replace("<", " ").trim { it <= ' ' }
         personDetails.surname = mrzInfo.primaryIdentifier.replace("<", " ").trim { it <= ' ' }
-        personDetails.personalNumber = mrzInfo.personalNumber;
-        personDetails.gender = mrzInfo.gender.toString();
-        personDetails.birthDate = DateUtil.convertFromMrzDate(mrzInfo.dateOfBirth);
-        personDetails.expiryDate = DateUtil.convertFromMrzDate(mrzInfo.dateOfExpiry);
-        personDetails.serialNumber = mrzInfo.documentNumber;
-        personDetails.nationality = mrzInfo.nationality;
-        personDetails.issuerAuthority = mrzInfo.issuingState;
+        personDetails.personalNumber = mrzInfo.personalNumber
+        personDetails.gender = mrzInfo.gender.toString()
+        personDetails.birthDate = DateUtil.convertFromMrzDate(mrzInfo.dateOfBirth)
+        personDetails.expiryDate = DateUtil.convertFromMrzDate(mrzInfo.dateOfExpiry)
+        personDetails.serialNumber = mrzInfo.documentNumber
+        personDetails.nationality = mrzInfo.nationality
+        personDetails.issuerAuthority = mrzInfo.issuingState
 
         eDocument.dg1 = encodedDg1File
 
@@ -207,10 +207,10 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec) {
 
 
 
-        eDocument.docType = docType;
-        eDocument.personDetails = personDetails;
-        eDocument.additionalPersonDetails = additionalPersonDetails;
-        eDocument.isPassiveAuth = hashesMatched;
+        eDocument.docType = docType
+        eDocument.personDetails = personDetails
+        eDocument.additionalPersonDetails = additionalPersonDetails
+        eDocument.isPassiveAuth = hashesMatched
 
 
         val dg15 = DG15File(dG15File)
@@ -227,7 +227,7 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec) {
         // sign -> contract
 
         val index = pemFile.indexOf("-----END CERTIFICATE-----")
-        var pemFileEnded = pemFile.addCharAtIndex('\n', index)
+        val pemFileEnded = pemFile.addCharAtIndex('\n', index)
 
 
         val encapsulaged_content = sodFile.readASN1Data()!!.toHexString().substring(8)
