@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.distributedLab.rarime.modules.passport.models.EDocument
 import org.jmrtd.lds.icao.MRZInfo
 
 private enum class ScanPassportState {
@@ -20,6 +21,9 @@ private enum class ScanPassportState {
 fun ScanPassportScreen(onClose: () -> Unit) {
     var state by remember { mutableStateOf(ScanPassportState.SCAN_MRZ) }
     var mrzData: MRZInfo? by remember { mutableStateOf(null) }
+
+    var eDocument: EDocument? by remember { mutableStateOf(null) }
+
     Column(modifier = Modifier.fillMaxSize()) {
         when (state) {
             ScanPassportState.SCAN_MRZ -> {
@@ -34,15 +38,18 @@ fun ScanPassportScreen(onClose: () -> Unit) {
             ScanPassportState.READ_NFC -> {
                 Log.e("TAG", mrzData!!.dateOfBirth)
                 ReadNFCStep(
-                    onNext = { state = ScanPassportState.SELECT_DATA },
-                    onClose = onClose,
-                    mrzInfo = mrzData!!
+                    onNext = {
+                        eDocument = it
+                        state = ScanPassportState.SELECT_DATA
+                    }, onClose = onClose, mrzInfo = mrzData!!
                 )
             }
 
             ScanPassportState.SELECT_DATA -> {
                 SelectDataStep(
-                    onNext = { state = ScanPassportState.GENERATE_PROOF }, onClose = onClose
+                    onNext = { state = ScanPassportState.GENERATE_PROOF },
+                    onClose = onClose,
+                    eDocument = eDocument!!
                 )
             }
 

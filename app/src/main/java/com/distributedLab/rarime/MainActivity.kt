@@ -4,7 +4,6 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
-import android.nfc.tech.IsoDep
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -58,16 +57,11 @@ class MainActivity : ComponentActivity() {
 
         super.onNewIntent(intent)
         setIntent(intent)
-        Log.e("SCAN", "SCAnning")
         if (NfcAdapter.ACTION_TAG_DISCOVERED == intent!!.action || NfcAdapter.ACTION_TECH_DISCOVERED == intent.action) {
 
             val tag =
                 Objects.requireNonNull(intent.extras)!!.getParcelable<Tag>(NfcAdapter.EXTRA_TAG)!!
-            val isoDep = IsoDep.get(tag)
-            isoDep.timeout = 5 * 1000
-            nfcViewModel.setIsScanning(true)
-            nfcViewModel.setParams(isoDep)
-
+            nfcViewModel.setParams(tag)
 
             CoroutineScope(Dispatchers.IO).launch {
                 nfcViewModel.startScanning()

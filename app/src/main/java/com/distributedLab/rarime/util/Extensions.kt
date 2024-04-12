@@ -54,10 +54,3 @@ fun String.toBitArray(): String {
 
 fun String.addCharAtIndex(char: Char, index: Int) =
     StringBuilder(this).apply { insert(index, char) }.toString()
-
-fun ViewGroup.inflate(layoutRes: Int, attach: Boolean = false): View =
-    LayoutInflater.from(context).inflate(layoutRes, this, attach) ?: throw IllegalArgumentException(
-        "ViewHolder not found, view = null"
-    )
-
-fun <T> unSafeLazy(initializer: () -> T): Lazy<T> = lazy(LazyThreadSafetyMode.NONE, initializer)

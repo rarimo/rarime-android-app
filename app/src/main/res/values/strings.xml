@@ -86,4 +86,7 @@
     <string name="camera_permission_description">Grant permission to use the camera</string>
     <string name="confirm">Confirm</string>
     <string name="dismiss">Dismiss</string>
+    <string name="nfc_reader_scanning">Scanning...</string>
+    <string name="nfc_reader_error">Scan again</string>
+    <string name="date_of_birth">Date of birth</string>
 </resources>

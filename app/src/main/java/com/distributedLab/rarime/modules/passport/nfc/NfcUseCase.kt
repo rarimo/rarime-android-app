@@ -43,7 +43,7 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec) {
     }
 
     @OptIn(ExperimentalStdlibApi::class)
-    fun scanPassport() {
+    fun scanPassport(): EDocument {
         val cardService = CardService.getInstance(isoDep)
         cardService.open()
         val service = PassportService(
@@ -199,10 +199,12 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec) {
         for (faceInfo in faceInfos) {
             allFaceImageInfos.addAll(faceInfo.faceImageInfos)
         }
-        if (allFaceImageInfos.isNotEmpty()) {
+        if (!allFaceImageInfos.isEmpty()) {
             val faceImageInfo = allFaceImageInfos.iterator().next()
-            personDetails.faceImageInfo = faceImageInfo
+
+            personDetails!!.faceImageInfo = faceImageInfo
         }
+
 
 
         eDocument.docType = docType;
@@ -241,7 +243,7 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec) {
 
         Log.e("pemFile", "pemFile: $pemFileEnded")
         Log.e("encapsulated_content", "encapsulated_content: $encapsulaged_content")
-        Log.e("dg1b", "dg1b: " + dg1B.toString())
+        Log.e("dg1b", "dg1b: $dg1B")
         Log.e("signedAtributes", "signedAtributes: " + signedAtributes.toHexString())
         Log.e("pubKey", "pubKey: " + pubKey.toHexString())
         Log.e("signature", "signature: " + signature.toHexString())
@@ -250,6 +252,7 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec) {
 
         Log.e("DG15", dg15.encoded.toHexString())
 
+        return eDocument
     }
 }
 
