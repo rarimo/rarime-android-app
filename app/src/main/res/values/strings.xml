@@ -76,10 +76,17 @@
     <string name="you_will_claim">You will claim</string>
     <string name="back_to_rewards_btn">Back to Rewards</string>
     <string name="document_class_model">Document class model</string>
-    <string name="processing_status_title">Please Wait...</string>
+    <string name="processing_status_title">Please Wait…</string>
     <string name="success_status_title">All Done!</string>
     <string name="failure_status_title">Error</string>
     <string name="processing_status_text">Creating anonymized identity proof</string>
     <string name="success_status_text">Your passport proof is ready</string>
     <string name="failure_status_text">Please try again later</string>
+    <string name="camera_permission_title">Camera permission</string>
+    <string name="camera_permission_description">Grant permission to use the camera</string>
+    <string name="confirm">Confirm</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="nfc_reader_scanning">Scanning…</string>
+    <string name="nfc_reader_error">Scan again</string>
+    <string name="date_of_birth">Date of birth</string>
 </resources>
