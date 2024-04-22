@@ -1,123 +1,199 @@
 package com.distributedLab.rarime.modules.home
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.modules.passport.PassportIntroScreen
 import com.distributedLab.rarime.ui.base.ButtonSize
+import com.distributedLab.rarime.ui.components.ActionCard
+import com.distributedLab.rarime.ui.components.AppBottomSheet
 import com.distributedLab.rarime.ui.components.AppIcon
-import com.distributedLab.rarime.ui.components.AppSwitch
-import com.distributedLab.rarime.ui.components.AppTextField
+import com.distributedLab.rarime.ui.components.CardContainer
+import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
-import com.distributedLab.rarime.ui.components.rememberAppSwitchState
-import com.distributedLab.rarime.ui.components.rememberAppTextFieldState
-import com.distributedLab.rarime.ui.theme.AppTheme
+import com.distributedLab.rarime.ui.components.PrimaryTextButton
+import com.distributedLab.rarime.ui.components.SecondaryTextButton
+import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun HomeScreen() {
-    val textFieldState = rememberAppTextFieldState("")
-    val switchState = rememberAppSwitchState()
+fun HomeScreen(onPassportScan: () -> Unit) {
+    val hasPassport = false
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
         modifier = Modifier
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary)
-            .verticalScroll(rememberScrollState())
-            .padding(20.dp)
-            .padding(bottom = 80.dp)
     ) {
-        Text(
-            text = "Home",
-            style = RarimeTheme.typography.subtitle1,
-            color = RarimeTheme.colors.textPrimary
-        )
-        AppTextField(
-            state = textFieldState,
-            label = "Text Field",
-            placeholder = "Enter some text",
-        )
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            AppSwitch(state = switchState)
-            Text(
-                text = "Switch",
-                modifier = Modifier.padding(8.dp, 0.dp),
-                color = RarimeTheme.colors.textPrimary,
-                style = RarimeTheme.typography.subtitle4
-            )
-        }
-        PrimaryButton(
-            modifier = Modifier.fillMaxWidth(),
-            size = ButtonSize.Large,
-            text = "Rarime Button",
-            leftIcon = R.drawable.ic_rarime,
-            onClick = {
-                textFieldState.updateErrorMessage("Some error message")
-            })
-
-        for (i in 0..20) {
-            Text("Lorem ipsum dolor sit amet, consectetur adipiscing $i")
-        }
-    }
-}
-
-@Composable
-fun List(homeViewModel: HomeViewModel = viewModel()) {
-    LazyColumn {
-        items(10) { item ->
-            Greeting(item.toString())
-        }
-    }
-}
-
-@Composable
-fun Greeting(item: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        AppIcon(
-            id = R.drawable.ic_rarime,
-            size = 24.dp,
-            tint = RarimeTheme.colors.textPrimary
-        )
-        Text(
-            text = item,
-            modifier = Modifier.padding(4.dp, 0.dp),
-            color = RarimeTheme.colors.textPrimary,
-            style = RarimeTheme.typography.subtitle1
-        )
-    }
-}
-
-@Preview(showBackground = true, name = "Light Mode")
-@Preview(showBackground = true, name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun GreetingPreview() {
-    AppTheme {
-        Surface(color = RarimeTheme.colors.backgroundPrimary) {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Greeting(item = "user")
-                PrimaryButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "Rarime Button",
-                    leftIcon = R.drawable.ic_rarime,
-                    onClick = { /*TODO*/ }) {}
+        Header()
+        Column(
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp)
+        ) {
+            if (hasPassport) {
+                // TODO: Add passport card
+                RarimeCard()
+            } else {
+                AirdropCard(onPassportScan)
+                OtherPassportsCard(onPassportScan)
             }
         }
     }
+}
+
+@Composable
+private fun Header() {
+    Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+        Text(
+            text = "Beta launch",
+            style = RarimeTheme.typography.body3,
+            color = RarimeTheme.colors.warningDark,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(RarimeTheme.colors.warningLighter)
+                .padding(vertical = 4.dp, horizontal = 20.dp)
+        )
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                SecondaryTextButton(onClick = { /*TODO*/ }) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Balance: RMO",
+                            style = RarimeTheme.typography.body3,
+                            color = RarimeTheme.colors.textSecondary
+                        )
+                        AppIcon(
+                            id = R.drawable.ic_caret_right,
+                            size = 16.dp,
+                            tint = RarimeTheme.colors.textSecondary
+                        )
+                    }
+                }
+                Text(
+                    text = "0",
+                    style = RarimeTheme.typography.h4,
+                    color = RarimeTheme.colors.textPrimary
+                )
+            }
+            PrimaryTextButton(onClick = { /*TODO*/ }) {
+                AppIcon(id = R.drawable.ic_qr_code)
+            }
+        }
+    }
+}
+
+@Composable
+private fun AirdropCard(onPassportScan: () -> Unit) {
+    val sheetState = rememberAppSheetState()
+
+    CardContainer {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(72.dp)
+                    .height(72.dp)
+                    .background(RarimeTheme.colors.componentPrimary, CircleShape)
+            ) {
+                Text(
+                    text = "🇺🇦",
+                    style = RarimeTheme.typography.h5,
+                    color = RarimeTheme.colors.textPrimary,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+
+            Text(
+                text = "Programable Airdrop",
+                style = RarimeTheme.typography.h6,
+                textAlign = TextAlign.Center,
+                color = RarimeTheme.colors.textPrimary
+            )
+            Text(
+                text = "Beta launch is focused on distributing tokens to Ukrainian identity holders",
+                style = RarimeTheme.typography.body2,
+                textAlign = TextAlign.Center,
+                color = RarimeTheme.colors.textSecondary
+            )
+            HorizontalDivider()
+            PrimaryButton(
+                modifier = Modifier.fillMaxWidth(),
+                size = ButtonSize.Large,
+                text = "Let's Start",
+                rightIcon = R.drawable.ic_arrow_right,
+                onClick = { sheetState.show() }
+            )
+        }
+    }
+    AppBottomSheet(state = sheetState) { hide ->
+        PassportIntroScreen(onStart = { hide(onPassportScan) })
+    }
+}
+
+@Composable
+private fun OtherPassportsCard(onPassportScan: () -> Unit) {
+    val sheetState = rememberAppSheetState()
+
+    ActionCard(
+        title = "Other passport holders",
+        description = "Join a waitlist",
+        onClick = { sheetState.show() }
+    )
+    AppBottomSheet(state = sheetState) { hide ->
+        PassportIntroScreen(onStart = { hide(onPassportScan) })
+    }
+}
+
+@Composable
+private fun RarimeCard() {
+    val sheetState = rememberAppSheetState()
+
+    ActionCard(
+        title = "RARIME",
+        description = "Learn more about RariMe App",
+        onClick = { sheetState.show() }
+    )
+    AppBottomSheet(state = sheetState) { hide ->
+        Column {
+            Text("Rarime sheet content")
+            PrimaryButton(text = "Okay", onClick = { hide {} })
+        }
+    }
+}
+
+@Composable
+@Preview
+private fun HomeScreenPreview() {
+    HomeScreen(onPassportScan = {})
 }
