@@ -50,15 +50,10 @@ enum class BottomTab(
         R.drawable.ic_gift,
         R.drawable.ic_gift_fill
     ),
-    Credentials(
-        Screen.Main.Credentials.route,
-        R.drawable.ic_identification_card,
-        R.drawable.ic_identification_card_fill
-    ),
-    Settings(
-        Screen.Main.Settings.route,
-        R.drawable.ic_dots_three_outline,
-        R.drawable.ic_dots_three_outline
+    Profile(
+        Screen.Main.Profile.route,
+        R.drawable.ic_user,
+        R.drawable.ic_user
     )
 }
 
