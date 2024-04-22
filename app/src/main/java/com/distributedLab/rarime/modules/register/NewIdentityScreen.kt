@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
@@ -34,24 +31,11 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
-// TODO: Replace with actual wordlist
-val wordlist = listOf(
-    "domain",
-    "explore",
-    "famous",
-    "lion",
-    "apple",
-    "banana",
-    "cherry",
-    "date",
-    "egg",
-    "fig",
-    "grape",
-    "honey",
-)
+// TODO: Replace with actual private key
+const val privateKey = "d4f1dc5332e5f0263746a31d3563e42ad8bef24a8989d8b0a5ad71f8d5de28a6"
 
 @Composable
-fun NewPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
+fun NewIdentityScreen(onNext: () -> Unit, onBack: () -> Unit) {
     val clipboardManager = LocalClipboardManager.current
     var isCopied by remember { mutableStateOf(false) }
 
@@ -62,9 +46,8 @@ fun NewPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
         }
     }
 
-    PhraseStepLayout(
-        step = 1,
-        title = stringResource(R.string.new_phrase_title),
+    IdentityStepLayout(
+        title = stringResource(R.string.new_identity_title),
         onBack = onBack,
         nextButton = {
             PrimaryButton(
@@ -78,39 +61,14 @@ fun NewPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
     ) {
         CardContainer {
             Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp)
-                ) {
-                    for ((index, value) in wordlist.withIndex()) {
-                        item {
-                            Row(
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .background(
-                                        RarimeTheme.colors.componentPrimary,
-                                        RoundedCornerShape(8.dp)
-                                    )
-                                    .padding(vertical = 6.dp)
-                                    .fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "${index + 1}.",
-                                    style = RarimeTheme.typography.subtitle5,
-                                    color = RarimeTheme.colors.textPrimary
-                                )
-                                Text(
-                                    text = value,
-                                    modifier = Modifier.padding(start = 8.dp),
-                                    style = RarimeTheme.typography.body3,
-                                    color = RarimeTheme.colors.textPrimary
-                                )
-                            }
-                        }
-                    }
-                }
+                Text(
+                    text = privateKey,
+                    style = RarimeTheme.typography.body3,
+                    color = RarimeTheme.colors.textPrimary,
+                    modifier = Modifier
+                        .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(8.dp))
+                        .padding(vertical = 14.dp, horizontal = 16.dp)
+                )
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
@@ -123,13 +81,13 @@ fun NewPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
                             stringResource(R.string.copy_to_clipboard_btn)
                         },
                         onClick = {
-                            clipboardManager.setText(AnnotatedString(wordlist.joinToString(" ")))
+                            clipboardManager.setText(AnnotatedString(privateKey))
                             isCopied = true
                         }
                     )
                 }
                 HorizontalDivider()
-                InfoAlert(text = stringResource(R.string.new_phrase_warning))
+                InfoAlert(text = stringResource(R.string.new_identity_warning))
             }
         }
     }
@@ -137,6 +95,6 @@ fun NewPhraseScreen(onNext: () -> Unit, onBack: () -> Unit) {
 
 @Preview
 @Composable
-private fun NewPhraseScreenPreview() {
-    NewPhraseScreen(onNext = {}, onBack = {})
+private fun NewIdentityScreenPreview() {
+    NewIdentityScreen(onNext = {}, onBack = {})
 }

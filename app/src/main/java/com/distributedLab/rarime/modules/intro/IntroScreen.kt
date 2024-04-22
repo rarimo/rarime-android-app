@@ -121,7 +121,7 @@ fun IntroScreen(navigateTo: (route: String) -> Unit) {
                     PrimaryButton(
                         text = stringResource(R.string.create_account_btn),
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = { navigateTo(Screen.Register.NewPhrase.route) }
+                        onClick = { navigateTo(Screen.Register.NewIdentity.route) }
                     )
                 } else {
                     Row(

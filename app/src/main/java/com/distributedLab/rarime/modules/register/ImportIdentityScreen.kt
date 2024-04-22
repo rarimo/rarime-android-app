@@ -17,7 +17,7 @@ import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun ImportPhraseScreen(onNext: () -> Unit) {
+fun ImportIdentityScreen(onNext: () -> Unit) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
@@ -26,7 +26,7 @@ fun ImportPhraseScreen(onNext: () -> Unit) {
             .padding(20.dp)
     ) {
         Text(
-            text = stringResource(R.string.import_phrase_title),
+            text = stringResource(R.string.import_identity_title),
             style = RarimeTheme.typography.subtitle1,
             color = RarimeTheme.colors.textPrimary
         )
