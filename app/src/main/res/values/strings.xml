@@ -24,17 +24,10 @@
     <string name="import_identity_text">Description text here</string>
 
     <string name="step_indicator">Step %1$s/%2$s</string>
-    <string name="new_phrase_title">New recovery phrase</string>
+    <string name="new_identity_title">Your Private Key</string>
     <string name="copy_to_clipboard_btn">Copy to clipboard</string>
     <string name="copied_text">Copied</string>
-    <string name="new_phrase_warning">Don’t share your recovery phrase with anyone</string>
-
-    <string name="verify_phrase_title">Verify recovery phrase</string>
-    <string name="word_number">Word #%1$s</string>
-    <string name="incorrect_selection_title">Incorrect</string>
-    <string name="incorrect_selection_text">Selections not matched. please try again</string>
-    <string name="try_again_btn">Try Again</string>
-    <string name="import_phrase_title">Import recovery phrase</string>
+    <string name="new_identity_warning">Please store the private key safely and do not share it with anyone. If you lose this key, you will not be able to recover the account and will lose access forever.</string>
 
     <string name="enable_passcode_title">Enable\nPasscode</string>
     <string name="enable_passcode_text">Enable Passcode Authentication</string>
@@ -89,4 +82,6 @@
     <string name="nfc_reader_scanning">Scanning…</string>
     <string name="nfc_reader_error">Scan again</string>
     <string name="date_of_birth">Date of birth</string>
+    <string name="beta_launch">Beta launch</string>
+    <string name="create_account_btn">Create account</string>
 </resources>

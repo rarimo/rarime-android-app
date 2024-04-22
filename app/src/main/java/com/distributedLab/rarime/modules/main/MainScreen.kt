@@ -25,9 +25,8 @@ import com.distributedLab.rarime.modules.credentials.CredentialsScreen
 import com.distributedLab.rarime.modules.home.HomeScreen
 import com.distributedLab.rarime.modules.intro.IntroScreen
 import com.distributedLab.rarime.modules.passport.ScanPassportScreen
-import com.distributedLab.rarime.modules.register.ImportPhraseScreen
-import com.distributedLab.rarime.modules.register.NewPhraseScreen
-import com.distributedLab.rarime.modules.register.VerifyPhraseScreen
+import com.distributedLab.rarime.modules.register.ImportIdentityScreen
+import com.distributedLab.rarime.modules.register.NewIdentityScreen
 import com.distributedLab.rarime.modules.rewards.RewardsScreen
 import com.distributedLab.rarime.modules.security.EnableBiometricsScreen
 import com.distributedLab.rarime.modules.security.EnablePasscodeScreen
@@ -42,9 +41,8 @@ sealed class Screen(val route: String) {
     data object ScanPassport : Screen("scan_passport")
 
     data object Register : Screen("register") {
-        data object NewPhrase : Screen("new_phrase")
-        data object VerifyPhrase : Screen("verify_phrase")
-        data object ImportPhrase : Screen("import_phrase")
+        data object NewIdentity : Screen("new_identity")
+        data object ImportIdentity : Screen("import_identity")
     }
 
     data object Security : Screen("security") {
@@ -120,23 +118,17 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
             }
 
             navigation(
-                startDestination = Screen.Register.NewPhrase.route,
+                startDestination = Screen.Register.NewIdentity.route,
                 route = Screen.Register.route
             ) {
-                composable(Screen.Register.NewPhrase.route) {
-                    NewPhraseScreen(
-                        onNext = { navController.navigate(Screen.Register.VerifyPhrase.route) },
+                composable(Screen.Register.NewIdentity.route) {
+                    NewIdentityScreen(
+                        onNext = { navController.navigate(Screen.Security.EnablePasscode.route) },
                         onBack = { navController.popBackStack() }
                     )
                 }
-                composable(Screen.Register.VerifyPhrase.route) {
-                    VerifyPhraseScreen(
-                        onNext = { navigateWithPopUp(Screen.Security.EnablePasscode.route) },
-                        onBack = { navController.popBackStack() }
-                    )
-                }
-                composable(Screen.Register.ImportPhrase.route) {
-                    ImportPhraseScreen { navigateWithPopUp(Screen.Security.EnablePasscode.route) }
+                composable(Screen.Register.ImportIdentity.route) {
+                    ImportIdentityScreen { navigateWithPopUp(Screen.Security.EnablePasscode.route) }
                 }
             }
 
@@ -195,8 +187,7 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
 @Composable
 fun NavigationBarColor(route: String) {
     val pureBgRoutes = listOf(
-        Screen.Register.NewPhrase.route,
-        Screen.Register.VerifyPhrase.route,
+        Screen.Register.NewIdentity.route,
     )
 
     val view = LocalView.current
