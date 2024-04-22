@@ -2,7 +2,6 @@ package com.distributedLab.rarime.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -85,11 +84,7 @@ fun AppBottomSheet(
             containerColor = RarimeTheme.colors.backgroundPure,
             onDismissRequest = { state.hide() }
         ) {
-            Box(
-                modifier = Modifier
-                    .padding(bottom = 48.dp)
-                    .fillMaxWidth()
-            ) {
+            Box(modifier = Modifier.fillMaxWidth()) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -101,14 +96,8 @@ fun AppBottomSheet(
                         onClick = { hide {} }
                     )
                 }
-                Column {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 32.dp)
-                    ) {
-                        content { cb -> hide(cb) }
-                    }
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    content { cb -> hide(cb) }
                 }
             }
         }

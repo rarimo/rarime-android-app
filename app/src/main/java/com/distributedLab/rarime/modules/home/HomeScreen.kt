@@ -13,6 +13,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -34,7 +38,8 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
 fun HomeScreen(onPassportScan: () -> Unit) {
-    val hasPassport = false
+    var hasPassport by remember { mutableStateOf(true) }
+    var passportCardLook by remember { mutableStateOf(PassportCardLook.BLACK) }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -50,7 +55,11 @@ fun HomeScreen(onPassportScan: () -> Unit) {
                 .padding(horizontal = 12.dp)
         ) {
             if (hasPassport) {
-                // TODO: Add passport card
+                PassportCard(
+                    look = passportCardLook,
+                    onLookChange = { passportCardLook = it },
+                    onDelete = { hasPassport = false }
+                )
                 RarimeCard()
             } else {
                 AirdropCard(onPassportScan)
