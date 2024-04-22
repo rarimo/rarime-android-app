@@ -119,9 +119,9 @@ fun IntroScreen(navigateTo: (route: String) -> Unit) {
                 HorizontalDivider()
                 if (isLastStep) {
                     PrimaryButton(
-                        text = stringResource(R.string.get_started_btn),
+                        text = stringResource(R.string.create_account_btn),
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = { sheetState.show() }
+                        onClick = { navigateTo(Screen.Register.NewPhrase.route) }
                     )
                 } else {
                     Row(
@@ -146,22 +146,12 @@ fun IntroScreen(navigateTo: (route: String) -> Unit) {
                 }
             }
         }
-
-        GetStartedSheet(
-            sheetState = sheetState,
-            onCreateClick = {
-                navigateTo(Screen.Register.NewPhrase.route)
-            },
-            onImportClick = {
-                navigateTo(Screen.Register.ImportPhrase.route)
-            }
-        )
     }
 }
 
 @Composable
 private fun StepView(step: IntroStep) {
-    Column(verticalArrangement = Arrangement.spacedBy(70.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
         Image(
             painter = painterResource(id = step.image),
             contentDescription = null,
@@ -172,6 +162,14 @@ private fun StepView(step: IntroStep) {
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.padding(horizontal = 24.dp)
         ) {
+            Text(
+                text = stringResource(R.string.beta_launch),
+                style = RarimeTheme.typography.body3,
+                color = RarimeTheme.colors.warningDark,
+                modifier = Modifier
+                    .background(RarimeTheme.colors.warningLighter, CircleShape)
+                    .padding(vertical = 4.dp, horizontal = 12.dp)
+            )
             Text(
                 text = stringResource(step.title),
                 style = RarimeTheme.typography.h4,
