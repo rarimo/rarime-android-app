@@ -77,7 +77,7 @@ fun GenerateProofStep(onClose: () -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary)
-            .padding(top = 70.dp, bottom = 20.dp)
+            .padding(top = 80.dp, bottom = 20.dp)
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(24.dp),

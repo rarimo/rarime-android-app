@@ -124,7 +124,8 @@ fun PassportDataStep(onNext: () -> Unit, onClose: () -> Unit, eDocument: EDocume
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(RarimeTheme.colors.backgroundPure)
-                    .padding(vertical = 12.dp, horizontal = 20.dp)
+                    .padding(top = 12.dp, bottom = 20.dp)
+                    .padding(horizontal = 20.dp)
             ) {
                 PrimaryButton(
                     text = stringResource(R.string.continue_btn),

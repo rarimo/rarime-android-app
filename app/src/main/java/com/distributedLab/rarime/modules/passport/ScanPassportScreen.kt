@@ -14,7 +14,11 @@ import com.distributedLab.rarime.modules.passport.models.EDocument
 import org.jmrtd.lds.icao.MRZInfo
 
 private enum class ScanPassportState {
-    SCAN_MRZ, READ_NFC, PASSPORT_DATA, GENERATE_PROOF
+    SCAN_MRZ,
+    READ_NFC,
+    PASSPORT_DATA,
+    GENERATE_PROOF,
+    CLAIM_TOKENS
 }
 
 @Composable
@@ -54,7 +58,11 @@ fun ScanPassportScreen(onClose: () -> Unit) {
             }
 
             ScanPassportState.GENERATE_PROOF -> {
-                GenerateProofStep(onClose = onClose)
+                GenerateProofStep(onClose = { state = ScanPassportState.CLAIM_TOKENS })
+            }
+
+            ScanPassportState.CLAIM_TOKENS -> {
+                ClaimTokensStep(onFinish = onClose)
             }
         }
     }
