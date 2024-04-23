@@ -290,8 +290,8 @@ private fun PassportLookOption(
     }
 }
 
-@Composable
 @Preview(showBackground = true)
+@Composable
 private fun PassportCardPreview() {
     PassportCard(look = PassportCardLook.BLACK, onLookChange = {}, onDelete = {})
 }

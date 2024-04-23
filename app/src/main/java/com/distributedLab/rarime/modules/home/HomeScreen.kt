@@ -23,7 +23,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.modules.passport.PassportIntroScreen
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.ActionCard
 import com.distributedLab.rarime.ui.components.AppBottomSheet
@@ -38,7 +37,7 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
 fun HomeScreen(onPassportScan: () -> Unit) {
-    var hasPassport by remember { mutableStateOf(true) }
+    var hasPassport by remember { mutableStateOf(false) }
     var passportCardLook by remember { mutableStateOf(PassportCardLook.BLACK) }
 
     Column(
@@ -165,8 +164,8 @@ private fun AirdropCard(onPassportScan: () -> Unit) {
             )
         }
     }
-    AppBottomSheet(state = sheetState) { hide ->
-        PassportIntroScreen(onStart = { hide(onPassportScan) })
+    AppBottomSheet(state = sheetState, fullScreen = true) { hide ->
+        AirdropIntroScreen(onStart = { hide(onPassportScan) })
     }
 }
 
@@ -180,7 +179,7 @@ private fun OtherPassportsCard(onPassportScan: () -> Unit) {
         onClick = { sheetState.show() }
     )
     AppBottomSheet(state = sheetState) { hide ->
-        PassportIntroScreen(onStart = { hide(onPassportScan) })
+        AirdropIntroScreen(onStart = { hide(onPassportScan) })
     }
 }
 
@@ -201,8 +200,8 @@ private fun RarimeCard() {
     }
 }
 
-@Composable
 @Preview
+@Composable
 private fun HomeScreenPreview() {
     HomeScreen(onPassportScan = {})
 }

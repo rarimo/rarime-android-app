@@ -21,6 +21,7 @@ import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
@@ -62,10 +63,12 @@ typealias HideSheetFn = (cb: () -> Unit) -> Unit
 fun AppBottomSheet(
     modifier: Modifier = Modifier,
     state: AppSheetState = rememberAppSheetState(false),
+    fullScreen: Boolean = false,
     content: @Composable (HideSheetFn) -> Unit
 ) {
     val modalState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
+    val configuration = LocalConfiguration.current
 
     fun hide(cb: () -> Unit) {
         coroutineScope.launch { modalState.hide() }.invokeOnCompletion {
@@ -96,7 +99,11 @@ fun AppBottomSheet(
                         onClick = { hide {} }
                     )
                 }
-                Box(modifier = Modifier.fillMaxWidth()) {
+                Box(
+                    modifier = (if (fullScreen) Modifier.height(configuration.screenHeightDp.dp) else Modifier)
+                        .fillMaxWidth()
+                        .padding(bottom = 20.dp)
+                ) {
                     content { cb -> hide(cb) }
                 }
             }

@@ -44,10 +44,9 @@
     <string name="lets_start_btn">Let\'s Start</string>
     <string name="passport_intro_title">Passport</string>
     <string name="passport_intro_text">You’ll need a biometric document</string>
-    <string name="passport_intro_step_1">"Personal data never leaves the device "</string>
-    <string name="passport_intro_step_2">Convert your data into ZK proofs</string>
-    <string name="passport_intro_step_3">Use proofs across the ecosystem</string>
-    <string name="passport_intro_step_4">Get rewarded with 50 RRMO</string>
+    <string name="airdrop_intro_step_1">"Personal data never leaves the device "</string>
+    <string name="airdrop_intro_step_2">Full privacy via Zero Knowledge Proofs</string>
+    <string name="airdrop_intro_step_3">Get rewarded with RMO tokens</string>
     <string name="scan_your_passport_title">Scan your Passport</string>
     <string name="scan_your_passport_text">Passport data is stored only on this device</string>
     <string name="scan_your_passport_hint">Move your PASSPORT page inside the border</string>
