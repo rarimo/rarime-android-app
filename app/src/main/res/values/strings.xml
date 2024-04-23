@@ -50,13 +50,13 @@
     <string name="passport_intro_step_4">Get rewarded with 50 RRMO</string>
     <string name="scan_your_passport_title">Scan your Passport</string>
     <string name="scan_your_passport_text">Passport data is stored only on this device</string>
-    <string name="scan_your_passport_hint">Move your PASSPORT page inside the border</string>
+    <string name="scan_your_passport_hint">Move your passport page inside the border</string>
     <string name="nfc_reader_title">NFC reader</string>
     <string name="nfc_reader_text">Reading Passport data</string>
     <string name="nfc_reader_hint">Place your passport cover to the back of your phone</string>
     <string name="start_btn">Start</string>
-    <string name="select_your_data_title">Select your data</string>
-    <string name="select_your_data_text">Selected data can be used as anonymised proofs</string>
+    <string name="passport_data_title">Incognito ID</string>
+    <string name="passport_data_text">Data can be used to generate proofs</string>
     <string name="must_data">Must Data</string>
     <string name="document_class_mode">Document class mode</string>
     <string name="issuing_state_code">Issuing state code</string>
@@ -72,7 +72,7 @@
     <string name="processing_status_title">Please Wait…</string>
     <string name="success_status_title">All Done!</string>
     <string name="failure_status_title">Error</string>
-    <string name="processing_status_text">Creating anonymized identity proof</string>
+    <string name="processing_status_text">Creating a confidential profile</string>
     <string name="success_status_text">Your passport proof is ready</string>
     <string name="failure_status_text">Please try again later</string>
     <string name="camera_permission_title">Camera permission</string>
@@ -84,4 +84,8 @@
     <string name="date_of_birth">Date of birth</string>
     <string name="beta_launch">Beta launch</string>
     <string name="create_account_btn">Create account</string>
+    <string name="reading_data_step">Reading data</string>
+    <string name="applying_zero_knowledge_step">Applying Zero Knowledge</string>
+    <string name="creating_confidential_profile_step">Creating a confidential profile</string>
+    <string name="finalizing_step">Finalizing</string>
 </resources>
