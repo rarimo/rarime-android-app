@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,8 +28,8 @@ fun RarimeInfoScreen(onClose: () -> Unit) {
                 tint = RarimeTheme.colors.textPrimary
             )
         },
-        title = "What is RariMe?",
-        description = "short description text here"
+        title = stringResource(R.string.what_is_rarime_title),
+        description = stringResource(R.string.what_is_rarime_description)
     ) {
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
@@ -36,15 +37,15 @@ fun RarimeInfoScreen(onClose: () -> Unit) {
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
-                    text = "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors ",
+                    text = stringResource(R.string.rarime_info_text),
                     style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.textPrimary
                 )
                 Text(
                     text = buildAnnotatedString {
-                        append("Full functional available on: ")
+                        append(stringResource(R.string.full_functional_available_on))
                         withStyle(RarimeTheme.typography.subtitle5.toSpanStyle()) {
-                            append("July")
+                            append(stringResource(R.string.july))
                         }
                     },
                     style = RarimeTheme.typography.body3,
@@ -52,7 +53,7 @@ fun RarimeInfoScreen(onClose: () -> Unit) {
                 )
             }
             PrimaryButton(
-                text = "Okay",
+                text = stringResource(R.string.okay_btn),
                 modifier = Modifier.fillMaxWidth(),
                 size = ButtonSize.Large,
                 onClick = onClose

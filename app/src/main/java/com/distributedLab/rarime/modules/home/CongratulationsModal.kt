@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,7 +30,7 @@ import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun CongratsModal(isClaimed: Boolean, onClose: () -> Unit) {
+fun CongratulationsModal(isClaimed: Boolean, onClose: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -78,12 +79,16 @@ fun CongratsModal(isClaimed: Boolean, onClose: () -> Unit) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = if (isClaimed) "Congrats!" else "You’ve joined the waitlist",
+                        text = if (isClaimed) stringResource(R.string.congrats_title) else stringResource(
+                            R.string.joined_waitlist_title
+                        ),
                         style = RarimeTheme.typography.h6,
                         color = RarimeTheme.colors.textPrimary
                     )
                     Text(
-                        text = if (isClaimed) "You’ve received 3 RMO tokens" else "We will notify when you become eligible",
+                        text = if (isClaimed) stringResource(R.string.congrats_description) else stringResource(
+                            R.string.joined_waitlist_description
+                        ),
                         style = RarimeTheme.typography.body2,
                         color = RarimeTheme.colors.textSecondary,
                         textAlign = TextAlign.Center,
@@ -92,7 +97,7 @@ fun CongratsModal(isClaimed: Boolean, onClose: () -> Unit) {
                 }
                 HorizontalDivider()
                 PrimaryButton(
-                    text = if (isClaimed) "Thanks!" else "Okay",
+                    text = if (isClaimed) stringResource(R.string.thanks_btn) else stringResource(R.string.okay_btn),
                     size = ButtonSize.Large,
                     modifier = Modifier.fillMaxWidth(),
                     onClick = onClose
@@ -104,6 +109,6 @@ fun CongratsModal(isClaimed: Boolean, onClose: () -> Unit) {
 
 @Preview(showBackground = true)
 @Composable
-private fun CongratsModalPreview() {
-    CongratsModal(isClaimed = true, onClose = {})
+private fun CongratulationsModalPreview() {
+    CongratulationsModal(isClaimed = true, onClose = {})
 }

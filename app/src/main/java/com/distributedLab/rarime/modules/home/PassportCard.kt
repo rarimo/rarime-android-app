@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
@@ -54,11 +55,11 @@ enum class PassportCardLook {
             WHITE -> RarimeTheme.colors.baseBlack
         }
 
-    val title: String
+    val titleResourceId: Int
         get() = when (this) {
-            GREEN -> "Green"
-            BLACK -> "Black"
-            WHITE -> "White"
+            GREEN -> R.string.passport_look_green
+            BLACK -> R.string.passport_look_black
+            WHITE -> R.string.passport_look_white
         }
 }
 
@@ -120,11 +121,11 @@ fun PassportCard(
                     color = look.foregroundColor
                 )
                 Text(
-                    text = if (isIncognito) "••• ••••• •••" else "${
-                        calculateAgeFromBirthDate(
+                    text = if (isIncognito) "••• ••••• •••" else stringResource(
+                        R.string.years_old, calculateAgeFromBirthDate(
                             passport.personDetails!!.birthDate!!
                         )
-                    } Years Old",
+                    ),
                     style = RarimeTheme.typography.body2,
                     color = look.foregroundColor.copy(alpha = 0.56f)
                 )
@@ -133,12 +134,12 @@ fun PassportCard(
         HorizontalDivider(color = look.foregroundColor.copy(alpha = 0.05f))
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             PassportInfoRow(
-                label = "Nationality",
+                label = stringResource(R.string.nationality),
                 value = if (isIncognito) "•••" else passport.personDetails!!.nationality!!,
                 look = look
             )
             PassportInfoRow(
-                label = "Document #",
+                label = stringResource(R.string.document_number),
                 value = if (isIncognito) "••••••••" else passport.personDetails!!.serialNumber!!,
                 look = look
             )
@@ -181,7 +182,7 @@ private fun PassportCardSettings(
 ) {
     Column {
         Text(
-            text = "Settings",
+            text = stringResource(R.string.settings_title),
             style = RarimeTheme.typography.h6,
             color = RarimeTheme.colors.textPrimary,
             modifier = Modifier.padding(vertical = 16.dp, horizontal = 20.dp)
@@ -192,7 +193,7 @@ private fun PassportCardSettings(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "CARD VISUAL",
+                text = stringResource(R.string.card_visual),
                 style = RarimeTheme.typography.overline3,
                 color = RarimeTheme.colors.textSecondary
             )
@@ -223,7 +224,7 @@ private fun PassportCardSettings(
                             .padding(10.dp)
                     )
                     Text(
-                        text = "Delete Card",
+                        text = stringResource(R.string.delete_card_btn),
                         style = RarimeTheme.typography.buttonMedium,
                         color = RarimeTheme.colors.textPrimary
                     )
@@ -294,7 +295,7 @@ private fun PassportLookOption(
             )
         }
         Text(
-            text = look.title,
+            text = stringResource(look.titleResourceId),
             style = RarimeTheme.typography.buttonMedium,
             color = RarimeTheme.colors.textPrimary
         )

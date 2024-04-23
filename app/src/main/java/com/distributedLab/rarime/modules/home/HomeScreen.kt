@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -61,6 +62,7 @@ fun HomeScreen(navigate: (String) -> Unit) {
     var isIncognito by remember { mutableStateOf(false) }
     // TODO: Use view model
     var isCongratsModalVisible by remember { mutableStateOf(false) }
+    val balance by remember { mutableStateOf(0f) }
 
     Box {
         Column(
@@ -70,7 +72,7 @@ fun HomeScreen(navigate: (String) -> Unit) {
                 .background(RarimeTheme.colors.backgroundPrimary)
                 .blur(if (isCongratsModalVisible) 12.dp else 0.dp)
         ) {
-            Header { navigate(Screen.Main.Wallet.route) }
+            Header(balance = balance) { navigate(Screen.Main.Wallet.route) }
             Column(
                 verticalArrangement = Arrangement.spacedBy(24.dp),
                 modifier = Modifier
@@ -95,7 +97,7 @@ fun HomeScreen(navigate: (String) -> Unit) {
         }
 
         if (isCongratsModalVisible) {
-            CongratsModal(
+            CongratulationsModal(
                 isClaimed = true,
                 onClose = { isCongratsModalVisible = false }
             )
@@ -104,10 +106,10 @@ fun HomeScreen(navigate: (String) -> Unit) {
 }
 
 @Composable
-private fun Header(onBalanceClick: () -> Unit = {}) {
+private fun Header(balance: Float, onBalanceClick: () -> Unit = {}) {
     Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
         Text(
-            text = "Beta launch",
+            text = stringResource(R.string.beta_launch),
             style = RarimeTheme.typography.body3,
             color = RarimeTheme.colors.warningDark,
             textAlign = TextAlign.Center,
@@ -130,7 +132,7 @@ private fun Header(onBalanceClick: () -> Unit = {}) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Balance: RMO",
+                            text = stringResource(R.string.balance_rmo),
                             style = RarimeTheme.typography.body3,
                             color = RarimeTheme.colors.textSecondary
                         )
@@ -142,7 +144,7 @@ private fun Header(onBalanceClick: () -> Unit = {}) {
                     }
                 }
                 Text(
-                    text = "0",
+                    text = balance.toString(),
                     style = RarimeTheme.typography.h4,
                     color = RarimeTheme.colors.textPrimary
                 )
@@ -178,13 +180,13 @@ private fun AirdropCard(onPassportScan: () -> Unit) {
             }
 
             Text(
-                text = "Programable Airdrop",
+                text = stringResource(R.string.airdrop_intro_title),
                 style = RarimeTheme.typography.h6,
                 textAlign = TextAlign.Center,
                 color = RarimeTheme.colors.textPrimary
             )
             Text(
-                text = "Beta launch is focused on distributing tokens to Ukrainian identity holders",
+                text = stringResource(R.string.airdrop_intro_description),
                 style = RarimeTheme.typography.body2,
                 textAlign = TextAlign.Center,
                 color = RarimeTheme.colors.textSecondary
@@ -193,7 +195,7 @@ private fun AirdropCard(onPassportScan: () -> Unit) {
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 size = ButtonSize.Large,
-                text = "Let's Start",
+                text = stringResource(R.string.lets_start_btn),
                 rightIcon = R.drawable.ic_arrow_right,
                 onClick = { sheetState.show() }
             )
@@ -209,8 +211,8 @@ private fun OtherPassportCard(onPassportScan: () -> Unit) {
     val sheetState = rememberAppSheetState()
 
     ActionCard(
-        title = "Other passport holders",
-        description = "Join a waitlist",
+        title = stringResource(R.string.other_passport_card_title),
+        description = stringResource(R.string.other_passport_card_description),
         onClick = { sheetState.show() }
     )
     AppBottomSheet(state = sheetState, fullScreen = true) { hide ->
@@ -223,8 +225,8 @@ private fun RarimeCard() {
     val sheetState = rememberAppSheetState()
 
     ActionCard(
-        title = "RARIME",
-        description = "Learn more about RariMe App",
+        title = stringResource(R.string.rarime_card_title),
+        description = stringResource(R.string.rarime_card_description),
         onClick = { sheetState.show() }
     )
     AppBottomSheet(state = sheetState, fullScreen = true) { hide ->

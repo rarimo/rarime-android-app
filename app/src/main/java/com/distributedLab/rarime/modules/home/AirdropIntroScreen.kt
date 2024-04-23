@@ -39,22 +39,22 @@ fun AirdropIntroScreen(onStart: () -> Unit) {
     val airdropTermsUrl = "https://rarime.com"
 
     val termsAnnotation = buildAnnotatedString {
-        append("By checking this box, you are agreeing to ")
+        append(stringResource(R.string.terms_check_agreement))
         pushStringAnnotation("URL", termsUrl)
         withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-            append("RariMe General Terms & Conditions")
+            append(stringResource(R.string.rarime_general_terms_conditions))
         }
         pop()
         append(", ")
         pushStringAnnotation("URL", privacyUrl)
         withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-            append("RariMe Privacy Notice")
+            append(stringResource(R.string.rarime_privacy_notice))
         }
         pop()
-        append(" and ")
+        append(stringResource(R.string.and))
         pushStringAnnotation("URL", airdropTermsUrl)
         withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-            append("Rarimo Airdrop Program Terms & Conditions")
+            append(stringResource(R.string.rarimo_airdrop_program_terms_conditions))
         }
         pop()
     }
@@ -73,8 +73,8 @@ fun AirdropIntroScreen(onStart: () -> Unit) {
                     color = RarimeTheme.colors.textPrimary,
                 )
             },
-            title = "Programable Airdrop",
-            description = "Beta launch is focused on distributing tokens to Ukrainian identity holders"
+            title = stringResource(R.string.airdrop_intro_title),
+            description = stringResource(R.string.airdrop_intro_description)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 DescriptionStepRow("1.", stringResource(R.string.airdrop_intro_step_1))
@@ -83,20 +83,20 @@ fun AirdropIntroScreen(onStart: () -> Unit) {
             }
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
-                    text = "WHAT IS THIS?",
+                    text = stringResource(R.string.what_is_this),
                     style = RarimeTheme.typography.overline2,
                     color = RarimeTheme.colors.textSecondary
                 )
                 Text(
-                    text = "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it h",
+                    text = stringResource(R.string.airdrop_intro_text),
                     style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.textPrimary
                 )
                 Text(
                     text = buildAnnotatedString {
-                        append("Full functional available on: ")
+                        append(stringResource(R.string.full_functional_available_on))
                         withStyle(RarimeTheme.typography.subtitle5.toSpanStyle()) {
-                            append("July")
+                            append(stringResource(R.string.july))
                         }
                     },
                     style = RarimeTheme.typography.body3,
