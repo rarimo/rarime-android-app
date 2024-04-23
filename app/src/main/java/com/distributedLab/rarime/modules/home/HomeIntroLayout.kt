@@ -31,7 +31,7 @@ fun HomeIntroLayout(
         verticalArrangement = Arrangement.spacedBy(32.dp),
         modifier = Modifier
             .padding(top = 40.dp, bottom = 20.dp)
-            .padding(horizontal = 20.dp)
+            .padding(horizontal = 24.dp)
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),

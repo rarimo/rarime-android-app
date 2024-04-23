@@ -161,6 +161,6 @@ fun DescriptionStepRow(prefix: String, text: String) {
 
 @Preview(showBackground = true)
 @Composable
-private fun PassportIntroScreenPreview() {
+private fun AirdropIntroScreenPreview() {
     AirdropIntroScreen(onStart = {})
 }

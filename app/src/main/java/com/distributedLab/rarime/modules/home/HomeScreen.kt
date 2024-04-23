@@ -37,7 +37,7 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
 fun HomeScreen(onPassportScan: () -> Unit) {
-    var hasPassport by remember { mutableStateOf(false) }
+    var hasPassport by remember { mutableStateOf(true) }
     var passportCardLook by remember { mutableStateOf(PassportCardLook.BLACK) }
 
     Column(
@@ -178,8 +178,8 @@ private fun OtherPassportsCard(onPassportScan: () -> Unit) {
         description = "Join a waitlist",
         onClick = { sheetState.show() }
     )
-    AppBottomSheet(state = sheetState) { hide ->
-        AirdropIntroScreen(onStart = { hide(onPassportScan) })
+    AppBottomSheet(state = sheetState, fullScreen = true) { hide ->
+        OtherPassportIntroScreen(onStart = { hide(onPassportScan) })
     }
 }
 
@@ -192,11 +192,8 @@ private fun RarimeCard() {
         description = "Learn more about RariMe App",
         onClick = { sheetState.show() }
     )
-    AppBottomSheet(state = sheetState) { hide ->
-        Column {
-            Text("Rarime sheet content")
-            PrimaryButton(text = "Okay", onClick = { hide {} })
-        }
+    AppBottomSheet(state = sheetState, fullScreen = true) { hide ->
+        RarimeInfoScreen(onClose = { hide {} })
     }
 }
 
