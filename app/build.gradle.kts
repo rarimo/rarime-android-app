@@ -16,6 +16,17 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        externalNativeBuild {
+            cmake {
+                cppFlags += "-fexceptions -frtti -std=c++11"
+                arguments += "-DANDROID_STL=c++_shared"
+            }
+
+            ndk {
+                abiFilters += "arm64-v8a"
+            }
+        }
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -46,6 +57,12 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
         }
     }
 }
@@ -95,4 +112,7 @@ dependencies {
     kapt("com.google.dagger:hilt-compiler:2.51")
 
     implementation("net.sf.scuba:scuba-sc-android:0.0.20")
+
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation(files("libs/Identity.aar"))
 }

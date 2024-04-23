@@ -13,14 +13,19 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.modules.passport.models.EDocument
+import com.distributedLab.rarime.modules.passport.proof.ProofViewModel
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.CirclesLoader
@@ -29,9 +34,21 @@ import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.ProcessingChip
 import com.distributedLab.rarime.ui.components.ProcessingStatus
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import kotlinx.coroutines.launch
+
 
 @Composable
-fun GenerateProofStep(onClose: () -> Unit) {
+fun GenerateProofStep(
+    eDocument: EDocument, onClose: () -> Unit, proofViewModel: ProofViewModel = viewModel()
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = null) {
+        coroutineScope.launch {
+            proofViewModel.generateProof(eDocument)
+        }
+    }
+
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
@@ -62,12 +79,10 @@ fun GenerateProofStep(onClose: () -> Unit) {
                     status = ProcessingStatus.SUCCESS
                 )
                 ProcessingItem(
-                    label = stringResource(R.string.expiry_date),
-                    status = ProcessingStatus.SUCCESS
+                    label = stringResource(R.string.expiry_date), status = ProcessingStatus.SUCCESS
                 )
                 ProcessingItem(
-                    label = stringResource(R.string.nationality),
-                    status = ProcessingStatus.SUCCESS
+                    label = stringResource(R.string.nationality), status = ProcessingStatus.SUCCESS
                 )
             }
         }
@@ -93,8 +108,7 @@ private fun GeneralProcessingStatus(status: ProcessingStatus) {
             ProcessingStatus.PROCESSING -> RarimeTheme.colors.warningLighter
             ProcessingStatus.SUCCESS -> RarimeTheme.colors.successLighter
             ProcessingStatus.FAILURE -> RarimeTheme.colors.errorLighter
-        },
-        label = ""
+        }, label = ""
     )
 
     val iconColor by animateColorAsState(
@@ -102,8 +116,7 @@ private fun GeneralProcessingStatus(status: ProcessingStatus) {
             ProcessingStatus.PROCESSING -> RarimeTheme.colors.warningDark
             ProcessingStatus.SUCCESS -> RarimeTheme.colors.successDark
             ProcessingStatus.FAILURE -> RarimeTheme.colors.errorMain
-        },
-        label = ""
+        }, label = ""
     )
 
     val title = when (status) {
@@ -134,8 +147,7 @@ private fun GeneralProcessingStatus(status: ProcessingStatus) {
         }
     }
     Column(
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.width(150.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.width(150.dp)
     ) {
         Text(
             text = title,
@@ -173,5 +185,6 @@ private fun ProcessingItem(label: String, status: ProcessingStatus) {
 @Preview
 @Composable
 private fun GenerateProofStepPreview() {
-    GenerateProofStep(onClose = {})
+    val eDocument = EDocument()
+    GenerateProofStep(onClose = {}, eDocument = eDocument)
 }

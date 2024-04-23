@@ -10,6 +10,7 @@ import com.distributedLab.rarime.util.DateUtil
 import com.distributedLab.rarime.util.SecurityUtil
 import com.distributedLab.rarime.util.StringUtil
 import com.distributedLab.rarime.util.addCharAtIndex
+import com.distributedLab.rarime.util.publicKeyToPem
 import com.distributedLab.rarime.util.toBitArray
 import net.sf.scuba.smartcards.CardService
 import org.bouncycastle.asn1.cms.SignedData
@@ -189,7 +190,6 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec) {
             "", "DG2 Computed Hash: " + StringUtil.byteArrayToHex(dg2ComputedHash)
         )
         if (Arrays.equals(dg2StoredHash, dg2ComputedHash)) {
-            eDocument.dg2Hash = dg2ComputedHash.toHexString()
             Log.d("", "DG2 Hashes are matched")
         } else {
             hashesMatched = false
@@ -231,6 +231,8 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec) {
 
 
         val encapsulaged_content = sodFile.readASN1Data()!!.toHexString().substring(8)
+
+        Log.d("Encapsulated Content", encapsulaged_content)
         val dg1B =
             String(dg1File.encoded).toBitArray().toCharArray().map { it1 -> it1.digitToInt() }
         val signedAtributes = sodFile.eContent
@@ -240,6 +242,8 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec) {
 
         val signature = sodFile.encryptedDigest
 
+        eDocument.dg15Pem = dg15.publicKey.publicKeyToPem()
+
 
         Log.e("pemFile", "pemFile: $pemFileEnded")
         Log.e("encapsulated_content", "encapsulated_content: $encapsulaged_content")
@@ -248,8 +252,10 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec) {
         Log.e("pubKey", "pubKey: " + pubKey.toHexString())
         Log.e("signature", "signature: " + signature.toHexString())
 
+
         Log.e("PUBLIC KEY", sodFile.docSigningCertificate.publicKey.toString())
 
+        eDocument.dg15 = dg15.encoded.toHexString()
         Log.e("DG15", dg15.encoded.toHexString())
 
         return eDocument

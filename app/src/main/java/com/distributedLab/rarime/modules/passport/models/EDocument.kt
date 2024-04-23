@@ -10,5 +10,6 @@ data class EDocument(
     var isChipAuth: Boolean = false,
     var sod: String? = null,
     var dg1: String? = null,
-    var dg2Hash: String? = null
+    var dg15: String? = null,
+    var dg15Pem: String? = null,
 )

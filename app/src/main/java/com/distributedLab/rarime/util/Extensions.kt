@@ -1,5 +1,8 @@
 package com.distributedLab.rarime.util
 
+import java.security.PublicKey
+import java.util.Base64
+
 fun String.decodeHexString(): ByteArray {
     check(length % 2 == 0) {
         "Must have an even length"
@@ -47,6 +50,15 @@ fun String.toBitArray(): String {
 
     return stringBuilder.toString()
 }
+
+fun PublicKey.publicKeyToPem(): String {
+    val base64PubKey = Base64.getEncoder().encodeToString(this.encoded)
+
+    return "-----BEGIN PUBLIC KEY-----\n" +
+            base64PubKey.replace("(.{64})".toRegex(), "$1\n") +
+            "\n-----END PUBLIC KEY-----\n"
+}
+
 
 fun String.addCharAtIndex(char: Char, index: Int) =
     StringBuilder(this).apply { insert(index, char) }.toString()

@@ -54,7 +54,7 @@ fun ScanPassportScreen(onClose: () -> Unit) {
             }
 
             ScanPassportState.GENERATE_PROOF -> {
-                GenerateProofStep(onClose = onClose)
+                GenerateProofStep(eDocument = eDocument!!, onClose = onClose)
             }
         }
     }
