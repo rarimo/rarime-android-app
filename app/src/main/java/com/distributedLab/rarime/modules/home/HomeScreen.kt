@@ -19,10 +19,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.modules.main.Screen
+import com.distributedLab.rarime.modules.passport.models.EDocument
+import com.distributedLab.rarime.modules.passport.models.PersonDetails
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.ActionCard
 import com.distributedLab.rarime.ui.components.AppBottomSheet
@@ -36,40 +40,71 @@ import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun HomeScreen(onPassportScan: () -> Unit) {
-    var hasPassport by remember { mutableStateOf(true) }
+fun HomeScreen(navigate: (String) -> Unit) {
+    // TODO: Replace with real data
+    var passport: EDocument? by remember {
+        mutableStateOf(
+            EDocument(
+                personDetails = PersonDetails(
+                    name = "John",
+                    surname = "Doe",
+                    birthDate = "01.01.1990",
+                    nationality = "USA",
+                    serialNumber = "123456789",
+                    faceImageInfo = null
+                )
+            )
+        )
+    }
+    // TODO: Use data from storage
     var passportCardLook by remember { mutableStateOf(PassportCardLook.BLACK) }
+    var isIncognito by remember { mutableStateOf(false) }
+    // TODO: Use view model
+    var isCongratsModalVisible by remember { mutableStateOf(false) }
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(24.dp),
-        modifier = Modifier
-            .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
-    ) {
-        Header()
+    Box {
         Column(
             verticalArrangement = Arrangement.spacedBy(24.dp),
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp)
+                .fillMaxSize()
+                .background(RarimeTheme.colors.backgroundPrimary)
+                .blur(if (isCongratsModalVisible) 12.dp else 0.dp)
         ) {
-            if (hasPassport) {
-                PassportCard(
-                    look = passportCardLook,
-                    onLookChange = { passportCardLook = it },
-                    onDelete = { hasPassport = false }
-                )
-                RarimeCard()
-            } else {
-                AirdropCard(onPassportScan)
-                OtherPassportsCard(onPassportScan)
+            Header { navigate(Screen.Main.Wallet.route) }
+            Column(
+                verticalArrangement = Arrangement.spacedBy(24.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp)
+            ) {
+                if (passport == null) {
+                    AirdropCard { navigate(Screen.ScanPassport.route) }
+                    OtherPassportCard { navigate(Screen.ScanPassport.route) }
+                } else {
+                    PassportCard(
+                        passport = passport!!,
+                        isIncognito = isIncognito,
+                        look = passportCardLook,
+                        onLookChange = { passportCardLook = it },
+                        onIncognitoChange = { isIncognito = it },
+                        onDelete = { passport = null }
+                    )
+                    RarimeCard()
+                }
             }
+        }
+
+        if (isCongratsModalVisible) {
+            CongratsModal(
+                isClaimed = true,
+                onClose = { isCongratsModalVisible = false }
+            )
         }
     }
 }
 
 @Composable
-private fun Header() {
+private fun Header(onBalanceClick: () -> Unit = {}) {
     Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
         Text(
             text = "Beta launch",
@@ -89,7 +124,7 @@ private fun Header() {
 
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                SecondaryTextButton(onClick = { /*TODO*/ }) {
+                SecondaryTextButton(onClick = onBalanceClick) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -170,7 +205,7 @@ private fun AirdropCard(onPassportScan: () -> Unit) {
 }
 
 @Composable
-private fun OtherPassportsCard(onPassportScan: () -> Unit) {
+private fun OtherPassportCard(onPassportScan: () -> Unit) {
     val sheetState = rememberAppSheetState()
 
     ActionCard(
@@ -200,5 +235,5 @@ private fun RarimeCard() {
 @Preview
 @Composable
 private fun HomeScreenPreview() {
-    HomeScreen(onPassportScan = {})
+    HomeScreen {}
 }

@@ -102,7 +102,7 @@ fun AppBottomSheet(
                 Box(
                     modifier = (if (fullScreen) Modifier.height(configuration.screenHeightDp.dp) else Modifier)
                         .fillMaxWidth()
-                        .padding(bottom = 20.dp)
+                        .padding(bottom = 32.dp)
                 ) {
                     content { cb -> hide(cb) }
                 }

@@ -170,7 +170,7 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                 route = Screen.Main.route
             ) {
                 composable(Screen.Main.Home.route) {
-                    HomeScreen { navController.navigate(Screen.ScanPassport.route) }
+                    HomeScreen { navController.navigate(it) }
                 }
                 composable(Screen.Main.Wallet.route) { WalletScreen() }
                 composable(Screen.Main.Rewards.route) { RewardsScreen() }

@@ -16,16 +16,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.modules.passport.calculateAgeFromBirthDate
+import com.distributedLab.rarime.modules.passport.models.EDocument
+import com.distributedLab.rarime.modules.passport.models.PersonDetails
 import com.distributedLab.rarime.ui.components.AppBottomSheet
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
@@ -33,6 +33,7 @@ import com.distributedLab.rarime.ui.components.PassportImage
 import com.distributedLab.rarime.ui.components.PrimaryTextButton
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.ImageUtil
 
 enum class PassportCardLook {
     GREEN, BLACK, WHITE;
@@ -63,12 +64,18 @@ enum class PassportCardLook {
 
 @Composable
 fun PassportCard(
+    passport: EDocument,
     look: PassportCardLook,
+    isIncognito: Boolean,
     onLookChange: (PassportCardLook) -> Unit,
+    onIncognitoChange: (Boolean) -> Unit,
     onDelete: () -> Unit
 ) {
     val settingsSheetState = rememberAppSheetState()
-    var isHidden by remember { mutableStateOf(false) }
+
+    val fullName = passport.personDetails!!.name + " " + passport.personDetails!!.surname
+    val faceImageInfo = passport.personDetails!!.faceImageInfo
+    val image = if (faceImageInfo == null) null else ImageUtil.getImage(faceImageInfo).bitmapImage!!
 
     Column(
         verticalArrangement = Arrangement.spacedBy(32.dp),
@@ -83,18 +90,18 @@ fun PassportCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 PassportImage(
-                    image = null,
+                    image = image,
                     color = look.foregroundColor,
                     backgroundColor = look.foregroundColor.copy(alpha = 0.05f),
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     AppIcon(
-                        id = if (isHidden) R.drawable.ic_eye_slash else R.drawable.ic_eye,
+                        id = if (isIncognito) R.drawable.ic_eye_slash else R.drawable.ic_eye,
                         tint = look.foregroundColor,
                         modifier = Modifier
                             .background(look.foregroundColor.copy(alpha = 0.05f), CircleShape)
                             .padding(8.dp)
-                            .clickable { isHidden = !isHidden }
+                            .clickable { onIncognitoChange(!isIncognito) }
                     )
                     AppIcon(
                         id = R.drawable.ic_dots_three_outline,
@@ -108,12 +115,16 @@ fun PassportCard(
             }
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    text = if (isHidden) "••••• •••••••" else "John Doe",
+                    text = if (isIncognito) "••••• •••••••" else fullName,
                     style = RarimeTheme.typography.h6,
                     color = look.foregroundColor
                 )
                 Text(
-                    text = if (isHidden) "••• ••••• •••" else "25 Years Old",
+                    text = if (isIncognito) "••• ••••• •••" else "${
+                        calculateAgeFromBirthDate(
+                            passport.personDetails!!.birthDate!!
+                        )
+                    } Years Old",
                     style = RarimeTheme.typography.body2,
                     color = look.foregroundColor.copy(alpha = 0.56f)
                 )
@@ -123,12 +134,12 @@ fun PassportCard(
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             PassportInfoRow(
                 label = "Nationality",
-                value = if (isHidden) "•••" else "UKR",
+                value = if (isIncognito) "•••" else passport.personDetails!!.nationality!!,
                 look = look
             )
             PassportInfoRow(
-                label = "Sex",
-                value = if (isHidden) "•••••" else "Male",
+                label = "Document #",
+                value = if (isIncognito) "••••••••" else passport.personDetails!!.serialNumber!!,
                 look = look
             )
         }
@@ -293,5 +304,21 @@ private fun PassportLookOption(
 @Preview(showBackground = true)
 @Composable
 private fun PassportCardPreview() {
-    PassportCard(look = PassportCardLook.BLACK, onLookChange = {}, onDelete = {})
+    PassportCard(
+        passport = EDocument(
+            personDetails = PersonDetails(
+                name = "John",
+                surname = "Doe",
+                birthDate = "01.01.1990",
+                nationality = "USA",
+                serialNumber = "123456789",
+                faceImageInfo = null
+            )
+        ),
+        look = PassportCardLook.BLACK,
+        isIncognito = false,
+        onLookChange = {},
+        onIncognitoChange = {},
+        onDelete = {}
+    )
 }

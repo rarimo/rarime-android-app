@@ -269,9 +269,7 @@ fun calculateAgeFromBirthDate(birthDate: String): Int {
 
     // Calculate age
     val currentDate = LocalDate.now()
-    val age = Period.between(dateOfBirth, currentDate).years
-
-    return age
+    return Period.between(dateOfBirth, currentDate).years
 }
 
 @Preview
