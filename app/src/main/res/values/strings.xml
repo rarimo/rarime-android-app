@@ -84,4 +84,5 @@
     <string name="date_of_birth">Date of birth</string>
     <string name="beta_launch">Beta launch</string>
     <string name="create_account_btn">Create account</string>
+    <string name="airdrop_tx_title">Airdrop</string>
 </resources>
