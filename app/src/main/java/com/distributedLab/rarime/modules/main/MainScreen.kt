@@ -33,7 +33,9 @@ import com.distributedLab.rarime.modules.security.EnablePasscodeScreen
 import com.distributedLab.rarime.modules.security.EnterPasscodeScreen
 import com.distributedLab.rarime.modules.security.RepeatPasscodeScreen
 import com.distributedLab.rarime.modules.settings.SettingsScreen
+import com.distributedLab.rarime.modules.wallet.WalletReceiveScreen
 import com.distributedLab.rarime.modules.wallet.WalletScreen
+import com.distributedLab.rarime.modules.wallet.WalletSendScreen
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 sealed class Screen(val route: String) {
@@ -55,7 +57,11 @@ sealed class Screen(val route: String) {
     data object Main : Screen("main") {
         data object Home : Screen("home")
         data object Rewards : Screen("rewards")
-        data object Wallet : Screen("wallet")
+        data object Wallet : Screen("wallet") {
+            data object Receive : Screen("receive")
+            data object Send : Screen("send")
+        }
+
         data object Credentials : Screen("credentials")
         data object Settings : Screen("settings")
     }
@@ -176,10 +182,18 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                 composable(Screen.Main.Rewards.route) {
                     RewardsScreen { navController.navigate(Screen.ScanPassport.route) }
                 }
-                composable(Screen.Main.Wallet.route) { WalletScreen() }
-                composable(Screen.Main.Credentials.route) { CredentialsScreen() }
-                composable(Screen.Main.Settings.route) { SettingsScreen() }
+                composable(Screen.Main.Wallet.route) {
+                    WalletScreen { navController.navigate(it) }
+                }
+                composable(Screen.Main.Wallet.Receive.route) {
+                    WalletReceiveScreen { navController.popBackStack() }
+                }
+                composable(Screen.Main.Wallet.Send.route) {
+                    WalletSendScreen { navController.popBackStack() }
+                }
             }
+            composable(Screen.Main.Credentials.route) { CredentialsScreen() }
+            composable(Screen.Main.Settings.route) { SettingsScreen() }
         }
     }
 }

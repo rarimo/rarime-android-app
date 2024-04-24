@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.modules.main.Screen
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.modules.wallet.models.TransactionState
 import com.distributedLab.rarime.ui.components.AppIcon
@@ -27,7 +28,7 @@ import com.distributedLab.rarime.util.NumberUtil
 import java.util.Date
 
 @Composable
-fun WalletScreen() {
+fun WalletScreen(navigate: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -63,13 +64,13 @@ fun WalletScreen() {
                         text = "Receive",
                         leftIcon = R.drawable.ic_arrow_down,
                         modifier = Modifier.weight(1f),
-                        onClick = { /*TODO*/ }
+                        onClick = { navigate(Screen.Main.Wallet.Receive.route) }
                     )
                     SecondaryButton(
                         text = "Send",
                         leftIcon = R.drawable.ic_arrow_up,
                         modifier = Modifier.weight(1f),
-                        onClick = { /*TODO*/ }
+                        onClick = { navigate(Screen.Main.Wallet.Send.route) }
                     )
                 }
             }
@@ -146,5 +147,5 @@ private fun TransactionCard(transaction: Transaction) {
 @Preview
 @Composable
 private fun WalletScreenPreview() {
-    WalletScreen()
+    WalletScreen {}
 }
