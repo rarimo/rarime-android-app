@@ -78,7 +78,6 @@ private val introSteps = listOf(
 @Composable
 fun IntroScreen(navigateTo: (route: String) -> Unit) {
     val stepState = rememberPagerState(pageCount = { introSteps.size })
-    val sheetState = rememberAppSheetState()
     val coroutineScope = rememberCoroutineScope()
 
     val isLastStep = stepState.currentPage == introSteps.size - 1
