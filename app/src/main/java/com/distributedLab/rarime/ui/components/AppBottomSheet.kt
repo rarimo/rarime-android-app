@@ -2,7 +2,6 @@ package com.distributedLab.rarime.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +21,7 @@ import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
@@ -63,10 +63,12 @@ typealias HideSheetFn = (cb: () -> Unit) -> Unit
 fun AppBottomSheet(
     modifier: Modifier = Modifier,
     state: AppSheetState = rememberAppSheetState(false),
+    fullScreen: Boolean = false,
     content: @Composable (HideSheetFn) -> Unit
 ) {
     val modalState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
+    val configuration = LocalConfiguration.current
 
     fun hide(cb: () -> Unit) {
         coroutineScope.launch { modalState.hide() }.invokeOnCompletion {
@@ -85,11 +87,7 @@ fun AppBottomSheet(
             containerColor = RarimeTheme.colors.backgroundPure,
             onDismissRequest = { state.hide() }
         ) {
-            Box(
-                modifier = Modifier
-                    .padding(bottom = 48.dp)
-                    .fillMaxWidth()
-            ) {
+            Box(modifier = Modifier.fillMaxWidth()) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -101,14 +99,12 @@ fun AppBottomSheet(
                         onClick = { hide {} }
                     )
                 }
-                Column {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 32.dp)
-                    ) {
-                        content { cb -> hide(cb) }
-                    }
+                Box(
+                    modifier = (if (fullScreen) Modifier.height(configuration.screenHeightDp.dp) else Modifier)
+                        .fillMaxWidth()
+                        .padding(bottom = 32.dp)
+                ) {
+                    content { cb -> hide(cb) }
                 }
             }
         }

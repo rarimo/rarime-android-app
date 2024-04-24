@@ -21,10 +21,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.distributedLab.rarime.modules.credentials.CredentialsScreen
 import com.distributedLab.rarime.modules.home.HomeScreen
 import com.distributedLab.rarime.modules.intro.IntroScreen
 import com.distributedLab.rarime.modules.passport.ScanPassportScreen
+import com.distributedLab.rarime.modules.profile.ProfileScreen
 import com.distributedLab.rarime.modules.register.ImportIdentityScreen
 import com.distributedLab.rarime.modules.register.NewIdentityScreen
 import com.distributedLab.rarime.modules.rewards.RewardsScreen
@@ -32,7 +32,6 @@ import com.distributedLab.rarime.modules.security.EnableBiometricsScreen
 import com.distributedLab.rarime.modules.security.EnablePasscodeScreen
 import com.distributedLab.rarime.modules.security.EnterPasscodeScreen
 import com.distributedLab.rarime.modules.security.RepeatPasscodeScreen
-import com.distributedLab.rarime.modules.settings.SettingsScreen
 import com.distributedLab.rarime.modules.wallet.WalletScreen
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
@@ -54,10 +53,9 @@ sealed class Screen(val route: String) {
 
     data object Main : Screen("main") {
         data object Home : Screen("home")
-        data object Rewards : Screen("rewards")
         data object Wallet : Screen("wallet")
-        data object Credentials : Screen("credentials")
-        data object Settings : Screen("settings")
+        data object Rewards : Screen("rewards")
+        data object Profile : Screen("profile")
     }
 }
 
@@ -65,8 +63,7 @@ val mainRoutes = listOf(
     Screen.Main.Home.route,
     Screen.Main.Rewards.route,
     Screen.Main.Wallet.route,
-    Screen.Main.Credentials.route,
-    Screen.Main.Settings.route
+    Screen.Main.Profile.route
 )
 
 // We have a floating tab bar at the bottom of the screen,
@@ -172,13 +169,12 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                 startDestination = Screen.Main.Home.route,
                 route = Screen.Main.route
             ) {
-                composable(Screen.Main.Home.route) { HomeScreen() }
-                composable(Screen.Main.Rewards.route) {
-                    RewardsScreen { navController.navigate(Screen.ScanPassport.route) }
+                composable(Screen.Main.Home.route) {
+                    HomeScreen { navController.navigate(it) }
                 }
                 composable(Screen.Main.Wallet.route) { WalletScreen() }
-                composable(Screen.Main.Credentials.route) { CredentialsScreen() }
-                composable(Screen.Main.Settings.route) { SettingsScreen() }
+                composable(Screen.Main.Rewards.route) { RewardsScreen() }
+                composable(Screen.Main.Profile.route) { ProfileScreen() }
             }
         }
     }
