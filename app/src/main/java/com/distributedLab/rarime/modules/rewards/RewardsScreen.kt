@@ -39,6 +39,7 @@ fun RewardsScreen() {
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
+                .fillMaxWidth()
                 .padding(top = 220.dp)
                 .padding(horizontal = 24.dp)
         ) {
@@ -126,8 +127,8 @@ private fun RewardsSkeleton() {
     }
 }
 
-@Composable
 @Preview
+@Composable
 private fun RewardsScreenPreview() {
     RewardsScreen()
 }
