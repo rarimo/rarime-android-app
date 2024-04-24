@@ -95,4 +95,7 @@ dependencies {
     kapt("com.google.dagger:hilt-compiler:2.51")
 
     implementation("net.sf.scuba:scuba-sc-android:0.0.20")
+
+    // QR Code
+    implementation("com.lightspark:compose-qr-code:1.0.1")
 }
