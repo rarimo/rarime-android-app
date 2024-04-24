@@ -20,13 +20,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.listSaver
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,34 +30,10 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.ui.theme.dropShadow
 import kotlinx.coroutines.launch
 
-class AppSwitchState(initialChecked: Boolean = false) {
-    var checked by mutableStateOf(initialChecked)
-        private set
-
-    fun updateChecked(newChecked: Boolean) {
-        checked = newChecked
-    }
-
-    companion object {
-        val Saver: Saver<AppSwitchState, *> = listSaver(
-            save = { listOf(it.checked) },
-            restore = {
-                AppSwitchState(initialChecked = it[0])
-            }
-        )
-    }
-}
-
-@Composable
-fun rememberAppSwitchState(checked: Boolean = false) =
-    rememberSaveable(checked, saver = AppSwitchState.Saver) {
-        AppSwitchState(checked)
-    }
-
 @Composable
 fun AppSwitch(
     modifier: Modifier = Modifier,
-    state: AppSwitchState = rememberAppSwitchState(),
+    state: AppCheckboxState = rememberAppCheckboxState(),
     enabled: Boolean = true,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -117,7 +88,7 @@ fun AppSwitch(
 @Preview(showBackground = true)
 @Composable
 private fun AppSwitchPreview() {
-    val checkedState = rememberAppSwitchState()
+    val checkedState = rememberAppCheckboxState()
 
     Column(
         modifier = Modifier.padding(12.dp, 16.dp),

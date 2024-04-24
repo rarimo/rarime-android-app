@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.settings
+package com.distributedLab.rarime.modules.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun SettingsScreen() {
+fun ProfileScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -19,7 +19,7 @@ fun SettingsScreen() {
             .padding(20.dp)
     ) {
         Text(
-            text = "Settings",
+            text = "Profile",
             style = RarimeTheme.typography.subtitle1,
             color = RarimeTheme.colors.textPrimary
         )
