@@ -29,6 +29,18 @@ import java.util.Date
 
 @Composable
 fun WalletScreen(navigate: (String) -> Unit) {
+    val balance = 3.0
+    val transactions = listOf(
+        Transaction(
+            id = 1,
+            iconId = R.drawable.ic_airdrop,
+            titleId = R.string.airdrop_tx_title,
+            amount = 3.0,
+            date = Date(),
+            state = TransactionState.INCOMING
+        )
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -52,7 +64,7 @@ fun WalletScreen(navigate: (String) -> Unit) {
                     color = RarimeTheme.colors.textSecondary
                 )
                 Text(
-                    text = "3",
+                    text = NumberUtil.formatAmount(balance),
                     style = RarimeTheme.typography.h4,
                     color = RarimeTheme.colors.textPrimary
                 )
@@ -83,17 +95,9 @@ fun WalletScreen(navigate: (String) -> Unit) {
                         style = RarimeTheme.typography.subtitle3,
                         color = RarimeTheme.colors.textPrimary
                     )
-
-                    TransactionCard(
-                        Transaction(
-                            id = 1,
-                            iconId = R.drawable.ic_airdrop,
-                            titleId = R.string.airdrop_tx_title,
-                            amount = 3.0,
-                            date = Date(),
-                            state = TransactionState.INCOMING
-                        )
-                    )
+                    transactions.forEach {
+                        TransactionCard(it)
+                    }
                 }
             }
         }

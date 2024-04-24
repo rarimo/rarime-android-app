@@ -51,7 +51,7 @@ fun WalletReceiveScreen(onBack: () -> Unit = {}) {
         description = "You can use the QR code or the wallet address to deposit the RMO token to your account",
         onBack = onBack
     ) {
-        CardContainer(modifier = Modifier.padding(horizontal = 20.dp)) {
+        CardContainer(modifier = Modifier.padding(horizontal = 12.dp)) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally

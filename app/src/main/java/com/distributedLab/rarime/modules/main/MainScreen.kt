@@ -102,7 +102,7 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
             }
         },
     ) {
-        NavigationBarColor(route = currentRoute ?: "")
+        ScreenBarsColor(route = currentRoute ?: "")
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -199,13 +199,23 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
 }
 
 @Composable
-fun NavigationBarColor(route: String) {
-    val pureBgRoutes = listOf(
+fun ScreenBarsColor(route: String) {
+    val view = LocalView.current
+
+    val navPureBgRoutes = listOf(
         Screen.Register.NewIdentity.route,
+        Screen.Main.Wallet.Send.route,
+    )
+    val statusPureBgRoutes = listOf(
+        Screen.Main.Wallet.route,
     )
 
-    val view = LocalView.current
-    val color = if (route in pureBgRoutes) {
+    val navColor = if (route in navPureBgRoutes) {
+        RarimeTheme.colors.backgroundPure
+    } else {
+        RarimeTheme.colors.backgroundPrimary
+    }
+    val statusColor = if (route in statusPureBgRoutes) {
         RarimeTheme.colors.backgroundPure
     } else {
         RarimeTheme.colors.backgroundPrimary
@@ -214,7 +224,8 @@ fun NavigationBarColor(route: String) {
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.navigationBarColor = color.toArgb()
+            window.navigationBarColor = navColor.toArgb()
+            window.statusBarColor = statusColor.toArgb()
         }
     }
 }
