@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,7 +45,7 @@ fun ScanQrScreen(onBack: () -> Unit, onScan: (String) -> Unit) {
                 .clickable { onBack() }
         )
         Text(
-            text = "Scan QR",
+            text = stringResource(R.string.scan_qr_title),
             style = RarimeTheme.typography.subtitle4,
             color = RarimeTheme.colors.baseWhite,
             modifier = Modifier
@@ -64,7 +65,7 @@ fun ScanQrScreen(onBack: () -> Unit, onScan: (String) -> Unit) {
                 modifier = Modifier.size(222.dp)
             )
             Text(
-                text = "Place QR code with the frame to scan",
+                text = stringResource(R.string.scan_qr_description),
                 style = RarimeTheme.typography.body3,
                 color = RarimeTheme.colors.baseWhite,
                 textAlign = TextAlign.Center,

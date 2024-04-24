@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,8 +48,8 @@ fun WalletReceiveScreen(onBack: () -> Unit = {}) {
     }
 
     WalletRouteLayout(
-        title = "Receive RMO",
-        description = "You can use the QR code or the wallet address to deposit the RMO token to your account",
+        title = stringResource(R.string.wallet_receive_title),
+        description = stringResource(R.string.wallet_receive_description),
         onBack = onBack
     ) {
         CardContainer(modifier = Modifier.padding(horizontal = 12.dp)) {
@@ -84,7 +85,7 @@ fun WalletReceiveScreen(onBack: () -> Unit = {}) {
                 }
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
-                        text = "Deposit Address",
+                        text = stringResource(R.string.deposit_address_lbl),
                         style = RarimeTheme.typography.subtitle4,
                         color = RarimeTheme.colors.textPrimary
                     )

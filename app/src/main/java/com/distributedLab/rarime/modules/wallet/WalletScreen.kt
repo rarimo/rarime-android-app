@@ -53,13 +53,13 @@ fun WalletScreen(navigate: (String) -> Unit) {
                 .padding(20.dp)
         ) {
             Text(
-                text = "Wallet",
+                text = stringResource(R.string.wallet_title),
                 style = RarimeTheme.typography.subtitle2,
                 color = RarimeTheme.colors.textPrimary
             )
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    text = "Available RMO",
+                    text = stringResource(R.string.available_rmo),
                     style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.textSecondary
                 )
@@ -73,13 +73,13 @@ fun WalletScreen(navigate: (String) -> Unit) {
                 HorizontalDivider()
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     SecondaryButton(
-                        text = "Receive",
+                        text = stringResource(R.string.receive_btn),
                         leftIcon = R.drawable.ic_arrow_down,
                         modifier = Modifier.weight(1f),
                         onClick = { navigate(Screen.Main.Wallet.Receive.route) }
                     )
                     SecondaryButton(
-                        text = "Send",
+                        text = stringResource(R.string.send_btn),
                         leftIcon = R.drawable.ic_arrow_up,
                         modifier = Modifier.weight(1f),
                         onClick = { navigate(Screen.Main.Wallet.Send.route) }
@@ -91,7 +91,7 @@ fun WalletScreen(navigate: (String) -> Unit) {
             CardContainer {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                     Text(
-                        text = "Transactions",
+                        text = stringResource(R.string.transactions_title),
                         style = RarimeTheme.typography.subtitle3,
                         color = RarimeTheme.colors.textPrimary
                     )

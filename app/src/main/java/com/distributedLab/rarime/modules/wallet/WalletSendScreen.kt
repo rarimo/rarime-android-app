@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
@@ -51,8 +52,8 @@ fun WalletSendScreen(onBack: () -> Unit) {
         )
     } else {
         WalletRouteLayout(
-            title = "Send RMO",
-            description = "Withdraw the RMO token",
+            title = stringResource(R.string.wallet_send_title),
+            description = stringResource(R.string.wallet_send_description),
             onBack = onBack
         ) {
             Column(
@@ -63,7 +64,7 @@ fun WalletSendScreen(onBack: () -> Unit) {
                     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                         AppTextField(
                             state = addressState,
-                            label = "Address",
+                            label = stringResource(R.string.address_lbl),
                             placeholder = "rarimo1...",
                             trailingItem = {
                                 SecondaryTextButton(
@@ -74,15 +75,15 @@ fun WalletSendScreen(onBack: () -> Unit) {
                         )
                         AppTextField(
                             state = amountState,
-                            label = "Amount",
-                            placeholder = "Enter amount in RMO",
+                            label = stringResource(R.string.amount_lbl),
+                            placeholder = stringResource(R.string.amount_placeholder),
                             hint = {
                                 Row(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     Text(
-                                        text = "Available:",
+                                        text = stringResource(R.string.available_hint),
                                         style = RarimeTheme.typography.body4,
                                         color = RarimeTheme.colors.textSecondary
                                     )
@@ -102,7 +103,7 @@ fun WalletSendScreen(onBack: () -> Unit) {
                                 ) {
                                     VerticalDivider()
                                     SecondaryTextButton(
-                                        text = "MAX",
+                                        text = stringResource(R.string.max_btn),
                                         onClick = { amountState.updateText(balance.toString()) }
                                     )
                                 }
@@ -120,7 +121,7 @@ fun WalletSendScreen(onBack: () -> Unit) {
                 ) {
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
-                            text = "Receiver gets",
+                            text = stringResource(R.string.receiver_gets),
                             style = RarimeTheme.typography.body3,
                             color = RarimeTheme.colors.textSecondary
                         )
@@ -131,7 +132,7 @@ fun WalletSendScreen(onBack: () -> Unit) {
                         )
                     }
                     PrimaryButton(
-                        text = "Send",
+                        text = stringResource(R.string.send_btn),
                         size = ButtonSize.Large,
                         modifier = Modifier.width(160.dp),
                         onClick = { /*TODO*/ }
