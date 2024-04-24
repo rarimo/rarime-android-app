@@ -25,13 +25,13 @@ fun CardContainer(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .background(RarimeTheme.colors.backgroundPure, RoundedCornerShape(24.dp))
+            .background(RarimeTheme.colors.backgroundOpacity, RoundedCornerShape(24.dp))
             .padding(20.dp),
         content = content
     )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun CardContainerPreview() {
     CardContainer {
