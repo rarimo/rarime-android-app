@@ -130,4 +130,7 @@
     <string name="beta_launch_title">Beta Launch</string>
     <string name="beta_launch_description">short description text here</string>
     <string name="beta_launch_text">"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors "</string>
+    <string name="delete_passport_card_title">Delete passport card?</string>
+    <string name="delete_passport_card_text">You will have to scan the passport again to restore it.</string>
+    <string name="delete_btn">Delete</string>
 </resources>
