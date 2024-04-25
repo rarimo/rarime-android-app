@@ -127,4 +127,6 @@
     <string name="claim_tokens_description">"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, "</string>
     <string name="claim_btn">Claim</string>
     <string name="claiming_btn">Claiming...</string>
+    <string name="terms_of_use">Terms of Use</string>
+    <string name="privacy_policy">Privacy Policy</string>
 </resources>

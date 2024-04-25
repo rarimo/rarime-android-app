@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -21,6 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.home.HomeScreen
 import com.distributedLab.rarime.modules.intro.IntroScreen
 import com.distributedLab.rarime.modules.passport.ScanPassportScreen
@@ -37,6 +39,7 @@ import com.distributedLab.rarime.modules.security.EnablePasscodeScreen
 import com.distributedLab.rarime.modules.security.EnterPasscodeScreen
 import com.distributedLab.rarime.modules.security.RepeatPasscodeScreen
 import com.distributedLab.rarime.modules.wallet.WalletScreen
+import com.distributedLab.rarime.ui.components.AppWebView
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 sealed class Screen(val route: String) {
@@ -64,6 +67,8 @@ sealed class Screen(val route: String) {
             data object ExportKeys : Screen("export_keys")
             data object Language : Screen("language")
             data object Theme : Screen("theme")
+            data object Terms : Screen("terms")
+            data object Privacy : Screen("privacy")
         }
     }
 }
@@ -74,6 +79,10 @@ val mainRoutes = listOf(
     Screen.Main.Wallet.route,
     Screen.Main.Profile.route
 )
+
+// TODO: Extract to constants
+private const val TERMS_URL = "https://rarime.com/general-terms.html"
+private const val PRIVACY_URL = "https://rarime.com/privacy-notice.html"
 
 // We have a floating tab bar at the bottom of the screen,
 // so no need to use scaffold padding
@@ -198,6 +207,20 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                 }
                 composable(Screen.Main.Profile.Theme.route) {
                     ThemeScreen { navController.popBackStack() }
+                }
+                composable(Screen.Main.Profile.Terms.route) {
+                    AppWebView(
+                        title = stringResource(R.string.terms_of_use),
+                        url = TERMS_URL,
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+                composable(Screen.Main.Profile.Privacy.route) {
+                    AppWebView(
+                        title = stringResource(R.string.privacy_policy),
+                        url = PRIVACY_URL,
+                        onBack = { navController.popBackStack() }
+                    )
                 }
             }
         }

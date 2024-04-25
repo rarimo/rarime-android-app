@@ -96,12 +96,12 @@ fun ProfileScreen(navigate: (String) -> Unit) {
                     ProfileRow(
                         iconId = R.drawable.ic_question,
                         title = "Privacy Policy",
-                        onClick = {}
+                        onClick = { navigate(Screen.Main.Profile.Privacy.route) }
                     )
                     ProfileRow(
                         iconId = R.drawable.ic_flag,
                         title = "Terms of Use",
-                        onClick = {}
+                        onClick = { navigate(Screen.Main.Profile.Terms.route) }
                     )
                 }
             }
