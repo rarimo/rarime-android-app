@@ -39,6 +39,7 @@ import com.distributedLab.rarime.ui.components.PrimaryTextButton
 import com.distributedLab.rarime.ui.components.SecondaryTextButton
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.NumberUtil
 
 @Composable
 fun HomeScreen(navigate: (String) -> Unit) {
@@ -62,7 +63,7 @@ fun HomeScreen(navigate: (String) -> Unit) {
     var isIncognito by remember { mutableStateOf(false) }
     // TODO: Use view model
     var isCongratsModalVisible by remember { mutableStateOf(false) }
-    val balance by remember { mutableStateOf(0f) }
+    val balance by remember { mutableStateOf(0.0) }
 
     Box {
         Column(
@@ -106,7 +107,7 @@ fun HomeScreen(navigate: (String) -> Unit) {
 }
 
 @Composable
-private fun Header(balance: Float, onBalanceClick: () -> Unit = {}) {
+private fun Header(balance: Double, onBalanceClick: () -> Unit = {}) {
     Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
         Text(
             text = stringResource(R.string.beta_launch),
@@ -144,7 +145,7 @@ private fun Header(balance: Float, onBalanceClick: () -> Unit = {}) {
                     }
                 }
                 Text(
-                    text = balance.toString(),
+                    text = NumberUtil.formatAmount(balance),
                     style = RarimeTheme.typography.h4,
                     color = RarimeTheme.colors.textPrimary
                 )
