@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
@@ -24,6 +25,12 @@ import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.CardContainer
 import com.distributedLab.rarime.ui.components.PassportImage
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.IdentityUtil
+
+// TODO: Replace with real app version
+private const val APP_VERSION = "1.0"
+// TODO: Replace with real user DID
+private const val USER_DID = "did:iden3:readonly:tQR6mhrf6jJyYxmc9YZZS6xiyxjG4b4yQh92diTme"
 
 @Composable
 fun ProfileScreen(navigate: (String) -> Unit) {
@@ -35,7 +42,7 @@ fun ProfileScreen(navigate: (String) -> Unit) {
             .padding(vertical = 20.dp, horizontal = 12.dp)
     ) {
         Text(
-            text = "Profile",
+            text = stringResource(R.string.profile),
             style = RarimeTheme.typography.subtitle2,
             color = RarimeTheme.colors.textPrimary,
             modifier = Modifier.padding(horizontal = 8.dp)
@@ -52,12 +59,12 @@ fun ProfileScreen(navigate: (String) -> Unit) {
                 ) {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
-                            text = "Account",
+                            text = stringResource(R.string.account),
                             style = RarimeTheme.typography.subtitle3,
                             color = RarimeTheme.colors.textPrimary
                         )
                         Text(
-                            text = "DID: Didq234234rw3423",
+                            text = stringResource(R.string.user_did, IdentityUtil.formatDid(USER_DID)),
                             style = RarimeTheme.typography.body4,
                             color = RarimeTheme.colors.textSecondary
                         )
@@ -69,12 +76,12 @@ fun ProfileScreen(navigate: (String) -> Unit) {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                     ProfileRow(
                         iconId = R.drawable.ic_user_focus,
-                        title = "Auth Method",
+                        title = stringResource(R.string.auth_method),
                         onClick = { navigate(Screen.Main.Profile.AuthMethod.route) }
                     )
                     ProfileRow(
                         iconId = R.drawable.ic_key,
-                        title = "Export Keys",
+                        title = stringResource(R.string.export_keys),
                         onClick = { navigate(Screen.Main.Profile.ExportKeys.route) }
                     )
                 }
@@ -83,30 +90,30 @@ fun ProfileScreen(navigate: (String) -> Unit) {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                     ProfileRow(
                         iconId = R.drawable.ic_globe_simple,
-                        title = "Language",
-                        value = "English",
+                        title = stringResource(R.string.language),
+                        value = stringResource(R.string.english),
                         onClick = { navigate(Screen.Main.Profile.Language.route) }
                     )
                     ProfileRow(
                         iconId = R.drawable.ic_sun,
-                        title = "Theme",
-                        value = "System",
+                        title = stringResource(R.string.theme),
+                        value = stringResource(R.string.system),
                         onClick = { navigate(Screen.Main.Profile.Theme.route) }
                     )
                     ProfileRow(
                         iconId = R.drawable.ic_question,
-                        title = "Privacy Policy",
+                        title = stringResource(R.string.privacy_policy),
                         onClick = { navigate(Screen.Main.Profile.Privacy.route) }
                     )
                     ProfileRow(
                         iconId = R.drawable.ic_flag,
-                        title = "Terms of Use",
+                        title = stringResource(R.string.terms_of_use),
                         onClick = { navigate(Screen.Main.Profile.Terms.route) }
                     )
                 }
             }
             Text(
-                text = "App version: 1.0",
+                text = stringResource(R.string.app_version, APP_VERSION),
                 style = RarimeTheme.typography.body4,
                 color = RarimeTheme.colors.textDisabled
             )

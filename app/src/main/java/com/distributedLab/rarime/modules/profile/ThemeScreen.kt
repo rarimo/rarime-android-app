@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
@@ -41,7 +42,7 @@ enum class AppColorScheme {
 fun ThemeScreen(onBack: () -> Unit) {
     var selectedColorScheme by remember { mutableStateOf(AppColorScheme.SYSTEM) }
 
-    ProfileRouteLayout(title = "Theme", onBack = onBack) {
+    ProfileRouteLayout(title = stringResource(R.string.theme), onBack = onBack) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             AppColorScheme.entries.forEach { colorScheme ->
                 SchemeItem(
@@ -67,9 +68,9 @@ private fun SchemeItem(
     }
 
     val label = when (scheme) {
-        AppColorScheme.LIGHT -> "Light Mode"
-        AppColorScheme.DARK -> "Dark Mode"
-        AppColorScheme.SYSTEM -> "System"
+        AppColorScheme.LIGHT -> stringResource(R.string.light_mode)
+        AppColorScheme.DARK -> stringResource(R.string.dark_mode)
+        AppColorScheme.SYSTEM -> stringResource(R.string.system)
     }
 
     AppRadioButton(isSelected = isSelected, onClick = onClick) {

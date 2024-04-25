@@ -8,8 +8,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.components.AppRadioButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
@@ -24,7 +26,7 @@ fun LanguageScreen(onBack: () -> Unit) {
     var selectedLanguage by remember { mutableStateOf(AppLanguage.ENGLISH) }
 
     ProfileRouteLayout(
-        title = "Language",
+        title = stringResource(R.string.language),
         onBack = onBack
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -47,9 +49,9 @@ private fun LanguageItem(
     onClick: () -> Unit
 ) {
     val label = when (language) {
-        AppLanguage.ENGLISH -> "English"
-        AppLanguage.UKRAINIAN -> "Ukrainian"
-        AppLanguage.GEORGIAN -> "Georgian"
+        AppLanguage.ENGLISH -> stringResource(R.string.english)
+        AppLanguage.UKRAINIAN -> stringResource(R.string.ukrainian)
+        AppLanguage.GEORGIAN -> stringResource(R.string.georgian)
     }
 
     AppRadioButton(isSelected = isSelected, onClick = onClick) {

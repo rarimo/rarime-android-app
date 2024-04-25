@@ -45,13 +45,13 @@ fun ExportKeysScreen(onBack: () -> Unit) {
     }
 
     ProfileRouteLayout(
-        title = "Export Keys",
+        title = stringResource(R.string.export_keys),
         onBack = onBack
     ) {
         CardContainer {
             Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                 Text(
-                    text = com.distributedLab.rarime.modules.register.privateKey,
+                    text = privateKey,
                     style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.textPrimary,
                     modifier = Modifier
@@ -70,7 +70,7 @@ fun ExportKeysScreen(onBack: () -> Unit) {
                             stringResource(R.string.copy_to_clipboard_btn)
                         },
                         onClick = {
-                            clipboardManager.setText(AnnotatedString(com.distributedLab.rarime.modules.register.privateKey))
+                            clipboardManager.setText(AnnotatedString(privateKey))
                             isCopied = true
                         }
                     )

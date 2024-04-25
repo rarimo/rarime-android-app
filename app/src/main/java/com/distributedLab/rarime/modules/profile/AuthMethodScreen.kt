@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
@@ -27,18 +28,18 @@ fun AuthMethodScreen(onBack: () -> Unit) {
     val passcodeState = rememberAppCheckboxState()
 
     ProfileRouteLayout(
-        title = "Auth Method",
+        title = stringResource(R.string.auth_method),
         onBack = onBack
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
             AuthMethodRow(
                 iconId = R.drawable.ic_fingerprint,
-                label = "Biometrics",
+                label = stringResource(R.string.biometrics),
                 state = biometricsState
             )
             AuthMethodRow(
                 iconId = R.drawable.ic_password,
-                label = "Passcode",
+                label = stringResource(R.string.passcode),
                 state = passcodeState
             )
         }
