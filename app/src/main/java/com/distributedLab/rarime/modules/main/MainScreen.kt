@@ -24,7 +24,11 @@ import androidx.navigation.compose.rememberNavController
 import com.distributedLab.rarime.modules.home.HomeScreen
 import com.distributedLab.rarime.modules.intro.IntroScreen
 import com.distributedLab.rarime.modules.passport.ScanPassportScreen
+import com.distributedLab.rarime.modules.profile.AuthMethodScreen
+import com.distributedLab.rarime.modules.profile.ExportKeysScreen
+import com.distributedLab.rarime.modules.profile.LanguageScreen
 import com.distributedLab.rarime.modules.profile.ProfileScreen
+import com.distributedLab.rarime.modules.profile.ThemeScreen
 import com.distributedLab.rarime.modules.register.ImportIdentityScreen
 import com.distributedLab.rarime.modules.register.NewIdentityScreen
 import com.distributedLab.rarime.modules.rewards.RewardsScreen
@@ -55,7 +59,12 @@ sealed class Screen(val route: String) {
         data object Home : Screen("home")
         data object Wallet : Screen("wallet")
         data object Rewards : Screen("rewards")
-        data object Profile : Screen("profile")
+        data object Profile : Screen("profile") {
+            data object AuthMethod : Screen("auth_method")
+            data object ExportKeys : Screen("export_keys")
+            data object Language : Screen("language")
+            data object Theme : Screen("theme")
+        }
     }
 }
 
@@ -174,7 +183,22 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                 }
                 composable(Screen.Main.Wallet.route) { WalletScreen() }
                 composable(Screen.Main.Rewards.route) { RewardsScreen() }
-                composable(Screen.Main.Profile.route) { ProfileScreen() }
+
+                composable(Screen.Main.Profile.route) {
+                    ProfileScreen { navController.navigate(it) }
+                }
+                composable(Screen.Main.Profile.AuthMethod.route) {
+                    AuthMethodScreen { navController.popBackStack() }
+                }
+                composable(Screen.Main.Profile.ExportKeys.route) {
+                    ExportKeysScreen { navController.popBackStack() }
+                }
+                composable(Screen.Main.Profile.Language.route) {
+                    LanguageScreen { navController.popBackStack() }
+                }
+                composable(Screen.Main.Profile.Theme.route) {
+                    ThemeScreen { navController.popBackStack() }
+                }
             }
         }
     }

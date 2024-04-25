@@ -1,6 +1,7 @@
 package com.distributedLab.rarime.modules.profile
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -27,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.ui.components.AppRadioButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 enum class AppColorScheme {
@@ -39,13 +41,10 @@ enum class AppColorScheme {
 fun ThemeScreen(onBack: () -> Unit) {
     var selectedColorScheme by remember { mutableStateOf(AppColorScheme.SYSTEM) }
 
-    ProfileRouteLayout(
-        title = "Theme",
-        onBack = onBack
-    ) {
+    ProfileRouteLayout(title = "Theme", onBack = onBack) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             AppColorScheme.entries.forEach { colorScheme ->
-                ThemeRow(
+                SchemeItem(
                     scheme = colorScheme,
                     isSelected = selectedColorScheme == colorScheme,
                     onClick = { selectedColorScheme = colorScheme }
@@ -56,7 +55,7 @@ fun ThemeScreen(onBack: () -> Unit) {
 }
 
 @Composable
-private fun ThemeRow(
+private fun SchemeItem(
     scheme: AppColorScheme,
     isSelected: Boolean,
     onClick: () -> Unit
@@ -73,23 +72,7 @@ private fun ThemeRow(
         AppColorScheme.SYSTEM -> "System"
     }
 
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(
-                width = 1.dp,
-                color = RarimeTheme.colors.componentHovered,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onClick
-            )
-            .padding(16.dp)
-    ) {
+    AppRadioButton(isSelected = isSelected, onClick = onClick) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -107,15 +90,6 @@ private fun ThemeRow(
                 color = RarimeTheme.colors.textPrimary
             )
         }
-        Box(
-            modifier = Modifier
-                .size(16.dp)
-                .border(
-                    width = if (isSelected) 4.dp else 2.dp,
-                    color = if (isSelected) RarimeTheme.colors.primaryDark else RarimeTheme.colors.componentHovered,
-                    shape = CircleShape
-                )
-        )
     }
 }
 

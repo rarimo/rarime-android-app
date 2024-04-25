@@ -3,6 +3,7 @@ package com.distributedLab.rarime.modules.profile
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,18 +13,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.modules.main.Screen
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.CardContainer
 import com.distributedLab.rarime.ui.components.PassportImage
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(navigate: (String) -> Unit) {
     Column(
         verticalArrangement = Arrangement.spacedBy(20.dp),
         modifier = Modifier
@@ -34,7 +37,8 @@ fun ProfileScreen() {
         Text(
             text = "Profile",
             style = RarimeTheme.typography.subtitle2,
-            color = RarimeTheme.colors.textPrimary
+            color = RarimeTheme.colors.textPrimary,
+            modifier = Modifier.padding(horizontal = 8.dp)
         )
         Column(
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -66,12 +70,12 @@ fun ProfileScreen() {
                     ProfileRow(
                         iconId = R.drawable.ic_user_focus,
                         title = "Auth Method",
-                        onClick = {}
+                        onClick = { navigate(Screen.Main.Profile.AuthMethod.route) }
                     )
                     ProfileRow(
                         iconId = R.drawable.ic_key,
                         title = "Export Keys",
-                        onClick = {}
+                        onClick = { navigate(Screen.Main.Profile.ExportKeys.route) }
                     )
                 }
             }
@@ -81,13 +85,13 @@ fun ProfileScreen() {
                         iconId = R.drawable.ic_globe_simple,
                         title = "Language",
                         value = "English",
-                        onClick = {}
+                        onClick = { navigate(Screen.Main.Profile.Language.route) }
                     )
                     ProfileRow(
                         iconId = R.drawable.ic_sun,
                         title = "Theme",
                         value = "System",
-                        onClick = {}
+                        onClick = { navigate(Screen.Main.Profile.Theme.route) }
                     )
                     ProfileRow(
                         iconId = R.drawable.ic_question,
@@ -115,14 +119,18 @@ private fun ProfileRow(
     @DrawableRes iconId: Int,
     title: String,
     value: String? = null,
-    onClick: (() -> Unit)
+    onClick: () -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick
+            )
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -163,5 +171,5 @@ private fun ProfileRow(
 @Preview
 @Composable
 private fun ProfileScreenPreview() {
-    ProfileScreen()
+    ProfileScreen {}
 }
