@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -21,10 +22,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.home.HomeScreen
 import com.distributedLab.rarime.modules.intro.IntroScreen
 import com.distributedLab.rarime.modules.passport.ScanPassportScreen
+import com.distributedLab.rarime.modules.profile.AuthMethodScreen
+import com.distributedLab.rarime.modules.profile.ExportKeysScreen
+import com.distributedLab.rarime.modules.profile.LanguageScreen
 import com.distributedLab.rarime.modules.profile.ProfileScreen
+import com.distributedLab.rarime.modules.profile.ThemeScreen
 import com.distributedLab.rarime.modules.register.ImportIdentityScreen
 import com.distributedLab.rarime.modules.register.NewIdentityScreen
 import com.distributedLab.rarime.modules.rewards.RewardsScreen
@@ -32,7 +38,10 @@ import com.distributedLab.rarime.modules.security.EnableBiometricsScreen
 import com.distributedLab.rarime.modules.security.EnablePasscodeScreen
 import com.distributedLab.rarime.modules.security.EnterPasscodeScreen
 import com.distributedLab.rarime.modules.security.RepeatPasscodeScreen
+import com.distributedLab.rarime.modules.wallet.WalletReceiveScreen
 import com.distributedLab.rarime.modules.wallet.WalletScreen
+import com.distributedLab.rarime.modules.wallet.WalletSendScreen
+import com.distributedLab.rarime.ui.components.AppWebView
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 sealed class Screen(val route: String) {
@@ -53,9 +62,20 @@ sealed class Screen(val route: String) {
 
     data object Main : Screen("main") {
         data object Home : Screen("home")
-        data object Wallet : Screen("wallet")
+        data object Wallet : Screen("wallet") {
+            data object Receive : Screen("receive")
+            data object Send : Screen("send")
+        }
+
         data object Rewards : Screen("rewards")
-        data object Profile : Screen("profile")
+        data object Profile : Screen("profile") {
+            data object AuthMethod : Screen("auth_method")
+            data object ExportKeys : Screen("export_keys")
+            data object Language : Screen("language")
+            data object Theme : Screen("theme")
+            data object Terms : Screen("terms")
+            data object Privacy : Screen("privacy")
+        }
     }
 }
 
@@ -65,6 +85,10 @@ val mainRoutes = listOf(
     Screen.Main.Wallet.route,
     Screen.Main.Profile.route
 )
+
+// TODO: Extract to constants
+private const val TERMS_URL = "https://rarime.com/general-terms.html"
+private const val PRIVACY_URL = "https://rarime.com/privacy-notice.html"
 
 // We have a floating tab bar at the bottom of the screen,
 // so no need to use scaffold padding
@@ -93,7 +117,7 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
             }
         },
     ) {
-        NavigationBarColor(route = currentRoute ?: "")
+        ScreenBarsColor(route = currentRoute ?: "")
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -172,22 +196,69 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                 composable(Screen.Main.Home.route) {
                     HomeScreen { navController.navigate(it) }
                 }
-                composable(Screen.Main.Wallet.route) { WalletScreen() }
+                composable(Screen.Main.Wallet.route) {
+                    WalletScreen { navController.navigate(it) }
+                }
+                composable(Screen.Main.Wallet.Receive.route) {
+                    WalletReceiveScreen { navController.popBackStack() }
+                }
+                composable(Screen.Main.Wallet.Send.route) {
+                    WalletSendScreen { navController.popBackStack() }
+                }
                 composable(Screen.Main.Rewards.route) { RewardsScreen() }
-                composable(Screen.Main.Profile.route) { ProfileScreen() }
+
+                composable(Screen.Main.Profile.route) {
+                    ProfileScreen { navController.navigate(it) }
+                }
+                composable(Screen.Main.Profile.AuthMethod.route) {
+                    AuthMethodScreen { navController.popBackStack() }
+                }
+                composable(Screen.Main.Profile.ExportKeys.route) {
+                    ExportKeysScreen { navController.popBackStack() }
+                }
+                composable(Screen.Main.Profile.Language.route) {
+                    LanguageScreen { navController.popBackStack() }
+                }
+                composable(Screen.Main.Profile.Theme.route) {
+                    ThemeScreen { navController.popBackStack() }
+                }
+                composable(Screen.Main.Profile.Terms.route) {
+                    AppWebView(
+                        title = stringResource(R.string.terms_of_use),
+                        url = TERMS_URL,
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+                composable(Screen.Main.Profile.Privacy.route) {
+                    AppWebView(
+                        title = stringResource(R.string.privacy_policy),
+                        url = PRIVACY_URL,
+                        onBack = { navController.popBackStack() }
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun NavigationBarColor(route: String) {
-    val pureBgRoutes = listOf(
+fun ScreenBarsColor(route: String) {
+    val view = LocalView.current
+
+    val navPureBgRoutes = listOf(
         Screen.Register.NewIdentity.route,
+        Screen.Main.Wallet.Send.route,
+    )
+    val statusPureBgRoutes = listOf(
+        Screen.Main.Wallet.route,
     )
 
-    val view = LocalView.current
-    val color = if (route in pureBgRoutes) {
+    val navColor = if (route in navPureBgRoutes) {
+        RarimeTheme.colors.backgroundPure
+    } else {
+        RarimeTheme.colors.backgroundPrimary
+    }
+    val statusColor = if (route in statusPureBgRoutes) {
         RarimeTheme.colors.backgroundPure
     } else {
         RarimeTheme.colors.backgroundPrimary
@@ -196,7 +267,8 @@ fun NavigationBarColor(route: String) {
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.navigationBarColor = color.toArgb()
+            window.navigationBarColor = navColor.toArgb()
+            window.statusBarColor = statusColor.toArgb()
         }
     }
 }

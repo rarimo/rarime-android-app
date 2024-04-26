@@ -41,6 +41,7 @@ import com.distributedLab.rarime.ui.components.PrimaryTextButton
 import com.distributedLab.rarime.ui.components.SecondaryTextButton
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.NumberUtil
 
 @Composable
 fun HomeScreen(navigate: (String) -> Unit) {
@@ -64,7 +65,7 @@ fun HomeScreen(navigate: (String) -> Unit) {
     var isIncognito by remember { mutableStateOf(false) }
     // TODO: Use view model
     var isCongratsModalVisible by remember { mutableStateOf(false) }
-    val balance by remember { mutableStateOf(0f) }
+    val balance by remember { mutableStateOf(0.0) }
 
     Box {
         Column(
@@ -108,7 +109,7 @@ fun HomeScreen(navigate: (String) -> Unit) {
 }
 
 @Composable
-private fun Header(balance: Float, onBalanceClick: () -> Unit = {}) {
+private fun Header(balance: Double, onBalanceClick: () -> Unit = {}) {
     val sheetState = rememberAppSheetState()
 
     Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
@@ -164,14 +165,15 @@ private fun Header(balance: Float, onBalanceClick: () -> Unit = {}) {
                     }
                 }
                 Text(
-                    text = balance.toString(),
+                    text = NumberUtil.formatAmount(balance),
                     style = RarimeTheme.typography.h4,
                     color = RarimeTheme.colors.textPrimary
                 )
             }
-            PrimaryTextButton(onClick = { /*TODO*/ }) {
-                AppIcon(id = R.drawable.ic_qr_code)
-            }
+            PrimaryTextButton(
+                leftIcon = R.drawable.ic_qr_code,
+                onClick = { /*TODO*/ }
+            )
         }
     }
     AppBottomSheet(state = sheetState, fullScreen = true) { hide ->

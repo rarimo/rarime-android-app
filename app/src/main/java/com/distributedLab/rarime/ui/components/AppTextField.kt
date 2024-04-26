@@ -66,6 +66,8 @@ fun AppTextField(
     enabled: Boolean = true,
     label: String = "",
     placeholder: String = "",
+    trailingItem: @Composable (() -> Unit)? = null,
+    hint: @Composable (() -> Unit)? = null,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         if (label.isNotEmpty()) {
@@ -88,6 +90,7 @@ fun AppTextField(
             isError = state.isError,
             textStyle = RarimeTheme.typography.body3,
             singleLine = true,
+            trailingIcon = trailingItem,
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color.Transparent,
                 unfocusedIndicatorColor = RarimeTheme.colors.componentPrimary,
@@ -121,6 +124,8 @@ fun AppTextField(
                 style = RarimeTheme.typography.caption2,
                 color = RarimeTheme.colors.errorMain
             )
+        } else {
+            hint?.invoke()
         }
     }
 }
