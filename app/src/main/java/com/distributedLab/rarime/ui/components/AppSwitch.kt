@@ -45,7 +45,7 @@ fun AppSwitch(
     val animatedBgColor by animateColorAsState(
         targetValue =
         if (!enabled) RarimeTheme.colors.componentDisabled
-        else if (state.checked) RarimeTheme.colors.successMain
+        else if (state.checked) RarimeTheme.colors.primaryDark
         else RarimeTheme.colors.componentPrimary,
         label = ""
     )

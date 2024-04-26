@@ -150,9 +150,10 @@ private fun Header(balance: Double, onBalanceClick: () -> Unit = {}) {
                     color = RarimeTheme.colors.textPrimary
                 )
             }
-            PrimaryTextButton(onClick = { /*TODO*/ }) {
-                AppIcon(id = R.drawable.ic_qr_code)
-            }
+            PrimaryTextButton(
+                leftIcon = R.drawable.ic_qr_code,
+                onClick = { /*TODO*/ }
+            )
         }
     }
 }
