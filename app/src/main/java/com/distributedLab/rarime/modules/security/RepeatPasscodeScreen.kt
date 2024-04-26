@@ -1,7 +1,5 @@
 package com.distributedLab.rarime.modules.security
 
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,9 +8,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.ui.components.PrimaryTextButton
+import com.distributedLab.rarime.ui.components.AppAlertDialog
 import com.distributedLab.rarime.ui.components.rememberAppTextFieldState
-import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
 fun RepeatPasscodeScreen(
@@ -43,29 +40,12 @@ fun RepeatPasscodeScreen(
     )
 
     if (isAlertVisible) {
-        AlertDialog(
-            containerColor = RarimeTheme.colors.backgroundPure,
-            onDismissRequest = { handleAlertDismiss() },
-            title = {
-                Text(
-                    text = stringResource(R.string.invalid_passcode),
-                    style = RarimeTheme.typography.subtitle2,
-                    color = RarimeTheme.colors.textPrimary
-                )
-            },
-            text = {
-                Text(
-                    text = stringResource(R.string.passcodes_mismatch_error),
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.textPrimary
-                )
-            },
-            confirmButton = {
-                PrimaryTextButton(
-                    text = stringResource(R.string.try_again),
-                    onClick = { handleAlertDismiss() }
-                )
-            }
+        AppAlertDialog(
+            title = stringResource(R.string.invalid_passcode),
+            text = stringResource(R.string.passcodes_mismatch_error),
+            confirmText = stringResource(R.string.try_again),
+            onConfirm = { handleAlertDismiss() },
+            onDismiss = { handleAlertDismiss() },
         )
     }
 }
