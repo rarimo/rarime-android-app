@@ -38,7 +38,9 @@ import com.distributedLab.rarime.modules.security.EnableBiometricsScreen
 import com.distributedLab.rarime.modules.security.EnablePasscodeScreen
 import com.distributedLab.rarime.modules.security.EnterPasscodeScreen
 import com.distributedLab.rarime.modules.security.RepeatPasscodeScreen
+import com.distributedLab.rarime.modules.wallet.WalletReceiveScreen
 import com.distributedLab.rarime.modules.wallet.WalletScreen
+import com.distributedLab.rarime.modules.wallet.WalletSendScreen
 import com.distributedLab.rarime.ui.components.AppWebView
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
@@ -60,7 +62,11 @@ sealed class Screen(val route: String) {
 
     data object Main : Screen("main") {
         data object Home : Screen("home")
-        data object Wallet : Screen("wallet")
+        data object Wallet : Screen("wallet") {
+            data object Receive : Screen("receive")
+            data object Send : Screen("send")
+        }
+
         data object Rewards : Screen("rewards")
         data object Profile : Screen("profile") {
             data object AuthMethod : Screen("auth_method")
@@ -111,7 +117,7 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
             }
         },
     ) {
-        NavigationBarColor(route = currentRoute ?: "")
+        ScreenBarsColor(route = currentRoute ?: "")
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -190,7 +196,15 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                 composable(Screen.Main.Home.route) {
                     HomeScreen { navController.navigate(it) }
                 }
-                composable(Screen.Main.Wallet.route) { WalletScreen() }
+                composable(Screen.Main.Wallet.route) {
+                    WalletScreen { navController.navigate(it) }
+                }
+                composable(Screen.Main.Wallet.Receive.route) {
+                    WalletReceiveScreen { navController.popBackStack() }
+                }
+                composable(Screen.Main.Wallet.Send.route) {
+                    WalletSendScreen { navController.popBackStack() }
+                }
                 composable(Screen.Main.Rewards.route) { RewardsScreen() }
 
                 composable(Screen.Main.Profile.route) {
@@ -228,13 +242,23 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
 }
 
 @Composable
-fun NavigationBarColor(route: String) {
-    val pureBgRoutes = listOf(
+fun ScreenBarsColor(route: String) {
+    val view = LocalView.current
+
+    val navPureBgRoutes = listOf(
         Screen.Register.NewIdentity.route,
+        Screen.Main.Wallet.Send.route,
+    )
+    val statusPureBgRoutes = listOf(
+        Screen.Main.Wallet.route,
     )
 
-    val view = LocalView.current
-    val color = if (route in pureBgRoutes) {
+    val navColor = if (route in navPureBgRoutes) {
+        RarimeTheme.colors.backgroundPure
+    } else {
+        RarimeTheme.colors.backgroundPrimary
+    }
+    val statusColor = if (route in statusPureBgRoutes) {
         RarimeTheme.colors.backgroundPure
     } else {
         RarimeTheme.colors.backgroundPrimary
@@ -243,7 +267,8 @@ fun NavigationBarColor(route: String) {
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.navigationBarColor = color.toArgb()
+            window.navigationBarColor = navColor.toArgb()
+            window.statusBarColor = statusColor.toArgb()
         }
     }
 }
