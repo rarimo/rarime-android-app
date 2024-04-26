@@ -16,7 +16,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
@@ -29,6 +32,7 @@ import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.passport.calculateAgeFromBirthDate
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.passport.models.PersonDetails
+import com.distributedLab.rarime.ui.components.AppAlertDialog
 import com.distributedLab.rarime.ui.components.AppBottomSheet
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
@@ -186,6 +190,21 @@ private fun PassportCardSettings(
     onLookChange: (PassportCardLook) -> Unit,
     onDelete: () -> Unit
 ) {
+    var isAlertVisible by remember { mutableStateOf(false) }
+
+    if (isAlertVisible) {
+        AppAlertDialog(
+            title = stringResource(R.string.delete_passport_card_title),
+            text = stringResource(R.string.delete_passport_card_text),
+            confirmText = stringResource(R.string.delete_btn),
+            onConfirm = {
+                isAlertVisible = false
+                onDelete()
+            },
+            onDismiss = { isAlertVisible = false }
+        )
+    }
+
     Column {
         Text(
             text = stringResource(R.string.settings_title),
@@ -217,7 +236,7 @@ private fun PassportCardSettings(
                 }
             }
             HorizontalDivider()
-            PrimaryTextButton(onClick = onDelete) {
+            PrimaryTextButton(onClick = { isAlertVisible = true }) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalAlignment = Alignment.CenterVertically

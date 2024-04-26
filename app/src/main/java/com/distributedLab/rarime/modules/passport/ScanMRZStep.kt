@@ -20,7 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.passport.camera.CameraScanPassport
-import com.distributedLab.rarime.ui.components.AlertDialogCard
+import com.distributedLab.rarime.ui.components.AppAlertDialog
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
@@ -58,11 +58,15 @@ fun ScanMRZStep(onNext: (MRZInfo) -> Unit, onClose: () -> Unit) {
             }
 
             if (isAlertVisible) {
-                AlertDialogCard(dialogTitle = stringResource(R.string.camera_permission_title),
-                    dialogText = stringResource(R.string.camera_permission_description),
-                    onConfirmation = { cameraPermissionState.launchPermissionRequest() },
-                    onDismissRequest = { onClose() },
-                    onClose = { isAlertVisible = false })
+                AppAlertDialog(
+                    title = stringResource(R.string.camera_permission_title),
+                    text = stringResource(R.string.camera_permission_description),
+                    onConfirm = {
+                        cameraPermissionState.launchPermissionRequest()
+                        isAlertVisible = false
+                    },
+                    onDismiss = { onClose() }
+                )
             }
 
             Text(
