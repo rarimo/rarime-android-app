@@ -127,6 +127,25 @@
     <string name="claim_tokens_description">"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, "</string>
     <string name="claim_btn">Claim</string>
     <string name="claiming_btn">Claiming...</string>
+    <string name="airdrop_tx_title">Airdrop</string>
+    <string name="scan_qr_title">Scan QR</string>
+    <string name="scan_qr_description">Place QR code with the frame to scan</string>
+    <string name="wallet_receive_title">Receive RMO</string>
+    <string name="wallet_receive_description">You can use the QR code or the wallet address to deposit the RMO token to your account</string>
+    <string name="deposit_address_lbl">Deposit Address</string>
+    <string name="address_lbl">Address</string>
+    <string name="amount_lbl">Amount</string>
+    <string name="amount_placeholder">Enter amount in RMO</string>
+    <string name="available_hint">Available:</string>
+    <string name="max_btn">MAX</string>
+    <string name="receiver_gets">Receiver gets</string>
+    <string name="send_btn">Send</string>
+    <string name="wallet_title">Wallet</string>
+    <string name="available_rmo">Available RMO</string>
+    <string name="receive_btn">Receive</string>
+    <string name="transactions_title">Transactions</string>
+    <string name="wallet_send_title">Send RMO</string>
+    <string name="wallet_send_description">Withdraw the RMO token</string>
     <string name="rewards_stub_title">Available in July</string>
     <string name="rewards_stub_description">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem</string>
 </resources>

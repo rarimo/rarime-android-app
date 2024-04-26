@@ -4,6 +4,13 @@ import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
+
+enum class DateFormatType(val pattern: String) {
+    DEFAULT("dd MMM, YYYY"),
+    DMY("dd.MM.yyyy"),
+    MRZ("yyMMdd")
+}
 
 object DateUtil {
     private fun stringToDate(dateStr: String?, dateFormat: DateFormat): Date? {
@@ -16,12 +23,13 @@ object DateUtil {
         return date
     }
 
-    private fun dateToString(date: Date?, dateFormat: DateFormat): String {
-        return dateFormat.format(date)
+    fun convertFromMrzDate(mrzDate: String?): String {
+        val date = stringToDate(mrzDate, SimpleDateFormat(DateFormatType.MRZ.pattern, Locale.US))
+            ?: return ""
+        return formatDate(date, DateFormatType.DMY)
     }
 
-    fun convertFromMrzDate(mrzDate: String?): String {
-        val date = stringToDate(mrzDate, SimpleDateFormat("yyMMdd"))
-        return dateToString(date, SimpleDateFormat("dd.MM.yyyy"))
+    fun formatDate(date: Date, formatType: DateFormatType = DateFormatType.DEFAULT): String {
+        return SimpleDateFormat(formatType.pattern, Locale.US).format(date)
     }
 }
