@@ -32,10 +32,4 @@ interface DataStoreManager {
     fun readWalletBalance(): Flow<Double>
     suspend fun saveWalletBalance(balance: Double)
 
-    fun readWalletTransactions(): Flow<String>
-    suspend fun saveWalletTransactions(transactions: String)
-
-    fun readIsAirdropClaimed(): Flow<Boolean>
-    suspend fun saveIsAirdropClaimed(isClaimed: Boolean)
-
 }

@@ -30,8 +30,6 @@ private object PreferenceKeys {
     val COLOR_SCHEME = intPreferencesKey("color_scheme")
     val LANGUAGE = stringPreferencesKey("language")
     val WALLET_BALANCE = doublePreferencesKey("wallet_balance")
-    val WALLET_TRANSACTIONS = stringPreferencesKey("wallet_transactions")
-    val IS_AIRDROP_CLAIMED = booleanPreferencesKey("is_airdrop_claimed")
 }
 
 class DataStoreManagerImpl @Inject constructor(
@@ -141,30 +139,6 @@ class DataStoreManagerImpl @Inject constructor(
     override suspend fun saveWalletBalance(balance: Double) {
         context.dataStore.edit { settings ->
             settings[PreferenceKeys.WALLET_BALANCE] = balance
-        }
-    }
-
-    override fun readWalletTransactions(): Flow<String> {
-        return context.dataStore.data.map { preferences ->
-            preferences[PreferenceKeys.WALLET_TRANSACTIONS] ?: ""
-        }
-    }
-
-    override suspend fun saveWalletTransactions(transactions: String) {
-        context.dataStore.edit { settings ->
-            settings[PreferenceKeys.WALLET_TRANSACTIONS] = transactions
-        }
-    }
-
-    override fun readIsAirdropClaimed(): Flow<Boolean> {
-        return context.dataStore.data.map { preferences ->
-            preferences[PreferenceKeys.IS_AIRDROP_CLAIMED] ?: false
-        }
-    }
-
-    override suspend fun saveIsAirdropClaimed(isClaimed: Boolean) {
-        context.dataStore.edit { settings ->
-            settings[PreferenceKeys.IS_AIRDROP_CLAIMED] = isClaimed
         }
     }
 
