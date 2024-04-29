@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.modules.profile
 
+import androidx.activity.ComponentActivity
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,10 +17,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.data.enums.toLocalizedString
+import com.distributedLab.rarime.modules.common.SettingsViewModel
 import com.distributedLab.rarime.modules.main.Screen
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.CardContainer
@@ -29,11 +34,15 @@ import com.distributedLab.rarime.util.IdentityUtil
 
 // TODO: Replace with real app version
 private const val APP_VERSION = "1.0"
+
 // TODO: Replace with real user DID
 private const val USER_DID = "did:iden3:readonly:tQR6mhrf6jJyYxmc9YZZS6xiyxjG4b4yQh92diTme"
 
 @Composable
-fun ProfileScreen(navigate: (String) -> Unit) {
+fun ProfileScreen(
+    settingsViewModel: SettingsViewModel = viewModel(LocalContext.current as ComponentActivity),
+    navigate: (String) -> Unit
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(20.dp),
         modifier = Modifier
@@ -64,7 +73,10 @@ fun ProfileScreen(navigate: (String) -> Unit) {
                             color = RarimeTheme.colors.textPrimary
                         )
                         Text(
-                            text = stringResource(R.string.user_did, IdentityUtil.formatDid(USER_DID)),
+                            text = stringResource(
+                                R.string.user_did,
+                                IdentityUtil.formatDid(USER_DID)
+                            ),
                             style = RarimeTheme.typography.body4,
                             color = RarimeTheme.colors.textSecondary
                         )
@@ -91,13 +103,13 @@ fun ProfileScreen(navigate: (String) -> Unit) {
                     ProfileRow(
                         iconId = R.drawable.ic_globe_simple,
                         title = stringResource(R.string.language),
-                        value = stringResource(R.string.english),
+                        value = settingsViewModel.language.value.toLocalizedString(),
                         onClick = { navigate(Screen.Main.Profile.Language.route) }
                     )
                     ProfileRow(
                         iconId = R.drawable.ic_sun,
                         title = stringResource(R.string.theme),
-                        value = stringResource(R.string.system),
+                        value = settingsViewModel.colorScheme.value.toLocalizedString(),
                         onClick = { navigate(Screen.Main.Profile.Theme.route) }
                     )
                     ProfileRow(

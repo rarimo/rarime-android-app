@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.data.manager
 
+import android.app.Application
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -33,23 +34,23 @@ private object PreferenceKeys {
 }
 
 class DataStoreManagerImpl @Inject constructor(
-    private val context: Context
+    private val application: Application
 ) : DataStoreManager {
 
     override fun readIsIntroFinished(): Flow<Boolean> {
-        return context.dataStore.data.map {
+        return application.dataStore.data.map {
             it[PreferenceKeys.IS_INTRO_FINISHED] ?: false
         }
     }
 
     override suspend fun saveIsIntroFinished(isFinished: Boolean) {
-        context.dataStore.edit {
+        application.dataStore.edit {
             it[PreferenceKeys.IS_INTRO_FINISHED] = isFinished
         }
     }
 
     override fun readPasscodeState(): Flow<SecurityCheckState> {
-        return context.dataStore.data.map {
+        return application.dataStore.data.map {
             SecurityCheckState.fromInt(
                 it[PreferenceKeys.PASSCODE_STATE] ?: SecurityCheckState.UNSET.value
             )
@@ -57,13 +58,13 @@ class DataStoreManagerImpl @Inject constructor(
     }
 
     override suspend fun savePasscodeState(state: SecurityCheckState) {
-        context.dataStore.edit {
+        application.dataStore.edit {
             it[PreferenceKeys.PASSCODE_STATE] = state.value
         }
     }
 
     override fun readBiometricsState(): Flow<SecurityCheckState> {
-        return context.dataStore.data.map {
+        return application.dataStore.data.map {
             SecurityCheckState.fromInt(
                 it[PreferenceKeys.BIOMETRICS_STATE] ?: SecurityCheckState.UNSET.value
             )
@@ -71,13 +72,13 @@ class DataStoreManagerImpl @Inject constructor(
     }
 
     override suspend fun saveBiometricsState(state: SecurityCheckState) {
-        context.dataStore.edit {
+        application.dataStore.edit {
             it[PreferenceKeys.BIOMETRICS_STATE] = state.value
         }
     }
 
     override fun readPassportCardLook(): Flow<PassportCardLook> {
-        return context.dataStore.data.map {
+        return application.dataStore.data.map {
             PassportCardLook.fromInt(
                 it[PreferenceKeys.PASSPORT_CARD_LOOK] ?: PassportCardLook.WHITE.value
             )
@@ -85,25 +86,25 @@ class DataStoreManagerImpl @Inject constructor(
     }
 
     override suspend fun savePassportCardLook(look: PassportCardLook) {
-        context.dataStore.edit {
+        application.dataStore.edit {
             it[PreferenceKeys.PASSPORT_CARD_LOOK] = look.value
         }
     }
 
     override fun readIsPassportIncognitoMode(): Flow<Boolean> {
-        return context.dataStore.data.map {
+        return application.dataStore.data.map {
             it[PreferenceKeys.IS_PASSPORT_INCOGNITO_MODE] ?: true
         }
     }
 
     override suspend fun saveIsPassportIncognitoMode(isIncognito: Boolean) {
-        context.dataStore.edit {
+        application.dataStore.edit {
             it[PreferenceKeys.IS_PASSPORT_INCOGNITO_MODE] = isIncognito
         }
     }
 
     override fun readColorScheme(): Flow<AppColorScheme> {
-        return context.dataStore.data.map {
+        return application.dataStore.data.map {
             AppColorScheme.fromInt(
                 it[PreferenceKeys.COLOR_SCHEME] ?: AppColorScheme.SYSTEM.value
             )
@@ -111,13 +112,13 @@ class DataStoreManagerImpl @Inject constructor(
     }
 
     override suspend fun saveColorScheme(scheme: AppColorScheme) {
-        context.dataStore.edit {
+        application.dataStore.edit {
             it[PreferenceKeys.COLOR_SCHEME] = scheme.value
         }
     }
 
     override fun readLanguage(): Flow<AppLanguage> {
-        return context.dataStore.data.map {
+        return application.dataStore.data.map {
             AppLanguage.fromString(
                 it[PreferenceKeys.LANGUAGE] ?: AppLanguage.ENGLISH.value
             )
@@ -125,19 +126,19 @@ class DataStoreManagerImpl @Inject constructor(
     }
 
     override suspend fun saveLanguage(language: AppLanguage) {
-        context.dataStore.edit {
+        application.dataStore.edit {
             it[PreferenceKeys.LANGUAGE] = language.value
         }
     }
 
     override fun readWalletBalance(): Flow<Double> {
-        return context.dataStore.data.map {
+        return application.dataStore.data.map {
             it[PreferenceKeys.WALLET_BALANCE] ?: 0.0
         }
     }
 
     override suspend fun saveWalletBalance(balance: Double) {
-        context.dataStore.edit {
+        application.dataStore.edit {
             it[PreferenceKeys.WALLET_BALANCE] = balance
         }
     }
