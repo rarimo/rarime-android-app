@@ -14,6 +14,7 @@ import com.distributedLab.rarime.util.ZKPUseCase
 import com.distributedLab.rarime.util.ZkpUtil
 import com.distributedLab.rarime.util.addCharAtIndex
 import com.distributedLab.rarime.util.decodeHexString
+import com.distributedLab.rarime.util.publicKeyToPem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import identity.Identity
 import identity.Profile
@@ -65,35 +66,61 @@ class ProofViewModel @Inject constructor(application: Application) : AndroidView
             val index = pemFile.indexOf("-----END CERTIFICATE-----")
             pemFile = pemFile.addCharAtIndex('\n', index)
 
+            Log.d("PUB", sodFile.docSigningCertificate.publicKey.encoded.toHexString())
+
             Log.d("Cert", pemFile)
 
+
             val inputs = profile.buildRegisterIdentityInputs(
-                privKey,
-                encapsulatedContent,
-                signedAttribute,
-                eDocument.dg1!!.toByteArray(),
-                eDocument.dg15!!.toByteArray(),
-                eDocument.dg15Pem!!.toByteArray(),
-                sodFile.eContent
+                preprocessMessage(encapsulatedContent),//
+                preprocessMessage(signedAttribute),//
+                preprocessMessage(eDocument.dg1!!.toByteArray()),//
+                preprocessMessage(eDocument.dg15!!.toByteArray()),//
+                sodFile.docSigningCertificate.publicKey.publicKeyToPem().toByteArray(),
+                sodFile.encryptedDigest
             )
+
 
 
             Log.d("inputs", inputs.decodeToString())
             val clip = ClipData.newPlainText("password", inputs.decodeToString())
 
+            Log.i("encapsulated content", encapsulatedContent.toHexString())
             clipboardManager.setPrimaryClip(clip)
 
             _state.value = GenerateProofState.GENERATE_PROOF
-            val proof = zkp.generateZKP(
-                "registerIdentityZkey.zkey",
-                R.raw.register_identity,
-                inputs,
-                ZkpUtil::registerIdentity
-            )
+//            val proof = zkp.generateZKP(
+//                "registerIdentityZkey.zkey",
+//                R.raw.register_identity,
+//                inputs,
+//                ZkpUtil::registerIdentity
+//            )
 
-            Log.e("Proof", proof.toString())
+            //Log.e("Proof", proof.toString())
 
             Log.e("Proof", ((endTime - startTime) / 1000).toString())
         }
     }
+}
+
+fun preprocessMessage(message: ByteArray): ByteArray {
+    val messageLengthBits = message.size * 8
+    val messageWithOneBit = message + byteArrayOf(0x80.toByte())
+
+    val currentMod512 = (messageWithOneBit.size * 8) % 512
+    val zeroPaddingNeeded = if (currentMod512 <= 448) {
+        448 - currentMod512
+    } else {
+        512 - currentMod512 + 448
+    }
+
+    val zeroPaddingBytes = ByteArray(zeroPaddingNeeded / 8)
+    val lengthInBits = messageLengthBits.toLong()
+
+    val lengthBytes = ByteArray(8)
+    for (i in 0..7) {
+        lengthBytes[7 - i] = (lengthInBits shr (i * 8) and 0xFF).toByte()
+    }
+
+    return messageWithOneBit + zeroPaddingBytes + lengthBytes
 }
