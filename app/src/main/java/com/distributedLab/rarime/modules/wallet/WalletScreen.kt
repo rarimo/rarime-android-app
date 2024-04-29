@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.modules.wallet
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,10 +12,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.modules.common.WalletViewModel
 import com.distributedLab.rarime.modules.main.Screen
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.modules.wallet.models.TransactionState
@@ -25,22 +29,12 @@ import com.distributedLab.rarime.ui.components.SecondaryButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.DateUtil
 import com.distributedLab.rarime.util.NumberUtil
-import java.util.Date
 
 @Composable
-fun WalletScreen(navigate: (String) -> Unit) {
-    val balance = 3.0
-    val transactions = listOf(
-        Transaction(
-            id = 1,
-            iconId = R.drawable.ic_airdrop,
-            titleId = R.string.airdrop_tx_title,
-            amount = 3.0,
-            date = Date(),
-            state = TransactionState.INCOMING
-        )
-    )
-
+fun WalletScreen(
+    walletViewModel: WalletViewModel = viewModel(LocalContext.current as ComponentActivity),
+    navigate: (String) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -64,7 +58,7 @@ fun WalletScreen(navigate: (String) -> Unit) {
                     color = RarimeTheme.colors.textSecondary
                 )
                 Text(
-                    text = NumberUtil.formatAmount(balance),
+                    text = NumberUtil.formatAmount(walletViewModel.balance.doubleValue),
                     style = RarimeTheme.typography.h4,
                     color = RarimeTheme.colors.textPrimary
                 )
@@ -95,8 +89,16 @@ fun WalletScreen(navigate: (String) -> Unit) {
                         style = RarimeTheme.typography.subtitle3,
                         color = RarimeTheme.colors.textPrimary
                     )
-                    transactions.forEach {
+                    walletViewModel.transactions.value.forEach {
                         TransactionCard(it)
+                    }
+
+                    if (walletViewModel.transactions.value.isEmpty()) {
+                        Text(
+                            text = stringResource(R.string.no_transactions_msg),
+                            style = RarimeTheme.typography.body3,
+                            color = RarimeTheme.colors.textSecondary
+                        )
                     }
                 }
             }

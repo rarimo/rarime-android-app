@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.modules.passport
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -20,11 +21,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.modules.common.WalletViewModel
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
@@ -37,14 +41,16 @@ import kotlinx.coroutines.launch
 private const val AIRDROP_AMOUNT = 3
 
 @Composable
-fun ClaimTokensStep(onFinish: () -> Unit) {
+fun ClaimTokensStep(
+    walletViewModel: WalletViewModel = viewModel(LocalContext.current as ComponentActivity),
+    onFinish: () -> Unit
+) {
     var isClaiming by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
     suspend fun claimTokens() {
         isClaiming = true
-        // TODO: Implement the actual token claiming logic
-        delay(3000)
+        walletViewModel.claimAirdrop()
         isClaiming = false
         onFinish()
     }

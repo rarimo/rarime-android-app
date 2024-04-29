@@ -11,6 +11,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.distributedLab.rarime.modules.common.SettingsViewModel
+import com.distributedLab.rarime.modules.common.WalletViewModel
 import com.distributedLab.rarime.modules.main.MainScreen
 import com.distributedLab.rarime.modules.passport.nfc.NfcViewModel
 import com.distributedLab.rarime.ui.theme.AppTheme
@@ -27,6 +28,7 @@ class MainActivity : ComponentActivity() {
 
     private val nfcViewModel by viewModels<NfcViewModel>()
     private val settingsViewModel by viewModels<SettingsViewModel>()
+    private val walletViewModel by viewModels<WalletViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

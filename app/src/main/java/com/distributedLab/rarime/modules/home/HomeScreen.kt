@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.modules.home
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -22,11 +23,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.modules.common.WalletViewModel
 import com.distributedLab.rarime.modules.main.Screen
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.passport.models.PersonDetails
@@ -44,7 +48,10 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.NumberUtil
 
 @Composable
-fun HomeScreen(navigate: (String) -> Unit) {
+fun HomeScreen(
+    walletViewModel: WalletViewModel = viewModel(LocalContext.current as ComponentActivity),
+    navigate: (String) -> Unit
+) {
     // TODO: Replace with real data
     var passport: EDocument? by remember {
         mutableStateOf(
@@ -65,7 +72,6 @@ fun HomeScreen(navigate: (String) -> Unit) {
     var isIncognito by remember { mutableStateOf(false) }
     // TODO: Use view model
     var isCongratsModalVisible by remember { mutableStateOf(false) }
-    val balance by remember { mutableStateOf(0.0) }
 
     Box {
         Column(
@@ -75,7 +81,7 @@ fun HomeScreen(navigate: (String) -> Unit) {
                 .background(RarimeTheme.colors.backgroundPrimary)
                 .blur(if (isCongratsModalVisible) 12.dp else 0.dp)
         ) {
-            Header(balance = balance) { navigate(Screen.Main.Wallet.route) }
+            Header(balance = walletViewModel.balance.doubleValue) { navigate(Screen.Main.Wallet.route) }
             Column(
                 verticalArrangement = Arrangement.spacedBy(24.dp),
                 modifier = Modifier
