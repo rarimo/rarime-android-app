@@ -10,6 +10,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.distributedLab.rarime.modules.common.IdentityViewModel
+import com.distributedLab.rarime.modules.common.PassportViewModel
+import com.distributedLab.rarime.modules.common.SecurityViewModel
 import com.distributedLab.rarime.modules.common.SettingsViewModel
 import com.distributedLab.rarime.modules.common.WalletViewModel
 import com.distributedLab.rarime.modules.main.MainScreen
@@ -29,6 +32,9 @@ class MainActivity : ComponentActivity() {
     private val nfcViewModel by viewModels<NfcViewModel>()
     private val settingsViewModel by viewModels<SettingsViewModel>()
     private val walletViewModel by viewModels<WalletViewModel>()
+    private val identityViewModel by viewModels<IdentityViewModel>()
+    private val securityViewModel by viewModels<SecurityViewModel>()
+    private val passportViewModel by viewModels<PassportViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

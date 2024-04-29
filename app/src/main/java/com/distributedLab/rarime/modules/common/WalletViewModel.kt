@@ -41,7 +41,10 @@ class WalletViewModel @Inject constructor(
 
         // TODO: Claim RMO token
         delay(3.seconds)
+        
         balance.doubleValue += 3.0
+        dataStoreManager.saveWalletBalance(balance.doubleValue)
+
         transactions.value = listOf(
             Transaction(
                 id = 1,
