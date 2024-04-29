@@ -98,4 +98,10 @@ dependencies {
 
     // QR Code
     implementation("com.lightspark:compose-qr-code:1.0.1")
+
+    // Datastore
+    implementation("androidx.datastore:datastore-preferences:1.1.0")
+
+    // Splash Screen
+    implementation("androidx.core:core-splashscreen:1.0.1")
 }
