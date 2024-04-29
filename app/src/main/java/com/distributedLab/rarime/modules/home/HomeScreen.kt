@@ -30,10 +30,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.modules.common.PassportViewModel
 import com.distributedLab.rarime.modules.common.WalletViewModel
 import com.distributedLab.rarime.modules.main.Screen
-import com.distributedLab.rarime.modules.passport.models.EDocument
-import com.distributedLab.rarime.modules.passport.models.PersonDetails
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.ActionCard
 import com.distributedLab.rarime.ui.components.AppBottomSheet
@@ -49,27 +48,10 @@ import com.distributedLab.rarime.util.NumberUtil
 
 @Composable
 fun HomeScreen(
+    passportViewModel: PassportViewModel = viewModel(LocalContext.current as ComponentActivity),
     walletViewModel: WalletViewModel = viewModel(LocalContext.current as ComponentActivity),
     navigate: (String) -> Unit
 ) {
-    // TODO: Replace with real data
-    var passport: EDocument? by remember {
-        mutableStateOf(
-            EDocument(
-                personDetails = PersonDetails(
-                    name = "John",
-                    surname = "Doe",
-                    birthDate = "01.01.1990",
-                    nationality = "USA",
-                    serialNumber = "123456789",
-                    faceImageInfo = null
-                )
-            )
-        )
-    }
-    // TODO: Use data from storage
-    var passportCardLook by remember { mutableStateOf(PassportCardLook.BLACK) }
-    var isIncognito by remember { mutableStateOf(false) }
     // TODO: Use view model
     var isCongratsModalVisible by remember { mutableStateOf(false) }
 
@@ -88,17 +70,16 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp)
             ) {
-                if (passport == null) {
+                if (passportViewModel.passport.value == null) {
                     AirdropCard { navigate(Screen.ScanPassport.route) }
                     OtherPassportCard { navigate(Screen.ScanPassport.route) }
                 } else {
                     PassportCard(
-                        passport = passport!!,
-                        isIncognito = isIncognito,
-                        look = passportCardLook,
-                        onLookChange = { passportCardLook = it },
-                        onIncognitoChange = { isIncognito = it },
-                        onDelete = { passport = null }
+                        passport = passportViewModel.passport.value!!,
+                        isIncognito = passportViewModel.isIncognitoMode.value,
+                        look = passportViewModel.passportCardLook.value,
+                        onLookChange = { passportViewModel.updatePassportCardLook(it) },
+                        onIncognitoChange = { passportViewModel.updateIsIncognitoMode(it) },
                     )
                     RarimeCard()
                 }
