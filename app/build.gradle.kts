@@ -100,5 +100,5 @@ dependencies {
     implementation("com.lightspark:compose-qr-code:1.0.1")
 
     // Datastore
-    implementation("androidx.datastore:datastore-preferences:1.1.0")
+    implementation("androidx.security:security-crypto:1.1.0-alpha03")
 }

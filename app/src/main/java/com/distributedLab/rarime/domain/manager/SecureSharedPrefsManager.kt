@@ -4,32 +4,31 @@ import com.distributedLab.rarime.data.enums.AppColorScheme
 import com.distributedLab.rarime.data.enums.AppLanguage
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.SecurityCheckState
-import kotlinx.coroutines.flow.Flow
 
-interface DataStoreManager {
+interface SecureSharedPrefsManager {
 
-    fun readIsIntroFinished(): Flow<Boolean>
+    fun readIsIntroFinished(): Boolean
     suspend fun saveIsIntroFinished(isFinished: Boolean)
 
-    fun readPasscodeState(): Flow<SecurityCheckState>
+    fun readPasscodeState(): SecurityCheckState
     suspend fun savePasscodeState(state: SecurityCheckState)
 
-    fun readBiometricsState(): Flow<SecurityCheckState>
+    fun readBiometricsState(): SecurityCheckState
     suspend fun saveBiometricsState(state: SecurityCheckState)
 
-    fun readPassportCardLook(): Flow<PassportCardLook>
+    fun readPassportCardLook(): PassportCardLook
     suspend fun savePassportCardLook(look: PassportCardLook)
 
-    fun readIsPassportIncognitoMode(): Flow<Boolean>
+    fun readIsPassportIncognitoMode(): Boolean
     suspend fun saveIsPassportIncognitoMode(isIncognito: Boolean)
 
-    fun readColorScheme(): Flow<AppColorScheme>
+    fun readColorScheme(): AppColorScheme
     suspend fun saveColorScheme(scheme: AppColorScheme)
 
-    fun readLanguage(): Flow<AppLanguage>
+    fun readLanguage(): AppLanguage
     suspend fun saveLanguage(language: AppLanguage)
 
-    fun readWalletBalance(): Flow<Double>
+    fun readWalletBalance(): Double
     suspend fun saveWalletBalance(balance: Double)
 
 }

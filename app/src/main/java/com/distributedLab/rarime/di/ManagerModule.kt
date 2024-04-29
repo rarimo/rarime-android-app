@@ -1,7 +1,7 @@
 package com.distributedLab.rarime.di
 
-import com.distributedLab.rarime.data.manager.DataStoreManagerImpl
-import com.distributedLab.rarime.domain.manager.DataStoreManager
+import com.distributedLab.rarime.data.manager.SecureSharedPrefsManagerImpl
+import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -14,5 +14,5 @@ abstract class ManagerModule {
 
     @Binds
     @Singleton
-    abstract fun bindDataStoreManager(dataStoreManagerImpl: DataStoreManagerImpl): DataStoreManager
+    abstract fun dataStoreManager(dataStoreManagerImpl: SecureSharedPrefsManagerImpl): SecureSharedPrefsManager
 }
