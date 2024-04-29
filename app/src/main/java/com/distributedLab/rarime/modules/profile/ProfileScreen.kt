@@ -22,8 +22,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.distributedLab.rarime.BuildConfig
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.toLocalizedString
+import com.distributedLab.rarime.modules.common.IdentityViewModel
 import com.distributedLab.rarime.modules.common.SettingsViewModel
 import com.distributedLab.rarime.modules.main.Screen
 import com.distributedLab.rarime.ui.components.AppIcon
@@ -32,14 +34,9 @@ import com.distributedLab.rarime.ui.components.PassportImage
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.IdentityUtil
 
-// TODO: Replace with real app version
-private const val APP_VERSION = "1.0"
-
-// TODO: Replace with real user DID
-private const val USER_DID = "did:iden3:readonly:tQR6mhrf6jJyYxmc9YZZS6xiyxjG4b4yQh92diTme"
-
 @Composable
 fun ProfileScreen(
+    identityViewModel: IdentityViewModel = viewModel(LocalContext.current as ComponentActivity),
     settingsViewModel: SettingsViewModel = viewModel(LocalContext.current as ComponentActivity),
     navigate: (String) -> Unit
 ) {
@@ -75,7 +72,7 @@ fun ProfileScreen(
                         Text(
                             text = stringResource(
                                 R.string.user_did,
-                                IdentityUtil.formatDid(USER_DID)
+                                IdentityUtil.formatDid(identityViewModel.did)
                             ),
                             style = RarimeTheme.typography.body4,
                             color = RarimeTheme.colors.textSecondary
@@ -125,7 +122,7 @@ fun ProfileScreen(
                 }
             }
             Text(
-                text = stringResource(R.string.app_version, APP_VERSION),
+                text = stringResource(R.string.app_version, BuildConfig.VERSION_NAME),
                 style = RarimeTheme.typography.body4,
                 color = RarimeTheme.colors.textDisabled
             )
