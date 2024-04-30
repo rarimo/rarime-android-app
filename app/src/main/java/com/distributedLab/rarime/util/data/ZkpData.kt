@@ -1,6 +1,5 @@
 package com.distributedLab.rarime.util.data
 
-import android.os.Parcelable
 import com.google.gson.Gson
 
 
@@ -23,6 +22,7 @@ data class Proof(
     }
 
 }
+
 data class ZkProof(
     val proof: Proof,
     val pub_signals: List<String>

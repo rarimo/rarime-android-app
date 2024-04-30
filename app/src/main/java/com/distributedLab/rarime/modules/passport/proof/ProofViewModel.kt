@@ -6,13 +6,11 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.passport.PassportProofState
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.passport.nfc.SODFileOwn
 import com.distributedLab.rarime.util.SecurityUtil
 import com.distributedLab.rarime.util.ZKPUseCase
-import com.distributedLab.rarime.util.ZkpUtil
 import com.distributedLab.rarime.util.addCharAtIndex
 import com.distributedLab.rarime.util.decodeHexString
 import com.distributedLab.rarime.util.publicKeyToPem
@@ -24,8 +22,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
-
-
 
 
 @HiltViewModel

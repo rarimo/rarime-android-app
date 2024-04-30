@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.modules.passport.models.EDocument
-import com.distributedLab.rarime.modules.passport.models.PersonDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
