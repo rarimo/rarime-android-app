@@ -2,13 +2,13 @@ package com.distributedLab.rarime.modules.common
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.distributedLab.rarime.domain.manager.DataStoreManager
+import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class IdentityViewModel @Inject constructor(
-    private val dataStoreManager: DataStoreManager
+    private val dataStoreManager: SecureSharedPrefsManager
 ) : ViewModel() {
     // TODO: Get the private key from secure storage
     var privateKey =

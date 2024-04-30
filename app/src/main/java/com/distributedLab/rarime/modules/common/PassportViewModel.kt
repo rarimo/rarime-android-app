@@ -2,19 +2,16 @@ package com.distributedLab.rarime.modules.common
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.distributedLab.rarime.data.enums.PassportCardLook
-import com.distributedLab.rarime.domain.manager.DataStoreManager
+import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.passport.models.PersonDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class PassportViewModel @Inject constructor(
-    private val dataStoreManager: DataStoreManager
+    private val dataStoreManager: SecureSharedPrefsManager
 ) : ViewModel() {
     // TODO: Get passport from secure storage
     var passport = mutableStateOf<EDocument?>(
@@ -30,30 +27,19 @@ class PassportViewModel @Inject constructor(
         )
     )
         private set
-    var passportCardLook = mutableStateOf(PassportCardLook.BLACK)
+    var passportCardLook = mutableStateOf(dataStoreManager.readPassportCardLook())
         private set
-    var isIncognitoMode = mutableStateOf(false)
+    var isIncognitoMode = mutableStateOf(dataStoreManager.readIsPassportIncognitoMode())
         private set
-
-    init {
-        viewModelScope.launch {
-            passportCardLook.value = dataStoreManager.readPassportCardLook().first()
-            isIncognitoMode.value = dataStoreManager.readIsPassportIncognitoMode().first()
-        }
-    }
 
     fun updatePassportCardLook(look: PassportCardLook) {
         passportCardLook.value = look
-        viewModelScope.launch {
-            dataStoreManager.savePassportCardLook(look)
-        }
+        dataStoreManager.savePassportCardLook(look)
     }
 
     fun updateIsIncognitoMode(isIncognitoMode: Boolean) {
         this.isIncognitoMode.value = isIncognitoMode
-        viewModelScope.launch {
-            dataStoreManager.saveIsPassportIncognitoMode(isIncognitoMode)
-        }
+        dataStoreManager.saveIsPassportIncognitoMode(isIncognitoMode)
     }
 
     fun setPassport(passport: EDocument?) {

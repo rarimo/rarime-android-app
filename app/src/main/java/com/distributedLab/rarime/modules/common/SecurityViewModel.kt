@@ -2,39 +2,27 @@ package com.distributedLab.rarime.modules.common
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.distributedLab.rarime.data.enums.SecurityCheckState
-import com.distributedLab.rarime.domain.manager.DataStoreManager
+import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SecurityViewModel @Inject constructor(
-    private val dataStoreManager: DataStoreManager
+    private val dataStoreManager: SecureSharedPrefsManager
 ) : ViewModel() {
-    var passcodeState = mutableStateOf(SecurityCheckState.UNSET)
+    var passcodeState = mutableStateOf(dataStoreManager.readPasscodeState())
         private set
-    var biometricsState = mutableStateOf(SecurityCheckState.UNSET)
+    var biometricsState = mutableStateOf(dataStoreManager.readBiometricsState())
         private set
 
     // TODO: Get passcode from secure storage
     var passcode = mutableStateOf("")
         private set
 
-    init {
-        viewModelScope.launch {
-            passcodeState.value = dataStoreManager.readPasscodeState().first()
-            biometricsState.value = dataStoreManager.readBiometricsState().first()
-        }
-    }
-
     fun updatePasscodeState(state: SecurityCheckState) {
         passcodeState.value = state
-        viewModelScope.launch {
-            dataStoreManager.savePasscodeState(state)
-        }
+        dataStoreManager.savePasscodeState(state)
     }
 
     fun setPasscode(newPasscode: String) {
@@ -43,8 +31,6 @@ class SecurityViewModel @Inject constructor(
 
     fun updateBiometricsState(state: SecurityCheckState) {
         biometricsState.value = state
-        viewModelScope.launch {
-            dataStoreManager.saveBiometricsState(state)
-        }
+        dataStoreManager.saveBiometricsState(state)
     }
 }
