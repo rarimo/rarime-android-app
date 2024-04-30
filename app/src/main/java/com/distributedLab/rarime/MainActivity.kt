@@ -30,11 +30,6 @@ class MainActivity : ComponentActivity() {
     private lateinit var adapter: NfcAdapter
 
     private val nfcViewModel by viewModels<NfcViewModel>()
-    private val settingsViewModel by viewModels<SettingsViewModel>()
-    private val walletViewModel by viewModels<WalletViewModel>()
-    private val identityViewModel by viewModels<IdentityViewModel>()
-    private val securityViewModel by viewModels<SecurityViewModel>()
-    private val passportViewModel by viewModels<PassportViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,9 +39,7 @@ class MainActivity : ComponentActivity() {
         nfcViewModel.disableNFC = ::disableNFCForegroundDispatch
 
         setContent {
-            AppTheme(colorScheme = settingsViewModel.colorScheme.value) {
-                MainScreen()
-            }
+            MainScreen()
         }
     }
 

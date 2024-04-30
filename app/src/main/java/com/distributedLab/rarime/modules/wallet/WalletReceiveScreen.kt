@@ -1,6 +1,5 @@
 package com.distributedLab.rarime.modules.wallet
 
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -20,14 +19,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.modules.common.WalletViewModel
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.CardContainer
 import com.distributedLab.rarime.ui.components.SecondaryTextButton
@@ -39,7 +35,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun WalletReceiveScreen(
-    walletViewModel: WalletViewModel = viewModel(LocalContext.current as ComponentActivity),
+    address: String,
     onBack: () -> Unit = {}
 ) {
     val clipboardManager = LocalClipboardManager.current
@@ -64,7 +60,7 @@ fun WalletReceiveScreen(
             ) {
                 Box {
                     QrCodeView(
-                        data = walletViewModel.address,
+                        data = address,
                         colors = QrCodeColors(
                             background = RarimeTheme.colors.backgroundPure,
                             foreground = RarimeTheme.colors.textPrimary
@@ -105,7 +101,7 @@ fun WalletReceiveScreen(
                             .padding(vertical = 14.dp, horizontal = 16.dp)
                     ) {
                         Text(
-                            text = walletViewModel.address,
+                            text = address,
                             style = RarimeTheme.typography.body3,
                             color = RarimeTheme.colors.textPrimary,
                             modifier = Modifier.weight(1f),
@@ -113,7 +109,7 @@ fun WalletReceiveScreen(
                         SecondaryTextButton(
                             leftIcon = if (isCopied) R.drawable.ic_check else R.drawable.ic_copy_simple,
                             onClick = {
-                                clipboardManager.setText(AnnotatedString(walletViewModel.address))
+                                clipboardManager.setText(AnnotatedString(address))
                                 isCopied = true
                             }
                         )
@@ -127,5 +123,5 @@ fun WalletReceiveScreen(
 @Preview
 @Composable
 private fun WalletReceiveScreenPreview() {
-    WalletReceiveScreen()
+    WalletReceiveScreen(address = "rarimo10xf20zsda2hpjstl3l5ahf65tzkkdnhaxlsl8a") {}
 }

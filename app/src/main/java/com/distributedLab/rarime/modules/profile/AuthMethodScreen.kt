@@ -1,6 +1,5 @@
 package com.distributedLab.rarime.modules.profile
 
-import androidx.activity.ComponentActivity
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,14 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.SecurityCheckState
-import com.distributedLab.rarime.modules.common.SecurityViewModel
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.AppSwitch
 import com.distributedLab.rarime.ui.components.rememberAppCheckboxState
@@ -29,7 +25,10 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
 fun AuthMethodScreen(
-    securityViewModel: SecurityViewModel = viewModel(LocalContext.current as ComponentActivity),
+    biometricsState: SecurityCheckState,
+    passcodeState: SecurityCheckState,
+    onBiometricsStateChanged: (SecurityCheckState) -> Unit,
+    onPasscodeStateChanged: (SecurityCheckState) -> Unit,
     onBack: () -> Unit
 ) {
     ProfileRouteLayout(
@@ -40,9 +39,9 @@ fun AuthMethodScreen(
             AuthMethodRow(
                 iconId = R.drawable.ic_fingerprint,
                 label = stringResource(R.string.biometrics),
-                checked = securityViewModel.biometricsState.value == SecurityCheckState.ENABLED,
+                checked = biometricsState == SecurityCheckState.ENABLED,
                 onCheckedChange = {
-                    securityViewModel.updateBiometricsState(
+                    onBiometricsStateChanged(
                         if (it) SecurityCheckState.ENABLED else SecurityCheckState.DISABLED
                     )
                 }
@@ -50,9 +49,9 @@ fun AuthMethodScreen(
             AuthMethodRow(
                 iconId = R.drawable.ic_password,
                 label = stringResource(R.string.passcode),
-                checked = securityViewModel.passcodeState.value == SecurityCheckState.ENABLED,
+                checked = passcodeState == SecurityCheckState.ENABLED,
                 onCheckedChange = {
-                    securityViewModel.updatePasscodeState(
+                    onPasscodeStateChanged(
                         if (it) SecurityCheckState.ENABLED else SecurityCheckState.DISABLED
                     )
                 }
@@ -104,5 +103,11 @@ private fun AuthMethodRow(
 @Preview
 @Composable
 private fun AuthMethodScreenPreview() {
-    AuthMethodScreen {}
+    AuthMethodScreen(
+        biometricsState = SecurityCheckState.ENABLED,
+        passcodeState = SecurityCheckState.DISABLED,
+        onBiometricsStateChanged = {},
+        onPasscodeStateChanged = {},
+        onBack = {}
+    )
 }

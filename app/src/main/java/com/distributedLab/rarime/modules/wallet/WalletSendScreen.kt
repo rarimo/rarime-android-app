@@ -1,6 +1,5 @@
 package com.distributedLab.rarime.modules.wallet
 
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,13 +16,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.modules.common.WalletViewModel
 import com.distributedLab.rarime.modules.qr.ScanQrScreen
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppTextField
@@ -37,7 +33,7 @@ import com.distributedLab.rarime.util.NumberUtil
 
 @Composable
 fun WalletSendScreen(
-    walletViewModel: WalletViewModel = viewModel(LocalContext.current as ComponentActivity),
+    balance: Double,
     onBack: () -> Unit
 ) {
     var isQrCodeScannerOpen by remember { mutableStateOf(false) }
@@ -92,7 +88,7 @@ fun WalletSendScreen(
                                         color = RarimeTheme.colors.textSecondary
                                     )
                                     Text(
-                                        text = "${NumberUtil.formatAmount(walletViewModel.balance.doubleValue)} RMO",
+                                        text = "${NumberUtil.formatAmount(balance)} RMO",
                                         style = RarimeTheme.typography.body4,
                                         color = RarimeTheme.colors.textPrimary
                                     )
@@ -108,7 +104,7 @@ fun WalletSendScreen(
                                     VerticalDivider()
                                     SecondaryTextButton(
                                         text = stringResource(R.string.max_btn),
-                                        onClick = { amountState.updateText(walletViewModel.balance.doubleValue.toString()) }
+                                        onClick = { amountState.updateText(balance.toString()) }
                                     )
                                 }
                             }
@@ -150,5 +146,8 @@ fun WalletSendScreen(
 @Preview
 @Composable
 private fun WalletSendScreenPreview() {
-    WalletSendScreen {}
+    WalletSendScreen(
+        balance = 100.0,
+        onBack = {}
+    )
 }

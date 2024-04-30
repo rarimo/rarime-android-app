@@ -1,6 +1,5 @@
 package com.distributedLab.rarime.modules.register
 
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,14 +16,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.modules.common.IdentityViewModel
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.CardContainer
 import com.distributedLab.rarime.ui.components.HorizontalDivider
@@ -37,7 +33,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun NewIdentityScreen(
-    identityViewModel: IdentityViewModel = viewModel(LocalContext.current as ComponentActivity),
+    privateKey: String,
     onNext: () -> Unit,
     onBack: () -> Unit
 ) {
@@ -67,7 +63,7 @@ fun NewIdentityScreen(
         CardContainer {
             Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                 Text(
-                    text = identityViewModel.privateKey.value,
+                    text = privateKey,
                     style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.textPrimary,
                     modifier = Modifier
@@ -86,7 +82,7 @@ fun NewIdentityScreen(
                             stringResource(R.string.copy_to_clipboard_btn)
                         },
                         onClick = {
-                            clipboardManager.setText(AnnotatedString(identityViewModel.privateKey.value))
+                            clipboardManager.setText(AnnotatedString(privateKey))
                             isCopied = true
                         }
                     )
@@ -101,5 +97,9 @@ fun NewIdentityScreen(
 @Preview
 @Composable
 private fun NewIdentityScreenPreview() {
-    NewIdentityScreen(onNext = {}, onBack = {})
+    NewIdentityScreen(
+        privateKey = "d4f1dc5332e5f0263746a31d3563e42ad8bef24a8989d8b0a5ad71f8d5de28a6",
+        onNext = {},
+        onBack = {}
+    )
 }

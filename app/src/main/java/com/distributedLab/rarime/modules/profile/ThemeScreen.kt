@@ -1,6 +1,5 @@
 package com.distributedLab.rarime.modules.profile
 
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,31 +10,29 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.AppColorScheme
 import com.distributedLab.rarime.data.enums.toLocalizedString
-import com.distributedLab.rarime.modules.common.SettingsViewModel
 import com.distributedLab.rarime.ui.components.AppRadioButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
 fun ThemeScreen(
-    settingsViewModel: SettingsViewModel = viewModel(LocalContext.current as ComponentActivity),
+    colorScheme: AppColorScheme,
+    onColorSchemeChanged: (AppColorScheme) -> Unit,
     onBack: () -> Unit
 ) {
     ProfileRouteLayout(title = stringResource(R.string.theme), onBack = onBack) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            AppColorScheme.entries.forEach { colorScheme ->
+            AppColorScheme.entries.forEach { scheme ->
                 SchemeItem(
-                    scheme = colorScheme,
-                    isSelected = settingsViewModel.colorScheme.value == colorScheme,
-                    onClick = { settingsViewModel.updateColorScheme(colorScheme) }
+                    scheme = scheme,
+                    isSelected = scheme == colorScheme,
+                    onClick = { onColorSchemeChanged(scheme) }
                 )
             }
         }
@@ -78,5 +75,9 @@ private fun SchemeItem(
 @Preview
 @Composable
 private fun ThemeScreenPreview() {
-    ThemeScreen {}
+    ThemeScreen(
+        colorScheme = AppColorScheme.SYSTEM,
+        onColorSchemeChanged = {},
+        onBack = {}
+    )
 }

@@ -42,7 +42,7 @@ private const val AIRDROP_AMOUNT = 3
 
 @Composable
 fun ClaimTokensStep(
-    walletViewModel: WalletViewModel = viewModel(LocalContext.current as ComponentActivity),
+    claimAirdrop: suspend () -> Unit,
     onFinish: () -> Unit
 ) {
     var isClaiming by remember { mutableStateOf(false) }
@@ -50,7 +50,7 @@ fun ClaimTokensStep(
 
     suspend fun claimTokens() {
         isClaiming = true
-        walletViewModel.claimAirdrop()
+        claimAirdrop()
         isClaiming = false
         onFinish()
     }
@@ -131,5 +131,8 @@ fun ClaimTokensStep(
 @Preview
 @Composable
 private fun ClaimTokensStepPreview() {
-    ClaimTokensStep(onFinish = {})
+    ClaimTokensStep(
+        claimAirdrop = { delay(1000) },
+        onFinish = {}
+    )
 }

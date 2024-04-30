@@ -22,7 +22,10 @@ private enum class ScanPassportState {
 }
 
 @Composable
-fun ScanPassportScreen(onClose: () -> Unit) {
+fun ScanPassportScreen(
+    claimAirdrop: suspend () -> Unit,
+    onClose: () -> Unit
+) {
     var state by remember { mutableStateOf(ScanPassportState.SCAN_MRZ) }
     var mrzData: MRZInfo? by remember { mutableStateOf(null) }
 
@@ -62,7 +65,10 @@ fun ScanPassportScreen(onClose: () -> Unit) {
             }
 
             ScanPassportState.CLAIM_TOKENS -> {
-                ClaimTokensStep(onFinish = onClose)
+                ClaimTokensStep(
+                    claimAirdrop = claimAirdrop,
+                    onFinish = onClose
+                )
             }
         }
     }
@@ -71,5 +77,8 @@ fun ScanPassportScreen(onClose: () -> Unit) {
 @Preview
 @Composable
 private fun ScanPassportScreenPreview() {
-    ScanPassportScreen(onClose = {})
+    ScanPassportScreen(
+        claimAirdrop = {},
+        onClose = {}
+    )
 }
