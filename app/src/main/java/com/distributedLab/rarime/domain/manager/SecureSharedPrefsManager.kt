@@ -34,4 +34,7 @@ interface SecureSharedPrefsManager {
     fun readPasscode(): String
     fun savePasscode(passcode: String)
 
+    fun readLockTimestamp(): Long
+    fun saveLockTimestamp(timestamp: Long)
+
 }

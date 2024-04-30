@@ -76,7 +76,7 @@ fun MainScreen() {
     val isBottomBarVisible = currentRoute != null && currentRoute in mainRoutes
 
     val startDestination =
-        if (viewModel.isLocked.value) {
+        if (securityViewModel.isScreenLocked.value) {
             Screen.Lock.route
         } else if (securityViewModel.biometricsState.value != SecurityCheckState.UNSET) {
             Screen.Main.route
@@ -128,10 +128,12 @@ fun MainScreen() {
                         isPasscodeEnabled = securityViewModel.passcodeState.value == SecurityCheckState.ENABLED,
                         isBiometricEnabled = securityViewModel.biometricsState.value == SecurityCheckState.ENABLED,
                         passcode = securityViewModel.passcode.value,
+                        lockTimestamp = securityViewModel.lockTimestamp.longValue,
                         onPass = {
-                            viewModel.unlock()
+                            securityViewModel.unlockScreen()
                             navController.navigate(startDestination)
-                        }
+                        },
+                        onLock = { securityViewModel.lockPasscode() }
                     )
                 }
 

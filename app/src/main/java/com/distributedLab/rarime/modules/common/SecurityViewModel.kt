@@ -1,9 +1,11 @@
 package com.distributedLab.rarime.modules.common
 
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.data.enums.SecurityCheckState
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
+import com.distributedLab.rarime.util.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -18,6 +20,15 @@ class SecurityViewModel @Inject constructor(
 
     var passcode = mutableStateOf(dataStoreManager.readPasscode())
         private set
+    var lockTimestamp = mutableLongStateOf(dataStoreManager.readLockTimestamp())
+        private set
+    var isScreenLocked =
+        mutableStateOf(
+            passcodeState.value == SecurityCheckState.ENABLED
+                    || biometricsState.value == SecurityCheckState.ENABLED
+        )
+        private set
+
 
     fun updatePasscodeState(state: SecurityCheckState) {
         passcodeState.value = state
@@ -32,5 +43,16 @@ class SecurityViewModel @Inject constructor(
     fun updateBiometricsState(state: SecurityCheckState) {
         biometricsState.value = state
         dataStoreManager.saveBiometricsState(state)
+    }
+
+    fun lockPasscode() {
+        val timestamp =
+            System.currentTimeMillis() + Constants.PASSCODE_LOCK_PERIOD.inWholeMilliseconds
+        lockTimestamp.longValue = timestamp
+        dataStoreManager.saveLockTimestamp(timestamp)
+    }
+
+    fun unlockScreen() {
+        isScreenLocked.value = false
     }
 }

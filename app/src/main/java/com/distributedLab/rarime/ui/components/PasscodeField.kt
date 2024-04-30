@@ -58,7 +58,8 @@ fun PasscodeField(
         ) {
             CodeValue(
                 value = state.text,
-                maxLength = maxLength
+                maxLength = maxLength,
+                isError = state.isError
             )
             Text(
                 text = state.errorMessage,
@@ -78,7 +79,8 @@ fun PasscodeField(
 @Composable
 private fun CodeValue(
     value: String,
-    maxLength: Int
+    maxLength: Int,
+    isError: Boolean
 ) {
     Row {
         repeat(maxLength) { index ->
@@ -88,7 +90,9 @@ private fun CodeValue(
                         .width(16.dp)
                         .height(16.dp)
                         .background(
-                            if (index < value.length) {
+                            if (isError) {
+                                RarimeTheme.colors.errorDark
+                            } else if (index < value.length) {
                                 RarimeTheme.colors.primaryMain
                             } else {
                                 RarimeTheme.colors.componentPrimary
@@ -125,11 +129,7 @@ private fun PasscodeKeyboard(
             }
         }
         Row {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(64.dp)
-            ) {
+            Box(modifier = Modifier.weight(1f)) {
                 action()
             }
             PasscodeKey(

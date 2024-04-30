@@ -25,7 +25,8 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "COLOR_SCHEME" to "COLOR_SCHEME",
         "LANGUAGE" to "LANGUAGE",
         "WALLET_BALANCE" to "WALLET_BALANCE",
-        "PASSCODE" to "PASSCODE"
+        "PASSCODE" to "PASSCODE",
+        "LOCK_TIMESTAMP" to "LOCK_TIMESTAMP"
     )
 
     private val PREFS_FILE_NAME = "sharedPrefFile"
@@ -163,6 +164,16 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     override fun savePasscode(passcode: String) {
         val editor = getEditor()
         editor.putString(accessTokens["PASSCODE"], passcode)
+        editor.apply()
+    }
+
+    override fun readLockTimestamp(): Long {
+        return getSharedPreferences().getLong(accessTokens["LOCK_TIMESTAMP"], 0L)
+    }
+
+    override fun saveLockTimestamp(timestamp: Long) {
+        val editor = getEditor()
+        editor.putLong(accessTokens["LOCK_TIMESTAMP"], timestamp)
         editor.apply()
     }
 
