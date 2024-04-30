@@ -25,7 +25,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.modules.passport.models.EDocument
+import com.distributedLab.rarime.modules.passport.proof.ProofViewModel
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.CirclesLoader
 import com.distributedLab.rarime.ui.components.HorizontalDivider
@@ -35,22 +38,29 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-private enum class PassportProofState(val value: Int) {
-    READING_DATA(0),
-    APPLYING_ZERO_KNOWLEDGE(1),
-    CREATING_CONFIDENTIAL_PROFILE(2),
-    FINALIZING(3);
+enum class PassportProofState(val value: Int) {
+    READING_DATA(0), APPLYING_ZERO_KNOWLEDGE(1), CREATING_CONFIDENTIAL_PROFILE(2), FINALIZING(3);
 }
 
 @Composable
-fun GenerateProofStep(onClose: () -> Unit) {
+fun GenerateProofStep(
+    eDocument: EDocument, onClose: () -> Unit, proofViewModel: ProofViewModel = viewModel()
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = null) {
+        coroutineScope.launch {
+
+        }
+    }
+
+
     var currentState by remember { mutableStateOf(PassportProofState.READING_DATA) }
     var processingStatus by remember { mutableStateOf(ProcessingStatus.PROCESSING) }
-    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
-            // TODO: Implement the actual proof generation logic
+            proofViewModel.generateProof(eDocument)
             delay(1000)
             currentState = PassportProofState.APPLYING_ZERO_KNOWLEDGE
             delay(2000)
@@ -65,8 +75,8 @@ fun GenerateProofStep(onClose: () -> Unit) {
     }
 
     fun getItemStatus(item: PassportProofState): ProcessingStatus {
-        val isSuccess = processingStatus == ProcessingStatus.SUCCESS ||
-                currentState.value > item.value
+        val isSuccess =
+            processingStatus == ProcessingStatus.SUCCESS || currentState.value > item.value
         if (isSuccess) return ProcessingStatus.SUCCESS
         if (processingStatus == ProcessingStatus.FAILURE) return ProcessingStatus.FAILURE
         return ProcessingStatus.PROCESSING
@@ -91,8 +101,7 @@ fun GenerateProofStep(onClose: () -> Unit) {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 PassportProofState.entries.forEach { item ->
                     ProcessingItem(
-                        item = item,
-                        status = getItemStatus(item)
+                        item = item, status = getItemStatus(item)
                     )
                 }
             }
@@ -107,8 +116,7 @@ private fun GeneralProcessingStatus(status: ProcessingStatus) {
             ProcessingStatus.PROCESSING -> RarimeTheme.colors.warningLighter
             ProcessingStatus.SUCCESS -> RarimeTheme.colors.successLighter
             ProcessingStatus.FAILURE -> RarimeTheme.colors.errorLighter
-        },
-        label = ""
+        }, label = ""
     )
 
     val iconColor by animateColorAsState(
@@ -116,8 +124,7 @@ private fun GeneralProcessingStatus(status: ProcessingStatus) {
             ProcessingStatus.PROCESSING -> RarimeTheme.colors.warningDark
             ProcessingStatus.SUCCESS -> RarimeTheme.colors.successDark
             ProcessingStatus.FAILURE -> RarimeTheme.colors.errorMain
-        },
-        label = ""
+        }, label = ""
     )
 
     val title = when (status) {
@@ -148,8 +155,7 @@ private fun GeneralProcessingStatus(status: ProcessingStatus) {
         }
     }
     Column(
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.width(150.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.width(150.dp)
     ) {
         Text(
             text = title,
@@ -194,5 +200,6 @@ private fun ProcessingItem(item: PassportProofState, status: ProcessingStatus) {
 @Preview
 @Composable
 private fun GenerateProofStepPreview() {
-    GenerateProofStep(onClose = {})
+    val eDocument = EDocument()
+    GenerateProofStep(onClose = {}, eDocument = eDocument)
 }

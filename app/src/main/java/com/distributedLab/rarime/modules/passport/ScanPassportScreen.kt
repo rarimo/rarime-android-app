@@ -61,7 +61,7 @@ fun ScanPassportScreen(
             }
 
             ScanPassportState.GENERATE_PROOF -> {
-                GenerateProofStep(onClose = { state = ScanPassportState.CLAIM_TOKENS })
+                GenerateProofStep(onClose = { state = ScanPassportState.CLAIM_TOKENS }, eDocument = eDocument!!)
             }
 
             ScanPassportState.CLAIM_TOKENS -> {
@@ -69,6 +69,7 @@ fun ScanPassportScreen(
                     claimAirdrop = claimAirdrop,
                     onFinish = onClose
                 )
+                GenerateProofStep(eDocument = eDocument!!, onClose = onClose)
             }
         }
     }
