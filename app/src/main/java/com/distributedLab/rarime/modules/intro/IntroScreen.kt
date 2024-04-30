@@ -32,12 +32,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.modules.main.Screen
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.SecondaryTextButton
-import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.Screen
 import kotlinx.coroutines.launch
 
 private enum class IntroStep(

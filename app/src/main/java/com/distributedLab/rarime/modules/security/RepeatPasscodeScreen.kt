@@ -13,6 +13,7 @@ import com.distributedLab.rarime.ui.components.rememberAppTextFieldState
 
 @Composable
 fun RepeatPasscodeScreen(
+    passcode: String,
     onNext: () -> Unit,
     onBack: () -> Unit,
     onClose: () -> Unit
@@ -29,8 +30,7 @@ fun RepeatPasscodeScreen(
         title = stringResource(R.string.repeat_passcode_title),
         passcodeState = repeatPasscodeState,
         onPasscodeFilled = {
-            // TODO: Check if passcodes match
-            if (repeatPasscodeState.text == "1234") {
+            if (repeatPasscodeState.text == passcode) {
                 onNext()
             } else {
                 isAlertVisible = true
@@ -53,5 +53,5 @@ fun RepeatPasscodeScreen(
 @Preview
 @Composable
 private fun RepeatPasscodeScreenPreview() {
-    RepeatPasscodeScreen(onNext = {}, onBack = {}, onClose = {})
+    RepeatPasscodeScreen(passcode = "1234", onNext = {}, onBack = {}, onClose = {})
 }

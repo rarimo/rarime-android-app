@@ -34,9 +34,10 @@ import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun WalletReceiveScreen(onBack: () -> Unit = {}) {
-    // TODO: Replace with actual address
-    val address = "rarimo10xf20zsda2hpjstl3l5ahf65tzkkdnhaxlsl8a"
+fun WalletReceiveScreen(
+    address: String,
+    onBack: () -> Unit = {}
+) {
     val clipboardManager = LocalClipboardManager.current
     var isCopied by remember { mutableStateOf(false) }
 
@@ -122,5 +123,5 @@ fun WalletReceiveScreen(onBack: () -> Unit = {}) {
 @Preview
 @Composable
 private fun WalletReceiveScreenPreview() {
-    WalletReceiveScreen()
+    WalletReceiveScreen(address = "rarimo10xf20zsda2hpjstl3l5ahf65tzkkdnhaxlsl8a") {}
 }

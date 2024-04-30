@@ -9,6 +9,12 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.distributedLab.rarime.modules.common.IdentityViewModel
+import com.distributedLab.rarime.modules.common.PassportViewModel
+import com.distributedLab.rarime.modules.common.SecurityViewModel
+import com.distributedLab.rarime.modules.common.SettingsViewModel
+import com.distributedLab.rarime.modules.common.WalletViewModel
 import com.distributedLab.rarime.modules.main.MainScreen
 import com.distributedLab.rarime.modules.passport.nfc.NfcViewModel
 import com.distributedLab.rarime.ui.theme.AppTheme
@@ -22,19 +28,18 @@ import java.util.Objects
 class MainActivity : ComponentActivity() {
 
     private lateinit var adapter: NfcAdapter
-    private val nfcViewModel by viewModels<NfcViewModel>()
 
+    private val nfcViewModel by viewModels<NfcViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen()
 
         nfcViewModel.enableNFC = ::enableForegroundDispatch
         nfcViewModel.disableNFC = ::disableNFCForegroundDispatch
 
         setContent {
-            AppTheme {
-                MainScreen()
-            }
+            MainScreen()
         }
     }
 

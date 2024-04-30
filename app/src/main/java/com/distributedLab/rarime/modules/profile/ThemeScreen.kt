@@ -1,27 +1,13 @@
 package com.distributedLab.rarime.modules.profile
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -29,26 +15,24 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.data.enums.AppColorScheme
+import com.distributedLab.rarime.data.enums.toLocalizedString
 import com.distributedLab.rarime.ui.components.AppRadioButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
-enum class AppColorScheme {
-    LIGHT,
-    DARK,
-    SYSTEM
-}
-
 @Composable
-fun ThemeScreen(onBack: () -> Unit) {
-    var selectedColorScheme by remember { mutableStateOf(AppColorScheme.SYSTEM) }
-
+fun ThemeScreen(
+    colorScheme: AppColorScheme,
+    onColorSchemeChanged: (AppColorScheme) -> Unit,
+    onBack: () -> Unit
+) {
     ProfileRouteLayout(title = stringResource(R.string.theme), onBack = onBack) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            AppColorScheme.entries.forEach { colorScheme ->
+            AppColorScheme.entries.forEach { scheme ->
                 SchemeItem(
-                    scheme = colorScheme,
-                    isSelected = selectedColorScheme == colorScheme,
-                    onClick = { selectedColorScheme = colorScheme }
+                    scheme = scheme,
+                    isSelected = scheme == colorScheme,
+                    onClick = { onColorSchemeChanged(scheme) }
                 )
             }
         }
@@ -67,12 +51,6 @@ private fun SchemeItem(
         AppColorScheme.SYSTEM -> R.drawable.system_theme
     }
 
-    val label = when (scheme) {
-        AppColorScheme.LIGHT -> stringResource(R.string.light_mode)
-        AppColorScheme.DARK -> stringResource(R.string.dark_mode)
-        AppColorScheme.SYSTEM -> stringResource(R.string.system)
-    }
-
     AppRadioButton(isSelected = isSelected, onClick = onClick) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -86,7 +64,7 @@ private fun SchemeItem(
                     .height(48.dp)
             )
             Text(
-                text = label,
+                text = scheme.toLocalizedString(),
                 style = RarimeTheme.typography.subtitle4,
                 color = RarimeTheme.colors.textPrimary
             )
@@ -97,5 +75,9 @@ private fun SchemeItem(
 @Preview
 @Composable
 private fun ThemeScreenPreview() {
-    ThemeScreen {}
+    ThemeScreen(
+        colorScheme = AppColorScheme.SYSTEM,
+        onColorSchemeChanged = {},
+        onBack = {}
+    )
 }

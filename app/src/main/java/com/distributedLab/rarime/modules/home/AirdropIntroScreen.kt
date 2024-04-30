@@ -27,32 +27,28 @@ import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.rememberAppCheckboxState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.Constants
 
 @Composable
 fun AirdropIntroScreen(onStart: () -> Unit) {
     val termsAcceptedState = rememberAppCheckboxState()
     val uriHandler = LocalUriHandler.current
 
-    // TODO: Replace with real URLs
-    val termsUrl = "https://rarime.com"
-    val privacyUrl = "https://rarime.com"
-    val airdropTermsUrl = "https://rarime.com"
-
     val termsAnnotation = buildAnnotatedString {
         append(stringResource(R.string.terms_check_agreement))
-        pushStringAnnotation("URL", termsUrl)
+        pushStringAnnotation("URL", Constants.TERMS_URL)
         withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
             append(stringResource(R.string.rarime_general_terms_conditions))
         }
         pop()
         append(", ")
-        pushStringAnnotation("URL", privacyUrl)
+        pushStringAnnotation("URL", Constants.PRIVACY_URL)
         withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
             append(stringResource(R.string.rarime_privacy_notice))
         }
         pop()
         append(stringResource(R.string.and))
-        pushStringAnnotation("URL", airdropTermsUrl)
+        pushStringAnnotation("URL", Constants.AIRDROP_TERMS_URL)
         withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
             append(stringResource(R.string.rarimo_airdrop_program_terms_conditions))
         }

@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.Screen
 
 enum class BottomTab(
     val route: String,

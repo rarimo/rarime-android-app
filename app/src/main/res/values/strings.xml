@@ -148,7 +148,7 @@
     <string name="wallet_send_description">Withdraw the RMO token</string>
     <string name="rewards_stub_title">Available in July</string>
     <string name="rewards_stub_description">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem</string>
-       <string name="terms_of_use">Terms of Use</string>
+    <string name="terms_of_use">Terms of Use</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="auth_method">Auth Method</string>
     <string name="biometrics">Biometrics</string>
@@ -172,4 +172,5 @@
     <string name="delete_passport_card_title">Delete passport card?</string>
     <string name="delete_passport_card_text">You will have to scan the passport again to restore it.</string>
     <string name="delete_btn">Delete</string>
+    <string name="no_transactions_msg">No transactions yet</string>
 </resources>

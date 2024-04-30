@@ -15,7 +15,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.modules.main.Screen
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.modules.wallet.models.TransactionState
 import com.distributedLab.rarime.ui.components.AppIcon
@@ -25,22 +24,15 @@ import com.distributedLab.rarime.ui.components.SecondaryButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.DateUtil
 import com.distributedLab.rarime.util.NumberUtil
+import com.distributedLab.rarime.util.Screen
 import java.util.Date
 
 @Composable
-fun WalletScreen(navigate: (String) -> Unit) {
-    val balance = 3.0
-    val transactions = listOf(
-        Transaction(
-            id = 1,
-            iconId = R.drawable.ic_airdrop,
-            titleId = R.string.airdrop_tx_title,
-            amount = 3.0,
-            date = Date(),
-            state = TransactionState.INCOMING
-        )
-    )
-
+fun WalletScreen(
+    balance: Double,
+    transactions: List<Transaction>,
+    navigate: (String) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -98,6 +90,14 @@ fun WalletScreen(navigate: (String) -> Unit) {
                     transactions.forEach {
                         TransactionCard(it)
                     }
+
+                    if (transactions.isEmpty()) {
+                        Text(
+                            text = stringResource(R.string.no_transactions_msg),
+                            style = RarimeTheme.typography.body3,
+                            color = RarimeTheme.colors.textSecondary
+                        )
+                    }
                 }
             }
         }
@@ -151,5 +151,26 @@ private fun TransactionCard(transaction: Transaction) {
 @Preview
 @Composable
 private fun WalletScreenPreview() {
-    WalletScreen {}
+    WalletScreen(
+        balance = 100.0,
+        transactions = listOf(
+            Transaction(
+                id = 2,
+                iconId = R.drawable.ic_arrow_up,
+                titleId = R.string.send_btn,
+                date = Date(),
+                amount = 100.0,
+                state = TransactionState.OUTGOING
+            ),
+            Transaction(
+                id = 1,
+                iconId = R.drawable.ic_airdrop,
+                titleId = R.string.airdrop_tx_title,
+                date = Date(),
+                amount = 100.0,
+                state = TransactionState.INCOMING
+            )
+        ),
+        navigate = {}
+    )
 }
