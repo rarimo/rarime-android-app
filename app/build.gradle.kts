@@ -39,6 +39,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -93,6 +94,7 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.51")
     implementation("androidx.navigation:navigation-compose:$lifecycle_version")
     kapt("com.google.dagger:hilt-compiler:2.51")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     implementation("net.sf.scuba:scuba-sc-android:0.0.20")
 
@@ -100,5 +102,8 @@ dependencies {
     implementation("com.lightspark:compose-qr-code:1.0.1")
 
     // Datastore
-    implementation("androidx.datastore:datastore-preferences:1.1.0")
+    implementation("androidx.security:security-crypto:1.1.0-alpha03")
+
+    // Splash Screen
+    implementation("androidx.core:core-splashscreen:1.0.1")
 }

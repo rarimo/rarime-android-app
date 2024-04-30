@@ -27,9 +27,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.modules.main.Screen
+import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.modules.passport.models.EDocument
-import com.distributedLab.rarime.modules.passport.models.PersonDetails
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.ActionCard
 import com.distributedLab.rarime.ui.components.AppBottomSheet
@@ -42,30 +41,20 @@ import com.distributedLab.rarime.ui.components.SecondaryTextButton
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.NumberUtil
+import com.distributedLab.rarime.util.Screen
 
 @Composable
-fun HomeScreen(navigate: (String) -> Unit) {
-    // TODO: Replace with real data
-    var passport: EDocument? by remember {
-        mutableStateOf(
-            EDocument(
-                personDetails = PersonDetails(
-                    name = "John",
-                    surname = "Doe",
-                    birthDate = "01.01.1990",
-                    nationality = "USA",
-                    serialNumber = "123456789",
-                    faceImageInfo = null
-                )
-            )
-        )
-    }
-    // TODO: Use data from storage
-    var passportCardLook by remember { mutableStateOf(PassportCardLook.BLACK) }
-    var isIncognito by remember { mutableStateOf(false) }
+fun HomeScreen(
+    balance: Double,
+    passport: EDocument?,
+    passportCardLook: PassportCardLook,
+    isIncognito: Boolean,
+    onPassportCardLookChange: (PassportCardLook) -> Unit,
+    onIncognitoChange: (Boolean) -> Unit,
+    navigate: (String) -> Unit
+) {
     // TODO: Use view model
     var isCongratsModalVisible by remember { mutableStateOf(false) }
-    val balance by remember { mutableStateOf(0.0) }
 
     Box {
         Column(
@@ -87,12 +76,11 @@ fun HomeScreen(navigate: (String) -> Unit) {
                     OtherPassportCard { navigate(Screen.ScanPassport.route) }
                 } else {
                     PassportCard(
-                        passport = passport!!,
+                        passport = passport,
                         isIncognito = isIncognito,
                         look = passportCardLook,
-                        onLookChange = { passportCardLook = it },
-                        onIncognitoChange = { isIncognito = it },
-                        onDelete = { passport = null }
+                        onLookChange = { onPassportCardLookChange(it) },
+                        onIncognitoChange = { onIncognitoChange(it) }
                     )
                     RarimeCard()
                 }
@@ -262,5 +250,13 @@ private fun RarimeCard() {
 @Preview
 @Composable
 private fun HomeScreenPreview() {
-    HomeScreen {}
+    HomeScreen(
+        balance = 100.0,
+        passport = null,
+        passportCardLook = PassportCardLook.GREEN,
+        isIncognito = false,
+        onPassportCardLookChange = {},
+        onIncognitoChange = {},
+        navigate = {}
+    )
 }

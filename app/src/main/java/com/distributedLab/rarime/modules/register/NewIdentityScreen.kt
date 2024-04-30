@@ -31,11 +31,12 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
-// TODO: Replace with actual private key
-const val privateKey = "d4f1dc5332e5f0263746a31d3563e42ad8bef24a8989d8b0a5ad71f8d5de28a6"
-
 @Composable
-fun NewIdentityScreen(onNext: () -> Unit, onBack: () -> Unit) {
+fun NewIdentityScreen(
+    privateKey: String,
+    onNext: () -> Unit,
+    onBack: () -> Unit
+) {
     val clipboardManager = LocalClipboardManager.current
     var isCopied by remember { mutableStateOf(false) }
 
@@ -96,5 +97,9 @@ fun NewIdentityScreen(onNext: () -> Unit, onBack: () -> Unit) {
 @Preview
 @Composable
 private fun NewIdentityScreenPreview() {
-    NewIdentityScreen(onNext = {}, onBack = {})
+    NewIdentityScreen(
+        privateKey = "d4f1dc5332e5f0263746a31d3563e42ad8bef24a8989d8b0a5ad71f8d5de28a6",
+        onNext = {},
+        onBack = {}
+    )
 }

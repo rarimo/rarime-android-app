@@ -32,10 +32,10 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.NumberUtil
 
 @Composable
-fun WalletSendScreen(onBack: () -> Unit) {
-    // TODO: Replace with actual balance
-    val balance = 3.0
-
+fun WalletSendScreen(
+    balance: Double,
+    onBack: () -> Unit
+) {
     var isQrCodeScannerOpen by remember { mutableStateOf(false) }
     val addressState = rememberAppTextFieldState("")
     val amountState = rememberAppTextFieldState("")
@@ -146,5 +146,8 @@ fun WalletSendScreen(onBack: () -> Unit) {
 @Preview
 @Composable
 private fun WalletSendScreenPreview() {
-    WalletSendScreen {}
+    WalletSendScreen(
+        balance = 100.0,
+        onBack = {}
+    )
 }

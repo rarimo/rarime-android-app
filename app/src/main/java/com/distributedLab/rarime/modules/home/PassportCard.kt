@@ -16,10 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
@@ -29,45 +26,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.data.enums.PassportCardLook
+import com.distributedLab.rarime.data.enums.getBackgroundColor
+import com.distributedLab.rarime.data.enums.getForegroundColor
+import com.distributedLab.rarime.data.enums.getTitle
 import com.distributedLab.rarime.modules.passport.calculateAgeFromBirthDate
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.passport.models.PersonDetails
-import com.distributedLab.rarime.ui.components.AppAlertDialog
 import com.distributedLab.rarime.ui.components.AppBottomSheet
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PassportImage
-import com.distributedLab.rarime.ui.components.PrimaryTextButton
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.ImageUtil
 
-enum class PassportCardLook {
-    GREEN, BLACK, WHITE;
-
-    val backgroundColor: Color
-        @Composable
-        get() = when (this) {
-            GREEN -> RarimeTheme.colors.primaryMain
-            BLACK -> RarimeTheme.colors.baseBlack
-            WHITE -> RarimeTheme.colors.baseWhite
-        }
-
-    val foregroundColor: Color
-        @Composable
-        get() = when (this) {
-            GREEN -> RarimeTheme.colors.baseBlack
-            BLACK -> RarimeTheme.colors.baseWhite
-            WHITE -> RarimeTheme.colors.baseBlack
-        }
-
-    val titleResourceId: Int
-        get() = when (this) {
-            GREEN -> R.string.passport_look_green
-            BLACK -> R.string.passport_look_black
-            WHITE -> R.string.passport_look_white
-        }
-}
 
 @Composable
 fun PassportCard(
@@ -76,7 +49,6 @@ fun PassportCard(
     isIncognito: Boolean,
     onLookChange: (PassportCardLook) -> Unit,
     onIncognitoChange: (Boolean) -> Unit,
-    onDelete: () -> Unit
 ) {
     val settingsSheetState = rememberAppSheetState()
 
@@ -88,7 +60,7 @@ fun PassportCard(
         verticalArrangement = Arrangement.spacedBy(32.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .background(look.backgroundColor, RoundedCornerShape(24.dp))
+            .background(look.getBackgroundColor(), RoundedCornerShape(24.dp))
             .padding(24.dp)
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
@@ -98,8 +70,8 @@ fun PassportCard(
             ) {
                 PassportImage(
                     image = image,
-                    color = look.foregroundColor,
-                    backgroundColor = look.foregroundColor.copy(alpha = 0.05f),
+                    color = look.getForegroundColor(),
+                    backgroundColor = look.getForegroundColor().copy(alpha = 0.05f),
                     modifier = Modifier.blur(
                         if (isIncognito) 12.dp else 0.dp,
                         edgeTreatment = BlurredEdgeTreatment.Unbounded
@@ -108,17 +80,25 @@ fun PassportCard(
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     AppIcon(
                         id = if (isIncognito) R.drawable.ic_eye_slash else R.drawable.ic_eye,
-                        tint = look.foregroundColor,
+                        tint = look.getForegroundColor(),
                         modifier = Modifier
-                            .background(look.foregroundColor.copy(alpha = 0.05f), CircleShape)
+                            .background(
+                                look
+                                    .getForegroundColor()
+                                    .copy(alpha = 0.05f), CircleShape
+                            )
                             .padding(8.dp)
                             .clickable { onIncognitoChange(!isIncognito) }
                     )
                     AppIcon(
                         id = R.drawable.ic_dots_three_outline,
-                        tint = look.foregroundColor,
+                        tint = look.getForegroundColor(),
                         modifier = Modifier
-                            .background(look.foregroundColor.copy(alpha = 0.05f), CircleShape)
+                            .background(
+                                look
+                                    .getForegroundColor()
+                                    .copy(alpha = 0.05f), CircleShape
+                            )
                             .padding(8.dp)
                             .clickable { settingsSheetState.show() }
                     )
@@ -128,7 +108,7 @@ fun PassportCard(
                 Text(
                     text = if (isIncognito) "••••• •••••••" else fullName,
                     style = RarimeTheme.typography.h6,
-                    color = look.foregroundColor
+                    color = look.getForegroundColor()
                 )
                 Text(
                     text = if (isIncognito) "••• ••••• •••" else stringResource(
@@ -137,11 +117,11 @@ fun PassportCard(
                         )
                     ),
                     style = RarimeTheme.typography.body2,
-                    color = look.foregroundColor.copy(alpha = 0.56f)
+                    color = look.getForegroundColor().copy(alpha = 0.56f)
                 )
             }
         }
-        HorizontalDivider(color = look.foregroundColor.copy(alpha = 0.05f))
+        HorizontalDivider(color = look.getForegroundColor().copy(alpha = 0.05f))
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             PassportInfoRow(
                 label = stringResource(R.string.nationality),
@@ -160,7 +140,6 @@ fun PassportCard(
         PassportCardSettings(
             look = look,
             onLookChange = onLookChange,
-            onDelete = onDelete
         )
     }
 }
@@ -174,12 +153,12 @@ private fun PassportInfoRow(label: String, value: String, look: PassportCardLook
         Text(
             text = label,
             style = RarimeTheme.typography.body3,
-            color = look.foregroundColor.copy(alpha = 0.56f)
+            color = look.getForegroundColor().copy(alpha = 0.56f)
         )
         Text(
             text = value,
             style = RarimeTheme.typography.subtitle4,
-            color = look.foregroundColor
+            color = look.getForegroundColor()
         )
     }
 }
@@ -187,24 +166,8 @@ private fun PassportInfoRow(label: String, value: String, look: PassportCardLook
 @Composable
 private fun PassportCardSettings(
     look: PassportCardLook,
-    onLookChange: (PassportCardLook) -> Unit,
-    onDelete: () -> Unit
+    onLookChange: (PassportCardLook) -> Unit
 ) {
-    var isAlertVisible by remember { mutableStateOf(false) }
-
-    if (isAlertVisible) {
-        AppAlertDialog(
-            title = stringResource(R.string.delete_passport_card_title),
-            text = stringResource(R.string.delete_passport_card_text),
-            confirmText = stringResource(R.string.delete_btn),
-            onConfirm = {
-                isAlertVisible = false
-                onDelete()
-            },
-            onDismiss = { isAlertVisible = false }
-        )
-    }
-
     Column {
         Text(
             text = stringResource(R.string.settings_title),
@@ -232,26 +195,6 @@ private fun PassportCardSettings(
                         isActive = item == look,
                         modifier = Modifier.weight(1f),
                         onClick = { onLookChange(item) }
-                    )
-                }
-            }
-            HorizontalDivider()
-            PrimaryTextButton(onClick = { isAlertVisible = true }) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    AppIcon(
-                        id = R.drawable.ic_trash_simple,
-                        tint = RarimeTheme.colors.errorMain,
-                        modifier = Modifier
-                            .background(RarimeTheme.colors.errorLighter, CircleShape)
-                            .padding(10.dp)
-                    )
-                    Text(
-                        text = stringResource(R.string.delete_card_btn),
-                        style = RarimeTheme.typography.buttonMedium,
-                        color = RarimeTheme.colors.textPrimary
                     )
                 }
             }
@@ -292,10 +235,12 @@ private fun PassportLookOption(
             modifier = Modifier
                 .width(64.dp)
                 .height(48.dp)
-                .background(look.backgroundColor, RoundedCornerShape(8.dp))
+                .background(look.getBackgroundColor(), RoundedCornerShape(8.dp))
                 .border(
                     width = 1.dp,
-                    color = look.foregroundColor.copy(alpha = 0.1f),
+                    color = look
+                        .getForegroundColor()
+                        .copy(alpha = 0.1f),
                     shape = RoundedCornerShape(8.dp)
                 )
                 .padding(9.dp)
@@ -304,23 +249,35 @@ private fun PassportLookOption(
                 modifier = Modifier
                     .width(12.dp)
                     .height(12.dp)
-                    .background(look.foregroundColor.copy(alpha = 0.1f), CircleShape)
+                    .background(
+                        look
+                            .getForegroundColor()
+                            .copy(alpha = 0.1f), CircleShape
+                    )
             )
             Box(
                 modifier = Modifier
                     .width(29.dp)
                     .height(5.dp)
-                    .background(look.foregroundColor.copy(alpha = 0.1f), RoundedCornerShape(100.dp))
+                    .background(
+                        look
+                            .getForegroundColor()
+                            .copy(alpha = 0.1f), RoundedCornerShape(100.dp)
+                    )
             )
             Box(
                 modifier = Modifier
                     .width(19.dp)
                     .height(5.dp)
-                    .background(look.foregroundColor.copy(alpha = 0.1f), RoundedCornerShape(100.dp))
+                    .background(
+                        look
+                            .getForegroundColor()
+                            .copy(alpha = 0.1f), RoundedCornerShape(100.dp)
+                    )
             )
         }
         Text(
-            text = stringResource(look.titleResourceId),
+            text = look.getTitle(),
             style = RarimeTheme.typography.buttonMedium,
             color = RarimeTheme.colors.textPrimary
         )
@@ -345,6 +302,5 @@ private fun PassportCardPreview() {
         isIncognito = false,
         onLookChange = {},
         onIncognitoChange = {},
-        onDelete = {}
     )
 }

@@ -30,10 +30,10 @@ import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun ExportKeysScreen(onBack: () -> Unit) {
-    // TODO: Replace with actual private key
-    val privateKey = "d4f1dc5332e5f0263746a31d3563e42ad8bef24a8989d8b0a5ad71f8d5de28a6"
-
+fun ExportKeysScreen(
+    privateKey: String,
+    onBack: () -> Unit
+) {
     val clipboardManager = LocalClipboardManager.current
     var isCopied by remember { mutableStateOf(false) }
 
@@ -85,5 +85,5 @@ fun ExportKeysScreen(onBack: () -> Unit) {
 @Preview
 @Composable
 private fun ExportKeysScreenPreview() {
-    ExportKeysScreen {}
+    ExportKeysScreen(privateKey = "d4f1dc5332e5f0263746a31d3563e42ad8bef24a8989d8b0a5ad71f8d5de28a6") {}
 }

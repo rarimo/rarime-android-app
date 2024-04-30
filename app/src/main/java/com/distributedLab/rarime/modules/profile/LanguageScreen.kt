@@ -4,37 +4,31 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.data.enums.AppLanguage
+import com.distributedLab.rarime.data.enums.toLocalizedString
 import com.distributedLab.rarime.ui.components.AppRadioButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
-enum class AppLanguage {
-    ENGLISH,
-    UKRAINIAN,
-    GEORGIAN
-}
-
 @Composable
-fun LanguageScreen(onBack: () -> Unit) {
-    var selectedLanguage by remember { mutableStateOf(AppLanguage.ENGLISH) }
-
+fun LanguageScreen(
+    language: AppLanguage,
+    onLanguageChanged: (AppLanguage) -> Unit,
+    onBack: () -> Unit
+) {
     ProfileRouteLayout(
         title = stringResource(R.string.language),
         onBack = onBack
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            AppLanguage.entries.forEach { language ->
+            AppLanguage.entries.forEach { lang ->
                 LanguageItem(
-                    language = language,
-                    isSelected = language == selectedLanguage,
-                    onClick = { selectedLanguage = language }
+                    language = lang,
+                    isSelected = lang == language,
+                    onClick = { onLanguageChanged(lang) }
                 )
             }
 
@@ -48,15 +42,9 @@ private fun LanguageItem(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val label = when (language) {
-        AppLanguage.ENGLISH -> stringResource(R.string.english)
-        AppLanguage.UKRAINIAN -> stringResource(R.string.ukrainian)
-        AppLanguage.GEORGIAN -> stringResource(R.string.georgian)
-    }
-
     AppRadioButton(isSelected = isSelected, onClick = onClick) {
         Text(
-            text = label,
+            text = language.toLocalizedString(),
             style = RarimeTheme.typography.subtitle4,
             color = RarimeTheme.colors.textPrimary
         )
@@ -66,5 +54,9 @@ private fun LanguageItem(
 @Preview
 @Composable
 private fun LanguageScreenPreview() {
-    LanguageScreen {}
+    LanguageScreen(
+        language = AppLanguage.ENGLISH,
+        onLanguageChanged = {},
+        onBack = {}
+    )
 }
