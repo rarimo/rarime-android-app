@@ -17,7 +17,7 @@ class SecurityViewModel @Inject constructor(
         private set
 
     // TODO: Get passcode from secure storage
-    var passcode = mutableStateOf("")
+    var passcode = mutableStateOf("1234")
         private set
 
     fun updatePasscodeState(state: SecurityCheckState) {

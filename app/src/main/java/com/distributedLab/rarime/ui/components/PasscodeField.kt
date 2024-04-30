@@ -28,9 +28,13 @@ fun PasscodeField(
     modifier: Modifier = Modifier,
     maxLength: Int = 4,
     state: AppTextFieldState = rememberAppTextFieldState(""),
-    onFilled: () -> Unit = {}
+    enabled: Boolean = true,
+    onFilled: () -> Unit = {},
+    action: @Composable () -> Unit = {}
 ) {
     fun handleValueChange(value: String) {
+        if (!enabled) return
+
         if (value.length <= maxLength) {
             state.updateText(value)
             state.updateErrorMessage("")
@@ -52,8 +56,7 @@ fun PasscodeField(
         ) {
             CodeValue(
                 value = state.text,
-                maxLength = maxLength,
-                isError = state.isError
+                maxLength = maxLength
             )
             Text(
                 text = state.errorMessage,
@@ -64,6 +67,7 @@ fun PasscodeField(
         }
         PasscodeKeyboard(
             value = state.text,
+            action = action,
             onValueChange = { handleValueChange(it) }
         )
     }
@@ -72,8 +76,7 @@ fun PasscodeField(
 @Composable
 private fun CodeValue(
     value: String,
-    maxLength: Int,
-    isError: Boolean
+    maxLength: Int
 ) {
     Row {
         repeat(maxLength) { index ->
@@ -83,9 +86,7 @@ private fun CodeValue(
                         .width(16.dp)
                         .height(16.dp)
                         .background(
-                            if (isError) {
-                                RarimeTheme.colors.errorDark
-                            } else if (index < value.length) {
+                            if (index < value.length) {
                                 RarimeTheme.colors.primaryMain
                             } else {
                                 RarimeTheme.colors.componentPrimary
@@ -101,7 +102,8 @@ private fun CodeValue(
 @Composable
 private fun PasscodeKeyboard(
     value: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    action: @Composable () -> Unit
 ) {
     Column {
         repeat(3) { rowIndex ->
@@ -121,7 +123,13 @@ private fun PasscodeKeyboard(
             }
         }
         Row {
-            Box(modifier = Modifier.weight(1f))
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(64.dp)
+            ) {
+                action()
+            }
             PasscodeKey(
                 modifier = Modifier.weight(1f),
                 onClick = { onValueChange(value + 0) }
