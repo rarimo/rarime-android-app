@@ -16,8 +16,7 @@ class SecurityViewModel @Inject constructor(
     var biometricsState = mutableStateOf(dataStoreManager.readBiometricsState())
         private set
 
-    // TODO: Get passcode from secure storage
-    var passcode = mutableStateOf("1234")
+    var passcode = mutableStateOf(dataStoreManager.readPasscode())
         private set
 
     fun updatePasscodeState(state: SecurityCheckState) {
@@ -27,6 +26,7 @@ class SecurityViewModel @Inject constructor(
 
     fun setPasscode(newPasscode: String) {
         passcode.value = newPasscode
+        dataStoreManager.savePasscode(newPasscode)
     }
 
     fun updateBiometricsState(state: SecurityCheckState) {

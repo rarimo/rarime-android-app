@@ -15,7 +15,10 @@ class MainViewModel @Inject constructor(
         private set
 
     var isLocked =
-        mutableStateOf(dataStoreManager.readPasscodeState() == SecurityCheckState.ENABLED)
+        mutableStateOf(
+            dataStoreManager.readPasscodeState() == SecurityCheckState.ENABLED ||
+                    dataStoreManager.readBiometricsState() == SecurityCheckState.ENABLED
+        )
         private set
 
     fun finishIntro() {

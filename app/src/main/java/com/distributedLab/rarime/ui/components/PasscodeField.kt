@@ -17,6 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -159,6 +161,8 @@ private fun PasscodeKey(
     onClick: () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
+
     Button(
         modifier = modifier.height(64.dp),
         shape = RoundedCornerShape(8.dp),
@@ -166,7 +170,10 @@ private fun PasscodeKey(
             containerColor = Color.Transparent,
             contentColor = RarimeTheme.colors.textPrimary
         ),
-        onClick = onClick
+        onClick = {
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            onClick()
+        }
     ) {
         content()
     }

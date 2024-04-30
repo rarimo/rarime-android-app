@@ -173,4 +173,7 @@
     <string name="delete_passport_card_text">You will have to scan the passport again to restore it.</string>
     <string name="delete_btn">Delete</string>
     <string name="no_transactions_msg">No transactions yet</string>
+    <string name="try_again_msg">Please, try again</string>
+    <string name="unlock_with_fingerprint">Unlock with fingerprint</string>
+    <string name="unlock_btn">Unlock</string>
 </resources>
