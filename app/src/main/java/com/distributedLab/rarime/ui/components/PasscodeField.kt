@@ -17,6 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,9 +30,13 @@ fun PasscodeField(
     modifier: Modifier = Modifier,
     maxLength: Int = 4,
     state: AppTextFieldState = rememberAppTextFieldState(""),
-    onFilled: () -> Unit = {}
+    enabled: Boolean = true,
+    onFilled: () -> Unit = {},
+    action: @Composable () -> Unit = {}
 ) {
     fun handleValueChange(value: String) {
+        if (!enabled) return
+
         if (value.length <= maxLength) {
             state.updateText(value)
             state.updateErrorMessage("")
@@ -64,6 +70,7 @@ fun PasscodeField(
         }
         PasscodeKeyboard(
             value = state.text,
+            action = action,
             onValueChange = { handleValueChange(it) }
         )
     }
@@ -101,7 +108,8 @@ private fun CodeValue(
 @Composable
 private fun PasscodeKeyboard(
     value: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    action: @Composable () -> Unit
 ) {
     Column {
         repeat(3) { rowIndex ->
@@ -121,7 +129,9 @@ private fun PasscodeKeyboard(
             }
         }
         Row {
-            Box(modifier = Modifier.weight(1f))
+            Box(modifier = Modifier.weight(1f)) {
+                action()
+            }
             PasscodeKey(
                 modifier = Modifier.weight(1f),
                 onClick = { onValueChange(value + 0) }
@@ -151,6 +161,8 @@ private fun PasscodeKey(
     onClick: () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
+
     Button(
         modifier = modifier.height(64.dp),
         shape = RoundedCornerShape(8.dp),
@@ -158,7 +170,10 @@ private fun PasscodeKey(
             containerColor = Color.Transparent,
             contentColor = RarimeTheme.colors.textPrimary
         ),
-        onClick = onClick
+        onClick = {
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            onClick()
+        }
     ) {
         content()
     }
