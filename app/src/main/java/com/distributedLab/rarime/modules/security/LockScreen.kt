@@ -1,6 +1,5 @@
 package com.distributedLab.rarime.modules.security
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -64,9 +63,13 @@ fun LockScreen(
     fun authenticateWithBiometrics() {
         BiometricUtil.authenticate(
             context = context,
-            title = "Biometric authentication",
-            subtitle = "Unlock with your fingerprint",
-            negativeButtonText = if (isPasscodeEnabled) "Use passcode" else "Cancel",
+            title = context.getString(R.string.biometric_authentication_title),
+            subtitle = context.getString(R.string.biometric_authentication_subtitle),
+            negativeButtonText = if (isPasscodeEnabled) {
+                context.getString(R.string.use_passcode_btn)
+            } else {
+                context.getString(R.string.cancel_btn)
+            },
             onSuccess = onPass,
             onError = {}
         )
@@ -175,7 +178,7 @@ fun LockScreen(
                 tint = RarimeTheme.colors.textPrimary
             )
             Text(
-                text = stringResource(R.string.unlock_with_fingerprint),
+                text = stringResource(R.string.biometric_lock_title),
                 style = RarimeTheme.typography.h4,
                 color = RarimeTheme.colors.textPrimary,
                 textAlign = TextAlign.Center,
@@ -192,13 +195,14 @@ fun LockScreen(
                 )
             } else {
                 Text(
-                    text = "Enable biometrics in settings to unlock with fingerprint",
-                    style = RarimeTheme.typography.body1,
+                    text = stringResource(R.string.enable_biometrics_msg),
+                    style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.textSecondary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 32.dp)
+                        .padding(top = 16.dp)
+                        .padding(horizontal = 40.dp)
                 )
 
             }
