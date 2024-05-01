@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,6 +26,7 @@ import com.distributedLab.rarime.modules.security.PasscodeScreen
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.AppSwitch
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.BiometricUtil
 
 @Composable
 fun AuthMethodScreen(
@@ -37,6 +39,26 @@ fun AuthMethodScreen(
     onBack: () -> Unit
 ) {
     var isPasscodeShown by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    val isBiometricsAvailable = remember {
+        BiometricUtil.isSupported(context)
+    }
+
+    fun handleBiometricsStateChange(isEnabled: Boolean) {
+        BiometricUtil.authenticate(
+            context,
+            title = context.getString(R.string.biometric_authentication_title),
+            subtitle = context.getString(R.string.biometric_authentication_subtitle),
+            negativeButtonText = context.getString(R.string.cancel_btn),
+            onSuccess = {
+                onBiometricsStateChange(
+                    if (isEnabled) SecurityCheckState.ENABLED else SecurityCheckState.DISABLED
+                )
+            },
+            onError = {}
+        )
+    }
 
     if (isPasscodeShown) {
         PasscodeScreen(
@@ -55,16 +77,14 @@ fun AuthMethodScreen(
             onBack = onBack
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
-                AuthMethodRow(
-                    iconId = R.drawable.ic_fingerprint,
-                    label = stringResource(R.string.biometrics),
-                    checked = biometricsState == SecurityCheckState.ENABLED,
-                    onCheckedChange = {
-                        onBiometricsStateChange(
-                            if (it) SecurityCheckState.ENABLED else SecurityCheckState.DISABLED
-                        )
-                    }
-                )
+                if (isBiometricsAvailable) {
+                    AuthMethodRow(
+                        iconId = R.drawable.ic_fingerprint,
+                        label = stringResource(R.string.biometrics),
+                        checked = biometricsState == SecurityCheckState.ENABLED,
+                        onCheckedChange = { handleBiometricsStateChange(it) }
+                    )
+                }
                 AuthMethodRow(
                     iconId = R.drawable.ic_password,
                     label = stringResource(R.string.passcode),

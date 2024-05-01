@@ -131,7 +131,7 @@ fun MainScreen() {
                         lockTimestamp = securityViewModel.lockTimestamp.longValue,
                         onPass = {
                             securityViewModel.unlockScreen()
-                            navController.navigate(startDestination)
+                            navController.navigate(Screen.Main.route)
                         },
                         onLock = { securityViewModel.lockPasscode() }
                     )

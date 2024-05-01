@@ -34,6 +34,7 @@ import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.rememberAppTextFieldState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.BiometricUtil
 import com.distributedLab.rarime.util.Constants
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
@@ -54,6 +55,31 @@ fun LockScreen(
 
     var attemptsLeft by remember { mutableIntStateOf(Constants.MAX_PASSCODE_ATTEMPTS) }
     var lockedTimeLeft by remember { mutableLongStateOf(lockTimestamp - System.currentTimeMillis()) }
+
+    val isBiometricsAvailable = remember {
+        BiometricUtil.isSupported(context)
+    }
+
+    fun authenticateWithBiometrics() {
+        BiometricUtil.authenticate(
+            context = context,
+            title = context.getString(R.string.biometric_authentication_title),
+            subtitle = context.getString(R.string.biometric_authentication_subtitle),
+            negativeButtonText = if (isPasscodeEnabled) {
+                context.getString(R.string.use_passcode_btn)
+            } else {
+                context.getString(R.string.cancel_btn)
+            },
+            onSuccess = onPass,
+            onError = {}
+        )
+    }
+
+    LaunchedEffect(true) {
+        if (isBiometricEnabled && isBiometricsAvailable) {
+            authenticateWithBiometrics()
+        }
+    }
 
     LaunchedEffect(lockTimestamp) {
         lockedTimeLeft = lockTimestamp - System.currentTimeMillis()
@@ -118,7 +144,7 @@ fun LockScreen(
             enabled = lockedTimeLeft <= 0,
             onPasscodeFilled = { verifyPasscode() }
         ) {
-            if (isBiometricEnabled) {
+            if (isBiometricEnabled && isBiometricsAvailable) {
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -128,7 +154,7 @@ fun LockScreen(
                         containerColor = Color.Transparent,
                         contentColor = RarimeTheme.colors.textPrimary
                     ),
-                    onClick = { /* TODO: Implement biometric authentication */ }
+                    onClick = { authenticateWithBiometrics() }
                 ) {
                     AppIcon(
                         id = R.drawable.ic_fingerprint,
@@ -152,7 +178,7 @@ fun LockScreen(
                 tint = RarimeTheme.colors.textPrimary
             )
             Text(
-                text = stringResource(R.string.unlock_with_fingerprint),
+                text = stringResource(R.string.biometric_lock_title),
                 style = RarimeTheme.typography.h4,
                 color = RarimeTheme.colors.textPrimary,
                 textAlign = TextAlign.Center,
@@ -160,15 +186,26 @@ fun LockScreen(
                     .fillMaxWidth()
                     .padding(top = 32.dp)
             )
-            PrimaryButton(
-                text = stringResource(R.string.unlock_btn),
-                size = ButtonSize.Large,
-                modifier = Modifier.padding(top = 32.dp),
-                onClick = {
-                    // TODO: Implement biometric authentication
-                    onPass()
-                }
-            )
+            if (isBiometricsAvailable) {
+                PrimaryButton(
+                    text = stringResource(R.string.unlock_btn),
+                    size = ButtonSize.Large,
+                    modifier = Modifier.padding(top = 32.dp),
+                    onClick = { authenticateWithBiometrics() }
+                )
+            } else {
+                Text(
+                    text = stringResource(R.string.enable_biometrics_msg),
+                    style = RarimeTheme.typography.body3,
+                    color = RarimeTheme.colors.textSecondary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp)
+                        .padding(horizontal = 40.dp)
+                )
+
+            }
         }
     }
 }

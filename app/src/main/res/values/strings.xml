@@ -174,9 +174,14 @@
     <string name="delete_btn">Delete</string>
     <string name="no_transactions_msg">No transactions yet</string>
     <string name="try_again_msg">Please, try again</string>
-    <string name="unlock_with_fingerprint">Unlock with fingerprint</string>
+    <string name="biometric_lock_title">Biometric Auth</string>
     <string name="unlock_btn">Unlock</string>
     <string name="account_locked_time_msg">Your account is locked. Please try again in %1$s.</string>
     <string name="account_locked_msg">Your account is locked. Please try again later.</string>
     <string name="attempts_left_msg">Attempts left: %1$s</string>
+    <string name="enable_biometrics_msg">Enable biometrics in settings to unlock with fingerprint</string>
+    <string name="biometric_authentication_title">Biometric Authentication</string>
+    <string name="biometric_authentication_subtitle">Scan your fingerprint to continue</string>
+    <string name="use_passcode_btn">Use passcode</string>
+    <string name="cancel_btn">Cancel</string>
 </resources>
