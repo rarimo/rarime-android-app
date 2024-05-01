@@ -10,6 +10,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.fragment.app.FragmentActivity
 import com.distributedLab.rarime.modules.common.IdentityViewModel
 import com.distributedLab.rarime.modules.common.PassportViewModel
 import com.distributedLab.rarime.modules.common.SecurityViewModel
@@ -25,7 +26,7 @@ import kotlinx.coroutines.launch
 import java.util.Objects
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     private lateinit var adapter: NfcAdapter
 

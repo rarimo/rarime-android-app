@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.modules.security
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.rememberAppTextFieldState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.BiometricUtil
 import com.distributedLab.rarime.util.Constants
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
@@ -54,6 +56,27 @@ fun LockScreen(
 
     var attemptsLeft by remember { mutableIntStateOf(Constants.MAX_PASSCODE_ATTEMPTS) }
     var lockedTimeLeft by remember { mutableLongStateOf(lockTimestamp - System.currentTimeMillis()) }
+
+    val isBiometricsAvailable = remember {
+        BiometricUtil.isSupported(context)
+    }
+
+    fun authenticateWithBiometrics() {
+        BiometricUtil.authenticate(
+            context = context,
+            title = "Biometric authentication",
+            subtitle = "Unlock with your fingerprint",
+            negativeButtonText = if (isPasscodeEnabled) "Use passcode" else "Cancel",
+            onSuccess = onPass,
+            onError = {}
+        )
+    }
+
+    LaunchedEffect(true) {
+        if (isBiometricEnabled && isBiometricsAvailable) {
+            authenticateWithBiometrics()
+        }
+    }
 
     LaunchedEffect(lockTimestamp) {
         lockedTimeLeft = lockTimestamp - System.currentTimeMillis()
@@ -118,7 +141,7 @@ fun LockScreen(
             enabled = lockedTimeLeft <= 0,
             onPasscodeFilled = { verifyPasscode() }
         ) {
-            if (isBiometricEnabled) {
+            if (isBiometricEnabled && isBiometricsAvailable) {
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -128,7 +151,7 @@ fun LockScreen(
                         containerColor = Color.Transparent,
                         contentColor = RarimeTheme.colors.textPrimary
                     ),
-                    onClick = { /* TODO: Implement biometric authentication */ }
+                    onClick = { authenticateWithBiometrics() }
                 ) {
                     AppIcon(
                         id = R.drawable.ic_fingerprint,
@@ -160,15 +183,25 @@ fun LockScreen(
                     .fillMaxWidth()
                     .padding(top = 32.dp)
             )
-            PrimaryButton(
-                text = stringResource(R.string.unlock_btn),
-                size = ButtonSize.Large,
-                modifier = Modifier.padding(top = 32.dp),
-                onClick = {
-                    // TODO: Implement biometric authentication
-                    onPass()
-                }
-            )
+            if (isBiometricsAvailable) {
+                PrimaryButton(
+                    text = stringResource(R.string.unlock_btn),
+                    size = ButtonSize.Large,
+                    modifier = Modifier.padding(top = 32.dp),
+                    onClick = { authenticateWithBiometrics() }
+                )
+            } else {
+                Text(
+                    text = "Enable biometrics in settings to unlock with fingerprint",
+                    style = RarimeTheme.typography.body1,
+                    color = RarimeTheme.colors.textSecondary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 32.dp)
+                )
+
+            }
         }
     }
 }

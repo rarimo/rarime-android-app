@@ -98,12 +98,8 @@ dependencies {
 
     implementation("net.sf.scuba:scuba-sc-android:0.0.20")
 
-    // QR Code
     implementation("com.lightspark:compose-qr-code:1.0.1")
-
-    // Datastore
     implementation("androidx.security:security-crypto:1.1.0-alpha03")
-
-    // Splash Screen
     implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.biometric:biometric:1.1.0")
 }
