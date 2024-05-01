@@ -16,7 +16,7 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 @Composable
 fun LanguageScreen(
     language: AppLanguage,
-    onLanguageChanged: (AppLanguage) -> Unit,
+    onLanguageChange: (AppLanguage) -> Unit,
     onBack: () -> Unit
 ) {
     ProfileRouteLayout(
@@ -28,7 +28,7 @@ fun LanguageScreen(
                 LanguageItem(
                     language = lang,
                     isSelected = lang == language,
-                    onClick = { onLanguageChanged(lang) }
+                    onClick = { onLanguageChange(lang) }
                 )
             }
 
@@ -56,7 +56,7 @@ private fun LanguageItem(
 private fun LanguageScreenPreview() {
     LanguageScreen(
         language = AppLanguage.ENGLISH,
-        onLanguageChanged = {},
+        onLanguageChange = {},
         onBack = {}
     )
 }

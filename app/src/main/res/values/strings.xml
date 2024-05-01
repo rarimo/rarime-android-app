@@ -173,4 +173,10 @@
     <string name="delete_passport_card_text">You will have to scan the passport again to restore it.</string>
     <string name="delete_btn">Delete</string>
     <string name="no_transactions_msg">No transactions yet</string>
+    <string name="try_again_msg">Please, try again</string>
+    <string name="unlock_with_fingerprint">Unlock with fingerprint</string>
+    <string name="unlock_btn">Unlock</string>
+    <string name="account_locked_time_msg">Your account is locked. Please try again in %1$s.</string>
+    <string name="account_locked_msg">Your account is locked. Please try again later.</string>
+    <string name="attempts_left_msg">Attempts left: %1$s</string>
 </resources>

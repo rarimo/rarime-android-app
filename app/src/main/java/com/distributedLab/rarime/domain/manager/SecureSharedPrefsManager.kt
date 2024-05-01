@@ -31,4 +31,10 @@ interface SecureSharedPrefsManager {
     fun readWalletBalance(): Double
     fun saveWalletBalance(balance: Double)
 
+    fun readPasscode(): String
+    fun savePasscode(passcode: String)
+
+    fun readLockTimestamp(): Long
+    fun saveLockTimestamp(timestamp: Long)
+
 }
