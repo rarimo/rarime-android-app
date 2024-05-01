@@ -107,7 +107,10 @@ fun MainScreen() {
                 }
             },
         ) {
-            ScreenBarsColor(route = currentRoute ?: "")
+            ScreenBarsColor(
+                colorScheme = settingsViewModel.colorScheme.value,
+                route = currentRoute ?: ""
+            )
             Box(
                 modifier = Modifier
                     .fillMaxSize()
