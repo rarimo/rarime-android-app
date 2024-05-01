@@ -3,6 +3,7 @@ package com.distributedLab.rarime.modules.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,12 +17,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,11 +57,15 @@ fun PassportCard(
     onLookChange: (PassportCardLook) -> Unit,
     onIncognitoChange: (Boolean) -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     val settingsSheetState = rememberAppSheetState()
+    var isPressing by remember { mutableStateOf(false) }
 
     val fullName = passport.personDetails!!.name + " " + passport.personDetails!!.surname
     val faceImageInfo = passport.personDetails!!.faceImageInfo
     val image = if (faceImageInfo == null) null else ImageUtil.getImage(faceImageInfo).bitmapImage!!
+
+    val isInfoHidden = isIncognito && !isPressing
 
     Column(
         verticalArrangement = Arrangement.spacedBy(32.dp),
@@ -62,6 +73,16 @@ fun PassportCard(
             .fillMaxWidth()
             .background(look.getBackgroundColor(), RoundedCornerShape(24.dp))
             .padding(24.dp)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onPress = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        isPressing = true
+                        tryAwaitRelease()
+                        isPressing = false
+                    }
+                )
+            }
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
             Row(
@@ -73,13 +94,13 @@ fun PassportCard(
                     color = look.getForegroundColor(),
                     backgroundColor = look.getForegroundColor().copy(alpha = 0.05f),
                     modifier = Modifier.blur(
-                        if (isIncognito) 12.dp else 0.dp,
+                        if (isInfoHidden) 12.dp else 0.dp,
                         edgeTreatment = BlurredEdgeTreatment.Unbounded
                     )
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     AppIcon(
-                        id = if (isIncognito) R.drawable.ic_eye_slash else R.drawable.ic_eye,
+                        id = if (isInfoHidden) R.drawable.ic_eye_slash else R.drawable.ic_eye,
                         tint = look.getForegroundColor(),
                         modifier = Modifier
                             .background(
@@ -88,7 +109,11 @@ fun PassportCard(
                                     .copy(alpha = 0.05f), CircleShape
                             )
                             .padding(8.dp)
-                            .clickable { onIncognitoChange(!isIncognito) }
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClick = { onIncognitoChange(!isIncognito) }
+                            )
                     )
                     AppIcon(
                         id = R.drawable.ic_dots_three_outline,
@@ -100,18 +125,22 @@ fun PassportCard(
                                     .copy(alpha = 0.05f), CircleShape
                             )
                             .padding(8.dp)
-                            .clickable { settingsSheetState.show() }
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClick = { settingsSheetState.show() }
+                            )
                     )
                 }
             }
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    text = if (isIncognito) "••••• •••••••" else fullName,
+                    text = if (isInfoHidden) "••••• •••••••" else fullName,
                     style = RarimeTheme.typography.h6,
                     color = look.getForegroundColor()
                 )
                 Text(
-                    text = if (isIncognito) "••• ••••• •••" else stringResource(
+                    text = if (isInfoHidden) "••• ••••• •••" else stringResource(
                         R.string.years_old, calculateAgeFromBirthDate(
                             passport.personDetails!!.birthDate!!
                         )
@@ -124,13 +153,13 @@ fun PassportCard(
         HorizontalDivider(color = look.getForegroundColor().copy(alpha = 0.05f))
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             PassportInfoRow(
-                label = stringResource(R.string.nationality),
-                value = if (isIncognito) "•••" else passport.personDetails!!.nationality!!,
+                label = if (isInfoHidden) "•••••••••" else stringResource(R.string.nationality),
+                value = if (isInfoHidden) "•••" else passport.personDetails!!.nationality!!,
                 look = look
             )
             PassportInfoRow(
-                label = stringResource(R.string.document_number),
-                value = if (isIncognito) "••••••••" else passport.personDetails!!.serialNumber!!,
+                label = if (isInfoHidden) "••••••••" else stringResource(R.string.document_number),
+                value = if (isInfoHidden) "••••••••" else passport.personDetails!!.serialNumber!!,
                 look = look
             )
         }
