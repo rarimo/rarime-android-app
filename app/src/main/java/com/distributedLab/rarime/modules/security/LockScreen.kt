@@ -53,7 +53,7 @@ fun LockScreen(
     val passcodeState = rememberAppTextFieldState("")
 
     var attemptsLeft by remember { mutableIntStateOf(Constants.MAX_PASSCODE_ATTEMPTS) }
-    var lockedTimeLeft by remember { mutableLongStateOf(0) }
+    var lockedTimeLeft by remember { mutableLongStateOf(lockTimestamp - System.currentTimeMillis()) }
 
     LaunchedEffect(lockTimestamp) {
         lockedTimeLeft = lockTimestamp - System.currentTimeMillis()
