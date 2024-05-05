@@ -12,6 +12,7 @@ import com.distributedLab.rarime.util.StringUtil
 import com.distributedLab.rarime.util.addCharAtIndex
 import com.distributedLab.rarime.util.publicKeyToPem
 import com.distributedLab.rarime.util.toBitArray
+import identity.Profile
 import net.sf.scuba.smartcards.CardService
 import org.bouncycastle.asn1.cms.SignedData
 import org.bouncycastle.jce.provider.BouncyCastleProvider
@@ -25,11 +26,13 @@ import org.jmrtd.lds.icao.DG1File
 import org.jmrtd.lds.icao.DG2File
 import org.jmrtd.lds.iso19794.FaceImageInfo
 import java.io.InputStream
+import java.math.BigInteger
 import java.security.MessageDigest
+import java.security.PrivateKey
 import java.security.Security
 import java.util.Arrays
 
-class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec) {
+class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,private val privateKey: ByteArray) {
     private var eDocument: EDocument = EDocument()
     private var docType: DocType = DocType.OTHER
     private var personDetails: PersonDetails = PersonDetails()
@@ -152,7 +155,6 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec) {
         personDetails.serialNumber = mrzInfo.documentNumber
         personDetails.nationality = mrzInfo.nationality
         personDetails.issuerAuthority = mrzInfo.issuingState
-
         eDocument.dg1 = encodedDg1File
 
         if ("I" == mrzInfo.documentCode) {
@@ -224,6 +226,17 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec) {
         Log.e("Digest Algorithm", sodFile.digestAlgorithm)
         Log.e("signerInfoDigestAlgorithm", sodFile.signerInfoDigestAlgorithm)
 
+
+
+        val profiler = Profile().newProfile(privateKey).registrationChallenge
+
+        val response = service.doAA(
+            dg15.publicKey,
+            "SHA-256", "SHA-256",profiler
+        )
+
+        eDocument.aaSignature = response.response
+
         // sign -> contract
 
         val index = pemFile.indexOf("-----END CERTIFICATE-----")
@@ -257,6 +270,8 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec) {
 
         eDocument.dg15 = dg15.encoded.toHexString()
         Log.e("DG15", dg15.encoded.toHexString())
+
+
 
         return eDocument
     }

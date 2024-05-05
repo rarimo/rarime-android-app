@@ -8,16 +8,11 @@ data class Proof(
     val pi_b: List<List<String>>,
     val pi_c: List<String>,
     val protocol: String,
-    var curve: String = "bn128"
 ) {
     companion object {
         fun fromJson(jsonString: String): Proof {
             val json = Gson().fromJson(jsonString, Proof::class.java)
             return json
-        }
-
-        fun getDefaultCurve(): String {
-            return "bn128"
         }
     }
 

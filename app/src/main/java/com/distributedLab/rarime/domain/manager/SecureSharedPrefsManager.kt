@@ -4,8 +4,16 @@ import com.distributedLab.rarime.data.enums.AppColorScheme
 import com.distributedLab.rarime.data.enums.AppLanguage
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.SecurityCheckState
+import com.distributedLab.rarime.modules.passport.models.EDocument
+import com.distributedLab.rarime.modules.wallet.models.Transaction
+import com.distributedLab.rarime.util.data.ZkProof
+import java.security.PrivateKey
 
 interface SecureSharedPrefsManager {
+
+    fun savePrivateKey(privateKey: String)
+
+    fun readPrivateKey(): String?
 
     fun readIsIntroFinished(): Boolean
     fun saveIsIntroFinished(isFinished: Boolean)
@@ -30,5 +38,16 @@ interface SecureSharedPrefsManager {
 
     fun readWalletBalance(): Double
     fun saveWalletBalance(balance: Double)
+
+
+    fun saveEDocument(eDocument: EDocument)
+
+    fun readEDocument(): EDocument?
+    fun saveRegistrationProof(proof: ZkProof)
+
+    fun readRegistrationProof(): ZkProof?
+    fun readTransactions(): List<Transaction>
+
+    fun addTransaction(transaction: Transaction)
 
 }

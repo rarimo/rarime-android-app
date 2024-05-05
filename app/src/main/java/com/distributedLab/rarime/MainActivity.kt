@@ -10,14 +10,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.distributedLab.rarime.modules.common.IdentityViewModel
-import com.distributedLab.rarime.modules.common.PassportViewModel
-import com.distributedLab.rarime.modules.common.SecurityViewModel
-import com.distributedLab.rarime.modules.common.SettingsViewModel
-import com.distributedLab.rarime.modules.common.WalletViewModel
 import com.distributedLab.rarime.modules.main.MainScreen
 import com.distributedLab.rarime.modules.passport.nfc.NfcViewModel
-import com.distributedLab.rarime.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

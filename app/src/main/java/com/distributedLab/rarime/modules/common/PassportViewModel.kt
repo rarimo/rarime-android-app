@@ -10,29 +10,30 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PassportViewModel @Inject constructor(
-    private val dataStoreManager: SecureSharedPrefsManager
+    private val secureSharedPrefsManager: SecureSharedPrefsManager
 ) : ViewModel() {
-    // TODO: Get passport from secure storage
+
     var passport = mutableStateOf<EDocument?>(
-        null
+        secureSharedPrefsManager.readEDocument()
     )
         private set
-    var passportCardLook = mutableStateOf(dataStoreManager.readPassportCardLook())
+    var passportCardLook = mutableStateOf(secureSharedPrefsManager.readPassportCardLook())
         private set
-    var isIncognitoMode = mutableStateOf(dataStoreManager.readIsPassportIncognitoMode())
+    var isIncognitoMode = mutableStateOf(secureSharedPrefsManager.readIsPassportIncognitoMode())
         private set
 
     fun updatePassportCardLook(look: PassportCardLook) {
         passportCardLook.value = look
-        dataStoreManager.savePassportCardLook(look)
+        secureSharedPrefsManager.savePassportCardLook(look)
     }
 
     fun updateIsIncognitoMode(isIncognitoMode: Boolean) {
         this.isIncognitoMode.value = isIncognitoMode
-        dataStoreManager.saveIsPassportIncognitoMode(isIncognitoMode)
+        secureSharedPrefsManager.saveIsPassportIncognitoMode(isIncognitoMode)
     }
 
-    fun setPassport(passport: EDocument?) {
+    fun setPassport(passport: EDocument) {
+        secureSharedPrefsManager.saveEDocument(passport)
         this.passport.value = passport
     }
 }

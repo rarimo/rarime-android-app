@@ -137,6 +137,7 @@ fun MainScreen() {
                             privateKey = identityViewModel.privateKey.value,
                             onNext = {
                                 viewModel.finishIntro()
+                                identityViewModel.savePrivateKey()
                                 navController.navigate(Screen.Passcode.route)
                             },
                             onBack = { navController.popBackStack() }
@@ -227,7 +228,7 @@ fun MainScreen() {
                     }
                     composable(Screen.Main.Wallet.Receive.route) {
                         WalletReceiveScreen(
-                            address = walletViewModel.address,
+                            address = walletViewModel.getAddress(),
                             onBack = { navController.popBackStack() }
                         )
                     }

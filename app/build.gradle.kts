@@ -10,6 +10,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
+
         applicationId = "com.distributedLab.rarime"
         minSdk = 27
         targetSdk = 34
@@ -126,4 +127,15 @@ dependencies {
 
     // Splash Screen
     implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
+
+
+
+    //Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+
+    //Web3
+    implementation("org.web3j:core:4.8.7-android")
 }

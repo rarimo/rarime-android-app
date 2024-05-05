@@ -2,6 +2,7 @@ package com.distributedLab.rarime.util
 
 import android.content.Context
 import android.content.res.AssetManager
+import android.util.Log
 import com.distributedLab.rarime.util.ZkpUtil.groth16ProverBig
 import com.distributedLab.rarime.util.data.Proof
 import com.distributedLab.rarime.util.data.ZkProof
@@ -22,7 +23,7 @@ object ZkpUtil {
         assetManager: AssetManager
     ): Int
 
-    external fun registerIdentity(
+    external fun registerIdentity2688(
         circuitBuffer: ByteArray,
         circuitSize: Long,
         jsonBuffer: ByteArray,
@@ -32,6 +33,31 @@ object ZkpUtil {
         errorMsg: ByteArray,
         errorMsgMaxSize: Long
     ): Int
+
+
+    external fun registerIdentity2704(
+        circuitBuffer: ByteArray,
+        circuitSize: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+
+    external fun queryIdentity(
+        circuitBuffer: ByteArray,
+        circuitSize: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
 
     init {
         System.loadLibrary("rarime")
@@ -97,6 +123,10 @@ class ZKPUseCase(val context: Context) {
             256,
             context.assets
         )
+
+        if(verification == -2) {
+            throw Exception("Error during zkp: Cant find file")
+        }
 
         if (verification == 2) {
             throw Exception("Not enough memory for verification ${msg.decodeToString()}")

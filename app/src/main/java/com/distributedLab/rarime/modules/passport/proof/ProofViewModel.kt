@@ -1,105 +1,174 @@
 package com.distributedLab.rarime.modules.passport.proof
 
 import android.app.Application
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import com.distributedLab.rarime.R
+import com.distributedLab.rarime.data.manager.ApiServiceRemoteData
+import com.distributedLab.rarime.domain.data.EvmTxResponse
+import com.distributedLab.rarime.domain.data.RegisterRequest
+import com.distributedLab.rarime.domain.data.RegisterRequestData
+import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.modules.passport.PassportProofState
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.passport.nfc.SODFileOwn
-import com.distributedLab.rarime.util.SecurityUtil
 import com.distributedLab.rarime.util.ZKPUseCase
-import com.distributedLab.rarime.util.addCharAtIndex
+import com.distributedLab.rarime.util.ZkpUtil
+import com.distributedLab.rarime.util.data.ZkProof
 import com.distributedLab.rarime.util.decodeHexString
 import com.distributedLab.rarime.util.publicKeyToPem
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
-import identity.Identity
+import identity.CallDataBuilder
 import identity.Profile
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+const val ENCAPSULATED_CONTENT_2688 = 2688
+const val ENCAPSULATED_CONTENT_2704 = 2704
 
+@OptIn(ExperimentalStdlibApi::class)
 @HiltViewModel
-class ProofViewModel @Inject constructor(application: Application) : AndroidViewModel(application) {
+class ProofViewModel @Inject constructor(
+    application: Application,
+    private val dataStoreManager: SecureSharedPrefsManager,
+    private val apiService: ApiServiceRemoteData
+) : AndroidViewModel(application) {
     val zkp = ZKPUseCase(application as Context)
 
-    val clipboardManager =
-        (application as Context).getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    private val secretKey: ByteArray = dataStoreManager.readPrivateKey()!!.decodeHexString()
 
+    private lateinit var proof: ZkProof
     private var _state = MutableStateFlow(PassportProofState.READING_DATA)
 
     val state: StateFlow<PassportProofState>
         get() = _state.asStateFlow()
 
+    fun getRegistrationProof(): ZkProof {
+        return proof
+    }
+
+    private fun buildRegistrationInputs(edocument: EDocument): ByteArray {
+
+        _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
+        val sodFile = SODFileOwn(edocument.sod!!.decodeHexString().inputStream())
+
+        val encapsulatedContent =
+            sodFile.readASN1Data()!!.toHexString().substring(8).decodeHexString()
+        val signedAttribute = sodFile.eContent
+
+        val certificate = sodFile.docSigningCertificate
+        val publicKeyPem = certificate.publicKey.publicKeyToPem()
+
+        val signature = sodFile.encryptedDigest
+
+        val profile = Profile().newProfile(secretKey)
+
+        Log.i("DG1hex", edocument.dg1!!.toByteArray().toHexString())
+
+        Log.i("DG1hex", edocument.dg15!!)
+
+        return profile.buildRegisterIdentityInputs(
+            encapsulatedContent,
+            signedAttribute,
+            edocument.dg1!!.toByteArray().toHexString().decodeHexString(),
+            edocument.dg15!!.decodeHexString(),
+            publicKeyPem.toByteArray(),
+            signature
+        )
+    }
+
+    private fun generateRegisterIdentityProof(edocument: EDocument): ZkProof? {
+
+        _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
+        val inputs = buildRegistrationInputs(edocument)
+        val sodFile = SODFileOwn(edocument.sod!!.decodeHexString().inputStream())
+
+        val size = sodFile.readASN1Data()!!.toHexString().substring(8).decodeHexString().size * 8
+
+        Log.e("SIZE", size.toString())
+
+        val proof = when (size) {
+            ENCAPSULATED_CONTENT_2688 -> {
+                zkp.generateZKP(
+                    zkeyFileName = "circuit_2688_zkey.zkey",
+                    R.raw.circuit_2688_dat,
+                    inputs,
+                    ZkpUtil::registerIdentity2688
+                )
+            }
+
+            ENCAPSULATED_CONTENT_2704 -> {
+                zkp.generateZKP(
+                    zkeyFileName = "circuit_2704_zkey.zkey",
+                    R.raw.circuit_2704_dat,
+                    inputs,
+                    ZkpUtil::registerIdentity2704
+                )
+            }
+
+            else -> {
+                null
+            }
+        }
+
+        Log.e("Proof", GsonBuilder().setPrettyPrinting().create().toJson(proof))
+
+        return proof
+    }
+
+    private suspend fun register(callData: ByteArray): EvmTxResponse {
+
+        val payload =
+            RegisterRequest(data = RegisterRequestData(tx_data = "0x" + callData.toHexString()))
+
+        val gson = GsonBuilder().setPrettyPrinting().create()
+        Log.i("Payload", gson.toJson(payload))
+        return apiService.sendRegistration(payload)!!
+    }
 
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun generateProof(eDocument: EDocument) {
 
-        coroutineScope {
-            val sodFile = SODFileOwn(eDocument.sod!!.decodeHexString().inputStream())
-            val startTime = System.currentTimeMillis()
 
-            val endTime = System.currentTimeMillis()
+        _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
 
-            val privKey = Identity.newBJJSecretKey()
-            val profile = Profile().newProfile(privKey)
-            val challlenge = profile.registrationChallenge
+        proof = withContext(Dispatchers.IO) { generateRegisterIdentityProof(eDocument)!! }
+        val proofJson = Gson().toJson(proof)
+        val sodFile = SODFileOwn(eDocument.sod!!.decodeHexString().inputStream())
 
-            val encapsulatedContent =
-                sodFile.readASN1Data()!!.toHexString().substring(8).decodeHexString()
-            val signedAttribute = sodFile.eContent
+        Log.i("SOD: ", sodFile.encoded.toHexString())
 
-            val certificate = sodFile.docSigningCertificate
-            var pemFile = SecurityUtil.convertToPem(certificate)
+        sodFile.docSigningCertificate.publicKey
+
+        Log.i("PUBKEY PEM", sodFile.docSigningCertificate.publicKey.publicKeyToPem())
 
 
-            val index = pemFile.indexOf("-----END CERTIFICATE-----")
-            pemFile = pemFile.addCharAtIndex('\n', index)
+        val callData = CallDataBuilder().buildRegisterCalldata(
+            proofJson.toByteArray(),
+            eDocument.aaSignature,
+            sodFile.docSigningCertificate.publicKey.publicKeyToPem().toByteArray(),
+            (sodFile.readASN1Data()!!.toHexString().substring(8)
+                .decodeHexString().size * 8).toLong(),
+        )
 
-            Log.d("PUB", sodFile.docSigningCertificate.publicKey.encoded.toHexString())
+        //val response = register(callData)
 
-            Log.d("Cert", pemFile)
+        //Log.i("Register", response.toString())
 
-            val inputs = profile.buildRegisterIdentityInputs(
-                preprocessMessage(encapsulatedContent),//
-                preprocessMessage(signedAttribute),//
-                preprocessMessage(eDocument.dg1!!.toByteArray()),//
-                preprocessMessage(eDocument.dg15!!.toByteArray()),//
-                sodFile.docSigningCertificate.publicKey.publicKeyToPem().toByteArray(),
-                sodFile.encryptedDigest
-            )
+        dataStoreManager.saveEDocument(eDocument)
+        dataStoreManager.saveRegistrationProof(proof)
 
-
-
-            Log.d("inputs", inputs.decodeToString())
-            val clip = ClipData.newPlainText("password", inputs.decodeToString())
-
-            Log.i("encapsulated content", encapsulatedContent.toHexString())
-            clipboardManager.setPrimaryClip(clip)
-
-            _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
-//            val proof = zkp.generateZKP(
-//                "registerIdentityZkey.zkey",
-//                R.raw.register_identity,
-//                inputs,
-//                ZkpUtil::registerIdentity
-//            )
-
-
-            _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
-
-
-            Log.e("Proof", ((endTime - startTime) / 1000).toString())
-
-            _state.value = PassportProofState.FINALIZING
-        }
+        _state.value = PassportProofState.FINALIZING
     }
 }
+
 
 fun preprocessMessage(message: ByteArray): ByteArray {
     val messageLengthBits = message.size * 8

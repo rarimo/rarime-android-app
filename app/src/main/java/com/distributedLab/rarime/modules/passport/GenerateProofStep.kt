@@ -14,18 +14,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.passport.proof.ProofViewModel
@@ -35,7 +35,7 @@ import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.ProcessingChip
 import com.distributedLab.rarime.ui.components.ProcessingStatus
 import com.distributedLab.rarime.ui.theme.RarimeTheme
-import kotlinx.coroutines.delay
+import com.distributedLab.rarime.util.data.ZkProof
 import kotlinx.coroutines.launch
 
 enum class PassportProofState(val value: Int) {
@@ -44,33 +44,20 @@ enum class PassportProofState(val value: Int) {
 
 @Composable
 fun GenerateProofStep(
-    eDocument: EDocument, onClose: () -> Unit, proofViewModel: ProofViewModel = viewModel()
+    eDocument: EDocument,
+    onClose: (zkp: ZkProof) -> Unit,
+    proofViewModel: ProofViewModel = hiltViewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(key1 = null) {
-        coroutineScope.launch {
 
-        }
-    }
-
-
-    var currentState by remember { mutableStateOf(PassportProofState.READING_DATA) }
-    var processingStatus by remember { mutableStateOf(ProcessingStatus.PROCESSING) }
+    val currentState by proofViewModel.state.collectAsState()
+    val processingStatus by remember { mutableStateOf(ProcessingStatus.PROCESSING) }
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
             proofViewModel.generateProof(eDocument)
-            delay(1000)
-            currentState = PassportProofState.APPLYING_ZERO_KNOWLEDGE
-            delay(2000)
-            currentState = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
-            delay(1000)
-            currentState = PassportProofState.FINALIZING
-            delay(3000)
-            processingStatus = ProcessingStatus.SUCCESS
-            delay(1500)
-            onClose()
+            onClose(proofViewModel.getRegistrationProof())
         }
     }
 
