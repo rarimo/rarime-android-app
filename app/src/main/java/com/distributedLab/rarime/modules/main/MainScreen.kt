@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -48,6 +49,7 @@ import com.distributedLab.rarime.ui.components.AppWebView
 import com.distributedLab.rarime.ui.theme.AppTheme
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Constants
+import com.distributedLab.rarime.util.LocaleUtil
 import com.distributedLab.rarime.util.Screen
 
 val mainRoutes = listOf(
@@ -74,6 +76,8 @@ fun MainScreen() {
 
     val currentRoute = navBackStackEntry?.destination?.route
     val isBottomBarVisible = currentRoute != null && currentRoute in mainRoutes
+
+    val context = LocalContext.current
 
     val startDestination =
         if (securityViewModel.isScreenLocked.value) {
@@ -271,7 +275,10 @@ fun MainScreen() {
                     composable(Screen.Main.Profile.Language.route) {
                         LanguageScreen(
                             language = settingsViewModel.language.value,
-                            onLanguageChange = settingsViewModel::updateLanguage,
+                            onLanguageChange = {
+                                settingsViewModel.updateLanguage(it)
+                                LocaleUtil.updateLocale(context, it.localeTag)
+                            },
                             onBack = { navController.popBackStack() }
                         )
                     }

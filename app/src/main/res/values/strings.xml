@@ -8,27 +8,23 @@
     <string name="intro_step_3_text">Login and access special parts of the web</string>
     <string name="intro_step_4_title">Get rewarded</string>
     <string name="intro_step_4_text">Create a profile, add various credentials, and invite others to earn rewards in the process</string>
-
     <string name="skip_btn">Skip</string>
     <string name="next_btn">Next</string>
     <string name="get_started_btn">Get Started</string>
     <string name="continue_btn">Continue</string>
     <string name="enable_btn">Enable</string>
     <string name="maybe_later_btn">Maybe Later</string>
-
     <string name="get_started_title">Get Started</string>
     <string name="get_started_text">Select Authorization Method</string>
     <string name="create_identity_title">Create new Identity</string>
     <string name="create_identity_text">Description text here</string>
     <string name="import_identity_title">Import from MetaMask Snap</string>
     <string name="import_identity_text">Description text here</string>
-
     <string name="step_indicator">Step %1$s/%2$s</string>
     <string name="new_identity_title">Your Private Key</string>
     <string name="copy_to_clipboard_btn">Copy to clipboard</string>
     <string name="copied_text">Copied</string>
     <string name="new_identity_warning">Please store the private key safely and do not share it with anyone. If you lose this key, you will not be able to recover the account and will lose access forever.</string>
-
     <string name="enable_passcode_title">Enable\nPasscode</string>
     <string name="enable_passcode_text">Enable Passcode Authentication</string>
     <string name="enter_passcode_title">Enter Passcode</string>
