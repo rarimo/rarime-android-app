@@ -9,6 +9,7 @@ import com.distributedLab.rarime.data.enums.AppLanguage
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.SecurityCheckState
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
+import com.distributedLab.rarime.util.LocaleUtil
 import javax.inject.Inject
 
 
@@ -134,16 +135,23 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     }
 
     override fun readLanguage(): AppLanguage {
-        return AppLanguage.fromString(
+        val systemLocale = LocaleUtil.getSystemLocale(application)
+        val defaultLanguage = try {
+            AppLanguage.fromLocaleTag(systemLocale)
+        } catch (e: NoSuchElementException) {
+            AppLanguage.ENGLISH
+        }
+        return AppLanguage.fromLocaleTag(
             getSharedPreferences().getString(
-                accessTokens["LANGUAGE"], AppLanguage.ENGLISH.value
-            ) ?: AppLanguage.ENGLISH.value
+                accessTokens["LANGUAGE"], defaultLanguage.localeTag
+            ) ?: defaultLanguage.localeTag
         )
     }
 
     override fun saveLanguage(language: AppLanguage) {
         val editor = getEditor()
-        editor.putString(accessTokens["LANGUAGE"], language.value)
+        editor.putString(accessTokens["LANGUAGE"], language.localeTag)
+        editor.apply()
     }
 
     override fun readWalletBalance(): Double {

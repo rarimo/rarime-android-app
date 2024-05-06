@@ -16,10 +16,16 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        resourceConfigurations.plus(listOf("en", "uk", "ka"))
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+    }
+
+    androidResources {
+        generateLocaleConfig = true
     }
 
     buildTypes {
