@@ -30,6 +30,7 @@ sealed class Screen(val route: String) {
             data object ExportKeys : Screen("export_keys")
             data object Language : Screen("language")
             data object Theme : Screen("theme")
+            data object AppIcon : Screen("app_icon")
             data object Terms : Screen("terms")
             data object Privacy : Screen("privacy")
         }
