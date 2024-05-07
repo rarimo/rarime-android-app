@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -76,16 +77,16 @@ fun AuthMethodScreen(
             title = stringResource(R.string.auth_method),
             onBack = onBack
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
-                if (isBiometricsAvailable) {
-                    AuthMethodRow(
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                if (!isBiometricsAvailable) {
+                    AuthMethodItem(
                         iconId = R.drawable.ic_fingerprint,
                         label = stringResource(R.string.biometrics),
                         checked = biometricsState == SecurityCheckState.ENABLED,
                         onCheckedChange = { handleBiometricsStateChange(it) }
                     )
                 }
-                AuthMethodRow(
+                AuthMethodItem(
                     iconId = R.drawable.ic_password,
                     label = stringResource(R.string.passcode),
                     checked = passcodeState == SecurityCheckState.ENABLED,
@@ -97,7 +98,7 @@ fun AuthMethodScreen(
 }
 
 @Composable
-private fun AuthMethodRow(
+private fun AuthMethodItem(
     @DrawableRes iconId: Int,
     label: String,
     checked: Boolean,
@@ -106,7 +107,10 @@ private fun AuthMethodRow(
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(RarimeTheme.colors.backgroundOpacity, RoundedCornerShape(12.dp))
+            .padding(16.dp)
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -122,7 +126,7 @@ private fun AuthMethodRow(
             )
             Text(
                 text = label,
-                style = RarimeTheme.typography.subtitle4,
+                style = RarimeTheme.typography.buttonMedium,
                 color = RarimeTheme.colors.textPrimary
             )
         }

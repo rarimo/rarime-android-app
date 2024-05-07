@@ -4,10 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.distributedLab.rarime.R
 
-enum class AppLanguage(val localeTag: String) {
-    ENGLISH("en"),
-    UKRAINIAN("uk"),
-    GEORGIAN("ka");
+enum class AppLanguage(val localeTag: String, val flag: String) {
+    ENGLISH("en", "🇺🇸"),
+    UKRAINIAN("uk", "🇺🇦"),
+    GEORGIAN("ka", "🇬🇪");
 
     companion object {
         fun fromLocaleTag(tag: String) = entries.first { tag.startsWith(it.localeTag) }

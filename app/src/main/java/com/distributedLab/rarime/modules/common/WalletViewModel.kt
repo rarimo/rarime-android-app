@@ -7,6 +7,7 @@ import com.distributedLab.rarime.R
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.modules.wallet.models.TransactionState
+import com.distributedLab.rarime.util.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import java.util.Date
@@ -33,7 +34,7 @@ class WalletViewModel @Inject constructor(
         // TODO: Claim RMO token
         delay(3.seconds)
 
-        balance.doubleValue += 3.0
+        balance.doubleValue += Constants.AIRDROP_REWARD
         dataStoreManager.saveWalletBalance(balance.doubleValue)
 
         transactions.value = listOf(
@@ -41,7 +42,7 @@ class WalletViewModel @Inject constructor(
                 id = 1,
                 iconId = R.drawable.ic_airdrop,
                 titleId = R.string.airdrop_tx_title,
-                amount = 3.0,
+                amount = Constants.AIRDROP_REWARD,
                 date = Date(),
                 state = TransactionState.INCOMING
             )
