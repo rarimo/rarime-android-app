@@ -6,11 +6,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -73,13 +71,8 @@ fun AirdropIntroScreen(onStart: () -> Unit) {
             description = stringResource(R.string.airdrop_intro_description)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                DescriptionStepRow("1.", stringResource(R.string.airdrop_intro_step_1))
-                DescriptionStepRow("2.", stringResource(R.string.airdrop_intro_step_2))
-                DescriptionStepRow("3.", stringResource(R.string.airdrop_intro_step_3))
-            }
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
-                    text = stringResource(R.string.what_is_this),
+                    text = stringResource(R.string.airdrop_intro_text_title),
                     style = RarimeTheme.typography.overline2,
                     color = RarimeTheme.colors.textSecondary
                 )
@@ -88,17 +81,6 @@ fun AirdropIntroScreen(onStart: () -> Unit) {
                     style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.textPrimary
                 )
-                Text(
-                    text = buildAnnotatedString {
-                        append(stringResource(R.string.full_functional_available_on))
-                        withStyle(RarimeTheme.typography.subtitle5.toSpanStyle()) {
-                            append(stringResource(R.string.july))
-                        }
-                    },
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.warningMain
-                )
-
             }
         }
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -132,26 +114,6 @@ fun AirdropIntroScreen(onStart: () -> Unit) {
                 )
             }
         }
-    }
-}
-
-@Composable
-fun DescriptionStepRow(prefix: String, text: String) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            modifier = Modifier.width(18.dp),
-            text = prefix,
-            style = RarimeTheme.typography.subtitle4,
-            color = RarimeTheme.colors.textPrimary,
-        )
-        Text(
-            text = text,
-            style = RarimeTheme.typography.body3,
-            color = RarimeTheme.colors.textPrimary,
-        )
     }
 }
 

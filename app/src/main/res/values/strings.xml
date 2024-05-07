@@ -80,21 +80,17 @@
     <string name="beta_launch">Beta launch</string>
     <string name="create_account_btn">Create account</string>
     <string name="what_is_rarime_title">What is RariMe?</string>
-    <string name="what_is_rarime_description">short description text here</string>
     <string name="rarime_info_text">"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors "</string>
-    <string name="full_functional_available_on">"Full functional available on: "</string>
-    <string name="july">July</string>
     <string name="settings_title">Settings</string>
     <string name="card_visual">CARD VISUAL</string>
     <string name="delete_card_btn">Delete Card</string>
     <string name="other_passport_title">Other passport holders</string>
-    <string name="other_passport_description">short description text here</string>
-    <string name="other_passport_text">"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors "</string>
+    <string name="other_passport_text">Upcoming airdrops will include citizens from all over the world.\n\nCreate an incognito profile by scanning your passport, and we will notify you when you become eligible.</string>
     <string name="join_waitlist_btn">Join the waitlist</string>
-    <string name="airdrop_intro_title">Programable Airdrop</string>
-    <string name="airdrop_intro_description">Beta launch is focused on distributing tokens to Ukrainian identity holders</string>
-    <string name="what_is_this">WHAT IS THIS?</string>
-    <string name="airdrop_intro_text">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it h</string>
+    <string name="airdrop_intro_title">Programmable Airdrop</string>
+    <string name="airdrop_intro_description">The beta launch is focused on distributing tokens to Ukrainian citizens</string>
+    <string name="airdrop_intro_text_title">WHAT’S THAT?</string>
+    <string name="airdrop_intro_text">This airdrop is part of a humanitarian effort to help direct funds towards Ukraine.\n\nIt showcases Rarimo’s identity infrastructure. and how it can be used by projects and organizations to directly reach civilians.</string>
     <string name="terms_check_agreement">"By checking this box, you are agreeing to "</string>
     <string name="rarime_general_terms_conditions"><![CDATA[RariMe General Terms & Conditions]]></string>
     <string name="rarime_privacy_notice">RariMe Privacy Notice</string>
@@ -177,4 +173,8 @@
     <string name="biometric_authentication_subtitle">Scan your fingerprint to continue</string>
     <string name="use_passcode_btn">Use passcode</string>
     <string name="cancel_btn">Cancel</string>
+    <string name="what_is_rarime_text_item_3_accent">Incognito mode</string>
+    <string name="what_is_rarime_text_item_1">RariMe is a self-custody identity wallet where no personal data ever leaves the device and everything is processed locally.</string>
+    <string name="what_is_rarime_text_item_2">Prove your eligibility, belonging, identity, and contributions — without ever revealing personal data.</string>
+    <string name="what_is_rarime_text_item_3">" ensures your history, reputation and actions are not lost, but remain confidential and under your control."</string>
 </resources>
