@@ -1,9 +1,8 @@
 package com.distributedLab.rarime.modules.intro
 
-import androidx.annotation.DrawableRes
+import androidx.annotation.RawRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -26,12 +26,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.ui.components.AppAnimation
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.SecondaryTextButton
@@ -42,27 +41,32 @@ import kotlinx.coroutines.launch
 private enum class IntroStep(
     @StringRes val title: Int,
     @StringRes val text: Int,
-    @DrawableRes val image: Int
+    @RawRes val animation: Int,
+    val animationWidth: Int,
 ) {
     Welcome(
         title = R.string.intro_step_1_title,
         text = R.string.intro_step_1_text,
-        image = R.drawable.intro_app
+        animation = R.raw.anim_intro_welcome,
+        animationWidth = 390
     ),
     Identity(
         title = R.string.intro_step_2_title,
         text = R.string.intro_step_2_text,
-        image = R.drawable.intro_identity
+        animation = R.raw.anim_intro_incognito,
+        animationWidth = 342
     ),
     Privacy(
         title = R.string.intro_step_3_title,
         text = R.string.intro_step_3_text,
-        image = R.drawable.intro_privacy
+        animation = R.raw.anim_intro_proofs,
+        animationWidth = 320
     ),
     Rewards(
         title = R.string.intro_step_4_title,
         text = R.string.intro_step_4_text,
-        image = R.drawable.intro_gifts
+        animation = R.raw.anim_intro_rewards,
+        animationWidth = 220
     )
 }
 
@@ -150,12 +154,18 @@ fun IntroScreen(navigateTo: (route: String) -> Unit) {
 @Composable
 private fun StepView(step: IntroStep) {
     Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
-        Image(
-            painter = painterResource(id = step.image),
-            contentDescription = null,
-            contentScale = ContentScale.FillWidth,
-            modifier = Modifier.fillMaxWidth()
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(390.dp)
+        ) {
+            AppAnimation(
+                id = step.animation,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(step.animationWidth.dp)
+            )
+        }
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.padding(horizontal = 24.dp)

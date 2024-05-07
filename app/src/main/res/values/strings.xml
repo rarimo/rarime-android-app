@@ -1,13 +1,13 @@
 <resources>
-    <string name="app_name">Rarime</string>
+    <string name="app_name">RariMe</string>
     <string name="intro_step_1_title">Welcome</string>
-    <string name="intro_step_1_text">This is an app where your digital identity lives and enables you to connect with rest of the web in a fully private mode</string>
-    <string name="intro_step_2_title">Plug your identity</string>
-    <string name="intro_step_2_text">Convert existing identity documents into anonymous credentials</string>
-    <string name="intro_step_3_title">Use them</string>
-    <string name="intro_step_3_text">Login and access special parts of the web</string>
-    <string name="intro_step_4_title">Get rewarded</string>
-    <string name="intro_step_4_text">Create a profile, add various credentials, and invite others to earn rewards in the process</string>
+    <string name="intro_step_1_text">This app is where you privately store your digital identities, enabling you to go incognito across the web.</string>
+    <string name="intro_step_2_title">Go Incognito</string>
+    <string name="intro_step_2_text">RariMe ensures your history, reputation and actions are not lost, and remain under your control.</string>
+    <string name="intro_step_3_title">Proofs</string>
+    <string name="intro_step_3_text">Prove your eligibility, belonging, identity, and contributions — all without revealing your personal details.</string>
+    <string name="intro_step_4_title">Get Rewarded</string>
+    <string name="intro_step_4_text">Start building your incognito profile and earn rewards as an early community member.</string>
     <string name="skip_btn">Skip</string>
     <string name="next_btn">Next</string>
     <string name="get_started_btn">Get Started</string>
@@ -26,12 +26,12 @@
     <string name="copied_text">Copied</string>
     <string name="new_identity_warning">Please store the private key safely and do not share it with anyone. If you lose this key, you will not be able to recover the account and will lose access forever.</string>
     <string name="enable_passcode_title">Enable\nPasscode</string>
-    <string name="enable_passcode_text">Enable Passcode Authentication</string>
+    <string name="enable_passcode_text">Enable Passcode Login</string>
     <string name="enter_passcode_title">Enter Passcode</string>
     <string name="repeat_passcode_title">Repeat Passcode</string>
     <string name="passcodes_mismatch_error">Passcodes do not match</string>
     <string name="enable_biometrics_title">Enable\nBiometrics</string>
-    <string name="enable_biometrics_text">Enable Fingerprint Authentication</string>
+    <string name="enable_biometrics_text">Enable Fingerprint Login</string>
     <string name="invalid_passcode">Invalid Passcode</string>
     <string name="try_again">Try Again</string>
     <string name="status_processing">PROCESSING</string>
