@@ -126,7 +126,7 @@ private fun AuthMethodItem(
             )
             Text(
                 text = label,
-                style = RarimeTheme.typography.subtitle4,
+                style = RarimeTheme.typography.buttonMedium,
                 color = RarimeTheme.colors.textPrimary
             )
         }

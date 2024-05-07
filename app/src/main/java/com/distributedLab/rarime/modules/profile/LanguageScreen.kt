@@ -56,7 +56,7 @@ private fun LanguageItem(
             )
             Text(
                 text = language.toLocalizedString(),
-                style = RarimeTheme.typography.subtitle4,
+                style = RarimeTheme.typography.buttonMedium,
                 color = RarimeTheme.colors.textPrimary
             )
         }
