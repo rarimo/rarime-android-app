@@ -40,10 +40,10 @@ fun PassportImage(
     } else {
         Image(
             bitmap = image.asImageBitmap(),
-            contentScale = ContentScale.FillWidth,
+            contentScale = ContentScale.FillHeight,
             contentDescription = null,
             modifier = modifier
-                .size(56.dp)
+                .size(size)
                 .clip(CircleShape)
                 .background(Color.White, CircleShape)
                 .border(1.dp, RarimeTheme.colors.componentPrimary, CircleShape)

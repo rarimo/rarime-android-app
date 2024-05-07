@@ -29,29 +29,16 @@ fun OtherPassportIntroScreen(onStart: () -> Unit) {
             )
         },
         title = stringResource(R.string.other_passport_title),
-        description = stringResource(R.string.other_passport_description)
     ) {
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxHeight()
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(
-                    text = stringResource(R.string.other_passport_text),
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.textPrimary
-                )
-                Text(
-                    text = buildAnnotatedString {
-                        append(stringResource(R.string.full_functional_available_on))
-                        withStyle(RarimeTheme.typography.subtitle5.toSpanStyle()) {
-                            append(stringResource(R.string.july))
-                        }
-                    },
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.warningMain
-                )
-            }
+            Text(
+                text = stringResource(R.string.other_passport_text),
+                style = RarimeTheme.typography.body3,
+                color = RarimeTheme.colors.textPrimary
+            )
             PrimaryButton(
                 text = stringResource(R.string.join_waitlist_btn),
                 rightIcon = R.drawable.ic_arrow_right,

@@ -64,7 +64,8 @@ fun RewardsScreen() {
                     text = stringResource(R.string.rewards_stub_description),
                     textAlign = TextAlign.Center,
                     style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.textSecondary
+                    color = RarimeTheme.colors.textSecondary,
+                    modifier = Modifier.width(264.dp)
                 )
             }
         }

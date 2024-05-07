@@ -1,8 +1,6 @@
 package com.distributedLab.rarime.modules.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -98,8 +96,6 @@ fun HomeScreen(
 
 @Composable
 private fun Header(balance: Double, onBalanceClick: () -> Unit = {}) {
-    val sheetState = rememberAppSheetState()
-
     Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -113,18 +109,6 @@ private fun Header(balance: Double, onBalanceClick: () -> Unit = {}) {
                 text = stringResource(R.string.beta_launch),
                 style = RarimeTheme.typography.body3,
                 color = RarimeTheme.colors.warningDark,
-            )
-            AppIcon(
-                id = R.drawable.ic_info,
-                size = 16.dp,
-                tint = RarimeTheme.colors.warningDark,
-                modifier = Modifier
-                    .padding(start = 8.dp)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = { sheetState.show() }
-                    )
             )
         }
         Row(
@@ -163,9 +147,6 @@ private fun Header(balance: Double, onBalanceClick: () -> Unit = {}) {
                 onClick = { /*TODO*/ }
             )
         }
-    }
-    AppBottomSheet(state = sheetState, fullScreen = true) { hide ->
-        BetaLaunchScreen(onClose = { hide {} })
     }
 }
 

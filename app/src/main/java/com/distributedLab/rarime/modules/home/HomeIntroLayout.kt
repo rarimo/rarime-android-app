@@ -24,7 +24,7 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 fun HomeIntroLayout(
     icon: @Composable () -> Unit,
     title: String,
-    description: String,
+    description: String? = null,
     content: @Composable () -> Unit
 ) {
     Column(
@@ -53,13 +53,15 @@ fun HomeIntroLayout(
                 style = RarimeTheme.typography.h6,
                 color = RarimeTheme.colors.textPrimary
             )
-            Text(
-                text = description,
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.textSecondary,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.width(300.dp)
-            )
+            description?.let {
+                Text(
+                    text = description,
+                    style = RarimeTheme.typography.body3,
+                    color = RarimeTheme.colors.textSecondary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.width(300.dp)
+                )
+            }
         }
         HorizontalDivider()
         content()

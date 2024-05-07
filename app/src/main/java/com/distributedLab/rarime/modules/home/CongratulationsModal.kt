@@ -28,6 +28,7 @@ import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.Constants
 
 @Composable
 fun CongratulationsModal(isClaimed: Boolean, onClose: () -> Unit) {
@@ -86,7 +87,7 @@ fun CongratulationsModal(isClaimed: Boolean, onClose: () -> Unit) {
                         color = RarimeTheme.colors.textPrimary
                     )
                     Text(
-                        text = if (isClaimed) stringResource(R.string.congrats_description) else stringResource(
+                        text = if (isClaimed) stringResource(R.string.congrats_description, Constants.AIRDROP_REWARD.toInt()) else stringResource(
                             R.string.joined_waitlist_description
                         ),
                         style = RarimeTheme.typography.body2,
