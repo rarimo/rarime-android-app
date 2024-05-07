@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.CirclesLoader
-import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.ProcessingChip
 import com.distributedLab.rarime.ui.components.ProcessingStatus
 import com.distributedLab.rarime.ui.theme.RarimeTheme
@@ -80,15 +80,20 @@ fun GenerateProofStep(onClose: () -> Unit) {
             .padding(top = 80.dp, bottom = 20.dp)
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(24.dp),
+            verticalArrangement = Arrangement.spacedBy(40.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp)
+                .padding(horizontal = 12.dp)
         ) {
             GeneralProcessingStatus(processingStatus)
-            HorizontalDivider()
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(RarimeTheme.colors.backgroundOpacity, RoundedCornerShape(24.dp))
+                    .padding(20.dp)
+            ) {
                 PassportProofState.entries.forEach { item ->
                     ProcessingItem(
                         item = item,
@@ -149,7 +154,7 @@ private fun GeneralProcessingStatus(status: ProcessingStatus) {
     }
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.width(150.dp)
+        modifier = Modifier.width(200.dp)
     ) {
         Text(
             text = title,
