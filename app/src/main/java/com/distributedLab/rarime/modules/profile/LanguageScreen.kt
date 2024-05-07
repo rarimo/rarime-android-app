@@ -2,8 +2,10 @@ package com.distributedLab.rarime.modules.profile
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,11 +45,21 @@ private fun LanguageItem(
     onClick: () -> Unit
 ) {
     AppRadioButton(isSelected = isSelected, onClick = onClick) {
-        Text(
-            text = language.toLocalizedString(),
-            style = RarimeTheme.typography.subtitle4,
-            color = RarimeTheme.colors.textPrimary
-        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+            ) {
+            Text(
+                text = language.flag,
+                style = RarimeTheme.typography.subtitle3,
+                color = RarimeTheme.colors.textPrimary
+            )
+            Text(
+                text = language.toLocalizedString(),
+                style = RarimeTheme.typography.subtitle4,
+                color = RarimeTheme.colors.textPrimary
+            )
+        }
     }
 }
 

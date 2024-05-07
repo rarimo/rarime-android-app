@@ -28,12 +28,12 @@ import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.CardContainer
 import com.distributedLab.rarime.ui.components.PassportImage
 import com.distributedLab.rarime.ui.theme.RarimeTheme
-import com.distributedLab.rarime.util.IdentityUtil
 import com.distributedLab.rarime.util.Screen
+import com.distributedLab.rarime.util.WalletUtil
 
 @Composable
 fun ProfileScreen(
-    did: String,
+    address: String,
     language: AppLanguage,
     colorScheme: AppColorScheme,
     navigate: (String) -> Unit
@@ -69,8 +69,8 @@ fun ProfileScreen(
                         )
                         Text(
                             text = stringResource(
-                                R.string.user_did,
-                                IdentityUtil.formatDid(did)
+                                R.string.user_address,
+                                WalletUtil.formatAddress(address)
                             ),
                             style = RarimeTheme.typography.body4,
                             color = RarimeTheme.colors.textSecondary
@@ -186,7 +186,7 @@ private fun ProfileRow(
 @Composable
 private fun ProfileScreenPreview() {
     ProfileScreen(
-        did = "did:iden3:readonly:tQR6mhrf6jJyYxmc9YZZS6xiyxjG4b4yQh92diTme",
+        address = "rarimo10xf20zsda2hpjstl3l5ahf65tzkkdnhaxlsl8a",
         language = AppLanguage.ENGLISH,
         colorScheme = AppColorScheme.SYSTEM,
         navigate = {}

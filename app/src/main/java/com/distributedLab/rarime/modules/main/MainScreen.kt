@@ -253,7 +253,7 @@ fun MainScreen() {
 
                     composable(Screen.Main.Profile.route) {
                         ProfileScreen(
-                            did = identityViewModel.did,
+                            address = walletViewModel.address,
                             language = settingsViewModel.language.value,
                             colorScheme = settingsViewModel.colorScheme.value,
                         ) { navController.navigate(it) }

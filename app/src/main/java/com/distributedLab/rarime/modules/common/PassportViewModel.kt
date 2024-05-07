@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.modules.passport.models.EDocument
+import com.distributedLab.rarime.modules.passport.models.PersonDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -14,7 +15,16 @@ class PassportViewModel @Inject constructor(
 ) : ViewModel() {
     // TODO: Get passport from secure storage
     var passport = mutableStateOf<EDocument?>(
-        null
+        EDocument(
+            personDetails = PersonDetails(
+                name = "John",
+                surname = "Doe",
+                birthDate = "01.01.1990",
+                nationality = "USA",
+                serialNumber = "123456789",
+                faceImageInfo = null
+            )
+        )
     )
         private set
     var passportCardLook = mutableStateOf(dataStoreManager.readPassportCardLook())
