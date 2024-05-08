@@ -26,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.ui.theme.RarimeTheme
@@ -44,11 +45,11 @@ fun AppSwitch(
 
     val xOffset = if (checked) 16f else 0f
     val animatedOffset = remember { Animatable(xOffset) }
+    val alpha = if (enabled) 1f else 0.8f
 
     val animatedBgColor by animateColorAsState(
         targetValue =
-        if (!enabled) RarimeTheme.colors.componentDisabled
-        else if (checked) RarimeTheme.colors.primaryDark
+        if (checked) RarimeTheme.colors.primaryDark
         else RarimeTheme.colors.componentPrimary,
         label = ""
     )
@@ -66,6 +67,7 @@ fun AppSwitch(
         modifier = modifier
             .height(24.dp)
             .width(40.dp)
+            .alpha(alpha)
             .background(animatedBgColor, CircleShape)
             .padding(2.dp)
             .clickable(interactionSource = interactionSource, indication = null) {
@@ -79,10 +81,7 @@ fun AppSwitch(
                 .size(20.dp)
                 .offset(animatedOffset.value.dp, 0.dp)
                 .dropShadow(borderRadius = 250.dp)
-                .background(
-                    if (enabled) RarimeTheme.colors.baseWhite else RarimeTheme.colors.componentDisabled,
-                    CircleShape
-                )
+                .background(RarimeTheme.colors.baseWhite.copy(alpha = alpha), CircleShape)
         )
     }
 }
