@@ -2,16 +2,18 @@ package com.distributedLab.rarime.modules.common
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.withFrameNanos
 import androidx.lifecycle.AndroidViewModel
+import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.manager.ApiServiceRemoteData
 import com.distributedLab.rarime.data.manager.ContractManager
 import com.distributedLab.rarime.domain.data.AirdropRequest
 import com.distributedLab.rarime.domain.data.AirdropRequestAttributes
 import com.distributedLab.rarime.domain.data.AirdropRequestData
+import com.distributedLab.rarime.domain.data.CosmosTransferResponse
 import com.distributedLab.rarime.domain.data.IdentityInfo
 import com.distributedLab.rarime.domain.data.PassportInfo
 import com.distributedLab.rarime.domain.data.SMTProof
@@ -30,11 +32,11 @@ import identity.Profile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import okhttp3.internal.wait
 import java.util.Date
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
+@OptIn(ExperimentalStdlibApi::class)
 @HiltViewModel
 class WalletViewModel @Inject constructor(
     private val application: Application,
@@ -66,18 +68,17 @@ class WalletViewModel @Inject constructor(
         val zkp = ZKPUseCase(application as Context)
         val registrationContract = contractManager.getRegistration()
 
+
+
         val proofIndex = Identity.calculateProofIndex(
             registrationProof.pub_signals[0], registrationProof.pub_signals[2]
         )
 
+
         val res = withContext(Dispatchers.IO) {
-
-            registrationContract.getProof(
-                proofIndex
-            ).send()
-        }
-
-
+            Log.i("proof index", proofIndex.toHexString())
+            apiServiceManager.getProof(proofIndex)
+        }!!
 
         val smtProof = SMTProof(
             res.root, res.siblings
@@ -172,6 +173,21 @@ class WalletViewModel @Inject constructor(
 
         refreshTransactions()
         isAirdropClaimed.value = true
+    }
+
+    suspend fun sendTokens(destination: String, amount: String): CosmosTransferResponse {
+        val privateKey = dataStoreManager.readPrivateKey()!!.decodeHexString()
+
+        val profile = Profile().newProfile(privateKey)
+
+        val response = withContext(Dispatchers.IO) {
+            profile.walletSend(
+                destination, amount, BaseConfig.CHAIN_ID, BaseConfig.DENOM, BaseConfig.RPC_IP
+            ).toString()
+        }
+
+
+        return Gson().fromJson(response, CosmosTransferResponse::class.java)
     }
 
 

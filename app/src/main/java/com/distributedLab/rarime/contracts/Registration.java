@@ -1,18 +1,12 @@
 package com.distributedLab.rarime.contracts;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 import org.web3j.abi.TypeReference;
-import org.web3j.abi.datatypes.Bool;
-import org.web3j.abi.datatypes.DynamicArray;
-import org.web3j.abi.datatypes.DynamicStruct;
+import org.web3j.abi.datatypes.Address;
 import org.web3j.abi.datatypes.Function;
 import org.web3j.abi.datatypes.StaticStruct;
 import org.web3j.abi.datatypes.Type;
@@ -21,11 +15,11 @@ import org.web3j.abi.datatypes.generated.Uint64;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.RemoteFunctionCall;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple2;
 import org.web3j.tx.Contract;
 import org.web3j.tx.TransactionManager;
 import org.web3j.tx.gas.ContractGasProvider;
-
 
 /**
  * <p>Auto generated code.
@@ -40,9 +34,27 @@ import org.web3j.tx.gas.ContractGasProvider;
 public class Registration extends Contract {
     public static final String BINARY = "Bin file was not provided";
 
+    public static final String FUNC_CERTIFICATESSMT = "certificatesSmt";
+
+    public static final String FUNC_CHANGEICAOMASTERTREEROOT = "changeICAOMasterTreeRoot";
+
+    public static final String FUNC_GETCERTIFICATEINFO = "getCertificateInfo";
+
     public static final String FUNC_GETPASSPORTINFO = "getPassportInfo";
 
-    public static final String FUNC_GETPROOF = "getProof";
+    public static final String FUNC_ICAOMASTERTREEMERKLEROOT = "icaoMasterTreeMerkleRoot";
+
+    public static final String FUNC_OWNER = "owner";
+
+    public static final String FUNC_PASSPORTDISPATCHERS = "passportDispatchers";
+
+    public static final String FUNC_REGISTERCERTIFICATE = "registerCertificate";
+
+    public static final String FUNC_REGISTRATIONSMT = "registrationSmt";
+
+    public static final String FUNC_REVOKECERTIFICATE = "revokeCertificate";
+
+    public static final String FUNC_SIGNER = "signer";
 
     @Deprecated
     protected Registration(String contractAddress, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
@@ -62,6 +74,30 @@ public class Registration extends Contract {
         super(BINARY, contractAddress, web3j, transactionManager, contractGasProvider);
     }
 
+    public RemoteFunctionCall<String> certificatesSmt() {
+        final Function function = new Function(FUNC_CERTIFICATESSMT, 
+                Arrays.<Type>asList(), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}));
+        return executeRemoteCallSingleValueReturn(function, String.class);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> changeICAOMasterTreeRoot(byte[] newRoot_, BigInteger timestamp, byte[] proof_) {
+        final Function function = new Function(
+                FUNC_CHANGEICAOMASTERTREEROOT, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes32(newRoot_), 
+                new org.web3j.abi.datatypes.generated.Uint256(timestamp), 
+                new org.web3j.abi.datatypes.DynamicBytes(proof_)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<CertificateInfo> getCertificateInfo(byte[] certificateKey_) {
+        final Function function = new Function(FUNC_GETCERTIFICATEINFO, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes32(certificateKey_)), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<CertificateInfo>() {}));
+        return executeRemoteCallSingleValueReturn(function, CertificateInfo.class);
+    }
+
     public RemoteFunctionCall<Tuple2<PassportInfo, IdentityInfo>> getPassportInfo(byte[] passportKey_) {
         final Function function = new Function(FUNC_GETPASSPORTINFO, 
                 Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes32(passportKey_)), 
@@ -78,11 +114,62 @@ public class Registration extends Contract {
                 });
     }
 
-    public RemoteFunctionCall<Proof> getProof(byte[] key_) {
-        final Function function = new Function(FUNC_GETPROOF, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes32(key_)), 
-                Arrays.<TypeReference<  ?>>asList(new TypeReference<Proof>() {}));
-        return executeRemoteCallSingleValueReturn(function, Proof.class);
+    public RemoteFunctionCall<byte[]> icaoMasterTreeMerkleRoot() {
+        final Function function = new Function(FUNC_ICAOMASTERTREEMERKLEROOT, 
+                Arrays.<Type>asList(), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}));
+        return executeRemoteCallSingleValueReturn(function, byte[].class);
+    }
+
+    public RemoteFunctionCall<String> owner() {
+        final Function function = new Function(FUNC_OWNER, 
+                Arrays.<Type>asList(), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}));
+        return executeRemoteCallSingleValueReturn(function, String.class);
+    }
+
+    public RemoteFunctionCall<String> passportDispatchers(byte[] param0) {
+        final Function function = new Function(FUNC_PASSPORTDISPATCHERS, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes32(param0)), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}));
+        return executeRemoteCallSingleValueReturn(function, String.class);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> registerCertificate(List<byte[]> icaoMerkleProof_, byte[] icaoMemberKey_, byte[] icaoMemberSignature_, byte[] x509SignedAttributes_, BigInteger x509KeyOffset_, BigInteger x509ExpirationOffset_) {
+        final Function function = new Function(
+                FUNC_REGISTERCERTIFICATE, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.DynamicArray<org.web3j.abi.datatypes.generated.Bytes32>(
+                        org.web3j.abi.datatypes.generated.Bytes32.class,
+                        org.web3j.abi.Utils.typeMap(icaoMerkleProof_, org.web3j.abi.datatypes.generated.Bytes32.class)), 
+                new org.web3j.abi.datatypes.DynamicBytes(icaoMemberKey_), 
+                new org.web3j.abi.datatypes.DynamicBytes(icaoMemberSignature_), 
+                new org.web3j.abi.datatypes.DynamicBytes(x509SignedAttributes_), 
+                new org.web3j.abi.datatypes.generated.Uint256(x509KeyOffset_), 
+                new org.web3j.abi.datatypes.generated.Uint256(x509ExpirationOffset_)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<String> registrationSmt() {
+        final Function function = new Function(FUNC_REGISTRATIONSMT, 
+                Arrays.<Type>asList(), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}));
+        return executeRemoteCallSingleValueReturn(function, String.class);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> revokeCertificate(byte[] certificateKey_) {
+        final Function function = new Function(
+                FUNC_REVOKECERTIFICATE, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes32(certificateKey_)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<String> signer() {
+        final Function function = new Function(FUNC_SIGNER, 
+                Arrays.<Type>asList(), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}));
+        return executeRemoteCallSingleValueReturn(function, String.class);
     }
 
     @Deprecated
@@ -101,6 +188,20 @@ public class Registration extends Contract {
 
     public static Registration load(String contractAddress, Web3j web3j, TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
         return new Registration(contractAddress, web3j, transactionManager, contractGasProvider);
+    }
+
+    public static class CertificateInfo extends StaticStruct {
+        public BigInteger expirationTimestamp;
+
+        public CertificateInfo(BigInteger expirationTimestamp) {
+            super(new org.web3j.abi.datatypes.generated.Uint64(expirationTimestamp));
+            this.expirationTimestamp = expirationTimestamp;
+        }
+
+        public CertificateInfo(Uint64 expirationTimestamp) {
+            super(expirationTimestamp);
+            this.expirationTimestamp = expirationTimestamp.getValue();
+        }
     }
 
     public static class PassportInfo extends StaticStruct {
@@ -140,61 +241,4 @@ public class Registration extends Contract {
             this.issueTimestamp = issueTimestamp.getValue();
         }
     }
-
-    public static class Proof extends DynamicStruct {
-        public byte[] root;
-
-        public List<byte[]> siblings;
-
-        public Boolean existence;
-
-        public byte[] key;
-
-        public byte[] value;
-
-        public Boolean auxExistence;
-
-        public byte[] auxKey;
-
-        public byte[] auxValue;
-
-        public Proof(byte[] root, List<byte[]> siblings, Boolean existence, byte[] key, byte[] value, Boolean auxExistence, byte[] auxKey, byte[] auxValue) {
-            super(new org.web3j.abi.datatypes.generated.Bytes32(root), 
-                    new org.web3j.abi.datatypes.DynamicArray<org.web3j.abi.datatypes.generated.Bytes32>(
-                            org.web3j.abi.datatypes.generated.Bytes32.class,
-                            org.web3j.abi.Utils.typeMap(siblings, org.web3j.abi.datatypes.generated.Bytes32.class)), 
-                    new org.web3j.abi.datatypes.Bool(existence), 
-                    new org.web3j.abi.datatypes.generated.Bytes32(key), 
-                    new org.web3j.abi.datatypes.generated.Bytes32(value), 
-                    new org.web3j.abi.datatypes.Bool(auxExistence), 
-                    new org.web3j.abi.datatypes.generated.Bytes32(auxKey), 
-                    new org.web3j.abi.datatypes.generated.Bytes32(auxValue));
-            this.root = root;
-            this.siblings = siblings;
-            this.existence = existence;
-            this.key = key;
-            this.value = value;
-            this.auxExistence = auxExistence;
-            this.auxKey = auxKey;
-            this.auxValue = auxValue;
-        }
-
-        public Proof(Bytes32 root, @Parameterized(type = Bytes32.class) DynamicArray<Bytes32> siblings, Bool existence, Bytes32 key, Bytes32 value, Bool auxExistence, Bytes32 auxKey, Bytes32 auxValue) {
-            super(root, siblings, existence, key, value, auxExistence, auxKey, auxValue);
-            this.root = root.getValue();
-            this.siblings = siblings.getValue().stream().map(v -> v.getValue()).collect(Collectors.toList());
-            this.existence = existence.getValue();
-            this.key = key.getValue();
-            this.value = value.getValue();
-            this.auxExistence = auxExistence.getValue();
-            this.auxKey = auxKey.getValue();
-            this.auxValue = auxValue.getValue();
-        }
-    }
-}
-
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
-@interface Parameterized {
-    Class<?> type();
 }

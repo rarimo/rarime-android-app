@@ -6,7 +6,6 @@ object BaseConfig {
     const val REGISTER_CONTRACT_ADDRESS = "0x9a780683B771d98cdfa8526039D005128807b66F"
     const val COSMOS_RPC_URL = "https://rpc-api.node1.mainnet-beta.rarimo.com"
 
-
     // Mark: Cosmos
     const val CHAIN_ID = "rarimo_42-1"
     const val DENOM = "stake"

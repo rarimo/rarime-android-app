@@ -1,6 +1,7 @@
 package com.distributedLab.rarime.data.manager
 
 import com.distributedLab.rarime.BaseConfig
+import com.distributedLab.rarime.contracts.PoseidonSMT
 import com.distributedLab.rarime.contracts.Registration
 import org.web3j.crypto.Credentials
 import org.web3j.crypto.Keys
@@ -18,6 +19,15 @@ class ContractManager @Inject constructor(private val web3j: Web3j) {
         return Registration.load(
             BaseConfig.REGISTER_CONTRACT_ADDRESS, web3j, credentials, gasProvider
         )
+    }
 
+    fun getPoseidonSMT(address: String): PoseidonSMT {
+        val ecKeyPair = Keys.createEcKeyPair()
+        val credentials = Credentials.create(ecKeyPair)
+        val gasProvider = DefaultGasProvider()
+
+        return PoseidonSMT.load(
+            address, web3j, credentials, gasProvider
+        )
     }
 }
