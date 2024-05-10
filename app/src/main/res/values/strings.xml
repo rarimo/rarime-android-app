@@ -153,6 +153,10 @@
     <string name="what_is_rarime_text_item_1">RariMe is a self-custody identity wallet where no personal data ever leaves the device and everything is processed locally.</string>
     <string name="what_is_rarime_text_item_2">Prove your eligibility, belonging, identity, and contributions — without ever revealing personal data.</string>
     <string name="what_is_rarime_text_item_3">" ensures your history, reputation and actions are not lost, but remain confidential and under your control."</string>
+    <string name="icon_black_and_white">Black &amp; White</string>
+    <string name="icon_black_and_green">Black &amp; Green</string>
+    <string name="icon_green_and_black">Green &amp; Black</string>
+    <string name="app_icon">App Icon</string>
     <string name="birth_date">Birth date</string>
     <string name="passport_card_identifiers_title">DATA</string>
     <string name="passport_card_identifiers_text">Shows two identifiers on the card</string>
