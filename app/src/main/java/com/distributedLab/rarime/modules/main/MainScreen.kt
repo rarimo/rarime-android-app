@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -30,6 +33,7 @@ import com.distributedLab.rarime.modules.common.WalletViewModel
 import com.distributedLab.rarime.modules.home.HomeScreen
 import com.distributedLab.rarime.modules.intro.IntroScreen
 import com.distributedLab.rarime.modules.passport.ScanPassportScreen
+import com.distributedLab.rarime.modules.profile.AppIconScreen
 import com.distributedLab.rarime.modules.profile.AuthMethodScreen
 import com.distributedLab.rarime.modules.profile.ExportKeysScreen
 import com.distributedLab.rarime.modules.profile.LanguageScreen
@@ -48,6 +52,7 @@ import com.distributedLab.rarime.modules.wallet.WalletSendScreen
 import com.distributedLab.rarime.ui.components.AppWebView
 import com.distributedLab.rarime.ui.theme.AppTheme
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.AppIconUtil
 import com.distributedLab.rarime.util.Constants
 import com.distributedLab.rarime.util.LocaleUtil
 import com.distributedLab.rarime.util.Screen
@@ -78,6 +83,7 @@ fun MainScreen() {
     val isBottomBarVisible = currentRoute != null && currentRoute in mainRoutes
 
     val context = LocalContext.current
+    var appIcon by remember { mutableStateOf(AppIconUtil.getIcon(context)) }
 
     val startDestination =
         if (securityViewModel.isScreenLocked.value) {
@@ -256,6 +262,7 @@ fun MainScreen() {
                             address = walletViewModel.address,
                             language = settingsViewModel.language.value,
                             colorScheme = settingsViewModel.colorScheme.value,
+                            appIcon = appIcon,
                         ) { navController.navigate(it) }
                     }
                     composable(Screen.Main.Profile.AuthMethod.route) {
@@ -286,6 +293,16 @@ fun MainScreen() {
                         ThemeScreen(
                             colorScheme = settingsViewModel.colorScheme.value,
                             onColorSchemeChange = settingsViewModel::updateColorScheme,
+                            onBack = { navController.popBackStack() }
+                        )
+                    }
+                    composable(Screen.Main.Profile.AppIcon.route) {
+                        AppIconScreen(
+                            appIcon = appIcon,
+                            onAppIconChange = {
+                                appIcon = it
+                                AppIconUtil.setIcon(context, it)
+                            },
                             onBack = { navController.popBackStack() }
                         )
                     }
