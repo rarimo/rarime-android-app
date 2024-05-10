@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.BuildConfig
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.AppColorScheme
+import com.distributedLab.rarime.data.enums.AppIcon
 import com.distributedLab.rarime.data.enums.AppLanguage
 import com.distributedLab.rarime.data.enums.toLocalizedString
 import com.distributedLab.rarime.ui.components.AppIcon
@@ -36,6 +37,7 @@ fun ProfileScreen(
     address: String,
     language: AppLanguage,
     colorScheme: AppColorScheme,
+    appIcon: AppIcon,
     navigate: (String) -> Unit
 ) {
     Column(
@@ -106,6 +108,12 @@ fun ProfileScreen(
                         title = stringResource(R.string.theme),
                         value = colorScheme.toLocalizedString(),
                         onClick = { navigate(Screen.Main.Profile.Theme.route) }
+                    )
+                    ProfileRow(
+                        iconId = R.drawable.ic_rarime,
+                        title = stringResource(R.string.app_icon),
+                        value = appIcon.toLocalizedString(),
+                        onClick = { navigate(Screen.Main.Profile.AppIcon.route) }
                     )
                     ProfileRow(
                         iconId = R.drawable.ic_question,
@@ -189,6 +197,7 @@ private fun ProfileScreenPreview() {
         address = "rarimo10xf20zsda2hpjstl3l5ahf65tzkkdnhaxlsl8a",
         language = AppLanguage.ENGLISH,
         colorScheme = AppColorScheme.SYSTEM,
+        appIcon = AppIcon.BLACK_AND_WHITE,
         navigate = {}
     )
 }
