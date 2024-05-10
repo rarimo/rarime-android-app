@@ -230,9 +230,11 @@ fun MainScreen() {
                             balance = walletViewModel.balance.doubleValue,
                             passport = passportViewModel.passport.value,
                             passportCardLook = passportViewModel.passportCardLook.value,
+                            passportIdentifiers = passportViewModel.passportIdentifiers.value,
                             isIncognito = passportViewModel.isIncognitoMode.value,
                             onPassportCardLookChange = passportViewModel::updatePassportCardLook,
                             onIncognitoChange = passportViewModel::updateIsIncognitoMode,
+                            onPassportIdentifiersChange = passportViewModel::updatePassportIdentifiers,
                             navigate = { navController.navigate(it) }
                         )
                     }

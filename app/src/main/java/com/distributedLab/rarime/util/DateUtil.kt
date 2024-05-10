@@ -32,4 +32,14 @@ object DateUtil {
     fun formatDate(date: Date, formatType: DateFormatType = DateFormatType.DEFAULT): String {
         return SimpleDateFormat(formatType.pattern, Locale.US).format(date)
     }
+
+    fun formatDateString(
+        dateStr: String?,
+        inputFormat: DateFormatType = DateFormatType.DMY,
+        outputFormat: DateFormatType = DateFormatType.DMY,
+    ): String {
+        val date = stringToDate(dateStr, SimpleDateFormat(inputFormat.pattern, Locale.US))
+            ?: return ""
+        return formatDate(date, outputFormat)
+    }
 }

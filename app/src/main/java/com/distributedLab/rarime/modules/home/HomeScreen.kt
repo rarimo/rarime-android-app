@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.PassportCardLook
+import com.distributedLab.rarime.data.enums.PassportIdentifier
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.ActionCard
@@ -46,12 +47,13 @@ fun HomeScreen(
     balance: Double,
     passport: EDocument?,
     passportCardLook: PassportCardLook,
+    passportIdentifiers: List<PassportIdentifier>,
     isIncognito: Boolean,
     onPassportCardLookChange: (PassportCardLook) -> Unit,
     onIncognitoChange: (Boolean) -> Unit,
+    onPassportIdentifiersChange: (List<PassportIdentifier>) -> Unit,
     navigate: (String) -> Unit
 ) {
-    // TODO: Use view model
     var isCongratsModalVisible by remember { mutableStateOf(false) }
 
     Box {
@@ -77,8 +79,10 @@ fun HomeScreen(
                         passport = passport,
                         isIncognito = isIncognito,
                         look = passportCardLook,
+                        identifiers = passportIdentifiers,
                         onLookChange = { onPassportCardLookChange(it) },
-                        onIncognitoChange = { onIncognitoChange(it) }
+                        onIncognitoChange = { onIncognitoChange(it) },
+                        onIdentifiersChange = { onPassportIdentifiersChange(it) }
                     )
                     RarimeCard()
                 }
@@ -235,9 +239,14 @@ private fun HomeScreenPreview() {
         balance = 100.0,
         passport = null,
         passportCardLook = PassportCardLook.GREEN,
+        passportIdentifiers = listOf(
+            PassportIdentifier.NATIONALITY,
+            PassportIdentifier.DOCUMENT_ID
+        ),
         isIncognito = false,
         onPassportCardLookChange = {},
         onIncognitoChange = {},
+        onPassportIdentifiersChange = {},
         navigate = {}
     )
 }
