@@ -13,7 +13,6 @@
     <string name="continue_btn">Continue</string>
     <string name="enable_btn">Enable</string>
     <string name="maybe_later_btn">Maybe Later</string>
-    <string name="import_identity_title">Import from MetaMask Snap</string>
     <string name="step_indicator">Step %1$s/%2$s</string>
     <string name="new_identity_title">Your Private Key</string>
     <string name="copy_to_clipboard_btn">Copy to clipboard</string>
@@ -35,7 +34,7 @@
     <string name="scan_your_passport_title">Scan your Passport</string>
     <string name="scan_your_passport_text">Data never leaves this device</string>
     <string name="scan_your_passport_hint">Move your passport page inside the border</string>
-    <string name="nfc_reader_title">NFC reader</string>
+    <string name="nfc_reader_title">NFC Reader</string>
     <string name="nfc_reader_text">Reading Passport data</string>
     <string name="nfc_reader_hint">Place your passport cover to the back of your phone</string>
     <string name="passport_data_title">Document data</string>
@@ -100,7 +99,7 @@
     <string name="claiming_btn">Claiming...</string>
     <string name="airdrop_tx_title">Airdrop</string>
     <string name="scan_qr_title">Scan QR</string>
-    <string name="scan_qr_description">Place QR code with the frame to scan</string>
+    <string name="scan_qr_description">Place QR code within the frame to scan</string>
     <string name="wallet_receive_title">Receive RMO</string>
     <string name="wallet_receive_description">You can use the QR code or the wallet address to deposit the RMO token to your account</string>
     <string name="deposit_address_lbl">Your Rarimo Address</string>
@@ -118,7 +117,7 @@
     <string name="wallet_send_title">Send RMO</string>
     <string name="wallet_send_description">Withdraw the RMO token</string>
     <string name="rewards_stub_title">Starting in July</string>
-    <string name="rewards_stub_description">The rewards program will allow you to receive weekly airdrops.\n\nYou can earn additional rewards by using RariMe’s incognito proofs with other ecosystem apps."</string>
+    <string name="rewards_stub_description">The rewards program will allow you to receive weekly airdrops.\n\nYou can earn additional rewards by using RariMe’s incognito proofs with other ecosystem apps.</string>
     <string name="terms_of_use">Terms of Use</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="auth_method">Auth Method</string>
@@ -127,8 +126,7 @@
     <string name="export_keys">Export Keys</string>
     <string name="language">Language</string>
     <string name="english">English</string>
-    <string name="ukrainian">Ukrainian</string>
-    <string name="georgian">Georgian</string>
+    <string name="ukrainian">Українська</string>
     <string name="theme">Theme</string>
     <string name="light_mode">Light Mode</string>
     <string name="dark_mode">Dark Mode</string>

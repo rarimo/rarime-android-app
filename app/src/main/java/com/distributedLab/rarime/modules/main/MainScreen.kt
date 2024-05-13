@@ -39,7 +39,6 @@ import com.distributedLab.rarime.modules.profile.ExportKeysScreen
 import com.distributedLab.rarime.modules.profile.LanguageScreen
 import com.distributedLab.rarime.modules.profile.ProfileScreen
 import com.distributedLab.rarime.modules.profile.ThemeScreen
-import com.distributedLab.rarime.modules.register.ImportIdentityScreen
 import com.distributedLab.rarime.modules.register.NewIdentityScreen
 import com.distributedLab.rarime.modules.rewards.RewardsScreen
 import com.distributedLab.rarime.modules.security.EnableBiometricsScreen
@@ -170,9 +169,6 @@ fun MainScreen() {
                             },
                             onBack = { navController.popBackStack() }
                         )
-                    }
-                    composable(Screen.Register.ImportIdentity.route) {
-                        ImportIdentityScreen { navigateWithPopUp(Screen.Passcode.EnablePasscode.route) }
                     }
                 }
 
