@@ -16,7 +16,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        resourceConfigurations.plus(listOf("en", "uk", "ka"))
+        resourceConfigurations.plus(listOf("en", "uk"))
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
