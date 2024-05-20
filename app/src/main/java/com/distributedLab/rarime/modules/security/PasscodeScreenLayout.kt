@@ -26,7 +26,9 @@ fun PasscodeScreenLayout(
     title: String,
     passcodeState: AppTextFieldState,
     onPasscodeFilled: () -> Unit,
-    onClose: () -> Unit
+    enabled: Boolean = true,
+    onClose: (() -> Unit)? = null,
+    action: @Composable () -> Unit = {}
 ) {
     Box(
         contentAlignment = Alignment.TopEnd,
@@ -35,10 +37,12 @@ fun PasscodeScreenLayout(
             .fillMaxSize()
             .padding(20.dp)
     ) {
-        PrimaryTextButton(
-            leftIcon = R.drawable.ic_close,
-            onClick = onClose
-        )
+        onClose?.let {
+            PrimaryTextButton(
+                leftIcon = R.drawable.ic_close,
+                onClick = onClose
+            )
+        }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween,
@@ -56,6 +60,8 @@ fun PasscodeScreenLayout(
             PasscodeField(
                 modifier = Modifier.padding(top = 100.dp),
                 state = passcodeState,
+                enabled = enabled,
+                action = action,
                 onFilled = onPasscodeFilled
             )
         }

@@ -3,6 +3,7 @@ package com.distributedLab.rarime.modules.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,29 +17,42 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.PassportCardLook
+import com.distributedLab.rarime.data.enums.PassportIdentifier
 import com.distributedLab.rarime.data.enums.getBackgroundColor
 import com.distributedLab.rarime.data.enums.getForegroundColor
 import com.distributedLab.rarime.data.enums.getTitle
+import com.distributedLab.rarime.data.enums.toLocalizedTitle
+import com.distributedLab.rarime.data.enums.toLocalizedValue
+import com.distributedLab.rarime.data.enums.toTitleStub
+import com.distributedLab.rarime.data.enums.toValueStub
 import com.distributedLab.rarime.modules.passport.calculateAgeFromBirthDate
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.passport.models.PersonDetails
 import com.distributedLab.rarime.ui.components.AppBottomSheet
 import com.distributedLab.rarime.ui.components.AppIcon
+import com.distributedLab.rarime.ui.components.AppSwitch
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PassportImage
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.Constants
 import com.distributedLab.rarime.util.ImageUtil
 
 
@@ -46,15 +60,21 @@ import com.distributedLab.rarime.util.ImageUtil
 fun PassportCard(
     passport: EDocument,
     look: PassportCardLook,
+    identifiers: List<PassportIdentifier>,
     isIncognito: Boolean,
     onLookChange: (PassportCardLook) -> Unit,
     onIncognitoChange: (Boolean) -> Unit,
+    onIdentifiersChange: (List<PassportIdentifier>) -> Unit
 ) {
+    val haptic = LocalHapticFeedback.current
     val settingsSheetState = rememberAppSheetState()
+    var isPressing by remember { mutableStateOf(false) }
 
     val fullName = passport.personDetails!!.name + " " + passport.personDetails!!.surname
     val faceImageInfo = passport.personDetails!!.faceImageInfo
     val image = if (faceImageInfo == null) null else ImageUtil.getImage(faceImageInfo).bitmapImage!!
+
+    val isInfoHidden = isIncognito && !isPressing
 
     Column(
         verticalArrangement = Arrangement.spacedBy(32.dp),
@@ -62,6 +82,16 @@ fun PassportCard(
             .fillMaxWidth()
             .background(look.getBackgroundColor(), RoundedCornerShape(24.dp))
             .padding(24.dp)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onPress = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        isPressing = true
+                        tryAwaitRelease()
+                        isPressing = false
+                    }
+                )
+            }
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
             Row(
@@ -73,13 +103,13 @@ fun PassportCard(
                     color = look.getForegroundColor(),
                     backgroundColor = look.getForegroundColor().copy(alpha = 0.05f),
                     modifier = Modifier.blur(
-                        if (isIncognito) 12.dp else 0.dp,
+                        if (isInfoHidden) 12.dp else 0.dp,
                         edgeTreatment = BlurredEdgeTreatment.Unbounded
                     )
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     AppIcon(
-                        id = if (isIncognito) R.drawable.ic_eye_slash else R.drawable.ic_eye,
+                        id = if (isInfoHidden) R.drawable.ic_eye_slash else R.drawable.ic_eye,
                         tint = look.getForegroundColor(),
                         modifier = Modifier
                             .background(
@@ -88,7 +118,11 @@ fun PassportCard(
                                     .copy(alpha = 0.05f), CircleShape
                             )
                             .padding(8.dp)
-                            .clickable { onIncognitoChange(!isIncognito) }
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClick = { onIncognitoChange(!isIncognito) }
+                            )
                     )
                     AppIcon(
                         id = R.drawable.ic_dots_three_outline,
@@ -100,18 +134,22 @@ fun PassportCard(
                                     .copy(alpha = 0.05f), CircleShape
                             )
                             .padding(8.dp)
-                            .clickable { settingsSheetState.show() }
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClick = { settingsSheetState.show() }
+                            )
                     )
                 }
             }
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    text = if (isIncognito) "••••• •••••••" else fullName,
+                    text = if (isInfoHidden) "••••• •••••••" else fullName,
                     style = RarimeTheme.typography.h6,
                     color = look.getForegroundColor()
                 )
                 Text(
-                    text = if (isIncognito) "••• ••••• •••" else stringResource(
+                    text = if (isInfoHidden) "••• ••••• •••" else stringResource(
                         R.string.years_old, calculateAgeFromBirthDate(
                             passport.personDetails!!.birthDate!!
                         )
@@ -122,24 +160,30 @@ fun PassportCard(
             }
         }
         HorizontalDivider(color = look.getForegroundColor().copy(alpha = 0.05f))
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            PassportInfoRow(
-                label = stringResource(R.string.nationality),
-                value = if (isIncognito) "•••" else passport.personDetails!!.nationality!!,
-                look = look
-            )
-            PassportInfoRow(
-                label = stringResource(R.string.document_number),
-                value = if (isIncognito) "••••••••" else passport.personDetails!!.serialNumber!!,
-                look = look
-            )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.height(50.dp)
+        ) {
+            identifiers.forEach { identifier ->
+                PassportInfoRow(
+                    look = look,
+                    label = if (isInfoHidden) identifier.toTitleStub() else identifier.toLocalizedTitle(),
+                    value = if (isInfoHidden) {
+                        identifier.toValueStub()
+                    } else {
+                        identifier.toLocalizedValue(passport)
+                    }
+                )
+            }
         }
     }
 
     AppBottomSheet(state = settingsSheetState) {
         PassportCardSettings(
             look = look,
+            identifiers = identifiers,
             onLookChange = onLookChange,
+            onIdentifiersChange = onIdentifiersChange
         )
     }
 }
@@ -166,7 +210,9 @@ private fun PassportInfoRow(label: String, value: String, look: PassportCardLook
 @Composable
 private fun PassportCardSettings(
     look: PassportCardLook,
-    onLookChange: (PassportCardLook) -> Unit
+    identifiers: List<PassportIdentifier>,
+    onLookChange: (PassportCardLook) -> Unit,
+    onIdentifiersChange: (List<PassportIdentifier>) -> Unit
 ) {
     Column {
         Text(
@@ -197,6 +243,54 @@ private fun PassportCardSettings(
                         onClick = { onLookChange(item) }
                     )
                 }
+            }
+            HorizontalDivider()
+            PassportIdentifiersPicker(identifiers, onIdentifiersChange)
+        }
+    }
+}
+
+@Composable
+private fun PassportIdentifiersPicker(
+    identifiers: List<PassportIdentifier>,
+    onIdentifiersChange: (List<PassportIdentifier>) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(
+                text = stringResource(R.string.passport_card_identifiers_title),
+                style = RarimeTheme.typography.overline3,
+                color = RarimeTheme.colors.textSecondary
+            )
+            Text(
+                text = stringResource(R.string.passport_card_identifiers_text),
+                style = RarimeTheme.typography.body4,
+                color = RarimeTheme.colors.textSecondary
+            )
+        }
+        PassportIdentifier.entries.forEach { identifier ->
+            val isSelected = identifiers.contains(identifier)
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = identifier.toLocalizedTitle(),
+                    style = RarimeTheme.typography.subtitle4,
+                    color = RarimeTheme.colors.textPrimary
+                )
+                AppSwitch(
+                    checked = isSelected,
+                    enabled = identifiers.size < Constants.MAX_PASSPORT_IDENTIFIERS || isSelected,
+                    onCheckedChange = {
+                        val newIdentifiers = if (isSelected) {
+                            identifiers.filter { it != identifier }
+                        } else {
+                            identifiers + listOf(identifier)
+                        }
+                        onIdentifiersChange(newIdentifiers.sortedBy { it.order })
+                    },
+                )
             }
         }
     }
@@ -287,20 +381,34 @@ private fun PassportLookOption(
 @Preview(showBackground = true)
 @Composable
 private fun PassportCardPreview() {
+    var isIncognito by remember { mutableStateOf(false) }
+    var look by remember { mutableStateOf(PassportCardLook.BLACK) }
+    var identifiers by remember {
+        mutableStateOf(
+            listOf(
+                PassportIdentifier.NATIONALITY,
+                PassportIdentifier.DOCUMENT_ID
+            )
+        )
+    }
+
     PassportCard(
         passport = EDocument(
             personDetails = PersonDetails(
                 name = "John",
                 surname = "Doe",
                 birthDate = "01.01.1990",
+                expiryDate = "01.01.2025",
                 nationality = "USA",
                 serialNumber = "123456789",
                 faceImageInfo = null
             )
         ),
-        look = PassportCardLook.BLACK,
-        isIncognito = false,
-        onLookChange = {},
-        onIncognitoChange = {},
+        look = look,
+        identifiers = identifiers,
+        isIncognito = isIncognito,
+        onLookChange = { look = it },
+        onIncognitoChange = { isIncognito = it },
+        onIdentifiersChange = { identifiers = it }
     )
 }

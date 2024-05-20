@@ -9,7 +9,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -29,25 +33,27 @@ import com.distributedLab.rarime.modules.common.WalletViewModel
 import com.distributedLab.rarime.modules.home.HomeScreen
 import com.distributedLab.rarime.modules.intro.IntroScreen
 import com.distributedLab.rarime.modules.passport.ScanPassportScreen
+import com.distributedLab.rarime.modules.profile.AppIconScreen
 import com.distributedLab.rarime.modules.profile.AuthMethodScreen
 import com.distributedLab.rarime.modules.profile.ExportKeysScreen
 import com.distributedLab.rarime.modules.profile.LanguageScreen
 import com.distributedLab.rarime.modules.profile.ProfileScreen
 import com.distributedLab.rarime.modules.profile.ThemeScreen
-import com.distributedLab.rarime.modules.register.ImportIdentityScreen
 import com.distributedLab.rarime.modules.register.NewIdentityScreen
 import com.distributedLab.rarime.modules.rewards.RewardsScreen
 import com.distributedLab.rarime.modules.security.EnableBiometricsScreen
 import com.distributedLab.rarime.modules.security.EnablePasscodeScreen
-import com.distributedLab.rarime.modules.security.EnterPasscodeScreen
-import com.distributedLab.rarime.modules.security.RepeatPasscodeScreen
+import com.distributedLab.rarime.modules.security.LockScreen
+import com.distributedLab.rarime.modules.security.PasscodeScreen
 import com.distributedLab.rarime.modules.wallet.WalletReceiveScreen
 import com.distributedLab.rarime.modules.wallet.WalletScreen
 import com.distributedLab.rarime.modules.wallet.WalletSendScreen
 import com.distributedLab.rarime.ui.components.AppWebView
 import com.distributedLab.rarime.ui.theme.AppTheme
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.AppIconUtil
 import com.distributedLab.rarime.util.Constants
+import com.distributedLab.rarime.util.LocaleUtil
 import com.distributedLab.rarime.util.Screen
 
 val mainRoutes = listOf(
@@ -75,8 +81,13 @@ fun MainScreen() {
     val currentRoute = navBackStackEntry?.destination?.route
     val isBottomBarVisible = currentRoute != null && currentRoute in mainRoutes
 
+    val context = LocalContext.current
+    var appIcon by remember { mutableStateOf(AppIconUtil.getIcon(context)) }
+
     val startDestination =
-        if (securityViewModel.biometricsState.value != SecurityCheckState.UNSET) {
+        if (securityViewModel.isScreenLocked.value) {
+            Screen.Lock.route
+        } else if (securityViewModel.biometricsState.value != SecurityCheckState.UNSET) {
             Screen.Main.route
         } else if (securityViewModel.passcodeState.value != SecurityCheckState.UNSET) {
             Screen.EnableBiometrics.route
@@ -105,7 +116,10 @@ fun MainScreen() {
                 }
             },
         ) {
-            ScreenBarsColor(route = currentRoute ?: "")
+            ScreenBarsColor(
+                colorScheme = settingsViewModel.colorScheme.value,
+                route = currentRoute ?: ""
+            )
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -119,6 +133,20 @@ fun MainScreen() {
             ) {
                 composable(Screen.Intro.route) {
                     IntroScreen { navController.navigate(it) }
+                }
+
+                composable(Screen.Lock.route) {
+                    LockScreen(
+                        isPasscodeEnabled = securityViewModel.passcodeState.value == SecurityCheckState.ENABLED,
+                        isBiometricEnabled = securityViewModel.biometricsState.value == SecurityCheckState.ENABLED,
+                        passcode = securityViewModel.passcode.value,
+                        lockTimestamp = securityViewModel.lockTimestamp.longValue,
+                        onPass = {
+                            securityViewModel.unlockScreen()
+                            navController.navigate(Screen.Main.route)
+                        },
+                        onLock = { securityViewModel.lockPasscode() }
+                    )
                 }
 
                 composable(Screen.ScanPassport.route) {
@@ -143,9 +171,6 @@ fun MainScreen() {
                             onBack = { navController.popBackStack() }
                         )
                     }
-                    composable(Screen.Register.ImportIdentity.route) {
-                        ImportIdentityScreen { navigateWithPopUp(Screen.Passcode.EnablePasscode.route) }
-                    }
                 }
 
                 navigation(
@@ -154,32 +179,21 @@ fun MainScreen() {
                 ) {
                     composable(Screen.Passcode.EnablePasscode.route) {
                         EnablePasscodeScreen(
-                            onNext = { navController.navigate(Screen.Passcode.EnterPasscode.route) },
+                            onNext = { navController.navigate(Screen.Passcode.AddPasscode.route) },
                             onSkip = { navigateWithPopUp(Screen.EnableBiometrics.route) }
                         )
                     }
-                    composable(Screen.Passcode.EnterPasscode.route) {
-                        EnterPasscodeScreen(
-                            onNext = {
+                    composable(Screen.Passcode.AddPasscode.route) {
+                        PasscodeScreen(
+                            passcodeState = SecurityCheckState.UNSET,
+                            onPasscodeStateChange = {
+                                securityViewModel.updatePasscodeState(
+                                    SecurityCheckState.ENABLED
+                                )
+                            },
+                            onPasscodeChange = {
                                 securityViewModel.setPasscode(it)
-                                navController.navigate(Screen.Passcode.RepeatPasscode.route)
-                            },
-                            onBack = {
-                                securityViewModel.updatePasscodeState(SecurityCheckState.DISABLED)
-                                navController.popBackStack()
-                            }
-                        )
-                    }
-                    composable(Screen.Passcode.RepeatPasscode.route) {
-                        RepeatPasscodeScreen(
-                            passcode = securityViewModel.passcode.value,
-                            onNext = {
-                                securityViewModel.updatePasscodeState(SecurityCheckState.ENABLED)
                                 navigateWithPopUp(Screen.EnableBiometrics.route)
-                            },
-                            onBack = {
-                                navController.popBackStack()
-                                // TODO: clear passcode field
                             },
                             onClose = {
                                 navController.popBackStack(
@@ -213,9 +227,11 @@ fun MainScreen() {
                             balance = walletViewModel.balance.doubleValue,
                             passport = passportViewModel.passport.value,
                             passportCardLook = passportViewModel.passportCardLook.value,
+                            passportIdentifiers = passportViewModel.passportIdentifiers.value,
                             isIncognito = passportViewModel.isIncognitoMode.value,
                             onPassportCardLookChange = passportViewModel::updatePassportCardLook,
                             onIncognitoChange = passportViewModel::updateIsIncognitoMode,
+                            onPassportIdentifiersChange = passportViewModel::updatePassportIdentifiers,
                             navigate = { navController.navigate(it) }
                         )
                     }
@@ -242,17 +258,20 @@ fun MainScreen() {
 
                     composable(Screen.Main.Profile.route) {
                         ProfileScreen(
-                            did = identityViewModel.did,
+                            address = walletViewModel.address,
                             language = settingsViewModel.language.value,
                             colorScheme = settingsViewModel.colorScheme.value,
+                            appIcon = appIcon,
                         ) { navController.navigate(it) }
                     }
                     composable(Screen.Main.Profile.AuthMethod.route) {
                         AuthMethodScreen(
                             biometricsState = securityViewModel.biometricsState.value,
                             passcodeState = securityViewModel.passcodeState.value,
-                            onBiometricsStateChanged = securityViewModel::updateBiometricsState,
-                            onPasscodeStateChanged = securityViewModel::updatePasscodeState,
+                            passcode = securityViewModel.passcode.value,
+                            onBiometricsStateChange = securityViewModel::updateBiometricsState,
+                            onPasscodeStateChange = securityViewModel::updatePasscodeState,
+                            onPasscodeChange = securityViewModel::setPasscode,
                             onBack = { navController.popBackStack() }
                         )
                     }
@@ -262,14 +281,27 @@ fun MainScreen() {
                     composable(Screen.Main.Profile.Language.route) {
                         LanguageScreen(
                             language = settingsViewModel.language.value,
-                            onLanguageChanged = settingsViewModel::updateLanguage,
+                            onLanguageChange = {
+                                settingsViewModel.updateLanguage(it)
+                                LocaleUtil.updateLocale(context, it.localeTag)
+                            },
                             onBack = { navController.popBackStack() }
                         )
                     }
                     composable(Screen.Main.Profile.Theme.route) {
                         ThemeScreen(
                             colorScheme = settingsViewModel.colorScheme.value,
-                            onColorSchemeChanged = settingsViewModel::updateColorScheme,
+                            onColorSchemeChange = settingsViewModel::updateColorScheme,
+                            onBack = { navController.popBackStack() }
+                        )
+                    }
+                    composable(Screen.Main.Profile.AppIcon.route) {
+                        AppIconScreen(
+                            appIcon = appIcon,
+                            onAppIconChange = {
+                                appIcon = it
+                                AppIconUtil.setIcon(context, it)
+                            },
                             onBack = { navController.popBackStack() }
                         )
                     }

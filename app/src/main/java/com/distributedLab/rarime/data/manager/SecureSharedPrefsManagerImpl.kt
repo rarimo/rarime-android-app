@@ -7,8 +7,10 @@ import androidx.security.crypto.MasterKey
 import com.distributedLab.rarime.data.enums.AppColorScheme
 import com.distributedLab.rarime.data.enums.AppLanguage
 import com.distributedLab.rarime.data.enums.PassportCardLook
+import com.distributedLab.rarime.data.enums.PassportIdentifier
 import com.distributedLab.rarime.data.enums.SecurityCheckState
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
+import com.distributedLab.rarime.util.LocaleUtil
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.util.data.ZkProof
@@ -27,8 +29,12 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "BIOMETRICS_STATE" to "BIOMETRICS_STATE",
         "PASSPORT_CARD_LOOK" to "PASSPORT_CARD_LOOK",
         "IS_PASSPORT_INCOGNITO_MODE" to "IS_PASSPORT_INCOGNITO_MODE",
+        "PASSPORT_IDENTIFIERS" to "PASSPORT_IDENTIFIERS",
         "COLOR_SCHEME" to "COLOR_SCHEME",
         "LANGUAGE" to "LANGUAGE",
+        "WALLET_BALANCE" to "WALLET_BALANCE",
+        "PASSCODE" to "PASSCODE",
+        "LOCK_TIMESTAMP" to "LOCK_TIMESTAMP",
         "WALLET_BALANCE" to "WALLET_BALANCE",
         "E_DOCUMENT" to "E_DOCUMENT",
         "PRIVATE_KEY" to "PRIVATE_KEY",
@@ -126,13 +132,31 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
 
     override fun readIsPassportIncognitoMode(): Boolean {
         return getSharedPreferences().getBoolean(
-            accessTokens["IS_PASSPORT_INCOGNITO_MODE"], false
+            accessTokens["IS_PASSPORT_INCOGNITO_MODE"], true
         )
     }
 
     override fun saveIsPassportIncognitoMode(isIncognito: Boolean) {
         val editor = getEditor()
         editor.putBoolean(accessTokens["IS_PASSPORT_INCOGNITO_MODE"], isIncognito)
+        editor.apply()
+    }
+
+    override fun readPassportIdentifiers(): List<PassportIdentifier> {
+        val valuesList = getSharedPreferences().getStringSet(
+            accessTokens["PASSPORT_IDENTIFIERS"], null
+        )?.toList()
+
+        return valuesList?.map { PassportIdentifier.fromString(it) }
+            ?: listOf(PassportIdentifier.NATIONALITY, PassportIdentifier.DOCUMENT_ID)
+    }
+
+    override fun savePassportIdentifiers(identifiers: List<PassportIdentifier>) {
+        val editor = getEditor()
+        editor.putStringSet(
+            accessTokens["PASSPORT_IDENTIFIERS"],
+            identifiers.map { it.value }.toSet()
+        )
         editor.apply()
     }
 
@@ -151,16 +175,23 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     }
 
     override fun readLanguage(): AppLanguage {
-        return AppLanguage.fromString(
+        val systemLocale = LocaleUtil.getSystemLocale(application)
+        val defaultLanguage = try {
+            AppLanguage.fromLocaleTag(systemLocale)
+        } catch (e: NoSuchElementException) {
+            AppLanguage.ENGLISH
+        }
+        return AppLanguage.fromLocaleTag(
             getSharedPreferences().getString(
-                accessTokens["LANGUAGE"], AppLanguage.ENGLISH.value
-            ) ?: AppLanguage.ENGLISH.value
+                accessTokens["LANGUAGE"], defaultLanguage.localeTag
+            ) ?: defaultLanguage.localeTag
         )
     }
 
     override fun saveLanguage(language: AppLanguage) {
         val editor = getEditor()
-        editor.putString(accessTokens["LANGUAGE"], language.value)
+        editor.putString(accessTokens["LANGUAGE"], language.localeTag)
+        editor.apply()
     }
 
     override fun readWalletBalance(): Double {
@@ -171,6 +202,26 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     override fun saveWalletBalance(balance: Double) {
         val editor = getEditor()
         editor.putString(accessTokens["WALLET_BALANCE"], balance.toString())
+        editor.apply()
+    }
+
+    override fun readPasscode(): String {
+        return getSharedPreferences().getString(accessTokens["PASSCODE"], "") ?: ""
+    }
+
+    override fun savePasscode(passcode: String) {
+        val editor = getEditor()
+        editor.putString(accessTokens["PASSCODE"], passcode)
+        editor.apply()
+    }
+
+    override fun readLockTimestamp(): Long {
+        return getSharedPreferences().getLong(accessTokens["LOCK_TIMESTAMP"], 0L)
+    }
+
+    override fun saveLockTimestamp(timestamp: Long) {
+        val editor = getEditor()
+        editor.putLong(accessTokens["LOCK_TIMESTAMP"], timestamp)
         editor.apply()
     }
 

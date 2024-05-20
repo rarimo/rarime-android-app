@@ -3,6 +3,7 @@ package com.distributedLab.rarime.domain.manager
 import com.distributedLab.rarime.data.enums.AppColorScheme
 import com.distributedLab.rarime.data.enums.AppLanguage
 import com.distributedLab.rarime.data.enums.PassportCardLook
+import com.distributedLab.rarime.data.enums.PassportIdentifier
 import com.distributedLab.rarime.data.enums.SecurityCheckState
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.wallet.models.Transaction
@@ -30,6 +31,9 @@ interface SecureSharedPrefsManager {
     fun readIsPassportIncognitoMode(): Boolean
     fun saveIsPassportIncognitoMode(isIncognito: Boolean)
 
+    fun readPassportIdentifiers(): List<PassportIdentifier>
+    fun savePassportIdentifiers(identifiers: List<PassportIdentifier>)
+
     fun readColorScheme(): AppColorScheme
     fun saveColorScheme(scheme: AppColorScheme)
 
@@ -49,5 +53,11 @@ interface SecureSharedPrefsManager {
     fun readTransactions(): List<Transaction>
 
     fun addTransaction(transaction: Transaction)
+
+    fun readPasscode(): String
+    fun savePasscode(passcode: String)
+
+    fun readLockTimestamp(): Long
+    fun saveLockTimestamp(timestamp: Long)
 
 }

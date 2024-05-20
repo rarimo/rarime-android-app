@@ -1,21 +1,16 @@
 package com.distributedLab.rarime.modules.passport
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,9 +21,11 @@ import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.passport.models.PersonDetails
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.CardContainer
+import com.distributedLab.rarime.ui.components.PassportImage
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.RewardChip
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.Constants
 import com.distributedLab.rarime.util.ImageUtil
 import java.time.LocalDate
 import java.time.Period
@@ -49,12 +46,13 @@ fun PassportDataStep(onNext: () -> Unit, onClose: () -> Unit, eDocument: EDocume
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 20.dp)
+                    .padding(horizontal = 12.dp)
             ) {
                 item {
                     CardContainer {
                         Row(
                             horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -74,14 +72,7 @@ fun PassportDataStep(onNext: () -> Unit, onClose: () -> Unit, eDocument: EDocume
                                 )
                             }
 
-                            Image(
-                                bitmap = image.asImageBitmap(),
-                                contentScale = ContentScale.FillWidth,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(56.dp)
-                                    .clip(CircleShape)
-                            )
+                            PassportImage(image = image)
                         }
                     }
                 }
@@ -97,7 +88,10 @@ fun PassportDataStep(onNext: () -> Unit, onClose: () -> Unit, eDocument: EDocume
                                     style = RarimeTheme.typography.subtitle3,
                                     color = RarimeTheme.colors.textPrimary
                                 )
-                                RewardChip(reward = 50, isActive = true)
+                                RewardChip(
+                                    reward = Constants.AIRDROP_REWARD.toInt(),
+                                    isActive = true
+                                )
                             }
 
                             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {

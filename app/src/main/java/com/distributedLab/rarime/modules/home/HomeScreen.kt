@@ -1,8 +1,6 @@
 package com.distributedLab.rarime.modules.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.PassportCardLook
+import com.distributedLab.rarime.data.enums.PassportIdentifier
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.ActionCard
@@ -48,12 +47,13 @@ fun HomeScreen(
     balance: Double,
     passport: EDocument?,
     passportCardLook: PassportCardLook,
+    passportIdentifiers: List<PassportIdentifier>,
     isIncognito: Boolean,
     onPassportCardLookChange: (PassportCardLook) -> Unit,
     onIncognitoChange: (Boolean) -> Unit,
+    onPassportIdentifiersChange: (List<PassportIdentifier>) -> Unit,
     navigate: (String) -> Unit
 ) {
-    // TODO: Use view model
     var isCongratsModalVisible by remember { mutableStateOf(false) }
 
     Box {
@@ -79,8 +79,10 @@ fun HomeScreen(
                         passport = passport,
                         isIncognito = isIncognito,
                         look = passportCardLook,
+                        identifiers = passportIdentifiers,
                         onLookChange = { onPassportCardLookChange(it) },
-                        onIncognitoChange = { onIncognitoChange(it) }
+                        onIncognitoChange = { onIncognitoChange(it) },
+                        onIdentifiersChange = { onPassportIdentifiersChange(it) }
                     )
                     RarimeCard()
                 }
@@ -98,8 +100,6 @@ fun HomeScreen(
 
 @Composable
 private fun Header(balance: Double, onBalanceClick: () -> Unit = {}) {
-    val sheetState = rememberAppSheetState()
-
     Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -113,18 +113,6 @@ private fun Header(balance: Double, onBalanceClick: () -> Unit = {}) {
                 text = stringResource(R.string.beta_launch),
                 style = RarimeTheme.typography.body3,
                 color = RarimeTheme.colors.warningDark,
-            )
-            AppIcon(
-                id = R.drawable.ic_info,
-                size = 16.dp,
-                tint = RarimeTheme.colors.warningDark,
-                modifier = Modifier
-                    .padding(start = 8.dp)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = { sheetState.show() }
-                    )
             )
         }
         Row(
@@ -163,9 +151,6 @@ private fun Header(balance: Double, onBalanceClick: () -> Unit = {}) {
                 onClick = { /*TODO*/ }
             )
         }
-    }
-    AppBottomSheet(state = sheetState, fullScreen = true) { hide ->
-        BetaLaunchScreen(onClose = { hide {} })
     }
 }
 
@@ -254,9 +239,14 @@ private fun HomeScreenPreview() {
         balance = 100.0,
         passport = null,
         passportCardLook = PassportCardLook.GREEN,
+        passportIdentifiers = listOf(
+            PassportIdentifier.NATIONALITY,
+            PassportIdentifier.DOCUMENT_ID
+        ),
         isIncognito = false,
         onPassportCardLookChange = {},
         onIncognitoChange = {},
+        onPassportIdentifiersChange = {},
         navigate = {}
     )
 }

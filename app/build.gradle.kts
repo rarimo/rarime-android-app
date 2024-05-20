@@ -28,10 +28,16 @@ android {
             }
         }
 
+        resourceConfigurations.plus(listOf("en", "uk"))
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+    }
+
+    androidResources {
+        generateLocaleConfig = true
     }
 
     buildTypes {
@@ -121,15 +127,12 @@ dependencies {
 
     // QR Code
     implementation("com.lightspark:compose-qr-code:1.0.1")
-
-    // Datastore
     implementation("androidx.security:security-crypto:1.1.0-alpha03")
-
-    // Splash Screen
     implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.biometric:biometric:1.1.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.airbnb.android:lottie-compose:6.4.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
-
-
 
     //Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")

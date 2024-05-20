@@ -21,6 +21,7 @@ import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.modules.wallet.models.TransactionState
+import com.distributedLab.rarime.util.Constants
 import com.distributedLab.rarime.util.ZKPUseCase
 import com.distributedLab.rarime.util.ZkpUtil
 import com.distributedLab.rarime.util.data.ZkProof
@@ -157,7 +158,8 @@ class WalletViewModel @Inject constructor(
 
         delay(3.seconds)
 
-        balance.doubleValue = fetchBalance().toDouble()
+        balance.doubleValue += Constants.AIRDROP_REWARD
+        //balance.doubleValue = fetchBalance().toDouble()
         dataStoreManager.saveWalletBalance(balance.doubleValue)
 
         transactions.value = listOf(
@@ -165,7 +167,7 @@ class WalletViewModel @Inject constructor(
                 id = 1,
                 iconId = R.drawable.ic_airdrop,
                 titleId = R.string.airdrop_tx_title,
-                amount = 3.0,
+                amount = Constants.AIRDROP_REWARD,
                 date = Date(),
                 state = TransactionState.INCOMING
             )

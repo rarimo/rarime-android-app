@@ -3,16 +3,15 @@ package com.distributedLab.rarime.util
 sealed class Screen(val route: String) {
     data object Intro : Screen("intro")
     data object ScanPassport : Screen("scan_passport")
+    data object Lock : Screen("lock")
 
     data object Register : Screen("register") {
         data object NewIdentity : Screen("new_identity")
-        data object ImportIdentity : Screen("import_identity")
     }
 
     data object Passcode : Screen("security") {
         data object EnablePasscode : Screen("enable_passcode")
-        data object EnterPasscode : Screen("enter_passcode")
-        data object RepeatPasscode : Screen("repeat_passcode")
+        data object AddPasscode : Screen("add_passcode")
     }
 
     data object EnableBiometrics : Screen("enable_biometrics")
@@ -30,6 +29,7 @@ sealed class Screen(val route: String) {
             data object ExportKeys : Screen("export_keys")
             data object Language : Screen("language")
             data object Theme : Screen("theme")
+            data object AppIcon : Screen("app_icon")
             data object Terms : Screen("terms")
             data object Privacy : Screen("privacy")
         }

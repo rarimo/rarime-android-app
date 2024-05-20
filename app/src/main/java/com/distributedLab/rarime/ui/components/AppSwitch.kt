@@ -18,12 +18,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.ui.theme.RarimeTheme
@@ -33,30 +36,30 @@ import kotlinx.coroutines.launch
 @Composable
 fun AppSwitch(
     modifier: Modifier = Modifier,
-    state: AppCheckboxState = rememberAppCheckboxState(),
+    checked: Boolean = false,
     enabled: Boolean = true,
+    onCheckedChange: (Boolean) -> Unit = {}
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val scope = rememberCoroutineScope()
 
-    val xOffset = if (state.checked) 16f else 0f
+    val xOffset = if (checked) 16f else 0f
     val animatedOffset = remember { Animatable(xOffset) }
+    val alpha = if (enabled) 1f else 0.8f
 
     val animatedBgColor by animateColorAsState(
         targetValue =
-        if (!enabled) RarimeTheme.colors.componentDisabled
-        else if (state.checked) RarimeTheme.colors.primaryDark
+        if (checked) RarimeTheme.colors.primaryDark
         else RarimeTheme.colors.componentPrimary,
         label = ""
     )
 
-    DisposableEffect(state.checked) {
+    LaunchedEffect(checked) {
         if (animatedOffset.targetValue != xOffset) {
             scope.launch {
                 animatedOffset.animateTo(xOffset, animationSpec = tween(300))
             }
         }
-        onDispose { }
     }
 
     Row(
@@ -64,11 +67,12 @@ fun AppSwitch(
         modifier = modifier
             .height(24.dp)
             .width(40.dp)
+            .alpha(alpha)
             .background(animatedBgColor, CircleShape)
             .padding(2.dp)
             .clickable(interactionSource = interactionSource, indication = null) {
                 if (enabled) {
-                    state.updateChecked(!state.checked)
+                    onCheckedChange(!checked)
                 }
             }
     ) {
@@ -77,10 +81,7 @@ fun AppSwitch(
                 .size(20.dp)
                 .offset(animatedOffset.value.dp, 0.dp)
                 .dropShadow(borderRadius = 250.dp)
-                .background(
-                    if (enabled) RarimeTheme.colors.baseWhite else RarimeTheme.colors.componentDisabled,
-                    CircleShape
-                )
+                .background(RarimeTheme.colors.baseWhite.copy(alpha = alpha), CircleShape)
         )
     }
 }
@@ -88,14 +89,14 @@ fun AppSwitch(
 @Preview(showBackground = true)
 @Composable
 private fun AppSwitchPreview() {
-    val checkedState = rememberAppCheckboxState()
+    var isChecked by remember { mutableStateOf(true) }
 
     Column(
         modifier = Modifier.padding(12.dp, 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Row {
-            AppSwitch(state = checkedState)
+            AppSwitch(checked = isChecked, onCheckedChange = { isChecked = it })
             Text(
                 text = "Regular",
                 modifier = Modifier.padding(8.dp, 0.dp),
@@ -104,7 +105,8 @@ private fun AppSwitchPreview() {
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             AppSwitch(
-                state = checkedState,
+                checked = isChecked,
+                onCheckedChange = { isChecked = it },
                 enabled = false,
             )
             Text(

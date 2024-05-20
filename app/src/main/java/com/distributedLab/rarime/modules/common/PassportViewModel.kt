@@ -3,6 +3,7 @@ package com.distributedLab.rarime.modules.common
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.data.enums.PassportCardLook
+import com.distributedLab.rarime.data.enums.PassportIdentifier
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +22,8 @@ class PassportViewModel @Inject constructor(
         private set
     var isIncognitoMode = mutableStateOf(secureSharedPrefsManager.readIsPassportIncognitoMode())
         private set
+    var passportIdentifiers = mutableStateOf(secureSharedPrefsManager.readPassportIdentifiers())
+        private set
 
     fun updatePassportCardLook(look: PassportCardLook) {
         passportCardLook.value = look
@@ -34,6 +37,12 @@ class PassportViewModel @Inject constructor(
 
     fun setPassport(passport: EDocument) {
         secureSharedPrefsManager.saveEDocument(passport)
+    fun updatePassportIdentifiers(identifiers: List<PassportIdentifier>) {
+        passportIdentifiers.value = identifiers
+        secureSharedPrefsManager.savePassportIdentifiers(identifiers)
+    }
+
+    fun setPassport(passport: EDocument?) {
         this.passport.value = passport
     }
 }

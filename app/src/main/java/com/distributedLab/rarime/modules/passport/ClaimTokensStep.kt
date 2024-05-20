@@ -32,11 +32,10 @@ import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.data.Proof
 import com.distributedLab.rarime.util.data.ZkProof
+import com.distributedLab.rarime.util.Constants
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
-private const val AIRDROP_AMOUNT = 3
 
 @Composable
 fun ClaimTokensStep(
@@ -100,7 +99,7 @@ fun ClaimTokensStep(
                     .padding(horizontal = 24.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.claim_tokens_title, AIRDROP_AMOUNT),
+                    text = stringResource(R.string.claim_tokens_title, Constants.AIRDROP_REWARD.toInt()),
                     style = RarimeTheme.typography.h6,
                     color = RarimeTheme.colors.textPrimary,
                 )

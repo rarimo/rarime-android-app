@@ -23,7 +23,7 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 @Composable
 fun ThemeScreen(
     colorScheme: AppColorScheme,
-    onColorSchemeChanged: (AppColorScheme) -> Unit,
+    onColorSchemeChange: (AppColorScheme) -> Unit,
     onBack: () -> Unit
 ) {
     ProfileRouteLayout(title = stringResource(R.string.theme), onBack = onBack) {
@@ -32,7 +32,7 @@ fun ThemeScreen(
                 SchemeItem(
                     scheme = scheme,
                     isSelected = scheme == colorScheme,
-                    onClick = { onColorSchemeChanged(scheme) }
+                    onClick = { onColorSchemeChange(scheme) }
                 )
             }
         }
@@ -65,7 +65,7 @@ private fun SchemeItem(
             )
             Text(
                 text = scheme.toLocalizedString(),
-                style = RarimeTheme.typography.subtitle4,
+                style = RarimeTheme.typography.buttonMedium,
                 color = RarimeTheme.colors.textPrimary
             )
         }
@@ -77,7 +77,7 @@ private fun SchemeItem(
 private fun ThemeScreenPreview() {
     ThemeScreen(
         colorScheme = AppColorScheme.SYSTEM,
-        onColorSchemeChanged = {},
+        onColorSchemeChange = {},
         onBack = {}
     )
 }
