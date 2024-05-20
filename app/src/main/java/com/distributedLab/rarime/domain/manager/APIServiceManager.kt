@@ -21,16 +21,16 @@ import retrofit2.http.Path
 
 interface APIServiceManager {
     @POST("$RELAYER_URL/integrations/registration-relayer/v1/register")
-    fun registerRequest(@Body body: RegisterRequest): Response<EvmTxResponse>
+    suspend fun registerRequest(@Body body: RegisterRequest): Response<EvmTxResponse>
 
     @POST("$RELAYER_URL/integrations/airdrop-svc/airdrops")
-    fun airdrop( @Body body: AirdropRequest) : Response<AirdropResponse>
+    suspend fun airdrop( @Body body: AirdropRequest) : Response<AirdropResponse>
 
     @Headers("Accept: application/json")
     @POST(EVM_RPC_URL)
-    fun getProof(@Body body: ByteArray): Call<String>
+    suspend fun getProof(@Body body: ByteArray): Call<String>
 
 
     @GET("$COSMOS_RPC_URL/cosmos/bank/v1beta1/spendable_balances/{address}")
-    fun fetchBalance(@Path("address") address: String) : Response<CosmosSpendableBalancesResponse>
+    suspend fun fetchBalance(@Path("address") address: String) : Response<CosmosSpendableBalancesResponse>
 }

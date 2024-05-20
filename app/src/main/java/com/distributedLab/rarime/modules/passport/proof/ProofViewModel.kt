@@ -23,18 +23,13 @@ import com.distributedLab.rarime.util.publicKeyToPem
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
-import identity.CallDataBuilder
 import identity.Profile
-import identity.X509Util
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-
-const val ENCAPSULATED_CONTENT_2688 = 2688
-const val ENCAPSULATED_CONTENT_2704 = 2704
 
 @OptIn(ExperimentalStdlibApi::class)
 @HiltViewModel
@@ -67,24 +62,24 @@ class ProofViewModel @Inject constructor(
         }
 
 
-        val x509Util = X509Util()
-
-        val masterCertificateIndex =
-            x509Util.getMasterCertificateIndex(certPem.toByteArray(), "ICAO".toByteArray())
-
-        val proof = withContext(Dispatchers.IO) {
-            apiService.getProof(masterCertificateIndex, certificatesSMTAddress)
-        }
-
-        if (proof?.existence == true) {
-            return
-        }
-
-
-        val callDataBuilder = CallDataBuilder()
-        val callData = callDataBuilder.buildRegisterCertificateCalldata(certPem.toByteArray(), "ICAO".toByteArray())
-
-        register(callData)
+//        val x509Util = X509Util()
+//
+//        val masterCertificateIndex =
+//            x509Util.getMasterCertificateIndex(certPem.toByteArray(), "ICAO".toByteArray())
+//
+//        val proof = withContext(Dispatchers.IO) {
+//            apiService.getProof(masterCertificateIndex, certificatesSMTAddress)
+//        }
+//
+//        if (proof?.existence == true) {
+//            return
+//        }
+//
+//
+//        val callDataBuilder = CallDataBuilder()
+//        val callData = callDataBuilder.buildRegisterCertificateCalldata(certPem.toByteArray(), "ICAO".toByteArray())
+//
+//        register(callData)
     }
 
     private fun buildRegistrationInputs(eDocument: EDocument): ByteArray {
@@ -156,24 +151,23 @@ class ProofViewModel @Inject constructor(
 
         _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
 
-        proof = withContext(Dispatchers.IO) { generateRegisterIdentityProof(eDocument)!! }
+        proof = withContext(Dispatchers.Default) { generateRegisterIdentityProof(eDocument)!! }
         val proofJson = Gson().toJson(proof)
         val sodFile = SODFileOwn(eDocument.sod!!.decodeHexString().inputStream())
 
         Log.i("SOD: ", sodFile.encoded.toHexString())
 
-        sodFile.docSigningCertificate.publicKey
 
         Log.i("PUBKEY PEM", sodFile.docSigningCertificate.publicKey.publicKeyToPem())
 
 
-        val callData = CallDataBuilder().buildRegisterCalldata(
-            proofJson.toByteArray(),
-            eDocument.aaSignature,
-            sodFile.docSigningCertificate.publicKey.publicKeyToPem().toByteArray(),
-            (sodFile.readASN1Data()!!.toHexString().substring(8)
-                .decodeHexString().size * 8).toLong(),
-        )
+//        val callData = CallDataBuilder().buildRegisterCalldata(
+//            proofJson.toByteArray(),
+//            eDocument.aaSignature,
+//            sodFile.docSigningCertificate.publicKey.publicKeyToPem().toByteArray(),
+//            (sodFile.readASN1Data()!!.toHexString().substring(8)
+//                .decodeHexString().size * 8).toLong(),
+//        )
 
         //val response = register(callData)
 
