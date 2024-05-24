@@ -37,6 +37,7 @@ import com.distributedLab.rarime.ui.components.ProcessingStatus
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.data.ZkProof
 import kotlinx.coroutines.launch
+import okhttp3.internal.wait
 
 enum class PassportProofState(val value: Int) {
     READING_DATA(0), APPLYING_ZERO_KNOWLEDGE(1), CREATING_CONFIDENTIAL_PROFILE(2), FINALIZING(3);
@@ -48,17 +49,14 @@ fun GenerateProofStep(
     onClose: (zkp: ZkProof) -> Unit,
     proofViewModel: ProofViewModel = hiltViewModel()
 ) {
-    val coroutineScope = rememberCoroutineScope()
 
 
     val currentState by proofViewModel.state.collectAsState()
     val processingStatus by remember { mutableStateOf(ProcessingStatus.PROCESSING) }
 
-    LaunchedEffect(Unit) {
-        coroutineScope.launch {
-            proofViewModel.generateProof(eDocument)
-            onClose(proofViewModel.getRegistrationProof())
-        }
+    LaunchedEffect(true) {
+        proofViewModel.registerByDocument(eDocument)
+        onClose(proofViewModel.getRegistrationProof())
     }
 
     fun getItemStatus(item: PassportProofState): ProcessingStatus {
@@ -108,7 +106,8 @@ private fun GeneralProcessingStatus(status: ProcessingStatus) {
             ProcessingStatus.PROCESSING -> RarimeTheme.colors.warningLighter
             ProcessingStatus.SUCCESS -> RarimeTheme.colors.successLighter
             ProcessingStatus.FAILURE -> RarimeTheme.colors.errorLighter
-        }, label = ""
+        },
+        label = ""
     )
 
     val iconColor by animateColorAsState(
@@ -116,7 +115,8 @@ private fun GeneralProcessingStatus(status: ProcessingStatus) {
             ProcessingStatus.PROCESSING -> RarimeTheme.colors.warningDark
             ProcessingStatus.SUCCESS -> RarimeTheme.colors.successDark
             ProcessingStatus.FAILURE -> RarimeTheme.colors.errorMain
-        }, label = ""
+        },
+        label = ""
     )
 
     val title = when (status) {

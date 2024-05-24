@@ -5,22 +5,23 @@ import org.bouncycastle.asn1.ASN1Encodable
 import org.bouncycastle.asn1.ASN1Integer
 import org.bouncycastle.asn1.DERSequence
 import org.bouncycastle.jce.provider.BouncyCastleProvider
-import org.bouncycastle.util.encoders.Base64
+import org.bouncycastle.openssl.jcajce.JcaPEMWriter
 import org.jmrtd.Util
 import java.io.IOException
+import java.io.StringWriter
 import java.security.MessageDigest
 import java.security.Provider
 import java.security.PublicKey
 import java.security.Security
 import java.security.Signature
 import java.security.cert.Certificate
-import java.security.cert.CertificateEncodingException
 import java.security.cert.X509Certificate
 import java.security.interfaces.ECPublicKey
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.MGF1ParameterSpec
 import java.security.spec.PSSParameterSpec
 import javax.crypto.Cipher
+
 
 /**
  * @author AliMertOzdemir
@@ -142,18 +143,11 @@ object SecurityUtil {
         return 0
     }
 
-    @Throws(CertificateEncodingException::class)
-    fun convertToPem(cert: X509Certificate): String {
-        val encoder = Base64()
-        val cert_begin = "-----BEGIN CERTIFICATE-----\n"
-        val end_cert = "-----END CERTIFICATE-----"
-        var derCert: ByteArray? = ByteArray(0)
-        try {
-            derCert = cert.encoded
-        } catch (e: CertificateEncodingException) {
-            e.printStackTrace()
+    fun convertToPEM(certificate: X509Certificate): String {
+        val stringWriter = StringWriter()
+        JcaPEMWriter(stringWriter).use { pemWriter ->
+            pemWriter.writeObject(certificate)
         }
-        val pemCertPre = String(Base64.encode(derCert))
-        return cert_begin + pemCertPre + end_cert
+        return stringWriter.toString()
     }
 }

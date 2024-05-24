@@ -68,7 +68,6 @@ fun ScanPassportScreen(
                 ClaimTokensStep(
                     registrationProof = registrationProof!!,
                     eDocument = eDocument!!,
-                    claimAirdrop = claimAirdrop,
                     onFinish = onClose
                 )
             }

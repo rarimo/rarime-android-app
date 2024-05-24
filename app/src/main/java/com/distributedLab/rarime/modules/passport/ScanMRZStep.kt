@@ -33,6 +33,7 @@ import org.jmrtd.lds.icao.MRZInfo
 fun ScanMRZStep(onNext: (MRZInfo) -> Unit, onClose: () -> Unit) {
     val cameraPermissionState: PermissionState =
         rememberPermissionState(android.Manifest.permission.CAMERA)
+
     var isAlertVisible by remember {
         mutableStateOf(false)
     }

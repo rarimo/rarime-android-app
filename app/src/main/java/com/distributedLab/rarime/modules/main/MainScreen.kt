@@ -151,7 +151,7 @@ fun MainScreen() {
 
                 composable(Screen.ScanPassport.route) {
                     ScanPassportScreen(
-                        claimAirdrop = { walletViewModel.claimAirdrop() },
+                        claimAirdrop = {},
                         onClose = { navController.popBackStack() }
                     )
                 }
@@ -162,7 +162,7 @@ fun MainScreen() {
                 ) {
                     composable(Screen.Register.NewIdentity.route) {
                         NewIdentityScreen(
-                            privateKey = identityViewModel.privateKey.value,
+                            privateKey = identityViewModel.privateKey,
                             onNext = {
                                 viewModel.finishIntro()
                                 identityViewModel.savePrivateKey()
@@ -244,7 +244,7 @@ fun MainScreen() {
                     }
                     composable(Screen.Main.Wallet.Receive.route) {
                         WalletReceiveScreen(
-                            address = walletViewModel.getAddress(),
+                            address = walletViewModel.address,
                             onBack = { navController.popBackStack() }
                         )
                     }
@@ -276,7 +276,7 @@ fun MainScreen() {
                         )
                     }
                     composable(Screen.Main.Profile.ExportKeys.route) {
-                        ExportKeysScreen(privateKey = identityViewModel.privateKey.value) { navController.popBackStack() }
+                        ExportKeysScreen(privateKey = identityViewModel.privateKey) { navController.popBackStack() }
                     }
                     composable(Screen.Main.Profile.Language.route) {
                         LanguageScreen(

@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.util
 
+import okio.ByteString.Companion.decodeBase64
 import java.security.PublicKey
 import java.util.Base64
 
@@ -62,3 +63,10 @@ fun PublicKey.publicKeyToPem(): String {
 
 fun String.addCharAtIndex(char: Char, index: Int) =
     StringBuilder(this).apply { insert(index, char) }.toString()
+
+fun ByteArray.toBase64(): String =
+    String(Base64.getEncoder().encode(this))
+
+fun String.fromBase64ToByteArray(): ByteArray {
+    return Base64.getDecoder().decode(this)
+}

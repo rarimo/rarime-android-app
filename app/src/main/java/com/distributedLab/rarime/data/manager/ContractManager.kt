@@ -3,10 +3,15 @@ package com.distributedLab.rarime.data.manager
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.contracts.PoseidonSMT
 import com.distributedLab.rarime.contracts.Registration
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.web3j.crypto.Credentials
 import org.web3j.crypto.Keys
 import org.web3j.protocol.Web3j
+import org.web3j.protocol.core.methods.response.TransactionReceipt
 import org.web3j.tx.gas.DefaultGasProvider
+import org.web3j.tx.response.PollingTransactionReceiptProcessor
+import org.web3j.tx.response.TransactionReceiptProcessor
 import javax.inject.Inject
 
 class ContractManager @Inject constructor(private val web3j: Web3j) {
@@ -29,5 +34,16 @@ class ContractManager @Inject constructor(private val web3j: Web3j) {
         return PoseidonSMT.load(
             address, web3j, credentials, gasProvider
         )
+    }
+
+    suspend fun checkIsTransactionSuccessful(txHash: String): Boolean {
+        val receiptProcessor: TransactionReceiptProcessor = PollingTransactionReceiptProcessor(
+            web3j, 1000,  // polling interval in milliseconds
+            40     // attempts
+        )
+        val transactionReceipt: TransactionReceipt = withContext(Dispatchers.IO) {
+            receiptProcessor.waitForTransactionReceipt(txHash)
+        }
+        return transactionReceipt.isStatusOK
     }
 }

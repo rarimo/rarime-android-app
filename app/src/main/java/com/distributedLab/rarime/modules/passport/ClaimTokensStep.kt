@@ -23,7 +23,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.modules.common.WalletViewModel
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppIcon
@@ -41,7 +43,7 @@ import kotlinx.coroutines.launch
 fun ClaimTokensStep(
     eDocument: EDocument,
     registrationProof: ZkProof,
-    claimAirdrop: suspend () -> Unit,
+    walletViewModel: WalletViewModel = hiltViewModel(),
     onFinish: () -> Unit
 ) {
     var isClaiming by remember { mutableStateOf(false) }
@@ -49,7 +51,7 @@ fun ClaimTokensStep(
 
     suspend fun claimTokens() {
         isClaiming = true
-        claimAirdrop()
+        walletViewModel.claimAirdrop()
         isClaiming = false
         onFinish()
     }
@@ -132,7 +134,6 @@ fun ClaimTokensStep(
 private fun ClaimTokensStepPreview() {
     ClaimTokensStep(
         registrationProof = ZkProof(Proof.fromJson(""), pub_signals = listOf("")),
-        claimAirdrop = { delay(1000) },
         onFinish = {},
         eDocument = EDocument()
     )

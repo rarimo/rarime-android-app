@@ -99,8 +99,9 @@ public class Registration extends Contract {
     }
 
     public RemoteFunctionCall<Tuple2<PassportInfo, IdentityInfo>> getPassportInfo(byte[] passportKey_) {
-        final Function function = new Function(FUNC_GETPASSPORTINFO, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes32(passportKey_)), 
+
+        final Function function = new Function(FUNC_GETPASSPORTINFO,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes32(passportKey_)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<PassportInfo>() {}, new TypeReference<IdentityInfo>() {}));
         return new RemoteFunctionCall<Tuple2<PassportInfo, IdentityInfo>>(function,
                 new Callable<Tuple2<PassportInfo, IdentityInfo>>() {

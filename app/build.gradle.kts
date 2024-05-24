@@ -138,7 +138,8 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
-
     //Web3
-    implementation("org.web3j:core:4.8.7-android")
+    implementation("org.web3j:core:4.9.8")
+    implementation("org.bouncycastle:bcpkix-jdk15on:1.70")
+
 }

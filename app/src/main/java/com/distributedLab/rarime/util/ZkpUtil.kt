@@ -88,7 +88,7 @@ class ZKPUseCase(val context: Context) {
             throw Exception("Error during zkp ${msg.decodeToString()}")
         }
 
-        val pubData = ByteArray(4 * 1024 * 1024)
+        val pubData = ByteArray(2 * 1024 * 1024)
 
 
         val pubLen = LongArray(1)

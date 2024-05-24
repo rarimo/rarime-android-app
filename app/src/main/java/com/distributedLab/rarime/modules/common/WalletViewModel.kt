@@ -14,9 +14,7 @@ import com.distributedLab.rarime.domain.data.AirdropRequest
 import com.distributedLab.rarime.domain.data.AirdropRequestAttributes
 import com.distributedLab.rarime.domain.data.AirdropRequestData
 import com.distributedLab.rarime.domain.data.CosmosTransferResponse
-import com.distributedLab.rarime.domain.data.IdentityInfo
-import com.distributedLab.rarime.domain.data.PassportInfo
-import com.distributedLab.rarime.domain.data.SMTProof
+import com.distributedLab.rarime.domain.data.ProofTxFull
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.wallet.models.Transaction
@@ -26,6 +24,8 @@ import com.distributedLab.rarime.util.ZKPUseCase
 import com.distributedLab.rarime.util.ZkpUtil
 import com.distributedLab.rarime.util.data.ZkProof
 import com.distributedLab.rarime.util.decodeHexString
+import com.distributedLab.rarime.util.fromBase64ToByteArray
+import com.distributedLab.rarime.util.toBase64
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import identity.Identity
@@ -53,12 +53,11 @@ class WalletViewModel @Inject constructor(
     var transactions = mutableStateOf(dataStoreManager.readTransactions())
         private set
 
-    fun getAddress(): String {
-        val privateKey = dataStoreManager.readPrivateKey() ?: return ""
-
-        return Profile().newProfile(
-            privateKey.decodeHexString()
-        ).rarimoAddress
+    val address: String by lazy {
+        val privateKey = dataStoreManager.readPrivateKey()
+        privateKey?.let {
+            Profile().newProfile(it.decodeHexString()).rarimoAddress
+        } ?: ""
     }
 
 
@@ -69,79 +68,87 @@ class WalletViewModel @Inject constructor(
         val zkp = ZKPUseCase(application as Context)
         val registrationContract = contractManager.getRegistration()
 
+        val registrationSmtAddress = withContext(Dispatchers.IO) {
+            registrationContract.registrationSmt().send()
+        }
+
+        val registrationSmtContract = contractManager.getPoseidonSMT(registrationSmtAddress)
 
 
         val proofIndex = Identity.calculateProofIndex(
             registrationProof.pub_signals[0], registrationProof.pub_signals[2]
         )
 
-
-        val res = withContext(Dispatchers.IO) {
-            Log.i("proof index", proofIndex.toHexString())
-            apiServiceManager.getProof(proofIndex)
-        }!!
-
-        val smtProof = SMTProof(
-            res.root, res.siblings
-        )
-
+        val smtProofRaw = withContext(Dispatchers.IO) {
+            registrationSmtContract.getProof(proofIndex).send()
+        }
+        val smtProof = ProofTxFull.fromContractProof(smtProofRaw)
         val smtProofJson = Gson().toJson(smtProof)
 
 
         val profiler = Profile().newProfile(privateKey)
 
+        Log.i("pubSignal", Identity.bigIntToBytes(registrationProof.pub_signals[0]).size.toString())
 
-        val passportKeyByts = Identity.bigIntToBytes(registrationProof.pub_signals[0])
 
-        val inputs: ByteArray = withContext(Dispatchers.IO) {
-            val rawData = registrationContract.getPassportInfo(passportKeyByts).send()
-            val passportInfo = PassportInfo(
-                rawData.component1().activeIdentity, rawData.component1().identityReissueCounter
-            )
-            val identityInfo = IdentityInfo(
-                rawData.component2().activePassport, rawData.component2().issueTimestamp
-            )
+        val passportInfoRaw = withContext(Dispatchers.IO) {
+            registrationContract.getPassportInfo(
+                Identity.bigIntToBytes(registrationProof.pub_signals[0])
+            ).send()
+        }
 
-            profiler.buildQueryIdentityInputs(
-                eDocument.dg1!!.toByteArray(),
-                smtProofJson.toByteArray(),
-                "39",
-                registrationProof.pub_signals[0],
-                identityInfo.issueTimestamp.toString(),
-                passportInfo.identityReissueCounter.toString(),
-                "0",
-                "0",
-                "1",
-                "0"
+        val passportInfo = passportInfoRaw.component1()
+        val identityInfo = passportInfoRaw.component2()
+
+
+        val queryProofInputs = profiler.buildAirdropQueryIdentityInputs(
+            eDocument.dg1!!.decodeHexString(),
+            smtProofJson.toByteArray(Charsets.UTF_8),
+            "23073",
+            registrationProof.pub_signals[0],
+            identityInfo.issueTimestamp.toString(),
+            passportInfo.identityReissueCounter.toString()
+        )
+
+        val queryProof = withContext(Dispatchers.Default) {
+            zkp.generateZKP(
+                "circuit_query_zkey.zkey",
+                R.raw.query_identity_dat,
+                queryProofInputs,
+                ZkpUtil::queryIdentity
             )
         }
-        return zkp.generateZKP(
-            "circuit_query_zkey", R.raw.query_identity_dat, inputs, ZkpUtil::queryIdentity
-        )
+
+        return queryProof
     }
 
     private suspend fun airDrop(zkProof: ZkProof) {
+        val secretKey = dataStoreManager.readPrivateKey()!!.decodeHexString()
+        val profile = Profile().newProfile(secretKey)
+
+        val rarimoAddress = profile.rarimoAddress
+
         val payload = AirdropRequest(
             data = AirdropRequestData(
                 type = "create_airdrop", attributes = AirdropRequestAttributes(
-                    address = getAddress(), algorithm = "SHA256withRSA", zk_proof = zkProof
+                    rarimoAddress, "SHA256withRSA", zkProof
                 )
             )
         )
 
+
         withContext(Dispatchers.IO) {
             apiServiceManager.sendQuery(payload)
         }
-
     }
 
-    fun refreshTransactions() {
+    private fun refreshTransactions() {
         transactions.value = dataStoreManager.readTransactions()
     }
 
     suspend fun fetchBalance(): String {
         return withContext(Dispatchers.IO) {
-            val balance = apiServiceManager.fetchBalance(getAddress())
+            val balance = apiServiceManager.fetchBalance(address)
             balance!!.balances.first().amount
         }
     }
@@ -158,8 +165,9 @@ class WalletViewModel @Inject constructor(
 
         delay(3.seconds)
 
+
         balance.doubleValue += Constants.AIRDROP_REWARD
-        //balance.doubleValue = fetchBalance().toDouble()
+        balance.doubleValue = fetchBalance().toDouble()
         dataStoreManager.saveWalletBalance(balance.doubleValue)
 
         transactions.value = listOf(

@@ -124,7 +124,7 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
         )
         val docSigningCert = sodFile.docSigningCertificate
         val docSigningCerts = sodFile.docSigningCertificates
-        val pemFile: String = SecurityUtil.convertToPem(docSigningCert)
+        val pemFile: String = SecurityUtil.convertToPEM(docSigningCert)
         Log.d(
             "", "Document Signer Certificate: $docSigningCert"
         )
@@ -144,7 +144,7 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
         // -- Personal Details -- //
         val dg1In = service.getInputStream(PassportService.EF_DG1)
         val dg1File = DG1File(dg1In)
-        var encodedDg1File = String(dg1File.encoded)
+        var encodedDg1File = dg1File.encoded.toHexString()
         val mrzInfo = dg1File.mrzInfo
         personDetails.name = mrzInfo.secondaryIdentifier.replace("<", " ").trim { it <= ' ' }
         personDetails.surname = mrzInfo.primaryIdentifier.replace("<", " ").trim { it <= ' ' }
@@ -243,7 +243,7 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
         val pemFileEnded = pemFile.addCharAtIndex('\n', index)
 
 
-        val encapsulaged_content = sodFile.readASN1Data()!!.toHexString().substring(8)
+        val encapsulaged_content = sodFile.readASN1Data()
 
         Log.d("Encapsulated Content", encapsulaged_content)
         val dg1B =
@@ -278,12 +278,17 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
 }
 
 class SODFileOwn(inputStream: InputStream?) : SODFile(inputStream) {
-    fun readASN1Data(): ByteArray? {
+    @OptIn(ExperimentalStdlibApi::class)
+    fun readASN1Data(): String {
         val a = SODFile::class.java.getDeclaredField("signedData");
         a.isAccessible = true
 
         val v: SignedData = a.get(this) as SignedData
 
-        return v.encapContentInfo.content.toASN1Primitive().encoded
+        val encapsulatedContent =  v.encapContentInfo.content.toASN1Primitive().encoded!!.toHexString()
+
+        val target = "30"
+        val startIndex = encapsulatedContent.indexOf(target)
+        return encapsulatedContent.substring(startIndex)
     }
 }

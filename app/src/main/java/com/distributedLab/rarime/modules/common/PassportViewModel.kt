@@ -35,14 +35,15 @@ class PassportViewModel @Inject constructor(
         secureSharedPrefsManager.saveIsPassportIncognitoMode(isIncognitoMode)
     }
 
-    fun setPassport(passport: EDocument) {
-        secureSharedPrefsManager.saveEDocument(passport)
     fun updatePassportIdentifiers(identifiers: List<PassportIdentifier>) {
         passportIdentifiers.value = identifiers
         secureSharedPrefsManager.savePassportIdentifiers(identifiers)
     }
 
     fun setPassport(passport: EDocument?) {
+        if (passport != null) {
+            secureSharedPrefsManager.saveEDocument(passport)
+        }
         this.passport.value = passport
     }
 }
