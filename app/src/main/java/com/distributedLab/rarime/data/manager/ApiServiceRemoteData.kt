@@ -32,6 +32,7 @@ class ApiServiceRemoteData @Inject constructor(private val apiServiceManager: AP
         if (response.isSuccessful) {
             return response.body()!!
         }
+        Log.e("AIR DROP ERROR", response.errorBody()!!.string())
         return null
     }
 

@@ -102,7 +102,7 @@ class WalletViewModel @Inject constructor(
 
 
         val queryProofInputs = profiler.buildAirdropQueryIdentityInputs(
-            eDocument.dg1!!.decodeHexString(),
+            eDocument.dg1!!.decodeHexString().toString().toByteArray(Charsets.UTF_8),
             smtProofJson.toByteArray(Charsets.UTF_8),
             "23073",
             registrationProof.pub_signals[0],
@@ -138,7 +138,8 @@ class WalletViewModel @Inject constructor(
 
 
         withContext(Dispatchers.IO) {
-            apiServiceManager.sendQuery(payload)
+            val resp = apiServiceManager.sendQuery(payload)
+
         }
     }
 
@@ -164,7 +165,6 @@ class WalletViewModel @Inject constructor(
         airDrop(proof)
 
         delay(3.seconds)
-
 
         balance.doubleValue += Constants.AIRDROP_REWARD
         balance.doubleValue = fetchBalance().toDouble()

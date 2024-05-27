@@ -24,10 +24,6 @@ interface APIServiceManager {
     @POST("$RELAYER_URL/integrations/airdrop-svc/airdrops")
     suspend fun airdrop( @Body body: AirdropRequest) : Response<AirdropResponse>
 
-    @Headers("Accept: application/json")
-    @POST(EVM_RPC_URL)
-    suspend fun getProof(@Body body: EthCallRequest): Response<EthCallResponse>
-
 
     @GET("$COSMOS_RPC_URL/cosmos/bank/v1beta1/spendable_balances/{address}")
     suspend fun fetchBalance(@Path("address") address: String) : Response<CosmosSpendableBalancesResponse>
