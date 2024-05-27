@@ -1,6 +1,7 @@
 package com.distributedLab.rarime.domain.data
 
 import com.distributedLab.rarime.contracts.PoseidonSMT
+import com.distributedLab.rarime.util.toBase64
 import java.io.Serializable
 
 data class ProofTx(
@@ -23,14 +24,14 @@ data class ProofTxFull(
         @OptIn(ExperimentalStdlibApi::class)
         fun fromContractProof(proof: PoseidonSMT.Proof): ProofTxFull {
             return ProofTxFull(
-                root = proof.root.toHexString(),
-                siblings = proof.siblings.map { it.toHexString() },
+                root = proof.root.toBase64(),
+                siblings = proof.siblings.map { it.toBase64() },
                 existence = proof.existence,
-                key = proof.key.toHexString(),
-                value = proof.pValue.toHexString(),
+                key = proof.key.toBase64(),
+                value = proof.pValue.toBase64(),
                 auxExistence = proof.auxExistence,
-                auxKey = proof.auxKey.toHexString(),
-                auxValue = proof.auxValue.toHexString()
+                auxKey = proof.auxKey.toBase64(),
+                auxValue = proof.auxValue.toBase64()
             )
         }
     }

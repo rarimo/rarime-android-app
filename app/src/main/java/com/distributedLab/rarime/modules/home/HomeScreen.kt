@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,9 +25,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.PassportIdentifier
+import com.distributedLab.rarime.modules.common.WalletViewModel
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.ActionCard
@@ -44,7 +47,6 @@ import com.distributedLab.rarime.util.Screen
 
 @Composable
 fun HomeScreen(
-    balance: Double,
     passport: EDocument?,
     passportCardLook: PassportCardLook,
     passportIdentifiers: List<PassportIdentifier>,
@@ -52,10 +54,12 @@ fun HomeScreen(
     onPassportCardLookChange: (PassportCardLook) -> Unit,
     onIncognitoChange: (Boolean) -> Unit,
     onPassportIdentifiersChange: (List<PassportIdentifier>) -> Unit,
-    navigate: (String) -> Unit
+    navigate: (String) -> Unit,
+    walletViewModel: WalletViewModel = hiltViewModel()
 ) {
     var isCongratsModalVisible by remember { mutableStateOf(false) }
 
+    val balance by walletViewModel.balance.collectAsState()
     Box {
         Column(
             verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -236,7 +240,6 @@ private fun RarimeCard() {
 @Composable
 private fun HomeScreenPreview() {
     HomeScreen(
-        balance = 100.0,
         passport = null,
         passportCardLook = PassportCardLook.GREEN,
         passportIdentifiers = listOf(

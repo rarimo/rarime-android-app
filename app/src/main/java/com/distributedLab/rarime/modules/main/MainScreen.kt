@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,10 +71,10 @@ val mainRoutes = listOf(
 fun MainScreen() {
     val identityViewModel: IdentityViewModel = hiltViewModel()
     val securityViewModel: SecurityViewModel = hiltViewModel()
-    val walletViewModel: WalletViewModel = hiltViewModel()
     val passportViewModel: PassportViewModel = hiltViewModel()
     val settingsViewModel: SettingsViewModel = hiltViewModel()
     val viewModel: MainViewModel = hiltViewModel()
+    val walletViewModel: WalletViewModel = hiltViewModel()
 
     val navController: NavHostController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -224,7 +225,6 @@ fun MainScreen() {
                 ) {
                     composable(Screen.Main.Home.route) {
                         HomeScreen(
-                            balance = walletViewModel.balance.doubleValue,
                             passport = passportViewModel.passport.value,
                             passportCardLook = passportViewModel.passportCardLook.value,
                             passportIdentifiers = passportViewModel.passportIdentifiers.value,
@@ -237,31 +237,28 @@ fun MainScreen() {
                     }
                     composable(Screen.Main.Wallet.route) {
                         WalletScreen(
-                            balance = walletViewModel.balance.doubleValue,
-                            transactions = walletViewModel.transactions.value,
                             navigate = { navController.navigate(it) }
                         )
                     }
                     composable(Screen.Main.Wallet.Receive.route) {
                         WalletReceiveScreen(
-                            address = walletViewModel.address,
                             onBack = { navController.popBackStack() }
                         )
                     }
                     composable(Screen.Main.Wallet.Send.route) {
                         WalletSendScreen(
-                            balance = walletViewModel.balance.doubleValue,
-                            onBack = { navController.popBackStack() }
+                            onBack = { navController.popBackStack() },
+                            walletViewModel = walletViewModel
                         )
                     }
                     composable(Screen.Main.Rewards.route) { RewardsScreen() }
 
                     composable(Screen.Main.Profile.route) {
                         ProfileScreen(
-                            address = walletViewModel.address,
                             language = settingsViewModel.language.value,
                             colorScheme = settingsViewModel.colorScheme.value,
                             appIcon = appIcon,
+                            walletViewModel = walletViewModel
                         ) { navController.navigate(it) }
                     }
                     composable(Screen.Main.Profile.AuthMethod.route) {

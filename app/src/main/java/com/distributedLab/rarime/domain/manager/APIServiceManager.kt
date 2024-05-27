@@ -9,6 +9,7 @@ import com.distributedLab.rarime.domain.data.CosmosSpendableBalancesResponse
 import com.distributedLab.rarime.domain.data.EthCallRequest
 import com.distributedLab.rarime.domain.data.EthCallResponse
 import com.distributedLab.rarime.domain.data.EvmTxResponse
+import com.distributedLab.rarime.domain.data.GetAirdropParamsResponse
 import com.distributedLab.rarime.domain.data.RegisterRequest
 import retrofit2.Response
 import retrofit2.http.Body
@@ -27,4 +28,7 @@ interface APIServiceManager {
 
     @GET("$COSMOS_RPC_URL/cosmos/bank/v1beta1/spendable_balances/{address}")
     suspend fun fetchBalance(@Path("address") address: String) : Response<CosmosSpendableBalancesResponse>
+
+    @GET("$RELAYER_URL/integrations/airdrop-svc/airdrops/params")
+    suspend fun airdropParams(): Response<GetAirdropParamsResponse>
 }

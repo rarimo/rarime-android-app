@@ -23,7 +23,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.modules.common.WalletViewModel
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.CardContainer
 import com.distributedLab.rarime.ui.components.SecondaryTextButton
@@ -35,11 +37,13 @@ import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun WalletReceiveScreen(
-    address: String,
-    onBack: () -> Unit = {}
+    onBack: () -> Unit = {},
+    walletViewModel: WalletViewModel = hiltViewModel()
 ) {
     val clipboardManager = LocalClipboardManager.current
     var isCopied by remember { mutableStateOf(false) }
+
+    val address = walletViewModel.address
 
     LaunchedEffect(isCopied) {
         if (isCopied) {
@@ -123,5 +127,5 @@ fun WalletReceiveScreen(
 @Preview
 @Composable
 private fun WalletReceiveScreenPreview() {
-    WalletReceiveScreen(address = "rarimo10xf20zsda2hpjstl3l5ahf65tzkkdnhaxlsl8a") {}
+    WalletReceiveScreen()
 }

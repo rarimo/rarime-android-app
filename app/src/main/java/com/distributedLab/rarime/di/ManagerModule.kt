@@ -1,7 +1,7 @@
 package com.distributedLab.rarime.di
 
 import com.distributedLab.rarime.BaseConfig
-import com.distributedLab.rarime.data.manager.SecureSharedPrefsManagerImpl
+import com.distributedLab.rarime.manager.SecureSharedPrefsManagerImpl
 import com.distributedLab.rarime.domain.manager.APIServiceManager
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import dagger.Binds

@@ -3,13 +3,12 @@ package com.distributedLab.rarime.modules.common
 import android.app.Application
 import android.content.Context
 import android.util.Log
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.data.manager.ApiServiceRemoteData
-import com.distributedLab.rarime.data.manager.ContractManager
+import com.distributedLab.rarime.manager.ApiServiceRemoteData
+import com.distributedLab.rarime.manager.ContractManager
 import com.distributedLab.rarime.domain.data.AirdropRequest
 import com.distributedLab.rarime.domain.data.AirdropRequestAttributes
 import com.distributedLab.rarime.domain.data.AirdropRequestData
@@ -24,14 +23,16 @@ import com.distributedLab.rarime.util.ZKPUseCase
 import com.distributedLab.rarime.util.ZkpUtil
 import com.distributedLab.rarime.util.data.ZkProof
 import com.distributedLab.rarime.util.decodeHexString
-import com.distributedLab.rarime.util.fromBase64ToByteArray
-import com.distributedLab.rarime.util.toBase64
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import identity.Identity
 import identity.Profile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import java.util.Date
 import javax.inject.Inject
@@ -46,12 +47,17 @@ class WalletViewModel @Inject constructor(
     private val apiServiceManager: ApiServiceRemoteData
 ) : AndroidViewModel(application) {
 
-    var balance = mutableDoubleStateOf(dataStoreManager.readWalletBalance())
-        private set
-    var isAirdropClaimed = mutableStateOf(false)
-        private set
-    var transactions = mutableStateOf(dataStoreManager.readTransactions())
-        private set
+    private var _transactions = MutableStateFlow(dataStoreManager.readTransactions())
+    private var _balance = MutableStateFlow(dataStoreManager.readWalletBalance())
+
+    val balance: StateFlow<Double>
+        get() = _balance.asStateFlow()
+
+    private var isAirdropClaimed = mutableStateOf(false)
+
+    val transactions: StateFlow<List<Transaction>>
+        get() = _transactions.asStateFlow()
+
 
     val address: String by lazy {
         val privateKey = dataStoreManager.readPrivateKey()
@@ -100,14 +106,20 @@ class WalletViewModel @Inject constructor(
         val passportInfo = passportInfoRaw.component1()
         val identityInfo = passportInfoRaw.component2()
 
+        val airDropParams = withContext(Dispatchers.IO) {
+            apiServiceManager.getAirdropParams()!!
+        }
+
 
         val queryProofInputs = profiler.buildAirdropQueryIdentityInputs(
-            eDocument.dg1!!.decodeHexString().toString().toByteArray(Charsets.UTF_8),
+            eDocument.dg1!!.decodeHexString(),
             smtProofJson.toByteArray(Charsets.UTF_8),
-            "23073",
+            airDropParams.data.attributes.query_selector,
             registrationProof.pub_signals[0],
             identityInfo.issueTimestamp.toString(),
-            passportInfo.identityReissueCounter.toString()
+            passportInfo.identityReissueCounter.toString(),
+            airDropParams.data.attributes.event_id,
+            airDropParams.data.attributes.started_at.toLong()
         )
 
         val queryProof = withContext(Dispatchers.Default) {
@@ -128,6 +140,8 @@ class WalletViewModel @Inject constructor(
 
         val rarimoAddress = profile.rarimoAddress
 
+        Log.i("airDrop", Gson().toJson(zkProof))
+
         val payload = AirdropRequest(
             data = AirdropRequestData(
                 type = "create_airdrop", attributes = AirdropRequestAttributes(
@@ -136,15 +150,17 @@ class WalletViewModel @Inject constructor(
             )
         )
 
+        val gson = GsonBuilder().setPrettyPrinting().create()
+        Log.i("PAYLOAD", gson.toJson(payload))
+
 
         withContext(Dispatchers.IO) {
             val resp = apiServiceManager.sendQuery(payload)
-
         }
     }
 
     private fun refreshTransactions() {
-        transactions.value = dataStoreManager.readTransactions()
+        _transactions.value = dataStoreManager.readTransactions()
     }
 
     suspend fun fetchBalance(): String {
@@ -160,18 +176,17 @@ class WalletViewModel @Inject constructor(
         val registrationProof = dataStoreManager.readRegistrationProof()!!
         val privateKey = dataStoreManager.readPrivateKey()!!.decodeHexString()
 
-        val proof = generateAirdropQueryProof(registrationProof, eDocument, privateKey)
+        withContext(Dispatchers.Default) {
+            val proof = generateAirdropQueryProof(registrationProof, eDocument, privateKey)
 
-        airDrop(proof)
+            airDrop(proof)
 
-        delay(3.seconds)
+            delay(10.seconds)
+            _balance.value += Constants.AIRDROP_REWARD
+            _balance.value = fetchBalance().toDouble()
+            dataStoreManager.saveWalletBalance(_balance.value)
 
-        balance.doubleValue += Constants.AIRDROP_REWARD
-        balance.doubleValue = fetchBalance().toDouble()
-        dataStoreManager.saveWalletBalance(balance.doubleValue)
-
-        transactions.value = listOf(
-            Transaction(
+            val transaction = Transaction(
                 id = 1,
                 iconId = R.drawable.ic_airdrop,
                 titleId = R.string.airdrop_tx_title,
@@ -179,10 +194,15 @@ class WalletViewModel @Inject constructor(
                 date = Date(),
                 state = TransactionState.INCOMING
             )
-        )
 
-        refreshTransactions()
-        isAirdropClaimed.value = true
+
+            dataStoreManager.addTransaction(transaction)
+
+            refreshTransactions()
+            isAirdropClaimed.value = true
+        }
+
+
     }
 
     suspend fun sendTokens(destination: String, amount: String): CosmosTransferResponse {

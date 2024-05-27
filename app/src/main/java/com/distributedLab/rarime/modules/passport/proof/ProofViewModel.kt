@@ -13,8 +13,8 @@ import androidx.lifecycle.AndroidViewModel
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.contracts.PoseidonSMT.Proof
-import com.distributedLab.rarime.data.manager.ApiServiceRemoteData
-import com.distributedLab.rarime.data.manager.ContractManager
+import com.distributedLab.rarime.manager.ApiServiceRemoteData
+import com.distributedLab.rarime.manager.ContractManager
 import com.distributedLab.rarime.domain.data.ProofTx
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.modules.passport.PassportProofState
@@ -40,9 +40,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import org.bouncycastle.asn1.eac.ECDSAPublicKey
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey
 import org.jmrtd.lds.icao.DG15File
 import java.io.IOException
 import javax.inject.Inject
+import kotlin.reflect.typeOf
 
 
 @OptIn(ExperimentalStdlibApi::class)
@@ -55,7 +57,6 @@ class ProofViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
     private val TAG = ProofViewModel::class.java.simpleName
     private val zkp = ZKPUseCase(application as Context)
-
     private lateinit var proof: ZkProof
     private var _state = MutableStateFlow(PassportProofState.READING_DATA)
     private lateinit var masterCertProof: Proof
@@ -127,7 +128,7 @@ class ProofViewModel @Inject constructor(
 
         Log.i("INPUTS", inputs.decodeToString())
 
-        val manager = ContextCompat.getSystemService(application as Context, ClipboardManager::class.java)
+        val manager = getSystemService(application as Context, ClipboardManager::class.java)
         manager!!.setPrimaryClip(
             ClipData.newPlainText(
                 "label",
@@ -195,7 +196,6 @@ class ProofViewModel @Inject constructor(
 
     private suspend fun buildRegistrationCircuits(eDocument: EDocument): ByteArray {
         val secretKey = dataStoreManager.readPrivateKey()
-
         val sodStream = eDocument.sod!!.decodeHexString().inputStream()
         val sodFile = SODFileOwn(sodStream)
         val dg15 = eDocument.dg15!!.decodeHexString()
@@ -236,7 +236,10 @@ class ProofViewModel @Inject constructor(
         val profile = identityProfile.newProfile(secretKey!!.decodeHexString())
 
         val dg15PublicKey = dG15File.publicKey
-        val isEcdsaActiveAuthentication = true//(dg15PublicKey is ECDSAPublicKey)
+        Log.i("DG15File", dg15PublicKey::class.java.name)
+
+
+        val isEcdsaActiveAuthentication = (dg15PublicKey is BCECPublicKey)
 
 
         val gson = GsonBuilder().create()
@@ -258,10 +261,10 @@ class ProofViewModel @Inject constructor(
             signedAttributes,
             eDocument.dg1!!.decodeHexString(),
             eDocument.dg15!!.decodeHexString(),
-            publicKeyPem.toByteArray(),
+            publicKeyPem.toByteArray(Charsets.UTF_8),
             signature,
             isEcdsaActiveAuthentication,
-            proofJson.toByteArray()
+            proofJson.toByteArray(Charsets.UTF_8)
         )
 
 
@@ -273,13 +276,10 @@ class ProofViewModel @Inject constructor(
 
     private fun readICAO(context: Context): ByteArray? {
         return try {
-
             context.assets.open("masters.pem").use { inputStream ->
                 val res = inputStream.readBytes()
                 res
             }
-
-
         } catch (e: IOException) {
             e.printStackTrace()
             null
