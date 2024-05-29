@@ -111,7 +111,7 @@
     <string name="receiver_gets">Receiver gets</string>
     <string name="send_btn">Send</string>
     <string name="wallet_title">Wallet</string>
-    <string name="available_rmo">Available RMO</string>
+    <string name="available_rmo">Total Balance</string>
     <string name="receive_btn">Receive</string>
     <string name="transactions_title">Transactions</string>
     <string name="wallet_send_title">Send RMO</string>

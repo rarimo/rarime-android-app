@@ -4,27 +4,32 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.modules.wallet.models.TransactionState
 import com.distributedLab.rarime.modules.wallet.view_model.WalletViewModel
+import com.distributedLab.rarime.modules.wallet.walletTokens.WalletTokensList
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.CardContainer
 import com.distributedLab.rarime.ui.components.HorizontalDivider
-import com.distributedLab.rarime.ui.components.SecondaryButton
+import com.distributedLab.rarime.ui.components.SecondaryIconButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.DateUtil
 import com.distributedLab.rarime.util.NumberUtil
@@ -44,42 +49,99 @@ fun WalletScreen(
             .background(RarimeTheme.colors.backgroundPrimary)
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(32.dp),
-            modifier = Modifier
-                .background(RarimeTheme.colors.backgroundPure)
-                .padding(20.dp)
+            verticalArrangement = Arrangement.spacedBy(40.dp),
+            modifier = Modifier.padding(20.dp)
         ) {
             Text(
                 text = stringResource(R.string.wallet_title),
                 style = RarimeTheme.typography.subtitle2,
                 color = RarimeTheme.colors.textPrimary
             )
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Text(
                     text = stringResource(R.string.available_rmo),
                     style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.textSecondary
                 )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = NumberUtil.formatAmount(balance),
+                        style = RarimeTheme.typography.h4,
+                        color = RarimeTheme.colors.textPrimary
+                    )
+                    // TODO: replace by select
+                    Text(
+                        text = BaseConfig.DENOM.uppercase(),
+                        style = RarimeTheme.typography.overline2,
+                        color = RarimeTheme.colors.textPrimary,
+                    )
+                }
                 Text(
-                    text = NumberUtil.formatAmount(balance),
-                    style = RarimeTheme.typography.h4,
-                    color = RarimeTheme.colors.textPrimary
+                    text = "---",
+                    style = RarimeTheme.typography.caption2,
+                    color = RarimeTheme.colors.textSecondary,
                 )
             }
-            Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                HorizontalDivider()
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    SecondaryButton(text = stringResource(R.string.receive_btn),
-                        leftIcon = R.drawable.ic_arrow_down,
-                        modifier = Modifier.weight(1f),
-                        onClick = { navigate(Screen.Main.Wallet.Receive.route) })
-                    SecondaryButton(text = stringResource(R.string.send_btn),
-                        leftIcon = R.drawable.ic_arrow_up,
-                        modifier = Modifier.weight(1f),
-                        onClick = { navigate(Screen.Main.Wallet.Send.route) })
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Column (
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        SecondaryIconButton(
+                            icon = R.drawable.ic_arrow_down,
+                            onClick = { navigate(Screen.Main.Wallet.Receive.route) }
+                        )
+                        Text(
+                            text = stringResource(R.string.receive_btn),
+                            color = RarimeTheme.colors.textSecondary,
+                            style = RarimeTheme.typography.buttonSmall
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(32.dp))
+                    Column (
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        SecondaryIconButton(
+                            icon = R.drawable.ic_arrow_up,
+                            onClick = { navigate(Screen.Main.Wallet.Send.route) }
+                        )
+                        Text(
+                            text = stringResource(R.string.send_btn),
+                            color = RarimeTheme.colors.textSecondary,
+                            style = RarimeTheme.typography.buttonSmall
+                        )
+                    }
                 }
+
+                HorizontalDivider()
             }
         }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(RarimeTheme.colors.backgroundPrimary)
+                .padding(20.dp)
+        ) {
+            WalletTokensList()
+        }
+
         Column(modifier = Modifier.padding(12.dp)) {
             CardContainer {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
