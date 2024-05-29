@@ -44,6 +44,8 @@ fun WalletTokenCard() {
             Box(
                 modifier = Modifier
                     .size(40.dp)
+                    .clip(RoundedCornerShape(999.dp))
+                    .border(1.dp, RarimeTheme.colors.baseWhite, RoundedCornerShape(999.dp))
                     .background(RarimeTheme.colors.baseBlack)
             )
 
@@ -54,7 +56,10 @@ fun WalletTokenCard() {
             )
         }
 
-        Column {
+        Column (
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalAlignment = Alignment.End
+        ) {
             Text(
                 text = "3",
                 color = RarimeTheme.colors.textPrimary,
