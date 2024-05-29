@@ -23,8 +23,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.modules.common.WalletViewModel
 import com.distributedLab.rarime.modules.qr.ScanQrScreen
+import com.distributedLab.rarime.modules.wallet.view_model.WalletSendViewModel
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppTextField
 import com.distributedLab.rarime.ui.components.CardContainer
@@ -35,12 +35,11 @@ import com.distributedLab.rarime.ui.components.rememberAppTextFieldState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.NumberUtil
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.getValue
 
 @Composable
 fun WalletSendScreen(
     onBack: () -> Unit,
-    walletViewModel: WalletViewModel,
+    walletViewModel: WalletSendViewModel = hiltViewModel(),
 ) {
     var isQrCodeScannerOpen by remember { mutableStateOf(false) }
     val addressState = rememberAppTextFieldState("")

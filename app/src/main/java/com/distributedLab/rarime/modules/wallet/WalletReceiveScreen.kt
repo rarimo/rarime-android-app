@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.modules.common.WalletViewModel
+import com.distributedLab.rarime.modules.wallet.view_model.WalletReceiveViewModel
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.CardContainer
 import com.distributedLab.rarime.ui.components.SecondaryTextButton
@@ -38,7 +38,7 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun WalletReceiveScreen(
     onBack: () -> Unit = {},
-    walletViewModel: WalletViewModel = hiltViewModel()
+    walletViewModel: WalletReceiveViewModel = hiltViewModel()
 ) {
     val clipboardManager = LocalClipboardManager.current
     var isCopied by remember { mutableStateOf(false) }

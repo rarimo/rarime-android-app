@@ -1,22 +1,34 @@
 package com.distributedLab.rarime.modules.home
 
 import androidx.lifecycle.ViewModel
-import com.distributedLab.rarime.data.TemplateRepository
+import com.distributedLab.rarime.data.enums.PassportCardLook
+import com.distributedLab.rarime.data.enums.PassportIdentifier
+import com.distributedLab.rarime.modules.common.PassportManager
+import com.distributedLab.rarime.modules.common.WalletManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val templateRepository: TemplateRepository,
+    private val passportManager: PassportManager,  walletManager: WalletManager
 ) : ViewModel() {
 
-    val templateData: Result<List<String>>
-        get() {
-            val data = templateRepository.templateData
-            return if (data != null) {
-                Result.success(data)
-            } else {
-                Result.failure(IllegalAccessError("No template data"))
-            }
-        }
+    var passport = passportManager.passport
+    var balance = walletManager.balance
+    var passportCardLook = passportManager.passportCardLook
+    var passportIdentifiers = passportManager.passportIdentifiers
+    var isIncognito = passportManager.isIncognitoMode
+
+
+    fun onPassportCardLookChange(passportCardLook: PassportCardLook) {
+        passportManager.updatePassportCardLook(passportCardLook)
+    }
+
+    fun onIncognitoChange(isIncognito: Boolean) {
+        passportManager.updateIsIncognitoMode(isIncognito)
+    }
+
+    fun onPassportIdentifiersChange(passportIdentifiers: List<PassportIdentifier>) {
+        passportManager.updatePassportIdentifiers(passportIdentifiers)
+    }
 }

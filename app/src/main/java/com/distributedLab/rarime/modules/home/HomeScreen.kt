@@ -26,10 +26,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.PassportIdentifier
-import com.distributedLab.rarime.modules.common.WalletViewModel
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.ActionCard
@@ -47,19 +47,16 @@ import com.distributedLab.rarime.util.Screen
 
 @Composable
 fun HomeScreen(
-    passport: EDocument?,
-    passportCardLook: PassportCardLook,
-    passportIdentifiers: List<PassportIdentifier>,
-    isIncognito: Boolean,
-    onPassportCardLookChange: (PassportCardLook) -> Unit,
-    onIncognitoChange: (Boolean) -> Unit,
-    onPassportIdentifiersChange: (List<PassportIdentifier>) -> Unit,
     navigate: (String) -> Unit,
-    walletViewModel: WalletViewModel = hiltViewModel()
+    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     var isCongratsModalVisible by remember { mutableStateOf(false) }
+    val passport by homeViewModel.passport
+    val passportCardLook by homeViewModel.passportCardLook
+    val passportIdentifiers by homeViewModel.passportIdentifiers
+    val isIncognito by homeViewModel.isIncognito
 
-    val balance by walletViewModel.balance.collectAsState()
+    val balance by homeViewModel.balance.collectAsState()
     Box {
         Column(
             verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -80,13 +77,13 @@ fun HomeScreen(
                     OtherPassportCard { navigate(Screen.ScanPassport.route) }
                 } else {
                     PassportCard(
-                        passport = passport,
+                        passport = passport!!,
                         isIncognito = isIncognito,
                         look = passportCardLook,
                         identifiers = passportIdentifiers,
-                        onLookChange = { onPassportCardLookChange(it) },
-                        onIncognitoChange = { onIncognitoChange(it) },
-                        onIdentifiersChange = { onPassportIdentifiersChange(it) }
+                        onLookChange = { homeViewModel.onPassportCardLookChange(it) },
+                        onIncognitoChange = { homeViewModel.onIncognitoChange(it) },
+                        onIdentifiersChange = { homeViewModel.onPassportIdentifiersChange(it) }
                     )
                     RarimeCard()
                 }
@@ -240,16 +237,6 @@ private fun RarimeCard() {
 @Composable
 private fun HomeScreenPreview() {
     HomeScreen(
-        passport = null,
-        passportCardLook = PassportCardLook.GREEN,
-        passportIdentifiers = listOf(
-            PassportIdentifier.NATIONALITY,
-            PassportIdentifier.DOCUMENT_ID
-        ),
-        isIncognito = false,
-        onPassportCardLookChange = {},
-        onIncognitoChange = {},
-        onPassportIdentifiersChange = {},
         navigate = {}
     )
 }

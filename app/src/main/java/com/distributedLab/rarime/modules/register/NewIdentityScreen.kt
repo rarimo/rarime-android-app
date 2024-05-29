@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.CardContainer
@@ -33,12 +34,17 @@ import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun NewIdentityScreen(
-    privateKey: String,
     onNext: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    newIdentityViewModel: NewIdentityViewModel = hiltViewModel()
 ) {
     val clipboardManager = LocalClipboardManager.current
     var isCopied by remember { mutableStateOf(false) }
+
+    val privateKey by remember {
+        mutableStateOf(newIdentityViewModel.getPrivateKey())
+    }
+
 
     if (isCopied) {
         LaunchedEffect(Unit) {
@@ -51,15 +57,12 @@ fun NewIdentityScreen(
         title = stringResource(R.string.new_identity_title),
         onBack = onBack,
         nextButton = {
-            PrimaryButton(
-                modifier = Modifier.fillMaxWidth(),
+            PrimaryButton(modifier = Modifier.fillMaxWidth(),
                 size = ButtonSize.Large,
                 text = stringResource(R.string.continue_btn),
                 rightIcon = R.drawable.ic_arrow_right,
-                onClick = onNext
-            )
-        }
-    ) {
+                onClick = { newIdentityViewModel.identityManager.savePrivateKey(); onNext.invoke() })
+        }) {
         CardContainer {
             Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                 Text(
@@ -67,15 +70,15 @@ fun NewIdentityScreen(
                     style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.textPrimary,
                     modifier = Modifier
-                        .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(8.dp))
+                        .background(
+                            RarimeTheme.colors.componentPrimary, RoundedCornerShape(8.dp)
+                        )
                         .padding(vertical = 14.dp, horizontal = 16.dp)
                 )
                 Row(
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()
                 ) {
-                    PrimaryTextButton(
-                        leftIcon = if (isCopied) R.drawable.ic_check else R.drawable.ic_copy_simple,
+                    PrimaryTextButton(leftIcon = if (isCopied) R.drawable.ic_check else R.drawable.ic_copy_simple,
                         text = if (isCopied) {
                             stringResource(R.string.copied_text)
                         } else {
@@ -84,8 +87,7 @@ fun NewIdentityScreen(
                         onClick = {
                             clipboardManager.setText(AnnotatedString(privateKey))
                             isCopied = true
-                        }
-                    )
+                        })
                 }
                 HorizontalDivider()
                 InfoAlert(text = stringResource(R.string.new_identity_warning))
@@ -97,9 +99,5 @@ fun NewIdentityScreen(
 @Preview
 @Composable
 private fun NewIdentityScreenPreview() {
-    NewIdentityScreen(
-        privateKey = "d4f1dc5332e5f0263746a31d3563e42ad8bef24a8989d8b0a5ad71f8d5de28a6",
-        onNext = {},
-        onBack = {}
-    )
+    NewIdentityScreen(onNext = {}, onBack = {})
 }

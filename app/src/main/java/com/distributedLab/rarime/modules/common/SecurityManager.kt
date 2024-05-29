@@ -2,17 +2,16 @@ package com.distributedLab.rarime.modules.common
 
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.data.enums.SecurityCheckState
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.util.Constants
-import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@HiltViewModel
-class SecurityViewModel @Inject constructor(
+@Singleton
+class SecurityManager @Inject constructor(
     private val dataStoreManager: SecureSharedPrefsManager
-) : ViewModel() {
+) {
     var passcodeState = mutableStateOf(dataStoreManager.readPasscodeState())
         private set
     var biometricsState = mutableStateOf(dataStoreManager.readBiometricsState())

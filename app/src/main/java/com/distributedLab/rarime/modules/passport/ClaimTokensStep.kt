@@ -25,33 +25,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.modules.common.WalletViewModel
-import com.distributedLab.rarime.modules.passport.models.EDocument
+import com.distributedLab.rarime.modules.passport.claimToken.ClaimTokenViewModel
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
-import com.distributedLab.rarime.util.data.Proof
-import com.distributedLab.rarime.util.data.ZkProof
 import com.distributedLab.rarime.util.Constants
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
 @Composable
 fun ClaimTokensStep(
-    eDocument: EDocument,
-    registrationProof: ZkProof,
-    walletViewModel: WalletViewModel = hiltViewModel(),
-    onFinish: () -> Unit
+    claimTokenViewModel: ClaimTokenViewModel = hiltViewModel(), onFinish: () -> Unit
 ) {
     var isClaiming by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
     suspend fun claimTokens() {
         isClaiming = true
-        walletViewModel.claimAirdrop()
+        claimTokenViewModel.claimAirdrop()
         isClaiming = false
         onFinish()
     }
@@ -101,7 +94,9 @@ fun ClaimTokensStep(
                     .padding(horizontal = 24.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.claim_tokens_title, Constants.AIRDROP_REWARD.toInt()),
+                    text = stringResource(
+                        R.string.claim_tokens_title, Constants.AIRDROP_REWARD.toInt()
+                    ),
                     style = RarimeTheme.typography.h6,
                     color = RarimeTheme.colors.textPrimary,
                 )
@@ -133,8 +128,6 @@ fun ClaimTokensStep(
 @Composable
 private fun ClaimTokensStepPreview() {
     ClaimTokensStep(
-        registrationProof = ZkProof(Proof.fromJson(""), pub_signals = listOf("")),
         onFinish = {},
-        eDocument = EDocument()
     )
 }

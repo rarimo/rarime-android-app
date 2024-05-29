@@ -8,12 +8,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.AppColorScheme
 import com.distributedLab.rarime.data.enums.toLocalizedString
@@ -22,17 +24,17 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
 fun ThemeScreen(
-    colorScheme: AppColorScheme,
-    onColorSchemeChange: (AppColorScheme) -> Unit,
+    viewModel: ThemeViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
+    val colorScheme by viewModel.colorScheme
     ProfileRouteLayout(title = stringResource(R.string.theme), onBack = onBack) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             AppColorScheme.entries.forEach { scheme ->
                 SchemeItem(
                     scheme = scheme,
                     isSelected = scheme == colorScheme,
-                    onClick = { onColorSchemeChange(scheme) }
+                    onClick = { viewModel.onColorSchemeChange(scheme) }
                 )
             }
         }
@@ -76,8 +78,6 @@ private fun SchemeItem(
 @Composable
 private fun ThemeScreenPreview() {
     ThemeScreen(
-        colorScheme = AppColorScheme.SYSTEM,
-        onColorSchemeChange = {},
         onBack = {}
     )
 }

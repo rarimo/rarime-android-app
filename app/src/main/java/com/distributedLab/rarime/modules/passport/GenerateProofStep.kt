@@ -19,7 +19,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -36,8 +35,6 @@ import com.distributedLab.rarime.ui.components.ProcessingChip
 import com.distributedLab.rarime.ui.components.ProcessingStatus
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.data.ZkProof
-import kotlinx.coroutines.launch
-import okhttp3.internal.wait
 
 enum class PassportProofState(val value: Int) {
     READING_DATA(0), APPLYING_ZERO_KNOWLEDGE(1), CREATING_CONFIDENTIAL_PROFILE(2), FINALIZING(3);

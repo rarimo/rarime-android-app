@@ -1,22 +1,17 @@
 package com.distributedLab.rarime.modules.passport.proof
 
-import android.R.attr.label
-import android.R.attr.text
 import android.app.Application
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.AndroidViewModel
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.contracts.PoseidonSMT.Proof
-import com.distributedLab.rarime.manager.ApiServiceRemoteData
-import com.distributedLab.rarime.manager.ContractManager
 import com.distributedLab.rarime.domain.data.ProofTx
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
+import com.distributedLab.rarime.manager.ApiServiceRemoteData
+import com.distributedLab.rarime.manager.ContractManager
+import com.distributedLab.rarime.modules.common.PassportManager
 import com.distributedLab.rarime.modules.passport.PassportProofState
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.passport.nfc.SODFileOwn
@@ -39,12 +34,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
-import org.bouncycastle.asn1.eac.ECDSAPublicKey
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey
 import org.jmrtd.lds.icao.DG15File
 import java.io.IOException
 import javax.inject.Inject
-import kotlin.reflect.typeOf
 
 
 @OptIn(ExperimentalStdlibApi::class)
@@ -52,6 +45,7 @@ import kotlin.reflect.typeOf
 class ProofViewModel @Inject constructor(
     private val application: Application,
     private val dataStoreManager: SecureSharedPrefsManager,
+    private val passportManager: PassportManager,
     private val apiService: ApiServiceRemoteData,
     private val contractManager: ContractManager
 ) : AndroidViewModel(application) {
@@ -128,15 +122,6 @@ class ProofViewModel @Inject constructor(
 
         Log.i("INPUTS", inputs.decodeToString())
 
-        val manager = getSystemService(application as Context, ClipboardManager::class.java)
-        manager!!.setPrimaryClip(
-            ClipData.newPlainText(
-                "label",
-                inputs.decodeToString()
-            )
-        )
-
-
         val proof = withContext(Dispatchers.Default) {
             zkp.generateZKP(
                 "circuit_registration.zkey",
@@ -167,7 +152,7 @@ class ProofViewModel @Inject constructor(
 
         _state.value = PassportProofState.FINALIZING
 
-        dataStoreManager.saveEDocument(eDocument)
+        passportManager.setPassport(eDocument)
         dataStoreManager.saveRegistrationProof(proof)
 
         delay(second * 1)

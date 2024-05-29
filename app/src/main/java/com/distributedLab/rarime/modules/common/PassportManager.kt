@@ -1,18 +1,17 @@
 package com.distributedLab.rarime.modules.common
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.PassportIdentifier
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.modules.passport.models.EDocument
-import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@HiltViewModel
-class PassportViewModel @Inject constructor(
+@Singleton
+class PassportManager @Inject constructor(
     private val secureSharedPrefsManager: SecureSharedPrefsManager
-) : ViewModel() {
+) {
 
     var passport = mutableStateOf<EDocument?>(
         secureSharedPrefsManager.readEDocument()

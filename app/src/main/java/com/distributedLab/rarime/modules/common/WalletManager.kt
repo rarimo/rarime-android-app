@@ -1,20 +1,18 @@
 package com.distributedLab.rarime.modules.common
 
-import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.AndroidViewModel
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.manager.ApiServiceRemoteData
-import com.distributedLab.rarime.manager.ContractManager
 import com.distributedLab.rarime.domain.data.AirdropRequest
 import com.distributedLab.rarime.domain.data.AirdropRequestAttributes
 import com.distributedLab.rarime.domain.data.AirdropRequestData
 import com.distributedLab.rarime.domain.data.CosmosTransferResponse
 import com.distributedLab.rarime.domain.data.ProofTxFull
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
+import com.distributedLab.rarime.manager.ApiServiceRemoteData
+import com.distributedLab.rarime.manager.ContractManager
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.modules.wallet.models.TransactionState
@@ -25,7 +23,6 @@ import com.distributedLab.rarime.util.data.ZkProof
 import com.distributedLab.rarime.util.decodeHexString
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import dagger.hilt.android.lifecycle.HiltViewModel
 import identity.Identity
 import identity.Profile
 import kotlinx.coroutines.Dispatchers
@@ -36,16 +33,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import java.util.Date
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.time.Duration.Companion.seconds
 
-@OptIn(ExperimentalStdlibApi::class)
-@HiltViewModel
-class WalletViewModel @Inject constructor(
-    private val application: Application,
+@Singleton
+class WalletManager @Inject constructor(
+    private val context: Context,
     private val dataStoreManager: SecureSharedPrefsManager,
     private val contractManager: ContractManager,
     private val apiServiceManager: ApiServiceRemoteData
-) : AndroidViewModel(application) {
+) {
 
     private var _transactions = MutableStateFlow(dataStoreManager.readTransactions())
     private var _balance = MutableStateFlow(dataStoreManager.readWalletBalance())
@@ -71,7 +68,7 @@ class WalletViewModel @Inject constructor(
         registrationProof: ZkProof, eDocument: EDocument, privateKey: ByteArray
     ): ZkProof {
 
-        val zkp = ZKPUseCase(application as Context)
+        val zkp = ZKPUseCase(context)
         val registrationContract = contractManager.getRegistration()
 
         val registrationSmtAddress = withContext(Dispatchers.IO) {
@@ -163,10 +160,10 @@ class WalletViewModel @Inject constructor(
         _transactions.value = dataStoreManager.readTransactions()
     }
 
-    suspend fun fetchBalance(): String {
+    private suspend fun fetchBalance(): String {
         return withContext(Dispatchers.IO) {
             val balance = apiServiceManager.fetchBalance(address)
-            balance!!.balances.first().amount
+            (balance!!.balances.first().amount.toDouble() / 1000000).toString()
         }
     }
 
@@ -182,7 +179,6 @@ class WalletViewModel @Inject constructor(
             airDrop(proof)
 
             delay(10.seconds)
-            _balance.value += Constants.AIRDROP_REWARD
             _balance.value = fetchBalance().toDouble()
             dataStoreManager.saveWalletBalance(_balance.value)
 
@@ -205,6 +201,14 @@ class WalletViewModel @Inject constructor(
 
     }
 
+    suspend fun refreshBalance() {
+        withContext(Dispatchers.IO) {
+            val amount = fetchBalance()
+            _balance.value = amount.toDouble()
+            dataStoreManager.saveWalletBalance(amount.toDouble())
+        }
+    }
+
     suspend fun sendTokens(destination: String, amount: String): CosmosTransferResponse {
         val privateKey = dataStoreManager.readPrivateKey()!!.decodeHexString()
 
@@ -215,6 +219,8 @@ class WalletViewModel @Inject constructor(
                 destination, amount, BaseConfig.CHAIN_ID, BaseConfig.DENOM, BaseConfig.RPC_IP
             ).toString()
         }
+
+
 
 
         return Gson().fromJson(response, CosmosTransferResponse::class.java)

@@ -20,11 +20,10 @@ private enum class ScanPassportState {
 
 @Composable
 fun ScanPassportScreen(
-    claimAirdrop: suspend () -> Unit, onClose: () -> Unit
+    onClose: () -> Unit
 ) {
     var state by remember { mutableStateOf(ScanPassportState.SCAN_MRZ) }
     var mrzData: MRZInfo? by remember { mutableStateOf(null) }
-
     var eDocument: EDocument? by remember { mutableStateOf(null) }
     var registrationProof: ZkProof? by remember { mutableStateOf(null) }
 
@@ -66,8 +65,8 @@ fun ScanPassportScreen(
 
             ScanPassportState.CLAIM_TOKENS -> {
                 ClaimTokensStep(
-                    registrationProof = registrationProof!!,
-                    eDocument = eDocument!!,
+//                    registrationProof = registrationProof!!,
+//                    eDocument = eDocument!!,
                     onFinish = onClose
                 )
             }
@@ -78,5 +77,5 @@ fun ScanPassportScreen(
 @Preview
 @Composable
 private fun ScanPassportScreenPreview() {
-    ScanPassportScreen(claimAirdrop = {}, onClose = {})
+    ScanPassportScreen(onClose = {})
 }
