@@ -8,10 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -26,8 +22,6 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import org.jmrtd.lds.icao.MRZInfo
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -35,10 +29,6 @@ import org.jmrtd.lds.icao.MRZInfo
 fun ScanMRZStep(onNext: (MRZInfo) -> Unit, onClose: () -> Unit) {
     val cameraPermissionState: PermissionState =
         rememberPermissionState(android.Manifest.permission.CAMERA)
-
-    var isAlertVisible by remember {
-        mutableStateOf(false)
-    }
 
     ScanPassportLayout(
         step = 1,
