@@ -3,10 +3,12 @@ package com.distributedLab.rarime.modules.wallet.walletTokens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -49,7 +51,7 @@ fun WalletTokensList() {
         scrollState.animateScrollToItem(index)
     }
 
-    var halfScreenWidth = configuration.screenWidthDp / 2
+    val halfScreenWidth = configuration.screenWidthDp / 2
 
     LaunchedEffect(scrollState) {
         snapshotFlow { scrollState.layoutInfo.visibleItemsInfo }
@@ -69,19 +71,13 @@ fun WalletTokensList() {
             }
     }
 
-    // FIXME: hardcoded paddings
     Column (
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         Row (
             modifier = Modifier
                 .fillMaxWidth()
-                .absolutePadding(
-                    top = 0.dp,
-                    left = 0.dp,
-                    bottom = 0.dp,
-                    right = 20.dp,
-                ),
+                .padding(horizontal = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -106,17 +102,17 @@ fun WalletTokensList() {
             )
         }
 
-        LazyRow (
-            state = scrollState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .absolutePadding(
-                    right = 20.dp
-                ),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        Row (
+            modifier = Modifier.fillMaxWidth(),
         ) {
-            itemsIndexed(List(MOCKED_ASSETS_COUNT) { it }) { index, _ ->
-                WalletTokenCard()
+            LazyRow (
+                state = scrollState,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(start = 20.dp, end = 20.dp)
+            ) {
+                itemsIndexed(List(MOCKED_ASSETS_COUNT) { it }) { index, _ ->
+                    WalletTokenCard()
+                }
             }
         }
     }
