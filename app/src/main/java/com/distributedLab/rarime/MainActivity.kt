@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
                 Objects.requireNonNull(intent.extras)!!.getParcelable<Tag>(NfcAdapter.EXTRA_TAG)!!
             nfcViewModel.setParams(tag)
 
-            CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(Dispatchers.Default).launch {
                 nfcViewModel.startScanning()
             }
         }

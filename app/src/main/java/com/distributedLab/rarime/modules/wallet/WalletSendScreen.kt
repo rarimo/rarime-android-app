@@ -11,16 +11,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.qr.ScanQrScreen
+import com.distributedLab.rarime.modules.wallet.view_model.WalletSendViewModel
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppTextField
 import com.distributedLab.rarime.ui.components.CardContainer
@@ -30,15 +34,19 @@ import com.distributedLab.rarime.ui.components.VerticalDivider
 import com.distributedLab.rarime.ui.components.rememberAppTextFieldState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.NumberUtil
+import kotlinx.coroutines.launch
 
 @Composable
 fun WalletSendScreen(
-    balance: Double,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    walletViewModel: WalletSendViewModel = hiltViewModel(),
 ) {
     var isQrCodeScannerOpen by remember { mutableStateOf(false) }
     val addressState = rememberAppTextFieldState("")
     val amountState = rememberAppTextFieldState("")
+    val balance = walletViewModel.balance.collectAsState()
+
+    val coroutineScope = rememberCoroutineScope()
 
     val amountToReceive = amountState.text.toDoubleOrNull() ?: 0.0
 
@@ -88,7 +96,7 @@ fun WalletSendScreen(
                                         color = RarimeTheme.colors.textSecondary
                                     )
                                     Text(
-                                        text = "${NumberUtil.formatAmount(balance)} RMO",
+                                        text = "${NumberUtil.formatAmount(balance.value)} RMO",
                                         style = RarimeTheme.typography.body4,
                                         color = RarimeTheme.colors.textPrimary
                                     )
@@ -135,7 +143,13 @@ fun WalletSendScreen(
                         text = stringResource(R.string.send_btn),
                         size = ButtonSize.Large,
                         modifier = Modifier.width(160.dp),
-                        onClick = { /*TODO*/ }
+                        onClick = {
+                            coroutineScope.launch {
+                                walletViewModel.sendTokens(addressState.text, amountState.text)
+                                walletViewModel.fetchBalance()
+                            }
+
+                        }
                     )
                 }
             }
@@ -147,7 +161,7 @@ fun WalletSendScreen(
 @Composable
 private fun WalletSendScreenPreview() {
     WalletSendScreen(
-        balance = 100.0,
-        onBack = {}
+        onBack = {},
+        walletViewModel = hiltViewModel()
     )
 }

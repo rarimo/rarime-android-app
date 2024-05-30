@@ -10,11 +10,23 @@ android {
     compileSdk = 34
 
     defaultConfig {
+
         applicationId = "com.distributedLab.rarime"
         minSdk = 27
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        externalNativeBuild {
+            cmake {
+                cppFlags += "-fexceptions -frtti -std=c++11"
+                arguments += "-DANDROID_STL=c++_shared"
+            }
+
+            ndk {
+                abiFilters += "arm64-v8a"
+            }
+        }
 
         resourceConfigurations.plus(listOf("en", "uk"))
 
@@ -53,6 +65,12 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
         }
     }
 }
@@ -104,10 +122,24 @@ dependencies {
 
     implementation("net.sf.scuba:scuba-sc-android:0.0.20")
 
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation(files("libs/Identity.aar"))
+
+    // QR Code
     implementation("com.lightspark:compose-qr-code:1.0.1")
-    implementation("androidx.security:security-crypto:1.1.0-alpha03")
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.biometric:biometric:1.1.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.airbnb.android:lottie-compose:6.4.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
+
+    //Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    //Web3
+    implementation("org.web3j:core:4.9.8")
+    implementation("org.bouncycastle:bcpkix-jdk15on:1.70")
+
 }

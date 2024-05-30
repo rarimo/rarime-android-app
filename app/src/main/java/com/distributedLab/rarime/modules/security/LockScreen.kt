@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppAlertDialog
@@ -37,52 +38,53 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.BiometricUtil
 import com.distributedLab.rarime.util.Constants
 import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun LockScreen(
-    isPasscodeEnabled: Boolean = false,
-    isBiometricEnabled: Boolean = false,
-    passcode: String,
-    lockTimestamp: Long,
-    onPass: () -> Unit,
-    onLock: () -> Unit
+    lockViewModule: LockViewModule = hiltViewModel(), onPass: () -> Unit
 ) {
+
+    fun onPassHandler() {
+        lockViewModule.unlockScreen()
+        onPass.invoke()
+    }
+
+
+
+
     val context = LocalContext.current
 
     var isAlertVisible by remember { mutableStateOf(false) }
     val passcodeState = rememberAppTextFieldState("")
 
     var attemptsLeft by remember { mutableIntStateOf(Constants.MAX_PASSCODE_ATTEMPTS) }
-    var lockedTimeLeft by remember { mutableLongStateOf(lockTimestamp - System.currentTimeMillis()) }
+    var lockedTimeLeft by remember { mutableLongStateOf(lockViewModule.lockTimestamp - System.currentTimeMillis()) }
 
     val isBiometricsAvailable = remember {
         BiometricUtil.isSupported(context)
     }
 
     fun authenticateWithBiometrics() {
-        BiometricUtil.authenticate(
-            context = context,
+        BiometricUtil.authenticate(context = context,
             title = context.getString(R.string.biometric_authentication_title),
             subtitle = context.getString(R.string.biometric_authentication_subtitle),
-            negativeButtonText = if (isPasscodeEnabled) {
+            negativeButtonText = if (lockViewModule.isPasscodeEnabled) {
                 context.getString(R.string.use_passcode_btn)
             } else {
                 context.getString(R.string.cancel_btn)
             },
             onSuccess = onPass,
-            onError = {}
-        )
+            onError = {})
     }
 
     LaunchedEffect(true) {
-        if (isBiometricEnabled && isBiometricsAvailable) {
+        if (lockViewModule.isBiometricEnabled && isBiometricsAvailable) {
             authenticateWithBiometrics()
         }
     }
 
-    LaunchedEffect(lockTimestamp) {
-        lockedTimeLeft = lockTimestamp - System.currentTimeMillis()
+    LaunchedEffect(lockViewModule.lockTimestamp) {
+        lockedTimeLeft = lockViewModule.lockTimestamp - System.currentTimeMillis()
         while (lockedTimeLeft > 0) {
             delay(1000)
             lockedTimeLeft -= 1000
@@ -106,12 +108,12 @@ fun LockScreen(
     }
 
     fun verifyPasscode() {
-        if (passcodeState.text == passcode) {
+        if (passcodeState.text == lockViewModule.passcode.value) {
             onPass()
         } else {
             attemptsLeft--
             if (attemptsLeft == 0) {
-                onLock()
+                lockViewModule.lockPasscode()
             }
 
             isAlertVisible = true
@@ -124,8 +126,7 @@ fun LockScreen(
     }
 
     if (isAlertVisible) {
-        AppAlertDialog(
-            title = stringResource(R.string.invalid_passcode),
+        AppAlertDialog(title = stringResource(R.string.invalid_passcode),
             text = if (attemptsLeft > 0) {
                 stringResource(R.string.attempts_left_msg, attemptsLeft)
             } else {
@@ -133,32 +134,26 @@ fun LockScreen(
             },
             confirmText = stringResource(R.string.try_again),
             onConfirm = { handleAlertDismiss() },
-            onDismiss = { handleAlertDismiss() }
-        )
+            onDismiss = { handleAlertDismiss() })
     }
 
-    if (isPasscodeEnabled) {
-        PasscodeScreenLayout(
-            title = stringResource(R.string.enter_passcode_title),
+    if (lockViewModule.isPasscodeEnabled) {
+        PasscodeScreenLayout(title = stringResource(R.string.enter_passcode_title),
             passcodeState = passcodeState,
             enabled = lockedTimeLeft <= 0,
-            onPasscodeFilled = { verifyPasscode() }
-        ) {
-            if (isBiometricEnabled && isBiometricsAvailable) {
-                Button(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(64.dp),
+            onPasscodeFilled = { verifyPasscode() }) {
+            if (lockViewModule.isBiometricEnabled && isBiometricsAvailable) {
+                Button(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent,
                         contentColor = RarimeTheme.colors.textPrimary
                     ),
-                    onClick = { authenticateWithBiometrics() }
-                ) {
+                    onClick = { authenticateWithBiometrics() }) {
                     AppIcon(
-                        id = R.drawable.ic_fingerprint,
-                        size = 24.dp
+                        id = R.drawable.ic_fingerprint, size = 24.dp
                     )
                 }
             }
@@ -173,9 +168,7 @@ fun LockScreen(
                 .padding(20.dp)
         ) {
             AppIcon(
-                id = R.drawable.ic_fingerprint,
-                size = 80.dp,
-                tint = RarimeTheme.colors.textPrimary
+                id = R.drawable.ic_fingerprint, size = 80.dp, tint = RarimeTheme.colors.textPrimary
             )
             Text(
                 text = stringResource(R.string.biometric_lock_title),
@@ -187,12 +180,10 @@ fun LockScreen(
                     .padding(top = 32.dp)
             )
             if (isBiometricsAvailable) {
-                PrimaryButton(
-                    text = stringResource(R.string.unlock_btn),
+                PrimaryButton(text = stringResource(R.string.unlock_btn),
                     size = ButtonSize.Large,
                     modifier = Modifier.padding(top = 32.dp),
-                    onClick = { authenticateWithBiometrics() }
-                )
+                    onClick = { authenticateWithBiometrics() })
             } else {
                 Text(
                     text = stringResource(R.string.enable_biometrics_msg),
@@ -214,11 +205,6 @@ fun LockScreen(
 @Composable
 private fun LockScreenPreview() {
     LockScreen(
-        isPasscodeEnabled = true,
-        isBiometricEnabled = true,
-        passcode = "1234",
-        lockTimestamp = System.currentTimeMillis() + 5.seconds.inWholeMilliseconds,
         onPass = {},
-        onLock = {}
     )
 }

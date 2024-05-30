@@ -23,28 +23,28 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.modules.passport.claimToken.ClaimTokenViewModel
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Constants
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
 @Composable
 fun ClaimTokensStep(
-    claimAirdrop: suspend () -> Unit,
-    onFinish: () -> Unit
+    claimTokenViewModel: ClaimTokenViewModel = hiltViewModel(), onFinish: () -> Unit
 ) {
     var isClaiming by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
     suspend fun claimTokens() {
         isClaiming = true
-        claimAirdrop()
+        claimTokenViewModel.claimAirdrop()
         isClaiming = false
         onFinish()
     }
@@ -94,7 +94,9 @@ fun ClaimTokensStep(
                     .padding(horizontal = 24.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.claim_tokens_title, Constants.AIRDROP_REWARD.toInt()),
+                    text = stringResource(
+                        R.string.claim_tokens_title, Constants.AIRDROP_REWARD.toInt()
+                    ),
                     style = RarimeTheme.typography.h6,
                     color = RarimeTheme.colors.textPrimary,
                 )
@@ -126,7 +128,6 @@ fun ClaimTokensStep(
 @Composable
 private fun ClaimTokensStepPreview() {
     ClaimTokensStep(
-        claimAirdrop = { delay(1000) },
-        onFinish = {}
+        onFinish = {},
     )
 }

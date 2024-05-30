@@ -7,17 +7,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.SecurityCheckState
 import com.distributedLab.rarime.ui.components.AppAlertDialog
+
+
+@Composable
+fun SetupPasscode(
+    onClose: () -> Unit, viewModel: SetupPasscodeViewModel = hiltViewModel(), onPasscodeChange: () -> Unit
+) {
+    PasscodeScreen(
+        passcodeState = SecurityCheckState.UNSET,
+        onPasscodeStateChange = viewModel::updatePasscodeState,
+        onPasscodeChange = {viewModel.onPasscodeChange(it); onPasscodeChange.invoke() },
+        onClose = onClose
+    )
+}
 
 @Composable
 fun PasscodeScreen(
     passcode: String = "",
     passcodeState: SecurityCheckState,
-    onPasscodeChange: (String) -> Unit = {},
+    onPasscodeChange: (String) -> Unit,
     onPasscodeStateChange: (SecurityCheckState) -> Unit,
-    onClose: () -> Unit
+    onClose: () -> Unit,
 ) {
     var isAlertVisible by remember { mutableStateOf(false) }
     var isRepeatingPasscode by remember { mutableStateOf(false) }
@@ -54,35 +68,26 @@ fun PasscodeScreen(
     }
 
     if (isRepeatingPasscode) {
-        RepeatPasscodeScreen(
-            passcode = newPasscode,
-            onNext = {
-                onPasscodeStateChange(SecurityCheckState.ENABLED)
-                onPasscodeChange(newPasscode)
-            },
-            onBack = {
-                isRepeatingPasscode = false
-                newPasscode = ""
-            },
-            onClose = { onClose() }
-        )
+        RepeatPasscodeScreen(passcode = newPasscode, onNext = {
+            onPasscodeStateChange(SecurityCheckState.ENABLED)
+            onPasscodeChange(newPasscode)
+        }, onBack = {
+            isRepeatingPasscode = false
+            newPasscode = ""
+        }, onClose = { onClose() })
     } else {
-        EnterPasscodeScreen(
-            passcode = newPasscode,
+        EnterPasscodeScreen(passcode = newPasscode,
             onNext = { handleEnterPasscode(it) },
-            onBack = { onClose() }
-        )
+            onBack = { onClose() })
     }
 }
 
 @Preview
 @Composable
 private fun PasscodeScreenPreview() {
-    PasscodeScreen(
-        passcode = "1234",
+    PasscodeScreen(passcode = "1234",
         passcodeState = SecurityCheckState.DISABLED,
         onPasscodeChange = {},
         onPasscodeStateChange = {},
-        onClose = {}
-    )
+        onClose = {})
 }

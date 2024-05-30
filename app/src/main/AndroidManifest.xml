@@ -33,7 +33,7 @@
             android:exported="true"
             android:localeConfig="@xml/locales_config"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Rarime"></activity>
+            android:theme="@style/Theme.Rarime"/>
 
         <activity-alias
             android:name=".MainActivityBW"

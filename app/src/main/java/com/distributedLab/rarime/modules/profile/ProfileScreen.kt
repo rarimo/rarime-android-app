@@ -13,17 +13,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.BuildConfig
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.data.enums.AppColorScheme
 import com.distributedLab.rarime.data.enums.AppIcon
-import com.distributedLab.rarime.data.enums.AppLanguage
 import com.distributedLab.rarime.data.enums.toLocalizedString
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.CardContainer
@@ -34,12 +34,16 @@ import com.distributedLab.rarime.util.WalletUtil
 
 @Composable
 fun ProfileScreen(
-    address: String,
-    language: AppLanguage,
-    colorScheme: AppColorScheme,
     appIcon: AppIcon,
-    navigate: (String) -> Unit
+    navigate: (String) -> Unit,
+    viewModel: ProfileViewModel = hiltViewModel()
 ) {
+
+    val language by viewModel.language
+    val colorScheme by viewModel.colorScheme
+
+
+
     Column(
         verticalArrangement = Arrangement.spacedBy(20.dp),
         modifier = Modifier
@@ -72,7 +76,7 @@ fun ProfileScreen(
                         Text(
                             text = stringResource(
                                 R.string.user_address,
-                                WalletUtil.formatAddress(address)
+                                WalletUtil.formatAddress(viewModel.address)
                             ),
                             style = RarimeTheme.typography.body4,
                             color = RarimeTheme.colors.textSecondary
@@ -194,9 +198,6 @@ private fun ProfileRow(
 @Composable
 private fun ProfileScreenPreview() {
     ProfileScreen(
-        address = "rarimo10xf20zsda2hpjstl3l5ahf65tzkkdnhaxlsl8a",
-        language = AppLanguage.ENGLISH,
-        colorScheme = AppColorScheme.SYSTEM,
         appIcon = AppIcon.BLACK_AND_WHITE,
         navigate = {}
     )
