@@ -31,7 +31,6 @@ fun WalletRouteLayout(
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(24.dp),
-            modifier = Modifier.padding(horizontal = 20.dp)
         ) {
             PrimaryTextButton(
                 leftIcon = R.drawable.ic_caret_left,

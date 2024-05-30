@@ -5,6 +5,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -19,11 +20,19 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
 fun WalletTokensList() {
+    // FIXME: hardcoded paddings
     Column (
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         Row (
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .absolutePadding(
+                    top = 0.dp,
+                    left = 0.dp,
+                    bottom = 0.dp,
+                    right = 20.dp,
+                ),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
