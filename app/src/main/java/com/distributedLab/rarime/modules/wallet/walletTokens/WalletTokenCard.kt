@@ -32,9 +32,8 @@ fun WalletTokenCard() {
         modifier = Modifier
             .requiredWidthIn(min = 300.dp)
             .clip(RoundedCornerShape(24.dp))
-            .border(1.dp, RarimeTheme.colors.baseWhite, RoundedCornerShape(24.dp))
-            // TODO: colors.Container?
-            .background(RarimeTheme.colors.baseWhite)
+            .border(1.dp, RarimeTheme.colors.backgroundPure, RoundedCornerShape(24.dp))
+            .background(RarimeTheme.colors.backgroundPure)
             .padding(16.dp)
     ) {
         Row (
@@ -45,7 +44,7 @@ fun WalletTokenCard() {
                 modifier = Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(999.dp))
-                    .border(1.dp, RarimeTheme.colors.baseWhite, RoundedCornerShape(999.dp))
+                    .border(1.dp, RarimeTheme.colors.backgroundPure, RoundedCornerShape(999.dp))
                     .background(RarimeTheme.colors.baseBlack)
             )
 

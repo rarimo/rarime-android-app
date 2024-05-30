@@ -40,6 +40,7 @@ import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.modules.wallet.models.TransactionState
 import com.distributedLab.rarime.modules.wallet.view_model.WalletViewModel
 import com.distributedLab.rarime.modules.wallet.walletTokens.WalletTokensList
+import com.distributedLab.rarime.ui.base.ButtonIconSize
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.SecondaryIconButton
@@ -164,6 +165,7 @@ fun WalletScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             SecondaryIconButton(
+                                size = ButtonIconSize.Large,
                                 icon = R.drawable.ic_arrow_down,
                                 onClick = { navigate(Screen.Main.Wallet.Receive.route) }
                             )
@@ -179,6 +181,7 @@ fun WalletScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             SecondaryIconButton(
+                                size = ButtonIconSize.Large,
                                 icon = R.drawable.ic_arrow_up,
                                 onClick = { navigate(Screen.Main.Wallet.Send.route) }
                             )
