@@ -26,6 +26,8 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import org.jmrtd.lds.icao.MRZInfo
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -33,6 +35,7 @@ import org.jmrtd.lds.icao.MRZInfo
 fun ScanMRZStep(onNext: (MRZInfo) -> Unit, onClose: () -> Unit) {
     val cameraPermissionState: PermissionState =
         rememberPermissionState(android.Manifest.permission.CAMERA)
+
     var isAlertVisible by remember {
         mutableStateOf(false)
     }
@@ -48,25 +51,23 @@ fun ScanMRZStep(onNext: (MRZInfo) -> Unit, onClose: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (cameraPermissionState.status.isGranted) {
-                CameraScanPassport(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp)
-                    .background(RarimeTheme.colors.baseBlack), onMrzDetected = { onNext(it) })
-            } else {
-                isAlertVisible = true
-            }
-
-            if (isAlertVisible) {
-                AppAlertDialog(
-                    title = stringResource(R.string.camera_permission_title),
-                    text = stringResource(R.string.camera_permission_description),
-                    onConfirm = {
-                        cameraPermissionState.launchPermissionRequest()
-                        isAlertVisible = false
-                    },
-                    onDismiss = { onClose() }
-                )
+            when {
+                cameraPermissionState.status.isGranted -> {
+                    CameraScanPassport(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .background(RarimeTheme.colors.baseBlack), onMrzDetected = { onNext(it) })
+                }
+                else -> {
+                    AppAlertDialog(
+                        title = stringResource(R.string.camera_permission_title),
+                        text = stringResource(R.string.camera_permission_description),
+                        onConfirm = {
+                            cameraPermissionState.launchPermissionRequest()
+                        },
+                        onDismiss = { onClose() }
+                    )
+                }
             }
 
             Text(

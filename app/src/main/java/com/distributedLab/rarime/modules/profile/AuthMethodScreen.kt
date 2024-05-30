@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.SecurityCheckState
 import com.distributedLab.rarime.modules.security.PasscodeScreen
@@ -31,15 +32,12 @@ import com.distributedLab.rarime.util.BiometricUtil
 
 @Composable
 fun AuthMethodScreen(
-    biometricsState: SecurityCheckState,
-    passcodeState: SecurityCheckState,
-    passcode: String,
-    onBiometricsStateChange: (SecurityCheckState) -> Unit,
-    onPasscodeStateChange: (SecurityCheckState) -> Unit,
-    onPasscodeChange: (String) -> Unit,
-    onBack: () -> Unit
+    viewModel: AuthMethodViewModel = hiltViewModel(), onBack: () -> Unit
 ) {
     var isPasscodeShown by remember { mutableStateOf(false) }
+    val biometricsState by viewModel.biometricsState
+    val passcodeState by viewModel.passcodeState
+    val passcode by viewModel.passcode
 
     val context = LocalContext.current
     val isBiometricsAvailable = remember {
@@ -47,51 +45,42 @@ fun AuthMethodScreen(
     }
 
     fun handleBiometricsStateChange(isEnabled: Boolean) {
-        BiometricUtil.authenticate(
-            context,
+        BiometricUtil.authenticate(context,
             title = context.getString(R.string.biometric_authentication_title),
             subtitle = context.getString(R.string.biometric_authentication_subtitle),
             negativeButtonText = context.getString(R.string.cancel_btn),
             onSuccess = {
-                onBiometricsStateChange(
+                viewModel.updateBiometricsState(
                     if (isEnabled) SecurityCheckState.ENABLED else SecurityCheckState.DISABLED
                 )
             },
-            onError = {}
-        )
+            onError = {})
     }
 
     if (isPasscodeShown) {
-        PasscodeScreen(
-            passcodeState = passcodeState,
+        PasscodeScreen(passcodeState = passcodeState,
             passcode = passcode,
-            onPasscodeChange = onPasscodeChange,
+            onPasscodeChange = viewModel::setPasscode,
             onPasscodeStateChange = {
-                onPasscodeStateChange(it)
+                viewModel.updatePasscodeState(it)
                 isPasscodeShown = false
             },
-            onClose = { isPasscodeShown = false }
-        )
+            onClose = { isPasscodeShown = false })
     } else {
         ProfileRouteLayout(
-            title = stringResource(R.string.auth_method),
-            onBack = onBack
+            title = stringResource(R.string.auth_method), onBack = onBack
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 if (!isBiometricsAvailable) {
-                    AuthMethodItem(
-                        iconId = R.drawable.ic_fingerprint,
+                    AuthMethodItem(iconId = R.drawable.ic_fingerprint,
                         label = stringResource(R.string.biometrics),
                         checked = biometricsState == SecurityCheckState.ENABLED,
-                        onCheckedChange = { handleBiometricsStateChange(it) }
-                    )
+                        onCheckedChange = { handleBiometricsStateChange(it) })
                 }
-                AuthMethodItem(
-                    iconId = R.drawable.ic_password,
+                AuthMethodItem(iconId = R.drawable.ic_password,
                     label = stringResource(R.string.passcode),
                     checked = passcodeState == SecurityCheckState.ENABLED,
-                    onCheckedChange = { isPasscodeShown = true }
-                )
+                    onCheckedChange = { isPasscodeShown = true })
             }
         }
     }
@@ -99,10 +88,7 @@ fun AuthMethodScreen(
 
 @Composable
 private fun AuthMethodItem(
-    @DrawableRes iconId: Int,
-    label: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
+    @DrawableRes iconId: Int, label: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -131,8 +117,7 @@ private fun AuthMethodItem(
             )
         }
         AppSwitch(
-            checked = checked,
-            onCheckedChange = onCheckedChange
+            checked = checked, onCheckedChange = onCheckedChange
         )
     }
 }
@@ -140,13 +125,5 @@ private fun AuthMethodItem(
 @Preview
 @Composable
 private fun AuthMethodScreenPreview() {
-    AuthMethodScreen(
-        biometricsState = SecurityCheckState.ENABLED,
-        passcodeState = SecurityCheckState.DISABLED,
-        passcode = "1234",
-        onBiometricsStateChange = {},
-        onPasscodeStateChange = {},
-        onPasscodeChange = {},
-        onBack = {}
-    )
+    AuthMethodScreen(onBack = {})
 }

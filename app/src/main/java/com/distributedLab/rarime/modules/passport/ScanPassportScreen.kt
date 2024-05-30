@@ -11,25 +11,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.distributedLab.rarime.modules.passport.models.EDocument
+import com.distributedLab.rarime.util.data.ZkProof
 import org.jmrtd.lds.icao.MRZInfo
 
 private enum class ScanPassportState {
-    SCAN_MRZ,
-    READ_NFC,
-    PASSPORT_DATA,
-    GENERATE_PROOF,
-    CLAIM_TOKENS
+    SCAN_MRZ, READ_NFC, PASSPORT_DATA, GENERATE_PROOF, CLAIM_TOKENS
 }
 
 @Composable
 fun ScanPassportScreen(
-    claimAirdrop: suspend () -> Unit,
     onClose: () -> Unit
 ) {
     var state by remember { mutableStateOf(ScanPassportState.SCAN_MRZ) }
     var mrzData: MRZInfo? by remember { mutableStateOf(null) }
-
     var eDocument: EDocument? by remember { mutableStateOf(null) }
+    var registrationProof: ZkProof? by remember { mutableStateOf(null) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         when (state) {
@@ -61,12 +57,16 @@ fun ScanPassportScreen(
             }
 
             ScanPassportState.GENERATE_PROOF -> {
-                GenerateProofStep(onClose = { state = ScanPassportState.CLAIM_TOKENS })
+                GenerateProofStep(onClose = {
+                    registrationProof = it
+                    state = ScanPassportState.CLAIM_TOKENS
+                }, eDocument = eDocument!!)
             }
 
             ScanPassportState.CLAIM_TOKENS -> {
                 ClaimTokensStep(
-                    claimAirdrop = claimAirdrop,
+//                    registrationProof = registrationProof!!,
+//                    eDocument = eDocument!!,
                     onFinish = onClose
                 )
             }
@@ -77,8 +77,5 @@ fun ScanPassportScreen(
 @Preview
 @Composable
 private fun ScanPassportScreenPreview() {
-    ScanPassportScreen(
-        claimAirdrop = {},
-        onClose = {}
-    )
+    ScanPassportScreen(onClose = {})
 }
