@@ -111,6 +111,7 @@
     <string name="receiver_gets">Буде отримано</string>
     <string name="send_btn">Надіслати</string>
     <string name="wallet_title">Гаманець</string>
+    <string name="wallet_tokens_list_title">Токени (%1$d)</string>
     <string name="available_rmo">Доступно RMO</string>
     <string name="receive_btn">Отримати</string>
     <string name="transactions_title">Транзакції</string>

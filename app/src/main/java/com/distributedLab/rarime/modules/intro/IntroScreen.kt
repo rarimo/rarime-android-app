@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -34,6 +33,7 @@ import com.distributedLab.rarime.ui.components.AppAnimation
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.SecondaryTextButton
+import com.distributedLab.rarime.ui.components.StepIndicator
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Screen
 import kotlinx.coroutines.launch
@@ -188,23 +188,6 @@ private fun StepView(step: IntroStep) {
                 style = RarimeTheme.typography.body2,
                 color = RarimeTheme.colors.textSecondary
             )
-        }
-    }
-}
-
-@Composable
-private fun StepIndicator(itemsCount: Int, selectedIndex: Int) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        repeat(itemsCount) { index ->
-            Box(
-                modifier = Modifier
-                    .width(if (index == selectedIndex) 16.dp else 8.dp)
-                    .height(8.dp)
-                    .background(
-                        color = if (index == selectedIndex) RarimeTheme.colors.primaryMain else RarimeTheme.colors.componentPrimary,
-                        shape = CircleShape
-                    )
-            ) {}
         }
     }
 }

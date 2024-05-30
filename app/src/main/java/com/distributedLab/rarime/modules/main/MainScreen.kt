@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,17 +61,27 @@ val mainRoutes = listOf(
     Screen.Main.Profile.route
 )
 
+val LocalMainViewModel = compositionLocalOf<MainViewModel> { error("No MainViewModel provided") }
+
+@Composable
+fun MainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
+    CompositionLocalProvider(LocalMainViewModel provides mainViewModel) {
+        MainScreenContent()
+    }
+}
 // We have a floating tab bar at the bottom of the screen,
 // so no need to use scaffold padding
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
-
+fun MainScreenContent() {
+    val mainViewModel = LocalMainViewModel.current
     val navController: NavHostController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
     val currentRoute = navBackStackEntry?.destination?.route
-    val isBottomBarVisible = currentRoute != null && currentRoute in mainRoutes
+    LaunchedEffect(currentRoute) {
+        mainViewModel.setBottomBarVisibility(currentRoute != null && currentRoute in mainRoutes)
+    }
 
     val context = LocalContext.current
     var appIcon by remember { mutableStateOf(AppIconUtil.getIcon(context)) }
@@ -96,7 +109,7 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
     AppTheme(colorScheme = mainViewModel.colorScheme.value) {
         Scaffold(
             bottomBar = {
-                if (isBottomBarVisible) {
+                if (mainViewModel.isBottomBarShown.value) {
                     BottomTabBar(currentRoute = currentRoute,
                         onRouteSelected = { navigateWithPopUp(it) })
                 }

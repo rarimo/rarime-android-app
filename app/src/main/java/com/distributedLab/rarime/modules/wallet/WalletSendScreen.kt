@@ -60,6 +60,7 @@ fun WalletSendScreen(
         )
     } else {
         WalletRouteLayout(
+            headerModifier = Modifier.padding(horizontal = 20.dp),
             title = stringResource(R.string.wallet_send_title),
             description = stringResource(R.string.wallet_send_description),
             onBack = onBack
@@ -68,7 +69,7 @@ fun WalletSendScreen(
                 verticalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxSize()
             ) {
-                CardContainer(modifier = Modifier.padding(horizontal = 12.dp)) {
+                CardContainer (modifier = Modifier.padding(horizontal = 20.dp)) {
                     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                         AppTextField(
                             state = addressState,
