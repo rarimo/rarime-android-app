@@ -78,7 +78,7 @@ fun WalletScreen(
             Column(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
-                    .absolutePadding(left = 12.dp, right = 12.dp, bottom = 20.dp)
+                    .absolutePadding(left = 20.dp, right = 20.dp, bottom = 20.dp)
                     .height((configuration.screenHeightDp * 0.75).dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
@@ -200,11 +200,8 @@ fun WalletScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .absolutePadding(
-                        top = 20.dp,
-                        left = 20.dp,
-                        bottom = 20.dp,
-                        right = 0.dp,
+                    .padding(
+                        vertical = 20.dp
                     )
             ) {
                 WalletTokensList()
