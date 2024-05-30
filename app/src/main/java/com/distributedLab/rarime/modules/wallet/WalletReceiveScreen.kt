@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -53,11 +54,16 @@ fun WalletReceiveScreen(
     }
 
     WalletRouteLayout(
+        headerModifier = Modifier.padding(horizontal = 20.dp),
         title = stringResource(R.string.wallet_receive_title),
         description = stringResource(R.string.wallet_receive_description),
         onBack = onBack
     ) {
-        CardContainer(modifier = Modifier.padding(horizontal = 12.dp)) {
+        CardContainer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+        ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
