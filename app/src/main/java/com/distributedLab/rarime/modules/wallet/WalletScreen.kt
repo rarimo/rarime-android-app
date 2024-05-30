@@ -70,7 +70,7 @@ fun WalletScreen(
     BottomSheetScaffold (
         sheetPeekHeight = 275.dp,
         scaffoldState = scaffoldState,
-        sheetContainerColor = RarimeTheme.colors.baseWhite,
+        sheetContainerColor = RarimeTheme.colors.backgroundPure,
         sheetContent = {
             Column(
                 modifier = Modifier
@@ -191,7 +191,6 @@ fun WalletScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(RarimeTheme.colors.backgroundPrimary)
                     .absolutePadding(
                         top = 20.dp,
                         left = 20.dp,
@@ -211,7 +210,7 @@ private fun TransactionCard(transaction: Transaction) {
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {

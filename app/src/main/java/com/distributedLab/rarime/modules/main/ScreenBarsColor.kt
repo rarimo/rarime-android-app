@@ -14,11 +14,10 @@ import com.distributedLab.rarime.util.Screen
 private val navPureBgRoutes = listOf(
     Screen.Register.NewIdentity.route,
     Screen.Main.Wallet.Send.route,
-)
-
-private val statusPureBgRoutes = listOf(
     Screen.Main.Wallet.route,
 )
+
+//private val statusPureBgRoutes = listOf()
 
 @Composable
 fun ScreenBarsColor(colorScheme: AppColorScheme, route: String) {
@@ -28,9 +27,10 @@ fun ScreenBarsColor(colorScheme: AppColorScheme, route: String) {
     val navColor =
         if (route in navPureBgRoutes) RarimeTheme.colors.backgroundPure
         else RarimeTheme.colors.backgroundPrimary
-    val statusColor =
-        if (route in statusPureBgRoutes) RarimeTheme.colors.backgroundPure
-        else RarimeTheme.colors.backgroundPrimary
+//    val statusColor =
+//        if (route in statusPureBgRoutes) RarimeTheme.colors.backgroundPure
+//        else RarimeTheme.colors.backgroundPrimary
+    val statusColor = RarimeTheme.colors.backgroundPrimary
 
     val isLightStyle = when (colorScheme) {
         AppColorScheme.LIGHT -> true
