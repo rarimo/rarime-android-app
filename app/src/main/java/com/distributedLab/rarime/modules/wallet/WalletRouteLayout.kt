@@ -17,6 +17,7 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
 fun WalletRouteLayout(
+    headerModifier: Modifier = Modifier,
     title: String,
     description: String,
     onBack: () -> Unit,
@@ -30,8 +31,8 @@ fun WalletRouteLayout(
             .padding(top = 20.dp)
     ) {
         Column(
+            modifier = headerModifier,
             verticalArrangement = Arrangement.spacedBy(24.dp),
-            modifier = Modifier.padding(horizontal = 20.dp)
         ) {
             PrimaryTextButton(
                 leftIcon = R.drawable.ic_caret_left,

@@ -23,6 +23,12 @@ class MainViewModel @Inject constructor(
 
     var colorScheme = settingsManager.colorScheme
 
+    var isBottomBarShown = mutableStateOf(true)
+        private set
+
+    fun setBottomBarVisibility(isVisible: Boolean) {
+        isBottomBarShown.value = isVisible
+    }
 
     fun finishIntro() {
         isIntroFinished.value = true
