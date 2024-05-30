@@ -1,6 +1,7 @@
 package com.distributedLab.rarime.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -13,7 +14,11 @@ import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun StepIndicator(itemsCount: Int, selectedIndex: Int) {
+fun StepIndicator(
+    itemsCount: Int,
+    selectedIndex: Int,
+    updateSelectedIndex: (Int) -> Unit = {},
+) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         repeat(itemsCount) { index ->
             Box(
@@ -24,6 +29,7 @@ fun StepIndicator(itemsCount: Int, selectedIndex: Int) {
                         color = if (index == selectedIndex) RarimeTheme.colors.primaryMain else RarimeTheme.colors.componentPrimary,
                         shape = CircleShape
                     )
+                    .clickable { updateSelectedIndex(index) }
             ) {}
         }
     }

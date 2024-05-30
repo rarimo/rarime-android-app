@@ -1,25 +1,73 @@
 package com.distributedLab.rarime.modules.wallet.walletTokens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.ui.components.StepIndicator
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 @Composable
 fun WalletTokensList() {
+    val configuration = LocalConfiguration.current
+
+    var selectedIndex by remember {
+        mutableStateOf(0)
+    }
+    val scrollState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+
+    suspend fun scrollToTokenByIndex(index: Int) {
+        selectedIndex = index
+
+        selectedIndex?.let {
+            scrollState.animateScrollToItem(selectedIndex) // error here
+        }
+    }
+
+    var halfScreenWidth = configuration.screenWidthDp / 2
+
+    LaunchedEffect(scrollState) {
+        snapshotFlow { scrollState.layoutInfo.visibleItemsInfo }
+            .map { visibleItems ->
+                visibleItems.find { item ->
+                    val itemStart = item.offset
+                    val itemEnd = item.offset + item.size
+
+                    itemStart < halfScreenWidth && itemEnd > halfScreenWidth
+                }?.index
+            }
+            .distinctUntilChanged()
+            .collect { index ->
+                if (index != null) {
+                    selectedIndex = index
+                }
+            }
+    }
+
     // FIXME: hardcoded paddings
     Column (
         verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -44,22 +92,29 @@ fun WalletTokensList() {
 
             // TODO: handle case, when tokens is too much to fit on the screen
             // TODO: add bullet click handler to scroll to specific token card
-            StepIndicator(itemsCount = 5, selectedIndex = 1)
+            StepIndicator(
+                itemsCount = 5,
+                selectedIndex = selectedIndex,
+                updateSelectedIndex = { index ->
+                    coroutineScope.launch {
+                        scrollToTokenByIndex(index)
+                    }
+                }
+            )
         }
 
-        var scrollState = rememberScrollState()
-
-        Row (
+        LazyRow (
+            state = scrollState,
             modifier = Modifier
-                .horizontalScroll(scrollState)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .absolutePadding(
+                    right = 20.dp
+                ),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            WalletTokenCard()
-            WalletTokenCard()
-            WalletTokenCard()
-            WalletTokenCard()
-            WalletTokenCard()
+            itemsIndexed(List(5) { it }) { index, _ ->
+                WalletTokenCard()
+            }
         }
     }
 }
