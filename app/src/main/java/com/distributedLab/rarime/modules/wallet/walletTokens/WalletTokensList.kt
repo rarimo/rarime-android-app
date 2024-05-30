@@ -22,13 +22,17 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.components.StepIndicator
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+
+const val MOCKED_ASSETS_COUNT = 5
 
 @Composable
 fun WalletTokensList() {
@@ -82,14 +86,17 @@ fun WalletTokensList() {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "Assets (2)".uppercase(),
+                text = stringResource(
+                    R.string.wallet_tokens_list_title,
+                    MOCKED_ASSETS_COUNT
+                ).uppercase(),
                 style = RarimeTheme.typography.overline2,
                 color = RarimeTheme.colors.textSecondary
             )
 
             // TODO: handle case, when tokens is too much to fit on the screen
             StepIndicator(
-                itemsCount = 5,
+                itemsCount = MOCKED_ASSETS_COUNT,
                 selectedIndex = selectedIndex,
                 updateSelectedIndex = { index ->
                     coroutineScope.launch {
@@ -108,7 +115,7 @@ fun WalletTokensList() {
                 ),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            itemsIndexed(List(5) { it }) { index, _ ->
+            itemsIndexed(List(MOCKED_ASSETS_COUNT) { it }) { index, _ ->
                 WalletTokenCard()
             }
         }
