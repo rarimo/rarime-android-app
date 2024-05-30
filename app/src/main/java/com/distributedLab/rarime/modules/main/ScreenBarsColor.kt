@@ -17,7 +17,8 @@ private val navPureBgRoutes = listOf(
     Screen.Main.Wallet.route,
 )
 
-//private val statusPureBgRoutes = listOf()
+// TODO: rollback once there will be any screen with pure bg
+// private val statusPureBgRoutes = listOf()
 
 @Composable
 fun ScreenBarsColor(colorScheme: AppColorScheme, route: String) {
@@ -27,6 +28,7 @@ fun ScreenBarsColor(colorScheme: AppColorScheme, route: String) {
     val navColor =
         if (route in navPureBgRoutes) RarimeTheme.colors.backgroundPure
         else RarimeTheme.colors.backgroundPrimary
+//    TODO: rollback once there will be any screen with pure bg
 //    val statusColor =
 //        if (route in statusPureBgRoutes) RarimeTheme.colors.backgroundPure
 //        else RarimeTheme.colors.backgroundPrimary
