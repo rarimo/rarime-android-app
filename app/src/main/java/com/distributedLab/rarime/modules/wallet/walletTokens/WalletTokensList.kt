@@ -42,10 +42,7 @@ fun WalletTokensList() {
 
     suspend fun scrollToTokenByIndex(index: Int) {
         selectedIndex = index
-
-        selectedIndex?.let {
-            scrollState.animateScrollToItem(selectedIndex) // error here
-        }
+        scrollState.animateScrollToItem(index)
     }
 
     var halfScreenWidth = configuration.screenWidthDp / 2
@@ -91,7 +88,6 @@ fun WalletTokensList() {
             )
 
             // TODO: handle case, when tokens is too much to fit on the screen
-            // TODO: add bullet click handler to scroll to specific token card
             StepIndicator(
                 itemsCount = 5,
                 selectedIndex = selectedIndex,

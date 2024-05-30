@@ -1,6 +1,7 @@
 package com.distributedLab.rarime.modules.wallet
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -75,25 +77,29 @@ fun WalletScreen(
             Column(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 12.dp, vertical = 20.dp)
+                    .absolutePadding(left = 12.dp, right = 12.dp, bottom = 20.dp)
                     .height((configuration.screenHeightDp * 0.75).dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
-                Text(
-                    text = stringResource(R.string.transactions_title),
-                    style = RarimeTheme.typography.subtitle3,
-                    color = RarimeTheme.colors.textPrimary
-                )
-                transactions.forEach {
-                    TransactionCard(it)
-                }
-
-                if (transactions.isEmpty()) {
+                Column (
+                    modifier = Modifier.fillMaxSize()
+                ) {
                     Text(
-                        text = stringResource(R.string.no_transactions_msg),
-                        style = RarimeTheme.typography.body3,
-                        color = RarimeTheme.colors.textSecondary
+                        text = stringResource(R.string.transactions_title),
+                        style = RarimeTheme.typography.subtitle3,
+                        color = RarimeTheme.colors.textPrimary
                     )
+                    transactions.forEach {
+                        TransactionCard(it)
+                    }
+
+                    if (transactions.isEmpty()) {
+                        Text(
+                            text = stringResource(R.string.no_transactions_msg),
+                            style = RarimeTheme.typography.body3,
+                            color = RarimeTheme.colors.textSecondary
+                        )
+                    }
                 }
             }
         },
