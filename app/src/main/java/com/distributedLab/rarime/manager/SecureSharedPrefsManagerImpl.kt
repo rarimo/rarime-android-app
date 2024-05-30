@@ -2,6 +2,7 @@ package com.distributedLab.rarime.manager
 
 import android.app.Application
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.distributedLab.rarime.data.enums.AppColorScheme
@@ -10,9 +11,9 @@ import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.PassportIdentifier
 import com.distributedLab.rarime.data.enums.SecurityCheckState
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
-import com.distributedLab.rarime.util.LocaleUtil
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.wallet.models.Transaction
+import com.distributedLab.rarime.util.LocaleUtil
 import com.distributedLab.rarime.util.data.ZkProof
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -154,8 +155,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     override fun savePassportIdentifiers(identifiers: List<PassportIdentifier>) {
         val editor = getEditor()
         editor.putStringSet(
-            accessTokens["PASSPORT_IDENTIFIERS"],
-            identifiers.map { it.value }.toSet()
+            accessTokens["PASSPORT_IDENTIFIERS"], identifiers.map { it.value }.toSet()
         )
         editor.apply()
     }
@@ -252,17 +252,24 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     }
 
     override fun readTransactions(): List<Transaction> {
-        val jsonTx =
-            getSharedPreferences().getString(accessTokens["TX"], null) ?: return emptyList()
-        val listType = object : TypeToken<List<Transaction?>?>() {}.type
-
-        val txList = Gson().fromJson<List<Transaction>>(jsonTx, listType)
-        return txList
+        val jsonTx = getSharedPreferences().getString(accessTokens["TX"], null)
+        if (jsonTx == null) {
+            Log.i("Secure shared prefs","It is empty transactions list")
+            return emptyList()
+        }
+        return try {
+            val listType = object : TypeToken<List<Transaction>>() {}.type
+            Gson().fromJson(jsonTx, listType) ?: emptyList()
+        } catch (e: Exception) {
+            Log.e("TransactionManager", "Error reading transactions", e)
+            emptyList()
+        }
     }
 
     override fun addTransaction(transaction: Transaction) {
         val allTransactions = readTransactions().toMutableList()
         allTransactions.add(transaction)
+        saveTransactions(allTransactions)
     }
 
     private fun saveTransactions(transactions: List<Transaction>) {
@@ -271,6 +278,4 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         editor.putString(accessTokens["TX"], jsonTx)
         editor.apply()
     }
-
-
 }

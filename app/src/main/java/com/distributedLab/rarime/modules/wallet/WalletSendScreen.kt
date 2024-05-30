@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.modules.wallet
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.qr.ScanQrScreen
+import com.distributedLab.rarime.modules.wallet.view_model.SendState
 import com.distributedLab.rarime.modules.wallet.view_model.WalletSendViewModel
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppTextField
@@ -36,6 +38,7 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.NumberUtil
 import kotlinx.coroutines.launch
 
+
 @Composable
 fun WalletSendScreen(
     onBack: () -> Unit,
@@ -46,18 +49,42 @@ fun WalletSendScreen(
     val amountState = rememberAppTextFieldState("")
     val balance = walletViewModel.balance.collectAsState()
 
+    val sendState = walletViewModel.sendErrorState.collectAsState()
+
     val coroutineScope = rememberCoroutineScope()
+
+    when (sendState.value) {
+        SendState.INVALID_ADDRESS -> {
+            addressState.updateErrorMessage("INVALID_ADDRESS")
+        }
+        SendState.AMOUNT_ZERO -> {
+            amountState.updateErrorMessage("AMOUNT_ZERO")
+        }
+        SendState.INVALID_AMOUNT -> {
+            amountState.updateErrorMessage("INVALID_AMOUNT")
+        }
+
+        SendState.AMOUNT_INSUFFICIENT -> {
+            amountState.updateErrorMessage("AMOUNT_INSUFFICIENT")
+        }
+        SendState.OK -> {
+            amountState.updateErrorMessage("")
+            amountState.updateErrorMessage("")
+        }
+
+        SendState.SENDING -> {
+            Log.i("send", "SENDING")}
+        SendState.FINISHED -> Log.i("send","FINISHED")
+        SendState.SENDING_ERROR -> Log.i("send","ERROR")
+    }
 
     val amountToReceive = amountState.text.toDoubleOrNull() ?: 0.0
 
     if (isQrCodeScannerOpen) {
-        ScanQrScreen(
-            onBack = { isQrCodeScannerOpen = false },
-            onScan = {
-                addressState.updateText(it)
-                isQrCodeScannerOpen = false
-            }
-        )
+        ScanQrScreen(onBack = { isQrCodeScannerOpen = false }, onScan = {
+            addressState.updateText(it)
+            isQrCodeScannerOpen = false
+        })
     } else {
         WalletRouteLayout(
             title = stringResource(R.string.wallet_send_title),
@@ -65,25 +92,22 @@ fun WalletSendScreen(
             onBack = onBack
         ) {
             Column(
-                verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxSize()
+                verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxSize()
             ) {
                 CardContainer(modifier = Modifier.padding(horizontal = 12.dp)) {
                     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                        AppTextField(
-                            state = addressState,
+                        AppTextField(state =
+                        addressState,
                             label = stringResource(R.string.address_lbl),
                             placeholder = "rarimo1...",
                             trailingItem = {
-                                SecondaryTextButton(
-                                    leftIcon = R.drawable.ic_qr_code,
-                                    onClick = { isQrCodeScannerOpen = true }
-                                )
-                            }
-                        )
-                        AppTextField(
-                            state = amountState,
+                                SecondaryTextButton(leftIcon = R.drawable.ic_qr_code,
+                                    onClick = { isQrCodeScannerOpen = true })
+                            })
+                        AppTextField(state = amountState,
                             label = stringResource(R.string.amount_lbl),
+                            onlyNumber = true,
+                            onlyPositiveNumber = true,
                             placeholder = stringResource(R.string.amount_placeholder),
                             hint = {
                                 Row(
@@ -110,13 +134,10 @@ fun WalletSendScreen(
                                         .height(20.dp)
                                 ) {
                                     VerticalDivider()
-                                    SecondaryTextButton(
-                                        text = stringResource(R.string.max_btn),
-                                        onClick = { amountState.updateText(balance.toString()) }
-                                    )
+                                    SecondaryTextButton(text = stringResource(R.string.max_btn),
+                                        onClick = { amountState.updateText(balance.value.toString()) })
                                 }
-                            }
-                        )
+                            })
                     }
                 }
                 Row(
@@ -139,29 +160,25 @@ fun WalletSendScreen(
                             color = RarimeTheme.colors.textPrimary
                         )
                     }
-                    PrimaryButton(
-                        text = stringResource(R.string.send_btn),
+                    PrimaryButton(text = stringResource(R.string.send_btn),
                         size = ButtonSize.Large,
                         modifier = Modifier.width(160.dp),
                         onClick = {
                             coroutineScope.launch {
                                 walletViewModel.sendTokens(addressState.text, amountState.text)
-                                walletViewModel.fetchBalance()
                             }
-
-                        }
-                    )
+                        })
                 }
             }
         }
     }
 }
 
+
 @Preview
 @Composable
 private fun WalletSendScreenPreview() {
     WalletSendScreen(
         onBack = {},
-        walletViewModel = hiltViewModel()
     )
 }

@@ -59,14 +59,16 @@ fun ScanPassportScreen(
             ScanPassportState.GENERATE_PROOF -> {
                 GenerateProofStep(onClose = {
                     registrationProof = it
-                    state = ScanPassportState.CLAIM_TOKENS
+                    if (eDocument?.personDetails?.issuerAuthority == "UKR") {
+                        state = ScanPassportState.CLAIM_TOKENS
+                    } else {
+                        onClose.invoke()
+                    }
                 }, eDocument = eDocument!!)
             }
 
             ScanPassportState.CLAIM_TOKENS -> {
                 ClaimTokensStep(
-//                    registrationProof = registrationProof!!,
-//                    eDocument = eDocument!!,
                     onFinish = onClose
                 )
             }

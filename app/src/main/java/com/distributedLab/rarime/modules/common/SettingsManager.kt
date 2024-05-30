@@ -1,11 +1,18 @@
 package com.distributedLab.rarime.modules.common
 
+import android.content.Context
+import android.content.Intent
+import android.os.Environment
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.content.ContextCompat.startActivity
 import com.distributedLab.rarime.data.enums.AppColorScheme
 import com.distributedLab.rarime.data.enums.AppLanguage
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
+import java.io.File
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
+
 
 @Singleton
 class SettingsManager @Inject constructor(
@@ -15,6 +22,8 @@ class SettingsManager @Inject constructor(
         private set
     var language = mutableStateOf(dataStoreManager.readLanguage())
         private set
+
+
 
     fun updateColorScheme(newScheme: AppColorScheme) {
         colorScheme.value = newScheme

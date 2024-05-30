@@ -1,8 +1,15 @@
 package com.distributedLab.rarime.modules.passport.proof
 
+import android.R.attr.label
+import android.R.attr.text
 import android.app.Application
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.AndroidViewModel
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
@@ -15,6 +22,7 @@ import com.distributedLab.rarime.modules.common.PassportManager
 import com.distributedLab.rarime.modules.passport.PassportProofState
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.passport.nfc.SODFileOwn
+import com.distributedLab.rarime.ui.components.ProcessingStatus
 import com.distributedLab.rarime.util.SecurityUtil
 import com.distributedLab.rarime.util.ZKPUseCase
 import com.distributedLab.rarime.util.ZkpUtil
@@ -53,11 +61,14 @@ class ProofViewModel @Inject constructor(
     private val zkp = ZKPUseCase(application as Context)
     private lateinit var proof: ZkProof
     private var _state = MutableStateFlow(PassportProofState.READING_DATA)
+    private var _processingState = MutableStateFlow(ProcessingStatus.PROCESSING)
     private lateinit var masterCertProof: Proof
 
     private val second = 1000L
     val state: StateFlow<PassportProofState>
         get() = _state.asStateFlow()
+    val processingStatus: StateFlow<ProcessingStatus>
+        get() = _processingState.asStateFlow()
 
     fun getRegistrationProof(): ZkProof {
         return proof
@@ -121,6 +132,10 @@ class ProofViewModel @Inject constructor(
         val inputs = buildRegistrationCircuits(eDocument)
 
         Log.i("INPUTS", inputs.decodeToString())
+
+        val clipboardManager = application.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("label", inputs.decodeToString())
+        clipboardManager.setPrimaryClip(clip)
 
         val proof = withContext(Dispatchers.Default) {
             zkp.generateZKP(
@@ -226,7 +241,6 @@ class ProofViewModel @Inject constructor(
 
         val isEcdsaActiveAuthentication = (dg15PublicKey is BCECPublicKey)
 
-
         val gson = GsonBuilder().create()
 
         Log.i("sign", proof.siblings.size.toString())
@@ -251,13 +265,10 @@ class ProofViewModel @Inject constructor(
             isEcdsaActiveAuthentication,
             proofJson.toByteArray(Charsets.UTF_8)
         )
-
-
         this.masterCertProof = proof!!
 
         return inputs
     }
-
 
     private fun readICAO(context: Context): ByteArray? {
         return try {
@@ -270,6 +281,4 @@ class ProofViewModel @Inject constructor(
             null
         }
     }
-
-
 }

@@ -10,35 +10,7 @@ data class CosmosSpendableBalance(
 )
 
 data class CosmosTransferResponse(
-    val data: CosmosTransferData
-)
-
-data class CosmosTransferData(
-    val id: String,
-    val type: String,
-    val attributes: CosmosTransferAttributes
-)
-
-data class CosmosTransferAttributes(
-    val address: String,
-    val amount: String,
-    val created_at: String,
-    val status: String,
-    val tx_hash: String,
-    val updated_at: String
-)
-
-
-
-data class Transaction(
-    val height: Long,
-    val txhash: String,
-    val data: String,
-    val raw_log: String,
-    val logs: List<Log>,
-    val gas_wanted: Long,
-    val gas_used: Long,
-    val events: List<Event>
+    val txhash: String
 )
 
 data class Log(

@@ -156,14 +156,11 @@ class WalletManager @Inject constructor(
         }
     }
 
-    private fun refreshTransactions() {
-        _transactions.value = dataStoreManager.readTransactions()
-    }
 
     private suspend fun fetchBalance(): String {
         return withContext(Dispatchers.IO) {
             val balance = apiServiceManager.fetchBalance(address)
-            (balance!!.balances.first().amount.toDouble() / 1000000).toString()
+            (balance!!.balances.first().amount.toDouble() / BaseConfig.RARIMO_TOKEN_MANTIS).toString()
         }
     }
 
@@ -191,14 +188,10 @@ class WalletManager @Inject constructor(
                 state = TransactionState.INCOMING
             )
 
+            addTransactions(transaction)
 
-            dataStoreManager.addTransaction(transaction)
-
-            refreshTransactions()
             isAirdropClaimed.value = true
         }
-
-
     }
 
     suspend fun refreshBalance() {
@@ -209,21 +202,43 @@ class WalletManager @Inject constructor(
         }
     }
 
-    suspend fun sendTokens(destination: String, amount: String): CosmosTransferResponse {
+    private fun addTransactions(transaction: Transaction) {
+        dataStoreManager.addTransaction(transaction)
+        val updatedTransactions = _transactions.value.toMutableList()
+        updatedTransactions.add(transaction)
+        _transactions.value = updatedTransactions
+    }
+
+    suspend fun sendTokens(destination: String, amount: String): CosmosTransferResponse? {
         val privateKey = dataStoreManager.readPrivateKey()!!.decodeHexString()
 
         val profile = Profile().newProfile(privateKey)
+        val calculatedAmount = (amount.toDouble() * BaseConfig.RARIMO_TOKEN_MANTIS).toUInt().toString()
 
         val response = withContext(Dispatchers.IO) {
             profile.walletSend(
-                destination, amount, BaseConfig.CHAIN_ID, BaseConfig.DENOM, BaseConfig.RPC_IP
-            ).toString()
+                destination,
+                calculatedAmount,
+                BaseConfig.CHAIN_ID,
+                BaseConfig.DENOM,
+                BaseConfig.RPC_IP
+            ).decodeToString()
         }
 
+        val transaction = Transaction(
+            id = 2,
+            iconId = R.drawable.ic_arrow_right,
+            titleId = R.string.wallet_send_title,
+            amount = amount.toDouble(),
+            date = Date(),
+            state = TransactionState.OUTGOING
+        )
 
-
+        addTransactions(transaction)
 
         return Gson().fromJson(response, CosmosTransferResponse::class.java)
+
+
     }
 
 

@@ -49,7 +49,7 @@ fun GenerateProofStep(
 
 
     val currentState by proofViewModel.state.collectAsState()
-    val processingStatus by remember { mutableStateOf(ProcessingStatus.PROCESSING) }
+    val processingStatus by proofViewModel.processingStatus.collectAsState()
 
     LaunchedEffect(true) {
         proofViewModel.registerByDocument(eDocument)

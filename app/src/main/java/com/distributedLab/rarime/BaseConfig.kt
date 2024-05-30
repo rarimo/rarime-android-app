@@ -13,4 +13,6 @@ object BaseConfig {
     const val ICAO_COSMOS_RPC = "core-api.node1.mainnet-beta.rarimo.com:443"
     const val MASTER_CERTIFICATES_FILENAME = "icaopkd-list.ldif"
     const val MASTER_CERTIFICATES_BUCKETNAME = "rarimo-temp"
+
+    const val RARIMO_TOKEN_MANTIS = 1_000_000
 }

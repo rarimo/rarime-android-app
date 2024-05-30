@@ -88,7 +88,7 @@ fun WalletScreen(
                         style = RarimeTheme.typography.subtitle3,
                         color = RarimeTheme.colors.textPrimary
                     )
-                    transactions.forEach {
+                    transactions.sortedBy { it.date }.forEach {
                         TransactionCard(it)
                     }
 

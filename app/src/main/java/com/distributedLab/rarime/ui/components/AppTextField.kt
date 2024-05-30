@@ -5,18 +5,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.ui.theme.RarimeTheme
@@ -41,15 +44,13 @@ class AppTextFieldState(initialText: String, initialErrorMessage: String = "") {
         get() = errorMessage.isNotEmpty()
 
     companion object {
-        val Saver: Saver<AppTextFieldState, *> = listSaver(
-            save = { listOf(it.text, it.errorMessage) },
-            restore = {
+        val Saver: Saver<AppTextFieldState, *> =
+            listSaver(save = { listOf(it.text, it.errorMessage) }, restore = {
                 AppTextFieldState(
                     initialText = it[0],
                     initialErrorMessage = it[1],
                 )
-            }
-        )
+            })
     }
 }
 
@@ -68,8 +69,13 @@ fun AppTextField(
     placeholder: String = "",
     trailingItem: @Composable (() -> Unit)? = null,
     hint: @Composable (() -> Unit)? = null,
+    onlyNumber: Boolean = false,
+    onlyPositiveNumber: Boolean = false,
 ) {
+    val pattern = remember { Regex("^\\d*(\\.\\d{0,6})?\$") }
+
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+
         if (label.isNotEmpty()) {
             Text(
                 text = label,
@@ -79,7 +85,16 @@ fun AppTextField(
         }
         OutlinedTextField(
             value = state.text,
-            onValueChange = { state.updateText(it) },
+            onValueChange = {
+                if (!onlyPositiveNumber) {
+                    state.updateText(it)
+                } else {
+                    if (it.matches(pattern)) {
+                        state.updateText(it)
+                    }
+                }
+
+            },
             placeholder = {
                 Text(
                     text = placeholder,
@@ -91,6 +106,7 @@ fun AppTextField(
             textStyle = RarimeTheme.typography.body3,
             singleLine = true,
             trailingIcon = trailingItem,
+            keyboardOptions = if (onlyNumber || onlyPositiveNumber) KeyboardOptions(keyboardType = KeyboardType.Number) else KeyboardOptions(),
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color.Transparent,
                 unfocusedIndicatorColor = RarimeTheme.colors.componentPrimary,

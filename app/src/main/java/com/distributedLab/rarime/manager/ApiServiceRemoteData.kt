@@ -24,6 +24,7 @@ class ApiServiceRemoteData @Inject constructor(private val apiServiceManager: AP
         if (response.isSuccessful) {
             return response.body()!!
         }
+        response.errorBody()?.string()?.let { Log.e("ERROR", it) }
         return null
     }
 

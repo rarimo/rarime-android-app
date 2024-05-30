@@ -237,7 +237,6 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
 
         eDocument.aaSignature = response.response
 
-        // sign -> contract
 
         val index = pemFile.indexOf("-----END CERTIFICATE-----")
         val pemFileEnded = pemFile.addCharAtIndex('\n', index)
