@@ -33,7 +33,6 @@ fun WalletTokenCard() {
             .requiredWidthIn(min = 300.dp)
             .clip(RoundedCornerShape(24.dp))
             .border(1.dp, RarimeTheme.colors.backgroundPure, RoundedCornerShape(24.dp))
-            // TODO: colors.Container?
             .background(RarimeTheme.colors.backgroundPure)
             .padding(16.dp)
     ) {
