@@ -11,7 +11,7 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     val settingsManager: SettingsManager, val walletManager: WalletManager
 ) : ViewModel() {
-    val address = walletManager.address
+    val address = walletManager.rarimoAddress
 
 
     val language = settingsManager.language

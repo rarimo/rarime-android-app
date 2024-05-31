@@ -58,8 +58,7 @@ fun WalletScreen(
     val mainViewModel = LocalMainViewModel.current
     val configuration = LocalConfiguration.current
 
-    val balance by walletViewModel.balance.collectAsState()
-    val transactions by walletViewModel.transactions.collectAsState()
+    val userAsset = walletViewModel.selectedAsset
 
     var scaffoldState = rememberBottomSheetScaffoldState()
     LaunchedEffect(scaffoldState.bottomSheetState.currentValue) {
@@ -90,11 +89,11 @@ fun WalletScreen(
                         style = RarimeTheme.typography.subtitle3,
                         color = RarimeTheme.colors.textPrimary
                     )
-                    transactions.forEach {
+                    userAsset.transactions.value.forEach {
                         TransactionCard(it)
                     }
 
-                    if (transactions.isEmpty()) {
+                    if (userAsset.transactions.value.isEmpty()) {
                         Text(
                             text = stringResource(R.string.no_transactions_msg),
                             style = RarimeTheme.typography.body3,
@@ -135,7 +134,7 @@ fun WalletScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = NumberUtil.formatAmount(balance),
+                            text = NumberUtil.formatAmount(userAsset.balance.value.toDouble()),
                             style = RarimeTheme.typography.h4,
                             color = RarimeTheme.colors.textPrimary
                         )

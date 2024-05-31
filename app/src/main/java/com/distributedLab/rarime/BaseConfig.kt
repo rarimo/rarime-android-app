@@ -1,5 +1,9 @@
 package com.distributedLab.rarime
 
+import com.distributedLab.rarime.data.tokens.Erc20Token
+import com.distributedLab.rarime.data.tokens.RarimoToken
+import com.distributedLab.rarime.modules.common.WalletAsset
+
 object BaseConfig {
     const val RELAYER_URL = "https://api.orgs.app.stage.rarime.com"
     const val EVM_RPC_URL = "https://rpc.evm.node1.mainnet-beta.rarimo.com"
@@ -13,4 +17,9 @@ object BaseConfig {
     const val ICAO_COSMOS_RPC = "core-api.node1.mainnet-beta.rarimo.com:443"
     const val MASTER_CERTIFICATES_FILENAME = "icaopkd-list.ldif"
     const val MASTER_CERTIFICATES_BUCKETNAME = "rarimo-temp"
+
+    val DEFAULT_WALLET_ASSETS = listOf(
+        WalletAsset("", RarimoToken()),
+        WalletAsset("", Erc20Token("0x0000000000000000000000000000000000000000"))
+    )
 }

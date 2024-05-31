@@ -4,12 +4,14 @@ import android.app.Application
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.data.enums.AppColorScheme
 import com.distributedLab.rarime.data.enums.AppLanguage
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.PassportIdentifier
 import com.distributedLab.rarime.data.enums.SecurityCheckState
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
+import com.distributedLab.rarime.modules.common.WalletAsset
 import com.distributedLab.rarime.util.LocaleUtil
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.wallet.models.Transaction
@@ -36,6 +38,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "PASSCODE" to "PASSCODE",
         "LOCK_TIMESTAMP" to "LOCK_TIMESTAMP",
         "WALLET_BALANCE" to "WALLET_BALANCE",
+        "WALLET_ASSETS" to "WALLET_ASSETS",
         "E_DOCUMENT" to "E_DOCUMENT",
         "PRIVATE_KEY" to "PRIVATE_KEY",
         "REGISTRATION_PROOF" to "REGISTRATION_PROOF",
@@ -202,6 +205,24 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     override fun saveWalletBalance(balance: Double) {
         val editor = getEditor()
         editor.putString(accessTokens["WALLET_BALANCE"], balance.toString())
+        editor.apply()
+    }
+
+    override fun readWalletAssets(): List<WalletAsset> {
+        val jsonWalletBalances =
+            getSharedPreferences().getString(accessTokens["WALLET_ASSETS"], null) ?: return BaseConfig.DEFAULT_WALLET_ASSETS
+        val listType = object : TypeToken<List<WalletAsset?>?>() {}.type
+
+        // FIXME: backward compatibility? try/catch?
+        val walletAssets = Gson().fromJson<List<WalletAsset>>(jsonWalletBalances, listType)
+
+        return walletAssets
+    }
+
+    override fun saveWalletAssets(balances: List<WalletAsset>) {
+        val editor = getEditor()
+        val jsonBalances = Gson().toJson(balances)
+        editor.putString(accessTokens["WALLET_ASSETS"], jsonBalances)
         editor.apply()
     }
 

@@ -5,10 +5,10 @@ import com.distributedLab.rarime.data.enums.AppLanguage
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.PassportIdentifier
 import com.distributedLab.rarime.data.enums.SecurityCheckState
+import com.distributedLab.rarime.modules.common.WalletAsset
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.util.data.ZkProof
-import java.security.PrivateKey
 
 interface SecureSharedPrefsManager {
 
@@ -42,6 +42,9 @@ interface SecureSharedPrefsManager {
 
     fun readWalletBalance(): Double
     fun saveWalletBalance(balance: Double)
+
+    fun readWalletAssets(): List<WalletAsset>
+    fun saveWalletAssets(balances: List<WalletAsset>)
 
 
     fun saveEDocument(eDocument: EDocument)

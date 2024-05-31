@@ -9,5 +9,5 @@ import javax.inject.Inject
 class WalletReceiveViewModel @Inject constructor(
     private val walletManager: WalletManager,
 ) : ViewModel() {
-    val address = walletManager.address
+    val address = walletManager.rarimoAddress
 }

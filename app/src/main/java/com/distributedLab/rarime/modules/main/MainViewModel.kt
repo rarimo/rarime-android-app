@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.modules.common.SecurityManager
 import com.distributedLab.rarime.modules.common.SettingsManager
+import com.distributedLab.rarime.modules.common.WalletManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -13,7 +14,12 @@ class MainViewModel @Inject constructor(
     private val dataStoreManager: SecureSharedPrefsManager,
     securityManager: SecurityManager,
     settingsManager: SettingsManager,
+    private val walletManager: WalletManager,
 ) : ViewModel() {
+    suspend fun loadBalances () {
+        walletManager.loadBalances()
+    }
+
     var isIntroFinished = mutableStateOf(dataStoreManager.readIsIntroFinished())
         private set
 

@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.data.tokens.Token
 import com.distributedLab.rarime.domain.data.AirdropRequest
 import com.distributedLab.rarime.domain.data.AirdropRequestAttributes
 import com.distributedLab.rarime.domain.data.AirdropRequestData
@@ -31,10 +32,24 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
+import java.math.BigInteger
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.seconds
+
+class WalletAsset(private val userAddress: String, val token: Token) {
+    var balance = mutableStateOf(BigInteger.ZERO)
+    var transactions = mutableStateOf(listOf<Transaction>())
+
+    suspend fun loadBalance() {
+        balance.value = token.balanceOf(userAddress)
+    }
+
+    suspend fun loadTransactions() {
+        transactions.value = listOf()
+    }
+}
 
 @Singleton
 class WalletManager @Inject constructor(
@@ -43,6 +58,26 @@ class WalletManager @Inject constructor(
     private val contractManager: ContractManager,
     private val apiServiceManager: ApiServiceRemoteData
 ) {
+    val rarimoAddress: String by lazy {
+        val privateKey = dataStoreManager.readPrivateKey()
+        privateKey?.let {
+            Profile().newProfile(it.decodeHexString()).rarimoAddress
+        } ?: ""
+    }
+
+    private var _walletAssets = MutableStateFlow(dataStoreManager.readWalletAssets())
+    val walletAssets: StateFlow<List<WalletAsset>>
+        get() = _walletAssets.asStateFlow()
+
+    suspend fun loadBalances() {
+        // TODO: Promise.all
+        _walletAssets.value.forEach {
+            it.loadBalance()
+            it.loadTransactions()
+        }
+
+        dataStoreManager.saveWalletAssets(_walletAssets.value)
+    }
 
     private var _transactions = MutableStateFlow(dataStoreManager.readTransactions())
     private var _balance = MutableStateFlow(dataStoreManager.readWalletBalance())
@@ -54,15 +89,6 @@ class WalletManager @Inject constructor(
 
     val transactions: StateFlow<List<Transaction>>
         get() = _transactions.asStateFlow()
-
-
-    val address: String by lazy {
-        val privateKey = dataStoreManager.readPrivateKey()
-        privateKey?.let {
-            Profile().newProfile(it.decodeHexString()).rarimoAddress
-        } ?: ""
-    }
-
 
     private suspend fun generateAirdropQueryProof(
         registrationProof: ZkProof, eDocument: EDocument, privateKey: ByteArray
@@ -162,7 +188,7 @@ class WalletManager @Inject constructor(
 
     private suspend fun fetchBalance(): String {
         return withContext(Dispatchers.IO) {
-            val balance = apiServiceManager.fetchBalance(address)
+            val balance = apiServiceManager.fetchBalance(rarimoAddress)
             (balance!!.balances.first().amount.toDouble() / 1000000).toString()
         }
     }
@@ -225,6 +251,4 @@ class WalletManager @Inject constructor(
 
         return Gson().fromJson(response, CosmosTransferResponse::class.java)
     }
-
-
 }
