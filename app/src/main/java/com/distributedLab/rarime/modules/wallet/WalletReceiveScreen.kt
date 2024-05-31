@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,7 +45,9 @@ fun WalletReceiveScreen(
     val clipboardManager = LocalClipboardManager.current
     var isCopied by remember { mutableStateOf(false) }
 
-    val address = walletViewModel.address
+    val address = walletViewModel.rarimoAddress
+
+    val rmoAsset = walletViewModel.rmoAsset.collectAsState()
 
     LaunchedEffect(isCopied) {
         if (isCopied) {
@@ -53,76 +56,78 @@ fun WalletReceiveScreen(
         }
     }
 
-    WalletRouteLayout(
-        headerModifier = Modifier.padding(horizontal = 20.dp),
-        title = stringResource(R.string.wallet_receive_title),
-        description = stringResource(R.string.wallet_receive_description),
-        onBack = onBack
-    ) {
-        CardContainer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
+    rmoAsset.value?.let {
+        WalletRouteLayout(
+            headerModifier = Modifier.padding(horizontal = 20.dp),
+            title = stringResource(R.string.wallet_receive_title, it.token.symbol),
+            description = stringResource(R.string.wallet_receive_description, it.token.symbol),
+            onBack = onBack
         ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+            CardContainer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
             ) {
-                Box {
-                    QrCodeView(
-                        data = address,
-                        colors = QrCodeColors(
-                            background = RarimeTheme.colors.backgroundPure,
-                            foreground = RarimeTheme.colors.textPrimary
-                        ),
-                        modifier = Modifier
-                            .size(180.dp)
-                            .border(7.dp, RarimeTheme.colors.textPrimary, RoundedCornerShape(12.dp))
-                            .padding(20.dp)
-                    )
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .background(RarimeTheme.colors.backgroundPure)
-                            .padding(4.dp)
-                    ) {
-                        AppIcon(
-                            id = R.drawable.ic_rarime,
-                            size = 36.dp,
-                            tint = RarimeTheme.colors.textPrimary,
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box {
+                        QrCodeView(
+                            data = address,
+                            colors = QrCodeColors(
+                                background = RarimeTheme.colors.backgroundPure,
+                                foreground = RarimeTheme.colors.textPrimary
+                            ),
+                            modifier = Modifier
+                                .size(180.dp)
+                                .border(7.dp, RarimeTheme.colors.textPrimary, RoundedCornerShape(12.dp))
+                                .padding(20.dp)
                         )
-                    }
-                }
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = stringResource(R.string.deposit_address_lbl),
-                        style = RarimeTheme.typography.subtitle4,
-                        color = RarimeTheme.colors.textPrimary
-                    )
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .background(
-                                RarimeTheme.colors.componentPrimary,
-                                RoundedCornerShape(8.dp)
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .background(RarimeTheme.colors.backgroundPure)
+                                .padding(4.dp)
+                        ) {
+                            AppIcon(
+                                id = R.drawable.ic_rarime,
+                                size = 36.dp,
+                                tint = RarimeTheme.colors.textPrimary,
                             )
-                            .padding(vertical = 14.dp, horizontal = 16.dp)
-                    ) {
+                        }
+                    }
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
-                            text = address,
-                            style = RarimeTheme.typography.body3,
-                            color = RarimeTheme.colors.textPrimary,
-                            modifier = Modifier.weight(1f),
+                            text = stringResource(R.string.deposit_address_lbl),
+                            style = RarimeTheme.typography.subtitle4,
+                            color = RarimeTheme.colors.textPrimary
                         )
-                        SecondaryTextButton(
-                            leftIcon = if (isCopied) R.drawable.ic_check else R.drawable.ic_copy_simple,
-                            onClick = {
-                                clipboardManager.setText(AnnotatedString(address))
-                                isCopied = true
-                            }
-                        )
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .background(
+                                    RarimeTheme.colors.componentPrimary,
+                                    RoundedCornerShape(8.dp)
+                                )
+                                .padding(vertical = 14.dp, horizontal = 16.dp)
+                        ) {
+                            Text(
+                                text = address,
+                                style = RarimeTheme.typography.body3,
+                                color = RarimeTheme.colors.textPrimary,
+                                modifier = Modifier.weight(1f),
+                            )
+                            SecondaryTextButton(
+                                leftIcon = if (isCopied) R.drawable.ic_check else R.drawable.ic_copy_simple,
+                                onClick = {
+                                    clipboardManager.setText(AnnotatedString(address))
+                                    isCopied = true
+                                }
+                            )
+                        }
                     }
                 }
             }

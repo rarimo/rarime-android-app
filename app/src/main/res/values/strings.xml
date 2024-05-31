@@ -84,7 +84,7 @@
     <string name="passport_look_black">Black</string>
     <string name="passport_look_white">White</string>
     <string name="years_old">%1$s Years Old</string>
-    <string name="balance_rmo">Balance: RMO</string>
+    <string name="balance_rmo">Balance: %1$s</string>
     <string name="other_passport_card_description">Join a waitlist</string>
     <string name="rarime_card_title">RARIME</string>
     <string name="rarime_card_description">Learn more about RariMe App</string>
@@ -100,12 +100,12 @@
     <string name="airdrop_tx_title">Airdrop</string>
     <string name="scan_qr_title">Scan QR</string>
     <string name="scan_qr_description">Place QR code within the frame to scan</string>
-    <string name="wallet_receive_title">Receive RMO</string>
-    <string name="wallet_receive_description">You can use the QR code or the wallet address to deposit the RMO token to your account</string>
+    <string name="wallet_receive_title">Receive %1$s</string>
+    <string name="wallet_receive_description">You can use the QR code or the wallet address to deposit the %1$s token to your account</string>
     <string name="deposit_address_lbl">Your Rarimo Address</string>
     <string name="address_lbl">Address</string>
     <string name="amount_lbl">Amount</string>
-    <string name="amount_placeholder">Enter amount in RMO</string>
+    <string name="amount_placeholder">Enter amount in %1$s</string>
     <string name="available_hint">Available:</string>
     <string name="max_btn">MAX</string>
     <string name="receiver_gets">Receiver gets</string>
@@ -115,8 +115,8 @@
     <string name="available_rmo">Total Balance</string>
     <string name="receive_btn">Receive</string>
     <string name="transactions_title">Transactions</string>
-    <string name="wallet_send_title">Send RMO</string>
-    <string name="wallet_send_description">Withdraw the RMO token</string>
+    <string name="wallet_send_title">Send %1$s</string>
+    <string name="wallet_send_description">Withdraw the %1$s token</string>
     <string name="rewards_stub_title">Starting in July</string>
     <string name="rewards_stub_description">The rewards program will allow you to receive weekly airdrops.\n\nYou can earn additional rewards by using RariMe’s incognito proofs with other ecosystem apps.</string>
     <string name="terms_of_use">Terms of Use</string>

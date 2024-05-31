@@ -1,13 +1,11 @@
 package com.distributedLab.rarime.modules.wallet
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,7 +22,6 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -58,7 +54,7 @@ fun WalletScreen(
     val mainViewModel = LocalMainViewModel.current
     val configuration = LocalConfiguration.current
 
-    val userAsset = walletViewModel.selectedAsset
+    val userAsset = walletViewModel.selectedAsset.collectAsState()
 
     var scaffoldState = rememberBottomSheetScaffoldState()
     LaunchedEffect(scaffoldState.bottomSheetState.currentValue) {
@@ -89,11 +85,11 @@ fun WalletScreen(
                         style = RarimeTheme.typography.subtitle3,
                         color = RarimeTheme.colors.textPrimary
                     )
-                    userAsset.transactions.value.forEach {
+                    userAsset.value.transactions.value.forEach {
                         TransactionCard(it)
                     }
 
-                    if (userAsset.transactions.value.isEmpty()) {
+                    if (userAsset.value.transactions.value.isEmpty()) {
                         Text(
                             text = stringResource(R.string.no_transactions_msg),
                             style = RarimeTheme.typography.body3,
@@ -134,7 +130,7 @@ fun WalletScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = NumberUtil.formatAmount(userAsset.balance.value.toDouble()),
+                            text = NumberUtil.formatAmount(userAsset.value.balance.value.toDouble()),
                             style = RarimeTheme.typography.h4,
                             color = RarimeTheme.colors.textPrimary
                         )

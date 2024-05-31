@@ -40,6 +40,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class WalletAsset(private val userAddress: String, val token: Token) {
     var balance = mutableStateOf(BigInteger.ZERO)
+
     var transactions = mutableStateOf(listOf<Transaction>())
 
     suspend fun loadBalance() {
@@ -70,25 +71,20 @@ class WalletManager @Inject constructor(
         get() = _walletAssets.asStateFlow()
 
     suspend fun loadBalances() {
-        // TODO: Promise.all
-        _walletAssets.value.forEach {
-            it.loadBalance()
-            it.loadTransactions()
-        }
+        withContext(Dispatchers.IO) {
+            _walletAssets.value.forEach {
+                it.token.loadDetails()
 
-        dataStoreManager.saveWalletAssets(_walletAssets.value)
+                // TODO: Promise.all
+                it.loadBalance()
+                it.loadTransactions()
+            }
+
+            dataStoreManager.saveWalletAssets(_walletAssets.value)
+        }
     }
 
-    private var _transactions = MutableStateFlow(dataStoreManager.readTransactions())
-    private var _balance = MutableStateFlow(dataStoreManager.readWalletBalance())
-
-    val balance: StateFlow<Double>
-        get() = _balance.asStateFlow()
-
     private var isAirdropClaimed = mutableStateOf(false)
-
-    val transactions: StateFlow<List<Transaction>>
-        get() = _transactions.asStateFlow()
 
     private suspend fun generateAirdropQueryProof(
         registrationProof: ZkProof, eDocument: EDocument, privateKey: ByteArray
@@ -182,10 +178,6 @@ class WalletManager @Inject constructor(
         }
     }
 
-    private fun refreshTransactions() {
-        _transactions.value = dataStoreManager.readTransactions()
-    }
-
     private suspend fun fetchBalance(): String {
         return withContext(Dispatchers.IO) {
             val balance = apiServiceManager.fetchBalance(rarimoAddress)
@@ -205,8 +197,6 @@ class WalletManager @Inject constructor(
             airDrop(proof)
 
             delay(10.seconds)
-            _balance.value = fetchBalance().toDouble()
-            dataStoreManager.saveWalletBalance(_balance.value)
 
             val transaction = Transaction(
                 id = 1,
@@ -217,22 +207,14 @@ class WalletManager @Inject constructor(
                 state = TransactionState.INCOMING
             )
 
-
+            // FIXME: use tx from token and remove transaction key from store
             dataStoreManager.addTransaction(transaction)
 
-            refreshTransactions()
+            loadBalances()
             isAirdropClaimed.value = true
         }
 
 
-    }
-
-    suspend fun refreshBalance() {
-        withContext(Dispatchers.IO) {
-            val amount = fetchBalance()
-            _balance.value = amount.toDouble()
-            dataStoreManager.saveWalletBalance(amount.toDouble())
-        }
     }
 
     suspend fun sendTokens(destination: String, amount: String): CosmosTransferResponse {

@@ -213,10 +213,13 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
             getSharedPreferences().getString(accessTokens["WALLET_ASSETS"], null) ?: return BaseConfig.DEFAULT_WALLET_ASSETS
         val listType = object : TypeToken<List<WalletAsset?>?>() {}.type
 
-        // FIXME: backward compatibility? try/catch?
-        val walletAssets = Gson().fromJson<List<WalletAsset>>(jsonWalletBalances, listType)
+        try {
+            val walletAssets = Gson().fromJson<List<WalletAsset>>(jsonWalletBalances, listType)
 
-        return walletAssets
+            return walletAssets
+        } catch (e: Exception) {
+            return BaseConfig.DEFAULT_WALLET_ASSETS
+        }
     }
 
     override fun saveWalletAssets(balances: List<WalletAsset>) {

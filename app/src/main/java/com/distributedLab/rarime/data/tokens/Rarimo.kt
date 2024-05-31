@@ -10,8 +10,8 @@ class RarimoToken(address: String = ""): Token(address) {
     override var decimals: Int = 0
 
     override suspend fun loadDetails(): Unit {
-        this.name = "RarimoToken"
-        this.symbol = "RMO"
+        this.name = "Rarimo Token"
+        this.symbol = "YOPTA" // FIXME
         this.decimals = 6
     }
 
