@@ -12,12 +12,14 @@ import com.distributedLab.rarime.data.enums.PassportIdentifier
 import com.distributedLab.rarime.data.enums.SecurityCheckState
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.modules.common.WalletAsset
+import com.distributedLab.rarime.modules.common.WalletAssetJSON
 import com.distributedLab.rarime.util.LocaleUtil
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.util.data.ZkProof
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.math.BigInteger
 import javax.inject.Inject
 
 
@@ -197,34 +199,31 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         editor.apply()
     }
 
-    override fun readWalletBalance(): Double {
-        return getSharedPreferences().getString(accessTokens["WALLET_BALANCE"], "0.0")?.toDouble()
-            ?: 0.0
-    }
-
-    override fun saveWalletBalance(balance: Double) {
-        val editor = getEditor()
-        editor.putString(accessTokens["WALLET_BALANCE"], balance.toString())
-        editor.apply()
-    }
-
-    override fun readWalletAssets(): List<WalletAsset> {
+    override fun readWalletAssets(assetsToPopulate: List<WalletAsset>): List<WalletAsset> {
         val jsonWalletBalances =
-            getSharedPreferences().getString(accessTokens["WALLET_ASSETS"], null) ?: return BaseConfig.DEFAULT_WALLET_ASSETS
+            getSharedPreferences().getString(accessTokens["WALLET_ASSETS"], null) ?: return assetsToPopulate
         val listType = object : TypeToken<List<WalletAsset?>?>() {}.type
 
         try {
-            val walletAssets = Gson().fromJson<List<WalletAsset>>(jsonWalletBalances, listType)
+            val JsonWalletAssets = Gson().fromJson<List<WalletAssetJSON>>(jsonWalletBalances, listType)
 
-            return walletAssets
+            return assetsToPopulate.map {
+                val jsonWalletAsset = JsonWalletAssets.find { asset -> asset.tokenSymbol == it.token.symbol }
+
+                if (jsonWalletAsset != null) {
+                    it.balance.value = BigInteger(jsonWalletAsset.balance)
+                    it.transactions.value = jsonWalletAsset.transactions
+                }
+                it
+            }
         } catch (e: Exception) {
-            return BaseConfig.DEFAULT_WALLET_ASSETS
+            return assetsToPopulate
         }
     }
 
-    override fun saveWalletAssets(balances: List<WalletAsset>) {
+    override fun saveWalletAssets(walletAssets: List<WalletAsset>) {
         val editor = getEditor()
-        val jsonBalances = Gson().toJson(balances)
+        val jsonBalances = Gson().toJson(walletAssets.map { it.toJSON() })
         editor.putString(accessTokens["WALLET_ASSETS"], jsonBalances)
         editor.apply()
     }

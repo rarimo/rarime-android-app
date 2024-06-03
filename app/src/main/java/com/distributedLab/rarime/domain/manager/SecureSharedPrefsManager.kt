@@ -40,11 +40,8 @@ interface SecureSharedPrefsManager {
     fun readLanguage(): AppLanguage
     fun saveLanguage(language: AppLanguage)
 
-    fun readWalletBalance(): Double
-    fun saveWalletBalance(balance: Double)
-
-    fun readWalletAssets(): List<WalletAsset>
-    fun saveWalletAssets(balances: List<WalletAsset>)
+    fun readWalletAssets(assetsToPopulate: List<WalletAsset>): List<WalletAsset>
+    fun saveWalletAssets(walletAssets: List<WalletAsset>)
 
 
     fun saveEDocument(eDocument: EDocument)

@@ -1,7 +1,10 @@
 package com.distributedLab.rarime.data.tokens
 
-import com.distributedLab.rarime.domain.data.Transaction
+import com.distributedLab.rarime.modules.wallet.models.Transaction
+import com.distributedLab.rarime.modules.wallet.models.TransactionState
 import java.math.BigInteger
+import java.time.Instant
+import java.util.Date
 
 // TODO: implement contracts manager
 class Erc20Token(address: String) : Token(address) {
@@ -19,16 +22,14 @@ class Erc20Token(address: String) : Token(address) {
         return BigInteger.ZERO
     }
 
-    override suspend fun transfer(to: String, value: BigInteger): Transaction {
+    override suspend fun transfer(to: String, amount: BigInteger): Transaction {
         return Transaction(
-            height = 0L,
-            txhash = "",
-            data = "",
-            raw_log = "",
-            logs = listOf(),
-            gas_wanted = 0L,
-            gas_used = 0L,
-            events = listOf(),
+            id = 0,
+            iconId = 0,
+            titleId = 0,
+            amount = 0.0,
+            date = Date.from(Instant.now()),
+            state = TransactionState.INCOMING,
         )
     }
 
@@ -39,14 +40,12 @@ class Erc20Token(address: String) : Token(address) {
 
         return listOf(
             Transaction(
-                height = 0L,
-                txhash = "",
-                data = "",
-                raw_log = "",
-                logs = listOf(),
-                gas_wanted = 0L,
-                gas_used = 0L,
-                events = listOf(),
+                id = 0,
+                iconId = 0,
+                titleId = 0,
+                amount = 0.0,
+                date = Date.from(Instant.now()),
+                state = TransactionState.INCOMING,
             )
         )
     }

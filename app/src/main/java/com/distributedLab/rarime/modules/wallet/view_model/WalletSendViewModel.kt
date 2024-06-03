@@ -4,13 +4,14 @@ import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.data.tokens.RarimoToken
 import com.distributedLab.rarime.modules.common.WalletAsset
 import com.distributedLab.rarime.modules.common.WalletManager
+import com.distributedLab.rarime.util.NumberUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
+import java.math.BigInteger
 import javax.inject.Inject
-
 
 @HiltViewModel
 class WalletSendViewModel @Inject constructor(
@@ -22,16 +23,22 @@ class WalletSendViewModel @Inject constructor(
     val rmoAsset: StateFlow<WalletAsset?>
         get() = _rmoAsset
 
-    suspend fun sendTokens(to: String, amount: String) {
-        withContext(Dispatchers.IO) {
-            walletManager.sendTokens(to, amount) // FIXME: change to token transfer
-            walletManager.loadBalances()
+    suspend fun sendTokens(to: String, humanAmount: String) {
+        rmoAsset.value?.let { it ->
+            val bigIntAmount = NumberUtil.toBigIntAmount(humanAmount.toDouble(), it.token.decimals)
+
+            withContext(Dispatchers.IO) {
+                it.token.transfer(to, BigInteger.valueOf(bigIntAmount.toLong()))
+                it.loadBalance() // TODO: does it trigger recompose?
+            }
         }
     }
 
     suspend fun fetchBalance() {
-        withContext(Dispatchers.IO) {
-            walletManager.loadBalances()
+        rmoAsset.value?.let {
+            withContext(Dispatchers.IO) {
+                it.loadBalance() // TODO: does it trigger recompose?
+            }
         }
     }
 }

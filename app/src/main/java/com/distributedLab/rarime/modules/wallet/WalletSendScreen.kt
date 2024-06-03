@@ -42,14 +42,13 @@ fun WalletSendScreen(
     walletViewModel: WalletSendViewModel = hiltViewModel(),
 ) {
     var isQrCodeScannerOpen by remember { mutableStateOf(false) }
+
     val addressState = rememberAppTextFieldState("")
-    val amountState = rememberAppTextFieldState("")
+    val humanAmountState = rememberAppTextFieldState("")
 
     val rmoAsset = walletViewModel.rmoAsset.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
-
-    val amountToReceive = amountState.text.toDoubleOrNull() ?: 0.0
 
     if (isQrCodeScannerOpen) {
         ScanQrScreen(
@@ -86,7 +85,7 @@ fun WalletSendScreen(
                                 }
                             )
                             AppTextField(
-                                state = amountState,
+                                state = humanAmountState,
                                 label = stringResource(R.string.amount_lbl),
                                 placeholder = stringResource(R.string.amount_placeholder, it.token.symbol),
                                 hint = {
@@ -117,7 +116,7 @@ fun WalletSendScreen(
                                         SecondaryTextButton(
                                             text = stringResource(R.string.max_btn),
                                             // TODO: mb to human string?
-                                            onClick = { amountState.updateText(it.balance.value.toString()) }
+                                            onClick = { humanAmountState.updateText(it.humanBalance().toString()) }
                                         )
                                     }
                                 }
@@ -139,7 +138,7 @@ fun WalletSendScreen(
                                 color = RarimeTheme.colors.textSecondary
                             )
                             Text(
-                                text = "${NumberUtil.formatAmount(amountToReceive)} ${rmoAsset.value?.token?.symbol}",
+                                text = "${NumberUtil.formatAmount(humanAmountState.text.toDoubleOrNull() ?: 0.0)} ${rmoAsset.value?.token?.symbol}",
                                 style = RarimeTheme.typography.subtitle3,
                                 color = RarimeTheme.colors.textPrimary
                             )
@@ -150,7 +149,7 @@ fun WalletSendScreen(
                             modifier = Modifier.width(160.dp),
                             onClick = {
                                 coroutineScope.launch {
-                                    walletViewModel.sendTokens(addressState.text, amountState.text)
+                                    walletViewModel.sendTokens(addressState.text, humanAmountState.text)
                                     walletViewModel.fetchBalance()
                                 }
 

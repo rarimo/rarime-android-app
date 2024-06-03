@@ -49,7 +49,7 @@ fun WalletTokenCard() {
             )
 
             Text(
-                text = "Total " + BaseConfig.DENOM,
+                text = "Total RMO", // FIXME: use actual token name
                 style = RarimeTheme.typography.body3,
                 color = RarimeTheme.colors.textSecondary
             )

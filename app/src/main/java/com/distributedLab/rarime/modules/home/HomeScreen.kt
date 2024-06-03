@@ -144,7 +144,7 @@ private fun Header(walletAsset: WalletAsset, onBalanceClick: () -> Unit = {}) {
                     }
                 }
                 Text(
-                    text = NumberUtil.formatAmount(walletAsset.balance.value.toDouble()),
+                    text = NumberUtil.formatAmount(walletAsset.humanBalance()),
                     style = RarimeTheme.typography.h4,
                     color = RarimeTheme.colors.textPrimary
                 )

@@ -29,8 +29,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.modules.common.WalletAsset
 import com.distributedLab.rarime.modules.main.LocalMainViewModel
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.modules.wallet.models.TransactionState
@@ -86,7 +86,7 @@ fun WalletScreen(
                         color = RarimeTheme.colors.textPrimary
                     )
                     userAsset.value.transactions.value.forEach {
-                        TransactionCard(it)
+                        TransactionCard(it, userAsset.value)
                     }
 
                     if (userAsset.value.transactions.value.isEmpty()) {
@@ -130,13 +130,13 @@ fun WalletScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = NumberUtil.formatAmount(userAsset.value.balance.value.toDouble()),
+                            text = NumberUtil.formatAmount(userAsset.value.humanBalance()),
                             style = RarimeTheme.typography.h4,
                             color = RarimeTheme.colors.textPrimary
                         )
                         // TODO: replace by select
                         Text(
-                            text = BaseConfig.DENOM.uppercase(),
+                            text = userAsset.value.token.symbol,
                             style = RarimeTheme.typography.overline2,
                             color = RarimeTheme.colors.textPrimary,
                         )
@@ -206,8 +206,10 @@ fun WalletScreen(
 }
 
 @Composable
-private fun TransactionCard(transaction: Transaction) {
+private fun TransactionCard(transaction: Transaction, asset: WalletAsset) {
     val amountSign = if (transaction.state == TransactionState.INCOMING) "+" else "-"
+
+    val txHumanAmount = NumberUtil.toHumanAmount(transaction.amount, asset.token.decimals)
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -240,7 +242,7 @@ private fun TransactionCard(transaction: Transaction) {
         }
 
         Text(
-            text = "${amountSign}${NumberUtil.formatAmount(transaction.amount)} RMO",
+            text = "${amountSign}${NumberUtil.formatAmount(txHumanAmount)} ${asset.token.symbol}",
             style = RarimeTheme.typography.subtitle5,
             color = if (transaction.state == TransactionState.INCOMING) {
                 RarimeTheme.colors.successMain
