@@ -14,17 +14,13 @@ import javax.inject.Inject
 class WalletViewModel @Inject constructor(
     private val walletManager: WalletManager,
 ) : ViewModel() {
-    // TODO: remove, use WalletAsset in select field
-    var selectedAssetIndex = mutableStateOf(0)
+    var walletAssets = walletManager.walletAssets
         private set
 
-    private val _selectedAddress = MutableStateFlow(walletManager.walletAssets.value[selectedAssetIndex.value])
+    var selectedWalletAsset = walletManager.selectedWalletAsset
+        private set
 
-    val selectedAsset: StateFlow<WalletAsset>
-        get() = _selectedAddress.asStateFlow()
-
-    fun updateSelectedAssetIndex(index: Int) {
-        selectedAssetIndex.value = index
-        _selectedAddress.value = walletManager.walletAssets.value[selectedAssetIndex.value]
+    fun updateSelectedWalletAsset(walletAsset: WalletAsset) {
+        walletManager.setSelectedWalletAsset(walletAsset)
     }
 }

@@ -43,6 +43,9 @@ interface SecureSharedPrefsManager {
     fun readWalletAssets(assetsToPopulate: List<WalletAsset>): List<WalletAsset>
     fun saveWalletAssets(walletAssets: List<WalletAsset>)
 
+    fun readSelectedWalletAsset(walletAssets: List<WalletAsset>): WalletAsset
+
+    fun saveSelectedWalletAsset(walletAsset: WalletAsset)
 
     fun saveEDocument(eDocument: EDocument)
 

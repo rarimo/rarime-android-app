@@ -111,6 +111,18 @@ class WalletManager @Inject constructor(
     val walletAssets: StateFlow<List<WalletAsset>>
         get() = _walletAssets.asStateFlow()
 
+    private val _selectedWalletAsset = MutableStateFlow(dataStoreManager.readSelectedWalletAsset(walletAssets.value))
+
+    val selectedWalletAsset: StateFlow<WalletAsset>
+        get() = _selectedWalletAsset.asStateFlow()
+
+    fun setSelectedWalletAsset(walletAsset: WalletAsset) {
+        _selectedWalletAsset.value = walletAsset
+        Log.i("setSelectedWalletAsset", _selectedWalletAsset.value.toJSON())
+
+        dataStoreManager.saveSelectedWalletAsset(walletAsset)
+    }
+
     suspend fun loadBalances() {
         withContext(Dispatchers.IO) {
             _walletAssets.value.forEach {

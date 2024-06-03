@@ -36,11 +36,10 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "PASSPORT_IDENTIFIERS" to "PASSPORT_IDENTIFIERS",
         "COLOR_SCHEME" to "COLOR_SCHEME",
         "LANGUAGE" to "LANGUAGE",
-        "WALLET_BALANCE" to "WALLET_BALANCE",
         "PASSCODE" to "PASSCODE",
         "LOCK_TIMESTAMP" to "LOCK_TIMESTAMP",
-        "WALLET_BALANCE" to "WALLET_BALANCE",
         "WALLET_ASSETS" to "WALLET_ASSETS",
+        "SELECTED_WALLET_ASSET" to "SELECTED_WALLET_ASSET",
         "E_DOCUMENT" to "E_DOCUMENT",
         "PRIVATE_KEY" to "PRIVATE_KEY",
         "REGISTRATION_PROOF" to "REGISTRATION_PROOF",
@@ -200,19 +199,19 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     }
 
     override fun readWalletAssets(assetsToPopulate: List<WalletAsset>): List<WalletAsset> {
-        val jsonWalletBalances =
+        val jsonWalletAssets =
             getSharedPreferences().getString(accessTokens["WALLET_ASSETS"], null) ?: return assetsToPopulate
         val listType = object : TypeToken<List<WalletAsset?>?>() {}.type
 
         try {
-            val JsonWalletAssets = Gson().fromJson<List<WalletAssetJSON>>(jsonWalletBalances, listType)
+            val parsedWalletAssets = Gson().fromJson<List<WalletAssetJSON>>(jsonWalletAssets, listType)
 
             return assetsToPopulate.map {
-                val jsonWalletAsset = JsonWalletAssets.find { asset -> asset.tokenSymbol == it.token.symbol }
+                val walletAsset = parsedWalletAssets.find { asset -> asset.tokenSymbol == it.token.symbol }
 
-                if (jsonWalletAsset != null) {
-                    it.balance.value = BigInteger(jsonWalletAsset.balance)
-                    it.transactions.value = jsonWalletAsset.transactions
+                if (walletAsset != null) {
+                    it.balance.value = BigInteger(walletAsset.balance)
+                    it.transactions.value = walletAsset.transactions
                 }
                 it
             }
@@ -225,6 +224,28 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         val editor = getEditor()
         val jsonBalances = Gson().toJson(walletAssets.map { it.toJSON() })
         editor.putString(accessTokens["WALLET_ASSETS"], jsonBalances)
+        editor.apply()
+    }
+
+    override fun readSelectedWalletAsset(walletAssets: List<WalletAsset>): WalletAsset {
+        val jsonWalletAsset = getSharedPreferences().getString(accessTokens["SELECTED_WALLET_ASSET"], walletAssets.first().toJSON())
+
+        val walletAssetType = object : TypeToken<WalletAsset?>() {}.type
+
+        try {
+            val parsedWalletAsset = Gson().fromJson<WalletAssetJSON>(jsonWalletAsset, walletAssetType)
+
+            val walletAsset = walletAssets.find { it.token.symbol == parsedWalletAsset.tokenSymbol }
+
+            return walletAsset ?: walletAssets.first()
+        } catch (error: Exception) {
+            return walletAssets.first()
+        }
+    }
+
+    override fun saveSelectedWalletAsset(walletAsset: WalletAsset) {
+        val editor = getEditor()
+        editor.putString(accessTokens["SELECTED_WALLET_ASSET"], walletAsset.toJSON())
         editor.apply()
     }
 
