@@ -10,6 +10,7 @@ import com.distributedLab.rarime.util.DateUtil
 import com.distributedLab.rarime.util.SecurityUtil
 import com.distributedLab.rarime.util.StringUtil
 import com.distributedLab.rarime.util.addCharAtIndex
+import com.distributedLab.rarime.util.decodeHexString
 import com.distributedLab.rarime.util.publicKeyToPem
 import com.distributedLab.rarime.util.toBitArray
 import identity.Profile
@@ -19,20 +20,25 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.jmrtd.BACKeySpec
 import org.jmrtd.PassportService
 import org.jmrtd.lds.CardSecurityFile
+import org.jmrtd.lds.ChipAuthenticationInfo
+import org.jmrtd.lds.ChipAuthenticationPublicKeyInfo
 import org.jmrtd.lds.PACEInfo
 import org.jmrtd.lds.SODFile
+import org.jmrtd.lds.icao.DG14File
 import org.jmrtd.lds.icao.DG15File
 import org.jmrtd.lds.icao.DG1File
 import org.jmrtd.lds.icao.DG2File
 import org.jmrtd.lds.iso19794.FaceImageInfo
+import org.jmrtd.protocol.AAResult
+import org.jmrtd.protocol.EACCAResult
 import java.io.InputStream
-import java.math.BigInteger
 import java.security.MessageDigest
-import java.security.PrivateKey
 import java.security.Security
 import java.util.Arrays
 
-class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,private val privateKey: ByteArray) {
+class NfcUseCase(
+    private val isoDep: IsoDep, private val bacKey: BACKeySpec, private val privateKey: ByteArray
+) {
     private var eDocument: EDocument = EDocument()
     private var docType: DocType = DocType.OTHER
     private var personDetails: PersonDetails = PersonDetails()
@@ -47,6 +53,70 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
     }
 
     @OptIn(ExperimentalStdlibApi::class)
+    fun revokePassport(challenge: ByteArray, eDocument: EDocument) {
+        val cardService = CardService.getInstance(isoDep)
+        cardService.open()
+        val service = PassportService(
+            cardService,
+            PassportService.NORMAL_MAX_TRANCEIVE_LENGTH,
+            PassportService.DEFAULT_MAX_BLOCKSIZE,
+            true,
+            false
+        )
+
+        service.open()
+        var paceSucceeded = false
+        try {
+            val cardSecurityFile =
+                CardSecurityFile(service.getInputStream(PassportService.EF_CARD_SECURITY))
+            val securityInfoCollection = cardSecurityFile.securityInfos
+            for (securityInfo in securityInfoCollection) {
+
+                if (securityInfo is PACEInfo) {
+                    val paceInfo = securityInfo
+                    service.doPACE(
+                        bacKey,
+                        paceInfo.objectIdentifier,
+                        PACEInfo.toParameterSpec(paceInfo.parameterId),
+                        null
+                    )
+                    paceSucceeded = true
+                }
+            }
+        } catch (e: Exception) {
+            Log.w("Error", e)
+        }
+
+        service.sendSelectApplet(paceSucceeded)
+        if (!paceSucceeded) {
+            try {
+                service.getInputStream(PassportService.EF_COM).read()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                service.doBAC(bacKey)
+            }
+        }
+
+        val sodFile = SODFileOwn(eDocument.sod!!.decodeHexString().inputStream())
+        val dg15 = DG15File(eDocument.dg15!!.decodeHexString().inputStream())
+
+        try {
+            val response = service.doAA(
+                dg15.publicKey,
+                sodFile.digestAlgorithm,
+                sodFile.signerInfoDigestAlgorithm,
+                challenge
+            )
+            eDocument.aaSignature = response.response.toHexString()
+            eDocument.aaResponse = response.toString()
+            eDocument.isActiveAuth = true
+        } catch (e: Exception) {
+            eDocument.isActiveAuth = false
+        }
+
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
     fun scanPassport(): EDocument {
         val cardService = CardService.getInstance(isoDep)
         cardService.open()
@@ -58,9 +128,9 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
             false
         )
 
-
         service.open()
         var paceSucceeded = false
+        var chipAuth = true
         try {
             val cardSecurityFile =
                 CardSecurityFile(service.getInputStream(PassportService.EF_CARD_SECURITY))
@@ -207,18 +277,71 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
             personDetails!!.faceImageInfo = faceImageInfo
         }
 
+        try {
+            val dg14In = service.getInputStream(PassportService.EF_DG14)
+            val dg14File = DG14File(dg14In)
+            val dg14StoredHash = sodFile.dataGroupHashes[14]
+            val dg14ComputedHash = digest.digest(dg14File.encoded)
+            Log.d(
+                "", "DG14 Stored Hash: " + StringUtil.byteArrayToHex(dg14StoredHash!!)
+            )
+            Log.d(
+                "", "DG14 Computed Hash: " + StringUtil.byteArrayToHex(dg14ComputedHash)
+            )
+            if (Arrays.equals(dg14StoredHash, dg14ComputedHash)) {
+                Log.d(
+                    "", "DG14 Hashes are matched"
+                )
+            } else {
+                hashesMatched = false
+            }
 
+            // Chip Authentication
+            val eaccaResults = ArrayList<EACCAResult>()
+            val chipAuthenticationPublicKeyInfos: MutableList<ChipAuthenticationPublicKeyInfo> =
+                ArrayList()
+            var chipAuthenticationInfo: ChipAuthenticationInfo? = null
+            if (!dg14File.securityInfos.isEmpty()) {
+                for (securityInfo in dg14File.securityInfos) {
+                    Log.d(
+                        "", "DG14 Security Info Identifier: " + securityInfo.objectIdentifier
+                    )
+                    if (securityInfo is ChipAuthenticationInfo) {
+                        chipAuthenticationInfo = securityInfo
+                    } else if (securityInfo is ChipAuthenticationPublicKeyInfo) {
+                        chipAuthenticationPublicKeyInfos.add(securityInfo)
+                    }
+                }
+                for (chipAuthenticationPublicKeyInfo in chipAuthenticationPublicKeyInfos) {
+                    if (chipAuthenticationInfo != null) {
+                        val eaccaResult = service.doEACCA(
+                            chipAuthenticationInfo.keyId,
+                            chipAuthenticationInfo.objectIdentifier,
+                            chipAuthenticationInfo.protocolOIDString,
+                            chipAuthenticationPublicKeyInfo.subjectPublicKey
+                        )
+                        eaccaResults.add(eaccaResult)
+                    } else {
+                        Log.d(
+                            "",
+                            "Chip Authentication failed for key: $chipAuthenticationPublicKeyInfo"
+                        )
+                    }
+                }
+                if (eaccaResults.size == 0) chipAuth = false
+            }
+        } catch (e: Exception) {
+            Log.w("", e)
+        }
 
         eDocument.docType = docType
         eDocument.personDetails = personDetails
         eDocument.additionalPersonDetails = additionalPersonDetails
         eDocument.isPassiveAuth = hashesMatched
+        eDocument.isChipAuth = chipAuth
 
 
         val dg15 = DG15File(dG15File)
-
-        //Arrays.copyOfRange(poseidonHash, poseidonHash.size - 8, poseidonHash.size).reversed().toByteArray()
-
 
         Log.e("PUB KEy", dg15.publicKey.encoded.toHexString())
 
@@ -227,15 +350,18 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
         Log.e("signerInfoDigestAlgorithm", sodFile.signerInfoDigestAlgorithm)
 
 
-
         val profiler = Profile().newProfile(privateKey).registrationChallenge
-
-        val response = service.doAA(
-            dg15.publicKey,
-            "SHA-256", "SHA-256",profiler
-        )
-
-        eDocument.aaSignature = response.response
+        val response: AAResult
+        try {
+            response = service.doAA(
+                dg15.publicKey, sodFile.digestAlgorithm, sodFile.signerInfoDigestAlgorithm, profiler
+            )
+            eDocument.aaSignature = response.response.toHexString()
+            eDocument.aaResponse = response.toString()
+            eDocument.isActiveAuth = true
+        } catch (e: Exception) {
+            eDocument.isActiveAuth = false
+        }
 
         // sign -> contract
 
@@ -285,7 +411,8 @@ class SODFileOwn(inputStream: InputStream?) : SODFile(inputStream) {
 
         val v: SignedData = a.get(this) as SignedData
 
-        val encapsulatedContent =  v.encapContentInfo.content.toASN1Primitive().encoded!!.toHexString()
+        val encapsulatedContent =
+            v.encapContentInfo.content.toASN1Primitive().encoded!!.toHexString()
 
         val target = "30"
         val startIndex = encapsulatedContent.indexOf(target)

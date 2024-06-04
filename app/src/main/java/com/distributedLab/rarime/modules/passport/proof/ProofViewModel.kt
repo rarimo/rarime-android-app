@@ -16,6 +16,8 @@ import com.distributedLab.rarime.modules.passport.PassportProofState
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.passport.nfc.SODFileOwn
 import com.distributedLab.rarime.util.SecurityUtil
+import com.distributedLab.rarime.util.SendErrorUtil.saveErrorDetailsToFile
+import com.distributedLab.rarime.util.SendErrorUtil.sendErrorEmail
 import com.distributedLab.rarime.util.ZKPUseCase
 import com.distributedLab.rarime.util.ZkpUtil
 import com.distributedLab.rarime.util.data.ZkProof
@@ -36,6 +38,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey
 import org.jmrtd.lds.icao.DG15File
+import org.json.JSONObject
 import java.io.IOException
 import javax.inject.Inject
 
@@ -64,9 +67,9 @@ class ProofViewModel @Inject constructor(
     }
 
     private suspend fun registerCertificate(eDocument: EDocument) {
-        val sodStream = eDocument.sod!!.decodeHexString().inputStream()
+        val sodStream =
+            eDocument.sod?.decodeHexString()?.inputStream() ?: throw Exception("No SOD File found")
         val sodFile = SODFileOwn(sodStream)
-
 
         val certificate = SecurityUtil.convertToPEM(sodFile.docSigningCertificate)
 
@@ -113,6 +116,7 @@ class ProofViewModel @Inject constructor(
 
         val res = contractManager.checkIsTransactionSuccessful(response.data.attributes.tx_hash)
         if (!res) {
+            throw Exception("Transaction failed")
             Log.e(TAG, "Transaction failed" + response.data.attributes.tx_hash)
         }
     }
@@ -130,32 +134,41 @@ class ProofViewModel @Inject constructor(
                 ZkpUtil::registerIdentityUniversal
             )
         }
-
         this.proof = proof
 
         return proof
     }
 
-    suspend fun registerByDocument(eDocument: EDocument) {
+    suspend fun registerByDocument(eDocument: EDocument, context: Context) {
 
-        _state.value = PassportProofState.READING_DATA
+        try {
+            _state.value = PassportProofState.READING_DATA
 
-        registerCertificate(eDocument)
+            registerCertificate(eDocument)
 
-        _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
-        val proof = generateRegisterIdentityProof(eDocument)
+            _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
+            val proof = generateRegisterIdentityProof(eDocument)
 
+            _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
+            register(proof, eDocument)
 
-        _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
-        register(proof, eDocument)
+            _state.value = PassportProofState.FINALIZING
 
+            passportManager.setPassport(eDocument)
+            dataStoreManager.saveRegistrationProof(proof)
 
-        _state.value = PassportProofState.FINALIZING
-
-        passportManager.setPassport(eDocument)
-        dataStoreManager.saveRegistrationProof(proof)
-
-        delay(second * 1)
+            delay(second * 1)
+        } catch (e: Exception) {
+            val gson = Gson()
+            val eDoc = gson.toJson(eDocument)
+            Log.i("EROROR", e.toString(), e)
+            val errorDetails = JSONObject()
+            errorDetails.put("error", e.message)
+            errorDetails.put("stackTrace", e.stackTrace.joinToString("\n"))
+            errorDetails.put("eDoucument", eDoc)
+            val file = saveErrorDetailsToFile(errorDetails.toString(), context)
+            sendErrorEmail(file, context)
+        }
     }
 
     private suspend fun register(zkProof: ZkProof, eDocument: EDocument) {
@@ -165,10 +178,30 @@ class ProofViewModel @Inject constructor(
 
         val pubKeyPem = dG15File.publicKey.publicKeyToPem()
 
+        val registerContract = contractManager.getRegistration()
+        val passportInfo =
+            registerContract.getPassportInfo(zkProof.pub_signals[0].toByteArray()).send()
+
+
+        val ZERO_BYTES32 = ByteArray(32) { 0 }
+        val isUserRevoking = !passportInfo.component1().activeIdentity.contentEquals(ZERO_BYTES32)
+
+        if (isUserRevoking) {
+            Log.i("Revoke", "Passport is registered, revoking")
+        } else {
+            Log.i("Revoke", "Passport is not registered")
+        }
+
+
+
+        if (isUserRevoking) {
+            val revokationChallenge = passportInfo.component1().activeIdentity.copyOfRange(24, 32)
+        }
+
         val callDataBuilder = CallDataBuilder()
         val callData = callDataBuilder.buildRegisterCalldata(
             jsonProof.toByteArray(),
-            eDocument.aaSignature,
+            eDocument.aaSignature!!.decodeHexString(),
             pubKeyPem.toByteArray(),
             masterCertProof.root
         )

@@ -1,0 +1,1 @@
+package com.distributedLab.rarime.domain.data

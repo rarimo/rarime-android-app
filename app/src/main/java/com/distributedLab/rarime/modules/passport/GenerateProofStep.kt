@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,12 +48,13 @@ fun GenerateProofStep(
     proofViewModel: ProofViewModel = hiltViewModel()
 ) {
 
+    val context = LocalContext.current
 
     val currentState by proofViewModel.state.collectAsState()
     val processingStatus by remember { mutableStateOf(ProcessingStatus.PROCESSING) }
 
     LaunchedEffect(true) {
-        proofViewModel.registerByDocument(eDocument)
+        proofViewModel.registerByDocument(eDocument, context)
         onClose(proofViewModel.getRegistrationProof())
     }
 

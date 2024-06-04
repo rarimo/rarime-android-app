@@ -18,7 +18,6 @@ class ApiServiceRemoteData @Inject constructor(private val apiServiceManager: AP
 
         val payload =
             RegisterRequest(data = RegisterRequestData(tx_data = "0x" + callData.toHexString()))
-        Log.i("PAYLOAD", Gson().toJson(payload))
         val response = apiServiceManager.registerRequest(payload)
 
         if (response.isSuccessful) {
@@ -26,7 +25,6 @@ class ApiServiceRemoteData @Inject constructor(private val apiServiceManager: AP
         }
         return null
     }
-
 
     suspend fun getAirdropParams(): GetAirdropParamsResponse? {
         val response = apiServiceManager.airdropParams()

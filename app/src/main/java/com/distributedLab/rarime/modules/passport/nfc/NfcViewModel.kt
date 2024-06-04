@@ -69,7 +69,6 @@ class NfcViewModel @Inject constructor(private val secureSharedPrefsManager: Sec
             _state.value = ScanNFCPassportState.ERROR
             Log.e("Error", "thm wrong with nfc", e)
         }
-
     }
 
     fun setMRZ(mrzInfo: MRZInfo) {
