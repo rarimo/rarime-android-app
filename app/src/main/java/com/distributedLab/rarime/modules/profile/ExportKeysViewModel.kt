@@ -9,5 +9,5 @@ import javax.inject.Inject
 class ExportKeysViewModel @Inject constructor(
     identityManager: IdentityManager
 ) : ViewModel() {
-    val privateKey = identityManager.privateKey!!
+    val privateKey = identityManager.privateKey
 }

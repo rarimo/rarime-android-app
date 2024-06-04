@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,6 +28,7 @@ import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.InfoAlert
 import com.distributedLab.rarime.ui.components.PrimaryTextButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.decodeHexString
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
@@ -34,11 +36,10 @@ import kotlin.time.Duration.Companion.seconds
 fun ExportKeysScreen(
     onBack: () -> Unit, viewModel: ExportKeysViewModel = hiltViewModel()
 ) {
+    val privateKey = viewModel.privateKey.collectAsState()
+
     val clipboardManager = LocalClipboardManager.current
     var isCopied by remember { mutableStateOf(false) }
-    val privateKey by remember {
-        mutableStateOf(viewModel.privateKey)
-    }
 
     if (isCopied) {
         LaunchedEffect(Unit) {
@@ -52,32 +53,34 @@ fun ExportKeysScreen(
     ) {
         CardContainer {
             Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                Text(
-                    text = viewModel.privateKey!!,
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.textPrimary,
-                    modifier = Modifier
-                        .background(
-                            RarimeTheme.colors.componentPrimary, RoundedCornerShape(8.dp)
-                        )
-                        .padding(vertical = 14.dp, horizontal = 16.dp)
-                )
-                Row(
-                    horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()
-                ) {
-                    PrimaryTextButton(leftIcon = if (isCopied) R.drawable.ic_check else R.drawable.ic_copy_simple,
-                        text = if (isCopied) {
-                            stringResource(R.string.copied_text)
-                        } else {
-                            stringResource(R.string.copy_to_clipboard_btn)
-                        },
-                        onClick = {
-                            clipboardManager.setText(AnnotatedString(privateKey))
-                            isCopied = true
-                        })
+                privateKey.value?.let {
+                    Text(
+                        text = it,
+                        style = RarimeTheme.typography.body3,
+                        color = RarimeTheme.colors.textPrimary,
+                        modifier = Modifier
+                            .background(
+                                RarimeTheme.colors.componentPrimary, RoundedCornerShape(8.dp)
+                            )
+                            .padding(vertical = 14.dp, horizontal = 16.dp)
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()
+                    ) {
+                        PrimaryTextButton(leftIcon = if (isCopied) R.drawable.ic_check else R.drawable.ic_copy_simple,
+                            text = if (isCopied) {
+                                stringResource(R.string.copied_text)
+                            } else {
+                                stringResource(R.string.copy_to_clipboard_btn)
+                            },
+                            onClick = {
+                                clipboardManager.setText(AnnotatedString(it))
+                                isCopied = true
+                            })
+                    }
+                    HorizontalDivider()
+                    InfoAlert(text = stringResource(R.string.new_identity_warning))
                 }
-                HorizontalDivider()
-                InfoAlert(text = stringResource(R.string.new_identity_warning))
             }
         }
     }

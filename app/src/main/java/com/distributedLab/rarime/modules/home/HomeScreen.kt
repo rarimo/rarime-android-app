@@ -26,11 +26,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.data.enums.PassportCardLook
-import com.distributedLab.rarime.data.enums.PassportIdentifier
-import com.distributedLab.rarime.modules.passport.models.EDocument
+import com.distributedLab.rarime.modules.common.WalletAsset
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.ActionCard
 import com.distributedLab.rarime.ui.components.AppBottomSheet
@@ -56,7 +53,8 @@ fun HomeScreen(
     val passportIdentifiers by homeViewModel.passportIdentifiers
     val isIncognito by homeViewModel.isIncognito
 
-    val balance by homeViewModel.balance.collectAsState()
+    val rmoAsset = homeViewModel.rmoAsset.collectAsState()
+
     Box {
         Column(
             verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -65,7 +63,11 @@ fun HomeScreen(
                 .background(RarimeTheme.colors.backgroundPrimary)
                 .blur(if (isCongratsModalVisible) 12.dp else 0.dp)
         ) {
-            Header(balance = balance) { navigate(Screen.Main.Wallet.route) }
+
+            rmoAsset.value?.let {
+                Header(walletAsset = it) { navigate(Screen.Main.Wallet.route) }
+            }
+
             Column(
                 verticalArrangement = Arrangement.spacedBy(24.dp),
                 modifier = Modifier
@@ -100,7 +102,7 @@ fun HomeScreen(
 }
 
 @Composable
-private fun Header(balance: Double, onBalanceClick: () -> Unit = {}) {
+private fun Header(walletAsset: WalletAsset, onBalanceClick: () -> Unit = {}) {
     Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -130,7 +132,7 @@ private fun Header(balance: Double, onBalanceClick: () -> Unit = {}) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = stringResource(R.string.balance_rmo),
+                            text = stringResource(R.string.balance_rmo, walletAsset.token.symbol),
                             style = RarimeTheme.typography.body3,
                             color = RarimeTheme.colors.textSecondary
                         )
@@ -142,7 +144,7 @@ private fun Header(balance: Double, onBalanceClick: () -> Unit = {}) {
                     }
                 }
                 Text(
-                    text = NumberUtil.formatAmount(balance),
+                    text = NumberUtil.formatAmount(walletAsset.humanBalance()),
                     style = RarimeTheme.typography.h4,
                     color = RarimeTheme.colors.textPrimary
                 )
