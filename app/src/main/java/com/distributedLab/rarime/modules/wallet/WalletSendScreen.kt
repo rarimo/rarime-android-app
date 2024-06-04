@@ -46,7 +46,7 @@ fun WalletSendScreen(
     val addressState = rememberAppTextFieldState("")
     val humanAmountState = rememberAppTextFieldState("")
 
-    val rmoAsset = walletViewModel.rmoAsset.collectAsState()
+    val selectedWalletAsset = walletViewModel.selectedWalletAsset.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -59,103 +59,100 @@ fun WalletSendScreen(
             }
         )
     } else {
-        // TODO: add loader or empty view
-        rmoAsset.value?.let {
-            WalletRouteLayout(
-                headerModifier = Modifier.padding(horizontal = 20.dp),
-                title = stringResource(R.string.wallet_send_title, it.token.symbol),
-                description = stringResource(R.string.wallet_send_description, it.token.symbol),
-                onBack = onBack
+        WalletRouteLayout(
+            headerModifier = Modifier.padding(horizontal = 20.dp),
+            title = stringResource(R.string.wallet_send_title, selectedWalletAsset.value.token.symbol),
+            description = stringResource(R.string.wallet_send_description, selectedWalletAsset.value.token.symbol),
+            onBack = onBack
+        ) {
+            Column(
+                verticalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxSize()
             ) {
-                Column(
-                    verticalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    CardContainer (modifier = Modifier.padding(horizontal = 20.dp)) {
-                        Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                            AppTextField(
-                                state = addressState,
-                                label = stringResource(R.string.address_lbl),
-                                placeholder = "rarimo1...",
-                                trailingItem = {
-                                    SecondaryTextButton(
-                                        leftIcon = R.drawable.ic_qr_code,
-                                        onClick = { isQrCodeScannerOpen = true }
+                CardContainer (modifier = Modifier.padding(horizontal = 20.dp)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                        AppTextField(
+                            state = addressState,
+                            label = stringResource(R.string.address_lbl),
+                            placeholder = "rarimo1...",
+                            trailingItem = {
+                                SecondaryTextButton(
+                                    leftIcon = R.drawable.ic_qr_code,
+                                    onClick = { isQrCodeScannerOpen = true }
+                                )
+                            }
+                        )
+                        AppTextField(
+                            state = humanAmountState,
+                            label = stringResource(R.string.amount_lbl),
+                            placeholder = stringResource(R.string.amount_placeholder, selectedWalletAsset.value.token.symbol),
+                            hint = {
+                                Row(
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.available_hint),
+                                        style = RarimeTheme.typography.body4,
+                                        color = RarimeTheme.colors.textSecondary
+                                    )
+                                    Text(
+                                        text = "${selectedWalletAsset.value.balance.value.toDouble()} ${selectedWalletAsset.value.token.symbol}",
+                                        style = RarimeTheme.typography.body4,
+                                        color = RarimeTheme.colors.textPrimary
                                     )
                                 }
-                            )
-                            AppTextField(
-                                state = humanAmountState,
-                                label = stringResource(R.string.amount_lbl),
-                                placeholder = stringResource(R.string.amount_placeholder, it.token.symbol),
-                                hint = {
-                                    Row(
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.available_hint),
-                                            style = RarimeTheme.typography.body4,
-                                            color = RarimeTheme.colors.textSecondary
-                                        )
-                                        Text(
-                                            text = "${it.balance.value.toDouble()} ${it.token.symbol}",
-                                            style = RarimeTheme.typography.body4,
-                                            color = RarimeTheme.colors.textPrimary
-                                        )
-                                    }
-                                },
-                                trailingItem = {
-                                    Row(
-                                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                        modifier = Modifier
-                                            .width(64.dp)
-                                            .height(20.dp)
-                                    ) {
-                                        VerticalDivider()
-                                        SecondaryTextButton(
-                                            text = stringResource(R.string.max_btn),
-                                            // TODO: mb to human string?
-                                            onClick = { humanAmountState.updateText(it.humanBalance().toString()) }
-                                        )
-                                    }
+                            },
+                            trailingItem = {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                    modifier = Modifier
+                                        .width(64.dp)
+                                        .height(20.dp)
+                                ) {
+                                    VerticalDivider()
+                                    SecondaryTextButton(
+                                        text = stringResource(R.string.max_btn),
+                                        // TODO: mb to human string?
+                                        onClick = { humanAmountState.updateText(selectedWalletAsset.value.humanBalance().toString()) }
+                                    )
                                 }
-                            )
-                        }
-                    }
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(RarimeTheme.colors.backgroundPure)
-                            .padding(top = 12.dp, bottom = 20.dp)
-                            .padding(horizontal = 20.dp),
-                    ) {
-                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text(
-                                text = stringResource(R.string.receiver_gets),
-                                style = RarimeTheme.typography.body3,
-                                color = RarimeTheme.colors.textSecondary
-                            )
-                            Text(
-                                text = "${NumberUtil.formatAmount(humanAmountState.text.toDoubleOrNull() ?: 0.0)} ${rmoAsset.value?.token?.symbol}",
-                                style = RarimeTheme.typography.subtitle3,
-                                color = RarimeTheme.colors.textPrimary
-                            )
-                        }
-                        PrimaryButton(
-                            text = stringResource(R.string.send_btn),
-                            size = ButtonSize.Large,
-                            modifier = Modifier.width(160.dp),
-                            onClick = {
-                                coroutineScope.launch {
-                                    walletViewModel.sendTokens(addressState.text, humanAmountState.text)
-                                    walletViewModel.fetchBalance()
-                                }
-
                             }
                         )
                     }
+                }
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(RarimeTheme.colors.backgroundPure)
+                        .padding(top = 12.dp, bottom = 20.dp)
+                        .padding(horizontal = 20.dp),
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(
+                            text = stringResource(R.string.receiver_gets),
+                            style = RarimeTheme.typography.body3,
+                            color = RarimeTheme.colors.textSecondary
+                        )
+                        Text(
+                            text = "${NumberUtil.formatAmount(humanAmountState.text.toDoubleOrNull() ?: 0.0)} ${selectedWalletAsset.value?.token?.symbol}",
+                            style = RarimeTheme.typography.subtitle3,
+                            color = RarimeTheme.colors.textPrimary
+                        )
+                    }
+                    PrimaryButton(
+                        text = stringResource(R.string.send_btn),
+                        size = ButtonSize.Large,
+                        modifier = Modifier.width(160.dp),
+                        onClick = {
+                            coroutineScope.launch {
+                                walletViewModel.sendTokens(addressState.text, humanAmountState.text)
+                                walletViewModel.fetchBalance()
+                            }
+
+                        }
+                    )
                 }
             }
         }

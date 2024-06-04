@@ -17,14 +17,11 @@ import javax.inject.Inject
 class WalletSendViewModel @Inject constructor(
     private val walletManager: WalletManager,
 ) : ViewModel() {
-    // FIXME: add multiple tokens support
-    val _rmoAsset = MutableStateFlow(walletManager.walletAssets.value.find { it.token is RarimoToken })
-
-    val rmoAsset: StateFlow<WalletAsset?>
-        get() = _rmoAsset
+    var selectedWalletAsset = walletManager.selectedWalletAsset
+        private set
 
     suspend fun sendTokens(to: String, humanAmount: String) {
-        rmoAsset.value?.let { it ->
+        selectedWalletAsset.value?.let { it ->
             val bigIntAmount = NumberUtil.toBigIntAmount(humanAmount.toDouble(), it.token.decimals)
 
             withContext(Dispatchers.IO) {
@@ -35,7 +32,7 @@ class WalletSendViewModel @Inject constructor(
     }
 
     suspend fun fetchBalance() {
-        rmoAsset.value?.let {
+        selectedWalletAsset.value?.let {
             withContext(Dispatchers.IO) {
                 it.loadBalance() // TODO: does it trigger recompose?
             }

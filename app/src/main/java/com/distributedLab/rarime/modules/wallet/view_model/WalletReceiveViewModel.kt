@@ -13,11 +13,8 @@ import javax.inject.Inject
 class WalletReceiveViewModel @Inject constructor(
     private val walletManager: WalletManager,
 ) : ViewModel() {
+    var selectedWalletAsset = walletManager.selectedWalletAsset
+        private set
+
     val rarimoAddress = walletManager.rarimoAddress
-
-    // FIXME: add multiple tokens support
-    val _rmoAsset = MutableStateFlow(walletManager.walletAssets.value.find { it.token is RarimoToken })
-
-    val rmoAsset: StateFlow<WalletAsset?>
-        get() = _rmoAsset
 }

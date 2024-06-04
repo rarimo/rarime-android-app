@@ -225,7 +225,7 @@ fun WalletScreen(
                         vertical = 20.dp
                     )
             ) {
-                WalletTokensList()
+                WalletTokensList(walletViewModel)
             }
         }
     }
