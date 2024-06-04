@@ -1,10 +1,12 @@
 package com.distributedLab.rarime.modules.common
 
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import com.distributedLab.rarime.data.enums.SecurityCheckState
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.util.Constants
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,8 +21,13 @@ class SecurityManager @Inject constructor(
 
     var passcode = mutableStateOf(dataStoreManager.readPasscode())
         private set
-    var lockTimestamp = mutableLongStateOf(dataStoreManager.readLockTimestamp())
+
+    var _lockTimestamp = MutableStateFlow(dataStoreManager.readLockTimestamp())
         private set
+
+    val lockTimestamp: StateFlow<Long>
+        get() = _lockTimestamp.asStateFlow()
+
     var isScreenLocked =
         mutableStateOf(
             passcodeState.value == SecurityCheckState.ENABLED
@@ -47,7 +54,7 @@ class SecurityManager @Inject constructor(
     fun lockPasscode() {
         val timestamp =
             System.currentTimeMillis() + Constants.PASSCODE_LOCK_PERIOD.inWholeMilliseconds
-        lockTimestamp.longValue = timestamp
+        _lockTimestamp.value = timestamp
         dataStoreManager.saveLockTimestamp(timestamp)
     }
 

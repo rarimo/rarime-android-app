@@ -11,9 +11,7 @@ import javax.inject.Inject
 class LockViewModule @Inject constructor(
     private val securityManager: SecurityManager
 ) : ViewModel() {
-
-    var isScreenLocked = securityManager.isScreenLocked
-    var lockTimestamp = securityManager.lockTimestamp.longValue
+    val lockTimestamp = securityManager.lockTimestamp
 
     var passcode = securityManager.passcode
 

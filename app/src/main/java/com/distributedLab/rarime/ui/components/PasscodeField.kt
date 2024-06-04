@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -16,6 +18,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -50,23 +54,30 @@ fun PasscodeField(
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(120.dp)
+        verticalArrangement = Arrangement.Bottom
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             CodeValue(
                 value = state.text,
                 maxLength = maxLength,
                 isError = state.isError
             )
+
+            Spacer(modifier = Modifier.height(32.dp))
             Text(
                 text = state.errorMessage,
                 style = RarimeTheme.typography.caption2,
-                color = RarimeTheme.colors.errorMain,
-                textAlign = TextAlign.Center
+                color = RarimeTheme.colors.errorDark,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .alpha(if (state.errorMessage == "") 0f else 1f)
+                    .clip(RoundedCornerShape(102.dp))
+                    .background(RarimeTheme.colors.errorLight)
+                    .padding(vertical = 12.dp, horizontal = 60.dp)
             )
+            Spacer(modifier = Modifier.height(64.dp))
         }
         PasscodeKeyboard(
             value = state.text,
@@ -90,9 +101,7 @@ private fun CodeValue(
                         .width(16.dp)
                         .height(16.dp)
                         .background(
-                            if (isError) {
-                                RarimeTheme.colors.errorDark
-                            } else if (index < value.length) {
+                            if (index < value.length) {
                                 RarimeTheme.colors.primaryMain
                             } else {
                                 RarimeTheme.colors.componentPrimary

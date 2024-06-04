@@ -13,6 +13,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -30,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.base.ButtonSize
-import com.distributedLab.rarime.ui.components.AppAlertDialog
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.rememberAppTextFieldState
@@ -43,27 +43,34 @@ import kotlinx.coroutines.delay
 fun LockScreen(
     lockViewModule: LockViewModule = hiltViewModel(), onPass: () -> Unit
 ) {
-
     fun onPassHandler() {
         lockViewModule.unlockScreen()
         onPass.invoke()
     }
 
-
-
-
+    /* STATE */
     val context = LocalContext.current
-
-    var isAlertVisible by remember { mutableStateOf(false) }
     val passcodeState = rememberAppTextFieldState("")
-
+    val lockTimestamp = lockViewModule.lockTimestamp.collectAsState()
     var attemptsLeft by remember { mutableIntStateOf(Constants.MAX_PASSCODE_ATTEMPTS) }
-    var lockedTimeLeft by remember { mutableLongStateOf(lockViewModule.lockTimestamp - System.currentTimeMillis()) }
+    var lockedTimeLeft by remember { mutableLongStateOf(lockTimestamp.value - System.currentTimeMillis()) }
+    var appLockedSubtitle by remember {
+        mutableStateOf(
+            context.getString(R.string.account_locked_time_msg, String.format("%02d:%02d", 0, 0))
+        )
+    }
+
+    /* COMPUTED */
+    var isAttemptsDisabled by remember { mutableStateOf(lockedTimeLeft > 0 || attemptsLeft <= 0) }
+    LaunchedEffect(lockedTimeLeft, attemptsLeft) {
+        isAttemptsDisabled = lockedTimeLeft > 0 || attemptsLeft <= 0
+    }
 
     val isBiometricsAvailable = remember {
         BiometricUtil.isSupported(context)
     }
 
+    /* METHODS */
     fun authenticateWithBiometrics() {
         BiometricUtil.authenticate(context = context,
             title = context.getString(R.string.biometric_authentication_title),
@@ -77,14 +84,34 @@ fun LockScreen(
             onError = {})
     }
 
+    fun verifyPasscode() {
+        if (passcodeState.text == lockViewModule.passcode.value) {
+            onPass()
+        } else {
+            attemptsLeft--
+
+            passcodeState.updateText("")
+
+            if (attemptsLeft <= 0) {
+                lockViewModule.lockPasscode()
+                passcodeState.updateErrorMessage("")
+            } else {
+                passcodeState.updateErrorMessage(
+                    context.getString(R.string.attempts_left_msg, attemptsLeft.toString())
+                )
+            }
+        }
+    }
+
+    /* EFFECTS */
     LaunchedEffect(true) {
         if (lockViewModule.isBiometricEnabled && isBiometricsAvailable) {
             authenticateWithBiometrics()
         }
     }
 
-    LaunchedEffect(lockViewModule.lockTimestamp) {
-        lockedTimeLeft = lockViewModule.lockTimestamp - System.currentTimeMillis()
+    LaunchedEffect(lockTimestamp.value) {
+        lockedTimeLeft = lockTimestamp.value - System.currentTimeMillis()
         while (lockedTimeLeft > 0) {
             delay(1000)
             lockedTimeLeft -= 1000
@@ -95,53 +122,26 @@ fun LockScreen(
         if (lockedTimeLeft > 0) {
             val minutesLeft = (lockedTimeLeft / 60000) % 60
             val secondsLeft = (lockedTimeLeft / 1000) % 60
-            passcodeState.updateErrorMessage(
-                context.getString(
-                    R.string.account_locked_time_msg,
-                    String.format("%02d:%02d", minutesLeft, secondsLeft)
-                )
+            appLockedSubtitle = context.getString(
+                R.string.account_locked_time_msg,
+                String.format("%02d:%02d", minutesLeft, secondsLeft)
             )
         } else {
             attemptsLeft = Constants.MAX_PASSCODE_ATTEMPTS
-            passcodeState.updateErrorMessage("")
         }
-    }
-
-    fun verifyPasscode() {
-        if (passcodeState.text == lockViewModule.passcode.value) {
-            onPass()
-        } else {
-            attemptsLeft--
-            if (attemptsLeft == 0) {
-                lockViewModule.lockPasscode()
-            }
-
-            isAlertVisible = true
-        }
-    }
-
-    fun handleAlertDismiss() {
-        isAlertVisible = false
-        passcodeState.updateText("")
-    }
-
-    if (isAlertVisible) {
-        AppAlertDialog(title = stringResource(R.string.invalid_passcode),
-            text = if (attemptsLeft > 0) {
-                stringResource(R.string.attempts_left_msg, attemptsLeft)
-            } else {
-                stringResource(R.string.account_locked_msg)
-            },
-            confirmText = stringResource(R.string.try_again),
-            onConfirm = { handleAlertDismiss() },
-            onDismiss = { handleAlertDismiss() })
     }
 
     if (lockViewModule.isPasscodeEnabled) {
-        PasscodeScreenLayout(title = stringResource(R.string.enter_passcode_title),
+        PasscodeScreenLayout(
+            title = if (isAttemptsDisabled) stringResource(R.string.account_locked_msg) else stringResource(R.string.enter_passcode_title),
+            subtitle = if (isAttemptsDisabled) appLockedSubtitle else "",
+            iconId = if (isAttemptsDisabled) R.drawable.ic_lock else R.drawable.ic_user,
+            iconColors = if (isAttemptsDisabled) RarimeTheme.colors.baseBlack to RarimeTheme.colors.baseWhite
+            else RarimeTheme.colors.primaryMain to RarimeTheme.colors.textPrimary,
             passcodeState = passcodeState,
-            enabled = lockedTimeLeft <= 0,
-            onPasscodeFilled = { verifyPasscode() }) {
+            enabled = !isAttemptsDisabled,
+            onPasscodeFilled = { verifyPasscode() }
+        ) {
             if (lockViewModule.isBiometricEnabled && isBiometricsAvailable) {
                 Button(modifier = Modifier
                     .fillMaxWidth()

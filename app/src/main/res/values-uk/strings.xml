@@ -140,8 +140,9 @@
     <string name="try_again_msg">Будь ласка, спробуйте ще раз</string>
     <string name="biometric_lock_title">Вхід за відбитком</string>
     <string name="unlock_btn">Розблокувати</string>
-    <string name="account_locked_time_msg">Доступ заблоковано. Будь ласка, спробуйте ще раз через %1$s.</string>
-    <string name="account_locked_msg">Доступ заблоковано. Будь ласка, спробуйте пізніше.</string>
+    <string name="account_locked_title">Доступ заблоковано</string>
+    <string name="account_locked_time_msg">Ви ввели невірний пароль. час до наступної спроби %1$s.</string>
+    <string name="account_locked_msg">Доступ заблоковано.</string>
     <string name="attempts_left_msg">Залишилось спроб: %1$s</string>
     <string name="enable_biometrics_msg">Увімкніть біометрію в налаштуваннях, щоб розблокувати за допомогою відбитка</string>
     <string name="biometric_authentication_title">Вхід за відбитком</string>
