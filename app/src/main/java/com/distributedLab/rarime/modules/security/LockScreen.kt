@@ -2,19 +2,18 @@ package com.distributedLab.rarime.modules.security
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -23,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -50,22 +48,29 @@ fun LockScreen(
         onPass.invoke()
     }
 
+    /* STATE */
     val context = LocalContext.current
-
-    var attemptsLeft by remember { mutableIntStateOf(Constants.MAX_PASSCODE_ATTEMPTS) }
-    var lockedTimeLeft by remember { mutableLongStateOf(lockViewModule.lockTimestamp - System.currentTimeMillis()) }
-
     val passcodeState = rememberAppTextFieldState("")
+    val lockTimestamp = lockViewModule.lockTimestamp.collectAsState()
+    var attemptsLeft by remember { mutableIntStateOf(Constants.MAX_PASSCODE_ATTEMPTS) }
+    var lockedTimeLeft by remember { mutableLongStateOf(lockTimestamp.value - System.currentTimeMillis()) }
     var appLockedSubtitle by remember {
         mutableStateOf(
             context.getString(R.string.account_locked_time_msg, String.format("%02d:%02d", 0, 0))
         )
     }
 
+    /* COMPUTED */
+    var isAttemptsDisabled by remember { mutableStateOf(lockedTimeLeft > 0 || attemptsLeft <= 0) }
+    LaunchedEffect(lockedTimeLeft, attemptsLeft) {
+        isAttemptsDisabled = lockedTimeLeft > 0 || attemptsLeft <= 0
+    }
+
     val isBiometricsAvailable = remember {
         BiometricUtil.isSupported(context)
     }
 
+    /* METHODS */
     fun authenticateWithBiometrics() {
         BiometricUtil.authenticate(context = context,
             title = context.getString(R.string.biometric_authentication_title),
@@ -79,14 +84,34 @@ fun LockScreen(
             onError = {})
     }
 
+    fun verifyPasscode() {
+        if (passcodeState.text == lockViewModule.passcode.value) {
+            onPass()
+        } else {
+            attemptsLeft--
+
+            passcodeState.updateText("")
+
+            if (attemptsLeft <= 0) {
+                lockViewModule.lockPasscode()
+                passcodeState.updateErrorMessage("")
+            } else {
+                passcodeState.updateErrorMessage(
+                    context.getString(R.string.attempts_left_msg, attemptsLeft.toString())
+                )
+            }
+        }
+    }
+
+    /* EFFECTS */
     LaunchedEffect(true) {
         if (lockViewModule.isBiometricEnabled && isBiometricsAvailable) {
             authenticateWithBiometrics()
         }
     }
 
-    LaunchedEffect(lockViewModule.lockTimestamp) {
-        lockedTimeLeft = lockViewModule.lockTimestamp - System.currentTimeMillis()
+    LaunchedEffect(lockTimestamp.value) {
+        lockedTimeLeft = lockTimestamp.value - System.currentTimeMillis()
         while (lockedTimeLeft > 0) {
             delay(1000)
             lockedTimeLeft -= 1000
@@ -103,62 +128,18 @@ fun LockScreen(
             )
         } else {
             attemptsLeft = Constants.MAX_PASSCODE_ATTEMPTS
-            passcodeState.updateErrorMessage("")
-        }
-    }
-
-    fun verifyPasscode() {
-        if (passcodeState.text == lockViewModule.passcode.value) {
-            onPass()
-        } else {
-            attemptsLeft--
-
-            if (attemptsLeft == 0) {
-                lockViewModule.lockPasscode()
-            }
-
-            passcodeState.updateText("")
-            passcodeState.updateErrorMessage(
-                context.getString(R.string.attempts_left_msg, attemptsLeft.toString())
-            )
         }
     }
 
     if (lockViewModule.isPasscodeEnabled) {
         PasscodeScreenLayout(
-            title = run {
-                if (lockedTimeLeft > 0)
-                    stringResource(R.string.account_locked_msg)
-                else
-                    stringResource(R.string.enter_passcode_title)
-            },
-            subtitle = run {
-                if (lockedTimeLeft > 0)
-                    appLockedSubtitle
-                else
-                    ""
-            },
-            iconComponent = {
-                if (lockedTimeLeft > 0) {
-                    Box(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .fillMaxSize()
-                            .background(RarimeTheme.colors.baseBlack),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        AppIcon(
-                            id = R.drawable.ic_lock,
-                            size = 28.dp,
-                            tint = RarimeTheme.colors.baseWhite
-                        )
-                    }
-                } else {
-                    null
-                }
-            },
+            title = if (isAttemptsDisabled) stringResource(R.string.account_locked_msg) else stringResource(R.string.enter_passcode_title),
+            subtitle = if (isAttemptsDisabled) appLockedSubtitle else "",
+            iconId = if (isAttemptsDisabled) R.drawable.ic_lock else R.drawable.ic_user,
+            iconColors = if (isAttemptsDisabled) RarimeTheme.colors.baseBlack to RarimeTheme.colors.baseWhite
+            else RarimeTheme.colors.primaryMain to RarimeTheme.colors.textPrimary,
             passcodeState = passcodeState,
-            enabled = lockedTimeLeft <= 0,
+            enabled = !isAttemptsDisabled,
             onPasscodeFilled = { verifyPasscode() }
         ) {
             if (lockViewModule.isBiometricEnabled && isBiometricsAvailable) {

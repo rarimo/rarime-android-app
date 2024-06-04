@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,7 +39,8 @@ fun PasscodeScreenLayout(
     onPasscodeFilled: () -> Unit,
     enabled: Boolean = true,
     onClose: (() -> Unit)? = null,
-    iconComponent: @Composable() (() -> Unit)? = null,
+    iconId: Int = R.drawable.ic_user,
+    iconColors: Pair<Color, Color> = RarimeTheme.colors.primaryMain to RarimeTheme.colors.textPrimary,
     action: @Composable () -> Unit = {}
 ) {
     Box(
@@ -68,22 +70,18 @@ fun PasscodeScreenLayout(
                     .zIndex(1f),
                 contentAlignment = Alignment.Center,
             ) {
-                if (iconComponent == null) {
-                    Box(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .fillMaxSize()
-                            .background(RarimeTheme.colors.primaryMain),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        AppIcon(
-                            id = R.drawable.ic_user,
-                            size = 28.dp,
-                            tint = RarimeTheme.colors.textPrimary
-                        )
-                    }
-                } else {
-                    iconComponent()
+                Box(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .fillMaxSize()
+                        .background(iconColors.first),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    AppIcon(
+                        id = iconId,
+                        size = 28.dp,
+                        tint = iconColors.second
+                    )
                 }
             }
             Column(
