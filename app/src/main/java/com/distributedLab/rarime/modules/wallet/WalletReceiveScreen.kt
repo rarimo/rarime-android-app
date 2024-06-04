@@ -45,7 +45,7 @@ fun WalletReceiveScreen(
     val clipboardManager = LocalClipboardManager.current
     var isCopied by remember { mutableStateOf(false) }
 
-    val address = walletViewModel.rarimoAddress
+    val address = walletViewModel.userAddress
 
     val selectedWalletAsset = walletViewModel.selectedWalletAsset.collectAsState()
 

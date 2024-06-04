@@ -7,6 +7,7 @@ import identity.Profile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import org.web3j.crypto.Credentials
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -37,6 +38,12 @@ class IdentityManager @Inject constructor(
     val rarimoAddress: String by lazy {
         _privateKey.value?.let {
             _profiler.value.rarimoAddress
+        } ?: ""
+    }
+
+    val evmAddress: String by lazy {
+        _privateKey.value?.let {
+            Credentials.create(privateKey.value)?.address
         } ?: ""
     }
 

@@ -46,7 +46,7 @@ data class WalletAssetJSON(
     val transactions: List<Transaction>
 )
 
-class WalletAsset(private val userAddress: String, val token: Token) {
+class WalletAsset(val userAddress: String, val token: Token) {
     var balance = mutableStateOf(BigInteger.ZERO)
 
     var transactions = mutableStateOf(listOf<Transaction>())
@@ -96,7 +96,7 @@ class WalletManager @Inject constructor(
                     )
                 ),
                 WalletAsset(
-                    "", // TODO: get eth addr
+                    identityManager.evmAddress,
                     Erc20Token("0x0000000000000000000000000000000000000000")
                 )
             )
