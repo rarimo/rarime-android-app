@@ -3,14 +3,12 @@ package com.distributedLab.rarime.data.tokens
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.ChainInfo
 import com.distributedLab.rarime.domain.data.CosmosTransferResponse
-import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.manager.ApiServiceRemoteData
+import com.distributedLab.rarime.modules.common.IdentityManager
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.modules.wallet.models.TransactionState
 import com.distributedLab.rarime.util.DateFormatType
-import com.distributedLab.rarime.util.decodeHexString
 import com.google.gson.Gson
-import identity.Profile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.math.BigInteger
@@ -22,7 +20,7 @@ import javax.inject.Inject
 
 class RarimoToken @Inject constructor(
     val chainInfo: ChainInfo,
-    private val dataStoreManager: SecureSharedPrefsManager,
+    private val identityManager: IdentityManager,
     private val apiServiceManager: ApiServiceRemoteData,
     address: String = ""
 ) : Token(address) {
@@ -53,12 +51,8 @@ class RarimoToken @Inject constructor(
     }
 
     override suspend fun transfer(to: String, amount: BigInteger): Transaction {
-        val privateKey = dataStoreManager.readPrivateKey()!!.decodeHexString()
-
-        val profile = Profile().newProfile(privateKey)
-
         val response = withContext(Dispatchers.IO) {
-            profile.walletSend(
+            identityManager.profiler?.value?.walletSend(
                 to,
                 amount.toString(),
                 chainInfo.chainId,

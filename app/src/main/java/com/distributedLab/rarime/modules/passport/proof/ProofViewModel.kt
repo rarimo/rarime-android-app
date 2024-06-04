@@ -11,6 +11,7 @@ import com.distributedLab.rarime.domain.data.ProofTx
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.manager.ApiServiceRemoteData
 import com.distributedLab.rarime.manager.ContractManager
+import com.distributedLab.rarime.modules.common.IdentityManager
 import com.distributedLab.rarime.modules.common.PassportManager
 import com.distributedLab.rarime.modules.passport.PassportProofState
 import com.distributedLab.rarime.modules.passport.models.EDocument
@@ -47,8 +48,11 @@ class ProofViewModel @Inject constructor(
     private val dataStoreManager: SecureSharedPrefsManager,
     private val passportManager: PassportManager,
     private val apiService: ApiServiceRemoteData,
-    private val contractManager: ContractManager
+    private val contractManager: ContractManager,
+    private val identityManager: IdentityManager,
 ) : AndroidViewModel(application) {
+    val privateKeyBytes = identityManager.privateKeyBytes
+
     private val TAG = ProofViewModel::class.java.simpleName
     private val zkp = ZKPUseCase(application as Context)
     private lateinit var proof: ZkProof
@@ -180,7 +184,6 @@ class ProofViewModel @Inject constructor(
     }
 
     private suspend fun buildRegistrationCircuits(eDocument: EDocument): ByteArray {
-        val secretKey = dataStoreManager.readPrivateKey()
         val sodStream = eDocument.sod!!.decodeHexString().inputStream()
         val sodFile = SODFileOwn(sodStream)
         val dg15 = eDocument.dg15!!.decodeHexString()
@@ -218,7 +221,7 @@ class ProofViewModel @Inject constructor(
         val signature = sodFile.encryptedDigest
 
         val identityProfile = Profile()
-        val profile = identityProfile.newProfile(secretKey!!.decodeHexString())
+        val profile = identityProfile.newProfile(privateKeyBytes)
 
         val dg15PublicKey = dG15File.publicKey
         Log.i("DG15File", dg15PublicKey::class.java.name)

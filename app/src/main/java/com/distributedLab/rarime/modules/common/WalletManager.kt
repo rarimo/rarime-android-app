@@ -81,23 +81,17 @@ class WalletManager @Inject constructor(
     private val context: Context,
     private val dataStoreManager: SecureSharedPrefsManager,
     private val contractManager: ContractManager,
-    private val apiServiceManager: ApiServiceRemoteData
+    private val apiServiceManager: ApiServiceRemoteData,
+    private val identityManager: IdentityManager,
 ) {
-    val rarimoAddress: String by lazy {
-        val privateKey = dataStoreManager.readPrivateKey()
-        privateKey?.let {
-            Profile().newProfile(it.decodeHexString()).rarimoAddress
-        } ?: ""
-    }
-
     private var _walletAssets = MutableStateFlow(
         dataStoreManager.readWalletAssets(
             listOf(
                 WalletAsset(
-                    rarimoAddress,
+                    identityManager.rarimoAddress,
                     RarimoToken(
                         BaseConfig.RARIMO_CHAINS[RarimoChains.MainnetBeta.chainId]!!, // FIXME: !!
-                        dataStoreManager,
+                        identityManager,
                         apiServiceManager,
                     )
                 ),
@@ -207,10 +201,7 @@ class WalletManager @Inject constructor(
     }
 
     private suspend fun airDrop(zkProof: ZkProof) {
-        val secretKey = dataStoreManager.readPrivateKey()!!.decodeHexString()
-        val profile = Profile().newProfile(secretKey)
-
-        val rarimoAddress = profile.rarimoAddress
+        val rarimoAddress = identityManager.rarimoAddress
 
         Log.i("airDrop", Gson().toJson(zkProof))
 
@@ -235,10 +226,9 @@ class WalletManager @Inject constructor(
         if (isAirdropClaimed.value) return
         val eDocument = dataStoreManager.readEDocument()!!
         val registrationProof = dataStoreManager.readRegistrationProof()!!
-        val privateKey = dataStoreManager.readPrivateKey()!!.decodeHexString()
 
         withContext(Dispatchers.Default) {
-            val proof = generateAirdropQueryProof(registrationProof, eDocument, privateKey)
+            val proof = generateAirdropQueryProof(registrationProof, eDocument, identityManager.privateKeyBytes!!)
 
             airDrop(proof)
 

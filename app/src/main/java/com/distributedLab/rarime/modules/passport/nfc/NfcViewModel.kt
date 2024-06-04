@@ -4,9 +4,8 @@ import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
+import com.distributedLab.rarime.modules.common.IdentityManager
 import com.distributedLab.rarime.modules.passport.models.EDocument
-import com.distributedLab.rarime.util.decodeHexString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,8 +19,9 @@ enum class ScanNFCPassportState {
 }
 
 @HiltViewModel
-class NfcViewModel @Inject constructor(private val secureSharedPrefsManager: SecureSharedPrefsManager) :
-    ViewModel() {
+class NfcViewModel @Inject constructor(
+    private val identityManager: IdentityManager,
+) : ViewModel() {
     private val TAG = "NfcViewModel"
     private lateinit var mrzInfo: MRZInfo
     private lateinit var bacKey: BACKey
@@ -51,9 +51,11 @@ class NfcViewModel @Inject constructor(private val secureSharedPrefsManager: Sec
 
         val isoDep = IsoDep.get(tag)
         isoDep.timeout = 5000
-        val privateKey = secureSharedPrefsManager.readPrivateKey()!!.decodeHexString()
+
+        val privateKeyBytes = identityManager.privateKeyBytes
+
         bacKey = BACKey(passportNumber, birthDate, expirationDate)
-        scanNfcUseCase = NfcUseCase(isoDep, bacKey, privateKey)
+        scanNfcUseCase = NfcUseCase(isoDep, bacKey, privateKeyBytes!!)
     }
 
     fun resetState() {

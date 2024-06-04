@@ -26,9 +26,7 @@ import org.jmrtd.lds.icao.DG1File
 import org.jmrtd.lds.icao.DG2File
 import org.jmrtd.lds.iso19794.FaceImageInfo
 import java.io.InputStream
-import java.math.BigInteger
 import java.security.MessageDigest
-import java.security.PrivateKey
 import java.security.Security
 import java.util.Arrays
 
