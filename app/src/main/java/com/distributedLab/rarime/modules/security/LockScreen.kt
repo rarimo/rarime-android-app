@@ -2,11 +2,13 @@ package com.distributedLab.rarime.modules.security
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -21,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -30,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.base.ButtonSize
-import com.distributedLab.rarime.ui.components.AppAlertDialog
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.rememberAppTextFieldState
@@ -43,22 +45,22 @@ import kotlinx.coroutines.delay
 fun LockScreen(
     lockViewModule: LockViewModule = hiltViewModel(), onPass: () -> Unit
 ) {
-
     fun onPassHandler() {
         lockViewModule.unlockScreen()
         onPass.invoke()
     }
 
-
-
-
     val context = LocalContext.current
-
-    var isAlertVisible by remember { mutableStateOf(false) }
-    val passcodeState = rememberAppTextFieldState("")
 
     var attemptsLeft by remember { mutableIntStateOf(Constants.MAX_PASSCODE_ATTEMPTS) }
     var lockedTimeLeft by remember { mutableLongStateOf(lockViewModule.lockTimestamp - System.currentTimeMillis()) }
+
+    val passcodeState = rememberAppTextFieldState("")
+    var appLockedSubtitle by remember {
+        mutableStateOf(
+            context.getString(R.string.account_locked_time_msg, String.format("%02d:%02d", 0, 0))
+        )
+    }
 
     val isBiometricsAvailable = remember {
         BiometricUtil.isSupported(context)
@@ -95,11 +97,9 @@ fun LockScreen(
         if (lockedTimeLeft > 0) {
             val minutesLeft = (lockedTimeLeft / 60000) % 60
             val secondsLeft = (lockedTimeLeft / 1000) % 60
-            passcodeState.updateErrorMessage(
-                context.getString(
-                    R.string.account_locked_time_msg,
-                    String.format("%02d:%02d", minutesLeft, secondsLeft)
-                )
+            appLockedSubtitle = context.getString(
+                R.string.account_locked_time_msg,
+                String.format("%02d:%02d", minutesLeft, secondsLeft)
             )
         } else {
             attemptsLeft = Constants.MAX_PASSCODE_ATTEMPTS
@@ -112,36 +112,55 @@ fun LockScreen(
             onPass()
         } else {
             attemptsLeft--
+
             if (attemptsLeft == 0) {
                 lockViewModule.lockPasscode()
             }
 
-            isAlertVisible = true
+            passcodeState.updateText("")
+            passcodeState.updateErrorMessage(
+                context.getString(R.string.attempts_left_msg, attemptsLeft.toString())
+            )
         }
     }
 
-    fun handleAlertDismiss() {
-        isAlertVisible = false
-        passcodeState.updateText("")
-    }
-
-    if (isAlertVisible) {
-        AppAlertDialog(title = stringResource(R.string.invalid_passcode),
-            text = if (attemptsLeft > 0) {
-                stringResource(R.string.attempts_left_msg, attemptsLeft)
-            } else {
-                stringResource(R.string.account_locked_msg)
-            },
-            confirmText = stringResource(R.string.try_again),
-            onConfirm = { handleAlertDismiss() },
-            onDismiss = { handleAlertDismiss() })
-    }
-
     if (lockViewModule.isPasscodeEnabled) {
-        PasscodeScreenLayout(title = stringResource(R.string.enter_passcode_title),
+        PasscodeScreenLayout(
+            title = run {
+                if (lockedTimeLeft > 0)
+                    stringResource(R.string.account_locked_msg)
+                else
+                    stringResource(R.string.enter_passcode_title)
+            },
+            subtitle = run {
+                if (lockedTimeLeft > 0)
+                    appLockedSubtitle
+                else
+                    ""
+            },
+            iconComponent = {
+                if (lockedTimeLeft > 0) {
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .fillMaxSize()
+                            .background(RarimeTheme.colors.baseBlack),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        AppIcon(
+                            id = R.drawable.ic_lock,
+                            size = 28.dp,
+                            tint = RarimeTheme.colors.baseWhite
+                        )
+                    }
+                } else {
+                    null
+                }
+            },
             passcodeState = passcodeState,
             enabled = lockedTimeLeft <= 0,
-            onPasscodeFilled = { verifyPasscode() }) {
+            onPasscodeFilled = { verifyPasscode() }
+        ) {
             if (lockViewModule.isBiometricEnabled && isBiometricsAvailable) {
                 Button(modifier = Modifier
                     .fillMaxWidth()
