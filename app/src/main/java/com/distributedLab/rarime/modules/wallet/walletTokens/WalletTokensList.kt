@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun WalletTokensList(walletViewModel: WalletViewModel) {
     val userAssets by walletViewModel.walletAssets.collectAsState()
-    val userAsset by walletViewModel.selectedWalletAsset.collectAsState()
+    val selectedUserAsset by walletViewModel.selectedWalletAsset.collectAsState()
 
     val configuration = LocalConfiguration.current
 
@@ -54,8 +54,8 @@ fun WalletTokensList(walletViewModel: WalletViewModel) {
         scrollState.animateScrollToItem(index)
     }
 
-    LaunchedEffect(userAsset) {
-        scrollToTokenByIndex(userAssets.indexOf(userAsset))
+    LaunchedEffect(selectedUserAsset) {
+        scrollToTokenByIndex(userAssets.indexOf(selectedUserAsset))
     }
 
     val halfScreenWidth = configuration.screenWidthDp / 2

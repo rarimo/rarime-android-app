@@ -26,7 +26,7 @@ class WalletSendViewModel @Inject constructor(
 
             withContext(Dispatchers.IO) {
                 it.token.transfer(to, BigInteger.valueOf(bigIntAmount.toLong()))
-                it.loadBalance() // TODO: does it trigger recompose?
+                it.loadBalance()
             }
         }
     }
@@ -34,7 +34,7 @@ class WalletSendViewModel @Inject constructor(
     suspend fun fetchBalance() {
         selectedWalletAsset.value?.let {
             withContext(Dispatchers.IO) {
-                it.loadBalance() // TODO: does it trigger recompose?
+                it.loadBalance()
             }
         }
     }

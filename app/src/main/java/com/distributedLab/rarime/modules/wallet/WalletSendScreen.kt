@@ -74,7 +74,7 @@ fun WalletSendScreen(
                         AppTextField(
                             state = addressState,
                             label = stringResource(R.string.address_lbl),
-                            placeholder = "rarimo1...",
+                            placeholder = selectedWalletAsset.value.userAddress.substring(0, 7) + "...",
                             trailingItem = {
                                 SecondaryTextButton(
                                     leftIcon = R.drawable.ic_qr_code,
