@@ -117,6 +117,11 @@
     <string name="transactions_title">Транзакції</string>
     <string name="wallet_send_title">Надіcлати %1$s</string>
     <string name="wallet_send_description">Відправляйте ваші токени %1$s на інший гаманець</string>
+
+    <string name="rewards_screen_title">Винагороди</string>
+    <string name="rewards_claim_btn">Забрати</string>
+    <string name="rewards_amount_overline_tooltip">Lorem ipsum dolor sit amet concestetur</string>
+
     <string name="rewards_stub_title">Стартуємо у липні</string>
     <string name="rewards_stub_description">Програма винагород дозволить вам отримувати щотижневі Airdrop\'и.\n\nВи зможете отримати додаткові винагороди, використовуючи анонімні докази RariMe з іншими програмами екосистеми.</string>
     <string name="terms_of_use">Умови використання</string>
