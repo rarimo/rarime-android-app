@@ -31,14 +31,17 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.rewards.components.RewardAmountPreview
+import com.distributedLab.rarime.modules.rewards.components.RewardsLeaderBoard
 import com.distributedLab.rarime.modules.rewards.view_models.RewardsViewModel
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.AppSkeleton
 import com.distributedLab.rarime.ui.components.CardContainer
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.base.BaseTooltip
+import com.distributedLab.rarime.ui.components.AppBottomSheet
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.UiLinearProgressBar
+import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.NumberUtil
 
@@ -48,6 +51,8 @@ fun RewardsScreen(
     rewardsViewModel: RewardsViewModel = hiltViewModel()
 ) {
     val pointsWalletAsset = rewardsViewModel.pointsWalletAsset
+
+    val sheetState = rememberAppSheetState()
 
     Column (
         modifier = Modifier
@@ -72,6 +77,7 @@ fun RewardsScreen(
                     .clip(RoundedCornerShape(100.dp))
                     .background(RarimeTheme.colors.warningLighter)
                     .padding(vertical = 4.dp, horizontal = 9.dp)
+                    .clickable { sheetState.show() }
             ) {
                 AppIcon(
                     id = R.drawable.ic_trophy,
@@ -218,7 +224,7 @@ fun RewardsScreen(
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    TimeEVentsList(
+                    TimeEventsList(
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -243,10 +249,15 @@ fun RewardsScreen(
             }
         }
     }
+
+
+    AppBottomSheet(state = sheetState, fullScreen = true) { hide ->
+        RewardsLeaderBoard()
+    }
 }
 
 @Composable
-fun TimeEVentsList(
+fun TimeEventsList(
     modifier: Modifier = Modifier
 ) {
     val limitedTimeEvents = listOf(
