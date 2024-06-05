@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.rewards
+package com.distributedLab.rarime.modules.rewards.view_models
 
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.modules.common.WalletManager

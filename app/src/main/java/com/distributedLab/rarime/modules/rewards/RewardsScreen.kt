@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.modules.rewards.view_models.RewardsViewModel
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.AppSkeleton
 import com.distributedLab.rarime.ui.components.CardContainer
