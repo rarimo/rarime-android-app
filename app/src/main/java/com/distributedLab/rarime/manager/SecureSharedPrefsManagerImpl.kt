@@ -4,18 +4,22 @@ import android.app.Application
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.data.enums.AppColorScheme
 import com.distributedLab.rarime.data.enums.AppLanguage
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.PassportIdentifier
 import com.distributedLab.rarime.data.enums.SecurityCheckState
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
+import com.distributedLab.rarime.modules.common.WalletAsset
+import com.distributedLab.rarime.modules.common.WalletAssetJSON
 import com.distributedLab.rarime.util.LocaleUtil
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.util.data.ZkProof
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.math.BigInteger
 import javax.inject.Inject
 
 
@@ -32,10 +36,10 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "PASSPORT_IDENTIFIERS" to "PASSPORT_IDENTIFIERS",
         "COLOR_SCHEME" to "COLOR_SCHEME",
         "LANGUAGE" to "LANGUAGE",
-        "WALLET_BALANCE" to "WALLET_BALANCE",
         "PASSCODE" to "PASSCODE",
         "LOCK_TIMESTAMP" to "LOCK_TIMESTAMP",
-        "WALLET_BALANCE" to "WALLET_BALANCE",
+        "WALLET_ASSETS" to "WALLET_ASSETS",
+        "SELECTED_WALLET_ASSET" to "SELECTED_WALLET_ASSET",
         "E_DOCUMENT" to "E_DOCUMENT",
         "PRIVATE_KEY" to "PRIVATE_KEY",
         "REGISTRATION_PROOF" to "REGISTRATION_PROOF",
@@ -194,14 +198,54 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         editor.apply()
     }
 
-    override fun readWalletBalance(): Double {
-        return getSharedPreferences().getString(accessTokens["WALLET_BALANCE"], "0.0")?.toDouble()
-            ?: 0.0
+    override fun readWalletAssets(assetsToPopulate: List<WalletAsset>): List<WalletAsset> {
+        val jsonWalletAssets =
+            getSharedPreferences().getString(accessTokens["WALLET_ASSETS"], null) ?: return assetsToPopulate
+        val listType = object : TypeToken<List<WalletAsset?>?>() {}.type
+
+        try {
+            val parsedWalletAssets = Gson().fromJson<List<WalletAssetJSON>>(jsonWalletAssets, listType)
+
+            return assetsToPopulate.map {
+                val walletAsset = parsedWalletAssets.find { asset -> asset.tokenSymbol == it.token.symbol }
+
+                if (walletAsset != null) {
+                    it.balance.value = BigInteger(walletAsset.balance)
+                    it.transactions.value = walletAsset.transactions
+                }
+                it
+            }
+        } catch (e: Exception) {
+            return assetsToPopulate
+        }
     }
 
-    override fun saveWalletBalance(balance: Double) {
+    override fun saveWalletAssets(walletAssets: List<WalletAsset>) {
         val editor = getEditor()
-        editor.putString(accessTokens["WALLET_BALANCE"], balance.toString())
+        val jsonBalances = Gson().toJson(walletAssets.map { it.toJSON() })
+        editor.putString(accessTokens["WALLET_ASSETS"], jsonBalances)
+        editor.apply()
+    }
+
+    override fun readSelectedWalletAsset(walletAssets: List<WalletAsset>): WalletAsset {
+        val jsonWalletAsset = getSharedPreferences().getString(accessTokens["SELECTED_WALLET_ASSET"], walletAssets.first().toJSON())
+
+        val walletAssetType = object : TypeToken<WalletAsset?>() {}.type
+
+        try {
+            val parsedWalletAsset = Gson().fromJson<WalletAssetJSON>(jsonWalletAsset, walletAssetType)
+
+            val walletAsset = walletAssets.find { it.token.symbol == parsedWalletAsset.tokenSymbol }
+
+            return walletAsset ?: walletAssets.first()
+        } catch (error: Exception) {
+            return walletAssets.first()
+        }
+    }
+
+    override fun saveSelectedWalletAsset(walletAsset: WalletAsset) {
+        val editor = getEditor()
+        editor.putString(accessTokens["SELECTED_WALLET_ASSET"], walletAsset.toJSON())
         editor.apply()
     }
 

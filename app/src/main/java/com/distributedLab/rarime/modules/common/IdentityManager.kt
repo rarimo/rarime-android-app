@@ -1,12 +1,13 @@
 package com.distributedLab.rarime.modules.common
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.util.decodeHexString
 import identity.Identity
 import identity.Profile
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import org.web3j.crypto.Credentials
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,33 +16,45 @@ import javax.inject.Singleton
 class IdentityManager @Inject constructor(
     private val dataStoreManager: SecureSharedPrefsManager
 ) {
+    private val _privateKey = MutableStateFlow(dataStoreManager.readPrivateKey())
 
+    val privateKey: StateFlow<String?>
+        get() = _privateKey.asStateFlow()
 
-    private var profiler: Profile? = null
-    fun getProfiler(): Profile {
-        if (profiler == null) {
+    val privateKeyBytes: ByteArray?
+        get() = _privateKey.value?.decodeHexString()
 
-            profiler = Profile().newProfile(privateKey!!.decodeHexString())
-            return profiler!!
+    private val _profiler = MutableStateFlow(Profile().newProfile(privateKeyBytes))
+
+    val profiler: StateFlow<Profile>
+        get() {
+            if (_profiler == null) {
+                // FIXME: setting in getter
+                _profiler.value = Profile().newProfile(privateKeyBytes)
+            }
+            return _profiler.asStateFlow()
         }
 
-        return profiler!!
+    val rarimoAddress: String by lazy {
+        _privateKey.value?.let {
+            _profiler.value.rarimoAddress
+        } ?: ""
     }
 
-    var privateKey by mutableStateOf(dataStoreManager.readPrivateKey())
-        private set
+    val evmAddress: String by lazy {
+        _privateKey.value?.let {
+            Credentials.create(privateKey.value)?.address
+        } ?: ""
+    }
 
 
     @OptIn(ExperimentalStdlibApi::class)
     fun newPrivateKey() : String {
-        privateKey = Identity.newBJJSecretKey().toHexString()
-        return privateKey!!
+        _privateKey.value = Identity.newBJJSecretKey().toHexString()
+        return privateKey.value!!
     }
 
     fun savePrivateKey() {
-        dataStoreManager.savePrivateKey(privateKey!!)
+        privateKey.value?.let { dataStoreManager.savePrivateKey(it) }
     }
-
-    val did: String
-        get() = getProfiler().rarimoAddress
 }

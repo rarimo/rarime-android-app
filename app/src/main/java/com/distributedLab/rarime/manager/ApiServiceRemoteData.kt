@@ -20,9 +20,12 @@ class ApiServiceRemoteData @Inject constructor(private val apiServiceManager: AP
             RegisterRequest(data = RegisterRequestData(tx_data = "0x" + callData.toHexString()))
         val response = apiServiceManager.registerRequest(payload)
 
+
         if (response.isSuccessful) {
             return response.body()!!
         }
+        Log.i("AIRDROP PARAMS", response.errorBody()?.string().toString())
+
         return null
     }
 

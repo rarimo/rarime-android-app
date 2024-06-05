@@ -5,10 +5,13 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.data.RarimoChains
+import com.distributedLab.rarime.data.tokens.Erc20Token
+import com.distributedLab.rarime.data.tokens.RarimoToken
+import com.distributedLab.rarime.data.tokens.Token
 import com.distributedLab.rarime.domain.data.AirdropRequest
 import com.distributedLab.rarime.domain.data.AirdropRequestAttributes
 import com.distributedLab.rarime.domain.data.AirdropRequestData
-import com.distributedLab.rarime.domain.data.CosmosTransferResponse
 import com.distributedLab.rarime.domain.data.ProofTxFull
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.manager.ApiServiceRemoteData
@@ -31,38 +34,104 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
+import java.math.BigInteger
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.seconds
+
+data class WalletAssetJSON(
+    val tokenSymbol: String,
+    val balance: String,
+    val transactions: List<Transaction>
+)
+
+class WalletAsset(val userAddress: String, val token: Token) {
+    var balance = mutableStateOf(BigInteger.ZERO)
+
+    var transactions = mutableStateOf(listOf<Transaction>())
+
+    fun toJSON(): String {
+        return Gson().toJson(
+            WalletAssetJSON(
+                tokenSymbol = token.symbol,
+                balance = balance.value.toString(),
+                transactions = transactions.value
+            )
+        )
+    }
+
+    suspend fun loadBalance() {
+        balance.value = token.balanceOf(userAddress)
+    }
+
+    suspend fun loadTransactions() {
+        transactions.value = listOf()
+    }
+
+    fun humanBalance(): Double {
+        return balance.value.divide(
+            BigInteger.TEN.pow(token.decimals)
+        ).toDouble()
+    }
+}
 
 @Singleton
 class WalletManager @Inject constructor(
     private val context: Context,
     private val dataStoreManager: SecureSharedPrefsManager,
     private val contractManager: ContractManager,
-    private val apiServiceManager: ApiServiceRemoteData
+    private val apiServiceManager: ApiServiceRemoteData,
+    private val identityManager: IdentityManager,
 ) {
+    private var _walletAssets = MutableStateFlow(
+        dataStoreManager.readWalletAssets(
+            listOf(
+                WalletAsset(
+                    identityManager.rarimoAddress,
+                    RarimoToken(
+                        BaseConfig.RARIMO_CHAINS[RarimoChains.MainnetBeta.chainId]!!, // FIXME: !!
+                        identityManager,
+                        apiServiceManager,
+                    )
+                ),
+                WalletAsset(
+                    identityManager.evmAddress,
+                    Erc20Token("0x0000000000000000000000000000000000000000")
+                )
+            )
+        )
+    )
+    val walletAssets: StateFlow<List<WalletAsset>>
+        get() = _walletAssets.asStateFlow()
 
-    private var _transactions = MutableStateFlow(dataStoreManager.readTransactions())
-    private var _balance = MutableStateFlow(dataStoreManager.readWalletBalance())
+    private val _selectedWalletAsset = MutableStateFlow(dataStoreManager.readSelectedWalletAsset(walletAssets.value))
 
-    val balance: StateFlow<Double>
-        get() = _balance.asStateFlow()
+    val selectedWalletAsset: StateFlow<WalletAsset>
+        get() = _selectedWalletAsset.asStateFlow()
 
-    private var isAirdropClaimed = mutableStateOf(false)
+    fun setSelectedWalletAsset(walletAsset: WalletAsset) {
+        _selectedWalletAsset.value = walletAsset
+        Log.i("setSelectedWalletAsset", _selectedWalletAsset.value.toJSON())
 
-    val transactions: StateFlow<List<Transaction>>
-        get() = _transactions.asStateFlow()
-
-
-    val address: String by lazy {
-        val privateKey = dataStoreManager.readPrivateKey()
-        privateKey?.let {
-            Profile().newProfile(it.decodeHexString()).rarimoAddress
-        } ?: ""
+        dataStoreManager.saveSelectedWalletAsset(walletAsset)
     }
 
+    suspend fun loadBalances() {
+        withContext(Dispatchers.IO) {
+            _walletAssets.value.forEach {
+                it.token.loadDetails()
+
+                // TODO: Promise.all
+                it.loadBalance()
+                it.loadTransactions()
+            }
+
+            dataStoreManager.saveWalletAssets(_walletAssets.value)
+        }
+    }
+
+    private var isAirdropClaimed = mutableStateOf(false)
 
     private suspend fun generateAirdropQueryProof(
         registrationProof: ZkProof, eDocument: EDocument, privateKey: ByteArray
@@ -132,10 +201,7 @@ class WalletManager @Inject constructor(
     }
 
     private suspend fun airDrop(zkProof: ZkProof) {
-        val secretKey = dataStoreManager.readPrivateKey()!!.decodeHexString()
-        val profile = Profile().newProfile(secretKey)
-
-        val rarimoAddress = profile.rarimoAddress
+        val rarimoAddress = identityManager.rarimoAddress
 
         Log.i("airDrop", Gson().toJson(zkProof))
 
@@ -156,31 +222,17 @@ class WalletManager @Inject constructor(
         }
     }
 
-    private fun refreshTransactions() {
-        _transactions.value = dataStoreManager.readTransactions()
-    }
-
-    private suspend fun fetchBalance(): String {
-        return withContext(Dispatchers.IO) {
-            val balance = apiServiceManager.fetchBalance(address)
-            (balance!!.balances.first().amount.toDouble() / 1000000).toString()
-        }
-    }
-
     suspend fun claimAirdrop() {
         if (isAirdropClaimed.value) return
         val eDocument = dataStoreManager.readEDocument()!!
         val registrationProof = dataStoreManager.readRegistrationProof()!!
-        val privateKey = dataStoreManager.readPrivateKey()!!.decodeHexString()
 
         withContext(Dispatchers.Default) {
-            val proof = generateAirdropQueryProof(registrationProof, eDocument, privateKey)
+            val proof = generateAirdropQueryProof(registrationProof, eDocument, identityManager.privateKeyBytes!!)
 
             airDrop(proof)
 
             delay(10.seconds)
-            _balance.value = fetchBalance().toDouble()
-            dataStoreManager.saveWalletBalance(_balance.value)
 
             val transaction = Transaction(
                 id = 1,
@@ -191,40 +243,13 @@ class WalletManager @Inject constructor(
                 state = TransactionState.INCOMING
             )
 
-
+            // FIXME: use tx from token and remove transaction key from store
             dataStoreManager.addTransaction(transaction)
 
-            refreshTransactions()
+            loadBalances()
             isAirdropClaimed.value = true
         }
 
 
     }
-
-    suspend fun refreshBalance() {
-        withContext(Dispatchers.IO) {
-            val amount = fetchBalance()
-            _balance.value = amount.toDouble()
-            dataStoreManager.saveWalletBalance(amount.toDouble())
-        }
-    }
-
-    suspend fun sendTokens(destination: String, amount: String): CosmosTransferResponse {
-        val privateKey = dataStoreManager.readPrivateKey()!!.decodeHexString()
-
-        val profile = Profile().newProfile(privateKey)
-
-        val response = withContext(Dispatchers.IO) {
-            profile.walletSend(
-                destination, amount, BaseConfig.CHAIN_ID, BaseConfig.DENOM, BaseConfig.RPC_IP
-            ).toString()
-        }
-
-
-
-
-        return Gson().fromJson(response, CosmosTransferResponse::class.java)
-    }
-
-
 }

@@ -76,7 +76,7 @@ fun ProfileScreen(
                         Text(
                             text = stringResource(
                                 R.string.user_address,
-                                WalletUtil.formatAddress(viewModel.address)
+                                WalletUtil.formatAddress(viewModel.rarimoAddress)
                             ),
                             style = RarimeTheme.typography.body4,
                             color = RarimeTheme.colors.textSecondary

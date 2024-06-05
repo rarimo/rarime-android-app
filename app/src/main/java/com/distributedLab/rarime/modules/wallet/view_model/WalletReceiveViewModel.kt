@@ -7,7 +7,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WalletReceiveViewModel @Inject constructor(
-    private val walletManager: WalletManager,
+    private val walletManager: WalletManager
 ) : ViewModel() {
-    val address = walletManager.address
+    var selectedWalletAsset = walletManager.selectedWalletAsset
+        private set
+
+    val userAddress = selectedWalletAsset.value.userAddress
 }

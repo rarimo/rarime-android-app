@@ -63,10 +63,11 @@ class APIModule {
         @ApplicationContext context: Context,
         dataStoreManager: SecureSharedPrefsManager,
         contractManager: ContractManager,
-        apiServiceManager: ApiServiceRemoteData
+        apiServiceManager: ApiServiceRemoteData,
+        identityManager: IdentityManager
     ): WalletManager {
         return WalletManager(
-            context, dataStoreManager, contractManager, apiServiceManager
+            context, dataStoreManager, contractManager, apiServiceManager, identityManager
         )
     }
 

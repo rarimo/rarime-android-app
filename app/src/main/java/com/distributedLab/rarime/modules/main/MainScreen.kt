@@ -14,6 +14,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -53,6 +54,7 @@ import com.distributedLab.rarime.util.AppIconUtil
 import com.distributedLab.rarime.util.Constants
 import com.distributedLab.rarime.util.LocaleUtil
 import com.distributedLab.rarime.util.Screen
+import kotlinx.coroutines.launch
 
 val mainRoutes = listOf(
     Screen.Main.Home.route,
@@ -65,6 +67,14 @@ val LocalMainViewModel = compositionLocalOf<MainViewModel> { error("No MainViewM
 
 @Composable
 fun MainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            mainViewModel.loadBalances()
+        }
+    }
+
     CompositionLocalProvider(LocalMainViewModel provides mainViewModel) {
         MainScreenContent()
     }

@@ -11,6 +11,7 @@ import com.distributedLab.rarime.domain.data.ProofTx
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.manager.ApiServiceRemoteData
 import com.distributedLab.rarime.manager.ContractManager
+import com.distributedLab.rarime.modules.common.IdentityManager
 import com.distributedLab.rarime.modules.common.PassportManager
 import com.distributedLab.rarime.modules.passport.PassportProofState
 import com.distributedLab.rarime.modules.passport.models.EDocument
@@ -28,6 +29,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import identity.CallDataBuilder
+import identity.Identity
 import identity.Profile
 import identity.X509Util
 import kotlinx.coroutines.Dispatchers
@@ -50,8 +52,11 @@ class ProofViewModel @Inject constructor(
     private val dataStoreManager: SecureSharedPrefsManager,
     private val passportManager: PassportManager,
     private val apiService: ApiServiceRemoteData,
-    private val contractManager: ContractManager
+    private val contractManager: ContractManager,
+    private val identityManager: IdentityManager,
 ) : AndroidViewModel(application) {
+    val privateKeyBytes = identityManager.privateKeyBytes
+
     private val TAG = ProofViewModel::class.java.simpleName
     private val zkp = ZKPUseCase(application as Context)
     private lateinit var proof: ZkProof
@@ -66,7 +71,7 @@ class ProofViewModel @Inject constructor(
         return proof
     }
 
-    private suspend fun registerCertificate(eDocument: EDocument) {
+    suspend fun registerCertificate(eDocument: EDocument) {
         val sodStream =
             eDocument.sod?.decodeHexString()?.inputStream() ?: throw Exception("No SOD File found")
         val sodFile = SODFileOwn(sodStream)
@@ -121,7 +126,7 @@ class ProofViewModel @Inject constructor(
         }
     }
 
-    private suspend fun generateRegisterIdentityProof(eDocument: EDocument): ZkProof {
+    suspend fun generateRegisterIdentityProof(eDocument: EDocument): ZkProof {
         val inputs = buildRegistrationCircuits(eDocument)
 
         Log.i("INPUTS", inputs.decodeToString())
@@ -140,7 +145,6 @@ class ProofViewModel @Inject constructor(
     }
 
     suspend fun registerByDocument(eDocument: EDocument, context: Context) {
-
         try {
             _state.value = PassportProofState.READING_DATA
 
@@ -150,12 +154,11 @@ class ProofViewModel @Inject constructor(
             val proof = generateRegisterIdentityProof(eDocument)
 
             _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
-            register(proof, eDocument)
+            //register(proof, eDocument)
 
             _state.value = PassportProofState.FINALIZING
 
-            passportManager.setPassport(eDocument)
-            dataStoreManager.saveRegistrationProof(proof)
+            saveData(proof, eDocument)
 
             delay(second * 1)
         } catch (e: Exception) {
@@ -171,17 +174,50 @@ class ProofViewModel @Inject constructor(
         }
     }
 
-    private suspend fun register(zkProof: ZkProof, eDocument: EDocument) {
-        val jsonProof = Gson().toJson(zkProof)
+    suspend fun revoke(eDocument: EDocument, zkProof: ZkProof) {
 
-        val dG15File = DG15File(eDocument.dg15!!.decodeHexString().inputStream())
-
-        val pubKeyPem = dG15File.publicKey.publicKeyToPem()
 
         val registerContract = contractManager.getRegistration()
-        val passportInfo =
-            registerContract.getPassportInfo(zkProof.pub_signals[0].toByteArray()).send()
+        val passportInfo = withContext(Dispatchers.IO) {
+            registerContract.getPassportInfo(Identity.bigIntToBytes(zkProof.pub_signals[0]))
+                .send()
+        }
 
+        val identityKey = passportInfo.component1().activeIdentity
+        val signature = eDocument.aaSignature
+        val callDataBuilder = CallDataBuilder()
+
+
+        val dg15 = eDocument.dg15!!.decodeHexString()
+        val dG15File = DG15File(dg15.inputStream())
+
+        val calldata = callDataBuilder.buildRevoceCalldata(
+            identityKey,
+            signature!!.decodeHexString(),
+            dG15File.publicKey.publicKeyToPem().toByteArray(),
+        )
+
+        val res = withContext(Dispatchers.IO) {
+            val response = apiService.sendRegistration(calldata)
+            contractManager.checkIsTransactionSuccessful(response!!.data.attributes.tx_hash)
+        }
+
+        if (!res) {
+            throw Exception("Transaction failed")
+        }
+    }
+
+    fun saveData(proof: ZkProof, eDocument: EDocument) {
+        passportManager.setPassport(eDocument)
+        dataStoreManager.saveRegistrationProof(proof)
+    }
+
+    suspend fun checkRevokation(zkProof: ZkProof): ByteArray? {
+        val registerContract = contractManager.getRegistration()
+        Log.i("pub_signals[0]", zkProof.pub_signals[0].toByteArray().size.toString())
+        val passportInfo = withContext(Dispatchers.IO) {
+            registerContract.getPassportInfo(Identity.bigIntToBytes(zkProof.pub_signals[0])).send()
+        }
 
         val ZERO_BYTES32 = ByteArray(32) { 0 }
         val isUserRevoking = !passportInfo.component1().activeIdentity.contentEquals(ZERO_BYTES32)
@@ -192,18 +228,33 @@ class ProofViewModel @Inject constructor(
             Log.i("Revoke", "Passport is not registered")
         }
 
-
-
         if (isUserRevoking) {
             val revokationChallenge = passportInfo.component1().activeIdentity.copyOfRange(24, 32)
+
+            return revokationChallenge
         }
 
+        return null
+    }
+
+    suspend fun register(zkProof: ZkProof, eDocument: EDocument, isRevoked: Boolean) {
+
+
+        val jsonProof = Gson().toJson(zkProof)
+
+        val dG15File = DG15File(eDocument.dg15!!.decodeHexString().inputStream())
+
+        val pubKeyPem = dG15File.publicKey.publicKeyToPem()
+
+
         val callDataBuilder = CallDataBuilder()
+        Log.i("eDocument.aaSignature", eDocument.aaSignature!!)
         val callData = callDataBuilder.buildRegisterCalldata(
             jsonProof.toByteArray(),
             eDocument.aaSignature!!.decodeHexString(),
             pubKeyPem.toByteArray(),
-            masterCertProof.root
+            masterCertProof.root,
+            isRevoked
         )
 
         withContext(Dispatchers.IO) {
@@ -213,7 +264,6 @@ class ProofViewModel @Inject constructor(
     }
 
     private suspend fun buildRegistrationCircuits(eDocument: EDocument): ByteArray {
-        val secretKey = dataStoreManager.readPrivateKey()
         val sodStream = eDocument.sod!!.decodeHexString().inputStream()
         val sodFile = SODFileOwn(sodStream)
         val dg15 = eDocument.dg15!!.decodeHexString()
@@ -251,7 +301,7 @@ class ProofViewModel @Inject constructor(
         val signature = sodFile.encryptedDigest
 
         val identityProfile = Profile()
-        val profile = identityProfile.newProfile(secretKey!!.decodeHexString())
+        val profile = identityProfile.newProfile(privateKeyBytes)
 
         val dg15PublicKey = dG15File.publicKey
         Log.i("DG15File", dg15PublicKey::class.java.name)

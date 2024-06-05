@@ -84,7 +84,7 @@
     <string name="passport_look_black">Чорна</string>
     <string name="passport_look_white">Біла</string>
     <string name="years_old">%1$s років</string>
-    <string name="balance_rmo">Баланс: RMO</string>
+    <string name="balance_rmo">Баланс: %1$s</string>
     <string name="other_passport_card_description">Доєднатися до очікування</string>
     <string name="rarime_card_title">RARIME</string>
     <string name="rarime_card_description">Дізнатися більше про додаток RariMe</string>
@@ -100,12 +100,12 @@
     <string name="airdrop_tx_title">Airdrop</string>
     <string name="scan_qr_title">QR сканер</string>
     <string name="scan_qr_description">Помістіть QR-код у рамку для сканування</string>
-    <string name="wallet_receive_title">Отримати RMO</string>
-    <string name="wallet_receive_description">Використовуйте цей QR-код або адресу гаманця, щоб внести токен RMO на свій рахунок</string>
+    <string name="wallet_receive_title">Отримати %1$s</string>
+    <string name="wallet_receive_description">Використовуйте цей QR-код або адресу гаманця, щоб внести токен %1$s на свій рахунок</string>
     <string name="deposit_address_lbl">Ваша адреса Rarimo</string>
     <string name="address_lbl">Адреса</string>
     <string name="amount_lbl">Сума</string>
-    <string name="amount_placeholder">Уведіть суму у RMO</string>
+    <string name="amount_placeholder">Уведіть суму у %1$s</string>
     <string name="available_hint">Доступно:</string>
     <string name="max_btn">МАКС</string>
     <string name="receiver_gets">Буде отримано</string>
@@ -115,8 +115,8 @@
     <string name="available_rmo">Доступно RMO</string>
     <string name="receive_btn">Отримати</string>
     <string name="transactions_title">Транзакції</string>
-    <string name="wallet_send_title">Надіcлати RMO</string>
-    <string name="wallet_send_description">Відправляйте ваші токени RMO на інший гаманець</string>
+    <string name="wallet_send_title">Надіcлати %1$s</string>
+    <string name="wallet_send_description">Відправляйте ваші токени %1$s на інший гаманець</string>
     <string name="rewards_stub_title">Стартуємо у липні</string>
     <string name="rewards_stub_description">Програма винагород дозволить вам отримувати щотижневі Airdrop\'и.\n\nВи зможете отримати додаткові винагороди, використовуючи анонімні докази RariMe з іншими програмами екосистеми.</string>
     <string name="terms_of_use">Умови використання</string>

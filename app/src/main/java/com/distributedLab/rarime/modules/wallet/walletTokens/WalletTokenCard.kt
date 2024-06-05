@@ -21,10 +21,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.BaseConfig
+import com.distributedLab.rarime.modules.common.WalletAsset
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.NumberUtil
 
 @Composable
-fun WalletTokenCard() {
+fun WalletTokenCard(walletAsset: WalletAsset) {
     Row (
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -49,7 +51,7 @@ fun WalletTokenCard() {
             )
 
             Text(
-                text = "Total " + BaseConfig.DENOM,
+                text = walletAsset.token.symbol,
                 style = RarimeTheme.typography.body3,
                 color = RarimeTheme.colors.textSecondary
             )
@@ -60,12 +62,12 @@ fun WalletTokenCard() {
             horizontalAlignment = Alignment.End
         ) {
             Text(
-                text = "3",
+                text = NumberUtil.formatAmount(walletAsset.humanBalance()),
                 color = RarimeTheme.colors.textPrimary,
                 style = RarimeTheme.typography.subtitle4
             )
             Text(
-                text = "---",
+                text = "---", // TODO: add $ equivalent
                 color = RarimeTheme.colors.textSecondary,
                 style = RarimeTheme.typography.caption3
             )
@@ -76,5 +78,6 @@ fun WalletTokenCard() {
 @Preview
 @Composable
 private fun WalletTokenCardPreview() {
-    WalletTokenCard()
+//    TODO: implement this
+//    WalletTokenCard()
 }

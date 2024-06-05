@@ -1,6 +1,7 @@
 package com.distributedLab.rarime.modules.passport
 
 import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -9,23 +10,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.distributedLab.rarime.modules.passport.models.EDocument
+import com.distributedLab.rarime.modules.passport.nfc.NfcViewModel
 import com.distributedLab.rarime.util.data.ZkProof
 import org.jmrtd.lds.icao.MRZInfo
 
 private enum class ScanPassportState {
-    SCAN_MRZ, READ_NFC, PASSPORT_DATA, GENERATE_PROOF, CLAIM_TOKENS
+    SCAN_MRZ, READ_NFC, PASSPORT_DATA, GENERATE_PROOF, CLAIM_TOKENS, REVOKE
 }
 
 @Composable
 fun ScanPassportScreen(
-    onClose: () -> Unit
+    onClose: () -> Unit,
+    nfcViewModel: NfcViewModel = viewModel(LocalContext.current as ComponentActivity)
 ) {
     var state by remember { mutableStateOf(ScanPassportState.SCAN_MRZ) }
     var mrzData: MRZInfo? by remember { mutableStateOf(null) }
     var eDocument: EDocument? by remember { mutableStateOf(null) }
     var registrationProof: ZkProof? by remember { mutableStateOf(null) }
+    var revocationChallenge: ByteArray? by remember { mutableStateOf(null) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         when (state) {
@@ -44,7 +50,7 @@ fun ScanPassportScreen(
                     onNext = {
                         eDocument = it
                         state = ScanPassportState.PASSPORT_DATA
-                    }, onClose = onClose, mrzInfo = mrzData!!
+                    }, onClose = onClose, mrzInfo = mrzData!!, nfcViewModel = nfcViewModel
                 )
             }
 
@@ -60,13 +66,18 @@ fun ScanPassportScreen(
                 GenerateProofStep(onClose = {
                     registrationProof = it
                     state = ScanPassportState.CLAIM_TOKENS
-                }, eDocument = eDocument!!)
+                },
+                    eDocument = eDocument!!,
+                    nfcViewModel = nfcViewModel
+                )
+            }
+
+            ScanPassportState.REVOKE -> {
+                RevokeStep(challenge = revocationChallenge!!, onClose = {})
             }
 
             ScanPassportState.CLAIM_TOKENS -> {
                 ClaimTokensStep(
-//                    registrationProof = registrationProof!!,
-//                    eDocument = eDocument!!,
                     onFinish = onClose
                 )
             }

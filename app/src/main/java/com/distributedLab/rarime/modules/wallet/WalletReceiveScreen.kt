@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,7 +45,9 @@ fun WalletReceiveScreen(
     val clipboardManager = LocalClipboardManager.current
     var isCopied by remember { mutableStateOf(false) }
 
-    val address = walletViewModel.address
+    val address = walletViewModel.userAddress
+
+    val selectedWalletAsset = walletViewModel.selectedWalletAsset.collectAsState()
 
     LaunchedEffect(isCopied) {
         if (isCopied) {
@@ -55,8 +58,8 @@ fun WalletReceiveScreen(
 
     WalletRouteLayout(
         headerModifier = Modifier.padding(horizontal = 20.dp),
-        title = stringResource(R.string.wallet_receive_title),
-        description = stringResource(R.string.wallet_receive_description),
+        title = stringResource(R.string.wallet_receive_title, selectedWalletAsset.value.token.symbol),
+        description = stringResource(R.string.wallet_receive_description, selectedWalletAsset.value.token.symbol),
         onBack = onBack
     ) {
         CardContainer(

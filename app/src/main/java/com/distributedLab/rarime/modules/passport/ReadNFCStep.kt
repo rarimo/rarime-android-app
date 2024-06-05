@@ -37,7 +37,7 @@ fun ReadNFCStep(
     mrzInfo: MRZInfo,
     onNext: (eDocument: EDocument) -> Unit,
     onClose: () -> Unit,
-    nfcViewModel: NfcViewModel = viewModel(LocalContext.current as ComponentActivity)
+    nfcViewModel: NfcViewModel
 ) {
 
     val state by nfcViewModel.state.collectAsState()
@@ -123,5 +123,7 @@ private fun ReadNFCStepPreview() {
     val mrzInfo = MRZInfo(
         "P", "NNN", "", "", "", "NNN", "", Gender.UNSPECIFIED, "", ""
     )
-    ReadNFCStep(mrzInfo, onNext = {}, onClose = {})
+    val nfcViewModel: NfcViewModel = viewModel(LocalContext.current as ComponentActivity)
+
+    ReadNFCStep(mrzInfo, onNext = {}, onClose = {}, nfcViewModel)
 }
