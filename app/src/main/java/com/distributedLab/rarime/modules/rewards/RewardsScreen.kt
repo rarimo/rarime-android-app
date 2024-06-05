@@ -56,9 +56,10 @@ fun RewardsScreen(
         Row (
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = stringResource(R.string.transactions_title),
+                text = stringResource(R.string.rewards_screen_title),
                 style = RarimeTheme.typography.subtitle3,
                 color = RarimeTheme.colors.textPrimary
             )
