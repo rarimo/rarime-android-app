@@ -9,5 +9,5 @@ import javax.inject.Inject
 class RewardsViewModel @Inject constructor(
     private val walletManager: WalletManager,
 ): ViewModel() {
-    val selectedWalletAsset = walletManager.selectedWalletAsset
+    val pointsWalletAsset = walletManager.walletAssets.value.find { it.token.symbol == "RRMO" }!!
 }

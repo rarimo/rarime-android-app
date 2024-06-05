@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,11 +16,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.RichTooltip
 import androidx.compose.material3.RichTooltipColors
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,7 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.AppSkeleton
@@ -42,10 +39,15 @@ import com.distributedLab.rarime.ui.base.BaseTooltip
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.UiLinearProgressBar
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.NumberUtil
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RewardsScreen() {
+fun RewardsScreen(
+    rewardsViewModel: RewardsViewModel = hiltViewModel()
+) {
+    val pointsWalletAsset = rewardsViewModel.pointsWalletAsset
+
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -121,13 +123,13 @@ fun RewardsScreen() {
                                 iconColor = RarimeTheme.colors.textSecondary,
                             ) {
                                 Text(
-                                    text = "Reserved RMO",
+                                    text = pointsWalletAsset.token.name,
                                     color = RarimeTheme.colors.textSecondary,
                                     style = RarimeTheme.typography.body3,
                                 )
                             }
                             Text(
-                                text = "210",
+                                text = NumberUtil.formatAmount(pointsWalletAsset.humanBalance()),
                                 color = RarimeTheme.colors.textPrimary,
                                 style = RarimeTheme.typography.h4,
                             )

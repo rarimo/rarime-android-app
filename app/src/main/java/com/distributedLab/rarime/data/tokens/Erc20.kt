@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.data.tokens
 
+import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.modules.wallet.models.TransactionState
 import java.math.BigInteger
@@ -11,6 +12,7 @@ class Erc20Token(address: String) : Token(address) {
     override var name: String = ""
     override var symbol: String = ""
     override var decimals: Int = 0
+    override var icon: Int = R.drawable.ic_metamask
 
     override suspend fun loadDetails(): Unit {
         this.name = "Erc20Token"

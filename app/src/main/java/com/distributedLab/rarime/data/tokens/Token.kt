@@ -8,6 +8,7 @@ abstract class Token(var address: String) {
     abstract var name: String
     abstract var symbol: String
     abstract var decimals: Int
+    abstract var icon: Int
 
     abstract suspend fun loadDetails()
 

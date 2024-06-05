@@ -7,6 +7,7 @@ import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.RarimoChains
 import com.distributedLab.rarime.data.tokens.Erc20Token
+import com.distributedLab.rarime.data.tokens.PointsToken
 import com.distributedLab.rarime.data.tokens.RarimoToken
 import com.distributedLab.rarime.data.tokens.Token
 import com.distributedLab.rarime.domain.data.AirdropRequest
@@ -98,6 +99,10 @@ class WalletManager @Inject constructor(
                 WalletAsset(
                     identityManager.evmAddress,
                     Erc20Token("0x0000000000000000000000000000000000000000")
+                ),
+                WalletAsset(
+                    identityManager.rarimoAddress,
+                    PointsToken()
                 )
             )
         )
