@@ -1,6 +1,8 @@
 package com.distributedLab.rarime.modules.rewards
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,15 +27,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.AppSkeleton
 import com.distributedLab.rarime.ui.components.CardContainer
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.base.BaseTooltip
+import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.UiLinearProgressBar
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
@@ -77,104 +83,221 @@ fun RewardsScreen() {
 
         Spacer(modifier = Modifier.height(22.dp))
 
-        CardContainer() {
-            Column (
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row (
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Column (
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        BaseTooltip (
-                            tooltipContent = {
-                                RichTooltip(
-                                    text = {
-                                        Text(
-                                            text = stringResource(id = R.string.rewards_amount_overline_tooltip),
-                                            style = RarimeTheme.typography.body3,
-                                            color = RarimeTheme.colors.textSecondary,
-                                        )
-                                    },
-                                    colors = RichTooltipColors(
-                                        containerColor = RarimeTheme.colors.baseWhite,
-                                        contentColor = RarimeTheme.colors.textPrimary,
-                                        titleContentColor = RarimeTheme.colors.textPrimary,
-                                        actionContentColor = RarimeTheme.colors.textPrimary,
-                                    ),
-                                )
-                            },
-                            iconColor = RarimeTheme.colors.textSecondary,
-                        ) {
-                            Text(
-                                text = "Reserved RMO",
-                                color = RarimeTheme.colors.textSecondary,
-                                style = RarimeTheme.typography.body3,
-                            )
-                        }
-                        Text(
-                            text = "210",
-                            color = RarimeTheme.colors.textPrimary,
-                            style = RarimeTheme.typography.h4,
-                        )
-                    }
-
-                    PrimaryButton(
-                        text = stringResource(R.string.rewards_claim_btn),
-                        leftIcon = R.drawable.ic_swap,
-                        onClick = {},
-                    )
-                }
-
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            CardContainer() {
                 Column (
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row (
-                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Row (
-                            modifier = Modifier
-                                .padding(0.dp)
-                                .clickable { /* TODO */ },
+                        Column (
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
+                            BaseTooltip (
+                                tooltipContent = {
+                                    RichTooltip(
+                                        text = {
+                                            Text(
+                                                text = stringResource(id = R.string.rewards_amount_overline_tooltip),
+                                                style = RarimeTheme.typography.body3,
+                                                color = RarimeTheme.colors.textSecondary,
+                                            )
+                                        },
+                                        colors = RichTooltipColors(
+                                            containerColor = RarimeTheme.colors.baseWhite,
+                                            contentColor = RarimeTheme.colors.textPrimary,
+                                            titleContentColor = RarimeTheme.colors.textPrimary,
+                                            actionContentColor = RarimeTheme.colors.textPrimary,
+                                        ),
+                                    )
+                                },
+                                iconColor = RarimeTheme.colors.textSecondary,
+                            ) {
+                                Text(
+                                    text = "Reserved RMO",
+                                    color = RarimeTheme.colors.textSecondary,
+                                    style = RarimeTheme.typography.body3,
+                                )
+                            }
                             Text(
-                                text = "Level 2",
-                                style = RarimeTheme.typography.subtitle5,
+                                text = "210",
                                 color = RarimeTheme.colors.textPrimary,
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            AppIcon(
-                                id = R.drawable.ic_caret_right,
-                                size = 16.dp,
+                                style = RarimeTheme.typography.h4,
                             )
                         }
 
-                        Text(
-                            text = "110/300",
-                            color = RarimeTheme.colors.textSecondary,
+                        PrimaryButton(
+                            text = stringResource(R.string.rewards_claim_btn),
+                            leftIcon = R.drawable.ic_swap,
+                            onClick = {},
                         )
                     }
 
-                    UiLinearProgressBar(
-                        percentage = 0.36f,
-                        trackColors = listOf(
-                            RarimeTheme.colors.primaryMain,
-                            RarimeTheme.colors.primaryDark,
-                            RarimeTheme.colors.primaryDarker,
-                        ),
-                        backgroundModifier = Modifier
-                            .fillMaxWidth()
-                            .height(8.dp)
-                            .clip(RoundedCornerShape(100.dp)),
+                    Column (
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row (
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row (
+                                modifier = Modifier
+                                    .padding(0.dp)
+                                    .clickable { /* TODO */ },
+                            ) {
+                                Text(
+                                    text = "Level 2",
+                                    style = RarimeTheme.typography.subtitle5,
+                                    color = RarimeTheme.colors.textPrimary,
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                AppIcon(
+                                    id = R.drawable.ic_caret_right,
+                                    size = 16.dp,
+                                )
+                            }
+
+                            Text(
+                                text = "110/300",
+                                color = RarimeTheme.colors.textSecondary,
+                            )
+                        }
+
+                        UiLinearProgressBar(
+                            percentage = 0.36f,
+                            trackColors = listOf(
+                                RarimeTheme.colors.primaryMain,
+                                RarimeTheme.colors.primaryDark,
+                                RarimeTheme.colors.primaryDarker,
+                            ),
+                            backgroundModifier = Modifier
+                                .fillMaxWidth()
+                                .height(8.dp)
+                                .clip(RoundedCornerShape(100.dp)),
+                        )
+                    }
+                }
+            }
+
+            CardContainer() {
+                Column {
+                    Row (
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Box (
+                            modifier = Modifier
+                                .width(24.dp)
+                                .height(24.dp)
+                                .clip(RoundedCornerShape(100.dp))
+                                .background(RarimeTheme.colors.warningLight),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "\uD83D\uDD25"
+                            )
+                        }
+                        Text(
+                            text = "Limited time events",
+                            style = RarimeTheme.typography.subtitle3
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    TimeEVentsList(
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun TimeEVentsList(
+    modifier: Modifier = Modifier
+) {
+    val limitedTimeEvents = listOf(
+        "Limited time event 1",
+        "Limited time event 2",
+    )
+
+    Column (
+        modifier = modifier
+    ) {
+        limitedTimeEvents.forEachIndexed { idx, item ->
+            TimeEventItem()
+
+            if (idx != limitedTimeEvents.size - 1) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun TimeEventItem() {
+    Row (
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Image(
+//            painter = rememberAsyncImagePainter("https://images.unsplash.com/photo-1717263608216-51a63715d209?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),
+            painter = painterResource(id = R.drawable.event_stub),
+            contentDescription = "Limited time event",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .width(64.dp)
+                .height(64.dp)
+                .clip(RoundedCornerShape(8.dp)),
+        )
+
+        Column (
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(
+                text = "Limited time event Limited time event Limited time event",
+                style = RarimeTheme.typography.subtitle4,
+                color = RarimeTheme.colors.textPrimary,
+            )
+
+            Row (
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box (
+                    modifier = Modifier
+                        .border(
+                            width = 1.dp,
+                            color = RarimeTheme.colors.textSecondary,
+                            shape = RoundedCornerShape(100.dp),
+                        )
+                        .padding(vertical = 2.dp, horizontal = 8.dp)
+                ) {
+                    Text (
+                        text = "+50 ra", // TODO: token icon
+                        style = RarimeTheme.typography.subtitle5,
+                        color = RarimeTheme.colors.textSecondary,
+                    )
+                }
+
+                Text(
+                    text = "2 days left",
+                    style = RarimeTheme.typography.caption2,
+                    color = RarimeTheme.colors.textSecondary,
+                )
             }
         }
     }
