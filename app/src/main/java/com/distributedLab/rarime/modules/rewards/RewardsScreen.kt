@@ -2,7 +2,6 @@ package com.distributedLab.rarime.modules.rewards
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.modules.rewards.components.RewardAmountPreview
 import com.distributedLab.rarime.modules.rewards.view_models.RewardsViewModel
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.AppSkeleton
@@ -391,27 +391,6 @@ fun ActiveTaskItem(
                 )
             }
         }
-    }
-}
-
-@Composable
-fun RewardAmountPreview(
-    modifier: Modifier = Modifier
-) {
-    Box (
-        modifier = modifier
-            .border(
-                width = 1.dp,
-                color = RarimeTheme.colors.textSecondary,
-                shape = RoundedCornerShape(100.dp),
-            )
-            .padding(vertical = 2.dp, horizontal = 8.dp)
-    ) {
-        Text (
-            text = "+50 ra", // TODO: token icon
-            style = RarimeTheme.typography.subtitle5,
-            color = RarimeTheme.colors.textSecondary,
-        )
     }
 }
 

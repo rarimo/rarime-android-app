@@ -3,7 +3,9 @@ package com.distributedLab.rarime.modules.wallet
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,9 +20,10 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 @Composable
 fun WalletRouteLayout(
     headerModifier: Modifier = Modifier,
-    title: String,
-    description: String,
+    title: String = "",
+    description: String = "",
     onBack: () -> Unit,
+    action: @Composable () -> Unit = {},
     content: @Composable () -> Unit
 ) {
     Column(
@@ -34,21 +37,35 @@ fun WalletRouteLayout(
             modifier = headerModifier,
             verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
-            PrimaryTextButton(
-                leftIcon = R.drawable.ic_caret_left,
-                onClick = onBack
-            )
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    text = title,
-                    style = RarimeTheme.typography.subtitle2,
-                    color = RarimeTheme.colors.textPrimary
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                PrimaryTextButton(
+                    leftIcon = R.drawable.ic_caret_left,
+                    onClick = onBack
                 )
-                Text(
-                    text = description,
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.textSecondary
-                )
+
+                action()
+            }
+            if (title.isNotEmpty() || description.isNotEmpty()) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (title.isNotEmpty()) {
+                        Text(
+                            text = title,
+                            style = RarimeTheme.typography.subtitle2,
+                            color = RarimeTheme.colors.textPrimary
+                        )
+                    }
+
+                    if (description.isNotEmpty()) {
+                        Text(
+                            text = description,
+                            style = RarimeTheme.typography.body3,
+                            color = RarimeTheme.colors.textSecondary
+                        )
+                    }
+                }
             }
         }
         content()
