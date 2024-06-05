@@ -219,6 +219,24 @@ fun RewardsScreen() {
                     )
                 }
             }
+
+            CardContainer() {
+                Column {
+                    Row (
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            text = "Active Tasks",
+                            style = RarimeTheme.typography.subtitle3
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    ActiveTasksList()
+                }
+            }
         }
     }
 }
@@ -277,21 +295,7 @@ fun TimeEventItem() {
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Box (
-                    modifier = Modifier
-                        .border(
-                            width = 1.dp,
-                            color = RarimeTheme.colors.textSecondary,
-                            shape = RoundedCornerShape(100.dp),
-                        )
-                        .padding(vertical = 2.dp, horizontal = 8.dp)
-                ) {
-                    Text (
-                        text = "+50 ra", // TODO: token icon
-                        style = RarimeTheme.typography.subtitle5,
-                        color = RarimeTheme.colors.textSecondary,
-                    )
-                }
+                RewardAmountPreview()
 
                 Text(
                     text = "2 days left",
@@ -300,6 +304,110 @@ fun TimeEventItem() {
                 )
             }
         }
+    }
+}
+
+@Composable
+fun ActiveTasksList(
+    modifier: Modifier = Modifier
+) {
+    val activeTasksList = listOf(
+        "Limited time event 1",
+        "Limited time event 2",
+    )
+
+    Column (
+        modifier = modifier
+    ) {
+        activeTasksList.forEachIndexed { idx, item ->
+            ActiveTaskItem()
+
+            if (idx != activeTasksList.size - 1) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ActiveTaskItem(
+    modifier: Modifier = Modifier
+) {
+    Row (
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.clickable { /* TODO */ }
+    ) {
+        Box (
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .clip(RoundedCornerShape(100.dp))
+                .width(40.dp)
+                .height(40.dp)
+                .background(RarimeTheme.colors.baseBlack)
+        ) {
+            AppIcon(
+                id = R.drawable.ic_users,
+                tint = RarimeTheme.colors.baseWhite
+            )
+        }
+
+        Row (
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column (
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    text = "Invite 5 users",
+                    style = RarimeTheme.typography.subtitle4,
+                    color = RarimeTheme.colors.textPrimary,
+                )
+
+                Text (
+                    text = "Invite frients into app",
+                    style = RarimeTheme.typography.body4,
+                    color = RarimeTheme.colors.textSecondary,
+                )
+            }
+
+            Row (
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                RewardAmountPreview()
+
+                AppIcon(
+                    id = R.drawable.ic_caret_right,
+                    tint = RarimeTheme.colors.textSecondary
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun RewardAmountPreview(
+    modifier: Modifier = Modifier
+) {
+    Box (
+        modifier = modifier
+            .border(
+                width = 1.dp,
+                color = RarimeTheme.colors.textSecondary,
+                shape = RoundedCornerShape(100.dp),
+            )
+            .padding(vertical = 2.dp, horizontal = 8.dp)
+    ) {
+        Text (
+            text = "+50 ra", // TODO: token icon
+            style = RarimeTheme.typography.subtitle5,
+            color = RarimeTheme.colors.textSecondary,
+        )
     }
 }
 
