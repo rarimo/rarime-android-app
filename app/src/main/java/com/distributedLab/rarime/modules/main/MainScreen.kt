@@ -62,7 +62,7 @@ import kotlinx.coroutines.launch
 
 val mainRoutes = listOf(
     Screen.Main.Home.route,
-    Screen.Main.Rewards.route,
+    Screen.Main.Rewards.RewardsMain.route,
     Screen.Main.Wallet.route,
     Screen.Main.Profile.route
 )
