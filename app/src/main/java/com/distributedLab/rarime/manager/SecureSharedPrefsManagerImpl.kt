@@ -4,18 +4,18 @@ import android.app.Application
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.data.enums.AppColorScheme
 import com.distributedLab.rarime.data.enums.AppLanguage
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.PassportIdentifier
+import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.data.enums.SecurityCheckState
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.modules.common.WalletAsset
 import com.distributedLab.rarime.modules.common.WalletAssetJSON
-import com.distributedLab.rarime.util.LocaleUtil
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.wallet.models.Transaction
+import com.distributedLab.rarime.util.LocaleUtil
 import com.distributedLab.rarime.util.data.ZkProof
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -43,7 +43,8 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "E_DOCUMENT" to "E_DOCUMENT",
         "PRIVATE_KEY" to "PRIVATE_KEY",
         "REGISTRATION_PROOF" to "REGISTRATION_PROOF",
-        "TX" to "TX"
+        "TX" to "TX",
+        "PASSPORT_STATUS" to "PASSPORT_STATUS",
     )
 
     private val PREFS_FILE_NAME = "sharedPrefFile"
@@ -158,8 +159,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     override fun savePassportIdentifiers(identifiers: List<PassportIdentifier>) {
         val editor = getEditor()
         editor.putStringSet(
-            accessTokens["PASSPORT_IDENTIFIERS"],
-            identifiers.map { it.value }.toSet()
+            accessTokens["PASSPORT_IDENTIFIERS"], identifiers.map { it.value }.toSet()
         )
         editor.apply()
     }
@@ -199,15 +199,17 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     }
 
     override fun readWalletAssets(assetsToPopulate: List<WalletAsset>): List<WalletAsset> {
-        val jsonWalletAssets =
-            getSharedPreferences().getString(accessTokens["WALLET_ASSETS"], null) ?: return assetsToPopulate
+        val jsonWalletAssets = getSharedPreferences().getString(accessTokens["WALLET_ASSETS"], null)
+            ?: return assetsToPopulate
         val listType = object : TypeToken<List<WalletAsset?>?>() {}.type
 
         try {
-            val parsedWalletAssets = Gson().fromJson<List<WalletAssetJSON>>(jsonWalletAssets, listType)
+            val parsedWalletAssets =
+                Gson().fromJson<List<WalletAssetJSON>>(jsonWalletAssets, listType)
 
             return assetsToPopulate.map {
-                val walletAsset = parsedWalletAssets.find { asset -> asset.tokenSymbol == it.token.symbol }
+                val walletAsset =
+                    parsedWalletAssets.find { asset -> asset.tokenSymbol == it.token.symbol }
 
                 if (walletAsset != null) {
                     it.balance.value = BigInteger(walletAsset.balance)
@@ -228,12 +230,15 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     }
 
     override fun readSelectedWalletAsset(walletAssets: List<WalletAsset>): WalletAsset {
-        val jsonWalletAsset = getSharedPreferences().getString(accessTokens["SELECTED_WALLET_ASSET"], walletAssets.first().toJSON())
+        val jsonWalletAsset = getSharedPreferences().getString(
+            accessTokens["SELECTED_WALLET_ASSET"], walletAssets.first().toJSON()
+        )
 
         val walletAssetType = object : TypeToken<WalletAsset?>() {}.type
 
         try {
-            val parsedWalletAsset = Gson().fromJson<WalletAssetJSON>(jsonWalletAsset, walletAssetType)
+            val parsedWalletAsset =
+                Gson().fromJson<WalletAssetJSON>(jsonWalletAsset, walletAssetType)
 
             val walletAsset = walletAssets.find { it.token.symbol == parsedWalletAsset.tokenSymbol }
 
@@ -267,6 +272,20 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         val editor = getEditor()
         editor.putLong(accessTokens["LOCK_TIMESTAMP"], timestamp)
         editor.apply()
+    }
+
+    override fun savePassportStatus(passportStatus: PassportStatus) {
+        val editor = getEditor()
+        editor.putInt(accessTokens["PASSPORT_STATUS"], passportStatus.value)
+        editor.apply()
+    }
+
+    override fun readPassportStatus(): PassportStatus {
+        return PassportStatus.fromInt(
+            getSharedPreferences().getInt(
+                accessTokens["PASSPORT_STATUS"], 1
+            )
+        )
     }
 
     override fun saveEDocument(eDocument: EDocument) {

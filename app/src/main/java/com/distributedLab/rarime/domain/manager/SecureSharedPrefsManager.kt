@@ -4,6 +4,7 @@ import com.distributedLab.rarime.data.enums.AppColorScheme
 import com.distributedLab.rarime.data.enums.AppLanguage
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.PassportIdentifier
+import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.data.enums.SecurityCheckState
 import com.distributedLab.rarime.modules.common.WalletAsset
 import com.distributedLab.rarime.modules.passport.models.EDocument
@@ -62,5 +63,8 @@ interface SecureSharedPrefsManager {
 
     fun readLockTimestamp(): Long
     fun saveLockTimestamp(timestamp: Long)
+
+    fun savePassportStatus(passportStatus: PassportStatus)
+    fun readPassportStatus(): PassportStatus
 
 }

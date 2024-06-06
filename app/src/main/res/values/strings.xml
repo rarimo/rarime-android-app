@@ -160,4 +160,14 @@
     <string name="birth_date">Birth date</string>
     <string name="passport_card_identifiers_title">DATA</string>
     <string name="passport_card_identifiers_text">Shows two identifiers on the card</string>
+    <string name="waitlist_title">Waitlist passport</string>
+    <string name="waitlist_subtitle">Become an ambassador</string>
+    <string name="waitlist_description">If you would like to enroll your country in the early beta phase, we will need your consent to share some data. Enrolling your country’s passports will entitle you to additional rewards</string>
+    <string name="join_program">Join the program</string>
+    <string name="waitlist_info">Information shared includes the data groups of the passport and the government signature</string>
+    <string name="unsupported_country_title">Unsupported country</string>
+    <string name="unsupported_country_description">Unfortunately, these passports are not eligible for rewards. However, you can use your incognito ID for other upcoming mini apps.</string>
+    <string name="unsupported_country_btn">Create Incognito ID</string>
+    <string name="waitlist_card_subtitle">You will be notified once added</string>
+    <string name="unsupported_card_title">Unsupported for rewards</string>
 </resources>

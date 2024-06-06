@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.modules.home
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -35,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.PassportIdentifier
+import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.data.enums.getBackgroundColor
 import com.distributedLab.rarime.data.enums.getForegroundColor
 import com.distributedLab.rarime.data.enums.getTitle
@@ -62,6 +65,7 @@ fun PassportCard(
     look: PassportCardLook,
     identifiers: List<PassportIdentifier>,
     isIncognito: Boolean,
+    passportStatus: PassportStatus,
     onLookChange: (PassportCardLook) -> Unit,
     onIncognitoChange: (Boolean) -> Unit,
     onIdentifiersChange: (List<PassportIdentifier>) -> Unit
@@ -70,113 +74,114 @@ fun PassportCard(
     val settingsSheetState = rememberAppSheetState()
     var isPressing by remember { mutableStateOf(false) }
 
+    // TODO: fix recomposition
     val fullName = passport.personDetails!!.name + " " + passport.personDetails!!.surname
     val faceImageInfo = passport.personDetails!!.faceImageInfo
     val image = if (faceImageInfo == null) null else ImageUtil.getImage(faceImageInfo).bitmapImage!!
 
     val isInfoHidden = isIncognito && !isPressing
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(32.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(look.getBackgroundColor(), RoundedCornerShape(24.dp))
-            .padding(24.dp)
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onPress = {
+
+    Column(verticalArrangement = Arrangement.spacedBy((-43).dp)) {
+        if (passportStatus == PassportStatus.WAIT_LIST || passportStatus == PassportStatus.NOT_ALLOWED) {
+            StatusCard(modifier = Modifier.padding(top = 20.dp), passportStatus)
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(32.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(look.getBackgroundColor(), RoundedCornerShape(24.dp))
+                .padding(24.dp)
+                .pointerInput(Unit) {
+                    detectTapGestures(onPress = {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         isPressing = true
                         tryAwaitRelease()
                         isPressing = false
+                    })
+                }) {
+
+            Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    PassportImage(
+                        image = image,
+                        color = look.getForegroundColor(),
+                        backgroundColor = look.getForegroundColor().copy(alpha = 0.05f),
+                        modifier = Modifier.blur(
+                            if (isInfoHidden) 12.dp else 0.dp,
+                            edgeTreatment = BlurredEdgeTreatment.Unbounded
+                        )
+                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        AppIcon(
+                            id = if (isInfoHidden) R.drawable.ic_eye_slash else R.drawable.ic_eye,
+                            tint = look.getForegroundColor(),
+                            modifier = Modifier
+                                .background(
+                                    look
+                                        .getForegroundColor()
+                                        .copy(alpha = 0.05f), CircleShape
+                                )
+                                .padding(8.dp)
+                                .clickable(interactionSource = remember { MutableInteractionSource() },
+                                    indication = null,
+                                    onClick = { onIncognitoChange(!isIncognito) })
+                        )
+                        AppIcon(
+                            id = R.drawable.ic_dots_three_outline,
+                            tint = look.getForegroundColor(),
+                            modifier = Modifier
+                                .background(
+                                    look
+                                        .getForegroundColor()
+                                        .copy(alpha = 0.05f), CircleShape
+                                )
+                                .padding(8.dp)
+                                .clickable(interactionSource = remember { MutableInteractionSource() },
+                                    indication = null,
+                                    onClick = { settingsSheetState.show() })
+                        )
                     }
-                )
-            }
-    ) {
-        Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                PassportImage(
-                    image = image,
-                    color = look.getForegroundColor(),
-                    backgroundColor = look.getForegroundColor().copy(alpha = 0.05f),
-                    modifier = Modifier.blur(
-                        if (isInfoHidden) 12.dp else 0.dp,
-                        edgeTreatment = BlurredEdgeTreatment.Unbounded
+                }
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = if (isInfoHidden) "••••• •••••••" else fullName,
+                        style = RarimeTheme.typography.h6,
+                        color = look.getForegroundColor()
                     )
-                )
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    AppIcon(
-                        id = if (isInfoHidden) R.drawable.ic_eye_slash else R.drawable.ic_eye,
-                        tint = look.getForegroundColor(),
-                        modifier = Modifier
-                            .background(
-                                look
-                                    .getForegroundColor()
-                                    .copy(alpha = 0.05f), CircleShape
+                    Text(
+                        text = if (isInfoHidden) "••• ••••• •••" else stringResource(
+                            R.string.years_old, calculateAgeFromBirthDate(
+                                passport.personDetails!!.birthDate!!
                             )
-                            .padding(8.dp)
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                                onClick = { onIncognitoChange(!isIncognito) }
-                            )
-                    )
-                    AppIcon(
-                        id = R.drawable.ic_dots_three_outline,
-                        tint = look.getForegroundColor(),
-                        modifier = Modifier
-                            .background(
-                                look
-                                    .getForegroundColor()
-                                    .copy(alpha = 0.05f), CircleShape
-                            )
-                            .padding(8.dp)
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                                onClick = { settingsSheetState.show() }
-                            )
+                        ),
+                        style = RarimeTheme.typography.body2,
+                        color = look.getForegroundColor().copy(alpha = 0.56f)
                     )
                 }
             }
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    text = if (isInfoHidden) "••••• •••••••" else fullName,
-                    style = RarimeTheme.typography.h6,
-                    color = look.getForegroundColor()
-                )
-                Text(
-                    text = if (isInfoHidden) "••• ••••• •••" else stringResource(
-                        R.string.years_old, calculateAgeFromBirthDate(
-                            passport.personDetails!!.birthDate!!
-                        )
-                    ),
-                    style = RarimeTheme.typography.body2,
-                    color = look.getForegroundColor().copy(alpha = 0.56f)
-                )
-            }
-        }
-        HorizontalDivider(color = look.getForegroundColor().copy(alpha = 0.05f))
-        Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.height(50.dp)
-        ) {
-            identifiers.forEach { identifier ->
-                PassportInfoRow(
-                    look = look,
-                    label = if (isInfoHidden) identifier.toTitleStub() else identifier.toLocalizedTitle(),
-                    value = if (isInfoHidden) {
-                        identifier.toValueStub()
-                    } else {
-                        identifier.toLocalizedValue(passport)
-                    }
-                )
+            HorizontalDivider(color = look.getForegroundColor().copy(alpha = 0.05f))
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.height(50.dp)
+            ) {
+                identifiers.forEach { identifier ->
+                    PassportInfoRow(
+                        look = look,
+                        label = if (isInfoHidden) identifier.toTitleStub() else identifier.toLocalizedTitle(),
+                        value = if (isInfoHidden) {
+                            identifier.toValueStub()
+                        } else {
+                            identifier.toLocalizedValue(passport)
+                        }
+                    )
+                }
             }
         }
     }
+
+
 
     AppBottomSheet(state = settingsSheetState) {
         PassportCardSettings(
@@ -191,8 +196,7 @@ fun PassportCard(
 @Composable
 private fun PassportInfoRow(label: String, value: String, look: PassportCardLook) {
     Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth()
+        horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()
     ) {
         Text(
             text = label,
@@ -223,8 +227,7 @@ private fun PassportCardSettings(
         )
         HorizontalDivider()
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.padding(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.padding(16.dp)
         ) {
             Text(
                 text = stringResource(R.string.card_visual),
@@ -236,12 +239,10 @@ private fun PassportCardSettings(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 PassportCardLook.entries.forEach { item ->
-                    PassportLookOption(
-                        look = item,
+                    PassportLookOption(look = item,
                         isActive = item == look,
                         modifier = Modifier.weight(1f),
-                        onClick = { onLookChange(item) }
-                    )
+                        onClick = { onLookChange(item) })
                 }
             }
             HorizontalDivider()
@@ -252,8 +253,7 @@ private fun PassportCardSettings(
 
 @Composable
 private fun PassportIdentifiersPicker(
-    identifiers: List<PassportIdentifier>,
-    onIdentifiersChange: (List<PassportIdentifier>) -> Unit
+    identifiers: List<PassportIdentifier>, onIdentifiersChange: (List<PassportIdentifier>) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -271,8 +271,7 @@ private fun PassportIdentifiersPicker(
         PassportIdentifier.entries.forEach { identifier ->
             val isSelected = identifiers.contains(identifier)
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+                horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     text = identifier.toLocalizedTitle(),
@@ -298,10 +297,7 @@ private fun PassportIdentifiersPicker(
 
 @Composable
 private fun PassportLookOption(
-    look: PassportCardLook,
-    isActive: Boolean,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    look: PassportCardLook, isActive: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -378,6 +374,82 @@ private fun PassportLookOption(
     }
 }
 
+@Composable
+fun StatusCard(modifier: Modifier = Modifier, passportStatus: PassportStatus) {
+
+    var statusIcon = remember {
+        R.drawable.ic_globe_simple_time
+    }
+
+    var statusTitle = remember {
+        R.string.waitlist_title
+    }
+
+    var statusDescription = remember {
+        R.string.waitlist_card_subtitle
+    }
+
+
+    when (passportStatus) {
+        PassportStatus.WAIT_LIST -> remember {
+            statusIcon = R.drawable.ic_globe_simple_time
+            statusTitle = R.string.waitlist_title
+            statusDescription = R.string.waitlist_card_subtitle
+        }
+
+        PassportStatus.NOT_ALLOWED -> remember {
+            statusIcon = R.drawable.ic_globe_simple_x
+            statusTitle = R.string.unsupported_card_title
+        }
+
+        else -> {
+            return
+        }
+    }
+
+
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp)
+            .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(24.dp))
+    ) {
+        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            AppIcon(
+                id = statusIcon,
+                tint = if(passportStatus == PassportStatus.WAIT_LIST) RarimeTheme.colors.warningMain else RarimeTheme.colors.errorMain,
+                modifier = Modifier.padding(vertical = 4.dp),
+                size = 24.dp
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column {
+                Text(
+                    text = stringResource(id = statusTitle),
+                    style = RarimeTheme.typography.subtitle5,
+                    color = RarimeTheme.colors.textPrimary
+                )
+                if (passportStatus == PassportStatus.WAIT_LIST) {
+                    Text(
+                        text = stringResource(id = statusDescription),
+                        style = RarimeTheme.typography.body4,
+                        color = RarimeTheme.colors.textSecondary
+                    )
+                }
+
+            }
+        }
+
+    }
+}
+
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun StatusCardPreview() {
+    StatusCard(passportStatus = PassportStatus.NOT_ALLOWED)
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun PassportCardPreview() {
@@ -386,29 +458,27 @@ private fun PassportCardPreview() {
     var identifiers by remember {
         mutableStateOf(
             listOf(
-                PassportIdentifier.NATIONALITY,
-                PassportIdentifier.DOCUMENT_ID
+                PassportIdentifier.NATIONALITY, PassportIdentifier.DOCUMENT_ID
             )
         )
     }
 
-    PassportCard(
-        passport = EDocument(
-            personDetails = PersonDetails(
-                name = "John",
-                surname = "Doe",
-                birthDate = "01.01.1990",
-                expiryDate = "01.01.2025",
-                nationality = "USA",
-                serialNumber = "123456789",
-                faceImageInfo = null
-            )
-        ),
+    PassportCard(passport = EDocument(
+        personDetails = PersonDetails(
+            name = "John",
+            surname = "Doe",
+            birthDate = "01.01.1990",
+            expiryDate = "01.01.2025",
+            nationality = "USA",
+            serialNumber = "123456789",
+            faceImageInfo = null
+        )
+    ),
         look = look,
         identifiers = identifiers,
         isIncognito = isIncognito,
         onLookChange = { look = it },
         onIncognitoChange = { isIncognito = it },
-        onIdentifiersChange = { identifiers = it }
-    )
+        passportStatus = PassportStatus.NOT_ALLOWED,
+        onIdentifiersChange = { identifiers = it })
 }

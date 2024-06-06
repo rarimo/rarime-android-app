@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.contracts.PoseidonSMT.Proof
+import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.domain.data.ProofTx
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.manager.ApiServiceRemoteData
@@ -16,6 +17,7 @@ import com.distributedLab.rarime.modules.common.PassportManager
 import com.distributedLab.rarime.modules.passport.PassportProofState
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.passport.nfc.SODFileOwn
+import com.distributedLab.rarime.util.Constants
 import com.distributedLab.rarime.util.SecurityUtil
 import com.distributedLab.rarime.util.ZKPUseCase
 import com.distributedLab.rarime.util.ZkpUtil
@@ -49,9 +51,9 @@ class ProofViewModel @Inject constructor(
     private val passportManager: PassportManager,
     private val apiService: ApiServiceRemoteData,
     private val contractManager: ContractManager,
-    private val identityManager: IdentityManager,
+    identityManager: IdentityManager,
 ) : AndroidViewModel(application) {
-    val privateKeyBytes = identityManager.privateKeyBytes
+    private val privateKeyBytes = identityManager.privateKeyBytes
 
     private val TAG = ProofViewModel::class.java.simpleName
     private val zkp = ZKPUseCase(application as Context)
@@ -86,7 +88,7 @@ class ProofViewModel @Inject constructor(
             val icao = readICAO(context = application.applicationContext)
             val slaveCertificateIndex =
                 x509Util.getSlaveCertificateIndex(certificate.toByteArray(), icao)
-            var indexHex = slaveCertificateIndex.toHexString()
+            val indexHex = slaveCertificateIndex.toHexString()
             val poseidonSMT = contractManager.getPoseidonSMT(certificatesSMTAddress)
             poseidonSMT.getProof(indexHex.decodeHexString()).send()
         }
@@ -141,25 +143,38 @@ class ProofViewModel @Inject constructor(
     }
 
     suspend fun registerByDocument(eDocument: EDocument) {
+        try {
+            _state.value = PassportProofState.READING_DATA
 
-        _state.value = PassportProofState.READING_DATA
+            passportManager.setPassport(eDocument)
 
-        registerCertificate(eDocument)
+            if (Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.issuerAuthority)) {
+                passportManager.updatePassportStatus(PassportStatus.NOT_ALLOWED)
+            }
 
-        _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
-        val proof = generateRegisterIdentityProof(eDocument)
+            registerCertificate(eDocument)
+
+            _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
+            val proof = generateRegisterIdentityProof(eDocument)
+
+            dataStoreManager.saveRegistrationProof(proof)
+
+            _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
+            register(proof, eDocument)
 
 
-        _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
-        register(proof, eDocument)
+            _state.value = PassportProofState.FINALIZING
 
 
-        _state.value = PassportProofState.FINALIZING
+            delay(second * 1)
+        } catch (e: Exception) {
+            if (passportManager.passportStatus.value != PassportStatus.NOT_ALLOWED) {
+                passportManager.updatePassportStatus(PassportStatus.WAIT_LIST)
+            }
+            throw e
+        }
 
-        passportManager.setPassport(eDocument)
-        dataStoreManager.saveRegistrationProof(proof)
 
-        delay(second * 1)
     }
 
     private suspend fun register(zkProof: ZkProof, eDocument: EDocument) {

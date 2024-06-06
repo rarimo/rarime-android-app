@@ -160,4 +160,14 @@
     <string name="birth_date">Дата народження</string>
     <string name="passport_card_identifiers_title">ДАНІ</string>
     <string name="passport_card_identifiers_text">Виберіть два ідентифікатори на картці</string>
+    <string name="waitlist_title">Паспорт не підтримується</string>
+    <string name="waitlist_subtitle">Стати весником</string>
+    <string name="waitlist_description">Якщо ви бажаєте зареєструвати свою країну на ранній бета-фазі, нам знадобиться ваша згода на надання деяких даних. Реєстрація паспортів вашої країни дасть вам право на додаткові винагороди</string>
+    <string name="join_program">Приєднатися</string>
+    <string name="waitlist_info">Інформація, що надається, включає групи даних паспорта та державний підпис</string>
+    <string name="unsupported_country_title">Unsupported country</string>
+    <string name="unsupported_country_description">Unfortunately, these passports are not eligible for rewards. However, you can use your incognito ID for other upcoming mini apps.</string>
+    <string name="unsupported_country_btn">Create Incognito ID</string>
+    <string name="waitlist_card_subtitle">You will be notified once added</string>
+    <string name="unsupported_card_title">Unsupported for rewards</string>
 </resources>
