@@ -25,7 +25,7 @@ data class PointsEvent(
     @Json(name = "updated_at")
     val updatedAt: Long,
 
-    val meta: Meta,
+    val meta: PointsEventMeta,
 
     @Json(name = "points_amount")
     val pointsAmount: Long,
@@ -34,12 +34,12 @@ data class PointsEvent(
     val balance: PointsBalance?,
 ) : Resource()
 
-data class Meta(
-    val static: Static,
-    val dynamic: Dynamic,
+data class PointsEventMeta(
+    val static: PointsEventMetaStatic,
+    val dynamic: PointsEventMetaDynamic,
 )
 
-data class Static(
+data class PointsEventMetaStatic(
     val name: String,
     val reward: Long,
     val title: String,
@@ -56,7 +56,7 @@ data class Static(
     val logo: String,
 )
 
-data class Dynamic(
+data class PointsEventMetaDynamic(
     val id: String,
 )
 
