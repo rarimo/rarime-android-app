@@ -23,7 +23,11 @@ sealed class Screen(val route: String) {
             data object Send : Screen("send")
         }
 
-        data object Rewards : Screen("rewards")
+        data object Rewards : Screen("rewards") {
+            data object RewardsEventsItem : Screen("rewards_events_item")
+
+            data object RewardsClaim : Screen("rewards_claim")
+        }
         data object Profile : Screen("profile") {
             data object AuthMethod : Screen("auth_method")
             data object ExportKeys : Screen("export_keys")

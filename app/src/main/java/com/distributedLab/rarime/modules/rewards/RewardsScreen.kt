@@ -44,10 +44,12 @@ import com.distributedLab.rarime.ui.components.UiLinearProgressBar
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.NumberUtil
+import com.distributedLab.rarime.util.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RewardsScreen(
+    navigate: (String) -> Unit,
     rewardsViewModel: RewardsViewModel = hiltViewModel()
 ) {
     val pointsWalletAsset = rewardsViewModel.pointsWalletAsset
@@ -146,7 +148,7 @@ fun RewardsScreen(
                         PrimaryButton(
                             text = stringResource(R.string.rewards_claim_btn),
                             leftIcon = R.drawable.ic_swap,
-                            onClick = {},
+                            onClick = { navigate(Screen.Main.Rewards.RewardsClaim.route) }
                         )
                     }
 
@@ -225,7 +227,8 @@ fun RewardsScreen(
                     Spacer(modifier = Modifier.height(20.dp))
 
                     TimeEventsList(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        navigate,
                     )
                 }
             }
@@ -244,7 +247,7 @@ fun RewardsScreen(
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    ActiveTasksList()
+                    ActiveTasksList(navigate)
                 }
             }
         }
@@ -258,7 +261,8 @@ fun RewardsScreen(
 
 @Composable
 fun TimeEventsList(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navigate: (String) -> Unit,
 ) {
     val limitedTimeEvents = listOf(
         "Limited time event 1",
@@ -269,7 +273,7 @@ fun TimeEventsList(
         modifier = modifier
     ) {
         limitedTimeEvents.forEachIndexed { idx, item ->
-            TimeEventItem()
+            TimeEventItem(navigate = navigate)
 
             if (idx != limitedTimeEvents.size - 1) {
                 HorizontalDivider(
@@ -281,8 +285,12 @@ fun TimeEventsList(
 }
 
 @Composable
-fun TimeEventItem() {
+fun TimeEventItem(
+    modifier: Modifier = Modifier,
+    navigate: (String) -> Unit,
+) {
     Row (
+        modifier = modifier.clickable { navigate(Screen.Main.Rewards.RewardsEventsItem.route) },
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -324,6 +332,7 @@ fun TimeEventItem() {
 
 @Composable
 fun ActiveTasksList(
+    navigate: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val activeTasksList = listOf(
@@ -335,7 +344,7 @@ fun ActiveTasksList(
         modifier = modifier
     ) {
         activeTasksList.forEachIndexed { idx, item ->
-            ActiveTaskItem()
+            ActiveTaskItem(navigate = navigate)
 
             if (idx != activeTasksList.size - 1) {
                 HorizontalDivider(
@@ -348,12 +357,13 @@ fun ActiveTasksList(
 
 @Composable
 fun ActiveTaskItem(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navigate: (String) -> Unit,
 ) {
     Row (
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.clickable { /* TODO */ }
+        modifier = modifier.clickable { navigate(Screen.Main.Rewards.RewardsEventsItem.route) }
     ) {
         Box (
             contentAlignment = Alignment.Center,
@@ -469,6 +479,6 @@ private fun RewardsScreenPreview() {
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary)
     ) {
-        RewardsScreen()
+        RewardsScreen(navigate = {})
     }
 }

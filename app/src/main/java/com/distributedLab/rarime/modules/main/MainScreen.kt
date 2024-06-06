@@ -39,6 +39,8 @@ import com.distributedLab.rarime.modules.profile.LanguageScreen
 import com.distributedLab.rarime.modules.profile.ProfileScreen
 import com.distributedLab.rarime.modules.profile.ThemeScreen
 import com.distributedLab.rarime.modules.register.NewIdentityScreen
+import com.distributedLab.rarime.modules.rewards.RewardsClaimScreen
+import com.distributedLab.rarime.modules.rewards.RewardsEventItemScreen
 import com.distributedLab.rarime.modules.rewards.RewardsScreen
 import com.distributedLab.rarime.modules.security.EnableBiometricsScreen
 import com.distributedLab.rarime.modules.security.EnablePasscodeScreen
@@ -211,7 +213,15 @@ fun MainScreenContent() {
                             onBack = { navController.popBackStack() },
                         )
                     }
-                    composable(Screen.Main.Rewards.route) { RewardsScreen() }
+                    composable(Screen.Main.Rewards.route) {
+                        RewardsScreen(navigate = { navController.navigate(it) })
+                    }
+                    composable(Screen.Main.Rewards.RewardsClaim.route) {
+                        RewardsClaimScreen( onBack = { navController.popBackStack() } )
+                    }
+                    composable(Screen.Main.Rewards.RewardsEventsItem.route) {
+                        RewardsEventItemScreen( onBack = { navController.popBackStack() } )
+                    }
 
                     composable(Screen.Main.Profile.route) {
                         ProfileScreen(appIcon = appIcon, navigate = { navController.navigate(it) })
