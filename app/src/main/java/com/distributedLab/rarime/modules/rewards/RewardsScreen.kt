@@ -32,6 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.rewards.components.RewardAmountPreview
 import com.distributedLab.rarime.modules.rewards.components.RewardsLeaderBoard
+import com.distributedLab.rarime.modules.rewards.components.RewardsLeveling
 import com.distributedLab.rarime.modules.rewards.view_models.RewardsViewModel
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.AppSkeleton
@@ -54,7 +55,9 @@ fun RewardsScreen(
 ) {
     val pointsWalletAsset = rewardsViewModel.pointsWalletAsset
 
-    val sheetState = rememberAppSheetState()
+    val leaderboardSheetState = rememberAppSheetState()
+
+    val levelingSheetState = rememberAppSheetState()
 
     Column (
         modifier = Modifier
@@ -79,7 +82,7 @@ fun RewardsScreen(
                     .clip(RoundedCornerShape(100.dp))
                     .background(RarimeTheme.colors.warningLighter)
                     .padding(vertical = 4.dp, horizontal = 9.dp)
-                    .clickable { sheetState.show() }
+                    .clickable { leaderboardSheetState.show() }
             ) {
                 AppIcon(
                     id = R.drawable.ic_trophy,
@@ -164,7 +167,7 @@ fun RewardsScreen(
                             Row (
                                 modifier = Modifier
                                     .padding(0.dp)
-                                    .clickable { /* TODO */ },
+                                    .clickable { levelingSheetState.show() },
                             ) {
                                 Text(
                                     text = "Level 2",
@@ -253,9 +256,12 @@ fun RewardsScreen(
         }
     }
 
-
-    AppBottomSheet(state = sheetState, fullScreen = true) { hide ->
+    AppBottomSheet(state = leaderboardSheetState, fullScreen = true) { hide ->
         RewardsLeaderBoard()
+    }
+
+    AppBottomSheet(state = levelingSheetState, fullScreen = true) { hide ->
+        RewardsLeveling()
     }
 }
 
