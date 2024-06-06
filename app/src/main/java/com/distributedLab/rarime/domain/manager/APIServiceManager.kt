@@ -1,20 +1,16 @@
 package com.distributedLab.rarime.domain.manager
 
 import com.distributedLab.rarime.BaseConfig.COSMOS_RPC_URL
-import com.distributedLab.rarime.BaseConfig.EVM_RPC_URL
 import com.distributedLab.rarime.BaseConfig.RELAYER_URL
 import com.distributedLab.rarime.domain.data.AirdropRequest
 import com.distributedLab.rarime.domain.data.AirdropResponse
 import com.distributedLab.rarime.domain.data.CosmosSpendableBalancesResponse
-import com.distributedLab.rarime.domain.data.EthCallRequest
-import com.distributedLab.rarime.domain.data.EthCallResponse
 import com.distributedLab.rarime.domain.data.EvmTxResponse
 import com.distributedLab.rarime.domain.data.GetAirdropParamsResponse
 import com.distributedLab.rarime.domain.data.RegisterRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Path
 
