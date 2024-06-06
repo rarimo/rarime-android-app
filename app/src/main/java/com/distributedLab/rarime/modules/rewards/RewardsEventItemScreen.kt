@@ -28,8 +28,10 @@ import com.distributedLab.rarime.modules.rewards.view_models.RewardsEventItemVie
 import com.distributedLab.rarime.modules.wallet.WalletRouteLayout
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
+import com.distributedLab.rarime.ui.components.MARKDOWN_CONTENT
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @Composable
 fun RewardsEventItemScreen(
@@ -106,8 +108,8 @@ fun RewardsEventItemScreen(
                         .weight(1f)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    Text (
-                        text = "lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  lorem ipsum dolor sit amet concestetur!  "
+                    MarkdownText(
+                        markdown = MARKDOWN_CONTENT
                     )
                 }
             }
