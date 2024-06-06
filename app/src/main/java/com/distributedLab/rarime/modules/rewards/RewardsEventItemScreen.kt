@@ -21,8 +21,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.rewards.components.RewardAmountPreview
+import com.distributedLab.rarime.modules.rewards.view_models.RewardsEventItemViewModel
 import com.distributedLab.rarime.modules.wallet.WalletRouteLayout
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
@@ -32,6 +34,7 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 @Composable
 fun RewardsEventItemScreen(
     onBack: () -> Unit,
+    rewardsEventItemViewModel: RewardsEventItemViewModel = hiltViewModel(),
 ) {
     WalletRouteLayout(
         headerModifier = Modifier

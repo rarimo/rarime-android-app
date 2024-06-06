@@ -24,7 +24,9 @@ sealed class Screen(val route: String) {
         }
 
         data object Rewards : Screen("rewards") {
-            data object RewardsEventsItem : Screen("rewards_events_item")
+            data object RewardsMain : Screen("rewards_main")
+
+            data object RewardsEventsItem : Screen("rewards_events_item/{item_id}")
 
             data object RewardsClaim : Screen("rewards_claim")
         }

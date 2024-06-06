@@ -289,8 +289,11 @@ fun TimeEventItem(
     modifier: Modifier = Modifier,
     navigate: (String) -> Unit,
 ) {
-    Row (
-        modifier = modifier.clickable { navigate(Screen.Main.Rewards.RewardsEventsItem.route) },
+    Row(
+        modifier = modifier
+            .clickable {
+                navigate(Screen.Main.Rewards.RewardsEventsItem.route.replace("{item_id}", "yopta"))
+            },
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -363,7 +366,10 @@ fun ActiveTaskItem(
     Row (
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.clickable { navigate(Screen.Main.Rewards.RewardsEventsItem.route) }
+        modifier = modifier
+            .clickable {
+                navigate(Screen.Main.Rewards.RewardsEventsItem.route.replace("{item_id}", "yopta"))
+            }
     ) {
         Box (
             contentAlignment = Alignment.Center,
