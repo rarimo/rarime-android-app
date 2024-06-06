@@ -18,6 +18,9 @@ import androidx.compose.material3.RichTooltip
 import androidx.compose.material3.RichTooltipColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +44,7 @@ import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.NumberUtil
 import com.distributedLab.rarime.util.Screen
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,6 +57,18 @@ fun RewardsScreen(
     val leaderboardSheetState = rememberAppSheetState()
 
     val levelingSheetState = rememberAppSheetState()
+
+    val limitedTimeEvents = rewardsViewModel.limitedTimeEvents.collectAsState()
+
+    val activeTasksEvents = rewardsViewModel.activeTasksEvents.collectAsState()
+
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        scope.launch {
+            rewardsViewModel.loadPointsEvents()
+        }
+    }
 
     Column (
         modifier = Modifier
@@ -224,11 +240,20 @@ fun RewardsScreen(
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    TimeEventsList(
-                        modifier = Modifier.fillMaxWidth(),
-                        navigate = navigate,
-                        pointsEvents = rewardsViewModel.MOCKED_EVENTS_LIST
-                    )
+                    limitedTimeEvents.value?.let {
+                        TimeEventsList(
+                            modifier = Modifier.fillMaxWidth(),
+                            navigate = navigate,
+                            pointsEvents = it
+                        )
+                    } ?: Column () {
+                        // TODO: implement skeleton loader and error view
+                        Text(
+                            text = "Loading...",
+                            style = RarimeTheme.typography.body3,
+                            color = RarimeTheme.colors.textSecondary,
+                        )
+                    }
                 }
             }
 
@@ -246,10 +271,19 @@ fun RewardsScreen(
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    ActiveTasksList(
-                        navigate = navigate,
-                        pointsEvents = rewardsViewModel.MOCKED_EVENTS_LIST
-                    )
+                    activeTasksEvents.value?.let {
+                        ActiveTasksList(
+                            navigate = navigate,
+                            pointsEvents = it
+                        )
+                    } ?: Column () {
+                        // TODO: implement skeleton loader and error view
+                        Text(
+                            text = "Loading...",
+                            style = RarimeTheme.typography.body3,
+                            color = RarimeTheme.colors.textSecondary,
+                        )
+                    }
                 }
             }
         }

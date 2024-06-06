@@ -36,7 +36,12 @@ fun TimeEventItem(
     Row(
         modifier = modifier
             .clickable {
-                navigate(Screen.Main.Rewards.RewardsEventsItem.route.replace("{item_id}", pointsEvent.id))
+                navigate(
+                    Screen.Main.Rewards.RewardsEventsItem.route.replace(
+                        "{item_id}",
+                        "1", // pointsEvent.id
+                    )
+                )
             },
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,

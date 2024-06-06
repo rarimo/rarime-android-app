@@ -10,6 +10,9 @@ import com.distributedLab.rarime.modules.common.PointsManager
 import com.distributedLab.rarime.modules.common.WalletManager
 import com.distributedLab.rarime.ui.components.MARKDOWN_CONTENT
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 val CONST_MOCKED_EVENTS_LIST = listOf(
@@ -90,9 +93,24 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
 @HiltViewModel
 class RewardsViewModel @Inject constructor(
     private val walletManager: WalletManager,
-    private val pointsManager: PointsManager,
+//    private val pointsManager: PointsManager,
 ) : ViewModel() {
     val pointsWalletAsset = walletManager.walletAssets.value.find { it.token.symbol == "RRMO" }!!
 
-    val MOCKED_EVENTS_LIST: List<PointsEvent> = CONST_MOCKED_EVENTS_LIST
+    var _limitedTimeEvents = MutableStateFlow<List<PointsEvent>?>(null)
+        private set
+
+    val limitedTimeEvents: StateFlow<List<PointsEvent>?>
+        get() = _limitedTimeEvents.asStateFlow()
+
+    var _activeTasksEvents = MutableStateFlow<List<PointsEvent>?>(null)
+        private set
+
+    val activeTasksEvents: StateFlow<List<PointsEvent>?>
+        get() = _activeTasksEvents.asStateFlow()
+
+    suspend fun loadPointsEvents() {
+        _limitedTimeEvents.value = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
+        _activeTasksEvents.value = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
+    }
 }

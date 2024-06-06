@@ -37,7 +37,12 @@ fun ActiveTaskItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clickable {
-                navigate(Screen.Main.Rewards.RewardsEventsItem.route.replace("{item_id}", pointEvent.id))
+                navigate(
+                    Screen.Main.Rewards.RewardsEventsItem.route.replace(
+                        "{item_id}",
+                        "1", // pointsEvent.id
+                    )
+                )
             }
     ) {
         Box (
