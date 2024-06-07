@@ -117,6 +117,22 @@
     <string name="transactions_title">Транзакції</string>
     <string name="wallet_send_title">Надіcлати %1$s</string>
     <string name="wallet_send_description">Відправляйте ваші токени %1$s на інший гаманець</string>
+
+    <string name="rewards_screen_title">Винагороди</string>
+    <string name="rewards_claim_btn">Забрати</string>
+    <string name="rewards_amount_overline_tooltip">Lorem ipsum dolor sit amet concestetur</string>
+
+    <string name="rewards_claim_screen_title">Claim %1$s</string>
+    <string name="rewards_claim_screen_subtitle">Claim %1$s</string>
+    <string name="rewards_claim_screen_from_lbl">From</string>
+    <string name="rewards_claim_screen_from_name">Reserved</string>
+    <string name="rewards_claim_screen_to_lbl">To</string>
+    <string name="rewards_claim_screen_to_name">Balance</string>
+    <string name="rewards_claim_screen_input_lbl">Claim amount</string>
+    <string name="rewards_claim_screen_input_placeholder">amount</string>
+    <string name="rewards_claim_screen_warning">If you claim tokens for the Reserved pool, you will be downgraded in the leaderboard</string>
+    <string name="rewards_claim_screen_claim_btn">Claim</string>
+
     <string name="rewards_stub_title">Стартуємо у липні</string>
     <string name="rewards_stub_description">Програма винагород дозволить вам отримувати щотижневі Airdrop\'и.\n\nВи зможете отримати додаткові винагороди, використовуючи анонімні докази RariMe з іншими програмами екосистеми.</string>
     <string name="terms_of_use">Умови використання</string>

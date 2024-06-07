@@ -53,8 +53,8 @@ interface SecureSharedPrefsManager {
     fun saveRegistrationProof(proof: ZkProof)
 
     fun readRegistrationProof(): ZkProof?
-    fun readTransactions(): List<Transaction>
 
+    fun readTransactions(): List<Transaction>
     fun addTransaction(transaction: Transaction)
 
     fun readPasscode(): String

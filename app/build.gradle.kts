@@ -76,7 +76,11 @@ android {
 }
 
 dependencies {
+    implementation("com.squareup.moshi:moshi:1.4.0")
+    implementation("moe.banana:moshi-jsonapi:master-SNAPSHOT")
 
+    implementation("com.github.jeziellago:compose-markdown:0.5.0")
+    implementation("io.coil-kt:coil-compose:2.0.0-rc01")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

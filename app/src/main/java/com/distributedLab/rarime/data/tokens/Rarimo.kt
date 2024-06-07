@@ -27,6 +27,7 @@ class RarimoToken @Inject constructor(
     override var name: String = "" // TODO: make nullable
     override var symbol: String = ""
     override var decimals: Int = 0
+    override var icon: Int = R.drawable.ic_rarimo
 
     override suspend fun loadDetails() {
         val currency = chainInfo.currencies[0]

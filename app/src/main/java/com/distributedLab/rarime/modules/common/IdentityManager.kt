@@ -18,6 +18,8 @@ class IdentityManager @Inject constructor(
 ) {
     private val _privateKey = MutableStateFlow(dataStoreManager.readPrivateKey())
 
+    val registrationProof = MutableStateFlow(dataStoreManager.readRegistrationProof())
+
     val privateKey: StateFlow<String?>
         get() = _privateKey.asStateFlow()
 
@@ -47,6 +49,11 @@ class IdentityManager @Inject constructor(
         } ?: ""
     }
 
+    val passportNullifier: String? by lazy {
+        registrationProof.value?.let {
+            it.pub_signals.get(0)
+        } ?: null
+    }
 
     @OptIn(ExperimentalStdlibApi::class)
     fun newPrivateKey() : String {

@@ -47,7 +47,7 @@ enum class BottomTab(
         R.drawable.ic_wallet_filled
     ),
     Rewards(
-        Screen.Main.Rewards.route,
+        Screen.Main.Rewards.RewardsMain.route,
         R.drawable.ic_gift,
         R.drawable.ic_gift_fill
     ),

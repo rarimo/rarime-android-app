@@ -22,11 +22,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.SecurityCheckState
 import com.distributedLab.rarime.modules.home.HomeScreen
@@ -39,6 +41,8 @@ import com.distributedLab.rarime.modules.profile.LanguageScreen
 import com.distributedLab.rarime.modules.profile.ProfileScreen
 import com.distributedLab.rarime.modules.profile.ThemeScreen
 import com.distributedLab.rarime.modules.register.NewIdentityScreen
+import com.distributedLab.rarime.modules.rewards.RewardsClaimScreen
+import com.distributedLab.rarime.modules.rewards.RewardsEventItemScreen
 import com.distributedLab.rarime.modules.rewards.RewardsScreen
 import com.distributedLab.rarime.modules.security.EnableBiometricsScreen
 import com.distributedLab.rarime.modules.security.EnablePasscodeScreen
@@ -58,7 +62,7 @@ import kotlinx.coroutines.launch
 
 val mainRoutes = listOf(
     Screen.Main.Home.route,
-    Screen.Main.Rewards.route,
+    Screen.Main.Rewards.RewardsMain.route,
     Screen.Main.Wallet.route,
     Screen.Main.Profile.route
 )
@@ -200,6 +204,7 @@ fun MainScreenContent() {
                     composable(Screen.Main.Home.route) {
                         HomeScreen(navigate = { navController.navigate(it) })
                     }
+
                     composable(Screen.Main.Wallet.route) {
                         WalletScreen(navigate = { navController.navigate(it) })
                     }
@@ -211,7 +216,24 @@ fun MainScreenContent() {
                             onBack = { navController.popBackStack() },
                         )
                     }
-                    composable(Screen.Main.Rewards.route) { RewardsScreen() }
+
+                    navigation(
+                        startDestination = Screen.Main.Rewards.RewardsMain.route,
+                        route = Screen.Main.Rewards.route,
+                    ) {
+                        composable(Screen.Main.Rewards.RewardsMain.route) {
+                            RewardsScreen(navigate = { navController.navigate(it) })
+                        }
+                        composable(Screen.Main.Rewards.RewardsClaim.route) {
+                            RewardsClaimScreen( onBack = { navController.popBackStack() } )
+                        }
+                        composable(
+                            Screen.Main.Rewards.RewardsEventsItem.route,
+                            arguments = listOf(navArgument("item_id") { type = NavType.StringType })
+                        ) {
+                            RewardsEventItemScreen(onBack = { navController.popBackStack() })
+                        }
+                    }
 
                     composable(Screen.Main.Profile.route) {
                         ProfileScreen(appIcon = appIcon, navigate = { navController.navigate(it) })
