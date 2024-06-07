@@ -17,6 +17,13 @@
         android:name="android.hardware.nfc"
         android:required="true" />
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SENDTO" />
+            <data android:scheme="*" />
+        </intent>
+    </queries>
+
     <application
         android:name=".App"
         android:allowBackup="true"
