@@ -1,4 +1,5 @@
 package com.distributedLab.rarime.domain.points
+import com.distributedLab.rarime.util.data.Proof
 import com.squareup.moshi.Json
 import moe.banana.jsonapi2.JsonApi
 import moe.banana.jsonapi2.Resource
@@ -81,6 +82,6 @@ data class WithdrawPayload (
 data class WithdrawPayloadAttributes(
     val amount: Long,
     val address: String,
-    val proof: Map<String, Any>,
+    val proof: Proof, // FIXME: is it correct?
 )
 

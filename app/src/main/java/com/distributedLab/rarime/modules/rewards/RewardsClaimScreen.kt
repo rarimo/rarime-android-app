@@ -1,6 +1,6 @@
 package com.distributedLab.rarime.modules.rewards
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text2.input.rememberTextFieldState
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -61,7 +60,7 @@ fun RewardsClaimScreen(
             rewardsClaimViewModel.reloadWalletAssets()
             onBack()
         } catch (e: Exception) {
-
+            Log.e(e.message, e.stackTraceToString())
         }
     }
 

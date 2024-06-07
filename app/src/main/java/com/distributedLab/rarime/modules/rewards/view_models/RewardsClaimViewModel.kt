@@ -16,7 +16,7 @@ import javax.inject.Inject
 class RewardsClaimViewModel @Inject constructor(
     private val walletManager: WalletManager,
     private val pointsManager: PointsManager,
-): ViewModel() {
+) : ViewModel() {
     val walletAssets = walletManager.walletAssets
 
     fun getPointsWalletAsset(): WalletAsset? {
@@ -45,8 +45,7 @@ class RewardsClaimViewModel @Inject constructor(
     }
 
     suspend fun withdrawPoints(amount: Double) {
-        // TODO: add nullifier and body
-        //  pointsManager.withdrawPoints("", null)
+        pointsManager.withdrawPoints(amount)
     }
 
     suspend fun reloadWalletAssets() {

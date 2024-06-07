@@ -92,6 +92,10 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
     ),
 )
 
+/**
+ * Better to keep this class, in order to development process
+ * and minimal leaderboard object requirements
+ */
 data class LeaderBoardItem (
     val number: Int,
     val address: String,

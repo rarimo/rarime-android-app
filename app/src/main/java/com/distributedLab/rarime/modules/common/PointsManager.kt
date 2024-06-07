@@ -9,9 +9,13 @@ import com.distributedLab.rarime.domain.points.PointsPrice
 import com.distributedLab.rarime.domain.points.PointsWithdrawal
 import com.distributedLab.rarime.domain.points.VerifyPassportPayload
 import com.distributedLab.rarime.domain.points.WithdrawPayload
+import com.distributedLab.rarime.domain.points.WithdrawPayloadAttributes
 import javax.inject.Inject
 
-class PointsManager @Inject constructor(private val jsonApiPointsSvcManager: JsonApiPointsSvcManager) {
+class PointsManager @Inject constructor(
+    private val jsonApiPointsSvcManager: JsonApiPointsSvcManager,
+    private val identityManager: IdentityManager
+) {
     /* BALANCE */
 
     suspend fun createPointsBalance(payload: CreateBalancePayload): PointsBalance? {
@@ -79,8 +83,23 @@ class PointsManager @Inject constructor(private val jsonApiPointsSvcManager: Jso
         return null
     }
 
-    suspend fun withdrawPoints(nullifier: String, payload: WithdrawPayload): PointsWithdrawal? {
-        val response = jsonApiPointsSvcManager.withdrawPoints(nullifier, payload)
+    suspend fun withdrawPoints(amount: Double): PointsWithdrawal? {
+        if (identityManager.passportNullifier == null || identityManager.registrationProof.value == null) {
+            throw Exception("passportNullifier is null")
+        }
+
+        val response = jsonApiPointsSvcManager.withdrawPoints(
+            identityManager.passportNullifier!!,
+            WithdrawPayload(
+                id = identityManager.passportNullifier!!,
+                type = "withdraw",
+                attributes = WithdrawPayloadAttributes(
+                    amount = amount.toLong(),
+                    address = identityManager.rarimoAddress,
+                    proof = identityManager.registrationProof.value!!.proof
+                )
+            )
+        )
 
         if (response.isSuccessful) {
             return response.body()!!

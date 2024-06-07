@@ -81,8 +81,11 @@ class APIModule {
 
     @Provides
     @Singleton
-    fun providePointsManager(@Named("PointsManagerRetrofit") retrofit: Retrofit): PointsManager =
-        PointsManager(retrofit.create(JsonApiPointsSvcManager::class.java))
+    fun providePointsManager(
+        @Named("PointsManagerRetrofit") retrofit: Retrofit,
+        identityManager: IdentityManager
+    ): PointsManager =
+        PointsManager(retrofit.create(JsonApiPointsSvcManager::class.java), identityManager)
 
 
     @Provides
