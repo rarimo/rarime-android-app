@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.modules.passport
 
+import android.content.res.Configuration
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -69,10 +70,10 @@ fun WaitlistPassportScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .size(72.dp)
-                    .background(RarimeTheme.colors.backgroundPure, CircleShape)
+                    .background(RarimeTheme.colors.componentPrimary, CircleShape)
                     .border(2.dp, RarimeTheme.colors.backgroundPrimary, CircleShape)
             ) {
-                AppIcon(id = R.drawable.ic_rarimo, size = 31.dp)
+                AppIcon(id = R.drawable.ic_rarimo, size = 31.dp,)
 
             }
 
@@ -154,7 +155,7 @@ fun WaitlistPassportScreen(
 
 
 @Composable
-@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 fun WaitlistPassportScreenPreview() {
     val eDocument: EDocument = EDocument(personDetails = PersonDetails(issuerAuthority = "GEO"))
     WaitlistPassportScreen(eDocument = eDocument, onClose = {})

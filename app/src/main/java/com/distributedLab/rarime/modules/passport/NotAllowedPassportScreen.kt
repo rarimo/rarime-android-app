@@ -60,7 +60,7 @@ fun NotAllowedPassportScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .size(72.dp)
-                    .background(RarimeTheme.colors.backgroundPure, CircleShape)
+                    .background(RarimeTheme.colors.componentPrimary, CircleShape)
                     .border(2.dp, RarimeTheme.colors.backgroundPrimary, CircleShape)
             ) {
                 AppIcon(id = R.drawable.ic_rarimo, size = 31.dp)
