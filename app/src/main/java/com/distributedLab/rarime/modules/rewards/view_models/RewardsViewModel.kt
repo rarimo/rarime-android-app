@@ -411,7 +411,6 @@ class RewardsViewModel @Inject constructor(
     val pointsWalletAsset: StateFlow<WalletAsset?>
         get() = _pointsWalletAsset.asStateFlow()
 
-
     var _limitedTimeEvents = MutableStateFlow<List<PointsEvent>?>(null)
         private set
 
@@ -435,6 +434,14 @@ class RewardsViewModel @Inject constructor(
         _activeTasksEvents.value = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
 
         _pointsWalletAsset.value = getPointsWalletAsset()
-        _leaderBoardList.value = MOCKED_LEADER_BOARD_LIST
+        _leaderBoardList.value = MOCKED_LEADER_BOARD_LIST.mapIndexed { idx, it ->
+            if (idx == 0) {
+                pointsWalletAsset.value?.userAddress?.let { userAddress ->
+                    it.copy(address = userAddress)
+                } ?: it
+            } else {
+                it
+            }
+        }
     }
 }
