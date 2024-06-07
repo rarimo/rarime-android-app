@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,6 +43,8 @@ fun RewardsEventItemScreen(
     onBack: () -> Unit,
     rewardsEventItemViewModel: RewardsEventItemViewModel = hiltViewModel(),
 ) {
+    val uriHandler = LocalUriHandler.current
+
     val _pointsEvent = rewardsEventItemViewModel.pointsEvent.collectAsState()
 
     val scope = rememberCoroutineScope()
@@ -146,7 +149,9 @@ fun RewardsEventItemScreen(
                         PrimaryButton(
                             modifier = Modifier.fillMaxWidth(),
                             text = "Let's start",
-                            onClick = { /*TODO*/ }
+                            onClick = {
+                                uriHandler.openUri(pointsEvent.meta.static.actionUrl)
+                            }
                         )
                     }
                 }
