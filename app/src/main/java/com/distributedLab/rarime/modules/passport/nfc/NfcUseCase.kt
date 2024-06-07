@@ -231,11 +231,13 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
         var response: AAResult? = null
         try {
             response = service.doAA(
-                dg15.publicKey,
-                "SHA-256", "SHA-256",profiler
+                dg15.publicKey, sodFile.digestAlgorithm, sodFile.signerInfoDigestAlgorithm, profiler
             )
+            eDocument.aaSignature = response.response
+            eDocument.aaResponse = response.toString()
+            eDocument.isActiveAuth = true
         } catch (e: Exception) {
-            e.printStackTrace()
+            eDocument.isActiveAuth = false
         }
 
 

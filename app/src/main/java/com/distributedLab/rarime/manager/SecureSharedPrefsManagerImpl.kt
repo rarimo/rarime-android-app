@@ -47,7 +47,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "PASSPORT_STATUS" to "PASSPORT_STATUS",
     )
 
-    private val PREFS_FILE_NAME = "sharedPrefFile"
+    private val PREFS_FILE_NAME = "sharedPrefFile1"
     private var sharedPref: SharedPreferences? = null
 
 
