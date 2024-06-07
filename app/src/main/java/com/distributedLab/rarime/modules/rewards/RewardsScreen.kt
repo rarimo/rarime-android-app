@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.rewards.components.ActiveTasksList
-import com.distributedLab.rarime.modules.rewards.components.RewardsLeaderBoard
+import com.distributedLab.rarime.modules.rewards.components.rewards_leaderboard.RewardsLeaderBoard
 import com.distributedLab.rarime.modules.rewards.components.RewardsLeveling
 import com.distributedLab.rarime.modules.rewards.components.TimeEventsList
 import com.distributedLab.rarime.modules.rewards.view_models.RewardsViewModel
@@ -52,7 +52,7 @@ fun RewardsScreen(
     navigate: (String) -> Unit,
     rewardsViewModel: RewardsViewModel = hiltViewModel()
 ) {
-    val pointsWalletAsset = rewardsViewModel.pointsWalletAsset
+    val pointsWalletAsset = rewardsViewModel.pointsWalletAsset.collectAsState()
 
     val leaderboardSheetState = rememberAppSheetState()
 
@@ -62,11 +62,13 @@ fun RewardsScreen(
 
     val activeTasksEvents = rewardsViewModel.activeTasksEvents.collectAsState()
 
+    val leaderBoardList = rewardsViewModel.leaderBoardList.collectAsState()
+
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         scope.launch {
-            rewardsViewModel.loadPointsEvents()
+            rewardsViewModel.init()
         }
     }
 
@@ -126,37 +128,39 @@ fun RewardsScreen(
                         Column (
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            BaseTooltip (
-                                tooltipContent = {
-                                    RichTooltip(
-                                        text = {
-                                            Text(
-                                                text = stringResource(id = R.string.rewards_amount_overline_tooltip),
-                                                style = RarimeTheme.typography.body3,
-                                                color = RarimeTheme.colors.textSecondary,
-                                            )
-                                        },
-                                        colors = RichTooltipColors(
-                                            containerColor = RarimeTheme.colors.baseWhite,
-                                            contentColor = RarimeTheme.colors.textPrimary,
-                                            titleContentColor = RarimeTheme.colors.textPrimary,
-                                            actionContentColor = RarimeTheme.colors.textPrimary,
-                                        ),
+                            pointsWalletAsset.value?.let {
+                                BaseTooltip (
+                                    tooltipContent = {
+                                        RichTooltip(
+                                            text = {
+                                                Text(
+                                                    text = stringResource(id = R.string.rewards_amount_overline_tooltip),
+                                                    style = RarimeTheme.typography.body3,
+                                                    color = RarimeTheme.colors.textSecondary,
+                                                )
+                                            },
+                                            colors = RichTooltipColors(
+                                                containerColor = RarimeTheme.colors.baseWhite,
+                                                contentColor = RarimeTheme.colors.textPrimary,
+                                                titleContentColor = RarimeTheme.colors.textPrimary,
+                                                actionContentColor = RarimeTheme.colors.textPrimary,
+                                            ),
+                                        )
+                                    },
+                                    iconColor = RarimeTheme.colors.textSecondary,
+                                ) {
+                                    Text(
+                                        text = it.token.name,
+                                        color = RarimeTheme.colors.textSecondary,
+                                        style = RarimeTheme.typography.body3,
                                     )
-                                },
-                                iconColor = RarimeTheme.colors.textSecondary,
-                            ) {
+                                }
                                 Text(
-                                    text = pointsWalletAsset.token.name,
-                                    color = RarimeTheme.colors.textSecondary,
-                                    style = RarimeTheme.typography.body3,
+                                    text = NumberUtil.formatBalance(it.humanBalance()),
+                                    color = RarimeTheme.colors.textPrimary,
+                                    style = RarimeTheme.typography.h4,
                                 )
                             }
-                            Text(
-                                text = NumberUtil.formatAmount(pointsWalletAsset.humanBalance()),
-                                color = RarimeTheme.colors.textPrimary,
-                                style = RarimeTheme.typography.h4,
-                            )
                         }
 
                         PrimaryButton(
@@ -289,8 +293,13 @@ fun RewardsScreen(
         }
     }
 
-    AppBottomSheet(state = leaderboardSheetState, fullScreen = true) { hide ->
-        RewardsLeaderBoard()
+    pointsWalletAsset.value?.let {
+        AppBottomSheet(state = leaderboardSheetState, fullScreen = true) { hide ->
+            RewardsLeaderBoard(
+                leaderBoardList.value,
+                it.userAddress,
+            )
+        }
     }
 
     AppBottomSheet(state = levelingSheetState, fullScreen = true) { hide ->

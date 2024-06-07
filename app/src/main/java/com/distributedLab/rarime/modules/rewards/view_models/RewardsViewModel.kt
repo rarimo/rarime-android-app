@@ -1,13 +1,14 @@
 package com.distributedLab.rarime.modules.rewards.view_models
 
 import androidx.lifecycle.ViewModel
+import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.tokens.PointsToken
 import com.distributedLab.rarime.domain.points.PointsEvent
 import com.distributedLab.rarime.domain.points.PointsEventMeta
 import com.distributedLab.rarime.domain.points.PointsEventMetaDynamic
 import com.distributedLab.rarime.domain.points.PointsEventMetaStatic
 import com.distributedLab.rarime.domain.points.PointsEventStatuses
-import com.distributedLab.rarime.modules.common.PointsManager
+import com.distributedLab.rarime.modules.common.WalletAsset
 import com.distributedLab.rarime.modules.common.WalletManager
 import com.distributedLab.rarime.ui.components.MARKDOWN_CONTENT
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -91,12 +92,325 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
     ),
 )
 
+data class LeaderBoardItem (
+    val number: Int,
+    val address: String,
+    val balance: Double,
+    val tokenIcon: Int,
+)
+
+val MOCKED_LEADER_BOARD_LIST = listOf(
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 1235566777888.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 122343.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.0,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 1.0,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "memememememememememememememememememmemememe",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+    LeaderBoardItem(
+        number = 0,
+        address = "0x1234567890abcdef",
+        balance = 123.45,
+        tokenIcon = R.drawable.ic_rarimo
+    ),
+).mapIndexed { idx, it -> it.copy(number = idx + 1, address = "${it.address}${idx}") }
+
 @HiltViewModel
 class RewardsViewModel @Inject constructor(
     private val walletManager: WalletManager,
 //    private val pointsManager: PointsManager,
 ) : ViewModel() {
-    val pointsWalletAsset = walletManager.walletAssets.value.find { it.token is PointsToken }!!
+    private fun getPointsWalletAsset (): WalletAsset? {
+        return walletManager.walletAssets.value.find { it.token is PointsToken }
+    }
+
+    var _pointsWalletAsset = MutableStateFlow(getPointsWalletAsset())
+        private set
+
+    val pointsWalletAsset: StateFlow<WalletAsset?>
+        get() = _pointsWalletAsset.asStateFlow()
+
 
     var _limitedTimeEvents = MutableStateFlow<List<PointsEvent>?>(null)
         private set
@@ -110,8 +424,17 @@ class RewardsViewModel @Inject constructor(
     val activeTasksEvents: StateFlow<List<PointsEvent>?>
         get() = _activeTasksEvents.asStateFlow()
 
-    suspend fun loadPointsEvents() {
+    var _leaderBoardList = MutableStateFlow(listOf<LeaderBoardItem>())
+        private set
+
+    val leaderBoardList: StateFlow<List<LeaderBoardItem>>
+        get() = _leaderBoardList.asStateFlow()
+
+    suspend fun init() {
         _limitedTimeEvents.value = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
         _activeTasksEvents.value = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
+
+        _pointsWalletAsset.value = getPointsWalletAsset()
+        _leaderBoardList.value = MOCKED_LEADER_BOARD_LIST
     }
 }
