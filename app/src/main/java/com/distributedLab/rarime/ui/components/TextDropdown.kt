@@ -78,7 +78,8 @@ fun TextDropdown(
                     modifier = Modifier
                         .rotate(if (isDropdownExpanded) 180f else 0f),
                     id = R.drawable.ic_carret_down,
-                    size = 12.dp
+                    size = 12.dp,
+                    tint = RarimeTheme.colors.textPrimary,
                 )
             }
         }
