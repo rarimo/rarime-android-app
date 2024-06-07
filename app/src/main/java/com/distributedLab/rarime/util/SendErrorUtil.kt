@@ -10,7 +10,7 @@ import java.io.FileWriter
 
 object SendErrorUtil {
     fun sendErrorEmail(file: File, context: Context): Intent {
-        val recipient = "info@rarimo.com"
+        val recipient = "info@rarilabs.com"
 
         // Get the content URI for the file
         val fileUri: Uri = FileProvider.getUriForFile(
