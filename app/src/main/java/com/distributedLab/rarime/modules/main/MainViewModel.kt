@@ -29,7 +29,7 @@ class MainViewModel @Inject constructor(
 
     var colorScheme = settingsManager.colorScheme
 
-    var isBottomBarShown = mutableStateOf(true)
+    var isBottomBarShown = mutableStateOf(false)
         private set
 
     fun setBottomBarVisibility(isVisible: Boolean) {
