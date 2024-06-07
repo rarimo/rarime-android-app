@@ -1,6 +1,7 @@
 package com.distributedLab.rarime.modules.rewards.view_models
 
 import androidx.lifecycle.ViewModel
+import com.distributedLab.rarime.data.tokens.PointsToken
 import com.distributedLab.rarime.domain.points.PointsEvent
 import com.distributedLab.rarime.domain.points.PointsEventMeta
 import com.distributedLab.rarime.domain.points.PointsEventMetaDynamic
@@ -95,7 +96,7 @@ class RewardsViewModel @Inject constructor(
     private val walletManager: WalletManager,
 //    private val pointsManager: PointsManager,
 ) : ViewModel() {
-    val pointsWalletAsset = walletManager.walletAssets.value.find { it.token.symbol == "RRMO" }!!
+    val pointsWalletAsset = walletManager.walletAssets.value.find { it.token is PointsToken }!!
 
     var _limitedTimeEvents = MutableStateFlow<List<PointsEvent>?>(null)
         private set

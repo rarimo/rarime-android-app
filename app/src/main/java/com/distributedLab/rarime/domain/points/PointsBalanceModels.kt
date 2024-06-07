@@ -53,13 +53,34 @@ data class CreateBalancePayload(
     val id: String,
     val type: String,
 
+    val attributes: CreateBalanceAttributes
+)
+
+data class CreateBalanceAttributes(
     @Json(name = "referred_by")
-    val referredBy: String,
+    val referredBy: String
 )
 
 data class VerifyPassportPayload(
     val id: String,
     val type: String,
 
+    val attributes: VerifyPassportAttributes
+)
+
+data class VerifyPassportAttributes(
     val proof: Map<String, Any>,
 )
+
+data class WithdrawPayload (
+    val id: String,
+    val type: String,
+    val attributes: WithdrawPayloadAttributes,
+)
+
+data class WithdrawPayloadAttributes(
+    val amount: Long,
+    val address: String,
+    val proof: Map<String, Any>,
+)
+

@@ -19,7 +19,7 @@ interface JsonApiPointsSvcManager {
     suspend fun getPointsBalance(@Path("nullifier") nullifier: String): Response<PointsBalance>
 
     @PATCH("https://api.stage.rarime.com/integrations/rarime-points-svc/v1/public/balances/{nullifier}")
-    suspend fun activatePointsBalance(@Path("nullifier") nullifier: String): Response<PointsBalance>
+    suspend fun activatePointsBalance(@Path("nullifier") nullifier: String, @Body payload: CreateBalancePayload): Response<PointsBalance>
 
     @POST("https://api.stage.rarime.com/integrations/rarime-points-svc/v1/public/balances/{nullifier}/verifypassport")
     suspend fun verifyPassport(
@@ -31,7 +31,7 @@ interface JsonApiPointsSvcManager {
     suspend fun getWithdrawalHistory(@Path("nullifier") nullifier: String): Response<List<PointsWithdrawal>>
 
     @POST("https://api.stage.rarime.com/integrations/rarime-points-svc/v1/public/balances/{nullifier}/withdrawals")
-    suspend fun withdrawPoints(@Path("nullifier") nullifier: String): Response<PointsWithdrawal>
+    suspend fun withdrawPoints(@Path("nullifier") nullifier: String, @Body payload: WithdrawPayload): Response<PointsWithdrawal>
 
     @GET("https://api.stage.rarime.com/integrations/rarime-points-svc/v1/public/point_price")
     suspend fun getPointPrice(): Response<PointsPrice>

@@ -8,6 +8,7 @@ import com.distributedLab.rarime.domain.points.PointsEvent
 import com.distributedLab.rarime.domain.points.PointsPrice
 import com.distributedLab.rarime.domain.points.PointsWithdrawal
 import com.distributedLab.rarime.domain.points.VerifyPassportPayload
+import com.distributedLab.rarime.domain.points.WithdrawPayload
 import javax.inject.Inject
 
 class PointsManager @Inject constructor(private val jsonApiPointsSvcManager: JsonApiPointsSvcManager) {
@@ -46,8 +47,8 @@ class PointsManager @Inject constructor(private val jsonApiPointsSvcManager: Jso
         return null
     }
 
-    suspend fun activatePointsBalance(nullifier: String): PointsBalance? {
-        val response = jsonApiPointsSvcManager.activatePointsBalance(nullifier)
+    suspend fun activatePointsBalance(nullifier: String, payload: CreateBalancePayload): PointsBalance? {
+        val response = jsonApiPointsSvcManager.activatePointsBalance(nullifier, payload)
 
         if (response.isSuccessful) {
             return response.body()!!
@@ -78,8 +79,8 @@ class PointsManager @Inject constructor(private val jsonApiPointsSvcManager: Jso
         return null
     }
 
-    suspend fun withdrawPoints(nullifier: String): PointsWithdrawal? {
-        val response = jsonApiPointsSvcManager.withdrawPoints(nullifier)
+    suspend fun withdrawPoints(nullifier: String, payload: WithdrawPayload): PointsWithdrawal? {
+        val response = jsonApiPointsSvcManager.withdrawPoints(nullifier, payload)
 
         if (response.isSuccessful) {
             return response.body()!!
