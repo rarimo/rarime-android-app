@@ -71,7 +71,7 @@ fun AuthMethodScreen(
             title = stringResource(R.string.auth_method), onBack = onBack
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                if (!isBiometricsAvailable) {
+                if (isBiometricsAvailable) {
                     AuthMethodItem(iconId = R.drawable.ic_fingerprint,
                         label = stringResource(R.string.biometrics),
                         checked = biometricsState == SecurityCheckState.ENABLED,

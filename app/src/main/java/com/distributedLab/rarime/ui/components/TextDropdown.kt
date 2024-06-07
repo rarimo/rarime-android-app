@@ -1,8 +1,10 @@
 package com.distributedLab.rarime.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
@@ -43,6 +46,7 @@ fun TextDropdown(
     modifier: Modifier = Modifier,
     options: List<DropdownOption>,
     value: String,
+    label: String? = null,
     onChange: (String) -> Unit
 ) {
     var isDropdownExpanded by remember {
@@ -69,7 +73,7 @@ fun TextDropdown(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = options.find { it.value == value }?.label ?: "",
+                    text = options.find { it.value == value }?.label ?: label ?: "",
                     style = RarimeTheme.typography.overline2,
                     color = RarimeTheme.colors.textPrimary,
                 )
@@ -78,7 +82,8 @@ fun TextDropdown(
                     modifier = Modifier
                         .rotate(if (isDropdownExpanded) 180f else 0f),
                     id = R.drawable.ic_carret_down,
-                    size = 12.dp
+                    size = 12.dp,
+                    tint = RarimeTheme.colors.textPrimary,
                 )
             }
         }
@@ -140,18 +145,35 @@ private fun TextDropdownPreview() {
 
 
     CardContainer (
-        modifier = Modifier.height(200.dp),
+        modifier = Modifier.fillMaxSize(),
     ) {
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.Top
+        Column (
+            verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
-            TextDropdown(
-                options = options,
-                value = value,
-                onChange = { value = it }
-            )
+            Row(
+                modifier = Modifier,
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.Top
+            ) {
+                TextDropdown(
+                    options = options,
+                    value = value,
+                    onChange = { value = it }
+                )
+            }
+
+            Row(
+                modifier = Modifier,
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.Top
+            ) {
+                TextDropdown(
+                    options = options,
+                    value = "",
+                    label = "Select an option",
+                    onChange = { value = it }
+                )
+            }
         }
     }
 }

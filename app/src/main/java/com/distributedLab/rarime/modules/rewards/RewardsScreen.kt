@@ -1,6 +1,5 @@
 package com.distributedLab.rarime.modules.rewards
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,33 +18,33 @@ import androidx.compose.material3.RichTooltip
 import androidx.compose.material3.RichTooltipColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.modules.rewards.components.RewardAmountPreview
-import com.distributedLab.rarime.modules.rewards.components.RewardsLeaderBoard
+import com.distributedLab.rarime.modules.rewards.components.ActiveTasksList
+import com.distributedLab.rarime.modules.rewards.components.rewards_leaderboard.RewardsLeaderBoard
 import com.distributedLab.rarime.modules.rewards.components.RewardsLeveling
+import com.distributedLab.rarime.modules.rewards.components.TimeEventsList
 import com.distributedLab.rarime.modules.rewards.view_models.RewardsViewModel
 import com.distributedLab.rarime.ui.components.AppIcon
-import com.distributedLab.rarime.ui.components.AppSkeleton
 import com.distributedLab.rarime.ui.components.CardContainer
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.base.BaseTooltip
 import com.distributedLab.rarime.ui.components.AppBottomSheet
-import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.UiLinearProgressBar
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.NumberUtil
 import com.distributedLab.rarime.util.Screen
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,11 +52,25 @@ fun RewardsScreen(
     navigate: (String) -> Unit,
     rewardsViewModel: RewardsViewModel = hiltViewModel()
 ) {
-    val pointsWalletAsset = rewardsViewModel.pointsWalletAsset
+    val pointsWalletAsset = rewardsViewModel.pointsWalletAsset.collectAsState()
 
     val leaderboardSheetState = rememberAppSheetState()
 
     val levelingSheetState = rememberAppSheetState()
+
+    val limitedTimeEvents = rewardsViewModel.limitedTimeEvents.collectAsState()
+
+    val activeTasksEvents = rewardsViewModel.activeTasksEvents.collectAsState()
+
+    val leaderBoardList = rewardsViewModel.leaderBoardList.collectAsState()
+
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        scope.launch {
+            rewardsViewModel.init()
+        }
+    }
 
     Column (
         modifier = Modifier
@@ -115,37 +128,39 @@ fun RewardsScreen(
                         Column (
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            BaseTooltip (
-                                tooltipContent = {
-                                    RichTooltip(
-                                        text = {
-                                            Text(
-                                                text = stringResource(id = R.string.rewards_amount_overline_tooltip),
-                                                style = RarimeTheme.typography.body3,
-                                                color = RarimeTheme.colors.textSecondary,
-                                            )
-                                        },
-                                        colors = RichTooltipColors(
-                                            containerColor = RarimeTheme.colors.baseWhite,
-                                            contentColor = RarimeTheme.colors.textPrimary,
-                                            titleContentColor = RarimeTheme.colors.textPrimary,
-                                            actionContentColor = RarimeTheme.colors.textPrimary,
-                                        ),
+                            pointsWalletAsset.value?.let {
+                                BaseTooltip (
+                                    tooltipContent = {
+                                        RichTooltip(
+                                            text = {
+                                                Text(
+                                                    text = stringResource(id = R.string.rewards_amount_overline_tooltip),
+                                                    style = RarimeTheme.typography.body3,
+                                                    color = RarimeTheme.colors.textSecondary,
+                                                )
+                                            },
+                                            colors = RichTooltipColors(
+                                                containerColor = RarimeTheme.colors.baseWhite,
+                                                contentColor = RarimeTheme.colors.textPrimary,
+                                                titleContentColor = RarimeTheme.colors.textPrimary,
+                                                actionContentColor = RarimeTheme.colors.textPrimary,
+                                            ),
+                                        )
+                                    },
+                                    iconColor = RarimeTheme.colors.textSecondary,
+                                ) {
+                                    Text(
+                                        text = it.token.name,
+                                        color = RarimeTheme.colors.textSecondary,
+                                        style = RarimeTheme.typography.body3,
                                     )
-                                },
-                                iconColor = RarimeTheme.colors.textSecondary,
-                            ) {
+                                }
                                 Text(
-                                    text = pointsWalletAsset.token.name,
-                                    color = RarimeTheme.colors.textSecondary,
-                                    style = RarimeTheme.typography.body3,
+                                    text = NumberUtil.formatBalance(it.humanBalance()),
+                                    color = RarimeTheme.colors.textPrimary,
+                                    style = RarimeTheme.typography.h4,
                                 )
                             }
-                            Text(
-                                text = NumberUtil.formatAmount(pointsWalletAsset.humanBalance()),
-                                color = RarimeTheme.colors.textPrimary,
-                                style = RarimeTheme.typography.h4,
-                            )
                         }
 
                         PrimaryButton(
@@ -229,10 +244,20 @@ fun RewardsScreen(
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    TimeEventsList(
-                        modifier = Modifier.fillMaxWidth(),
-                        navigate,
-                    )
+                    limitedTimeEvents.value?.let {
+                        TimeEventsList(
+                            modifier = Modifier.fillMaxWidth(),
+                            navigate = navigate,
+                            pointsEvents = it
+                        )
+                    } ?: Column () {
+                        // TODO: implement skeleton loader and error view
+                        Text(
+                            text = "Loading...",
+                            style = RarimeTheme.typography.body3,
+                            color = RarimeTheme.colors.textSecondary,
+                        )
+                    }
                 }
             }
 
@@ -250,236 +275,35 @@ fun RewardsScreen(
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    ActiveTasksList(navigate)
+                    activeTasksEvents.value?.let {
+                        ActiveTasksList(
+                            navigate = navigate,
+                            pointsEvents = it
+                        )
+                    } ?: Column () {
+                        // TODO: implement skeleton loader and error view
+                        Text(
+                            text = "Loading...",
+                            style = RarimeTheme.typography.body3,
+                            color = RarimeTheme.colors.textSecondary,
+                        )
+                    }
                 }
             }
         }
     }
 
-    AppBottomSheet(state = leaderboardSheetState, fullScreen = true) { hide ->
-        RewardsLeaderBoard()
+    pointsWalletAsset.value?.let {
+        AppBottomSheet(state = leaderboardSheetState, fullScreen = true) { hide ->
+            RewardsLeaderBoard(
+                leaderBoardList.value,
+                it.userAddress,
+            )
+        }
     }
 
     AppBottomSheet(state = levelingSheetState, fullScreen = true) { hide ->
         RewardsLeveling()
-    }
-}
-
-@Composable
-fun TimeEventsList(
-    modifier: Modifier = Modifier,
-    navigate: (String) -> Unit,
-) {
-    val limitedTimeEvents = listOf(
-        "Limited time event 1",
-        "Limited time event 2",
-    )
-
-    Column (
-        modifier = modifier
-    ) {
-        limitedTimeEvents.forEachIndexed { idx, item ->
-            TimeEventItem(navigate = navigate)
-
-            if (idx != limitedTimeEvents.size - 1) {
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun TimeEventItem(
-    modifier: Modifier = Modifier,
-    navigate: (String) -> Unit,
-) {
-    Row(
-        modifier = modifier
-            .clickable {
-                navigate(Screen.Main.Rewards.RewardsEventsItem.route.replace("{item_id}", "yopta"))
-            },
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Image(
-//            painter = rememberAsyncImagePainter("https://images.unsplash.com/photo-1717263608216-51a63715d209?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),
-            painter = painterResource(id = R.drawable.event_stub),
-            contentDescription = "Limited time event",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .width(64.dp)
-                .height(64.dp)
-                .clip(RoundedCornerShape(8.dp)),
-        )
-
-        Column (
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Text(
-                text = "Limited time event Limited time event Limited time event",
-                style = RarimeTheme.typography.subtitle4,
-                color = RarimeTheme.colors.textPrimary,
-            )
-
-            Row (
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                RewardAmountPreview()
-
-                Text(
-                    text = "2 days left",
-                    style = RarimeTheme.typography.caption2,
-                    color = RarimeTheme.colors.textSecondary,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun ActiveTasksList(
-    navigate: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val activeTasksList = listOf(
-        "Limited time event 1",
-        "Limited time event 2",
-    )
-
-    Column (
-        modifier = modifier
-    ) {
-        activeTasksList.forEachIndexed { idx, item ->
-            ActiveTaskItem(navigate = navigate)
-
-            if (idx != activeTasksList.size - 1) {
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun ActiveTaskItem(
-    modifier: Modifier = Modifier,
-    navigate: (String) -> Unit,
-) {
-    Row (
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .clickable {
-                navigate(Screen.Main.Rewards.RewardsEventsItem.route.replace("{item_id}", "yopta"))
-            }
-    ) {
-        Box (
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .clip(RoundedCornerShape(100.dp))
-                .width(40.dp)
-                .height(40.dp)
-                .background(RarimeTheme.colors.baseBlack)
-        ) {
-            AppIcon(
-                id = R.drawable.ic_users,
-                tint = RarimeTheme.colors.baseWhite
-            )
-        }
-
-        Row (
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column (
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Text(
-                    text = "Invite 5 users",
-                    style = RarimeTheme.typography.subtitle4,
-                    color = RarimeTheme.colors.textPrimary,
-                )
-
-                Text (
-                    text = "Invite frients into app",
-                    style = RarimeTheme.typography.body4,
-                    color = RarimeTheme.colors.textSecondary,
-                )
-            }
-
-            Row (
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                RewardAmountPreview()
-
-                AppIcon(
-                    id = R.drawable.ic_caret_right,
-                    tint = RarimeTheme.colors.textSecondary
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun RewardsSkeleton() {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-        modifier = Modifier
-            .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
-            .padding(top = 20.dp)
-            .padding(horizontal = 12.dp)
-            .blur(6.dp)
-    ) {
-        AppSkeleton(
-            modifier = Modifier
-                .width(120.dp)
-                .height(20.dp)
-        )
-        for (i in 0..4) {
-            CardContainer {
-                Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                    AppSkeleton(
-                        modifier = Modifier
-                            .width(60.dp)
-                            .height(12.dp)
-                    )
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        AppSkeleton(
-                            modifier = Modifier
-                                .width(140.dp)
-                                .height(30.dp)
-                        )
-                        AppSkeleton(
-                            modifier = Modifier
-                                .width(60.dp)
-                                .height(20.dp)
-                        )
-                    }
-                    AppSkeleton(
-                        modifier = Modifier
-                            .width(200.dp)
-                            .height(12.dp)
-                    )
-                    AppSkeleton(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(40.dp)
-                    )
-                }
-            }
-        }
     }
 }
 
