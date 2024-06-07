@@ -36,6 +36,7 @@ class IdentityManager @Inject constructor(
         }
 
     fun rarimoAddress(): String {
+
         return profiler.value.rarimoAddress
     }
 

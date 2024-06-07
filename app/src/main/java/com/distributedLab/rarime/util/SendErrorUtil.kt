@@ -10,9 +10,7 @@ import java.io.FileWriter
 
 object SendErrorUtil {
     fun sendErrorEmail(file: File, context: Context): Intent {
-        val recipient = "yaroslav.ivanov@distributedlab.com"
-        val subject = "Error in registerByDocument Function"
-        val body = "Please find the attached file for error details."
+        val recipient = "info@rarimo.com"
 
         // Get the content URI for the file
         val fileUri: Uri = FileProvider.getUriForFile(
@@ -20,10 +18,7 @@ object SendErrorUtil {
         )
 
         val emailIntent = Intent(Intent.ACTION_SEND).apply {
-            //type = "message/rfc822"
             putExtra(Intent.EXTRA_EMAIL, arrayOf(recipient))
-            putExtra(Intent.EXTRA_SUBJECT, subject)
-            putExtra(Intent.EXTRA_TEXT, body)
             putExtra(Intent.EXTRA_STREAM, fileUri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
