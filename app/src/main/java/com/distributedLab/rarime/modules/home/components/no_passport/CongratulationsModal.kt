@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.home
+package com.distributedLab.rarime.modules.home.components.no_passport
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

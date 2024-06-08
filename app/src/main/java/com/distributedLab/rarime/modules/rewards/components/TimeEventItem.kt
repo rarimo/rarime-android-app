@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -90,9 +91,9 @@ private fun TimeEventsListPreview () {
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary)
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         TimeEventItem(
+            modifier = Modifier.fillMaxWidth(),
             navigate = {},
             pointsEvent = CONST_MOCKED_EVENTS_LIST[0]
         )
