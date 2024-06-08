@@ -39,8 +39,14 @@ data class SocialItem(
 )
 
 @Composable
-fun Invitation() {
-val invitationCodeState = rememberAppTextFieldState(initialText = "")
+fun Invitation(
+    onNext: () -> Unit = { }
+) {
+    val invitationCodeState = rememberAppTextFieldState(initialText = "")
+
+    fun verifyCode () {
+        onNext()
+    }
 
     HomeIntroLayout(
         title = "Join Rewards Program",
@@ -49,7 +55,7 @@ val invitationCodeState = rememberAppTextFieldState(initialText = "")
             Image(
                 painter = painterResource(id = R.drawable.reward_coin),
                 contentDescription = "Invitation Icon",
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(110.dp)
             )
         }
     ) {
@@ -68,7 +74,7 @@ val invitationCodeState = rememberAppTextFieldState(initialText = "")
                                 .width(52.dp)
                                 .height(32.dp),
                             icon = R.drawable.ic_arrow_right,
-                            onClick = { /*TODO*/ },
+                            onClick = { verifyCode() },
                             enabled = invitationCodeState.text.isNotEmpty()
                         )
                     }
@@ -77,7 +83,7 @@ val invitationCodeState = rememberAppTextFieldState(initialText = "")
 
             HorizontalDivider()
 
-            Column (
+            Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
 
@@ -94,7 +100,7 @@ val invitationCodeState = rememberAppTextFieldState(initialText = "")
                 )
             }
 
-            Row (
+            Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
@@ -123,7 +129,7 @@ val invitationCodeState = rememberAppTextFieldState(initialText = "")
                             .clickable { it.onClick },
                         contentAlignment = Alignment.Center
                     ) {
-                        Column (
+                        Column(
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -144,18 +150,18 @@ val invitationCodeState = rememberAppTextFieldState(initialText = "")
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Column (
+            Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text (
+                Text(
                     text = "Supported countries",
                     style = RarimeTheme.typography.buttonSmall,
                     color = RarimeTheme.colors.textSecondary
                 )
 
-                Text (
+                Text(
                     text = "Learn more about the program",
                     style = RarimeTheme.typography.buttonSmall,
                     color = RarimeTheme.colors.textSecondary

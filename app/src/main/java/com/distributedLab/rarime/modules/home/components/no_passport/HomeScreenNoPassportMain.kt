@@ -1,5 +1,11 @@
 package com.distributedLab.rarime.modules.home.components.no_passport
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOut
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +16,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -21,7 +31,9 @@ import com.distributedLab.rarime.modules.common.WalletAsset
 import com.distributedLab.rarime.modules.home.LocalHomeViewModel
 import com.distributedLab.rarime.modules.home.components.HomeScreenHeader
 import com.distributedLab.rarime.modules.home.components.RarimeInfoScreen
+import com.distributedLab.rarime.modules.home.components.no_passport.non_specific.Invitation
 import com.distributedLab.rarime.modules.home.components.no_passport.non_specific.OtherPassportIntroScreen
+import com.distributedLab.rarime.modules.home.components.no_passport.non_specific.PolicyConfirmation
 import com.distributedLab.rarime.modules.home.components.no_passport.specific.AirdropIntroScreen
 import com.distributedLab.rarime.ui.components.ActionCard
 import com.distributedLab.rarime.ui.components.ActionCardVariants
@@ -45,7 +57,7 @@ fun HomeScreenNoPassportMain(
 }
 
 @Composable
-fun HomeScreenNoPassportMainContent (
+fun HomeScreenNoPassportMainContent(
     navigate: (String) -> Unit,
     rmoAsset: WalletAsset
 ) {
@@ -55,7 +67,7 @@ fun HomeScreenNoPassportMainContent (
 
     val specificAppSheetState = rememberAppSheetState()
 
-    Column (
+    Column(
         modifier = Modifier
             .padding(12.dp)
     ) {
@@ -65,7 +77,7 @@ fun HomeScreenNoPassportMainContent (
 
         Spacer(modifier = Modifier.size(32.dp))
 
-        Column (
+        Column(
             modifier = Modifier
                 .weight(1f),
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -115,9 +127,49 @@ fun HomeScreenNoPassportMainContent (
             }
 
             AppBottomSheet(state = nonSpecificAppSheetState, fullScreen = true) { hide ->
-                OtherPassportIntroScreen(onStart = {
-                    hide({ navigate(Screen.ScanPassport.route) })
-                })
+                var currStep by remember {
+                    mutableStateOf(0)
+                }
+
+                when (currStep) {
+                    0 -> {
+                        AnimatedVisibility(
+                            visible = currStep.equals(0),
+                            enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
+                            exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
+                        ) {
+                            Invitation(onNext = {
+                                currStep = 1
+                            })
+                        }
+                    }
+
+                    1 -> {
+                        AnimatedVisibility(
+                            visible = currStep.equals(1),
+                            enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
+                            exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
+                        ) {
+                            OtherPassportIntroScreen(onStart = {
+                                currStep = 2
+                            })
+                        }
+                    }
+
+                    2 -> {
+                        AnimatedVisibility(
+                            visible = currStep.equals(2),
+                            enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
+                            exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
+                        ) {
+                            PolicyConfirmation(
+                                onNext = {
+                                    hide({ navigate(Screen.ScanPassport.route) })
+                                }
+                            )
+                        }
+                    }
+                }
             }
 
             AppBottomSheet(state = specificAppSheetState, fullScreen = true) { hide ->
@@ -131,7 +183,7 @@ fun HomeScreenNoPassportMainContent (
 
 @Preview
 @Composable
-fun HomeScreenNoPassportMainContentPreview () {
+fun HomeScreenNoPassportMainContentPreview() {
 
     Column(
         modifier = Modifier
