@@ -37,10 +37,9 @@ class IdentityManager @Inject constructor(
             return _profiler.asStateFlow()
         }
 
-    val rarimoAddress: String by lazy {
-        _privateKey.value?.let {
-            _profiler.value.rarimoAddress
-        } ?: ""
+    fun rarimoAddress(): String {
+
+        return profiler.value.rarimoAddress
     }
 
     val evmAddress: String by lazy {

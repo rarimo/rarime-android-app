@@ -89,7 +89,7 @@ class WalletManager @Inject constructor(
         dataStoreManager.readWalletAssets(
             listOf(
                 WalletAsset(
-                    identityManager.rarimoAddress,
+                    identityManager.rarimoAddress(),
                     RarimoToken(
                         BaseConfig.RARIMO_CHAINS[RarimoChains.MainnetBeta.chainId]!!, // FIXME: !!
                         identityManager,
@@ -141,8 +141,10 @@ class WalletManager @Inject constructor(
     private suspend fun generateAirdropQueryProof(
         registrationProof: ZkProof, eDocument: EDocument, privateKey: ByteArray
     ): ZkProof {
+        val assetContext: Context = context.createPackageContext("com.distributedLab.rarime", 0)
+        val assetManager = assetContext.assets
 
-        val zkp = ZKPUseCase(context)
+        val zkp = ZKPUseCase(context, assetManager)
         val registrationContract = contractManager.getRegistration()
 
         val registrationSmtAddress = withContext(Dispatchers.IO) {
@@ -206,7 +208,7 @@ class WalletManager @Inject constructor(
     }
 
     private suspend fun airDrop(zkProof: ZkProof) {
-        val rarimoAddress = identityManager.rarimoAddress
+        val rarimoAddress = identityManager.rarimoAddress()
 
         Log.i("airDrop", Gson().toJson(zkProof))
 

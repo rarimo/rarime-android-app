@@ -52,6 +52,7 @@ fun HomeScreen(
     val passportCardLook by homeViewModel.passportCardLook
     val passportIdentifiers by homeViewModel.passportIdentifiers
     val isIncognito by homeViewModel.isIncognito
+    val passportStatus by homeViewModel.passportStatus.collectAsState()
 
     val rmoAsset = homeViewModel.rmoAsset.collectAsState()
 
@@ -85,6 +86,7 @@ fun HomeScreen(
                         identifiers = passportIdentifiers,
                         onLookChange = { homeViewModel.onPassportCardLookChange(it) },
                         onIncognitoChange = { homeViewModel.onIncognitoChange(it) },
+                        passportStatus = passportStatus,
                         onIdentifiersChange = { homeViewModel.onPassportIdentifiersChange(it) }
                     )
                     RarimeCard()
@@ -104,20 +106,6 @@ fun HomeScreen(
 @Composable
 private fun Header(walletAsset: WalletAsset, onBalanceClick: () -> Unit = {}) {
     Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(RarimeTheme.colors.warningLighter)
-                .padding(vertical = 4.dp, horizontal = 20.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.beta_launch),
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.warningDark,
-            )
-        }
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
@@ -149,10 +137,7 @@ private fun Header(walletAsset: WalletAsset, onBalanceClick: () -> Unit = {}) {
                     color = RarimeTheme.colors.textPrimary
                 )
             }
-            PrimaryTextButton(
-                leftIcon = R.drawable.ic_qr_code,
-                onClick = { /*TODO*/ }
-            )
+
         }
     }
 }

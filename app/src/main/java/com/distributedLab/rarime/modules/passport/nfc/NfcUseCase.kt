@@ -25,6 +25,7 @@ import org.jmrtd.lds.icao.DG15File
 import org.jmrtd.lds.icao.DG1File
 import org.jmrtd.lds.icao.DG2File
 import org.jmrtd.lds.iso19794.FaceImageInfo
+import org.jmrtd.protocol.AAResult
 import java.io.InputStream
 import java.security.MessageDigest
 import java.security.Security
@@ -227,13 +228,20 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
 
 
         val profiler = Profile().newProfile(privateKey).registrationChallenge
+        var response: AAResult? = null
+        try {
+            response = service.doAA(
+                dg15.publicKey, sodFile.digestAlgorithm, sodFile.signerInfoDigestAlgorithm, profiler
+            )
+            eDocument.aaSignature = response.response
+            eDocument.aaResponse = response.toString()
+            eDocument.isActiveAuth = true
+        } catch (e: Exception) {
+            eDocument.isActiveAuth = false
+        }
 
-        val response = service.doAA(
-            dg15.publicKey,
-            "SHA-256", "SHA-256",profiler
-        )
 
-        eDocument.aaSignature = response.response
+        eDocument.aaSignature = response?.response
 
         // sign -> contract
 

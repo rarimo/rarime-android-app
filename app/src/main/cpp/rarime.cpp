@@ -35,8 +35,6 @@ Java_com_distributedLab_rarime_util_ZkpUtil_groth16ProverBig(JNIEnv *env, jobjec
 
     const char* fileName = env->GetStringUTFChars(filename, nullptr);
 
-
-
     AAsset *asset = AAssetManager_open(mgr, fileName, AASSET_MODE_BUFFER);
     if (asset == nullptr) {
         return -2;

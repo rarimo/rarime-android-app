@@ -21,7 +21,6 @@ data class ProofTxFull(
     var auxValue: String
 ) : Serializable {
     companion object {
-        @OptIn(ExperimentalStdlibApi::class)
         fun fromContractProof(proof: PoseidonSMT.Proof): ProofTxFull {
             return ProofTxFull(
                 root = proof.root.toBase64(),

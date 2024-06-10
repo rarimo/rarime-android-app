@@ -176,4 +176,14 @@
     <string name="birth_date">Дата народження</string>
     <string name="passport_card_identifiers_title">ДАНІ</string>
     <string name="passport_card_identifiers_text">Виберіть два ідентифікатори на картці</string>
+    <string name="waitlist_title">Паспорт не підтримується</string>
+    <string name="waitlist_subtitle">Стати весником</string>
+    <string name="waitlist_description">Якщо ви бажаєте зареєструвати свою країну на ранній бета-фазі, нам знадобиться ваша згода на надання деяких даних. Реєстрація паспортів вашої країни дасть вам право на додаткові винагороди</string>
+    <string name="join_program">Приєднатися</string>
+    <string name="waitlist_info">Інформація, що надається, включає групи даних паспорта та державний підпис</string>
+    <string name="unsupported_country_title">Непідтримувана країна</string>
+    <string name="unsupported_country_description">На жаль, ці паспорти не підлягають винагороді. Однак ви можете використовувати свій анонімний ідентифікатор для інших майбутніх міні-програм.</string>
+    <string name="unsupported_country_btn">Створити анонімний ідентифікатор</string>
+    <string name="waitlist_card_subtitle">Після додавання ви отримаєте сповіщення</string>
+    <string name="unsupported_card_title">Не підтримується для винагород</string>
 </resources>

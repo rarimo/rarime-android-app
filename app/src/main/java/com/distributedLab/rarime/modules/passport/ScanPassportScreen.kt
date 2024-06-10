@@ -11,11 +11,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.distributedLab.rarime.modules.passport.models.EDocument
+import com.distributedLab.rarime.util.Constants
 import com.distributedLab.rarime.util.data.ZkProof
 import org.jmrtd.lds.icao.MRZInfo
 
 private enum class ScanPassportState {
-    SCAN_MRZ, READ_NFC, PASSPORT_DATA, GENERATE_PROOF, CLAIM_TOKENS
+    SCAN_MRZ, READ_NFC, PASSPORT_DATA, GENERATE_PROOF, CLAIM_TOKENS, UNSUPPORTED_PASSPORT, NOT_ALLOWED_PASSPORT
 }
 
 @Composable
@@ -50,23 +51,46 @@ fun ScanPassportScreen(
 
             ScanPassportState.PASSPORT_DATA -> {
                 PassportDataStep(
-                    onNext = { state = ScanPassportState.GENERATE_PROOF },
-                    onClose = onClose,
-                    eDocument = eDocument!!
+                    onNext = {
+                        state =
+                            if (Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument?.personDetails?.issuerAuthority)) {
+                                ScanPassportState.NOT_ALLOWED_PASSPORT
+                            } else {
+                                ScanPassportState.GENERATE_PROOF
+                            }
+                    }, onClose = onClose, eDocument = eDocument!!
                 )
             }
 
             ScanPassportState.GENERATE_PROOF -> {
                 GenerateProofStep(onClose = {
                     registrationProof = it
-                    state = ScanPassportState.CLAIM_TOKENS
-                }, eDocument = eDocument!!)
+                    if (eDocument?.personDetails?.issuerAuthority == "UKR") {
+                        state = ScanPassportState.CLAIM_TOKENS
+                    } else {
+                        onClose.invoke()
+                    }
+
+                }, eDocument = eDocument!!, onError = {
+                    state = ScanPassportState.UNSUPPORTED_PASSPORT
+                })
             }
+
+            ScanPassportState.NOT_ALLOWED_PASSPORT -> {
+                NotAllowedPassportScreen(eDocument = eDocument!!, onClose = onClose) {
+                    state = ScanPassportState.GENERATE_PROOF
+                }
+            }
+
+            ScanPassportState.UNSUPPORTED_PASSPORT -> {
+                WaitlistPassportScreen(eDocument = eDocument!!) {
+                    onClose.invoke()
+                }
+            }
+
 
             ScanPassportState.CLAIM_TOKENS -> {
                 ClaimTokensStep(
-//                    registrationProof = registrationProof!!,
-//                    eDocument = eDocument!!,
                     onFinish = onClose
                 )
             }
