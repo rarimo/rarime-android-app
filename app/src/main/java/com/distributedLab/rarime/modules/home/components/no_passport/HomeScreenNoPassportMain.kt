@@ -4,13 +4,14 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOut
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
@@ -20,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -31,17 +33,25 @@ import com.distributedLab.rarime.modules.common.WalletAsset
 import com.distributedLab.rarime.modules.home.LocalHomeViewModel
 import com.distributedLab.rarime.modules.home.components.HomeScreenHeader
 import com.distributedLab.rarime.modules.home.components.RarimeInfoScreen
+import com.distributedLab.rarime.modules.home.components.no_passport.non_specific.AboutProgram
 import com.distributedLab.rarime.modules.home.components.no_passport.non_specific.Invitation
-import com.distributedLab.rarime.modules.home.components.no_passport.non_specific.OtherPassportIntroScreen
 import com.distributedLab.rarime.modules.home.components.no_passport.non_specific.PolicyConfirmation
 import com.distributedLab.rarime.modules.home.components.no_passport.specific.AirdropIntroScreen
 import com.distributedLab.rarime.ui.components.ActionCard
 import com.distributedLab.rarime.ui.components.ActionCardVariants
 import com.distributedLab.rarime.ui.components.AppBottomSheet
 import com.distributedLab.rarime.ui.components.AppIcon
+import com.distributedLab.rarime.ui.components.PrimaryTextButton
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Screen
+
+enum class UNSPECIFIED_PASSPORT_STEPS(val value: Int) {
+    INVITATION(1),
+    POLICY_CONFIRMATION(3),
+
+    ABOUT_PROGRAM(5),
+}
 
 @Composable
 fun HomeScreenNoPassportMain(
@@ -126,41 +136,102 @@ fun HomeScreenNoPassportMainContent(
                 RarimeInfoScreen(onClose = { hide {} })
             }
 
-            AppBottomSheet(state = nonSpecificAppSheetState, fullScreen = true) { hide ->
+            AppBottomSheet(
+                state = nonSpecificAppSheetState,
+                fullScreen = true,
+                isHeaderEnabled = false,
+            ) { hide ->
                 var currStep by remember {
-                    mutableStateOf(0)
+                    mutableStateOf(UNSPECIFIED_PASSPORT_STEPS.INVITATION)
                 }
 
                 AnimatedVisibility(
-                    visible = currStep.equals(0),
+                    visible = currStep.equals(UNSPECIFIED_PASSPORT_STEPS.INVITATION),
                     enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
                     exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
                 ) {
-                    Invitation(onNext = {
-                        currStep = 1
-                    })
-                }
-
-                AnimatedVisibility(
-                    visible = currStep.equals(1),
-                    enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
-                    exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
-                ) {
-                    OtherPassportIntroScreen(onStart = {
-                        currStep = 2
-                    })
-                }
-
-                AnimatedVisibility(
-                    visible = currStep.equals(2),
-                    enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
-                    exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
-                ) {
-                    PolicyConfirmation(
-                        onNext = {
-                            hide({ navigate(Screen.ScanPassport.route) })
+                    Column (
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row (
+                            modifier = Modifier.fillMaxWidth().padding(24.dp),
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            PrimaryTextButton(
+                                leftIcon = R.drawable.ic_close,
+                                onClick = { nonSpecificAppSheetState.hide() }
+                            )
                         }
-                    )
+
+                        Column (
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Invitation(
+                                onNext = { currStep = UNSPECIFIED_PASSPORT_STEPS.POLICY_CONFIRMATION },
+                                updateStep = { currStep = it }
+                            )
+                        }
+                    }
+                }
+
+                AnimatedVisibility(
+                    visible = currStep.equals(UNSPECIFIED_PASSPORT_STEPS.POLICY_CONFIRMATION),
+                    enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
+                    exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
+                ) {
+                    Column (
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row (
+                            modifier = Modifier.fillMaxWidth().padding(24.dp),
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            PrimaryTextButton(
+                                leftIcon = R.drawable.ic_close,
+                                onClick = { nonSpecificAppSheetState.hide() }
+                            )
+                        }
+                        PolicyConfirmation(
+                            onNext = {
+                                hide({ navigate(Screen.ScanPassport.route) })
+                            }
+                        )
+                    }
+                }
+
+                AnimatedVisibility(
+                    visible = currStep.equals(UNSPECIFIED_PASSPORT_STEPS.ABOUT_PROGRAM),
+                    enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
+                    exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
+                ) {
+                    Column {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(24.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            PrimaryTextButton(
+                                leftIcon = R.drawable.ic_arrow_left,
+                                onClick = { currStep = UNSPECIFIED_PASSPORT_STEPS.INVITATION }
+                            )
+
+                            Text(
+                                text = "About the program",
+                                style = RarimeTheme.typography.subtitle4,
+                                color = RarimeTheme.colors.textPrimary,
+                            )
+
+                            PrimaryTextButton(
+                                leftIcon = R.drawable.ic_close,
+                                onClick = { nonSpecificAppSheetState.hide() }
+                            )
+                        }
+                        AboutProgram(
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
             }
 

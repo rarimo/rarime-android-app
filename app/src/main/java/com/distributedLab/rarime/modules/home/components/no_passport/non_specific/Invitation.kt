@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.home.components.HomeIntroLayout
+import com.distributedLab.rarime.modules.home.components.no_passport.UNSPECIFIED_PASSPORT_STEPS
 import com.distributedLab.rarime.ui.base.BaseIconButton
 import com.distributedLab.rarime.ui.components.AppTextField
 import com.distributedLab.rarime.ui.components.HorizontalDivider
@@ -42,13 +43,15 @@ data class SocialItem(
 
 @Composable
 fun Invitation(
-    onNext: () -> Unit = { }
+    modifier: Modifier = Modifier,
+    onNext: () -> Unit = { },
+    updateStep: (step: UNSPECIFIED_PASSPORT_STEPS) -> Unit = { }
 ) {
     val uriHandler = LocalUriHandler.current
 
     val invitationCodeState = rememberAppTextFieldState(initialText = "")
 
-    fun verifyCode () {
+    fun verifyCode() {
         onNext()
     }
 
@@ -166,6 +169,10 @@ fun Invitation(
                 )
 
                 Text(
+                    modifier = Modifier
+                        .clickable {
+                            updateStep(UNSPECIFIED_PASSPORT_STEPS.ABOUT_PROGRAM)
+                        },
                     text = "Learn more about the program",
                     style = RarimeTheme.typography.buttonSmall,
                     color = RarimeTheme.colors.textSecondary
