@@ -49,6 +49,7 @@ fun HomeScreenPassportMainContent(
     val passportCardLook by homeViewModel.passportCardLook
     val passportIdentifiers by homeViewModel.passportIdentifiers
     val isIncognito by homeViewModel.isIncognito
+    val passportStatus by homeViewModel.passportStatus.collectAsState()
 
     val rarimoInfoSheetState = rememberAppSheetState()
 
@@ -73,6 +74,7 @@ fun HomeScreenPassportMainContent(
                 identifiers = passportIdentifiers,
                 onLookChange = { homeViewModel.onPassportCardLookChange(it) },
                 onIncognitoChange = { homeViewModel.onIncognitoChange(it) },
+                passportStatus = passportStatus,
                 onIdentifiersChange = { homeViewModel.onPassportIdentifiersChange(it) }
             )
 

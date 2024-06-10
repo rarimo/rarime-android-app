@@ -95,7 +95,7 @@ class PointsManager @Inject constructor(
                 type = "withdraw",
                 attributes = WithdrawPayloadAttributes(
                     amount = amount.toLong(),
-                    address = identityManager.rarimoAddress,
+                    address = identityManager.rarimoAddress(),
                     proof = identityManager.registrationProof.value!!.proof
                 )
             )
