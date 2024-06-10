@@ -64,6 +64,7 @@ fun AppBottomSheet(
     modifier: Modifier = Modifier,
     state: AppSheetState = rememberAppSheetState(false),
     fullScreen: Boolean = false,
+    isHeaderEnabled: Boolean = true,
     content: @Composable (HideSheetFn) -> Unit
 ) {
     val modalState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -88,16 +89,18 @@ fun AppBottomSheet(
             onDismissRequest = { state.hide() }
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    PrimaryTextButton(
-                        leftIcon = R.drawable.ic_close,
-                        onClick = { hide {} }
-                    )
+                if (isHeaderEnabled) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        PrimaryTextButton(
+                            leftIcon = R.drawable.ic_close,
+                            onClick = { hide {} }
+                        )
+                    }
                 }
                 Box(
                     modifier = (if (fullScreen) Modifier.height(configuration.screenHeightDp.dp) else Modifier)
@@ -114,7 +117,7 @@ fun AppBottomSheet(
 @Preview
 @Composable
 private fun AppBottomSheetPreview() {
-    val sheetState = rememberAppSheetState(true)
+    val sheetState = rememberAppSheetState(false)
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Box {
@@ -123,7 +126,10 @@ private fun AppBottomSheetPreview() {
                 onClick = { sheetState.show() }
             )
         }
-        AppBottomSheet(state = sheetState) {
+        AppBottomSheet(
+            state = sheetState,
+            fullScreen = true,
+        ) {
             Box(modifier = Modifier.height(200.dp)) {
                 Text("Bottom sheet content")
             }
