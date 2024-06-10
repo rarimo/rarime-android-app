@@ -195,6 +195,7 @@ class ProofViewModel @Inject constructor(
             eDocument.aaSignature,
             pubKeyPem.toByteArray(),
             masterCertProof.root,
+            false
         )
 
         withContext(Dispatchers.IO) {
