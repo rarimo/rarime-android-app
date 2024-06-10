@@ -101,7 +101,7 @@ class WalletManager @Inject constructor(
                     Erc20Token("0x0000000000000000000000000000000000000000")
                 ),
                 WalletAsset(
-                    identityManager.rarimoAddress,
+                    identityManager.rarimoAddress(),
                     PointsToken()
                 )
             )

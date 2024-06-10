@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.home
+package com.distributedLab.rarime.modules.home.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -38,16 +38,8 @@ fun HomeIntroLayout(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .width(72.dp)
-                    .height(72.dp)
-                    .background(RarimeTheme.colors.componentPrimary, CircleShape)
-            ) {
-                icon()
-            }
+            icon()
+
             Text(
                 text = title,
                 style = RarimeTheme.typography.h6,
@@ -72,7 +64,19 @@ fun HomeIntroLayout(
 @Composable
 private fun HomeIntroLayoutPreview() {
     HomeIntroLayout(
-        icon = { AppIcon(id = R.drawable.ic_house_simple_fill, size = 32.dp) },
+        icon = {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .width(72.dp)
+                    .height(72.dp)
+                    .background(RarimeTheme.colors.componentPrimary, CircleShape)
+            ) {
+
+                AppIcon(id = R.drawable.ic_house_simple_fill, size = 32.dp)
+            }
+        },
         title = "Home Intro Title",
         description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod",
     ) {

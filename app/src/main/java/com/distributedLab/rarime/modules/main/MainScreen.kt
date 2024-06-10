@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -99,6 +101,9 @@ fun MainScreenContent() {
 
     val context = LocalContext.current
     var appIcon by remember { mutableStateOf(AppIconUtil.getIcon(context)) }
+
+    val isModalShown = mainViewModel.isModalShown.collectAsState()
+    val modalContent = mainViewModel.modalContent.collectAsState()
 
     val startDestination = if (mainViewModel.isScreenLocked.value) {
         Screen.Lock.route
@@ -268,6 +273,12 @@ fun MainScreenContent() {
                             url = Constants.PRIVACY_URL,
                             onBack = { navController.popBackStack() })
                     }
+                }
+            }
+
+            if (isModalShown.value) {
+                Dialog(onDismissRequest = { mainViewModel.setModalVisibility(false) }) {
+                    modalContent.value()
                 }
             }
         }

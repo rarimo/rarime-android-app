@@ -85,10 +85,13 @@
     <string name="passport_look_white">White</string>
     <string name="years_old">%1$s Years Old</string>
     <string name="balance_rmo">Balance: %1$s</string>
-    <string name="other_passport_card_description">Join a waitlist</string>
+
+    <string name="other_passport_card_title">Join Rewards Program</string>
+    <string name="other_passport_card_description">Check your eligibility</string>
+    <string name="greet_Common_action_card_btn_text">Let's start</string>
     <string name="rarime_card_title">RARIME</string>
     <string name="rarime_card_description">Learn more about RariMe App</string>
-    <string name="other_passport_card_title">Other passport holders</string>
+
     <string name="reading_data_step">Reading data</string>
     <string name="applying_zero_knowledge_step">Applying Zero Knowledge</string>
     <string name="creating_confidential_profile_step">Creating a confidential profile</string>

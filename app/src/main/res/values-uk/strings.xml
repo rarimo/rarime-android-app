@@ -85,10 +85,13 @@
     <string name="passport_look_white">Біла</string>
     <string name="years_old">%1$s років</string>
     <string name="balance_rmo">Баланс: %1$s</string>
-    <string name="other_passport_card_description">Доєднатися до очікування</string>
+
+    <string name="other_passport_card_title">Доєднатися до програми винагород</string>
+    <string name="other_passport_card_description">Перевірте свої права</string>
+    <string name="greet_Common_action_card_btn_text">Почати</string>
     <string name="rarime_card_title">RARIME</string>
     <string name="rarime_card_description">Дізнатися більше про додаток RariMe</string>
-    <string name="other_passport_card_title">Інші власники паспортів</string>
+
     <string name="reading_data_step">Зчитування даних</string>
     <string name="applying_zero_knowledge_step">Застосування Zero Knowledge</string>
     <string name="creating_confidential_profile_step">Створення конфіденційного профілю</string>

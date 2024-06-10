@@ -7,18 +7,14 @@ import java.math.BigInteger
 import java.time.Instant
 import java.util.Date
 
-// TODO: implement contracts manager
-class Erc20Token(address: String) : Token(address) {
-    override var name: String = ""
-    override var symbol: String = ""
-    override var decimals: Int = 0
-    override var icon: Int = R.drawable.ic_metamask
-
-    override suspend fun loadDetails(): Unit {
-        this.name = "Erc20Token"
-        this.symbol = "ERC"
-        this.decimals = 18
-    }
+class PreviewerToken(
+    address: String,
+    override var name: String = "Previewer Token",
+    override var symbol: String = "PRE",
+    override var decimals: Int = 18,
+    override var icon: Int = R.drawable.ic_info,
+) : Token(address) {
+    override suspend fun loadDetails(): Unit {}
 
     override suspend fun balanceOf(address: String): BigInteger {
         return BigInteger.ZERO
