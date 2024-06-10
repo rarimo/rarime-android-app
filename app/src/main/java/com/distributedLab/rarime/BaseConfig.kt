@@ -14,6 +14,9 @@ object BaseConfig {
     const val REGISTER_CONTRACT_ADDRESS = "0x31C9baC74fa7482cDCf33d09B8476250b460B058"
     const val COSMOS_RPC_URL = "https://rpc-api.node1.mainnet-beta.rarimo.com"
 
+    const val DISCORD_URL = "https://discord.gg/Bzjm5MDXrU"
+    const val TWITTER_URL = "https://x.com/Rarimo_protocol"
+
     val RARIMO_CHAINS: Map<String, ChainInfo> = mapOf(
         RarimoChains.MainnetBeta.chainId to ChainInfo(
             chainId = "rarimo_42-1",

@@ -131,44 +131,36 @@ fun HomeScreenNoPassportMainContent(
                     mutableStateOf(0)
                 }
 
-                when (currStep) {
-                    0 -> {
-                        AnimatedVisibility(
-                            visible = currStep.equals(0),
-                            enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
-                            exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
-                        ) {
-                            Invitation(onNext = {
-                                currStep = 1
-                            })
-                        }
-                    }
+                AnimatedVisibility(
+                    visible = currStep.equals(0),
+                    enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
+                    exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
+                ) {
+                    Invitation(onNext = {
+                        currStep = 1
+                    })
+                }
 
-                    1 -> {
-                        AnimatedVisibility(
-                            visible = currStep.equals(1),
-                            enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
-                            exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
-                        ) {
-                            OtherPassportIntroScreen(onStart = {
-                                currStep = 2
-                            })
-                        }
-                    }
+                AnimatedVisibility(
+                    visible = currStep.equals(1),
+                    enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
+                    exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
+                ) {
+                    OtherPassportIntroScreen(onStart = {
+                        currStep = 2
+                    })
+                }
 
-                    2 -> {
-                        AnimatedVisibility(
-                            visible = currStep.equals(2),
-                            enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
-                            exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
-                        ) {
-                            PolicyConfirmation(
-                                onNext = {
-                                    hide({ navigate(Screen.ScanPassport.route) })
-                                }
-                            )
+                AnimatedVisibility(
+                    visible = currStep.equals(2),
+                    enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
+                    exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
+                ) {
+                    PolicyConfirmation(
+                        onNext = {
+                            hide({ navigate(Screen.ScanPassport.route) })
                         }
-                    }
+                    )
                 }
             }
 

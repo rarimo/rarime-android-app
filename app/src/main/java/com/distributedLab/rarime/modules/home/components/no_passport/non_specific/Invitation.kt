@@ -21,9 +21,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.home.components.HomeIntroLayout
 import com.distributedLab.rarime.ui.base.BaseIconButton
@@ -42,6 +44,8 @@ data class SocialItem(
 fun Invitation(
     onNext: () -> Unit = { }
 ) {
+    val uriHandler = LocalUriHandler.current
+
     val invitationCodeState = rememberAppTextFieldState(initialText = "")
 
     fun verifyCode () {
@@ -108,12 +112,12 @@ fun Invitation(
                     SocialItem(
                         icon = R.drawable.ic_twitter_x,
                         title = "x",
-                        onClick = { /*TODO*/ }
+                        onClick = { uriHandler.openUri(BaseConfig.TWITTER_URL) }
                     ),
                     SocialItem(
                         icon = R.drawable.ic_discord,
                         title = "Discord",
-                        onClick = { /*TODO*/ }
+                        onClick = { uriHandler.openUri(BaseConfig.DISCORD_URL) }
                     )
                 ).forEachIndexed { idx, it ->
                     if (idx > 0) {
@@ -126,7 +130,7 @@ fun Invitation(
                             .clip(RoundedCornerShape(8.dp))
                             .background(RarimeTheme.colors.componentPrimary)
                             .requiredHeight(78.dp)
-                            .clickable { it.onClick },
+                            .clickable { it.onClick() },
                         contentAlignment = Alignment.Center
                     ) {
                         Column(

@@ -29,6 +29,7 @@ import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppCheckbox
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
+import com.distributedLab.rarime.ui.components.UiPrivacyCheckbox
 import com.distributedLab.rarime.ui.components.rememberAppCheckboxState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Constants
@@ -36,28 +37,6 @@ import com.distributedLab.rarime.util.Constants
 @Composable
 fun AirdropIntroScreen(onStart: () -> Unit) {
     val termsAcceptedState = rememberAppCheckboxState()
-    val uriHandler = LocalUriHandler.current
-
-    val termsAnnotation = buildAnnotatedString {
-        append(stringResource(R.string.terms_check_agreement))
-        pushStringAnnotation("URL", Constants.TERMS_URL)
-        withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-            append(stringResource(R.string.rarime_general_terms_conditions))
-        }
-        pop()
-        append(", ")
-        pushStringAnnotation("URL", Constants.PRIVACY_URL)
-        withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-            append(stringResource(R.string.rarime_privacy_notice))
-        }
-        pop()
-        append(stringResource(R.string.and))
-        pushStringAnnotation("URL", Constants.AIRDROP_TERMS_URL)
-        withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-            append(stringResource(R.string.rarimo_airdrop_program_terms_conditions))
-        }
-        pop()
-    }
 
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -106,20 +85,7 @@ fun AirdropIntroScreen(onStart: () -> Unit) {
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp)
             ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    AppCheckbox(state = termsAcceptedState)
-                    ClickableText(
-                        text = termsAnnotation,
-                        style = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary),
-                        onClick = {
-                            termsAnnotation
-                                .getStringAnnotations("URL", it, it)
-                                .firstOrNull()?.let { stringAnnotation ->
-                                    uriHandler.openUri(stringAnnotation.item)
-                                }
-                        }
-                    )
-                }
+                UiPrivacyCheckbox(termsAcceptedState = termsAcceptedState)
                 PrimaryButton(
                     text = stringResource(R.string.continue_btn),
                     modifier = Modifier.fillMaxWidth(),
