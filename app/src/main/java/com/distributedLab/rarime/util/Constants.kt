@@ -12,4 +12,6 @@ object Constants {
 
     const val AIRDROP_REWARD = 3.0
     const val MAX_PASSPORT_IDENTIFIERS = 2
+
+    val NOT_ALLOWED_COUNTRIES = listOf("RUS", "USA", "CAN", "BLR", "CHN", "HKG", "MAC", "TWN", "PRK", "IRN", "CUB", "COG", "COD", "LBY", "SOM", "SSD", "SDN", "SYR", "YEM")
 }

@@ -14,7 +14,7 @@ class ProfileViewModel @Inject constructor(
     val walletManager: WalletManager,
     val identityManager: IdentityManager,
 ) : ViewModel() {
-    val rarimoAddress = identityManager.rarimoAddress
+    val rarimoAddress = identityManager.rarimoAddress()
 
 
     val language = settingsManager.language

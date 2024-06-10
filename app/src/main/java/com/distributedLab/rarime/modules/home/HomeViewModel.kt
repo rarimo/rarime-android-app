@@ -1,5 +1,7 @@
 package com.distributedLab.rarime.modules.home
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.PassportIdentifier
@@ -19,6 +21,7 @@ class HomeViewModel @Inject constructor(
 
     val _rmoAsset = MutableStateFlow(walletManager.walletAssets.value.find { it.token is RarimoToken })
 
+
     val rmoAsset: StateFlow<WalletAsset?>
         get() = _rmoAsset
 
@@ -26,6 +29,8 @@ class HomeViewModel @Inject constructor(
     var passportCardLook = passportManager.passportCardLook
     var passportIdentifiers = passportManager.passportIdentifiers
     var isIncognito = passportManager.isIncognitoMode
+
+    val passportStatus = passportManager.passportStatus
 
 
     fun onPassportCardLookChange(passportCardLook: PassportCardLook) {

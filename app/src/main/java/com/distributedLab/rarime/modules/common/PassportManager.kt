@@ -3,8 +3,12 @@ package com.distributedLab.rarime.modules.common
 import androidx.compose.runtime.mutableStateOf
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.PassportIdentifier
+import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.modules.passport.models.EDocument
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,9 +28,19 @@ class PassportManager @Inject constructor(
     var passportIdentifiers = mutableStateOf(secureSharedPrefsManager.readPassportIdentifiers())
         private set
 
+    private var _passportStatus = MutableStateFlow(secureSharedPrefsManager.readPassportStatus())
+
+    val passportStatus: StateFlow<PassportStatus>
+        get() = _passportStatus.asStateFlow()
+
     fun updatePassportCardLook(look: PassportCardLook) {
         passportCardLook.value = look
         secureSharedPrefsManager.savePassportCardLook(look)
+    }
+
+    fun updatePassportStatus(status: PassportStatus) {
+        _passportStatus.value = status
+        secureSharedPrefsManager.savePassportStatus(status)
     }
 
     fun updateIsIncognitoMode(isIncognitoMode: Boolean) {
