@@ -4,34 +4,25 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.home.components.HomeIntroLayout
 import com.distributedLab.rarime.ui.base.ButtonSize
-import com.distributedLab.rarime.ui.components.AppCheckbox
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.UiPrivacyCheckbox
 import com.distributedLab.rarime.ui.components.rememberAppCheckboxState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
-import com.distributedLab.rarime.util.Constants
 
 @Composable
 fun PolicyConfirmation(
@@ -53,8 +44,8 @@ fun PolicyConfirmation(
                     modifier = Modifier.size(110.dp)
                 )
             },
-            title = "Join Rewards Program",
-            description = "Check your eligibility"
+            title = stringResource(id = R.string.other_passport_card_title),
+            description = stringResource(id = R.string.other_passport_card_description)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(

@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -100,9 +101,9 @@ fun HomeScreenNoPassportMainContent(
                         contentDescription = "decor",
                     )
                 },
-                title = "Join Rewards Program",
-                subtitle = "Check your eligibility",
-                btnText = "Let's start",
+                title = stringResource(id = R.string.other_passport_card_title),
+                subtitle = stringResource(id = R.string.other_passport_card_description),
+                btnText = stringResource(id = R.string.greet_Common_action_card_btn_text),
                 onClick = { nonSpecificAppSheetState.show() }
             )
 
@@ -154,7 +155,9 @@ fun HomeScreenNoPassportMainContent(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row (
-                            modifier = Modifier.fillMaxWidth().padding(24.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp),
                             horizontalArrangement = Arrangement.End,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
@@ -184,7 +187,9 @@ fun HomeScreenNoPassportMainContent(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row (
-                            modifier = Modifier.fillMaxWidth().padding(24.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp),
                             horizontalArrangement = Arrangement.End,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
@@ -208,7 +213,9 @@ fun HomeScreenNoPassportMainContent(
                 ) {
                     Column {
                         Row(
-                            modifier = Modifier.fillMaxWidth().padding(24.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {

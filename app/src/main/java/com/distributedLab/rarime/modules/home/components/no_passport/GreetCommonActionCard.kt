@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,7 +55,7 @@ fun GreetCommonActionCard(
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 size = ButtonSize.Large,
-                text = "Let's start",
+                text = btnText,
                 rightIcon = R.drawable.ic_arrow_right,
                 onClick = onClick
             )
@@ -79,9 +80,9 @@ fun GreetCommonActionCardPreview() {
                     contentDescription = "decor",
                 )
             },
-            title = "Join Rewards Program",
-            subtitle = "Check your eligibility",
-            btnText = "Let's start",
+            title = stringResource(id = R.string.other_passport_card_title),
+            subtitle = stringResource(id = R.string.other_passport_card_description),
+            btnText = stringResource(id = R.string.greet_Common_action_card_btn_text),
             onClick = {}
         )
     }
