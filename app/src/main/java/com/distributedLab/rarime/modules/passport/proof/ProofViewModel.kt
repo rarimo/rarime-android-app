@@ -56,7 +56,7 @@ class ProofViewModel @Inject constructor(
     private val privateKeyBytes = identityManager.privateKeyBytes
 
     private val TAG = ProofViewModel::class.java.simpleName
-    private val zkp = ZKPUseCase(application as Context)
+
     private lateinit var proof: ZkProof
     private var _state = MutableStateFlow(PassportProofState.READING_DATA)
     private lateinit var masterCertProof: Proof
@@ -127,6 +127,11 @@ class ProofViewModel @Inject constructor(
         val inputs = buildRegistrationCircuits(eDocument)
 
         Log.i("INPUTS", inputs.decodeToString())
+        val assetContext: Context =
+            (application as Context).createPackageContext("com.distributedLab.rarime", 0)
+        val assetManager = assetContext.assets
+
+        val zkp = ZKPUseCase(application as Context, assetManager)
 
         val proof = withContext(Dispatchers.Default) {
             zkp.generateZKP(
@@ -280,7 +285,9 @@ class ProofViewModel @Inject constructor(
 
     private fun readICAO(context: Context): ByteArray? {
         return try {
-            context.assets.open("masters.pem").use { inputStream ->
+            val assetContext: Context = context.createPackageContext("com.distributedLab.rarime", 0)
+            val assetManager = assetContext.assets
+            assetManager.open("masters_asset.pem").use { inputStream ->
                 val res = inputStream.readBytes()
                 res
             }

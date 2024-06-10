@@ -136,8 +136,10 @@ class WalletManager @Inject constructor(
     private suspend fun generateAirdropQueryProof(
         registrationProof: ZkProof, eDocument: EDocument, privateKey: ByteArray
     ): ZkProof {
+        val assetContext: Context = context.createPackageContext("com.distributedLab.rarime", 0)
+        val assetManager = assetContext.assets
 
-        val zkp = ZKPUseCase(context)
+        val zkp = ZKPUseCase(context, assetManager)
         val registrationContract = contractManager.getRegistration()
 
         val registrationSmtAddress = withContext(Dispatchers.IO) {

@@ -9,13 +9,15 @@ android {
     namespace = "com.distributedLab.rarime"
     compileSdk = 34
 
+    assetPacks += listOf(":zkp_assets")
+
     defaultConfig {
 
         applicationId = "com.distributedLab.rarime"
         minSdk = 27
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.0-internal"
 
         externalNativeBuild {
             cmake {
@@ -141,5 +143,8 @@ dependencies {
     //Web3
     implementation("org.web3j:core:4.9.8")
     implementation("org.bouncycastle:bcpkix-jdk15on:1.70")
+
+    implementation(libs.play.core)
+
 
 }

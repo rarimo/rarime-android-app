@@ -54,7 +54,7 @@ object ZkpUtil {
 
 }
 
-class ZKPUseCase(val context: Context) {
+class ZKPUseCase(val context: Context, assetManager: AssetManager) {
     fun generateZKP(
         zkeyFileName: String, datFile: Int, inputs: ByteArray, proofFunction: (
             circuitBuffer: ByteArray, circuitSize: Long, jsonBuffer: ByteArray, jsonSize: Long, wtnsBuffer: ByteArray, wtnsSize: LongArray, errorMsg: ByteArray, errorMsgMaxSize: Long
