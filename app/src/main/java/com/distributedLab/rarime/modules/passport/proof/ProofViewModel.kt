@@ -56,7 +56,7 @@ class ProofViewModel @Inject constructor(
     private val privateKeyBytes = identityManager.privateKeyBytes
 
     private val TAG = ProofViewModel::class.java.simpleName
-    private val zkp = ZKPUseCase(application as Context)
+
     private lateinit var proof: ZkProof
     private var _state = MutableStateFlow(PassportProofState.READING_DATA)
     private lateinit var masterCertProof: Proof
@@ -127,6 +127,11 @@ class ProofViewModel @Inject constructor(
         val inputs = buildRegistrationCircuits(eDocument)
 
         Log.i("INPUTS", inputs.decodeToString())
+        val assetContext: Context =
+            (application as Context).createPackageContext("com.distributedLab.rarime", 0)
+        val assetManager = assetContext.assets
+
+        val zkp = ZKPUseCase(application as Context, assetManager)
 
         val proof = withContext(Dispatchers.Default) {
             zkp.generateZKP(
@@ -169,7 +174,7 @@ class ProofViewModel @Inject constructor(
             delay(second * 1)
         } catch (e: Exception) {
             if (passportManager.passportStatus.value != PassportStatus.NOT_ALLOWED) {
-                passportManager.updatePassportStatus(PassportStatus.WAIT_LIST)
+                passportManager.updatePassportStatus(PassportStatus.WAITLIST)
             }
             throw e
         }
@@ -190,7 +195,6 @@ class ProofViewModel @Inject constructor(
             eDocument.aaSignature,
             pubKeyPem.toByteArray(),
             masterCertProof.root,
-            false
         )
 
         withContext(Dispatchers.IO) {
@@ -280,7 +284,9 @@ class ProofViewModel @Inject constructor(
 
     private fun readICAO(context: Context): ByteArray? {
         return try {
-            context.assets.open("masters.pem").use { inputStream ->
+            val assetContext: Context = context.createPackageContext("com.distributedLab.rarime", 0)
+            val assetManager = assetContext.assets
+            assetManager.open("masters_asset.pem").use { inputStream ->
                 val res = inputStream.readBytes()
                 res
             }

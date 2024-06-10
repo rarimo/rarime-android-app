@@ -25,3 +25,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Rarime"
 include(":app")
+include(":zkp_assets")
