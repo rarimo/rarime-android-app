@@ -174,7 +174,7 @@ class ProofViewModel @Inject constructor(
             delay(second * 1)
         } catch (e: Exception) {
             if (passportManager.passportStatus.value != PassportStatus.NOT_ALLOWED) {
-                passportManager.updatePassportStatus(PassportStatus.WAIT_LIST)
+                passportManager.updatePassportStatus(PassportStatus.WAITLIST)
             }
             throw e
         }
