@@ -82,7 +82,7 @@ fun GreetCommonActionCardPreview() {
             },
             title = stringResource(id = R.string.other_passport_card_title),
             subtitle = stringResource(id = R.string.other_passport_card_description),
-            btnText = stringResource(id = R.string.greet_Common_action_card_btn_text),
+            btnText = stringResource(id = R.string.greet_common_action_card_btn_text),
             onClick = {}
         )
     }
