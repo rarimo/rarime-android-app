@@ -37,6 +37,7 @@ import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.data.tokens.PreviewerToken
 import com.distributedLab.rarime.domain.points.PointsEvent
 import com.distributedLab.rarime.modules.common.WalletAsset
+import com.distributedLab.rarime.modules.home.components.passport.StatusCard
 import com.distributedLab.rarime.modules.rewards.components.ActiveTasksList
 import com.distributedLab.rarime.modules.rewards.components.ActiveTasksListSkeleton
 import com.distributedLab.rarime.modules.rewards.components.rewards_leaderboard.RewardsLeaderBoard
@@ -53,6 +54,7 @@ import com.distributedLab.rarime.ui.base.BaseTooltip
 import com.distributedLab.rarime.ui.components.AppBottomSheet
 import com.distributedLab.rarime.ui.components.AppSkeleton
 import com.distributedLab.rarime.ui.components.HorizontalDivider
+import com.distributedLab.rarime.ui.components.InfoAlert
 import com.distributedLab.rarime.ui.components.UiLinearProgressBar
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
@@ -65,8 +67,7 @@ val localRewardsScreenViewModel =
 
 @Composable
 fun RewardsScreen(
-    navigate: (String) -> Unit,
-    rewardsViewModel: RewardsViewModel = hiltViewModel()
+    navigate: (String) -> Unit, rewardsViewModel: RewardsViewModel = hiltViewModel()
 ) {
     CompositionLocalProvider(localRewardsScreenViewModel provides rewardsViewModel) {
         RewardsScreenContent(navigate)
@@ -128,28 +129,24 @@ fun RewardsScreenContent(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                CardContainer {
-                    RewardsScreenUserStatistic(
-                        navigate = navigate,
-                        pointsWalletAsset = walletAsset,
-                        isClaimEnabled = passportStatus.value == PassportStatus.ALLOWED && walletAsset.balance.value.toDouble() > 0.0,
-                        levelProgress = levelProgress,
-                    )
-                }
+                RewardsScreenUserStatistic(
+                    navigate = navigate,
+                    pointsWalletAsset = walletAsset,
+                    passportStatus = passportStatus.value,
+                    levelProgress = levelProgress,
+                )
 
                 if (passportStatus.value == PassportStatus.ALLOWED) {
                     CardContainer {
                         LimitedEventsList(
-                            navigate = navigate,
-                            limitedTimeEvents = limitedTimeEvents.value
+                            navigate = navigate, limitedTimeEvents = limitedTimeEvents.value
                         )
                     }
                 }
 
                 CardContainer {
                     ActiveTastsList(
-                        navigate = navigate,
-                        activeTasksEvents = activeTasksEvents.value
+                        navigate = navigate, activeTasksEvents = activeTasksEvents.value
                     )
                 }
             }
@@ -157,10 +154,140 @@ fun RewardsScreenContent(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LimitedEventsList (
+fun RewardsScreenUserStatistic(
     navigate: (String) -> Unit,
-    limitedTimeEvents: List<PointsEvent>?
+    pointsWalletAsset: WalletAsset,
+    passportStatus: PassportStatus,
+    levelProgress: Float,
+) {
+    val levelingSheetState = rememberAppSheetState()
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy((-43).dp)
+    ) {
+        StatusCard(passportStatus = passportStatus)
+        CardContainer {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        BaseTooltip(
+                            tooltipContent = {
+                                RichTooltip(
+                                    text = {
+                                        Text(
+                                            text = stringResource(id = R.string.rewards_amount_overline_tooltip),
+                                            style = RarimeTheme.typography.body3,
+                                            color = RarimeTheme.colors.textSecondary,
+                                        )
+                                    },
+                                    colors = RichTooltipColors(
+                                        containerColor = RarimeTheme.colors.baseWhite,
+                                        contentColor = RarimeTheme.colors.textPrimary,
+                                        titleContentColor = RarimeTheme.colors.textPrimary,
+                                        actionContentColor = RarimeTheme.colors.textPrimary,
+                                    ),
+                                )
+                            },
+                            iconColor = RarimeTheme.colors.textSecondary,
+                        ) {
+                            Text(
+                                text = pointsWalletAsset.token.name,
+                                color = RarimeTheme.colors.textSecondary,
+                                style = RarimeTheme.typography.body3,
+                            )
+                        }
+                        Text(
+                            text = NumberUtil.formatBalance(pointsWalletAsset.humanBalance()),
+                            color = RarimeTheme.colors.textPrimary,
+                            style = RarimeTheme.typography.h4,
+                        )
+                    }
+
+                    PrimaryButton(
+                        text = stringResource(R.string.rewards_claim_btn),
+                        leftIcon = R.drawable.ic_swap,
+                        onClick = { navigate(Screen.Main.Rewards.RewardsClaim.route) },
+                        enabled = passportStatus == PassportStatus.ALLOWED && pointsWalletAsset.balance.value.toDouble() > 0.0,
+                    )
+                }
+
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(0.dp)
+                                .clickable { levelingSheetState.show() },
+                        ) {
+                            Text(
+                                text = "Level 2",
+                                style = RarimeTheme.typography.subtitle5,
+                                color = RarimeTheme.colors.textPrimary,
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            AppIcon(
+                                id = R.drawable.ic_caret_right,
+                                size = 16.dp,
+                            )
+                        }
+
+                        Text(
+                            text = "110/300",
+                            color = RarimeTheme.colors.textSecondary,
+                        )
+                    }
+
+                    UiLinearProgressBar(
+                        percentage = levelProgress,
+                        trackColors = listOf(
+                            RarimeTheme.colors.primaryMain,
+                            RarimeTheme.colors.primaryDark,
+                            RarimeTheme.colors.primaryDarker,
+                        ),
+                        backgroundModifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .clip(RoundedCornerShape(100.dp)),
+                    )
+                }
+
+                if (passportStatus == PassportStatus.UNSCANNED) {
+                    InfoAlert(
+                        text = stringResource(
+                            id = R.string.rewards_screen_statistics_unscanned,
+                            pointsWalletAsset.token.symbol
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    AppBottomSheet(state = levelingSheetState, fullScreen = true) { hide ->
+        RewardsLeveling()
+    }
+}
+
+@Composable
+fun LimitedEventsList(
+    navigate: (String) -> Unit, limitedTimeEvents: List<PointsEvent>?
 ) {
     Column {
         Row(
@@ -180,8 +307,7 @@ fun LimitedEventsList (
                 )
             }
             Text(
-                text = "Limited time events",
-                style = RarimeTheme.typography.subtitle3
+                text = "Limited time events", style = RarimeTheme.typography.subtitle3
             )
         }
 
@@ -196,9 +322,7 @@ fun LimitedEventsList (
                 )
             } else {
                 TimeEventsList(
-                    modifier = Modifier.fillMaxWidth(),
-                    navigate = navigate,
-                    pointsEvents = it
+                    modifier = Modifier.fillMaxWidth(), navigate = navigate, pointsEvents = it
                 )
             }
         } ?: TimeEventsListSkeleton()
@@ -207,8 +331,7 @@ fun LimitedEventsList (
 
 @Composable
 fun ActiveTastsList(
-    navigate: (String) -> Unit,
-    activeTasksEvents: List<PointsEvent>?
+    navigate: (String) -> Unit, activeTasksEvents: List<PointsEvent>?
 ) {
     Column {
         Row(
@@ -216,8 +339,7 @@ fun ActiveTastsList(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "Active Tasks",
-                style = RarimeTheme.typography.subtitle3
+                text = "Active Tasks", style = RarimeTheme.typography.subtitle3
             )
         }
 
@@ -225,15 +347,14 @@ fun ActiveTastsList(
 
         activeTasksEvents?.let {
             if (it.isEmpty()) {
-                Text (
+                Text(
                     text = "No tasks",
                     style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.textSecondary
                 )
             } else {
                 ActiveTasksList(
-                    navigate = navigate,
-                    pointsEvents = it
+                    navigate = navigate, pointsEvents = it
                 )
             }
         } ?: ActiveTasksListSkeleton()
@@ -242,8 +363,7 @@ fun ActiveTastsList(
 
 @Composable
 fun RewardsRatingBadge(
-    leaderBoardList: List<LeaderBoardItem>,
-    walletAsset: WalletAsset
+    leaderBoardList: List<LeaderBoardItem>, walletAsset: WalletAsset
 ) {
     val leaderboardSheetState = rememberAppSheetState()
 
@@ -254,8 +374,7 @@ fun RewardsRatingBadge(
             .clip(RoundedCornerShape(100.dp))
             .background(RarimeTheme.colors.warningLighter)
             .padding(vertical = 4.dp, horizontal = 9.dp)
-            .clickable { leaderboardSheetState.show() }
-    ) {
+            .clickable { leaderboardSheetState.show() }) {
         AppIcon(
             id = R.drawable.ic_trophy,
             tint = RarimeTheme.colors.warningDarker,
@@ -275,139 +394,45 @@ fun RewardsRatingBadge(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun RewardsScreenUserStatistic(
-    navigate: (String) -> Unit,
-    pointsWalletAsset: WalletAsset,
-    isClaimEnabled: Boolean,
-    levelProgress: Float,
-) {
-    val levelingSheetState = rememberAppSheetState()
-
-    Column(
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                BaseTooltip(
-                    tooltipContent = {
-                        RichTooltip(
-                            text = {
-                                Text(
-                                    text = stringResource(id = R.string.rewards_amount_overline_tooltip),
-                                    style = RarimeTheme.typography.body3,
-                                    color = RarimeTheme.colors.textSecondary,
-                                )
-                            },
-                            colors = RichTooltipColors(
-                                containerColor = RarimeTheme.colors.baseWhite,
-                                contentColor = RarimeTheme.colors.textPrimary,
-                                titleContentColor = RarimeTheme.colors.textPrimary,
-                                actionContentColor = RarimeTheme.colors.textPrimary,
-                            ),
-                        )
-                    },
-                    iconColor = RarimeTheme.colors.textSecondary,
-                ) {
-                    Text(
-                        text = pointsWalletAsset.token.name,
-                        color = RarimeTheme.colors.textSecondary,
-                        style = RarimeTheme.typography.body3,
-                    )
-                }
-                Text(
-                    text = NumberUtil.formatBalance(pointsWalletAsset.humanBalance()),
-                    color = RarimeTheme.colors.textPrimary,
-                    style = RarimeTheme.typography.h4,
-                )
-            }
-
-            PrimaryButton(
-                text = stringResource(R.string.rewards_claim_btn),
-                leftIcon = R.drawable.ic_swap,
-                onClick = { navigate(Screen.Main.Rewards.RewardsClaim.route) },
-                enabled = isClaimEnabled,
-            )
-        }
-
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier
-                        .padding(0.dp)
-                        .clickable { levelingSheetState.show() },
-                ) {
-                    Text(
-                        text = "Level 2",
-                        style = RarimeTheme.typography.subtitle5,
-                        color = RarimeTheme.colors.textPrimary,
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    AppIcon(
-                        id = R.drawable.ic_caret_right,
-                        size = 16.dp,
-                    )
-                }
-
-                Text(
-                    text = "110/300",
-                    color = RarimeTheme.colors.textSecondary,
-                )
-            }
-
-            UiLinearProgressBar(
-                percentage = levelProgress,
-                trackColors = listOf(
-                    RarimeTheme.colors.primaryMain,
-                    RarimeTheme.colors.primaryDark,
-                    RarimeTheme.colors.primaryDarker,
-                ),
-                backgroundModifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp)
-                    .clip(RoundedCornerShape(100.dp)),
-            )
-        }
-    }
-
-    AppBottomSheet(state = levelingSheetState, fullScreen = true) { hide ->
-        RewardsLeveling()
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun RewardsRatingBadgePreview() {
     RewardsRatingBadge(
-        leaderBoardList = listOf(),
-        walletAsset = WalletAsset("", PreviewerToken(""))
+        leaderBoardList = listOf(), walletAsset = WalletAsset("", PreviewerToken(""))
     )
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun RewardsScreenUserStatisticPreview() {
-    RewardsScreenUserStatistic(
-        navigate = {},
-        pointsWalletAsset = WalletAsset("", PreviewerToken("", "Reserved", "RRMO")),
-        isClaimEnabled = true,
-        levelProgress = 0.5f
-    )
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        RewardsScreenUserStatistic(
+            navigate = {},
+            pointsWalletAsset = WalletAsset("", PreviewerToken("", "Reserved", "RRMO")),
+            passportStatus = PassportStatus.NOT_ALLOWED,
+            levelProgress = 0f
+        )
+        RewardsScreenUserStatistic(
+            navigate = {},
+            pointsWalletAsset = WalletAsset("", PreviewerToken("", "Reserved", "RRMO")),
+            passportStatus = PassportStatus.WAITLIST,
+            levelProgress = 0f
+        )
+        RewardsScreenUserStatistic(
+            navigate = {},
+            pointsWalletAsset = WalletAsset("", PreviewerToken("", "Reserved", "RRMO")),
+            passportStatus = PassportStatus.ALLOWED,
+            levelProgress = 0.75f
+        )
+        RewardsScreenUserStatistic(
+            navigate = {},
+            pointsWalletAsset = WalletAsset("", PreviewerToken("", "Reserved", "RRMO")),
+            passportStatus = PassportStatus.UNSCANNED,
+            levelProgress = 0f
+        )
+    }
 }
 
 @Preview
@@ -419,41 +444,31 @@ private fun RewardsEventsListsPreview() {
             .padding(24.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(40.dp)
-    )  {
-        Column (
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             LimitedEventsList(
-                navigate = {},
-                limitedTimeEvents = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
+                navigate = {}, limitedTimeEvents = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
             )
             LimitedEventsList(
-                navigate = {},
-                limitedTimeEvents = listOf()
+                navigate = {}, limitedTimeEvents = listOf()
             )
             LimitedEventsList(
-                navigate = {},
-                limitedTimeEvents = null
+                navigate = {}, limitedTimeEvents = null
             )
         }
         Column(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             ActiveTastsList(
-                navigate = {},
-                activeTasksEvents = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
+                navigate = {}, activeTasksEvents = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
             )
             ActiveTastsList(
-                navigate = {},
-                activeTasksEvents = listOf()
+                navigate = {}, activeTasksEvents = listOf()
             )
             ActiveTastsList(
-                navigate = {},
-                activeTasksEvents = null
+                navigate = {}, activeTasksEvents = null
             )
         }
     }
