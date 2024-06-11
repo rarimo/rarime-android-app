@@ -13,6 +13,7 @@ import com.distributedLab.rarime.modules.common.WalletAsset
 import com.distributedLab.rarime.modules.common.WalletManager
 import com.distributedLab.rarime.ui.components.MARKDOWN_CONTENT
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -439,6 +440,8 @@ class RewardsViewModel @Inject constructor(
         get() = _leaderBoardList.asStateFlow()
 
     suspend fun init() {
+        delay(1000L * 3)
+
         _limitedTimeEvents.value = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
         _activeTasksEvents.value = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
 

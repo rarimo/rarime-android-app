@@ -32,16 +32,23 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.PassportStatus
+import com.distributedLab.rarime.data.tokens.PreviewerToken
+import com.distributedLab.rarime.domain.points.PointsEvent
+import com.distributedLab.rarime.modules.common.WalletAsset
 import com.distributedLab.rarime.modules.rewards.components.ActiveTasksList
 import com.distributedLab.rarime.modules.rewards.components.rewards_leaderboard.RewardsLeaderBoard
 import com.distributedLab.rarime.modules.rewards.components.RewardsLeveling
 import com.distributedLab.rarime.modules.rewards.components.TimeEventsList
+import com.distributedLab.rarime.modules.rewards.components.TimeEventsListSkeleton
+import com.distributedLab.rarime.modules.rewards.view_models.LeaderBoardItem
 import com.distributedLab.rarime.modules.rewards.view_models.RewardsViewModel
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.CardContainer
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.base.BaseTooltip
 import com.distributedLab.rarime.ui.components.AppBottomSheet
+import com.distributedLab.rarime.ui.components.AppSkeleton
+import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.UiLinearProgressBar
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
@@ -75,10 +82,6 @@ fun RewardsScreenContent(
 
     val pointsWalletAsset = rewardsViewModel.pointsWalletAsset.collectAsState()
 
-    val leaderboardSheetState = rememberAppSheetState()
-
-    val levelingSheetState = rememberAppSheetState()
-
     val limitedTimeEvents = rewardsViewModel.limitedTimeEvents.collectAsState()
 
     val activeTasksEvents = rewardsViewModel.activeTasksEvents.collectAsState()
@@ -110,25 +113,10 @@ fun RewardsScreenContent(
                     color = RarimeTheme.colors.textPrimary
                 )
 
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(100.dp))
-                        .background(RarimeTheme.colors.warningLighter)
-                        .padding(vertical = 4.dp, horizontal = 9.dp)
-                        .clickable { leaderboardSheetState.show() }
-                ) {
-                    AppIcon(
-                        id = R.drawable.ic_trophy,
-                        tint = RarimeTheme.colors.warningDarker,
-                    )
-
-                    Text(
-                        text = "241",
-                        color = RarimeTheme.colors.warningDarker,
-                    )
-                }
+                RewardsRatingBadge(
+                    leaderBoardList = leaderBoardList.value,
+                    walletAsset = walletAsset,
+                )
             }
 
             Spacer(modifier = Modifier.height(22.dp))
@@ -137,157 +125,25 @@ fun RewardsScreenContent(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                CardContainer() {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(20.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Column(
-                                verticalArrangement = Arrangement.spacedBy(8.dp),
-                            ) {
-                                pointsWalletAsset.value?.let {
-                                    BaseTooltip(
-                                        tooltipContent = {
-                                            RichTooltip(
-                                                text = {
-                                                    Text(
-                                                        text = stringResource(id = R.string.rewards_amount_overline_tooltip),
-                                                        style = RarimeTheme.typography.body3,
-                                                        color = RarimeTheme.colors.textSecondary,
-                                                    )
-                                                },
-                                                colors = RichTooltipColors(
-                                                    containerColor = RarimeTheme.colors.baseWhite,
-                                                    contentColor = RarimeTheme.colors.textPrimary,
-                                                    titleContentColor = RarimeTheme.colors.textPrimary,
-                                                    actionContentColor = RarimeTheme.colors.textPrimary,
-                                                ),
-                                            )
-                                        },
-                                        iconColor = RarimeTheme.colors.textSecondary,
-                                    ) {
-                                        Text(
-                                            text = walletAsset.token.name,
-                                            color = RarimeTheme.colors.textSecondary,
-                                            style = RarimeTheme.typography.body3,
-                                        )
-                                    }
-                                    Text(
-                                        text = NumberUtil.formatBalance(walletAsset.humanBalance()),
-                                        color = RarimeTheme.colors.textPrimary,
-                                        style = RarimeTheme.typography.h4,
-                                    )
-                                }
-                            }
-
-                            PrimaryButton(
-                                text = stringResource(R.string.rewards_claim_btn),
-                                leftIcon = R.drawable.ic_swap,
-                                onClick = { navigate(Screen.Main.Rewards.RewardsClaim.route) },
-                                enabled = passportStatus.value == PassportStatus.ALLOWED &&
-                                        walletAsset.balance.value.toDouble() > 0.0,
-                            )
-                        }
-
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .padding(0.dp)
-                                        .clickable { levelingSheetState.show() },
-                                ) {
-                                    Text(
-                                        text = "Level 2",
-                                        style = RarimeTheme.typography.subtitle5,
-                                        color = RarimeTheme.colors.textPrimary,
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    AppIcon(
-                                        id = R.drawable.ic_caret_right,
-                                        size = 16.dp,
-                                    )
-                                }
-
-                                Text(
-                                    text = "110/300",
-                                    color = RarimeTheme.colors.textSecondary,
-                                )
-                            }
-
-                            UiLinearProgressBar(
-                                percentage = levelProgress,
-                                trackColors = listOf(
-                                    RarimeTheme.colors.primaryMain,
-                                    RarimeTheme.colors.primaryDark,
-                                    RarimeTheme.colors.primaryDarker,
-                                ),
-                                backgroundModifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(8.dp)
-                                    .clip(RoundedCornerShape(100.dp)),
-                            )
-                        }
-                    }
+                CardContainer {
+                    RewardsScreenUserStatistic(
+                        navigate = navigate,
+                        pointsWalletAsset = walletAsset,
+                        isClaimEnabled = passportStatus.value == PassportStatus.ALLOWED && walletAsset.balance.value.toDouble() > 0.0,
+                        levelProgress = levelProgress,
+                    )
                 }
 
                 if (passportStatus.value == PassportStatus.ALLOWED) {
-                    CardContainer() {
-                        Column {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .width(24.dp)
-                                        .height(24.dp)
-                                        .clip(RoundedCornerShape(100.dp))
-                                        .background(RarimeTheme.colors.warningLight),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = "\uD83D\uDD25"
-                                    )
-                                }
-                                Text(
-                                    text = "Limited time events",
-                                    style = RarimeTheme.typography.subtitle3
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(20.dp))
-
-                            limitedTimeEvents.value?.let {
-                                TimeEventsList(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    navigate = navigate,
-                                    pointsEvents = it
-                                )
-                            } ?: Column() {
-                                // TODO: implement skeleton loader and error view
-                                Text(
-                                    text = "Loading...",
-                                    style = RarimeTheme.typography.body3,
-                                    color = RarimeTheme.colors.textSecondary,
-                                )
-                            }
-                        }
+                    CardContainer {
+                        LimitedEventsList(
+                            navigate = navigate,
+                            limitedTimeEvents = limitedTimeEvents.value
+                        )
                     }
                 }
 
-                CardContainer() {
+                CardContainer {
                     Column {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -306,23 +162,209 @@ fun RewardsScreenContent(
                                 navigate = navigate,
                                 pointsEvents = it
                             )
-                        } ?: Column() {
-                            // TODO: implement skeleton loader and error view
-                            Text(
-                                text = "Loading...",
-                                style = RarimeTheme.typography.body3,
-                                color = RarimeTheme.colors.textSecondary,
+                        } ?: Column {
+                            AppSkeleton()
+                            HorizontalDivider(
+                                modifier = Modifier.padding(vertical = 16.dp)
                             )
+                            AppSkeleton()
                         }
                     }
                 }
             }
         }
+    }
+}
 
-        AppBottomSheet(state = leaderboardSheetState, fullScreen = true) { hide ->
-            RewardsLeaderBoard(
-                leaderBoardList.value,
-                walletAsset.userAddress,
+@Composable
+fun LimitedEventsList (
+    navigate: (String) -> Unit,
+    limitedTimeEvents: List<PointsEvent>?
+) {
+    Column {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(24.dp)
+                    .height(24.dp)
+                    .clip(RoundedCornerShape(100.dp))
+                    .background(RarimeTheme.colors.warningLight),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "\uD83D\uDD25"
+                )
+            }
+            Text(
+                text = "Limited time events",
+                style = RarimeTheme.typography.subtitle3
+            )
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        limitedTimeEvents?.let {
+            if (it.isEmpty()) {
+                Text(
+                    text = "No events",
+                    style = RarimeTheme.typography.body3,
+                    color = RarimeTheme.colors.textSecondary
+                )
+            } else {
+                TimeEventsList(
+                    modifier = Modifier.fillMaxWidth(),
+                    navigate = navigate,
+                    pointsEvents = it
+                )
+            }
+        } ?: TimeEventsListSkeleton()
+    }
+}
+
+@Composable
+fun RewardsRatingBadge(
+    leaderBoardList: List<LeaderBoardItem>,
+    walletAsset: WalletAsset
+) {
+    val leaderboardSheetState = rememberAppSheetState()
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .clip(RoundedCornerShape(100.dp))
+            .background(RarimeTheme.colors.warningLighter)
+            .padding(vertical = 4.dp, horizontal = 9.dp)
+            .clickable { leaderboardSheetState.show() }
+    ) {
+        AppIcon(
+            id = R.drawable.ic_trophy,
+            tint = RarimeTheme.colors.warningDarker,
+        )
+
+        Text(
+            text = "241",
+            color = RarimeTheme.colors.warningDarker,
+        )
+    }
+
+    AppBottomSheet(state = leaderboardSheetState, fullScreen = true) { hide ->
+        RewardsLeaderBoard(
+            leaderBoardList,
+            walletAsset.userAddress,
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RewardsScreenUserStatistic(
+    navigate: (String) -> Unit,
+    pointsWalletAsset: WalletAsset,
+    isClaimEnabled: Boolean,
+    levelProgress: Float,
+) {
+    val levelingSheetState = rememberAppSheetState()
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                BaseTooltip(
+                    tooltipContent = {
+                        RichTooltip(
+                            text = {
+                                Text(
+                                    text = stringResource(id = R.string.rewards_amount_overline_tooltip),
+                                    style = RarimeTheme.typography.body3,
+                                    color = RarimeTheme.colors.textSecondary,
+                                )
+                            },
+                            colors = RichTooltipColors(
+                                containerColor = RarimeTheme.colors.baseWhite,
+                                contentColor = RarimeTheme.colors.textPrimary,
+                                titleContentColor = RarimeTheme.colors.textPrimary,
+                                actionContentColor = RarimeTheme.colors.textPrimary,
+                            ),
+                        )
+                    },
+                    iconColor = RarimeTheme.colors.textSecondary,
+                ) {
+                    Text(
+                        text = pointsWalletAsset.token.name,
+                        color = RarimeTheme.colors.textSecondary,
+                        style = RarimeTheme.typography.body3,
+                    )
+                }
+                Text(
+                    text = NumberUtil.formatBalance(pointsWalletAsset.humanBalance()),
+                    color = RarimeTheme.colors.textPrimary,
+                    style = RarimeTheme.typography.h4,
+                )
+            }
+
+            PrimaryButton(
+                text = stringResource(R.string.rewards_claim_btn),
+                leftIcon = R.drawable.ic_swap,
+                onClick = { navigate(Screen.Main.Rewards.RewardsClaim.route) },
+                enabled = isClaimEnabled,
+            )
+        }
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(0.dp)
+                        .clickable { levelingSheetState.show() },
+                ) {
+                    Text(
+                        text = "Level 2",
+                        style = RarimeTheme.typography.subtitle5,
+                        color = RarimeTheme.colors.textPrimary,
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    AppIcon(
+                        id = R.drawable.ic_caret_right,
+                        size = 16.dp,
+                    )
+                }
+
+                Text(
+                    text = "110/300",
+                    color = RarimeTheme.colors.textSecondary,
+                )
+            }
+
+            UiLinearProgressBar(
+                percentage = levelProgress,
+                trackColors = listOf(
+                    RarimeTheme.colors.primaryMain,
+                    RarimeTheme.colors.primaryDark,
+                    RarimeTheme.colors.primaryDarker,
+                ),
+                backgroundModifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp)
+                    .clip(RoundedCornerShape(100.dp)),
             )
         }
     }
@@ -332,14 +374,22 @@ fun RewardsScreenContent(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-private fun RewardsScreenPreview() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
-    ) {
-        RewardsScreen(navigate = {})
-    }
+fun RewardsRatingBadgePreview() {
+    RewardsRatingBadge(
+        leaderBoardList = listOf(),
+        walletAsset = WalletAsset("", PreviewerToken(""))
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RewardsScreenUserStatisticPreview() {
+    RewardsScreenUserStatistic(
+        navigate = {},
+        pointsWalletAsset = WalletAsset("", PreviewerToken("", "Reserved", "RRMO")),
+        isClaimEnabled = true,
+        levelProgress = 0.5f
+    )
 }

@@ -39,12 +39,24 @@ fun TimeEventsList(
     }
 }
 
+@Composable
+fun TimeEventsListSkeleton() {
+    Column {
+
+        TimeEventItemSkeleton()
+        HorizontalDivider(
+            modifier = Modifier.padding(vertical = 16.dp)
+        )
+        TimeEventItemSkeleton()
+    }
+}
+
 @Preview
 @Composable
 private fun TimeEventsListPreview () {
     Column (
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .background(RarimeTheme.colors.backgroundPrimary)
             .padding(16.dp)
     ) {
@@ -52,5 +64,18 @@ private fun TimeEventsListPreview () {
             navigate = {},
             pointsEvents = CONST_MOCKED_EVENTS_LIST
         )
+    }
+}
+
+@Preview
+@Composable
+private fun TimeEventsListSkeletonPreview() {
+    Column (
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(RarimeTheme.colors.backgroundPrimary)
+            .padding(16.dp)
+    ) {
+        TimeEventsListSkeleton()
     }
 }
