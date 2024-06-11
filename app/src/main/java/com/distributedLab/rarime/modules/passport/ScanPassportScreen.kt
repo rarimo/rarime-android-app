@@ -21,12 +21,13 @@ private enum class ScanPassportState {
 
 @Composable
 fun ScanPassportScreen(
-    onClose: () -> Unit
+    onClose: () -> Unit, onClaim: () -> Unit
 ) {
     var state by remember { mutableStateOf(ScanPassportState.SCAN_MRZ) }
     var mrzData: MRZInfo? by remember { mutableStateOf(null) }
     var eDocument: EDocument? by remember { mutableStateOf(null) }
     var registrationProof: ZkProof? by remember { mutableStateOf(null) }
+
 
     Column(modifier = Modifier.fillMaxSize()) {
         when (state) {
@@ -88,11 +89,8 @@ fun ScanPassportScreen(
                 }
             }
 
-
             ScanPassportState.CLAIM_TOKENS -> {
-                ClaimTokensStep(
-                    onFinish = onClose
-                )
+                onClaim.invoke()
             }
         }
     }
@@ -101,5 +99,5 @@ fun ScanPassportScreen(
 @Preview
 @Composable
 private fun ScanPassportScreenPreview() {
-    ScanPassportScreen(onClose = {})
+    ScanPassportScreen(onClose = {}, onClaim = {})
 }

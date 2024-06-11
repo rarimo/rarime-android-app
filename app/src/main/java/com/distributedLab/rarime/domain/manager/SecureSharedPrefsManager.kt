@@ -67,4 +67,12 @@ interface SecureSharedPrefsManager {
     fun savePassportStatus(passportStatus: PassportStatus)
     fun readPassportStatus(): PassportStatus
 
+
+    fun saveIsReserved()
+
+    fun saveIsIUkrClaimed()
+
+    fun readIsReserved() : Boolean
+
+    fun readIsUkrClaimed() : Boolean
 }

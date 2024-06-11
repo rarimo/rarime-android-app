@@ -170,7 +170,8 @@ class ProofViewModel @Inject constructor(
 
             _state.value = PassportProofState.FINALIZING
 
-
+            passportManager.updatePassportStatus(PassportStatus.ALLOWED)
+            
             delay(second * 1)
         } catch (e: Exception) {
             if (passportManager.passportStatus.value != PassportStatus.NOT_ALLOWED) {

@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.modules.home.components.no_passport
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -147,7 +148,7 @@ fun HomeScreenNoPassportMainContent(
                 }
 
                 AnimatedVisibility(
-                    visible = currStep.equals(UNSPECIFIED_PASSPORT_STEPS.INVITATION),
+                    visible = currStep == UNSPECIFIED_PASSPORT_STEPS.INVITATION,
                     enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
                     exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
                 ) {
@@ -200,7 +201,7 @@ fun HomeScreenNoPassportMainContent(
                         }
                         PolicyConfirmation(
                             onNext = {
-                                hide({ navigate(Screen.ScanPassport.route) })
+                                hide { navigate(Screen.ScanPassport.ScanPassportReserve.route) }
                             }
                         )
                     }
@@ -244,7 +245,7 @@ fun HomeScreenNoPassportMainContent(
 
             AppBottomSheet(state = specificAppSheetState, fullScreen = true) { hide ->
                 AirdropIntroScreen(onStart = {
-                    hide({ navigate(Screen.ScanPassport.route) })
+                    hide { navigate(Screen.ScanPassport.ScanPassportUkr.route) }
                 })
             }
         }

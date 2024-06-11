@@ -48,17 +48,12 @@ fun GenerateProofStep(
     onError: (e: Exception) -> Unit
 ) {
 
-
     val currentState by proofViewModel.state.collectAsState()
     val processingStatus by remember { mutableStateOf(ProcessingStatus.PROCESSING) }
-
-
-
 
     LaunchedEffect(true) {
         try {
             proofViewModel.registerByDocument(eDocument)
-
             onClose(proofViewModel.getRegistrationProof())
         } catch (e: Exception) {
             e.printStackTrace()

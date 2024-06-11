@@ -42,9 +42,7 @@ import javax.inject.Singleton
 import kotlin.time.Duration.Companion.seconds
 
 data class WalletAssetJSON(
-    val tokenSymbol: String,
-    val balance: String,
-    val transactions: List<Transaction>
+    val tokenSymbol: String, val balance: String, val transactions: List<Transaction>
 )
 
 class WalletAsset(val userAddress: String, val token: Token) {
@@ -89,28 +87,51 @@ class WalletManager @Inject constructor(
         dataStoreManager.readWalletAssets(
             listOf(
                 WalletAsset(
-                    identityManager.rarimoAddress(),
-                    RarimoToken(
+                    identityManager.rarimoAddress(), RarimoToken(
                         BaseConfig.RARIMO_CHAINS[RarimoChains.MainnetBeta.chainId]!!, // FIXME: !!
                         identityManager,
                         apiServiceManager,
                     )
-                ),
-                WalletAsset(
+                ), WalletAsset(
                     identityManager.evmAddress,
                     Erc20Token("0x0000000000000000000000000000000000000000")
-                ),
-                WalletAsset(
-                    identityManager.rarimoAddress(),
-                    PointsToken()
+                ), WalletAsset(
+                    identityManager.rarimoAddress(), PointsToken()
                 )
             )
         )
     )
+
+    private val _isUkrClaimed = MutableStateFlow(
+        dataStoreManager.readIsUkrClaimed()
+    )
+    val isUkrClaimed: StateFlow<Boolean>
+        get() = _isUkrClaimed.asStateFlow()
+
+
+    private val _isReserved = MutableStateFlow(
+        dataStoreManager.readIsReserved()
+    )
+
+    val isReserved: StateFlow<Boolean>
+        get() = _isReserved.asStateFlow()
+
+
     val walletAssets: StateFlow<List<WalletAsset>>
         get() = _walletAssets.asStateFlow()
 
-    private val _selectedWalletAsset = MutableStateFlow(dataStoreManager.readSelectedWalletAsset(walletAssets.value))
+    private val _selectedWalletAsset =
+        MutableStateFlow(dataStoreManager.readSelectedWalletAsset(walletAssets.value))
+
+    fun updateIsReserved() {
+        _isReserved.value = true
+        dataStoreManager.saveIsReserved()
+    }
+
+    fun updateIsUkrClaimed() {
+        _isUkrClaimed.value = true
+        dataStoreManager.readIsUkrClaimed()
+    }
 
     val selectedWalletAsset: StateFlow<WalletAsset>
         get() = _selectedWalletAsset.asStateFlow()
@@ -235,7 +256,9 @@ class WalletManager @Inject constructor(
         val registrationProof = dataStoreManager.readRegistrationProof()!!
 
         withContext(Dispatchers.Default) {
-            val proof = generateAirdropQueryProof(registrationProof, eDocument, identityManager.privateKeyBytes!!)
+            val proof = generateAirdropQueryProof(
+                registrationProof, eDocument, identityManager.privateKeyBytes!!
+            )
 
             airDrop(proof)
 
@@ -252,11 +275,10 @@ class WalletManager @Inject constructor(
 
             // FIXME: use tx from token and remove transaction key from store
             dataStoreManager.addTransaction(transaction)
+            dataStoreManager.saveIsIUkrClaimed()
 
             loadBalances()
             isAirdropClaimed.value = true
         }
-
-
     }
 }

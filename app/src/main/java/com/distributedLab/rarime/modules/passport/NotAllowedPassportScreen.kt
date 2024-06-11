@@ -1,8 +1,5 @@
 package com.distributedLab.rarime.modules.passport
 
-import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,16 +23,11 @@ import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.passport.models.PersonDetails
 import com.distributedLab.rarime.ui.base.ButtonSize
-import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
-import com.distributedLab.rarime.ui.components.InfoAlert
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.TertiaryButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
-import com.distributedLab.rarime.util.SendErrorUtil.saveErrorDetailsToFile
-import com.distributedLab.rarime.util.SendErrorUtil.sendErrorEmail
-import com.google.gson.Gson
-import org.json.JSONObject
+import com.distributedLab.rarime.util.Country
 
 @Composable
 fun NotAllowedPassportScreen(
@@ -60,11 +51,14 @@ fun NotAllowedPassportScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .size(72.dp)
-                    .background(RarimeTheme.colors.componentPrimary, CircleShape)
+                    .background(RarimeTheme.colors.backgroundPure, CircleShape)
                     .border(2.dp, RarimeTheme.colors.backgroundPrimary, CircleShape)
             ) {
-                AppIcon(id = R.drawable.ic_rarimo, size = 31.dp)
-
+                Text(
+                    text = Country.fromISOCode(eDocument.personDetails!!.issuerAuthority)!!.emoji,
+                    style = RarimeTheme.typography.h5,
+                    color = RarimeTheme.colors.textPrimary,
+                )
             }
 
 
@@ -83,7 +77,7 @@ fun NotAllowedPassportScreen(
                     color = RarimeTheme.colors.textPrimary,
                 )
                 Text(
-                    text = eDocument.personDetails?.issuerAuthority ?: "",
+                    text = Country.fromISOCode(eDocument.personDetails!!.issuerAuthority)!!.localizedName,
                     style = RarimeTheme.typography.body3,
                     textAlign = TextAlign.Center,
                     color = RarimeTheme.colors.textSecondary,

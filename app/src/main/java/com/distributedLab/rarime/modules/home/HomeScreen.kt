@@ -2,6 +2,7 @@ package com.distributedLab.rarime.modules.home
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,6 +32,6 @@ fun HomeScreen(
 @Composable
 private fun HomeScreenPreview() {
     HomeScreen(
-        navigate = {}
+        navigate = {},
     )
 }

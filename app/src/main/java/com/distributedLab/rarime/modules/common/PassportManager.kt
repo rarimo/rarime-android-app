@@ -38,6 +38,10 @@ class PassportManager @Inject constructor(
         secureSharedPrefsManager.savePassportCardLook(look)
     }
 
+    fun getIsoCode(): String? {
+        return passport.value?.personDetails?.issuerAuthority
+    }
+
     fun updatePassportStatus(status: PassportStatus) {
         _passportStatus.value = status
         secureSharedPrefsManager.savePassportStatus(status)

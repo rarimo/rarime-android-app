@@ -189,4 +189,6 @@
     <string name="unsupported_country_btn">Create Incognito ID</string>
     <string name="waitlist_card_subtitle">You will be notified once added</string>
     <string name="unsupported_card_title">Unsupported for rewards</string>
+    <string name="reserve_tokens_title">Reserve %1$s RMO tokens</string>
+    <string name="reserve_tokens_description">The passport is in the allowlist</string>
 </resources>

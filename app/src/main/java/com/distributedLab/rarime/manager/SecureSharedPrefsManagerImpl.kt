@@ -45,6 +45,8 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "REGISTRATION_PROOF" to "REGISTRATION_PROOF",
         "TX" to "TX",
         "PASSPORT_STATUS" to "PASSPORT_STATUS",
+        "IS_UKR_CLAIMED" to "IS_UKR_CLAIMED",
+        "IS_RARIMO_RESERVED" to "IS_RARIMO_RESERVED"
     )
 
     private val PREFS_FILE_NAME = "sharedPrefFile1"
@@ -326,7 +328,9 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     override fun addTransaction(transaction: Transaction) {
         val allTransactions = readTransactions().toMutableList()
         allTransactions.add(transaction)
+        saveTransactions(allTransactions)
     }
+
 
     private fun saveTransactions(transactions: List<Transaction>) {
         val editor = getEditor()
@@ -335,5 +339,27 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         editor.apply()
     }
 
+
+    override fun saveIsReserved() {
+        val editor = getEditor()
+        editor.putBoolean(accessTokens["IS_RARIMO_RESERVED"], true)
+        editor.apply()
+    }
+
+    override fun saveIsIUkrClaimed() {
+        val editor = getEditor()
+        editor.putBoolean(accessTokens["IS_UKR_CLAIMED"], true)
+        editor.apply()
+    }
+
+    override fun readIsReserved(): Boolean {
+        val sharedPrefs = getSharedPreferences()
+        return sharedPrefs.getBoolean(accessTokens["IS_RARIMO_RESERVED"], false)
+    }
+
+    override fun readIsUkrClaimed(): Boolean {
+        val sharedPrefs = getSharedPreferences()
+        return sharedPrefs.getBoolean(accessTokens["IS_UKR_CLAIMED"], false)
+    }
 
 }

@@ -1,7 +1,5 @@
 package com.distributedLab.rarime.modules.home
 
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.PassportIdentifier
@@ -16,11 +14,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val passportManager: PassportManager,  walletManager: WalletManager
+    private val passportManager: PassportManager, walletManager: WalletManager
 ) : ViewModel() {
 
-    val _rmoAsset = MutableStateFlow(walletManager.walletAssets.value.find { it.token is RarimoToken })
-
+    private val _rmoAsset =
+        MutableStateFlow(walletManager.walletAssets.value.find { it.token is RarimoToken })
+    val isUkrClaimed = walletManager.isUkrClaimed
+    val isReserved = walletManager.isReserved
 
     val rmoAsset: StateFlow<WalletAsset?>
         get() = _rmoAsset

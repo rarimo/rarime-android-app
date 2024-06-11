@@ -28,12 +28,12 @@ import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.passport.models.EDocument
 import com.distributedLab.rarime.modules.passport.models.PersonDetails
 import com.distributedLab.rarime.ui.base.ButtonSize
-import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.InfoAlert
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.TertiaryButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.Country
 import com.distributedLab.rarime.util.SendErrorUtil.saveErrorDetailsToFile
 import com.distributedLab.rarime.util.SendErrorUtil.sendErrorEmail
 import com.google.gson.Gson
@@ -46,12 +46,12 @@ fun WaitlistPassportScreen(
 
     val context = LocalContext.current
 
-    val launcher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult(),
-            onResult = {
-                Log.i("result Code", it.resultCode.toString())
-                onClose.invoke()
-            })
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = {
+            Log.i("result Code", it.resultCode.toString())
+            onClose.invoke()
+        })
 
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -70,11 +70,14 @@ fun WaitlistPassportScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .size(72.dp)
-                    .background(RarimeTheme.colors.componentPrimary, CircleShape)
+                    .background(RarimeTheme.colors.backgroundPure, CircleShape)
                     .border(2.dp, RarimeTheme.colors.backgroundPrimary, CircleShape)
             ) {
-                AppIcon(id = R.drawable.ic_rarimo, size = 31.dp,)
-
+                Text(
+                    text = Country.fromISOCode(eDocument.personDetails!!.issuerAuthority)!!.emoji,
+                    style = RarimeTheme.typography.h5,
+                    color = RarimeTheme.colors.textPrimary,
+                )
             }
 
 
@@ -93,7 +96,7 @@ fun WaitlistPassportScreen(
                     color = RarimeTheme.colors.textPrimary,
                 )
                 Text(
-                    text = eDocument.personDetails?.issuerAuthority ?: "",
+                    text = Country.fromISOCode(eDocument.personDetails!!.issuerAuthority)!!.localizedName,
                     style = RarimeTheme.typography.body3,
                     textAlign = TextAlign.Center,
                     color = RarimeTheme.colors.textSecondary,

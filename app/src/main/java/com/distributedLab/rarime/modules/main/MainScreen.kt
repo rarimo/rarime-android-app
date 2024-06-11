@@ -1,6 +1,7 @@
 package com.distributedLab.rarime.modules.main
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.background
@@ -33,6 +34,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.SecurityCheckState
+import com.distributedLab.rarime.modules.claim.ClaimUkrTokens
+import com.distributedLab.rarime.modules.claim.ReserveScreen
 import com.distributedLab.rarime.modules.home.HomeScreen
 import com.distributedLab.rarime.modules.intro.IntroScreen
 import com.distributedLab.rarime.modules.passport.ScanPassportScreen
@@ -85,6 +88,7 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
         MainScreenContent()
     }
 }
+
 // We have a floating tab bar at the bottom of the screen,
 // so no need to use scaffold padding
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -129,7 +133,8 @@ fun MainScreenContent() {
         Scaffold(
             bottomBar = {
                 if (mainViewModel.isBottomBarShown.value) {
-                    BottomTabBar(currentRoute = currentRoute,
+                    BottomTabBar(
+                        currentRoute = currentRoute,
                         onRouteSelected = { navigateWithPopUp(it) })
                 }
             },
@@ -158,8 +163,15 @@ fun MainScreenContent() {
                     })
                 }
 
-                composable(Screen.ScanPassport.route) {
-                    ScanPassportScreen(onClose = { navController.popBackStack() })
+                //Scan Flow
+                composable(Screen.ScanPassport.ScanPassportUkr.route) {
+                    ScanPassportScreen(onClose = { navController.popBackStack() },
+                        onClaim = {  navigateWithPopUp(Screen.Claim.Ukr.route) })
+                }
+
+                composable(Screen.ScanPassport.ScanPassportReserve.route) {
+                    ScanPassportScreen(onClose = { navController.popBackStack() },
+                        onClaim = { navigateWithPopUp(Screen.Claim.Reserve.route) })
                 }
 
                 navigation(
@@ -183,15 +195,25 @@ fun MainScreenContent() {
                             onSkip = { navigateWithPopUp(Screen.EnableBiometrics.route) })
                     }
                     composable(Screen.Passcode.AddPasscode.route) {
-                        SetupPasscode(
-                            onPasscodeChange = {
-                                navigateWithPopUp(Screen.EnableBiometrics.route)
-                            },
-                            onClose = {
-                                navController.popBackStack(
-                                    Screen.Passcode.EnablePasscode.route, false
-                                )
-                            })
+                        SetupPasscode(onPasscodeChange = {
+                            navigateWithPopUp(Screen.EnableBiometrics.route)
+                        }, onClose = {
+                            navController.popBackStack(
+                                Screen.Passcode.EnablePasscode.route, false
+                            )
+                        })
+                    }
+                }
+
+                composable(Screen.Claim.Ukr.route) {
+                    ClaimUkrTokens {
+                        navigateWithPopUp(Screen.Main.route)
+                    }
+                }
+
+                composable(Screen.Claim.Reserve.route) {
+                    ReserveScreen {
+                        navigateWithPopUp(Screen.Main.route)
                     }
                 }
 
@@ -230,7 +252,7 @@ fun MainScreenContent() {
                             RewardsScreen(navigate = { navController.navigate(it) })
                         }
                         composable(Screen.Main.Rewards.RewardsClaim.route) {
-                            RewardsClaimScreen( onBack = { navController.popBackStack() } )
+                            RewardsClaimScreen(onBack = { navController.popBackStack() })
                         }
                         composable(
                             Screen.Main.Rewards.RewardsEventsItem.route,

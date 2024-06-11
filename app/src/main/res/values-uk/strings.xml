@@ -189,4 +189,6 @@
     <string name="unsupported_country_btn">Створити анонімний ідентифікатор</string>
     <string name="waitlist_card_subtitle">Після додавання ви отримаєте сповіщення</string>
     <string name="unsupported_card_title">Не підтримується для винагород</string>
+    <string name="reserve_tokens_title">Reserve %1$s RMO tokens</string>
+    <string name="reserve_tokens_description">The passport is in the allowlist</string>
 </resources>

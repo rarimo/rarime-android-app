@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.passport
+package com.distributedLab.rarime.modules.claim
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.modules.passport.claimToken.ClaimTokenViewModel
+import com.distributedLab.rarime.modules.claim.viewModels.ClaimUkrTokenViewModel
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
@@ -34,10 +34,9 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Constants
 import kotlinx.coroutines.launch
 
-
 @Composable
-fun ClaimTokensStep(
-    claimTokenViewModel: ClaimTokenViewModel = hiltViewModel(), onFinish: () -> Unit
+fun ClaimUkrTokens(
+    claimTokenViewModel: ClaimUkrTokenViewModel = hiltViewModel(), onFinish: () -> Unit
 ) {
     var isClaiming by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
@@ -127,7 +126,7 @@ fun ClaimTokensStep(
 @Preview
 @Composable
 private fun ClaimTokensStepPreview() {
-    ClaimTokensStep(
+    ClaimUkrTokens(
         onFinish = {},
     )
 }
