@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.RichTooltip
 import androidx.compose.material3.RichTooltipColors
@@ -36,10 +38,12 @@ import com.distributedLab.rarime.data.tokens.PreviewerToken
 import com.distributedLab.rarime.domain.points.PointsEvent
 import com.distributedLab.rarime.modules.common.WalletAsset
 import com.distributedLab.rarime.modules.rewards.components.ActiveTasksList
+import com.distributedLab.rarime.modules.rewards.components.ActiveTasksListSkeleton
 import com.distributedLab.rarime.modules.rewards.components.rewards_leaderboard.RewardsLeaderBoard
 import com.distributedLab.rarime.modules.rewards.components.RewardsLeveling
 import com.distributedLab.rarime.modules.rewards.components.TimeEventsList
 import com.distributedLab.rarime.modules.rewards.components.TimeEventsListSkeleton
+import com.distributedLab.rarime.modules.rewards.view_models.CONST_MOCKED_EVENTS_LIST
 import com.distributedLab.rarime.modules.rewards.view_models.LeaderBoardItem
 import com.distributedLab.rarime.modules.rewards.view_models.RewardsViewModel
 import com.distributedLab.rarime.ui.components.AppIcon
@@ -69,7 +73,6 @@ fun RewardsScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RewardsScreenContent(
     navigate: (String) -> Unit,
@@ -144,32 +147,10 @@ fun RewardsScreenContent(
                 }
 
                 CardContainer {
-                    Column {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            Text(
-                                text = "Active Tasks",
-                                style = RarimeTheme.typography.subtitle3
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        activeTasksEvents.value?.let {
-                            ActiveTasksList(
-                                navigate = navigate,
-                                pointsEvents = it
-                            )
-                        } ?: Column {
-                            AppSkeleton()
-                            HorizontalDivider(
-                                modifier = Modifier.padding(vertical = 16.dp)
-                            )
-                            AppSkeleton()
-                        }
-                    }
+                    ActiveTastsList(
+                        navigate = navigate,
+                        activeTasksEvents = activeTasksEvents.value
+                    )
                 }
             }
         }
@@ -221,6 +202,41 @@ fun LimitedEventsList (
                 )
             }
         } ?: TimeEventsListSkeleton()
+    }
+}
+
+@Composable
+fun ActiveTastsList(
+    navigate: (String) -> Unit,
+    activeTasksEvents: List<PointsEvent>?
+) {
+    Column {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = "Active Tasks",
+                style = RarimeTheme.typography.subtitle3
+            )
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        activeTasksEvents?.let {
+            if (it.isEmpty()) {
+                Text (
+                    text = "No tasks",
+                    style = RarimeTheme.typography.body3,
+                    color = RarimeTheme.colors.textSecondary
+                )
+            } else {
+                ActiveTasksList(
+                    navigate = navigate,
+                    pointsEvents = it
+                )
+            }
+        } ?: ActiveTasksListSkeleton()
     }
 }
 
@@ -392,4 +408,53 @@ private fun RewardsScreenUserStatisticPreview() {
         isClaimEnabled = true,
         levelProgress = 0.5f
     )
+}
+
+@Preview
+@Composable
+private fun RewardsEventsListsPreview() {
+    Column(
+        modifier = Modifier
+            .background(RarimeTheme.colors.backgroundPrimary)
+            .padding(24.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(40.dp)
+    )  {
+        Column (
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            LimitedEventsList(
+                navigate = {},
+                limitedTimeEvents = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
+            )
+            LimitedEventsList(
+                navigate = {},
+                limitedTimeEvents = listOf()
+            )
+            LimitedEventsList(
+                navigate = {},
+                limitedTimeEvents = null
+            )
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            ActiveTastsList(
+                navigate = {},
+                activeTasksEvents = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
+            )
+            ActiveTastsList(
+                navigate = {},
+                activeTasksEvents = listOf()
+            )
+            ActiveTastsList(
+                navigate = {},
+                activeTasksEvents = null
+            )
+        }
+    }
 }
