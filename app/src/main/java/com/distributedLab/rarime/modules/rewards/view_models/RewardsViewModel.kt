@@ -8,6 +8,7 @@ import com.distributedLab.rarime.domain.points.PointsEventMeta
 import com.distributedLab.rarime.domain.points.PointsEventMetaDynamic
 import com.distributedLab.rarime.domain.points.PointsEventMetaStatic
 import com.distributedLab.rarime.domain.points.PointsEventStatuses
+import com.distributedLab.rarime.modules.common.PassportManager
 import com.distributedLab.rarime.modules.common.WalletAsset
 import com.distributedLab.rarime.modules.common.WalletManager
 import com.distributedLab.rarime.ui.components.MARKDOWN_CONTENT
@@ -403,8 +404,12 @@ val MOCKED_LEADER_BOARD_LIST = listOf(
 @HiltViewModel
 class RewardsViewModel @Inject constructor(
     private val walletManager: WalletManager,
-//    private val pointsManager: PointsManager,
+    private val passportManager: PassportManager
 ) : ViewModel() {
+    val passportStatus = passportManager.passportStatus
+
+    val levelProgress = 0.36f
+
     private fun getPointsWalletAsset (): WalletAsset? {
         return walletManager.walletAssets.value.find { it.token is PointsToken }
     }
