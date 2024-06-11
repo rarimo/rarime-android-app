@@ -124,6 +124,7 @@
     <string name="rewards_screen_title">Rewards</string>
     <string name="rewards_claim_btn">Claim</string>
     <string name="rewards_amount_overline_tooltip">Lorem ipsum dolor sit amet concestetur</string>
+    <string name="rewards_screen_statistics_unscanned">Please scan passport in the next 30 days to avoid losing %1$s</string>
 
     <string name="rewards_claim_screen_title">Claim %1$s</string>
     <string name="rewards_claim_screen_subtitle">Lorem ipsum dolor sit amet concestetur!</string>

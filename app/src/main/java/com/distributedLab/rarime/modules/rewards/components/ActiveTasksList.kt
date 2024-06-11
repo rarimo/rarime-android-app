@@ -1,8 +1,10 @@
 package com.distributedLab.rarime.modules.rewards.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -34,18 +36,30 @@ fun ActiveTasksList(
     }
 }
 
+@Composable
+fun ActiveTasksListSkeleton() {
+    Column {
+        ActiveTaskItemSkeleton()
+        HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+        ActiveTaskItemSkeleton()
+    }
+}
+
 @Preview
 @Composable
 private fun TimeEventsListPreview () {
     Column (
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .background(RarimeTheme.colors.backgroundPrimary)
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         ActiveTasksList(
             navigate = {},
             pointsEvents = CONST_MOCKED_EVENTS_LIST
         )
+
+        ActiveTasksListSkeleton()
     }
 }

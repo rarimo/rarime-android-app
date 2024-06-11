@@ -8,10 +8,12 @@ import com.distributedLab.rarime.domain.points.PointsEventMeta
 import com.distributedLab.rarime.domain.points.PointsEventMetaDynamic
 import com.distributedLab.rarime.domain.points.PointsEventMetaStatic
 import com.distributedLab.rarime.domain.points.PointsEventStatuses
+import com.distributedLab.rarime.modules.common.PassportManager
 import com.distributedLab.rarime.modules.common.WalletAsset
 import com.distributedLab.rarime.modules.common.WalletManager
 import com.distributedLab.rarime.ui.components.MARKDOWN_CONTENT
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -403,8 +405,12 @@ val MOCKED_LEADER_BOARD_LIST = listOf(
 @HiltViewModel
 class RewardsViewModel @Inject constructor(
     private val walletManager: WalletManager,
-//    private val pointsManager: PointsManager,
+    private val passportManager: PassportManager
 ) : ViewModel() {
+    val passportStatus = passportManager.passportStatus
+
+    val levelProgress = 0.36f
+
     private fun getPointsWalletAsset (): WalletAsset? {
         return walletManager.walletAssets.value.find { it.token is PointsToken }
     }
@@ -434,6 +440,8 @@ class RewardsViewModel @Inject constructor(
         get() = _leaderBoardList.asStateFlow()
 
     suspend fun init() {
+        delay(1000L * 3)
+
         _limitedTimeEvents.value = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
         _activeTasksEvents.value = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
 

@@ -23,6 +23,7 @@ import com.distributedLab.rarime.R
 import com.distributedLab.rarime.domain.points.PointsEvent
 import com.distributedLab.rarime.modules.rewards.view_models.CONST_MOCKED_EVENTS_LIST
 import com.distributedLab.rarime.ui.components.AppIcon
+import com.distributedLab.rarime.ui.components.AppSkeleton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Screen
 
@@ -96,6 +97,59 @@ fun ActiveTaskItem(
     }
 }
 
+@Composable
+fun ActiveTaskItemSkeleton() {
+    Row (
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        AppSkeleton(
+            modifier = Modifier
+                .width(40.dp)
+                .height(40.dp)
+        )
+
+        Row (
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column (
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                AppSkeleton(
+                    modifier = Modifier
+                        .width(100.dp)
+                        .height(14.dp)
+                )
+                AppSkeleton(
+                    modifier = Modifier
+                        .width(140.dp)
+                        .height(12.dp)
+                )
+            }
+
+            Row (
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                AppSkeleton(
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(14.dp)
+                )
+
+                AppSkeleton(
+                    modifier = Modifier
+                        .width(12.dp)
+                        .height(28.dp)
+                )
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun TimeEventsListPreview () {
@@ -115,5 +169,6 @@ private fun TimeEventsListPreview () {
             navigate = {},
             pointEvent = CONST_MOCKED_EVENTS_LIST[1]
         )
+        ActiveTaskItemSkeleton()
     }
 }

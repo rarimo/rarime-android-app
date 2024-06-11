@@ -3,6 +3,7 @@ package com.distributedLab.rarime.modules.main
 import android.annotation.SuppressLint
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -145,7 +146,7 @@ fun MainScreenContent() {
             NavHost(
                 navController,
                 startDestination = startDestination,
-                enterTransition = { EnterTransition.None },
+                enterTransition = { fadeIn() },
                 exitTransition = { ExitTransition.None },
             ) {
                 composable(Screen.Intro.route) {
