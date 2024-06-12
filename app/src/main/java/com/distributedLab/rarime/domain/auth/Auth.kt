@@ -1,38 +1,56 @@
 package com.distributedLab.rarime.domain.auth
 
-import moe.banana.jsonapi2.JsonApi
-import moe.banana.jsonapi2.Resource
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
+data class RequestAuthorizeBody(
+    val data: RequestAuthorizePayload,
+)
+
+@JsonClass(generateAdapter = true)
 data class RequestAuthorizePayload(
     val id: String,
     val type: String,
+
     val attributes: RequestAuthorizePayloadAttributes,
 )
 
+@JsonClass(generateAdapter = true)
 data class RequestAuthorizePayloadAttributes(
     val proof: Map<String, Any>,
 )
 
-@JsonApi(type = "request-response")
+@JsonClass(generateAdapter = true)
 data class RequestAuthorizeResponse(
+    val id: String,
+    val type: String,
+
     val accessToken: AuthToken,
     val refreshToken: AuthToken,
-) : Resource()
+)
 
+@JsonClass(generateAdapter = true)
 data class AuthToken(
     val token: String,
     val tokenType: String,
 )
 
-@JsonApi(type = "challenge")
+@JsonClass(generateAdapter = true)
 data class AuthChallenge(
-    val challenge: String,
-) : Resource()
+    val id: String,
+    val type: String,
 
-@JsonApi(type = "validate")
+    val challenge: String,
+)
+
+@JsonClass(generateAdapter = true)
 data class ValidateResponse(
+    val id: String,
+    val type: String,
+
     val claims: List<Claim>,
-) : Resource()
+)
+@JsonClass(generateAdapter = true)
 
 data class Claim(
     val address: String,

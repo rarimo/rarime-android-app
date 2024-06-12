@@ -1,15 +1,13 @@
 package com.distributedLab.rarime.domain.points
+
 import com.distributedLab.rarime.util.data.Proof
 import com.squareup.moshi.Json
-import moe.banana.jsonapi2.JsonApi
-import moe.banana.jsonapi2.Resource
+import com.squareup.moshi.JsonClass
 
-@JsonApi(type = "balance")
-data class PointsBalance (
-//    @Json(name = "id")
-//    val id: String,
-//    @Json(name = "type")
-//    val type: String,
+@JsonClass(generateAdapter = true)
+data class PointsBalance(
+    @Json(name = "id") val id: String,
+    @Json(name = "type") val type: String,
 
     val amount: Long,
     @Json(name = "is_disabled")
@@ -24,14 +22,12 @@ data class PointsBalance (
     @Json(name = "consumed_referral_codes")
     val consumedReferralCodes: List<String>,
     val level: Long,
-) : Resource()
+)
 
-@JsonApi(type = "withdrawal")
-data class PointsWithdrawal (
-//    @Json(name = "id")
-//    val id: String,
-//    @Json(name = "type")
-//    val type: String,
+@JsonClass(generateAdapter = true)
+data class PointsWithdrawal(
+    @Json(name = "id") val id: String,
+    @Json(name = "type") val type: String,
 
     val amount: Long,
     val address: String,
@@ -40,45 +36,66 @@ data class PointsWithdrawal (
     val createdAt: Long,
 
     val balance: PointsBalance?,
-) : Resource()
+)
 
-@JsonApi(type = "point_price")
-data class PointsPrice (
+@JsonClass(generateAdapter = true)
+data class PointsPrice(
 //    @Json(name = "id")
 //    val type: String,
 
     val urmo: Long,
-) : Resource()
+)
 
+@JsonClass(generateAdapter = true)
+data class CreateBalanceBody(
+    @Json(name = "data") val data: CreateBalancePayload
+)
+
+@JsonClass(generateAdapter = true)
 data class CreateBalancePayload(
-    val id: String,
-    val type: String,
+    @Json(name = "id") val id: String,
+    @Json(name = "type") val type: String,
 
-    val attributes: CreateBalanceAttributes
+    @Json(name = "attributes") val attributes: CreateBalanceAttributes
 )
 
+@JsonClass(generateAdapter = true)
 data class CreateBalanceAttributes(
-    @Json(name = "referred_by")
-    val referredBy: String
+    @Json(name = "referred_by") val referredBy: String
 )
 
+@JsonClass(generateAdapter = true)
+data class VerifyPassportBody(
+    @Json(name = "data") val data: VerifyPassportPayload
+)
+
+@JsonClass(generateAdapter = true)
 data class VerifyPassportPayload(
-    val id: String,
-    val type: String,
+    @Json(name = "id") val id: String,
+    @Json(name = "type") val type: String,
 
     val attributes: VerifyPassportAttributes
 )
 
+@JsonClass(generateAdapter = true)
 data class VerifyPassportAttributes(
-    val proof: Map<String, Any>,
+    val proof: Proof
 )
 
-data class WithdrawPayload (
-    val id: String,
-    val type: String,
+@JsonClass(generateAdapter = true)
+data class WithdrawBody(
+    @Json(name = "data") val data: WithdrawPayload
+)
+
+@JsonClass(generateAdapter = true)
+data class WithdrawPayload(
+    @Json(name = "id") val id: String,
+    @Json(name = "type") val type: String,
+
     val attributes: WithdrawPayloadAttributes,
 )
 
+@JsonClass(generateAdapter = true)
 data class WithdrawPayloadAttributes(
     val amount: Long,
     val address: String,

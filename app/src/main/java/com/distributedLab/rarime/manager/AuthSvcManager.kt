@@ -2,6 +2,7 @@ package com.distributedLab.rarime.manager
 
 import com.distributedLab.rarime.domain.auth.AuthChallenge
 import com.distributedLab.rarime.domain.auth.JsonApiAuthSvcManager
+import com.distributedLab.rarime.domain.auth.RequestAuthorizeBody
 import com.distributedLab.rarime.domain.auth.RequestAuthorizePayload
 import com.distributedLab.rarime.domain.auth.RequestAuthorizeResponse
 import com.distributedLab.rarime.domain.auth.ValidateResponse
@@ -11,7 +12,11 @@ class AuthSvcManager @Inject constructor(
     private val jsonApiAuthSvcManager: JsonApiAuthSvcManager
 ) {
     suspend fun authorize(payload: RequestAuthorizePayload): RequestAuthorizeResponse? {
-        val response = jsonApiAuthSvcManager.authorize(payload)
+        val response = jsonApiAuthSvcManager.authorize(
+            RequestAuthorizeBody(
+                data = payload
+            )
+        )
 
         if (response.isSuccessful) {
             return response.body()

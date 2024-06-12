@@ -25,10 +25,11 @@ class PointsToken @Inject constructor(
         symbol = "RRMO"
         decimals = 0
 
-        // FIXME: use real nullifier
-        balanceDetails = pointsManager.getPointsBalance(
-            identityManager.passportNullifier ?: ""
-        )
+        try {
+            balanceDetails = pointsManager.getPointsBalance()
+        } catch (e: Exception) {
+
+        }
     }
 
     override suspend fun balanceOf(address: String): BigInteger {

@@ -1,13 +1,19 @@
 package com.distributedLab.rarime.modules.common
 
+import com.distributedLab.rarime.domain.points.ClaimEventBody
 import com.distributedLab.rarime.domain.points.ClaimEventPayload
+import com.distributedLab.rarime.domain.points.CreateBalanceAttributes
+import com.distributedLab.rarime.domain.points.CreateBalanceBody
 import com.distributedLab.rarime.domain.points.CreateBalancePayload
 import com.distributedLab.rarime.domain.points.JsonApiPointsSvcManager
 import com.distributedLab.rarime.domain.points.PointsBalance
 import com.distributedLab.rarime.domain.points.PointsEvent
 import com.distributedLab.rarime.domain.points.PointsPrice
 import com.distributedLab.rarime.domain.points.PointsWithdrawal
+import com.distributedLab.rarime.domain.points.VerifyPassportAttributes
+import com.distributedLab.rarime.domain.points.VerifyPassportBody
 import com.distributedLab.rarime.domain.points.VerifyPassportPayload
+import com.distributedLab.rarime.domain.points.WithdrawBody
 import com.distributedLab.rarime.domain.points.WithdrawPayload
 import com.distributedLab.rarime.domain.points.WithdrawPayloadAttributes
 import javax.inject.Inject
@@ -18,17 +24,30 @@ class PointsManager @Inject constructor(
 ) {
     /* BALANCE */
 
-    suspend fun createPointsBalance(payload: CreateBalancePayload): PointsBalance? {
-        val response = jsonApiPointsSvcManager.createPointsBalance(payload)
+    suspend fun createPointsBalance(referralCode: String): PointsBalance? {
+        val userNullifier = identityManager.getUserNullifier()
+
+        if (userNullifier.isEmpty()) {
+            throw Exception("user nullifier is null")
+        }
+
+        val body = CreateBalanceBody(
+            data = CreateBalancePayload(
+                id = userNullifier,
+                type = "crete_balance",
+                attributes = CreateBalanceAttributes(
+                    referredBy = referralCode
+                )
+            )
+        )
+
+        val response = jsonApiPointsSvcManager.createPointsBalance(body)
 
         if (response.isSuccessful) {
             return response.body()!!
         }
 
-        return null
-
-        // TODO:
-        //  return response.errorBody()!!
+        throw Exception(response.errorBody()?.string().toString())
     }
 
     suspend fun getLeaderboard(): List<PointsBalance>? {
@@ -38,34 +57,47 @@ class PointsManager @Inject constructor(
             return response.body()!!
         }
 
-        return null
+        throw Exception(response.errorBody()?.string().toString())
     }
 
-    suspend fun getPointsBalance(nullifier: String): PointsBalance? {
-        val response = jsonApiPointsSvcManager.getPointsBalance(nullifier)
+    suspend fun getPointsBalance(): PointsBalance? {
+        val userNullifier = identityManager.getUserNullifier()
+
+        if (userNullifier.isEmpty()) {
+            throw Exception("user nullifier is null")
+        }
+
+        val response = jsonApiPointsSvcManager.getPointsBalance(userNullifier)
 
         if (response.isSuccessful) {
             return response.body()!!
         }
 
-        return null
+        throw Exception(response.errorBody()?.string().toString())
     }
 
-    suspend fun activatePointsBalance(nullifier: String, payload: CreateBalancePayload): PointsBalance? {
-        val response = jsonApiPointsSvcManager.activatePointsBalance(nullifier, payload)
+    suspend fun verifyPassport(): Unit {
+        val userNullifier = identityManager.getUserNullifier()
 
-        if (response.isSuccessful) {
-            return response.body()!!
+        if (userNullifier.isEmpty()) {
+            throw Exception("user nullifier is null")
         }
 
-        return null
-    }
+        if (identityManager.registrationProof.value == null) {
+            throw Exception("registration proof is null")
+        }
 
-    suspend fun verifyPassport(
-        nullifier: String,
-        payload: VerifyPassportPayload
-    ): Unit {
-        val response = jsonApiPointsSvcManager.verifyPassport(nullifier, payload)
+        val body = VerifyPassportBody(
+            data = VerifyPassportPayload(
+                id = userNullifier,
+                type = "verify_passport",
+                attributes = VerifyPassportAttributes(
+                    proof = identityManager.registrationProof.value!!.proof
+                )
+            )
+        )
+
+        val response = jsonApiPointsSvcManager.verifyPassport(userNullifier, body)
 
         if (!response.isSuccessful) {
             // TODO: get error code
@@ -80,23 +112,27 @@ class PointsManager @Inject constructor(
             return response.body()!!
         }
 
-        return null
+        throw Exception(response.errorBody()?.string().toString())
     }
 
     suspend fun withdrawPoints(amount: Double): PointsWithdrawal? {
-        if (identityManager.passportNullifier == null || identityManager.registrationProof.value == null) {
-            throw Exception("passportNullifier is null")
+        val userNullifier = identityManager.getUserNullifier()
+
+        if (userNullifier.isEmpty()) {
+            throw Exception("user nullifier is null")
         }
 
         val response = jsonApiPointsSvcManager.withdrawPoints(
-            identityManager.passportNullifier!!,
-            WithdrawPayload(
-                id = identityManager.passportNullifier!!,
-                type = "withdraw",
-                attributes = WithdrawPayloadAttributes(
-                    amount = amount.toLong(),
-                    address = identityManager.rarimoAddress(),
-                    proof = identityManager.registrationProof.value!!.proof
+            userNullifier,
+            WithdrawBody(
+                data = WithdrawPayload(
+                    id = userNullifier,
+                    type = "withdraw",
+                    attributes = WithdrawPayloadAttributes(
+                        amount = amount.toLong(),
+                        address = identityManager.rarimoAddress(),
+                        proof = identityManager.registrationProof.value!!.proof
+                    )
                 )
             )
         )
@@ -105,7 +141,7 @@ class PointsManager @Inject constructor(
             return response.body()!!
         }
 
-        return null
+        throw Exception(response.errorBody()?.string().toString())
     }
 
     suspend fun getPointPrice(): PointsPrice? {
@@ -115,7 +151,7 @@ class PointsManager @Inject constructor(
             return response.body()!!
         }
 
-        return null
+        throw Exception(response.errorBody()?.string().toString())
     }
 
     // TODO: implement
@@ -130,7 +166,7 @@ class PointsManager @Inject constructor(
             return response.body()!!
         }
 
-        return null
+        throw Exception(response.errorBody()?.string().toString())
     }
 
     suspend fun getEvent(id: String): PointsEvent? {
@@ -140,16 +176,20 @@ class PointsManager @Inject constructor(
             return response.body()!!
         }
 
-        return null
+        throw Exception(response.errorBody()?.string().toString())
     }
 
     suspend fun claimPointsByEvent(id: String, payload: ClaimEventPayload): PointsEvent? {
-        val response = jsonApiPointsSvcManager.claimPointsByEvent(id, payload)
+        val response = jsonApiPointsSvcManager.claimPointsByEvent(
+            id, ClaimEventBody(
+                data = payload
+            )
+        )
 
         if (response.isSuccessful) {
             return response.body()!!
         }
 
-        return null
+        throw Exception(response.errorBody()?.string().toString())
     }
 }

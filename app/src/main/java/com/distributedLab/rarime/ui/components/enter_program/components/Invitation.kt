@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.ui.components.enter_program.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,16 +17,20 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.home.components.HomeIntroLayout
@@ -35,6 +40,9 @@ import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.enter_program.UNSPECIFIED_PASSPORT_STEPS
 import com.distributedLab.rarime.ui.components.rememberAppTextFieldState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 data class SocialItem(
     val icon: Int,
@@ -46,14 +54,28 @@ data class SocialItem(
 fun Invitation(
     modifier: Modifier = Modifier,
     onNext: () -> Unit = { },
-    updateStep: (step: UNSPECIFIED_PASSPORT_STEPS) -> Unit = { }
+    updateStep: (step: UNSPECIFIED_PASSPORT_STEPS) -> Unit = { },
+    invitationViewModel: InvitationViewModel = hiltViewModel()
 ) {
     val uriHandler = LocalUriHandler.current
 
     val invitationCodeState = rememberAppTextFieldState(initialText = "")
 
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
     fun verifyCode() {
-        onNext()
+        scope.launch {
+            try {
+                invitationViewModel.createBalance(invitationCodeState.text)
+                onNext()
+            } catch (e: Exception) {
+                Log.e("verifyCode", e.message ?: "no message")
+                invitationCodeState.updateErrorMessage(
+                    context.getString(R.string.invalid_referal_code)
+                )
+            }
+        }
     }
 
     HomeIntroLayout(
@@ -83,7 +105,13 @@ fun Invitation(
                                 .height(32.dp),
                             icon = R.drawable.ic_arrow_right,
                             onClick = { verifyCode() },
-                            enabled = invitationCodeState.text.isNotEmpty()
+                            enabled = invitationCodeState.text.isNotEmpty(),
+                            colors = ButtonColors(
+                                containerColor = RarimeTheme.colors.primaryMain,
+                                contentColor = RarimeTheme.colors.textPrimary,
+                                disabledContainerColor = RarimeTheme.colors.componentDisabled,
+                                disabledContentColor = RarimeTheme.colors.textPrimary.copy(alpha = 0.5f),
+                            ),
                         )
                     }
                 }

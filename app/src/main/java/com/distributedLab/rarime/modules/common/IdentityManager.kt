@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.modules.common
 
+import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.util.decodeHexString
 import identity.Identity
@@ -48,14 +49,19 @@ class IdentityManager @Inject constructor(
         } ?: ""
     }
 
-    val passportNullifier: String? by lazy {
-        registrationProof.value?.let {
+    fun getPassportNullifier(): String {
+        return registrationProof.value?.let {
             it.pub_signals.get(0)
-        } ?: null
+        } ?: ""
+    }
+
+    fun getUserNullifier(): String {
+        // TODO: rename, not for airdrop only
+        return profiler.value.calculateAirdropEventNullifier(BaseConfig.POINTS_SVC_ID)
     }
 
     @OptIn(ExperimentalStdlibApi::class)
-    fun newPrivateKey() : String {
+    fun newPrivateKey(): String {
         _privateKey.value = Identity.newBJJSecretKey().toHexString()
         return privateKey.value!!
     }

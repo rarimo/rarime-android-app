@@ -10,7 +10,7 @@ import retrofit2.http.Path
 
 interface JsonApiAuthSvcManager {
     @POST("${BaseConfig.RELAYER_URL}/integrations/decentralized-auth-svc/v1/authorize")
-    fun authorize(@Body payload: RequestAuthorizePayload): Response<RequestAuthorizeResponse>
+    fun authorize(@Body payload: RequestAuthorizeBody): Response<RequestAuthorizeResponse>
 
     @GET("${BaseConfig.RELAYER_URL}/integrations/decentralized-auth-svc/v1/authorize/{nullifier}/challenge")
     fun getChallenge(@Path("nullifier") nullifier: String): Response<AuthChallenge>

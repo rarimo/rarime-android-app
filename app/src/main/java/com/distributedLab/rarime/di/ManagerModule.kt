@@ -2,17 +2,10 @@ package com.distributedLab.rarime.di
 
 import android.content.Context
 import com.distributedLab.rarime.BaseConfig
-import com.distributedLab.rarime.domain.auth.AuthChallenge
 import com.distributedLab.rarime.domain.auth.JsonApiAuthSvcManager
-import com.distributedLab.rarime.domain.auth.RequestAuthorizeResponse
-import com.distributedLab.rarime.domain.auth.ValidateResponse
 import com.distributedLab.rarime.domain.manager.APIServiceManager
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.domain.points.JsonApiPointsSvcManager
-import com.distributedLab.rarime.domain.points.PointsBalance
-import com.distributedLab.rarime.domain.points.PointsEvent
-import com.distributedLab.rarime.domain.points.PointsPrice
-import com.distributedLab.rarime.domain.points.PointsWithdrawal
 import com.distributedLab.rarime.manager.ApiServiceRemoteData
 import com.distributedLab.rarime.manager.AuthSvcManager
 import com.distributedLab.rarime.manager.ContractManager
@@ -23,21 +16,20 @@ import com.distributedLab.rarime.modules.common.SecurityManager
 import com.distributedLab.rarime.modules.common.SettingsManager
 import com.distributedLab.rarime.modules.common.WalletManager
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import moe.banana.jsonapi2.JsonApiConverterFactory
-import moe.banana.jsonapi2.ResourceAdapterFactory
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.http.HttpService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Named
 import javax.inject.Singleton
-
+import retrofit2.converter.moshi.MoshiConverterFactory
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -52,54 +44,28 @@ abstract class ManagerModule {
 class APIModule {
     @Provides
     @Singleton
+    @Named("otherRetrofit")
     fun provideRetrofit(): Retrofit =
-        Retrofit.Builder().addConverterFactory(GsonConverterFactory.create()).baseUrl("http://NONE")
-            .build()
-
-    @Provides
-    @Singleton
-    fun provideAPIService(retrofit: Retrofit): APIServiceManager =
-        retrofit.create(APIServiceManager::class.java)
-
-    @Provides
-    @Singleton
-    @Named("PointsManagerRetrofit")
-    fun providePointsManagerRetrofit(): Retrofit =
-        Retrofit
-            .Builder()
-            .addConverterFactory(
-                JsonApiConverterFactory.create(
-                    Moshi.Builder()
-                        .add(
-                            ResourceAdapterFactory.builder()
-                                .add(PointsBalance::class.java)
-                                .add(PointsEvent::class.java)
-                                .add(PointsWithdrawal::class.java)
-                                .add(PointsPrice::class.java)
-                                .build()
-                        )
-                        .build()
-                )
-            )
+        Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
             .baseUrl("http://NONE")
             .build()
 
     @Provides
     @Singleton
-    @Named("AuthManagerRetrofit")
-    fun provideAuthManagerRetrofit(): Retrofit =
+    fun provideAPIService(@Named("otherRetrofit") retrofit: Retrofit): APIServiceManager =
+        retrofit.create(APIServiceManager::class.java)
+
+    @Provides
+    @Singleton
+    @Named("jsonApiRetrofit")
+    fun provideJsonApiRetrofit(): Retrofit =
         Retrofit
             .Builder()
             .addConverterFactory(
-                JsonApiConverterFactory.create(
+                MoshiConverterFactory.create(
                     Moshi.Builder()
-                        .add(
-                            ResourceAdapterFactory.builder()
-                                .add(RequestAuthorizeResponse::class.java)
-                                .add(AuthChallenge::class.java)
-                                .add(ValidateResponse::class.java)
-                                .build()
-                        )
+                        .add(KotlinJsonAdapterFactory())
                         .build()
                 )
             )
@@ -109,7 +75,7 @@ class APIModule {
     @Provides
     @Singleton
     fun providePointsManager(
-        @Named("PointsManagerRetrofit") retrofit: Retrofit,
+        @Named("jsonApiRetrofit") retrofit: Retrofit,
         identityManager: IdentityManager
     ): PointsManager =
         PointsManager(retrofit.create(JsonApiPointsSvcManager::class.java), identityManager)
@@ -117,7 +83,7 @@ class APIModule {
     @Provides
     @Singleton
     fun provideAuthManager(
-        @Named("AuthManagerRetrofit") retrofit: Retrofit
+        @Named("jsonApiRetrofit") retrofit: Retrofit
     ): AuthSvcManager =
         AuthSvcManager(retrofit.create(JsonApiAuthSvcManager::class.java))
 

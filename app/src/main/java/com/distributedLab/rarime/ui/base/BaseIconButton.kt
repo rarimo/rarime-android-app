@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.ui.components.AppIcon
+import com.distributedLab.rarime.ui.theme.RarimeTheme
 
 enum class ButtonIconSize {
     Small,
@@ -100,5 +101,21 @@ private fun BaseIconButtonPreview() {
             onClick = { },
             icon = R.drawable.ic_arrow_right,
         )
+
+
+        BaseIconButton(
+            modifier = Modifier.height(64.dp).width(220.dp),
+            onClick = { },
+            icon = R.drawable.ic_arrow_right,
+            colors = ButtonColors(
+                containerColor = RarimeTheme.colors.primaryMain,
+                contentColor = RarimeTheme.colors.textPrimary,
+                disabledContainerColor = RarimeTheme.colors.componentDisabled,
+                disabledContentColor = RarimeTheme.colors.textPrimary.copy(alpha = 0.5f),
+            ),
+            enabled = false
+        )
+
+
     }
 }

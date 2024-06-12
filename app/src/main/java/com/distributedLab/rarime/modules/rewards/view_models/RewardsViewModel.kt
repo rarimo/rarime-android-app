@@ -21,6 +21,8 @@ import javax.inject.Inject
 
 val CONST_MOCKED_EVENTS_LIST = listOf(
     PointsEvent(
+        id = "1",
+        type = "balance",
         status = PointsEventStatuses.OPEN,
         createdAt = 0,
         updatedAt = 0,
@@ -45,6 +47,8 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
         balance = null,
     ),
     PointsEvent(
+        id = "2",
+        type = "balance",
         status = PointsEventStatuses.CLAIMED,
         createdAt = 0,
         updatedAt = 0,
@@ -69,6 +73,8 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
         balance = null,
     ),
     PointsEvent(
+        id = "3",
+        type = "balance",
         status = PointsEventStatuses.FULFILLED,
         createdAt = 0,
         updatedAt = 0,
