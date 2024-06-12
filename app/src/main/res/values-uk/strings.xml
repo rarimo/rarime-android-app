@@ -199,4 +199,6 @@
     <string name="learn_more_about_the_app">Дізнайтеся більше про додаток</string>
     <string name="about_the_program">Про додаток</string>
     <string name="checking_eligibility">Перевірка відповідності вимогам відбувається за допомогою сканування вашого біометричного паспорта.\n\nВаші дані ніколи не залишають пристрій і не передаються третім особам. Підтвердження громадянства створюється локально за допомогою технології Zero-Knowledge.</string>
+    <string name="reserve_tokens">Резерв токенів</string>
+    <string name="you_re_entitled_of_x_rmo">You’re entitled of 5 RMO</string>
 </resources>

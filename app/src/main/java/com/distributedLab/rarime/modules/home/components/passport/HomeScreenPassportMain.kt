@@ -12,10 +12,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.data.tokens.PreviewerToken
 import com.distributedLab.rarime.modules.common.WalletAsset
 import com.distributedLab.rarime.modules.home.LocalHomeViewModel
@@ -28,6 +30,7 @@ import com.distributedLab.rarime.ui.components.AppBottomSheet
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.Constants
 import com.distributedLab.rarime.util.Screen
 
 @Composable
@@ -82,9 +85,11 @@ fun HomeScreenPassportMainContent(
                 onIncognitoChange = { homeViewModel.onIncognitoChange(it) },
                 passportStatus = passportStatus,
                 onIdentifiersChange = { homeViewModel.onPassportIdentifiersChange(it) })
-            if (!isReserved) {
-                ActionCard(title = "Reserve tokens",
-                    description = "You’re entitled of 5 RMO",
+            if (!isReserved && passportStatus == PassportStatus.ALLOWED) {
+                ActionCard(title = stringResource(R.string.reserve_tokens),
+                    description = stringResource(
+                        R.string.you_re_entitled_of_x_rmo, Constants.AIRDROP_REWARD
+                    ),
                     leadingContent = {
                         Image(
                             modifier = Modifier.size(42.dp),
@@ -95,10 +100,9 @@ fun HomeScreenPassportMainContent(
                     onClick = { navigate(Screen.Claim.Reserve.route) })
             }
 
-
-            if (!isUkrClaimed) {
-                ActionCard(title = "Ukrainian Citizens",
-                    description = "Programmable rewards",
+            if (!isUkrClaimed && passportStatus == PassportStatus.ALLOWED) {
+                ActionCard(title = stringResource(id = R.string.ukrainian_citizens),
+                    description = stringResource(R.string.programmable_rewards),
                     leadingContent = {
                         Text(
                             text = "🇺🇦",
@@ -112,8 +116,8 @@ fun HomeScreenPassportMainContent(
 
 
 
-            ActionCard(title = "RARIME",
-                description = "Learn more about the App",
+            ActionCard(title = stringResource(id = R.string.app_name),
+                description = stringResource(R.string.learn_more_about_the_app),
                 leadingContent = {
                     AppIcon(id = R.drawable.ic_info, size = 24.dp)
                 },

@@ -199,4 +199,6 @@
     <string name="learn_more_about_the_app">Learn more about the App</string>
     <string name="about_the_program">About the program</string>
     <string name="checking_eligibility">Checking eligibility happens via a scan of your biometric passport.\n\nYour data never leaves the device or is shared with any third party. Proof of citizenship is generated locally using Zero-Knowledge technology.</string>
+    <string name="reserve_tokens">Reserve tokens</string>
+    <string name="you_re_entitled_of_x_rmo">You’re entitled of %1$s RMO</string>
 </resources>
