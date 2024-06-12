@@ -30,6 +30,8 @@ import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
+import com.distributedLab.rarime.ui.components.UiPrivacyCheckbox
+import com.distributedLab.rarime.ui.components.rememberAppCheckboxState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Constants
 import kotlinx.coroutines.launch
@@ -39,13 +41,14 @@ import kotlinx.coroutines.launch
 fun ReserveScreen(
     reserveTokenViewModel: ReserveTokenViewModel = hiltViewModel(), onFinish: () -> Unit
 ) {
-    var isClaiming by remember { mutableStateOf(false) }
+    var isReserving by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
-    suspend fun claimTokens() {
-        isClaiming = true
+    val termsAcceptedState = rememberAppCheckboxState()
+    suspend fun reserveTokens() {
+        isReserving = true
         reserveTokenViewModel.reserve()
-        isClaiming = false
+        isReserving = false
         onFinish()
     }
 
@@ -109,17 +112,23 @@ fun ReserveScreen(
             }
         }
 
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             HorizontalDivider()
-            PrimaryButton(
-                text = if (isClaiming) stringResource(R.string.claiming_btn) else stringResource(R.string.claim_btn),
-                size = ButtonSize.Large,
-                enabled = !isClaiming,
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                onClick = { coroutineScope.launch { claimTokens() } },
-            )
+                    .padding(horizontal = 24.dp)
+            ) {
+                UiPrivacyCheckbox(termsAcceptedState = termsAcceptedState, enabled = !isReserving)
+                PrimaryButton(text = if (isReserving) stringResource(R.string.reserving_btn) else stringResource(
+                    R.string.reserv_btn
+                ),
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = termsAcceptedState.checked && !isReserving,
+                    size = ButtonSize.Large,
+                    onClick = { coroutineScope.launch { reserveTokens() } })
+            }
         }
     }
 }

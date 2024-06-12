@@ -1,6 +1,5 @@
 package com.distributedLab.rarime.modules.home.components.no_passport
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -49,8 +48,7 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Screen
 
 enum class UNSPECIFIED_PASSPORT_STEPS(val value: Int) {
-    INVITATION(1),
-    POLICY_CONFIRMATION(3),
+    INVITATION(1), POLICY_CONFIRMATION(3),
 
     ABOUT_PROGRAM(5),
 }
@@ -70,8 +68,7 @@ fun HomeScreenNoPassportMain(
 
 @Composable
 fun HomeScreenNoPassportMainContent(
-    navigate: (String) -> Unit,
-    rmoAsset: WalletAsset
+    navigate: (String) -> Unit, rmoAsset: WalletAsset
 ) {
     val rarimoInfoSheetState = rememberAppSheetState()
 
@@ -80,8 +77,7 @@ fun HomeScreenNoPassportMainContent(
     val specificAppSheetState = rememberAppSheetState()
 
     Column(
-        modifier = Modifier
-            .padding(12.dp)
+        modifier = Modifier.padding(12.dp)
     ) {
         Spacer(modifier = Modifier.size(32.dp))
 
@@ -90,27 +86,22 @@ fun HomeScreenNoPassportMainContent(
         Spacer(modifier = Modifier.size(32.dp))
 
         Column(
-            modifier = Modifier
-                .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            GreetCommonActionCard(
-                mediaContent = {
-                    Image(
-                        modifier = Modifier.size(110.dp),
-                        painter = painterResource(id = R.drawable.reward_coin),
-                        contentDescription = "decor",
-                    )
-                },
+            GreetCommonActionCard(mediaContent = {
+                Image(
+                    modifier = Modifier.size(110.dp),
+                    painter = painterResource(id = R.drawable.reward_coin),
+                    contentDescription = "decor",
+                )
+            },
                 title = stringResource(id = R.string.other_passport_card_title),
                 subtitle = stringResource(id = R.string.other_passport_card_description),
                 btnText = stringResource(id = R.string.greet_common_action_card_btn_text),
-                onClick = { nonSpecificAppSheetState.show() }
-            )
+                onClick = { nonSpecificAppSheetState.show() })
 
-            ActionCard(
-                title = "Ukrainian Citizens",
-                description = "Programmable rewards",
+            ActionCard(title = stringResource(id = R.string.ukrainian_citizens),
+                description = stringResource(R.string.programmable_rewards),
                 leadingContent = {
                     Text(
                         text = "🇺🇦",
@@ -119,20 +110,17 @@ fun HomeScreenNoPassportMainContent(
                         textAlign = TextAlign.Center
                     )
                 },
-                onClick = { specificAppSheetState.show() }
-            )
+                onClick = { specificAppSheetState.show() })
 
-            ActionCard(
-                title = "RARIME",
-                description = "Learn more about the App",
+            ActionCard(title = stringResource(id = R.string.app_name),
+                description = stringResource(R.string.learn_more_about_the_app),
                 leadingContent = {
                     AppIcon(id = R.drawable.ic_info, size = 24.dp)
                 },
                 variant = ActionCardVariants.Outlined,
                 onClick = {
                     rarimoInfoSheetState.show()
-                }
-            )
+                })
 
             AppBottomSheet(state = rarimoInfoSheetState, fullScreen = true) { hide ->
                 RarimeInfoScreen(onClose = { hide {} })
@@ -152,29 +140,26 @@ fun HomeScreenNoPassportMainContent(
                     enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
                     exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
                 ) {
-                    Column (
+                    Column(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Row (
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(24.dp),
                             horizontalArrangement = Arrangement.End,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            PrimaryTextButton(
-                                leftIcon = R.drawable.ic_close,
-                                onClick = { nonSpecificAppSheetState.hide() }
-                            )
+                            PrimaryTextButton(leftIcon = R.drawable.ic_close,
+                                onClick = { nonSpecificAppSheetState.hide() })
                         }
 
-                        Column (
+                        Column(
                             modifier = Modifier.weight(1f)
                         ) {
-                            Invitation(
-                                onNext = { currStep = UNSPECIFIED_PASSPORT_STEPS.POLICY_CONFIRMATION },
-                                updateStep = { currStep = it }
-                            )
+                            Invitation(onNext = {
+                                currStep = UNSPECIFIED_PASSPORT_STEPS.POLICY_CONFIRMATION
+                            }, updateStep = { currStep = it })
                         }
                     }
                 }
@@ -184,26 +169,22 @@ fun HomeScreenNoPassportMainContent(
                     enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
                     exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
                 ) {
-                    Column (
+                    Column(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Row (
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(24.dp),
                             horizontalArrangement = Arrangement.End,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            PrimaryTextButton(
-                                leftIcon = R.drawable.ic_close,
-                                onClick = { nonSpecificAppSheetState.hide() }
-                            )
+                            PrimaryTextButton(leftIcon = R.drawable.ic_close,
+                                onClick = { nonSpecificAppSheetState.hide() })
                         }
-                        PolicyConfirmation(
-                            onNext = {
-                                hide { navigate(Screen.ScanPassport.ScanPassportReserve.route) }
-                            }
-                        )
+                        PolicyConfirmation(onNext = {
+                            hide { navigate(Screen.ScanPassport.ScanPassportReserve.route) }
+                        })
                     }
                 }
 
@@ -220,21 +201,17 @@ fun HomeScreenNoPassportMainContent(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            PrimaryTextButton(
-                                leftIcon = R.drawable.ic_arrow_left,
-                                onClick = { currStep = UNSPECIFIED_PASSPORT_STEPS.INVITATION }
-                            )
+                            PrimaryTextButton(leftIcon = R.drawable.ic_arrow_left,
+                                onClick = { currStep = UNSPECIFIED_PASSPORT_STEPS.INVITATION })
 
                             Text(
-                                text = "About the program",
+                                text = stringResource(R.string.about_the_program),
                                 style = RarimeTheme.typography.subtitle4,
                                 color = RarimeTheme.colors.textPrimary,
                             )
 
-                            PrimaryTextButton(
-                                leftIcon = R.drawable.ic_close,
-                                onClick = { nonSpecificAppSheetState.hide() }
-                            )
+                            PrimaryTextButton(leftIcon = R.drawable.ic_close,
+                                onClick = { nonSpecificAppSheetState.hide() })
                         }
                         AboutProgram(
                             modifier = Modifier.weight(1f)
@@ -257,14 +234,11 @@ fun HomeScreenNoPassportMainContent(
 fun HomeScreenNoPassportMainContentPreview() {
 
     Column(
-        modifier = Modifier
-            .background(RarimeTheme.colors.backgroundPrimary)
+        modifier = Modifier.background(RarimeTheme.colors.backgroundPrimary)
     ) {
         HomeScreenNoPassportMainContent(
-            navigate = {},
-            rmoAsset = WalletAsset(
-                "",
-                PreviewerToken(
+            navigate = {}, rmoAsset = WalletAsset(
+                "", PreviewerToken(
                     "",
                     "Reserved RMO",
                     "RRMO",
