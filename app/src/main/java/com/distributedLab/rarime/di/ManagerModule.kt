@@ -2,6 +2,10 @@ package com.distributedLab.rarime.di
 
 import android.content.Context
 import com.distributedLab.rarime.BaseConfig
+import com.distributedLab.rarime.domain.auth.AuthChallenge
+import com.distributedLab.rarime.domain.auth.JsonApiAuthSvcManager
+import com.distributedLab.rarime.domain.auth.RequestAuthorizeResponse
+import com.distributedLab.rarime.domain.auth.ValidateResponse
 import com.distributedLab.rarime.domain.manager.APIServiceManager
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.domain.points.JsonApiPointsSvcManager
@@ -10,6 +14,7 @@ import com.distributedLab.rarime.domain.points.PointsEvent
 import com.distributedLab.rarime.domain.points.PointsPrice
 import com.distributedLab.rarime.domain.points.PointsWithdrawal
 import com.distributedLab.rarime.manager.ApiServiceRemoteData
+import com.distributedLab.rarime.manager.AuthSvcManager
 import com.distributedLab.rarime.manager.ContractManager
 import com.distributedLab.rarime.manager.SecureSharedPrefsManagerImpl
 import com.distributedLab.rarime.modules.common.IdentityManager
@@ -81,11 +86,40 @@ class APIModule {
 
     @Provides
     @Singleton
+    @Named("AuthManagerRetrofit")
+    fun provideAuthManagerRetrofit(): Retrofit =
+        Retrofit
+            .Builder()
+            .addConverterFactory(
+                JsonApiConverterFactory.create(
+                    Moshi.Builder()
+                        .add(
+                            ResourceAdapterFactory.builder()
+                                .add(RequestAuthorizeResponse::class.java)
+                                .add(AuthChallenge::class.java)
+                                .add(ValidateResponse::class.java)
+                                .build()
+                        )
+                        .build()
+                )
+            )
+            .baseUrl("http://NONE")
+            .build()
+
+    @Provides
+    @Singleton
     fun providePointsManager(
         @Named("PointsManagerRetrofit") retrofit: Retrofit,
         identityManager: IdentityManager
     ): PointsManager =
         PointsManager(retrofit.create(JsonApiPointsSvcManager::class.java), identityManager)
+
+    @Provides
+    @Singleton
+    fun provideAuthManager(
+        @Named("AuthManagerRetrofit") retrofit: Retrofit
+    ): AuthSvcManager =
+        AuthSvcManager(retrofit.create(JsonApiAuthSvcManager::class.java))
 
 
     @Provides
