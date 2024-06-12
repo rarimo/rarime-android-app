@@ -139,7 +139,6 @@ fun HomeScreenNoPassportMainContent(
 @Preview
 @Composable
 fun HomeScreenNoPassportMainContentPreview() {
-
     Column(
         modifier = Modifier
             .background(RarimeTheme.colors.backgroundPrimary)

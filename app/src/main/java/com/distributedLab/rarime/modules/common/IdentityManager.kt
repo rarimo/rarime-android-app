@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.web3j.crypto.Credentials
+import java.math.BigInteger
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -58,6 +59,12 @@ class IdentityManager @Inject constructor(
     fun getUserNullifier(): String {
         // TODO: rename, not for airdrop only
         return profiler.value.calculateAirdropEventNullifier(BaseConfig.POINTS_SVC_ID)
+    }
+
+    fun getUserNullifierHex(): String {
+        return "0x" + BigInteger(this.getUserNullifier())
+            .toByteArray()
+            .toHexString()
     }
 
     @OptIn(ExperimentalStdlibApi::class)

@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.modules.common
 
+import android.util.Log
 import com.distributedLab.rarime.domain.points.ClaimEventBody
 import com.distributedLab.rarime.domain.points.ClaimEventPayload
 import com.distributedLab.rarime.domain.points.CreateBalanceAttributes
@@ -16,6 +17,7 @@ import com.distributedLab.rarime.domain.points.VerifyPassportPayload
 import com.distributedLab.rarime.domain.points.WithdrawBody
 import com.distributedLab.rarime.domain.points.WithdrawPayload
 import com.distributedLab.rarime.domain.points.WithdrawPayloadAttributes
+import com.google.gson.Gson
 import javax.inject.Inject
 
 class PointsManager @Inject constructor(
@@ -26,20 +28,24 @@ class PointsManager @Inject constructor(
 
     suspend fun createPointsBalance(referralCode: String): PointsBalance? {
         val userNullifier = identityManager.getUserNullifier()
+        val userNullifierHex = identityManager.getUserNullifierHex()
 
-        if (userNullifier.isEmpty()) {
+        if (userNullifierHex.isEmpty()) {
             throw Exception("user nullifier is null")
         }
 
         val body = CreateBalanceBody(
             data = CreateBalancePayload(
-                id = userNullifier,
-                type = "crete_balance",
+                id = userNullifierHex,
+                type = "create_balance",
                 attributes = CreateBalanceAttributes(
                     referredBy = referralCode
                 )
             )
         )
+
+        Log.i("user nullifier", userNullifier)
+        Log.i("create balance body", Gson().toJson(body))
 
         val response = jsonApiPointsSvcManager.createPointsBalance(body)
 
@@ -61,13 +67,13 @@ class PointsManager @Inject constructor(
     }
 
     suspend fun getPointsBalance(): PointsBalance? {
-        val userNullifier = identityManager.getUserNullifier()
+        val userNullifierHex = identityManager.getUserNullifierHex()
 
-        if (userNullifier.isEmpty()) {
+        if (userNullifierHex.isEmpty()) {
             throw Exception("user nullifier is null")
         }
 
-        val response = jsonApiPointsSvcManager.getPointsBalance(userNullifier)
+        val response = jsonApiPointsSvcManager.getPointsBalance(userNullifierHex)
 
         if (response.isSuccessful) {
             return response.body()!!
@@ -77,9 +83,9 @@ class PointsManager @Inject constructor(
     }
 
     suspend fun verifyPassport(): Unit {
-        val userNullifier = identityManager.getUserNullifier()
+        val userNullifierHex = identityManager.getUserNullifierHex()
 
-        if (userNullifier.isEmpty()) {
+        if (userNullifierHex.isEmpty()) {
             throw Exception("user nullifier is null")
         }
 
@@ -89,7 +95,7 @@ class PointsManager @Inject constructor(
 
         val body = VerifyPassportBody(
             data = VerifyPassportPayload(
-                id = userNullifier,
+                id = userNullifierHex,
                 type = "verify_passport",
                 attributes = VerifyPassportAttributes(
                     proof = identityManager.registrationProof.value!!.proof
@@ -97,7 +103,7 @@ class PointsManager @Inject constructor(
             )
         )
 
-        val response = jsonApiPointsSvcManager.verifyPassport(userNullifier, body)
+        val response = jsonApiPointsSvcManager.verifyPassport(userNullifierHex, body)
 
         if (!response.isSuccessful) {
             // TODO: get error code
@@ -116,17 +122,17 @@ class PointsManager @Inject constructor(
     }
 
     suspend fun withdrawPoints(amount: Double): PointsWithdrawal? {
-        val userNullifier = identityManager.getUserNullifier()
+        val userNullifierHex = identityManager.getUserNullifierHex()
 
-        if (userNullifier.isEmpty()) {
+        if (userNullifierHex.isEmpty()) {
             throw Exception("user nullifier is null")
         }
 
         val response = jsonApiPointsSvcManager.withdrawPoints(
-            userNullifier,
+            userNullifierHex,
             WithdrawBody(
                 data = WithdrawPayload(
-                    id = userNullifier,
+                    id = userNullifierHex,
                     type = "withdraw",
                     attributes = WithdrawPayloadAttributes(
                         amount = amount.toLong(),
