@@ -124,6 +124,7 @@
     <string name="rewards_screen_title">Винагороди</string>
     <string name="rewards_claim_btn">Забрати</string>
     <string name="rewards_amount_overline_tooltip">Lorem ipsum dolor sit amet concestetur</string>
+    <string name="rewards_screen_statistics_unscanned">Будь ласка проскануйте паспорт щоб уникнути втрати %1$s</string>
 
     <string name="rewards_claim_screen_title">Claim %1$s</string>
     <string name="rewards_claim_screen_subtitle">Claim %1$s</string>

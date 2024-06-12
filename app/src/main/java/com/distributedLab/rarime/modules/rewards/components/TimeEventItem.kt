@@ -25,6 +25,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.domain.points.PointsEvent
 import com.distributedLab.rarime.modules.rewards.view_models.CONST_MOCKED_EVENTS_LIST
+import com.distributedLab.rarime.ui.components.AppSkeleton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Screen
 
@@ -83,6 +84,48 @@ fun TimeEventItem(
     }
 }
 
+@Composable
+fun TimeEventItemSkeleton() {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        AppSkeleton(
+            modifier = Modifier
+                .width(64.dp)
+                .height(64.dp),
+            cornerRadius = 16f
+        )
+
+        Column (
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            AppSkeleton(
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(14.dp)
+            )
+
+            Row (
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                AppSkeleton(
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(14.dp)
+                )
+
+                AppSkeleton(
+                    modifier = Modifier
+                        .width(65.dp)
+                        .height(14.dp)
+                )
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun TimeEventsListPreview () {
@@ -91,11 +134,14 @@ private fun TimeEventsListPreview () {
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary)
             .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         TimeEventItem(
             modifier = Modifier.fillMaxWidth(),
             navigate = {},
             pointsEvent = CONST_MOCKED_EVENTS_LIST[0]
         )
+
+        TimeEventItemSkeleton()
     }
 }
