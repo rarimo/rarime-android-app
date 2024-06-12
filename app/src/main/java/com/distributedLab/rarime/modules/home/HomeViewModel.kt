@@ -19,7 +19,7 @@ class HomeViewModel @Inject constructor(
 
     private val _rmoAsset =
         MutableStateFlow(walletManager.walletAssets.value.find { it.token is RarimoToken })
-    val isUkrClaimed = walletManager.isUkrClaimed
+    val isSpecificClaimed = walletManager.isSpecificClaimed
     val isReserved = walletManager.isReserved
 
     val rmoAsset: StateFlow<WalletAsset?>

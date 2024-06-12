@@ -102,11 +102,11 @@ class WalletManager @Inject constructor(
         )
     )
 
-    private val _isUkrClaimed = MutableStateFlow(
-        dataStoreManager.readIsUkrClaimed()
+    private val _isSpecificClaimed = MutableStateFlow(
+        dataStoreManager.readIsSpecificClaimed()
     )
-    val isUkrClaimed: StateFlow<Boolean>
-        get() = _isUkrClaimed.asStateFlow()
+    val isSpecificClaimed: StateFlow<Boolean>
+        get() = _isSpecificClaimed.asStateFlow()
 
 
     private val _isReserved = MutableStateFlow(
@@ -128,9 +128,9 @@ class WalletManager @Inject constructor(
         dataStoreManager.saveIsReserved()
     }
 
-    fun updateIsUkrClaimed() {
-        _isUkrClaimed.value = true
-        dataStoreManager.readIsUkrClaimed()
+    fun updateIsSpecificClaimed() {
+        _isSpecificClaimed.value = true
+        dataStoreManager.readIsSpecificClaimed()
     }
 
     val selectedWalletAsset: StateFlow<WalletAsset>
@@ -275,7 +275,7 @@ class WalletManager @Inject constructor(
 
             // FIXME: use tx from token and remove transaction key from store
             dataStoreManager.addTransaction(transaction)
-            dataStoreManager.saveIsIUkrClaimed()
+            dataStoreManager.saveIsSpecificClaimed()
 
             loadBalances()
             isAirdropClaimed.value = true

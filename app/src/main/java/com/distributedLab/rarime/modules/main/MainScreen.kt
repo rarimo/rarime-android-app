@@ -1,8 +1,6 @@
 package com.distributedLab.rarime.modules.main
 
 import android.annotation.SuppressLint
-import android.util.Log
-import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
@@ -35,7 +33,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.SecurityCheckState
-import com.distributedLab.rarime.modules.claim.ClaimUkrTokens
+import com.distributedLab.rarime.modules.claim.ClaimSpecificTokens
 import com.distributedLab.rarime.modules.claim.ReserveScreen
 import com.distributedLab.rarime.modules.home.HomeScreen
 import com.distributedLab.rarime.modules.intro.IntroScreen
@@ -165,9 +163,9 @@ fun MainScreenContent() {
                 }
 
                 //Scan Flow
-                composable(Screen.ScanPassport.ScanPassportUkr.route) {
+                composable(Screen.ScanPassport.ScanPassportSpecific.route) {
                     ScanPassportScreen(onClose = { navController.popBackStack() },
-                        onClaim = {  navigateWithPopUp(Screen.Claim.Ukr.route) })
+                        onClaim = {  navigateWithPopUp(Screen.Claim.Specific.route) })
                 }
 
                 composable(Screen.ScanPassport.ScanPassportReserve.route) {
@@ -206,8 +204,8 @@ fun MainScreenContent() {
                     }
                 }
 
-                composable(Screen.Claim.Ukr.route) {
-                    ClaimUkrTokens {
+                composable(Screen.Claim.Specific.route) {
+                    ClaimSpecificTokens {
                         navigateWithPopUp(Screen.Main.route)
                     }
                 }

@@ -222,7 +222,7 @@ fun HomeScreenNoPassportMainContent(
 
             AppBottomSheet(state = specificAppSheetState, fullScreen = true) { hide ->
                 AirdropIntroScreen(onStart = {
-                    hide { navigate(Screen.ScanPassport.ScanPassportUkr.route) }
+                    hide { navigate(Screen.ScanPassport.ScanPassportSpecific.route) }
                 })
             }
         }

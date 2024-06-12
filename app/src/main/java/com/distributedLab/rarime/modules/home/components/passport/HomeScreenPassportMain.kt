@@ -60,7 +60,7 @@ fun HomeScreenPassportMainContent(
     val passportStatus by homeViewModel.passportStatus.collectAsState()
 
     val isReserved by homeViewModel.isReserved.collectAsState()
-    val isUkrClaimed by homeViewModel.isUkrClaimed.collectAsState()
+    val isSpecificClaimed by homeViewModel.isSpecificClaimed.collectAsState()
 
     val rarimoInfoSheetState = rememberAppSheetState()
     val specificAppSheetState = rememberAppSheetState()
@@ -100,7 +100,7 @@ fun HomeScreenPassportMainContent(
                     onClick = { navigate(Screen.Claim.Reserve.route) })
             }
 
-            if (!isUkrClaimed && passportStatus == PassportStatus.ALLOWED) {
+            if (!isSpecificClaimed && passportStatus == PassportStatus.ALLOWED) {
                 ActionCard(title = stringResource(id = R.string.ukrainian_citizens),
                     description = stringResource(R.string.programmable_rewards),
                     leadingContent = {
@@ -136,7 +136,7 @@ fun HomeScreenPassportMainContent(
 
         AppBottomSheet(state = specificAppSheetState, fullScreen = true) { hide ->
             AirdropIntroScreen(onStart = {
-                hide { navigate(Screen.Claim.Ukr.route) }
+                hide { navigate(Screen.Claim.Specific.route) }
             })
         }
     }

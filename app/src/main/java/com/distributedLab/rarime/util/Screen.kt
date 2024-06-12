@@ -4,7 +4,7 @@ sealed class Screen(val route: String) {
     data object Intro : Screen("intro")
     data object ScanPassport : Screen("scan_passport")  {
 
-        data object ScanPassportUkr : Screen("scan_passport_ukr")
+        data object ScanPassportSpecific : Screen("scan_passport_specific")
         data object ScanPassportReserve: Screen("scan_passport_reserve")
     }
     data object Lock : Screen("lock")
@@ -15,7 +15,7 @@ sealed class Screen(val route: String) {
 
     data object Claim : Screen("calim") {
         data object Reserve : Screen("reserve")
-        data object Ukr : Screen("rarimo")
+        data object Specific : Screen("specific")
     }
 
     data object Passcode : Screen("security") {

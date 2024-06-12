@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.modules.claim.viewModels.ClaimUkrTokenViewModel
+import com.distributedLab.rarime.modules.claim.viewModels.ClaimSpecificTokenViewModel
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
@@ -37,8 +37,8 @@ import com.distributedLab.rarime.util.Constants
 import kotlinx.coroutines.launch
 
 @Composable
-fun ClaimUkrTokens(
-    claimTokenViewModel: ClaimUkrTokenViewModel = hiltViewModel(), onFinish: () -> Unit
+fun ClaimSpecificTokens(
+    claimTokenViewModel: ClaimSpecificTokenViewModel = hiltViewModel(), onFinish: () -> Unit
 ) {
     var isClaiming by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
@@ -135,7 +135,7 @@ fun ClaimUkrTokens(
 @Preview
 @Composable
 private fun ClaimTokensStepPreview() {
-    ClaimUkrTokens(
+    ClaimSpecificTokens(
         onFinish = {},
     )
 }

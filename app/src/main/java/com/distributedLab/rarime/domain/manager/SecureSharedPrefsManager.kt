@@ -70,9 +70,9 @@ interface SecureSharedPrefsManager {
 
     fun saveIsReserved()
 
-    fun saveIsIUkrClaimed()
+    fun saveIsSpecificClaimed()
 
     fun readIsReserved() : Boolean
 
-    fun readIsUkrClaimed() : Boolean
+    fun readIsSpecificClaimed() : Boolean
 }
