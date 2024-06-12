@@ -3,6 +3,7 @@ package com.distributedLab.rarime.modules.main
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.distributedLab.rarime.data.tokens.PointsToken
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.modules.common.SecurityManager
 import com.distributedLab.rarime.modules.common.SettingsManager
@@ -20,6 +21,13 @@ class MainViewModel @Inject constructor(
     settingsManager: SettingsManager,
     private val walletManager: WalletManager,
 ) : ViewModel() {
+    // FIXME: recomposability
+    val pointsWalletAsset = walletManager.walletAssets.value.firstOrNull { it.token is PointsToken }
+
+    val pointsToken: PointsToken? = pointsWalletAsset?.token as PointsToken
+
+    val isPointsBalanceCreated = pointsToken?.getIsBalanceCreated() ?: false
+
     suspend fun loadBalances () {
         walletManager.loadBalances()
     }

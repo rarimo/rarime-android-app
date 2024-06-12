@@ -85,6 +85,12 @@ class WalletManager @Inject constructor(
     private val apiServiceManager: ApiServiceRemoteData,
     private val identityManager: IdentityManager,
 ) {
+    var _isPointsBalanceCreated = MutableStateFlow(false)
+        private set
+
+    val isPointsBalanceCreated: StateFlow<Boolean>
+        get() = _isPointsBalanceCreated.asStateFlow()
+
     private var _walletAssets = MutableStateFlow(
         dataStoreManager.readWalletAssets(
             listOf(

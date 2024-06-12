@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.home.components.no_passport.non_specific
+package com.distributedLab.rarime.ui.components.enter_program.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

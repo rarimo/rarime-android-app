@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.home.components.no_passport.non_specific
+package com.distributedLab.rarime.ui.components.enter_program.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,10 +29,10 @@ import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.home.components.HomeIntroLayout
-import com.distributedLab.rarime.modules.home.components.no_passport.UNSPECIFIED_PASSPORT_STEPS
 import com.distributedLab.rarime.ui.base.BaseIconButton
 import com.distributedLab.rarime.ui.components.AppTextField
 import com.distributedLab.rarime.ui.components.HorizontalDivider
+import com.distributedLab.rarime.ui.components.enter_program.UNSPECIFIED_PASSPORT_STEPS
 import com.distributedLab.rarime.ui.components.rememberAppTextFieldState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
