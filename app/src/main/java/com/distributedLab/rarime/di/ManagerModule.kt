@@ -139,10 +139,16 @@ class APIModule {
         dataStoreManager: SecureSharedPrefsManager,
         contractManager: ContractManager,
         apiServiceManager: ApiServiceRemoteData,
-        identityManager: IdentityManager
+        identityManager: IdentityManager,
+        pointsManager: PointsManager
     ): WalletManager {
         return WalletManager(
-            context, dataStoreManager, contractManager, apiServiceManager, identityManager
+            context,
+            dataStoreManager,
+            contractManager,
+            apiServiceManager,
+            identityManager,
+            pointsManager
         )
     }
 

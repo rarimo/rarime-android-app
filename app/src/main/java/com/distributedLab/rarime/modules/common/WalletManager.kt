@@ -84,6 +84,7 @@ class WalletManager @Inject constructor(
     private val contractManager: ContractManager,
     private val apiServiceManager: ApiServiceRemoteData,
     private val identityManager: IdentityManager,
+    private val pointsManager: PointsManager
 ) {
     var _isPointsBalanceCreated = MutableStateFlow(false)
         private set
@@ -108,7 +109,10 @@ class WalletManager @Inject constructor(
                 ),
                 WalletAsset(
                     identityManager.rarimoAddress(),
-                    PointsToken()
+                    PointsToken(
+                        identityManager = identityManager,
+                        pointsManager = pointsManager,
+                    )
                 )
             )
         )
