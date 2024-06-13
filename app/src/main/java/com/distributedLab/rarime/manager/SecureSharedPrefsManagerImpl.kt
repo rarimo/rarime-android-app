@@ -13,7 +13,7 @@ import com.distributedLab.rarime.data.enums.SecurityCheckState
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.modules.common.WalletAsset
 import com.distributedLab.rarime.modules.common.WalletAssetJSON
-import com.distributedLab.rarime.modules.passport.models.EDocument
+import com.distributedLab.rarime.modules.passportScan.models.EDocument
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.util.LocaleUtil
 import com.distributedLab.rarime.util.data.ZkProof
@@ -45,6 +45,8 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "REGISTRATION_PROOF" to "REGISTRATION_PROOF",
         "TX" to "TX",
         "PASSPORT_STATUS" to "PASSPORT_STATUS",
+        "IS_SPECIFIC_CLAIMED" to "IS_SPECIFIC_CLAIMED",
+        "IS_RARIMO_RESERVED" to "IS_RARIMO_RESERVED"
     )
 
     private val PREFS_FILE_NAME = "sharedPrefFile1"
@@ -326,7 +328,9 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     override fun addTransaction(transaction: Transaction) {
         val allTransactions = readTransactions().toMutableList()
         allTransactions.add(transaction)
+        saveTransactions(allTransactions)
     }
+
 
     private fun saveTransactions(transactions: List<Transaction>) {
         val editor = getEditor()
@@ -335,5 +339,27 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         editor.apply()
     }
 
+
+    override fun saveIsReserved() {
+        val editor = getEditor()
+        editor.putBoolean(accessTokens["IS_RARIMO_RESERVED"], true)
+        editor.apply()
+    }
+
+    override fun saveIsSpecificClaimed() {
+        val editor = getEditor()
+        editor.putBoolean(accessTokens["IS_SPECIFIC_CLAIMED"], true)
+        editor.apply()
+    }
+
+    override fun readIsReserved(): Boolean {
+        val sharedPrefs = getSharedPreferences()
+        return sharedPrefs.getBoolean(accessTokens["IS_RARIMO_RESERVED"], false)
+    }
+
+    override fun readIsSpecificClaimed(): Boolean {
+        val sharedPrefs = getSharedPreferences()
+        return sharedPrefs.getBoolean(accessTokens["IS_SPECIFIC_CLAIMED"], false)
+    }
 
 }

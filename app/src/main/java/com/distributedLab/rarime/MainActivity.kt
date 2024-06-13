@@ -11,7 +11,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.distributedLab.rarime.modules.main.MainScreen
-import com.distributedLab.rarime.modules.passport.nfc.NfcViewModel
+import com.distributedLab.rarime.modules.passportScan.nfc.NfcViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

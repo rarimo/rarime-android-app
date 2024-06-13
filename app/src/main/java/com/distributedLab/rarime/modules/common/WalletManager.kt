@@ -18,7 +18,7 @@ import com.distributedLab.rarime.domain.data.ProofTxFull
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.manager.ApiServiceRemoteData
 import com.distributedLab.rarime.manager.ContractManager
-import com.distributedLab.rarime.modules.passport.models.EDocument
+import com.distributedLab.rarime.modules.passportScan.models.EDocument
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.modules.wallet.models.TransactionState
 import com.distributedLab.rarime.util.Constants
@@ -43,9 +43,7 @@ import javax.inject.Singleton
 import kotlin.time.Duration.Companion.seconds
 
 data class WalletAssetJSON(
-    val tokenSymbol: String,
-    val balance: String,
-    val transactions: List<Transaction>
+    val tokenSymbol: String, val balance: String, val transactions: List<Transaction>
 )
 
 class WalletAsset(val userAddress: String, val token: Token) {
@@ -97,31 +95,55 @@ class WalletManager @Inject constructor(
         dataStoreManager.readWalletAssets(
             listOf(
                 WalletAsset(
-                    identityManager.rarimoAddress(),
-                    RarimoToken(
+                    identityManager.rarimoAddress(), RarimoToken(
                         BaseConfig.RARIMO_CHAINS[RarimoChains.MainnetBeta.chainId]!!, // FIXME: !!
                         identityManager,
                         apiServiceManager,
                     )
-                ),
-                WalletAsset(
+                ), WalletAsset(
                     identityManager.evmAddress,
                     Erc20Token("0x0000000000000000000000000000000000000000")
-                ),
-                WalletAsset(
+                ), WalletAsset(
                     identityManager.rarimoAddress(),
                     PointsToken(
                         identityManager = identityManager,
-                        pointsAPIManager = pointsAPIManager,
+                        pointsAPIManager = pointsAPIManager
                     )
                 )
             )
         )
     )
+
+    private val _isSpecificClaimed = MutableStateFlow(
+        dataStoreManager.readIsSpecificClaimed()
+    )
+    val isSpecificClaimed: StateFlow<Boolean>
+        get() = _isSpecificClaimed.asStateFlow()
+
+
+    private val _isReserved = MutableStateFlow(
+        dataStoreManager.readIsReserved()
+    )
+
+    val isReserved: StateFlow<Boolean>
+        get() = _isReserved.asStateFlow()
+
+
     val walletAssets: StateFlow<List<WalletAsset>>
         get() = _walletAssets.asStateFlow()
 
-    private val _selectedWalletAsset = MutableStateFlow(dataStoreManager.readSelectedWalletAsset(walletAssets.value))
+    private val _selectedWalletAsset =
+        MutableStateFlow(dataStoreManager.readSelectedWalletAsset(walletAssets.value))
+
+    fun updateIsReserved() {
+        _isReserved.value = true
+        dataStoreManager.saveIsReserved()
+    }
+
+    fun updateIsSpecificClaimed() {
+        _isSpecificClaimed.value = true
+        dataStoreManager.readIsSpecificClaimed()
+    }
 
     val selectedWalletAsset: StateFlow<WalletAsset>
         get() = _selectedWalletAsset.asStateFlow()
@@ -246,7 +268,9 @@ class WalletManager @Inject constructor(
         val registrationProof = dataStoreManager.readRegistrationProof()!!
 
         withContext(Dispatchers.Default) {
-            val proof = generateAirdropQueryProof(registrationProof, eDocument, identityManager.privateKeyBytes!!)
+            val proof = generateAirdropQueryProof(
+                registrationProof, eDocument, identityManager.privateKeyBytes!!
+            )
 
             airDrop(proof)
 
@@ -263,11 +287,10 @@ class WalletManager @Inject constructor(
 
             // FIXME: use tx from token and remove transaction key from store
             dataStoreManager.addTransaction(transaction)
+            dataStoreManager.saveIsSpecificClaimed()
 
             loadBalances()
             isAirdropClaimed.value = true
         }
-
-
     }
 }

@@ -106,7 +106,7 @@ fun EnterProgramFlow(
             PolicyConfirmation(
                 onNext = {
                     hide({
-                        navigate(Screen.ScanPassport.route)
+                        navigate(Screen.ScanPassport.ScanPassportPoints.route)
                     })
                 }
             )

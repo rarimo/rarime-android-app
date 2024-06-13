@@ -18,7 +18,7 @@ package com.distributedLab.rarime.util
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
-import com.distributedLab.rarime.modules.passport.models.Image
+import com.distributedLab.rarime.modules.passportScan.models.Image
 import com.gemalto.jp2.JP2Decoder
 import org.jmrtd.lds.AbstractImageInfo
 import org.jnbis.WsqDecoder

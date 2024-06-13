@@ -192,4 +192,15 @@
     <string name="unsupported_country_btn">Create Incognito ID</string>
     <string name="waitlist_card_subtitle">You will be notified once added</string>
     <string name="unsupported_card_title">Unsupported for rewards</string>
+    <string name="reserve_tokens_title">Reserve %1$s RMO tokens</string>
+    <string name="reserve_tokens_description">The passport is in the allowlist</string>
+    <string name="reserving_btn">Reserving...</string>
+    <string name="reserv_btn">Reserve</string>
+    <string name="specific_citizens">Ukrainian Citizens</string>
+    <string name="programmable_rewards">Programmable rewards</string>
+    <string name="learn_more_about_the_app">Learn more about the App</string>
+    <string name="about_the_program">About the program</string>
+    <string name="checking_eligibility">Checking eligibility happens via a scan of your biometric passport.\n\nYour data never leaves the device or is shared with any third party. Proof of citizenship is generated locally using Zero-Knowledge technology.</string>
+    <string name="reserve_tokens">Reserve tokens</string>
+    <string name="you_re_entitled_of_x_rmo">You’re entitled of %1$s RMO</string>
 </resources>

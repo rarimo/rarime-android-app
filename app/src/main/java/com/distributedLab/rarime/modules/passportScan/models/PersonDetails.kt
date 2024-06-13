@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.passport.models
+package com.distributedLab.rarime.modules.passportScan.models
 
 import android.graphics.Bitmap
 import org.jmrtd.lds.iso19794.FaceImageInfo

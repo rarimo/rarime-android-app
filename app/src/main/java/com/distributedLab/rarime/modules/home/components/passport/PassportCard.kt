@@ -45,9 +45,9 @@ import com.distributedLab.rarime.data.enums.toLocalizedTitle
 import com.distributedLab.rarime.data.enums.toLocalizedValue
 import com.distributedLab.rarime.data.enums.toTitleStub
 import com.distributedLab.rarime.data.enums.toValueStub
-import com.distributedLab.rarime.modules.passport.calculateAgeFromBirthDate
-import com.distributedLab.rarime.modules.passport.models.EDocument
-import com.distributedLab.rarime.modules.passport.models.PersonDetails
+import com.distributedLab.rarime.modules.passportScan.calculateAgeFromBirthDate
+import com.distributedLab.rarime.modules.passportScan.models.EDocument
+import com.distributedLab.rarime.modules.passportScan.models.PersonDetails
 import com.distributedLab.rarime.ui.components.AppBottomSheet
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.AppSwitch
@@ -388,7 +388,6 @@ fun StatusCard(modifier: Modifier = Modifier, passportStatus: PassportStatus) {
     var statusDescription = remember {
         R.string.waitlist_card_subtitle
     }
-
 
     when (passportStatus) {
         PassportStatus.WAITLIST -> remember {

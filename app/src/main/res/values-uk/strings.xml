@@ -192,4 +192,15 @@
     <string name="unsupported_country_btn">Створити анонімний ідентифікатор</string>
     <string name="waitlist_card_subtitle">Після додавання ви отримаєте сповіщення</string>
     <string name="unsupported_card_title">Не підтримується для винагород</string>
+    <string name="reserve_tokens_title">Зарезервуйте %1$s токенів RMO</string>
+    <string name="reserve_tokens_description">Паспорт в списку підтримуваних</string>
+    <string name="reserving_btn">Резервування...</string>
+    <string name="reserv_btn">Зарезервувати</string>
+    <string name="specific_citizens">Громадяни України</string>
+    <string name="programmable_rewards">Програмовані винагороди</string>
+    <string name="learn_more_about_the_app">Дізнайтеся більше про додаток</string>
+    <string name="about_the_program">Про додаток</string>
+    <string name="checking_eligibility">Перевірка відповідності вимогам відбувається за допомогою сканування вашого біометричного паспорта.\n\nВаші дані ніколи не залишають пристрій і не передаються третім особам. Підтвердження громадянства створюється локально за допомогою технології Zero-Knowledge.</string>
+    <string name="reserve_tokens">Резерв токенів</string>
+    <string name="you_re_entitled_of_x_rmo">Ви маєте право на %1$s RMO</string>
 </resources>

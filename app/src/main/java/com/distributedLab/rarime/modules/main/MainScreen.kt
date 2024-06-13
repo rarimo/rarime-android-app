@@ -1,7 +1,6 @@
 package com.distributedLab.rarime.modules.main
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
@@ -35,9 +34,11 @@ import androidx.navigation.navArgument
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.data.enums.SecurityCheckState
+import com.distributedLab.rarime.modules.passportVerify.VerifySpecificScreen
+import com.distributedLab.rarime.modules.passportVerify.VerifyPoitntsScreen
 import com.distributedLab.rarime.modules.home.HomeScreen
 import com.distributedLab.rarime.modules.intro.IntroScreen
-import com.distributedLab.rarime.modules.passport.ScanPassportScreen
+import com.distributedLab.rarime.modules.passportScan.ScanPassportScreen
 import com.distributedLab.rarime.modules.profile.AppIconScreen
 import com.distributedLab.rarime.modules.profile.AuthMethodScreen
 import com.distributedLab.rarime.modules.profile.ExportKeysScreen
@@ -176,8 +177,15 @@ fun MainScreenContent() {
                     })
                 }
 
-                composable(Screen.ScanPassport.route) {
-                    ScanPassportScreen(onClose = { navController.popBackStack() })
+                //Scan Flow
+                composable(Screen.ScanPassport.ScanPassportSpecific.route) {
+                    ScanPassportScreen(onClose = { navController.popBackStack() },
+                        onClaim = {  navigateWithPopUp(Screen.Claim.Specific.route) })
+                }
+
+                composable(Screen.ScanPassport.ScanPassportPoints.route) {
+                    ScanPassportScreen(onClose = { navController.popBackStack() },
+                        onClaim = { navigateWithPopUp(Screen.Claim.Reserve.route) })
                 }
 
                 navigation(
@@ -201,15 +209,25 @@ fun MainScreenContent() {
                             onSkip = { navigateWithPopUp(Screen.EnableBiometrics.route) })
                     }
                     composable(Screen.Passcode.AddPasscode.route) {
-                        SetupPasscode(
-                            onPasscodeChange = {
-                                navigateWithPopUp(Screen.EnableBiometrics.route)
-                            },
-                            onClose = {
-                                navController.popBackStack(
-                                    Screen.Passcode.EnablePasscode.route, false
-                                )
-                            })
+                        SetupPasscode(onPasscodeChange = {
+                            navigateWithPopUp(Screen.EnableBiometrics.route)
+                        }, onClose = {
+                            navController.popBackStack(
+                                Screen.Passcode.EnablePasscode.route, false
+                            )
+                        })
+                    }
+                }
+
+                composable(Screen.Claim.Specific.route) {
+                    VerifySpecificScreen {
+                        navigateWithPopUp(Screen.Main.route)
+                    }
+                }
+
+                composable(Screen.Claim.Reserve.route) {
+                    VerifyPoitntsScreen {
+                        navigateWithPopUp(Screen.Main.route)
                     }
                 }
 
