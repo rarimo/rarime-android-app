@@ -55,7 +55,7 @@ fun RewardsClaimScreen(
 
     suspend fun submit () {
         try {
-            rewardsClaimViewModel.withdrawPoints(amountInputState.text.toDouble())
+            rewardsClaimViewModel.withdrawPoints(amountInputState.text)
 
             rewardsClaimViewModel.reloadWalletAssets()
             onBack()

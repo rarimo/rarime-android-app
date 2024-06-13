@@ -12,6 +12,8 @@ data class PointsBalance(
     val amount: Long,
     @Json(name = "is_disabled")
     val isDisabled: Boolean,
+    @Json(name = "is_verified")
+    val isVerified: Boolean = false,
     @Json(name = "created_at")
     val createdAt: Long,
     @Json(name = "updated_at")

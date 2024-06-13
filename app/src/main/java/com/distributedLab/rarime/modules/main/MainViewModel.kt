@@ -3,6 +3,7 @@ package com.distributedLab.rarime.modules.main
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.distributedLab.rarime.api.airdrop.AirDropManager
 import com.distributedLab.rarime.data.tokens.PointsToken
 import com.distributedLab.rarime.store.SecureSharedPrefsManager
 import com.distributedLab.rarime.manager.SecurityManager
@@ -20,6 +21,7 @@ class MainViewModel @Inject constructor(
     securityManager: SecurityManager,
     settingsManager: SettingsManager,
     private val walletManager: WalletManager,
+    private val airDropManager: AirDropManager,
 ) : ViewModel() {
     // FIXME: recomposability
     val pointsWalletAsset = walletManager.walletAssets.value.firstOrNull { it.token is PointsToken }
@@ -28,8 +30,9 @@ class MainViewModel @Inject constructor(
 
     val isPointsBalanceCreated = pointsToken?.getIsBalanceCreated() ?: false
 
-    suspend fun loadBalances () {
+    suspend fun initApp() {
         walletManager.loadBalances()
+        airDropManager.getAirDropByNullifier()
     }
 
     var _isModalShown = MutableStateFlow(false)

@@ -1,8 +1,10 @@
 package com.distributedLab.rarime.modules.home
 
 import androidx.lifecycle.ViewModel
+import com.distributedLab.rarime.api.airdrop.AirDropManager
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.PassportIdentifier
+import com.distributedLab.rarime.data.tokens.PointsToken
 import com.distributedLab.rarime.data.tokens.RarimoToken
 import com.distributedLab.rarime.manager.PassportManager
 import com.distributedLab.rarime.manager.WalletAsset
@@ -10,20 +12,30 @@ import com.distributedLab.rarime.manager.WalletManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val passportManager: PassportManager, walletManager: WalletManager
+    private val passportManager: PassportManager,
+    walletManager: WalletManager,
+    private val airDropManager: AirDropManager
 ) : ViewModel() {
+    val isAirDropClaimed = airDropManager.isAirDropClaimed
 
     private val _rmoAsset =
         MutableStateFlow(walletManager.walletAssets.value.find { it.token is RarimoToken })
-    val isSpecificClaimed = walletManager.isSpecificClaimed
-    val isReserved = walletManager.isReserved
 
     val rmoAsset: StateFlow<WalletAsset?>
         get() = _rmoAsset
+
+    var _pointsToken = MutableStateFlow(
+        walletManager.walletAssets.value.find { it.token is PointsToken }?.token as PointsToken?
+    )
+        private set
+
+    val pointsToken: StateFlow<PointsToken?>
+        get() = _pointsToken.asStateFlow()
 
     var passport = passportManager.passport
     var passportCardLook = passportManager.passportCardLook
@@ -31,7 +43,6 @@ class HomeViewModel @Inject constructor(
     var isIncognito = passportManager.isIncognitoMode
 
     val passportStatus = passportManager.passportStatus
-
 
     fun onPassportCardLookChange(passportCardLook: PassportCardLook) {
         passportManager.updatePassportCardLook(passportCardLook)

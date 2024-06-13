@@ -1,6 +1,7 @@
 package com.distributedLab.rarime.modules.main
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
@@ -83,7 +84,11 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
-            mainViewModel.loadBalances()
+            try {
+                mainViewModel.initApp()
+            } catch (e: Exception) {
+                Log.e("MainScreen", "Failed to init app", e)
+            }
         }
     }
 

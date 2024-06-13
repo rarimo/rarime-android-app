@@ -4,6 +4,11 @@ import com.distributedLab.rarime.util.data.ZkProof
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.squareup.moshi.JsonClass
 
+enum class AirDropStatuses(val status: String) {
+    COMPLETED("completed"),
+    PENDING("pending"),
+}
+
 @JsonClass(generateAdapter = true)
 data class CreateAirDropBody(
     val data: CreateAirDrop,
@@ -19,8 +24,8 @@ data class CreateAirDrop(
 data class CreateAirDropAttributes(
     val address: String,
 
-    @JsonProperty("zk_proof")
-    val zkProof: ZkProof,
+//    @JsonProperty("zk_proof")
+    val zk_proof: ZkProof,
 )
 
 @JsonClass(generateAdapter = true)
@@ -39,18 +44,18 @@ data class Airdrop(
 data class AirdropAttributes(
     val address: String,
     val nullifier: String,
-    val status: String,
+    val status: AirDropStatuses,
 
-    @JsonProperty("created_at")
-    val createdAt: String,
+//    @JsonProperty("created_at")
+    val created_at: String,
 
-    @JsonProperty("updated_at")
-    val updatedAt: String,
+//    @JsonProperty("updated_at")
+    val updated_at: String,
 
     val amount: String,
 
-    @JsonProperty("tx_hash")
-    val txHash: String,
+//    @JsonProperty("tx_hash")
+    val tx_hash: String,
 )
 
 @JsonClass(generateAdapter = true)
@@ -67,10 +72,10 @@ data class AirdropEventParams(
 
 @JsonClass(generateAdapter = true)
 data class AirdropEventParamsAttributes(
-    @JsonProperty("event_id")
-    val eventId: String,
-    @JsonProperty("started_at")
-    val startedAt: Long,
-    @JsonProperty("query_selector")
-    val querySelector: Long,
+//    @JsonProperty("event_id")
+    val event_id: String,
+//    @JsonProperty("started_at")
+    val started_at: Long,
+//    @JsonProperty("query_selector")
+    val query_selector: Long,
 )

@@ -14,10 +14,8 @@ class ReserveTokenViewModel @Inject constructor(
     val pointsManager: PointsManager
 ) : ViewModel() {
 
-    //TODO: Reserve flow
     suspend fun reserve() {
         pointsManager.verifyPassport()
-        walletManager.updateIsReserved()
     }
 
     fun getFlag(): String {

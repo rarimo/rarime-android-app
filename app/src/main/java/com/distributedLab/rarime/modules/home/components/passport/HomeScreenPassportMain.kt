@@ -59,8 +59,8 @@ fun HomeScreenPassportMainContent(
     val isIncognito by homeViewModel.isIncognito
     val passportStatus by homeViewModel.passportStatus.collectAsState()
 
-    val isReserved by homeViewModel.isReserved.collectAsState()
-    val isSpecificClaimed by homeViewModel.isSpecificClaimed.collectAsState()
+    val pointsToken by homeViewModel.pointsToken.collectAsState()
+    val isAirDropClaimed by homeViewModel.isAirDropClaimed.collectAsState()
 
     val rarimoInfoSheetState = rememberAppSheetState()
     val specificAppSheetState = rememberAppSheetState()
@@ -85,7 +85,7 @@ fun HomeScreenPassportMainContent(
                 onIncognitoChange = { homeViewModel.onIncognitoChange(it) },
                 passportStatus = passportStatus,
                 onIdentifiersChange = { homeViewModel.onPassportIdentifiersChange(it) })
-            if (!isReserved && passportStatus == PassportStatus.ALLOWED) {
+            if ((pointsToken?.balanceDetails?.isVerified == null || pointsToken?.balanceDetails?.isVerified == false) && passportStatus == PassportStatus.ALLOWED) {
                 ActionCard(title = stringResource(R.string.reserve_tokens),
                     description = stringResource(
                         R.string.you_re_entitled_of_x_rmo, Constants.AIRDROP_REWARD
@@ -100,7 +100,7 @@ fun HomeScreenPassportMainContent(
                     onClick = { navigate(Screen.Claim.Reserve.route) })
             }
 
-            if (!isSpecificClaimed && passportStatus == PassportStatus.ALLOWED) {
+            if (!isAirDropClaimed && passportStatus == PassportStatus.ALLOWED) {
                 ActionCard(title = stringResource(id = R.string.specific_citizens),
                     description = stringResource(R.string.programmable_rewards),
                     leadingContent = {

@@ -2,16 +2,14 @@ package com.distributedLab.rarime.data.tokens
 
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.api.points.models.PointsBalance
-import com.distributedLab.rarime.manager.IdentityManager
-import com.distributedLab.rarime.api.points.PointsAPIManager
+import com.distributedLab.rarime.api.points.PointsManager
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import java.math.BigInteger
 import javax.inject.Inject
 
 class PointsToken @Inject constructor(
     address: String = "",
-    private val identityManager: IdentityManager,
-    private val pointsAPIManager: PointsAPIManager
+    private val pointsManager: PointsManager
 ) : Token(address) {
     override var name: String = ""
     override var symbol: String = ""
@@ -26,7 +24,7 @@ class PointsToken @Inject constructor(
         decimals = 0
 
         try {
-            balanceDetails = pointsAPIManager.getPointsBalance()
+            balanceDetails = pointsManager.getPointsBalance()
         } catch (e: Exception) {
 
         }

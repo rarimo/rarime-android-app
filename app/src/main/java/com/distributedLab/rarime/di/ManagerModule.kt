@@ -32,6 +32,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.http.HttpService
 import retrofit2.Retrofit
@@ -65,6 +67,13 @@ class APIModule {
                 )
             )
             .baseUrl("http://NONE")
+            .client(OkHttpClient
+                .Builder()
+                .addInterceptor(
+                    HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+                )
+                .build()
+            )
             .build()
 
     @Provides
@@ -109,7 +118,7 @@ class APIModule {
         // TODO: remove
         identityManager: IdentityManager
     ): PointsAPIManager =
-        PointsAPIManager(retrofit.create(PointsAPI::class.java), identityManager)
+        PointsAPIManager(retrofit.create(PointsAPI::class.java))
 
     @Provides
     @Singleton
@@ -166,13 +175,13 @@ class APIModule {
     fun provideWalletManager(
         dataStoreManager: SecureSharedPrefsManager,
         identityManager: IdentityManager,
-        pointsAPIManager: PointsAPIManager,
+        pointsManager: PointsManager,
         cosmosManager: CosmosManager
     ): WalletManager {
         return WalletManager(
             dataStoreManager = dataStoreManager,
             identityManager = identityManager,
-            pointsAPIManager = pointsAPIManager,
+            pointsManager = pointsManager,
             cosmosManager = cosmosManager,
         )
     }
