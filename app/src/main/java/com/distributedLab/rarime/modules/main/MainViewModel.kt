@@ -4,10 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.data.tokens.PointsToken
-import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
-import com.distributedLab.rarime.modules.common.SecurityManager
-import com.distributedLab.rarime.modules.common.SettingsManager
-import com.distributedLab.rarime.modules.common.WalletManager
+import com.distributedLab.rarime.store.SecureSharedPrefsManager
+import com.distributedLab.rarime.manager.SecurityManager
+import com.distributedLab.rarime.manager.SettingsManager
+import com.distributedLab.rarime.manager.WalletManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

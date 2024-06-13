@@ -1,7 +1,7 @@
-package com.distributedLab.rarime.modules.common
+package com.distributedLab.rarime.manager
 
 import com.distributedLab.rarime.BaseConfig
-import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
+import com.distributedLab.rarime.store.SecureSharedPrefsManager
 import com.distributedLab.rarime.util.decodeHexString
 import identity.Identity
 import identity.Profile

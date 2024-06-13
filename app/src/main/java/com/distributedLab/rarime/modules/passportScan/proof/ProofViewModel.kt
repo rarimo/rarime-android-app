@@ -9,11 +9,11 @@ import com.distributedLab.rarime.R
 import com.distributedLab.rarime.api.registration.RegistrationManager
 import com.distributedLab.rarime.contracts.PoseidonSMT.Proof
 import com.distributedLab.rarime.data.enums.PassportStatus
-import com.distributedLab.rarime.domain.data.ProofTx
-import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
+import com.distributedLab.rarime.data.ProofTx
+import com.distributedLab.rarime.store.SecureSharedPrefsManager
 import com.distributedLab.rarime.manager.ContractManager
-import com.distributedLab.rarime.modules.common.IdentityManager
-import com.distributedLab.rarime.modules.common.PassportManager
+import com.distributedLab.rarime.manager.IdentityManager
+import com.distributedLab.rarime.manager.PassportManager
 import com.distributedLab.rarime.modules.passportScan.models.EDocument
 import com.distributedLab.rarime.modules.passportScan.nfc.SODFileOwn
 import com.distributedLab.rarime.util.Constants

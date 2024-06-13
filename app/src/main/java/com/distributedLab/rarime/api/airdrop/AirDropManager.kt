@@ -8,10 +8,10 @@ import com.distributedLab.rarime.api.airdrop.models.AirdropEventParamsBody
 import com.distributedLab.rarime.api.airdrop.models.CreateAirDrop
 import com.distributedLab.rarime.api.airdrop.models.CreateAirDropAttributes
 import com.distributedLab.rarime.api.airdrop.models.CreateAirDropBody
-import com.distributedLab.rarime.domain.data.ProofTxFull
-import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
+import com.distributedLab.rarime.data.ProofTxFull
+import com.distributedLab.rarime.store.SecureSharedPrefsManager
 import com.distributedLab.rarime.manager.ContractManager
-import com.distributedLab.rarime.modules.common.IdentityManager
+import com.distributedLab.rarime.manager.IdentityManager
 import com.distributedLab.rarime.modules.passportScan.models.EDocument
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.modules.wallet.models.TransactionState

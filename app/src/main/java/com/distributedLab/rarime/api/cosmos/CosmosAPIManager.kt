@@ -1,6 +1,6 @@
 package com.distributedLab.rarime.api.cosmos
 
-import com.distributedLab.rarime.domain.data.CosmosSpendableBalancesResponse
+import com.distributedLab.rarime.api.cosmos.models.CosmosSpendableBalancesResponse
 import javax.inject.Inject
 
 class CosmosAPIManager @Inject constructor(

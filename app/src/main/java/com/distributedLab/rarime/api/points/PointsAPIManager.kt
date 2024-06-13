@@ -16,7 +16,7 @@ import com.distributedLab.rarime.api.points.models.VerifyPassportPayload
 import com.distributedLab.rarime.api.points.models.WithdrawBody
 import com.distributedLab.rarime.api.points.models.WithdrawPayload
 import com.distributedLab.rarime.api.points.models.WithdrawPayloadAttributes
-import com.distributedLab.rarime.modules.common.IdentityManager
+import com.distributedLab.rarime.manager.IdentityManager
 import com.google.gson.Gson
 import javax.inject.Inject
 

@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.domain.data
+package com.distributedLab.rarime.api.cosmos.models
 
 data class CosmosSpendableBalancesResponse(
     val balances: List<CosmosSpendableBalance> // Array in Swift becomes List in Kotlin

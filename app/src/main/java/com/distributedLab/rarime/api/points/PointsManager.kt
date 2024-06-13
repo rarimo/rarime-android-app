@@ -1,6 +1,6 @@
 package com.distributedLab.rarime.api.points
 
-import com.distributedLab.rarime.modules.common.IdentityManager
+import com.distributedLab.rarime.manager.IdentityManager
 import javax.inject.Inject
 
 class PointsManager @Inject constructor(

@@ -1,7 +1,7 @@
 package com.distributedLab.rarime.modules.profile
 
 import androidx.lifecycle.ViewModel
-import com.distributedLab.rarime.modules.common.IdentityManager
+import com.distributedLab.rarime.manager.IdentityManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

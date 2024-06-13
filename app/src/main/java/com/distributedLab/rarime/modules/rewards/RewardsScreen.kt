@@ -36,7 +36,7 @@ import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.data.tokens.PreviewerToken
 import com.distributedLab.rarime.api.points.models.PointsEvent
-import com.distributedLab.rarime.modules.common.WalletAsset
+import com.distributedLab.rarime.manager.WalletAsset
 import com.distributedLab.rarime.modules.home.components.passport.StatusCard
 import com.distributedLab.rarime.modules.rewards.components.ActiveTasksList
 import com.distributedLab.rarime.modules.rewards.components.ActiveTasksListSkeleton

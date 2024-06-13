@@ -2,7 +2,7 @@ package com.distributedLab.rarime.data.tokens
 
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.api.points.models.PointsBalance
-import com.distributedLab.rarime.modules.common.IdentityManager
+import com.distributedLab.rarime.manager.IdentityManager
 import com.distributedLab.rarime.api.points.PointsAPIManager
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import java.math.BigInteger

@@ -1,7 +1,7 @@
 package com.distributedLab.rarime.api.cosmos
 
 import com.distributedLab.rarime.BaseConfig
-import com.distributedLab.rarime.domain.data.CosmosSpendableBalancesResponse
+import com.distributedLab.rarime.api.cosmos.models.CosmosSpendableBalancesResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

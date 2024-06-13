@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.common
+package com.distributedLab.rarime.manager
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
@@ -10,7 +10,7 @@ import com.distributedLab.rarime.data.tokens.Erc20Token
 import com.distributedLab.rarime.data.tokens.PointsToken
 import com.distributedLab.rarime.data.tokens.RarimoToken
 import com.distributedLab.rarime.data.tokens.Token
-import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
+import com.distributedLab.rarime.store.SecureSharedPrefsManager
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers

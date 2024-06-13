@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.domain.data
+package com.distributedLab.rarime.data
 
 import java.math.BigInteger
 

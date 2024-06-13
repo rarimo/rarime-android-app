@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.domain.data
+package com.distributedLab.rarime.data
 
 import com.distributedLab.rarime.contracts.PoseidonSMT
 import com.distributedLab.rarime.util.toBase64

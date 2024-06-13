@@ -1,8 +1,8 @@
-package com.distributedLab.rarime.modules.common
+package com.distributedLab.rarime.manager
 
 import androidx.compose.runtime.mutableStateOf
 import com.distributedLab.rarime.data.enums.SecurityCheckState
-import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
+import com.distributedLab.rarime.store.SecureSharedPrefsManager
 import com.distributedLab.rarime.util.Constants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

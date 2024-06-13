@@ -3,8 +3,8 @@ package com.distributedLab.rarime.data.tokens
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.api.cosmos.CosmosManager
 import com.distributedLab.rarime.data.ChainInfo
-import com.distributedLab.rarime.domain.data.CosmosTransferResponse
-import com.distributedLab.rarime.modules.common.IdentityManager
+import com.distributedLab.rarime.api.cosmos.models.CosmosTransferResponse
+import com.distributedLab.rarime.manager.IdentityManager
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.modules.wallet.models.TransactionState
 import com.distributedLab.rarime.util.DateFormatType

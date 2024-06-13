@@ -8,9 +8,9 @@ import com.distributedLab.rarime.api.points.models.PointsEventMeta
 import com.distributedLab.rarime.api.points.models.PointsEventMetaDynamic
 import com.distributedLab.rarime.api.points.models.PointsEventMetaStatic
 import com.distributedLab.rarime.api.points.models.PointsEventStatuses
-import com.distributedLab.rarime.modules.common.PassportManager
-import com.distributedLab.rarime.modules.common.WalletAsset
-import com.distributedLab.rarime.modules.common.WalletManager
+import com.distributedLab.rarime.manager.PassportManager
+import com.distributedLab.rarime.manager.WalletAsset
+import com.distributedLab.rarime.manager.WalletManager
 import com.distributedLab.rarime.ui.components.MARKDOWN_CONTENT
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay

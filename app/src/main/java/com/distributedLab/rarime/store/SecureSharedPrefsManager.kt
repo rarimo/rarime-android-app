@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.domain.manager
+package com.distributedLab.rarime.store
 
 import com.distributedLab.rarime.data.enums.AppColorScheme
 import com.distributedLab.rarime.data.enums.AppLanguage
@@ -6,7 +6,7 @@ import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.PassportIdentifier
 import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.data.enums.SecurityCheckState
-import com.distributedLab.rarime.modules.common.WalletAsset
+import com.distributedLab.rarime.manager.WalletAsset
 import com.distributedLab.rarime.modules.passportScan.models.EDocument
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.util.data.ZkProof

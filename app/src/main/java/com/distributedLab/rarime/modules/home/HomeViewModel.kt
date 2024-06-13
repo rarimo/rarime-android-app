@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.PassportIdentifier
 import com.distributedLab.rarime.data.tokens.RarimoToken
-import com.distributedLab.rarime.modules.common.PassportManager
-import com.distributedLab.rarime.modules.common.WalletAsset
-import com.distributedLab.rarime.modules.common.WalletManager
+import com.distributedLab.rarime.manager.PassportManager
+import com.distributedLab.rarime.manager.WalletAsset
+import com.distributedLab.rarime.manager.WalletManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

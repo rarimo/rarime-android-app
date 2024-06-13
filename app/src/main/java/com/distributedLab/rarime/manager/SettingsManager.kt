@@ -1,9 +1,9 @@
-package com.distributedLab.rarime.modules.common
+package com.distributedLab.rarime.manager
 
 import androidx.compose.runtime.mutableStateOf
 import com.distributedLab.rarime.data.enums.AppColorScheme
 import com.distributedLab.rarime.data.enums.AppLanguage
-import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
+import com.distributedLab.rarime.store.SecureSharedPrefsManager
 import javax.inject.Inject
 import javax.inject.Singleton
 

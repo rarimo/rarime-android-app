@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.tokens.PreviewerToken
-import com.distributedLab.rarime.modules.common.WalletAsset
+import com.distributedLab.rarime.manager.WalletAsset
 import com.distributedLab.rarime.modules.home.LocalHomeViewModel
 import com.distributedLab.rarime.modules.home.components.HomeScreenHeader
 import com.distributedLab.rarime.modules.home.components.RarimeInfoScreen
