@@ -7,16 +7,20 @@ import com.distributedLab.rarime.api.airdrop.AirDropAPIManager
 import com.distributedLab.rarime.api.airdrop.AirDropManager
 import com.distributedLab.rarime.api.points.PointsManager
 import com.distributedLab.rarime.api.auth.AuthAPI
-import com.distributedLab.rarime.domain.manager.APIServiceManager
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.api.points.PointsAPI
-import com.distributedLab.rarime.manager.ApiServiceRemoteData
 import com.distributedLab.rarime.api.auth.AuthAPIManager
 import com.distributedLab.rarime.api.auth.AuthManager
+import com.distributedLab.rarime.api.cosmos.CosmosAPI
+import com.distributedLab.rarime.api.cosmos.CosmosAPIManager
+import com.distributedLab.rarime.api.cosmos.CosmosManager
 import com.distributedLab.rarime.manager.ContractManager
 import com.distributedLab.rarime.manager.SecureSharedPrefsManagerImpl
 import com.distributedLab.rarime.modules.common.IdentityManager
 import com.distributedLab.rarime.api.points.PointsAPIManager
+import com.distributedLab.rarime.api.registration.RegistrationAPI
+import com.distributedLab.rarime.api.registration.RegistrationAPIManager
+import com.distributedLab.rarime.api.registration.RegistrationManager
 import com.distributedLab.rarime.modules.common.SecurityManager
 import com.distributedLab.rarime.modules.common.SettingsManager
 import com.distributedLab.rarime.modules.common.WalletManager
@@ -31,7 +35,7 @@ import dagger.hilt.components.SingletonComponent
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.http.HttpService
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+//import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Named
 import javax.inject.Singleton
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -47,24 +51,6 @@ abstract class ManagerModule {
 @Module
 @InstallIn(SingletonComponent::class)
 class APIModule {
-    // TODO: remove
-    @Provides
-    @Singleton
-    @Named("otherRetrofit")
-    fun provideRetrofit(): Retrofit =
-        Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://NONE")
-            .build()
-
-    // TODO: remove
-    @Provides
-    @Singleton
-    fun provideAPIService(@Named("otherRetrofit") retrofit: Retrofit): APIServiceManager =
-        retrofit.create(APIServiceManager::class.java)
-
-    // NEW
-
     @Provides
     @Singleton
     @Named("jsonApiRetrofit")
@@ -83,6 +69,18 @@ class APIModule {
 
     @Provides
     @Singleton
+    fun providerRegistrationAPIManager(
+        @Named("jsonApiRetrofit") retrofit: Retrofit
+    ): RegistrationAPIManager = RegistrationAPIManager(retrofit.create(RegistrationAPI::class.java))
+
+    @Provides
+    @Singleton
+    fun provideRegistrationManager(
+        registrationAPIManager: RegistrationAPIManager
+    ): RegistrationManager = RegistrationManager(registrationAPIManager)
+
+    @Provides
+    @Singleton
     fun provideAirDropAPIManager(@Named("jsonApiRetrofit") retrofit: Retrofit): AirDropAPIManager =
         AirDropAPIManager(
             retrofit.create(AirDropAPI::class.java),
@@ -91,8 +89,8 @@ class APIModule {
     @Provides
     @Singleton
     fun provideAirDropManager(
+        @ApplicationContext context: Context,
         airDropAPIManager: AirDropAPIManager,
-        context: Context,
         contractManager: ContractManager,
         identityManager: IdentityManager,
         dataStoreManager: SecureSharedPrefsManager,
@@ -138,6 +136,20 @@ class APIModule {
         return AuthManager(authAPIManager)
     }
 
+    @Provides
+    @Singleton
+    fun provideCosmosAPIManager(
+        @Named("jsonApiRetrofit") retrofit: Retrofit
+    ): CosmosAPIManager =
+        CosmosAPIManager(retrofit.create(CosmosAPI::class.java))
+
+    @Provides
+    @Singleton
+    fun provideCosmosManager(
+        cosmosAPIManager: CosmosAPIManager
+    ): CosmosManager {
+        return CosmosManager(cosmosAPIManager)
+    }
 
     @Provides
     @Singleton
@@ -152,20 +164,16 @@ class APIModule {
     @Provides
     @Singleton
     fun provideWalletManager(
-        @ApplicationContext context: Context,
         dataStoreManager: SecureSharedPrefsManager,
-        contractManager: ContractManager,
-        apiServiceManager: ApiServiceRemoteData,
         identityManager: IdentityManager,
-        pointsAPIManager: PointsAPIManager
+        pointsAPIManager: PointsAPIManager,
+        cosmosManager: CosmosManager
     ): WalletManager {
         return WalletManager(
-            context,
-            dataStoreManager,
-            contractManager,
-            apiServiceManager,
-            identityManager,
-            pointsAPIManager
+            dataStoreManager = dataStoreManager,
+            identityManager = identityManager,
+            pointsAPIManager = pointsAPIManager,
+            cosmosManager = cosmosManager,
         )
     }
 

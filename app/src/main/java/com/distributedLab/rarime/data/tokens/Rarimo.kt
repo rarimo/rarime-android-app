@@ -1,9 +1,9 @@
 package com.distributedLab.rarime.data.tokens
 
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.api.cosmos.CosmosManager
 import com.distributedLab.rarime.data.ChainInfo
 import com.distributedLab.rarime.domain.data.CosmosTransferResponse
-import com.distributedLab.rarime.manager.ApiServiceRemoteData
 import com.distributedLab.rarime.modules.common.IdentityManager
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.modules.wallet.models.TransactionState
@@ -21,7 +21,7 @@ import javax.inject.Inject
 class RarimoToken @Inject constructor(
     val chainInfo: ChainInfo,
     private val identityManager: IdentityManager,
-    private val apiServiceManager: ApiServiceRemoteData,
+    private val cosmosManager: CosmosManager,
     address: String = ""
 ) : Token(address) {
     override var name: String = "" // TODO: make nullable
@@ -39,7 +39,7 @@ class RarimoToken @Inject constructor(
 
     override suspend fun balanceOf(address: String): BigInteger {
         return withContext(Dispatchers.IO) {
-            val response = apiServiceManager.fetchBalance(address)
+            val response = cosmosManager.getBalance(address)
 
             response?.let {
                 it.balances.ifEmpty {

@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.api.airdrop.models.AirdropEventParamsBody
 import com.distributedLab.rarime.api.airdrop.models.CreateAirDrop
 import com.distributedLab.rarime.api.airdrop.models.CreateAirDropAttributes
 import com.distributedLab.rarime.api.airdrop.models.CreateAirDropBody
@@ -153,5 +154,9 @@ class AirDropManager @Inject constructor(
 
             isAirdropClaimed.value = true
         }
+    }
+
+    suspend fun getAirDropParams(): AirdropEventParamsBody {
+        return airDropAPIManager.getAirDropParams()
     }
 }

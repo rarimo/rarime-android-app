@@ -7,4 +7,5 @@ class PointsManager @Inject constructor(
     private val pointsAPIManager: PointsAPIManager,
     private val identityManager: IdentityManager
 ) {
+    suspend fun verifyPassport() = pointsAPIManager.verifyPassport()
 }
