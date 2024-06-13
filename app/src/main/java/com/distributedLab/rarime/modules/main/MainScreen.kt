@@ -329,7 +329,7 @@ fun MainScreenContent() {
                 isHeaderEnabled = false,
             ) { hide ->
                 EnterProgramFlow(
-                    navigate = { navController.navigate(it) },
+                    navigate = { navController.navigate(Screen.ScanPassport.ScanPassportPoints.route) },
                     sheetState = enterProgramSheetState,
                     hide = hide
                 )

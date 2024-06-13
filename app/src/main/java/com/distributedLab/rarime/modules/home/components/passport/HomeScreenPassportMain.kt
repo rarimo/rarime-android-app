@@ -28,6 +28,7 @@ import com.distributedLab.rarime.ui.components.ActionCard
 import com.distributedLab.rarime.ui.components.ActionCardVariants
 import com.distributedLab.rarime.ui.components.AppBottomSheet
 import com.distributedLab.rarime.ui.components.AppIcon
+import com.distributedLab.rarime.ui.components.enter_program.EnterProgramFlow
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Constants
@@ -64,6 +65,7 @@ fun HomeScreenPassportMainContent(
 
     val rarimoInfoSheetState = rememberAppSheetState()
     val specificAppSheetState = rememberAppSheetState()
+    val verifyPassportSheetState = rememberAppSheetState()
 
     Column(
         modifier = Modifier.padding(12.dp)
@@ -97,7 +99,13 @@ fun HomeScreenPassportMainContent(
                             contentDescription = "decor",
                         )
                     },
-                    onClick = { navigate(Screen.Claim.Reserve.route) })
+                    onClick = {
+                        pointsToken?.balanceDetails?.let {
+                            navigate(Screen.Claim.Reserve.route)
+                        } ?: run {
+                            verifyPassportSheetState.show()
+                        }
+                    })
             }
 
             if (!isAirDropClaimed && passportStatus == PassportStatus.ALLOWED) {
@@ -129,9 +137,16 @@ fun HomeScreenPassportMainContent(
 
         }
 
-
         AppBottomSheet(state = rarimoInfoSheetState, fullScreen = true) { hide ->
             RarimeInfoScreen(onClose = { hide {} })
+        }
+
+        AppBottomSheet(state = verifyPassportSheetState, fullScreen = true, isHeaderEnabled = false) { hide ->
+            EnterProgramFlow(
+                navigate = { navigate(Screen.Claim.Reserve.route) },
+                sheetState = verifyPassportSheetState,
+                hide = hide
+            )
         }
 
         AppBottomSheet(state = specificAppSheetState, fullScreen = true) { hide ->

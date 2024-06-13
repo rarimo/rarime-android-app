@@ -43,7 +43,7 @@ enum class UNSPECIFIED_PASSPORT_STEPS(val value: Int) {
 
 @Composable
 fun EnterProgramFlow(
-    navigate: (String) -> Unit,
+    navigate: () -> Unit,
     sheetState: AppSheetState,
     hide: HideSheetFn,
 ) {
@@ -106,7 +106,7 @@ fun EnterProgramFlow(
             PolicyConfirmation(
                 onNext = {
                     hide({
-                        navigate(Screen.ScanPassport.ScanPassportPoints.route)
+                        navigate()
                     })
                 }
             )
