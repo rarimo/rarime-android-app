@@ -84,7 +84,6 @@ class AirDropManager @Inject constructor(
             airDropAPIManager.getAirDropParams()!!
         }
 
-
         val queryProofInputs = profiler.buildAirdropQueryIdentityInputs(
             eDocument.dg1!!.decodeHexString(),
             smtProofJson.toByteArray(Charsets.UTF_8),

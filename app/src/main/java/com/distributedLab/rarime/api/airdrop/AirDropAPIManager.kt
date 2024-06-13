@@ -1,8 +1,10 @@
 package com.distributedLab.rarime.api.airdrop
 
+import android.util.Log
 import com.distributedLab.rarime.api.airdrop.models.AirDropResponseBody
 import com.distributedLab.rarime.api.airdrop.models.AirdropEventParamsBody
 import com.distributedLab.rarime.api.airdrop.models.CreateAirDropBody
+import com.google.gson.Gson
 import javax.inject.Inject
 
 class AirDropAPIManager @Inject constructor(private val airDropAPI: AirDropAPI) {
