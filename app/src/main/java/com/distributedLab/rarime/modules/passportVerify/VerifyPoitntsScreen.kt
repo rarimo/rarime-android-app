@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.verify
+package com.distributedLab.rarime.modules.passportVerify
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.modules.verify.viewModels.ClaimSpecificTokenViewModel
+import com.distributedLab.rarime.modules.passportVerify.viewModels.ReserveTokenViewModel
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
@@ -36,18 +36,19 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Constants
 import kotlinx.coroutines.launch
 
-@Composable
-fun ClaimSpecificTokens(
-    claimTokenViewModel: ClaimSpecificTokenViewModel = hiltViewModel(), onFinish: () -> Unit
-) {
-    var isClaiming by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
-    val termsAcceptedState = rememberAppCheckboxState()
 
-    suspend fun claimTokens() {
-        isClaiming = true
-        claimTokenViewModel.claimAirdrop()
-        isClaiming = false
+@Composable
+fun VerifyPoitntsScreen(
+    reserveTokenViewModel: ReserveTokenViewModel = hiltViewModel(), onFinish: () -> Unit
+) {
+    var isReserving by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+
+    val termsAcceptedState = rememberAppCheckboxState()
+    suspend fun reserveTokens() {
+        isReserving = true
+        reserveTokenViewModel.reserve()
+        isReserving = false
         onFinish()
     }
 
@@ -81,7 +82,7 @@ fun ClaimSpecificTokens(
                         .border(2.dp, RarimeTheme.colors.backgroundPrimary, CircleShape)
                 ) {
                     Text(
-                        text = "🇺🇦",
+                        text = reserveTokenViewModel.getFlag(),
                         style = RarimeTheme.typography.h5,
                         color = RarimeTheme.colors.textPrimary,
                     )
@@ -97,13 +98,13 @@ fun ClaimSpecificTokens(
             ) {
                 Text(
                     text = stringResource(
-                        R.string.claim_tokens_title, Constants.AIRDROP_REWARD.toInt()
+                        R.string.reserve_tokens_title, Constants.AIRDROP_REWARD.toInt()
                     ),
                     style = RarimeTheme.typography.h6,
                     color = RarimeTheme.colors.textPrimary,
                 )
                 Text(
-                    text = stringResource(R.string.claim_tokens_description),
+                    text = stringResource(R.string.reserve_tokens_description),
                     style = RarimeTheme.typography.body3,
                     textAlign = TextAlign.Center,
                     color = RarimeTheme.colors.textSecondary,
@@ -119,14 +120,14 @@ fun ClaimSpecificTokens(
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp)
             ) {
-                UiPrivacyCheckbox(termsAcceptedState = termsAcceptedState, enabled = !isClaiming)
-                PrimaryButton(text = if (isClaiming) stringResource(R.string.claiming_btn) else stringResource(
-                    R.string.claim_btn
+                UiPrivacyCheckbox(termsAcceptedState = termsAcceptedState, enabled = !isReserving)
+                PrimaryButton(text = if (isReserving) stringResource(R.string.reserving_btn) else stringResource(
+                    R.string.reserv_btn
                 ),
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = termsAcceptedState.checked && !isClaiming,
+                    enabled = termsAcceptedState.checked && !isReserving,
                     size = ButtonSize.Large,
-                    onClick = { coroutineScope.launch { claimTokens() } })
+                    onClick = { coroutineScope.launch { reserveTokens() } })
             }
         }
     }
@@ -134,8 +135,30 @@ fun ClaimSpecificTokens(
 
 @Preview
 @Composable
-private fun ClaimTokensStepPreview() {
-    ClaimSpecificTokens(
-        onFinish = {},
-    )
+private fun VerifyPoitntsScreenPreview() {
+    Row(horizontalArrangement = Arrangement.spacedBy((-32).dp)) {
+        AppIcon(
+            id = R.drawable.ic_rarimo,
+            size = 32.dp,
+            tint = RarimeTheme.colors.textPrimary,
+            modifier = Modifier
+                .background(RarimeTheme.colors.backgroundPure, CircleShape)
+                .border(2.dp, RarimeTheme.colors.backgroundPrimary, CircleShape)
+                .padding(20.dp),
+        )
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .size(72.dp)
+                .background(RarimeTheme.colors.backgroundPure, CircleShape)
+                .border(2.dp, RarimeTheme.colors.backgroundPrimary, CircleShape)
+        ) {
+            Text(
+                text = "🇺🇦",
+                style = RarimeTheme.typography.h5,
+                color = RarimeTheme.colors.textPrimary,
+            )
+        }
+    }
 }

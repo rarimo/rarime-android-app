@@ -5,7 +5,7 @@ sealed class Screen(val route: String) {
     data object ScanPassport : Screen("scan_passport")  {
 
         data object ScanPassportSpecific : Screen("scan_passport_specific")
-        data object ScanPassportReserve: Screen("scan_passport_reserve")
+        data object ScanPassportPoints: Screen("scan_passport_points")
     }
     data object Lock : Screen("lock")
 

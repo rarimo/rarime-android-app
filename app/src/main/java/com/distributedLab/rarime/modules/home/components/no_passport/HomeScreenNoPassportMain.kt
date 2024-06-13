@@ -183,7 +183,7 @@ fun HomeScreenNoPassportMainContent(
                                 onClick = { nonSpecificAppSheetState.hide() })
                         }
                         PolicyConfirmation(onNext = {
-                            hide { navigate(Screen.ScanPassport.ScanPassportReserve.route) }
+                            hide { navigate(Screen.ScanPassport.ScanPassportPoints.route) }
                         })
                     }
                 }

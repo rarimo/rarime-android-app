@@ -33,8 +33,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.SecurityCheckState
-import com.distributedLab.rarime.modules.verify.ClaimSpecificTokens
-import com.distributedLab.rarime.modules.verify.ReserveScreen
+import com.distributedLab.rarime.modules.passportVerify.VerifySpecificScreen
+import com.distributedLab.rarime.modules.passportVerify.VerifyPoitntsScreen
 import com.distributedLab.rarime.modules.home.HomeScreen
 import com.distributedLab.rarime.modules.intro.IntroScreen
 import com.distributedLab.rarime.modules.passportScan.ScanPassportScreen
@@ -168,7 +168,7 @@ fun MainScreenContent() {
                         onClaim = {  navigateWithPopUp(Screen.Claim.Specific.route) })
                 }
 
-                composable(Screen.ScanPassport.ScanPassportReserve.route) {
+                composable(Screen.ScanPassport.ScanPassportPoints.route) {
                     ScanPassportScreen(onClose = { navController.popBackStack() },
                         onClaim = { navigateWithPopUp(Screen.Claim.Reserve.route) })
                 }
@@ -205,13 +205,13 @@ fun MainScreenContent() {
                 }
 
                 composable(Screen.Claim.Specific.route) {
-                    ClaimSpecificTokens {
+                    VerifySpecificScreen {
                         navigateWithPopUp(Screen.Main.route)
                     }
                 }
 
                 composable(Screen.Claim.Reserve.route) {
-                    ReserveScreen {
+                    VerifyPoitntsScreen {
                         navigateWithPopUp(Screen.Main.route)
                     }
                 }
