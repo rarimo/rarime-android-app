@@ -1,11 +1,11 @@
-package com.distributedLab.rarime.modules.passport.nfc
+package com.distributedLab.rarime.modules.passportScan.nfc
 
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.modules.common.IdentityManager
-import com.distributedLab.rarime.modules.passport.models.EDocument
+import com.distributedLab.rarime.modules.passportScan.models.EDocument
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

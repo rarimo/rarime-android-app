@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.claim.viewModels
+package com.distributedLab.rarime.modules.verify.viewModels
 
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.modules.common.PassportManager
@@ -19,6 +19,6 @@ class ReserveTokenViewModel @Inject constructor(
     }
 
     fun getFlag(): String {
-        return Country.fromISOCode(passportManager.getIsoCode()!!)!!.emoji
+        return Country.fromISOCode(passportManager.getIsoCode()!!)!!.flag
     }
 }

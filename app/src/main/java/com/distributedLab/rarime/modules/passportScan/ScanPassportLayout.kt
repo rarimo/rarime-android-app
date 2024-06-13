@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.passport
+package com.distributedLab.rarime.modules.passportScan
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

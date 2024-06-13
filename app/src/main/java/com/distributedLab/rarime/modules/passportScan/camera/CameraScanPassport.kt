@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.passport.camera
+package com.distributedLab.rarime.modules.passportScan.camera
 
 import android.content.Context
 import android.view.ViewGroup

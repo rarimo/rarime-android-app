@@ -33,12 +33,12 @@ class IdentityManager @Inject constructor(
             if (_profiler == null) {
                 // FIXME: setting in getter
                 _profiler.value = Profile().newProfile(privateKeyBytes)
+
             }
             return _profiler.asStateFlow()
         }
 
     fun rarimoAddress(): String {
-
         return profiler.value.rarimoAddress
     }
 

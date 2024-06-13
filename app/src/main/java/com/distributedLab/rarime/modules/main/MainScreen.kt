@@ -33,11 +33,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.SecurityCheckState
-import com.distributedLab.rarime.modules.claim.ClaimSpecificTokens
-import com.distributedLab.rarime.modules.claim.ReserveScreen
+import com.distributedLab.rarime.modules.verify.ClaimSpecificTokens
+import com.distributedLab.rarime.modules.verify.ReserveScreen
 import com.distributedLab.rarime.modules.home.HomeScreen
 import com.distributedLab.rarime.modules.intro.IntroScreen
-import com.distributedLab.rarime.modules.passport.ScanPassportScreen
+import com.distributedLab.rarime.modules.passportScan.ScanPassportScreen
 import com.distributedLab.rarime.modules.profile.AppIconScreen
 import com.distributedLab.rarime.modules.profile.AuthMethodScreen
 import com.distributedLab.rarime.modules.profile.ExportKeysScreen

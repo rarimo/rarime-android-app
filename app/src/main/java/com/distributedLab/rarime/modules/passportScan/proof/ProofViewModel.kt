@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.passport.proof
+package com.distributedLab.rarime.modules.passportScan.proof
 
 import android.app.Application
 import android.content.Context
@@ -14,9 +14,8 @@ import com.distributedLab.rarime.manager.ApiServiceRemoteData
 import com.distributedLab.rarime.manager.ContractManager
 import com.distributedLab.rarime.modules.common.IdentityManager
 import com.distributedLab.rarime.modules.common.PassportManager
-import com.distributedLab.rarime.modules.passport.PassportProofState
-import com.distributedLab.rarime.modules.passport.models.EDocument
-import com.distributedLab.rarime.modules.passport.nfc.SODFileOwn
+import com.distributedLab.rarime.modules.passportScan.models.EDocument
+import com.distributedLab.rarime.modules.passportScan.nfc.SODFileOwn
 import com.distributedLab.rarime.util.Constants
 import com.distributedLab.rarime.util.SecurityUtil
 import com.distributedLab.rarime.util.ZKPUseCase
@@ -105,6 +104,7 @@ class ProofViewModel @Inject constructor(
             BaseConfig.MASTER_CERTIFICATES_BUCKETNAME,
             BaseConfig.MASTER_CERTIFICATES_FILENAME
         )
+
 
         val response = withContext(Dispatchers.IO) {
             apiService.sendRegistration(callData)

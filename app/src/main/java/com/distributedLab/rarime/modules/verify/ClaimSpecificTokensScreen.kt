@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.claim
+package com.distributedLab.rarime.modules.verify
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.modules.claim.viewModels.ClaimSpecificTokenViewModel
+import com.distributedLab.rarime.modules.verify.viewModels.ClaimSpecificTokenViewModel
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider

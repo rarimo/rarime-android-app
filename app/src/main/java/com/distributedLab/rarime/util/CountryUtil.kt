@@ -1,6 +1,6 @@
 package com.distributedLab.rarime.util
 
-enum class Country(val emoji: String, val localizedName: String) {
+enum class Country(val flag: String, val localizedName: String) {
     AFGHANISTAN("🇦🇫", "Afghanistan"),
     ALBANIA("🇦🇱", "Albania"),
     ALGERIA("🇩🇿", "Algeria"),

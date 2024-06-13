@@ -17,7 +17,7 @@ import com.distributedLab.rarime.domain.data.ProofTxFull
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
 import com.distributedLab.rarime.manager.ApiServiceRemoteData
 import com.distributedLab.rarime.manager.ContractManager
-import com.distributedLab.rarime.modules.passport.models.EDocument
+import com.distributedLab.rarime.modules.passportScan.models.EDocument
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.modules.wallet.models.TransactionState
 import com.distributedLab.rarime.util.Constants

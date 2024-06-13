@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.claim.viewModels
+package com.distributedLab.rarime.modules.verify.viewModels
 
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.modules.common.WalletManager

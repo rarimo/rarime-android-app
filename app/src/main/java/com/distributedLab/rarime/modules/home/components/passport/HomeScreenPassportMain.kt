@@ -101,7 +101,7 @@ fun HomeScreenPassportMainContent(
             }
 
             if (!isSpecificClaimed && passportStatus == PassportStatus.ALLOWED) {
-                ActionCard(title = stringResource(id = R.string.ukrainian_citizens),
+                ActionCard(title = stringResource(id = R.string.specific_citizens),
                     description = stringResource(R.string.programmable_rewards),
                     leadingContent = {
                         Text(

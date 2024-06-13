@@ -13,7 +13,7 @@ sealed class Screen(val route: String) {
         data object NewIdentity : Screen("new_identity")
     }
 
-    data object Claim : Screen("calim") {
+    data object Claim : Screen("claim") {
         data object Reserve : Screen("reserve")
         data object Specific : Screen("specific")
     }

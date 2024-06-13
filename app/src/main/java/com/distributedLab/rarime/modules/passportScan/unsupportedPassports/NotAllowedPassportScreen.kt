@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.passport
+package com.distributedLab.rarime.modules.passportScan.unsupportedPassports
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,8 +20,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.modules.passport.models.EDocument
-import com.distributedLab.rarime.modules.passport.models.PersonDetails
+import com.distributedLab.rarime.modules.passportScan.models.EDocument
+import com.distributedLab.rarime.modules.passportScan.models.PersonDetails
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
@@ -55,7 +55,7 @@ fun NotAllowedPassportScreen(
                     .border(2.dp, RarimeTheme.colors.backgroundPrimary, CircleShape)
             ) {
                 Text(
-                    text = Country.fromISOCode(eDocument.personDetails!!.issuerAuthority)!!.emoji,
+                    text = Country.fromISOCode(eDocument.personDetails!!.issuerAuthority)!!.flag,
                     style = RarimeTheme.typography.h5,
                     color = RarimeTheme.colors.textPrimary,
                 )

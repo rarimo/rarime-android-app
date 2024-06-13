@@ -7,7 +7,7 @@ import com.distributedLab.rarime.data.enums.PassportIdentifier
 import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.data.enums.SecurityCheckState
 import com.distributedLab.rarime.modules.common.WalletAsset
-import com.distributedLab.rarime.modules.passport.models.EDocument
+import com.distributedLab.rarime.modules.passportScan.models.EDocument
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import com.distributedLab.rarime.util.data.ZkProof
 
