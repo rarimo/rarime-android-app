@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.domain.points
+package com.distributedLab.rarime.api.points.models
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

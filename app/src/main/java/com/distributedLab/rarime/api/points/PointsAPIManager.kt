@@ -1,27 +1,27 @@
-package com.distributedLab.rarime.modules.common
+package com.distributedLab.rarime.api.points
 
 import android.util.Log
-import com.distributedLab.rarime.domain.points.ClaimEventBody
-import com.distributedLab.rarime.domain.points.ClaimEventPayload
-import com.distributedLab.rarime.domain.points.CreateBalanceAttributes
-import com.distributedLab.rarime.domain.points.CreateBalanceBody
-import com.distributedLab.rarime.domain.points.CreateBalancePayload
-import com.distributedLab.rarime.domain.points.JsonApiPointsSvcManager
-import com.distributedLab.rarime.domain.points.PointsBalance
-import com.distributedLab.rarime.domain.points.PointsEvent
-import com.distributedLab.rarime.domain.points.PointsPrice
-import com.distributedLab.rarime.domain.points.PointsWithdrawal
-import com.distributedLab.rarime.domain.points.VerifyPassportAttributes
-import com.distributedLab.rarime.domain.points.VerifyPassportBody
-import com.distributedLab.rarime.domain.points.VerifyPassportPayload
-import com.distributedLab.rarime.domain.points.WithdrawBody
-import com.distributedLab.rarime.domain.points.WithdrawPayload
-import com.distributedLab.rarime.domain.points.WithdrawPayloadAttributes
+import com.distributedLab.rarime.api.points.models.ClaimEventBody
+import com.distributedLab.rarime.api.points.models.ClaimEventPayload
+import com.distributedLab.rarime.api.points.models.CreateBalanceAttributes
+import com.distributedLab.rarime.api.points.models.CreateBalanceBody
+import com.distributedLab.rarime.api.points.models.CreateBalancePayload
+import com.distributedLab.rarime.api.points.models.PointsBalance
+import com.distributedLab.rarime.api.points.models.PointsEvent
+import com.distributedLab.rarime.api.points.models.PointsPrice
+import com.distributedLab.rarime.api.points.models.PointsWithdrawal
+import com.distributedLab.rarime.api.points.models.VerifyPassportAttributes
+import com.distributedLab.rarime.api.points.models.VerifyPassportBody
+import com.distributedLab.rarime.api.points.models.VerifyPassportPayload
+import com.distributedLab.rarime.api.points.models.WithdrawBody
+import com.distributedLab.rarime.api.points.models.WithdrawPayload
+import com.distributedLab.rarime.api.points.models.WithdrawPayloadAttributes
+import com.distributedLab.rarime.modules.common.IdentityManager
 import com.google.gson.Gson
 import javax.inject.Inject
 
-class PointsManager @Inject constructor(
-    private val jsonApiPointsSvcManager: JsonApiPointsSvcManager,
+class PointsAPIManager @Inject constructor(
+    private val jsonApiPointsSvcManager: PointsAPI,
     private val identityManager: IdentityManager
 ) {
     /* BALANCE */

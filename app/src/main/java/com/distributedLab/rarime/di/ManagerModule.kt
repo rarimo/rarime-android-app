@@ -2,16 +2,21 @@ package com.distributedLab.rarime.di
 
 import android.content.Context
 import com.distributedLab.rarime.BaseConfig
-import com.distributedLab.rarime.domain.auth.JsonApiAuthSvcManager
+import com.distributedLab.rarime.api.airdrop.AirDropAPI
+import com.distributedLab.rarime.api.airdrop.AirDropAPIManager
+import com.distributedLab.rarime.api.airdrop.AirDropManager
+import com.distributedLab.rarime.api.points.PointsManager
+import com.distributedLab.rarime.api.auth.AuthAPI
 import com.distributedLab.rarime.domain.manager.APIServiceManager
 import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
-import com.distributedLab.rarime.domain.points.JsonApiPointsSvcManager
+import com.distributedLab.rarime.api.points.PointsAPI
 import com.distributedLab.rarime.manager.ApiServiceRemoteData
-import com.distributedLab.rarime.manager.AuthSvcManager
+import com.distributedLab.rarime.api.auth.AuthAPIManager
+import com.distributedLab.rarime.api.auth.AuthManager
 import com.distributedLab.rarime.manager.ContractManager
 import com.distributedLab.rarime.manager.SecureSharedPrefsManagerImpl
 import com.distributedLab.rarime.modules.common.IdentityManager
-import com.distributedLab.rarime.modules.common.PointsManager
+import com.distributedLab.rarime.api.points.PointsAPIManager
 import com.distributedLab.rarime.modules.common.SecurityManager
 import com.distributedLab.rarime.modules.common.SettingsManager
 import com.distributedLab.rarime.modules.common.WalletManager
@@ -42,6 +47,7 @@ abstract class ManagerModule {
 @Module
 @InstallIn(SingletonComponent::class)
 class APIModule {
+    // TODO: remove
     @Provides
     @Singleton
     @Named("otherRetrofit")
@@ -51,10 +57,13 @@ class APIModule {
             .baseUrl("http://NONE")
             .build()
 
+    // TODO: remove
     @Provides
     @Singleton
     fun provideAPIService(@Named("otherRetrofit") retrofit: Retrofit): APIServiceManager =
         retrofit.create(APIServiceManager::class.java)
+
+    // NEW
 
     @Provides
     @Singleton
@@ -74,18 +83,60 @@ class APIModule {
 
     @Provides
     @Singleton
-    fun providePointsManager(
+    fun provideAirDropAPIManager(@Named("jsonApiRetrofit") retrofit: Retrofit): AirDropAPIManager =
+        AirDropAPIManager(
+            retrofit.create(AirDropAPI::class.java),
+        )
+
+    @Provides
+    @Singleton
+    fun provideAirDropManager(
+        airDropAPIManager: AirDropAPIManager,
+        context: Context,
+        contractManager: ContractManager,
+        identityManager: IdentityManager,
+        dataStoreManager: SecureSharedPrefsManager,
+    ): AirDropManager = AirDropManager(
+        airDropAPIManager,
+        context,
+        contractManager,
+        identityManager,
+        dataStoreManager,
+    )
+
+    @Provides
+    @Singleton
+    fun providePointsAPIManager(
         @Named("jsonApiRetrofit") retrofit: Retrofit,
+        // TODO: remove
         identityManager: IdentityManager
-    ): PointsManager =
-        PointsManager(retrofit.create(JsonApiPointsSvcManager::class.java), identityManager)
+    ): PointsAPIManager =
+        PointsAPIManager(retrofit.create(PointsAPI::class.java), identityManager)
+
+    @Provides
+    @Singleton
+    fun providePointsManager(
+        pointsAPIManager: PointsAPIManager,
+        identityManager: IdentityManager
+    ): PointsManager = PointsManager(
+        pointsAPIManager,
+        identityManager,
+    )
+
+    @Provides
+    @Singleton
+    fun provideAuthAPIManager(
+        @Named("jsonApiRetrofit") retrofit: Retrofit
+    ): AuthAPIManager =
+        AuthAPIManager(retrofit.create(AuthAPI::class.java))
 
     @Provides
     @Singleton
     fun provideAuthManager(
-        @Named("jsonApiRetrofit") retrofit: Retrofit
-    ): AuthSvcManager =
-        AuthSvcManager(retrofit.create(JsonApiAuthSvcManager::class.java))
+        authAPIManager: AuthAPIManager
+    ): AuthManager {
+        return AuthManager(authAPIManager)
+    }
 
 
     @Provides
@@ -106,7 +157,7 @@ class APIModule {
         contractManager: ContractManager,
         apiServiceManager: ApiServiceRemoteData,
         identityManager: IdentityManager,
-        pointsManager: PointsManager
+        pointsAPIManager: PointsAPIManager
     ): WalletManager {
         return WalletManager(
             context,
@@ -114,7 +165,7 @@ class APIModule {
             contractManager,
             apiServiceManager,
             identityManager,
-            pointsManager
+            pointsAPIManager
         )
     }
 

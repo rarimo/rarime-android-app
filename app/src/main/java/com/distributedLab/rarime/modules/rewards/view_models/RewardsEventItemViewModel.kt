@@ -2,8 +2,7 @@ package com.distributedLab.rarime.modules.rewards.view_models
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.distributedLab.rarime.domain.points.PointsEvent
-import com.distributedLab.rarime.modules.common.PointsManager
+import com.distributedLab.rarime.api.points.models.PointsEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

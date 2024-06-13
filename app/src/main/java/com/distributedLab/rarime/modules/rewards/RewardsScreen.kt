@@ -35,7 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.data.tokens.PreviewerToken
-import com.distributedLab.rarime.domain.points.PointsEvent
+import com.distributedLab.rarime.api.points.models.PointsEvent
 import com.distributedLab.rarime.modules.common.WalletAsset
 import com.distributedLab.rarime.modules.home.components.passport.StatusCard
 import com.distributedLab.rarime.modules.rewards.components.ActiveTasksList
@@ -52,8 +52,6 @@ import com.distributedLab.rarime.ui.components.CardContainer
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.base.BaseTooltip
 import com.distributedLab.rarime.ui.components.AppBottomSheet
-import com.distributedLab.rarime.ui.components.AppSkeleton
-import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.InfoAlert
 import com.distributedLab.rarime.ui.components.UiLinearProgressBar
 import com.distributedLab.rarime.ui.components.rememberAppSheetState

@@ -1,6 +1,11 @@
-package com.distributedLab.rarime.domain.auth
+package com.distributedLab.rarime.api.auth
 
 import com.distributedLab.rarime.BaseConfig
+import com.distributedLab.rarime.api.auth.models.AuthChallenge
+import com.distributedLab.rarime.api.auth.models.RequestAuthorizeBody
+import com.distributedLab.rarime.api.auth.models.RequestAuthorizePayload
+import com.distributedLab.rarime.api.auth.models.RequestAuthorizeResponse
+import com.distributedLab.rarime.api.auth.models.ValidateResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -8,7 +13,7 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
 
-interface JsonApiAuthSvcManager {
+interface AuthAPI {
     @POST("${BaseConfig.RELAYER_URL}/integrations/decentralized-auth-svc/v1/authorize")
     fun authorize(@Body payload: RequestAuthorizeBody): Response<RequestAuthorizeResponse>
 

@@ -3,11 +3,11 @@ package com.distributedLab.rarime.modules.rewards.view_models
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.tokens.PointsToken
-import com.distributedLab.rarime.domain.points.PointsEvent
-import com.distributedLab.rarime.domain.points.PointsEventMeta
-import com.distributedLab.rarime.domain.points.PointsEventMetaDynamic
-import com.distributedLab.rarime.domain.points.PointsEventMetaStatic
-import com.distributedLab.rarime.domain.points.PointsEventStatuses
+import com.distributedLab.rarime.api.points.models.PointsEvent
+import com.distributedLab.rarime.api.points.models.PointsEventMeta
+import com.distributedLab.rarime.api.points.models.PointsEventMetaDynamic
+import com.distributedLab.rarime.api.points.models.PointsEventMetaStatic
+import com.distributedLab.rarime.api.points.models.PointsEventStatuses
 import com.distributedLab.rarime.modules.common.PassportManager
 import com.distributedLab.rarime.modules.common.WalletAsset
 import com.distributedLab.rarime.modules.common.WalletManager

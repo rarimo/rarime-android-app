@@ -1,5 +1,13 @@
-package com.distributedLab.rarime.domain.points
+package com.distributedLab.rarime.api.points
 import com.distributedLab.rarime.BaseConfig
+import com.distributedLab.rarime.api.points.models.ClaimEventBody
+import com.distributedLab.rarime.api.points.models.CreateBalanceBody
+import com.distributedLab.rarime.api.points.models.PointsBalance
+import com.distributedLab.rarime.api.points.models.PointsEvent
+import com.distributedLab.rarime.api.points.models.PointsPrice
+import com.distributedLab.rarime.api.points.models.PointsWithdrawal
+import com.distributedLab.rarime.api.points.models.VerifyPassportBody
+import com.distributedLab.rarime.api.points.models.WithdrawBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -7,7 +15,7 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 
-interface JsonApiPointsSvcManager {
+interface PointsAPI {
     /* BALANCE */
 
     @POST("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances")

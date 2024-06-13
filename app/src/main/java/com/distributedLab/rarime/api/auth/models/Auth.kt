@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.domain.auth
+package com.distributedLab.rarime.api.auth.models
 
 import com.squareup.moshi.JsonClass
 

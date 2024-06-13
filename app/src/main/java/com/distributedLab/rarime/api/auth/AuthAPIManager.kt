@@ -1,18 +1,17 @@
-package com.distributedLab.rarime.manager
+package com.distributedLab.rarime.api.auth
 
-import com.distributedLab.rarime.domain.auth.AuthChallenge
-import com.distributedLab.rarime.domain.auth.JsonApiAuthSvcManager
-import com.distributedLab.rarime.domain.auth.RequestAuthorizeBody
-import com.distributedLab.rarime.domain.auth.RequestAuthorizePayload
-import com.distributedLab.rarime.domain.auth.RequestAuthorizeResponse
-import com.distributedLab.rarime.domain.auth.ValidateResponse
+import com.distributedLab.rarime.api.auth.models.AuthChallenge
+import com.distributedLab.rarime.api.auth.models.RequestAuthorizeBody
+import com.distributedLab.rarime.api.auth.models.RequestAuthorizePayload
+import com.distributedLab.rarime.api.auth.models.RequestAuthorizeResponse
+import com.distributedLab.rarime.api.auth.models.ValidateResponse
 import javax.inject.Inject
 
-class AuthSvcManager @Inject constructor(
-    private val jsonApiAuthSvcManager: JsonApiAuthSvcManager
+class AuthAPIManager @Inject constructor(
+    private val authAPI: AuthAPI
 ) {
     suspend fun authorize(payload: RequestAuthorizePayload): RequestAuthorizeResponse? {
-        val response = jsonApiAuthSvcManager.authorize(
+        val response = authAPI.authorize(
             RequestAuthorizeBody(
                 data = payload
             )
@@ -26,7 +25,7 @@ class AuthSvcManager @Inject constructor(
     }
 
     suspend fun getChallenge(nullifier: String): AuthChallenge? {
-        val response = jsonApiAuthSvcManager.getChallenge(nullifier)
+        val response = authAPI.getChallenge(nullifier)
 
         if (response.isSuccessful) {
             return response.body()
@@ -36,7 +35,7 @@ class AuthSvcManager @Inject constructor(
     }
 
     suspend fun refresh(authorize: String): RequestAuthorizePayload? {
-        val response = jsonApiAuthSvcManager.refresh(authorize)
+        val response = authAPI.refresh(authorize)
 
         if (response.isSuccessful) {
             return response.body()
@@ -46,7 +45,7 @@ class AuthSvcManager @Inject constructor(
     }
 
     suspend fun validate(authorize: String): ValidateResponse? {
-        val response = jsonApiAuthSvcManager.validate(authorize)
+        val response = authAPI.validate(authorize)
 
         if (response.isSuccessful) {
             return response.body()

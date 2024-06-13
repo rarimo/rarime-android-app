@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.api.points.PointsAPIManager
 import com.distributedLab.rarime.data.RarimoChains
 import com.distributedLab.rarime.data.tokens.Erc20Token
 import com.distributedLab.rarime.data.tokens.PointsToken
@@ -84,7 +85,7 @@ class WalletManager @Inject constructor(
     private val contractManager: ContractManager,
     private val apiServiceManager: ApiServiceRemoteData,
     private val identityManager: IdentityManager,
-    private val pointsManager: PointsManager
+    private val pointsAPIManager: PointsAPIManager
 ) {
     var _isPointsBalanceCreated = MutableStateFlow(false)
         private set
@@ -111,7 +112,7 @@ class WalletManager @Inject constructor(
                     identityManager.rarimoAddress(),
                     PointsToken(
                         identityManager = identityManager,
-                        pointsManager = pointsManager,
+                        pointsAPIManager = pointsAPIManager,
                     )
                 )
             )
