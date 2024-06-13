@@ -3,14 +3,14 @@ package com.distributedLab.rarime.modules.rewards.view_models
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.tokens.PointsToken
-import com.distributedLab.rarime.domain.points.PointsEvent
-import com.distributedLab.rarime.domain.points.PointsEventMeta
-import com.distributedLab.rarime.domain.points.PointsEventMetaDynamic
-import com.distributedLab.rarime.domain.points.PointsEventMetaStatic
-import com.distributedLab.rarime.domain.points.PointsEventStatuses
-import com.distributedLab.rarime.modules.common.PassportManager
-import com.distributedLab.rarime.modules.common.WalletAsset
-import com.distributedLab.rarime.modules.common.WalletManager
+import com.distributedLab.rarime.api.points.models.PointsEvent
+import com.distributedLab.rarime.api.points.models.PointsEventMeta
+import com.distributedLab.rarime.api.points.models.PointsEventMetaDynamic
+import com.distributedLab.rarime.api.points.models.PointsEventMetaStatic
+import com.distributedLab.rarime.api.points.models.PointsEventStatuses
+import com.distributedLab.rarime.manager.PassportManager
+import com.distributedLab.rarime.manager.WalletAsset
+import com.distributedLab.rarime.manager.WalletManager
 import com.distributedLab.rarime.ui.components.MARKDOWN_CONTENT
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -21,6 +21,8 @@ import javax.inject.Inject
 
 val CONST_MOCKED_EVENTS_LIST = listOf(
     PointsEvent(
+        id = "1",
+        type = "balance",
         status = PointsEventStatuses.OPEN,
         createdAt = 0,
         updatedAt = 0,
@@ -45,6 +47,8 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
         balance = null,
     ),
     PointsEvent(
+        id = "2",
+        type = "balance",
         status = PointsEventStatuses.CLAIMED,
         createdAt = 0,
         updatedAt = 0,
@@ -69,6 +73,8 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
         balance = null,
     ),
     PointsEvent(
+        id = "3",
+        type = "balance",
         status = PointsEventStatuses.FULFILLED,
         createdAt = 0,
         updatedAt = 0,

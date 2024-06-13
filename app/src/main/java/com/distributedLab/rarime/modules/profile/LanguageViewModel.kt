@@ -2,7 +2,7 @@ package com.distributedLab.rarime.modules.profile
 
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.data.enums.AppLanguage
-import com.distributedLab.rarime.modules.common.SettingsManager
+import com.distributedLab.rarime.manager.SettingsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

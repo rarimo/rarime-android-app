@@ -3,9 +3,9 @@ package com.distributedLab.rarime.modules.rewards.view_models
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.data.tokens.PointsToken
 import com.distributedLab.rarime.data.tokens.RarimoToken
-import com.distributedLab.rarime.modules.common.PointsManager
-import com.distributedLab.rarime.modules.common.WalletAsset
-import com.distributedLab.rarime.modules.common.WalletManager
+import com.distributedLab.rarime.api.points.PointsAPIManager
+import com.distributedLab.rarime.manager.WalletAsset
+import com.distributedLab.rarime.manager.WalletManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RewardsClaimViewModel @Inject constructor(
     private val walletManager: WalletManager,
-    private val pointsManager: PointsManager,
+    private val pointsAPIManager: PointsAPIManager,
 ) : ViewModel() {
     val walletAssets = walletManager.walletAssets
 
@@ -45,7 +45,7 @@ class RewardsClaimViewModel @Inject constructor(
     }
 
     suspend fun withdrawPoints(amount: Double) {
-        pointsManager.withdrawPoints(amount)
+        pointsAPIManager.withdrawPoints(amount)
     }
 
     suspend fun reloadWalletAssets() {

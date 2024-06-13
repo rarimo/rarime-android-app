@@ -92,6 +92,8 @@
     <string name="rarime_card_title">RARIME</string>
     <string name="rarime_card_description">Дізнатися більше про додаток RariMe</string>
 
+    <string name="invalid_referal_code">невалідний код приглошення</string>
+
     <string name="reading_data_step">Зчитування даних</string>
     <string name="applying_zero_knowledge_step">Застосування Zero Knowledge</string>
     <string name="creating_confidential_profile_step">Створення конфіденційного профілю</string>

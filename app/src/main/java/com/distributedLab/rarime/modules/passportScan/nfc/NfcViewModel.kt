@@ -4,7 +4,7 @@ import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.distributedLab.rarime.modules.common.IdentityManager
+import com.distributedLab.rarime.manager.IdentityManager
 import com.distributedLab.rarime.modules.passportScan.models.EDocument
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

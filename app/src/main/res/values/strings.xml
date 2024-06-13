@@ -92,6 +92,8 @@
     <string name="rarime_card_title">RARIME</string>
     <string name="rarime_card_description">Learn more about RariMe App</string>
 
+    <string name="invalid_referal_code">Invalid referral code</string>
+
     <string name="reading_data_step">Reading data</string>
     <string name="applying_zero_knowledge_step">Applying Zero Knowledge</string>
     <string name="creating_confidential_profile_step">Creating a confidential profile</string>

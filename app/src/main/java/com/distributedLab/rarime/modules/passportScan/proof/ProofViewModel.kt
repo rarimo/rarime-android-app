@@ -6,14 +6,14 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.api.registration.RegistrationManager
 import com.distributedLab.rarime.contracts.PoseidonSMT.Proof
 import com.distributedLab.rarime.data.enums.PassportStatus
-import com.distributedLab.rarime.domain.data.ProofTx
-import com.distributedLab.rarime.domain.manager.SecureSharedPrefsManager
-import com.distributedLab.rarime.manager.ApiServiceRemoteData
+import com.distributedLab.rarime.data.ProofTx
+import com.distributedLab.rarime.store.SecureSharedPrefsManager
 import com.distributedLab.rarime.manager.ContractManager
-import com.distributedLab.rarime.modules.common.IdentityManager
-import com.distributedLab.rarime.modules.common.PassportManager
+import com.distributedLab.rarime.manager.IdentityManager
+import com.distributedLab.rarime.manager.PassportManager
 import com.distributedLab.rarime.modules.passportScan.models.EDocument
 import com.distributedLab.rarime.modules.passportScan.nfc.SODFileOwn
 import com.distributedLab.rarime.util.Constants
@@ -48,7 +48,7 @@ class ProofViewModel @Inject constructor(
     private val application: Application,
     private val dataStoreManager: SecureSharedPrefsManager,
     private val passportManager: PassportManager,
-    private val apiService: ApiServiceRemoteData,
+    private val registrationManager: RegistrationManager,
     private val contractManager: ContractManager,
     identityManager: IdentityManager,
 ) : AndroidViewModel(application) {
@@ -107,7 +107,7 @@ class ProofViewModel @Inject constructor(
 
 
         val response = withContext(Dispatchers.IO) {
-            apiService.sendRegistration(callData)
+            registrationManager.register(callData)
         }
 
         if (response == null) {
@@ -200,7 +200,7 @@ class ProofViewModel @Inject constructor(
         )
 
         withContext(Dispatchers.IO) {
-            val response = apiService.sendRegistration(callData)
+            val response = registrationManager.register(callData)
             contractManager.checkIsTransactionSuccessful(response!!.data.attributes.tx_hash)
         }
     }

@@ -1,7 +1,7 @@
 package com.distributedLab.rarime.modules.wallet.view_model
 
 import androidx.lifecycle.ViewModel
-import com.distributedLab.rarime.modules.common.WalletManager
+import com.distributedLab.rarime.manager.WalletManager
 import com.distributedLab.rarime.util.NumberUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

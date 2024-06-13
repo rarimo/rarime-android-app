@@ -32,6 +32,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.data.enums.SecurityCheckState
 import com.distributedLab.rarime.modules.passportVerify.VerifySpecificScreen
 import com.distributedLab.rarime.modules.passportVerify.VerifyPoitntsScreen
@@ -55,7 +56,10 @@ import com.distributedLab.rarime.modules.security.SetupPasscode
 import com.distributedLab.rarime.modules.wallet.WalletReceiveScreen
 import com.distributedLab.rarime.modules.wallet.WalletScreen
 import com.distributedLab.rarime.modules.wallet.WalletSendScreen
+import com.distributedLab.rarime.ui.components.AppBottomSheet
 import com.distributedLab.rarime.ui.components.AppWebView
+import com.distributedLab.rarime.ui.components.enter_program.EnterProgramFlow
+import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.AppTheme
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.AppIconUtil
@@ -108,6 +112,10 @@ fun MainScreenContent() {
     val isModalShown = mainViewModel.isModalShown.collectAsState()
     val modalContent = mainViewModel.modalContent.collectAsState()
 
+    val isPointsBalanceCreated = mainViewModel.isPointsBalanceCreated
+
+    val enterProgramSheetState = rememberAppSheetState()
+
     val startDestination = if (mainViewModel.isScreenLocked.value) {
         Screen.Lock.route
     } else if (mainViewModel.biometricsState.value != SecurityCheckState.UNSET) {
@@ -121,6 +129,12 @@ fun MainScreenContent() {
     }
 
     fun navigateWithPopUp(route: String) {
+        if (route == Screen.Main.Rewards.RewardsMain.route && !isPointsBalanceCreated) {
+            enterProgramSheetState.show()
+
+            return
+        }
+
         navController.navigate(route) {
             popUpTo(navController.graph.id) { inclusive = true }
             restoreState = true
@@ -134,7 +148,8 @@ fun MainScreenContent() {
                 if (mainViewModel.isBottomBarShown.value) {
                     BottomTabBar(
                         currentRoute = currentRoute,
-                        onRouteSelected = { navigateWithPopUp(it) })
+                        onRouteSelected = { navigateWithPopUp(it) }
+                    )
                 }
             },
         ) {
@@ -301,6 +316,18 @@ fun MainScreenContent() {
                 Dialog(onDismissRequest = { mainViewModel.setModalVisibility(false) }) {
                     modalContent.value()
                 }
+            }
+
+            AppBottomSheet(
+                state = enterProgramSheetState,
+                fullScreen = true,
+                isHeaderEnabled = false,
+            ) { hide ->
+                EnterProgramFlow(
+                    navigate = { navController.navigate(it) },
+                    sheetState = enterProgramSheetState,
+                    hide = hide
+                )
             }
         }
     }
