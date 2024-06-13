@@ -23,6 +23,7 @@ import com.distributedLab.rarime.util.Constants
 @Composable
 fun UiPrivacyCheckbox(
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     termsAcceptedState: AppCheckboxState = rememberAppCheckboxState(),
 ) {
     val uriHandler = LocalUriHandler.current
@@ -52,7 +53,7 @@ fun UiPrivacyCheckbox(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        AppCheckbox(state = termsAcceptedState)
+        AppCheckbox(state = termsAcceptedState, enabled = enabled)
         ClickableText(
             text = termsAnnotation,
             style = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary),

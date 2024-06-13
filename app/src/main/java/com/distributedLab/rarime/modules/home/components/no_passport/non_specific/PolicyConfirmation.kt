@@ -49,7 +49,7 @@ fun PolicyConfirmation(
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
-                    text = "Checking eligibility happens via a scan of your biometric passport.\n\nYour data never leaves the device or is shared with any third party. Proof of citizenship is generated locally using Zero-Knowledge technology.",
+                    text = stringResource(R.string.checking_eligibility),
                     style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.textPrimary
                 )

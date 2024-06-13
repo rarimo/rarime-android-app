@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.passport
+package com.distributedLab.rarime.modules.passportScan.nfc
 
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -24,9 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.modules.passport.models.EDocument
-import com.distributedLab.rarime.modules.passport.nfc.NfcViewModel
-import com.distributedLab.rarime.modules.passport.nfc.ScanNFCPassportState
+import com.distributedLab.rarime.modules.passportScan.ScanPassportLayout
+import com.distributedLab.rarime.modules.passportScan.models.EDocument
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import net.sf.scuba.data.Gender
 import org.jmrtd.lds.icao.MRZInfo

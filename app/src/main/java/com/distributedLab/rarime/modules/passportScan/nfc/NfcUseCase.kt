@@ -1,11 +1,11 @@
-package com.distributedLab.rarime.modules.passport.nfc
+package com.distributedLab.rarime.modules.passportScan.nfc
 
 import android.nfc.tech.IsoDep
 import android.util.Log
-import com.distributedLab.rarime.modules.passport.models.AdditionalPersonDetails
-import com.distributedLab.rarime.modules.passport.models.DocType
-import com.distributedLab.rarime.modules.passport.models.EDocument
-import com.distributedLab.rarime.modules.passport.models.PersonDetails
+import com.distributedLab.rarime.modules.passportScan.models.AdditionalPersonDetails
+import com.distributedLab.rarime.modules.passportScan.models.DocType
+import com.distributedLab.rarime.modules.passportScan.models.EDocument
+import com.distributedLab.rarime.modules.passportScan.models.PersonDetails
 import com.distributedLab.rarime.util.DateUtil
 import com.distributedLab.rarime.util.SecurityUtil
 import com.distributedLab.rarime.util.StringUtil

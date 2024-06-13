@@ -33,12 +33,9 @@ class AppCheckboxState(initialChecked: Boolean = false) {
     }
 
     companion object {
-        val Saver: Saver<AppCheckboxState, *> = listSaver(
-            save = { listOf(it.checked) },
-            restore = {
-                AppCheckboxState(initialChecked = it[0])
-            }
-        )
+        val Saver: Saver<AppCheckboxState, *> = listSaver(save = { listOf(it.checked) }, restore = {
+            AppCheckboxState(initialChecked = it[0])
+        })
     }
 }
 
@@ -51,26 +48,21 @@ fun rememberAppCheckboxState(checked: Boolean = false) =
 @Composable
 fun AppCheckbox(
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     state: AppCheckboxState = rememberAppCheckboxState(),
 ) {
     val animatedBgColor by animateColorAsState(
-        targetValue =
-        if (state.checked) RarimeTheme.colors.primaryDark
-        else RarimeTheme.colors.componentPrimary,
-        label = ""
+        targetValue = if (state.checked) RarimeTheme.colors.primaryDark
+        else RarimeTheme.colors.componentPrimary, label = ""
     )
 
-    Box(
-        modifier = modifier
-            .background(animatedBgColor, RoundedCornerShape(4.dp))
-            .border(1.dp, RarimeTheme.colors.componentPrimary, RoundedCornerShape(4.dp))
-            .padding(2.dp)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = { state.updateChecked(!state.checked) }
-            )
-    ) {
+    Box(modifier = modifier
+        .background(animatedBgColor, RoundedCornerShape(4.dp))
+        .border(1.dp, RarimeTheme.colors.componentPrimary, RoundedCornerShape(4.dp))
+        .padding(2.dp)
+        .clickable(interactionSource = remember { MutableInteractionSource() },
+            indication = null,
+            onClick = { if (enabled) state.updateChecked(!state.checked) })) {
         AppIcon(
             id = R.drawable.ic_check,
             size = 16.dp,

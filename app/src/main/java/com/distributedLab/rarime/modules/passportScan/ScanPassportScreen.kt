@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.passport
+package com.distributedLab.rarime.modules.passportScan
 
 import android.util.Log
 import androidx.compose.foundation.layout.Column
@@ -10,7 +10,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.distributedLab.rarime.modules.passport.models.EDocument
+import com.distributedLab.rarime.modules.passportScan.unsupportedPassports.NotAllowedPassportScreen
+import com.distributedLab.rarime.modules.passportScan.unsupportedPassports.WaitlistPassportScreen
+import com.distributedLab.rarime.modules.passportScan.camera.ScanMRZStep
+import com.distributedLab.rarime.modules.passportScan.models.EDocument
+import com.distributedLab.rarime.modules.passportScan.nfc.ReadNFCStep
+import com.distributedLab.rarime.modules.passportScan.proof.GenerateProofStep
 import com.distributedLab.rarime.util.Constants
 import com.distributedLab.rarime.util.data.ZkProof
 import org.jmrtd.lds.icao.MRZInfo
@@ -21,12 +26,13 @@ private enum class ScanPassportState {
 
 @Composable
 fun ScanPassportScreen(
-    onClose: () -> Unit
+    onClose: () -> Unit, onClaim: () -> Unit
 ) {
     var state by remember { mutableStateOf(ScanPassportState.SCAN_MRZ) }
     var mrzData: MRZInfo? by remember { mutableStateOf(null) }
     var eDocument: EDocument? by remember { mutableStateOf(null) }
     var registrationProof: ZkProof? by remember { mutableStateOf(null) }
+
 
     Column(modifier = Modifier.fillMaxSize()) {
         when (state) {
@@ -88,11 +94,8 @@ fun ScanPassportScreen(
                 }
             }
 
-
             ScanPassportState.CLAIM_TOKENS -> {
-                ClaimTokensStep(
-                    onFinish = onClose
-                )
+                onClaim.invoke()
             }
         }
     }
@@ -101,5 +104,5 @@ fun ScanPassportScreen(
 @Preview
 @Composable
 private fun ScanPassportScreenPreview() {
-    ScanPassportScreen(onClose = {})
+    ScanPassportScreen(onClose = {}, onClaim = {})
 }

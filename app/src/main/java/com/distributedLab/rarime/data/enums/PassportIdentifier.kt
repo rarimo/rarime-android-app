@@ -3,7 +3,7 @@ package com.distributedLab.rarime.data.enums
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.modules.passport.models.EDocument
+import com.distributedLab.rarime.modules.passportScan.models.EDocument
 import com.distributedLab.rarime.util.DateUtil
 
 enum class PassportIdentifier(val value: String, val order: Int) {

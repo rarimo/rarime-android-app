@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.modules.passport
+package com.distributedLab.rarime.modules.passportVerify
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -25,22 +25,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.modules.passport.claimToken.ClaimTokenViewModel
+import com.distributedLab.rarime.modules.passportVerify.viewModels.ClaimSpecificTokenViewModel
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
+import com.distributedLab.rarime.ui.components.UiPrivacyCheckbox
+import com.distributedLab.rarime.ui.components.rememberAppCheckboxState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Constants
 import kotlinx.coroutines.launch
 
-
 @Composable
-fun ClaimTokensStep(
-    claimTokenViewModel: ClaimTokenViewModel = hiltViewModel(), onFinish: () -> Unit
+fun VerifySpecificScreen(
+    claimTokenViewModel: ClaimSpecificTokenViewModel = hiltViewModel(), onFinish: () -> Unit
 ) {
     var isClaiming by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
+    val termsAcceptedState = rememberAppCheckboxState()
 
     suspend fun claimTokens() {
         isClaiming = true
@@ -109,25 +111,31 @@ fun ClaimTokensStep(
             }
         }
 
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             HorizontalDivider()
-            PrimaryButton(
-                text = if (isClaiming) stringResource(R.string.claiming_btn) else stringResource(R.string.claim_btn),
-                size = ButtonSize.Large,
-                enabled = !isClaiming,
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                onClick = { coroutineScope.launch { claimTokens() } },
-            )
+                    .padding(horizontal = 24.dp)
+            ) {
+                UiPrivacyCheckbox(termsAcceptedState = termsAcceptedState, enabled = !isClaiming)
+                PrimaryButton(text = if (isClaiming) stringResource(R.string.claiming_btn) else stringResource(
+                    R.string.claim_btn
+                ),
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = termsAcceptedState.checked && !isClaiming,
+                    size = ButtonSize.Large,
+                    onClick = { coroutineScope.launch { claimTokens() } })
+            }
         }
     }
 }
 
 @Preview
 @Composable
-private fun ClaimTokensStepPreview() {
-    ClaimTokensStep(
+private fun VerifySpecificScreenPreview() {
+    VerifySpecificScreen(
         onFinish = {},
     )
 }

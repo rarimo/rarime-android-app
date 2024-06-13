@@ -2,11 +2,20 @@ package com.distributedLab.rarime.util
 
 sealed class Screen(val route: String) {
     data object Intro : Screen("intro")
-    data object ScanPassport : Screen("scan_passport")
+    data object ScanPassport : Screen("scan_passport")  {
+
+        data object ScanPassportSpecific : Screen("scan_passport_specific")
+        data object ScanPassportPoints: Screen("scan_passport_points")
+    }
     data object Lock : Screen("lock")
 
     data object Register : Screen("register") {
         data object NewIdentity : Screen("new_identity")
+    }
+
+    data object Claim : Screen("claim") {
+        data object Reserve : Screen("reserve")
+        data object Specific : Screen("specific")
     }
 
     data object Passcode : Screen("security") {
