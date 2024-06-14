@@ -79,14 +79,17 @@ fun HomeScreenPassportMainContent(
         Column(
             modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            PassportCard(passport = passport.value!!,
+            PassportCard(
+                passport = passport.value!!,
                 isIncognito = isIncognito,
                 look = passportCardLook,
                 identifiers = passportIdentifiers,
                 onLookChange = { homeViewModel.onPassportCardLookChange(it) },
                 onIncognitoChange = { homeViewModel.onIncognitoChange(it) },
                 passportStatus = passportStatus,
-                onIdentifiersChange = { homeViewModel.onPassportIdentifiersChange(it) })
+                onIdentifiersChange = { homeViewModel.onPassportIdentifiersChange(it) }
+            )
+
             if ((pointsToken?.balanceDetails?.isVerified == null || pointsToken?.balanceDetails?.isVerified == false) && passportStatus == PassportStatus.ALLOWED) {
                 ActionCard(title = stringResource(R.string.reserve_tokens),
                     description = stringResource(
@@ -122,9 +125,8 @@ fun HomeScreenPassportMainContent(
                     onClick = { specificAppSheetState.show() })
             }
 
-
-
-            ActionCard(title = stringResource(id = R.string.app_name),
+            ActionCard(
+                title = stringResource(id = R.string.app_name),
                 description = stringResource(R.string.learn_more_about_the_app),
                 leadingContent = {
                     AppIcon(id = R.drawable.ic_info, size = 24.dp)
@@ -132,16 +134,19 @@ fun HomeScreenPassportMainContent(
                 variant = ActionCardVariants.Outlined,
                 onClick = {
                     rarimoInfoSheetState.show()
-                })
-
-
+                }
+            )
         }
 
         AppBottomSheet(state = rarimoInfoSheetState, fullScreen = true) { hide ->
             RarimeInfoScreen(onClose = { hide {} })
         }
 
-        AppBottomSheet(state = verifyPassportSheetState, fullScreen = true, isHeaderEnabled = false) { hide ->
+        AppBottomSheet(
+            state = verifyPassportSheetState,
+            fullScreen = true,
+            isHeaderEnabled = false
+        ) { hide ->
             EnterProgramFlow(
                 navigate = { navigate(Screen.Claim.Reserve.route) },
                 sheetState = verifyPassportSheetState,

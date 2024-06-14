@@ -2,6 +2,7 @@ package com.distributedLab.rarime.modules.rewards.view_models
 
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.api.auth.AuthManager
 import com.distributedLab.rarime.data.tokens.PointsToken
 import com.distributedLab.rarime.api.points.models.PointsEvent
 import com.distributedLab.rarime.api.points.models.PointsEventMeta
@@ -411,11 +412,14 @@ val MOCKED_LEADER_BOARD_LIST = listOf(
 @HiltViewModel
 class RewardsViewModel @Inject constructor(
     private val walletManager: WalletManager,
-    private val passportManager: PassportManager
+    private val passportManager: PassportManager,
+    private val authManager: AuthManager,
 ) : ViewModel() {
     val passportStatus = passportManager.passportStatus
 
     val levelProgress = 0.36f
+
+    val isAuthorized = authManager.isAuthorized
 
     private fun getPointsWalletAsset (): WalletAsset? {
         return walletManager.walletAssets.value.find { it.token is PointsToken }
@@ -461,5 +465,9 @@ class RewardsViewModel @Inject constructor(
                 it
             }
         }
+    }
+
+    suspend fun login() {
+        authManager.login()
     }
 }

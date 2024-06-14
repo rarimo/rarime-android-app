@@ -1,19 +1,17 @@
 package com.distributedLab.rarime.api.auth
 
 import android.content.Context
+import android.util.Log
 import com.auth0.android.jwt.JWT
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.api.auth.models.AuthToken
 import com.distributedLab.rarime.api.auth.models.RequestAuthorizeBody
 import com.distributedLab.rarime.api.auth.models.RequestAuthorizeData
 import com.distributedLab.rarime.api.auth.models.RequestAuthorizeDataAttributes
 import com.distributedLab.rarime.manager.IdentityManager
 import com.distributedLab.rarime.store.SecureSharedPrefsManager
-import com.distributedLab.rarime.util.DateUtil
 import com.distributedLab.rarime.util.ZKPUseCase
 import com.distributedLab.rarime.util.ZkpUtil
-import com.distributedLab.rarime.util.decodeHexString
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +20,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.ZoneId
-import java.util.Date
 import javax.inject.Inject
 
 data class AuthProofInputs(
@@ -46,6 +43,15 @@ class AuthManager @Inject constructor(
 
     val refreshToken: StateFlow<String?>
         get() = _refreshToken.asStateFlow()
+
+    private fun getIsAuthorized(): Boolean {
+        return _accessToken.value != null && isAccessTokenExpired() == true
+    }
+
+    private var _isAuthorized = MutableStateFlow(getIsAuthorized())
+
+    val isAuthorized: StateFlow<Boolean>
+        get() = _isAuthorized.asStateFlow()
 
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun login() {
@@ -88,6 +94,11 @@ class AuthManager @Inject constructor(
 
         _accessToken.value = response.data.attributes.access_token.token
         _refreshToken.value = response.data.attributes.refresh_token.token
+
+        _isAuthorized.value = getIsAuthorized()
+
+        Log.i("AuthManager", "login: Access token: ${_accessToken.value}")
+        Log.i("AuthManager", "login: Refresh token: ${_refreshToken.value}")
     }
 
     suspend fun refresh() {
@@ -101,6 +112,8 @@ class AuthManager @Inject constructor(
 
         _accessToken.value = response.data.attributes.access_token.token
         _refreshToken.value = response.data.attributes.refresh_token.token
+
+        _isAuthorized.value = getIsAuthorized()
     }
 
     fun isAccessTokenExpired(): Boolean {

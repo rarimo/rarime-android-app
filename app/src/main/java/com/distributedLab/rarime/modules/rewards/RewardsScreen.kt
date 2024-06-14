@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.modules.rewards
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -67,8 +68,44 @@ val localRewardsScreenViewModel =
 fun RewardsScreen(
     navigate: (String) -> Unit, rewardsViewModel: RewardsViewModel = hiltViewModel()
 ) {
+    val isAuthorized = rewardsViewModel.isAuthorized.collectAsState()
+
     CompositionLocalProvider(localRewardsScreenViewModel provides rewardsViewModel) {
-        RewardsScreenContent(navigate)
+        if (isAuthorized.value) {
+            RewardsScreenContent(navigate)
+        } else {
+            RewardsUnauthorized()
+        }
+    }
+}
+
+@Composable
+fun RewardsUnauthorized() {
+    val rewardsViewModel = localRewardsScreenViewModel.current
+
+    val coroutineScope = rememberCoroutineScope()
+
+    suspend fun login() {
+        try {
+            rewardsViewModel.login()
+        } catch (e: Exception) {
+            Log.e("HomeViewModel", "login: ${e.message}")
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(RarimeTheme.colors.backgroundPrimary)
+            .padding(12.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // TODO: implement properly
+        PrimaryButton(
+            text = "Login",
+            onClick = { coroutineScope.launch { login() } }
+        )
     }
 }
 
