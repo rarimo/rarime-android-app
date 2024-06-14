@@ -17,10 +17,13 @@ set_target_properties(register_identity_universal PROPERTIES IMPORTED_LOCATION $
 add_library(query_identity SHARED IMPORTED)
 set_target_properties(query_identity PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/lib/libwitnesscalc_queryIdentity.so)
 
+add_library(auth SHARED IMPORTED)
+set_target_properties(auth PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/lib/libwitnesscalc_auth.so)
+
 
 add_library(${CMAKE_PROJECT_NAME} SHARED
         rarime.cpp)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         android
-        log  rapidsnark register_identity_universal query_identity)
+        log  rapidsnark register_identity_universal query_identity auth)

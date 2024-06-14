@@ -1,11 +1,12 @@
 package com.distributedLab.rarime.api.auth
 
 import coil.network.HttpException
-import com.distributedLab.rarime.api.auth.models.AuthChallenge
+import com.distributedLab.rarime.api.auth.models.AuthChallengeBody
+import com.distributedLab.rarime.api.auth.models.AuthChallengeData
 import com.distributedLab.rarime.api.auth.models.RequestAuthorizeBody
-import com.distributedLab.rarime.api.auth.models.RequestAuthorizePayload
-import com.distributedLab.rarime.api.auth.models.RequestAuthorizeResponse
+import com.distributedLab.rarime.api.auth.models.RequestAuthorizeResponseBody
 import com.distributedLab.rarime.api.auth.models.ValidateResponse
+import com.distributedLab.rarime.api.auth.models.ValidateResponseBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -13,7 +14,7 @@ import javax.inject.Inject
 class AuthAPIManager @Inject constructor(
     private val authAPI: AuthAPI
 ) {
-    suspend fun authorize(body: RequestAuthorizeBody): RequestAuthorizeResponse {
+    suspend fun authorize(body: RequestAuthorizeBody): RequestAuthorizeResponseBody {
         return withContext(Dispatchers.IO) {
             try {
                 authAPI.authorize(body)
@@ -23,7 +24,7 @@ class AuthAPIManager @Inject constructor(
         }
     }
 
-    suspend fun getChallenge(nullifier: String): AuthChallenge {
+    suspend fun getChallenge(nullifier: String): AuthChallengeBody {
         return withContext(Dispatchers.IO) {
             try {
                 authAPI.getChallenge(nullifier)
@@ -33,7 +34,7 @@ class AuthAPIManager @Inject constructor(
         }
     }
 
-    suspend fun refresh(authorization: String): RequestAuthorizePayload {
+    suspend fun refresh(authorization: String): RequestAuthorizeResponseBody {
         return withContext(Dispatchers.IO) {
             try {
                 authAPI.refresh(authorization)
@@ -43,7 +44,7 @@ class AuthAPIManager @Inject constructor(
         }
     }
 
-    suspend fun validate(authorization: String): ValidateResponse {
+    suspend fun validate(authorization: String): ValidateResponseBody {
         return withContext(Dispatchers.IO) {
             try {
                 authAPI.validate(authorization)

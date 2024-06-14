@@ -75,7 +75,6 @@ class AirDropManager @Inject constructor(
 
         Log.i("pubSignal", Identity.bigIntToBytes(registrationProof.pub_signals[0]).size.toString())
 
-
         val passportInfoRaw = withContext(Dispatchers.IO) {
             registrationContract.getPassportInfo(
                 Identity.bigIntToBytes(registrationProof.pub_signals[0])

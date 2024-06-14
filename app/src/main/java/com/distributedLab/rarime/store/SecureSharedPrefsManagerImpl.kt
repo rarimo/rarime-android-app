@@ -44,6 +44,8 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "REGISTRATION_PROOF" to "REGISTRATION_PROOF",
         "TX" to "TX",
         "PASSPORT_STATUS" to "PASSPORT_STATUS",
+        "ACCESS_TOKEN" to "ACCESS_TOKEN",
+        "REFRESH_TOKEN" to "REFRESH_TOKEN"
     )
 
     private val PREFS_FILE_NAME = "sharedPrefFile1"
@@ -333,5 +335,25 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         val jsonTx = Gson().toJson(transactions)
         editor.putString(accessTokens["TX"], jsonTx)
         editor.apply()
+    }
+
+    override fun saveAccessToken(accessToken: String) {
+        val editor = getEditor()
+        editor.putString(accessTokens["ACCESS_TOKEN"], accessToken)
+        editor.apply()
+    }
+
+    override fun readAccessToken(): String? {
+        return getSharedPreferences().getString(accessTokens["ACCESS_TOKEN"], null)
+    }
+
+    override fun saveRefreshToken(refreshToken: String) {
+        val editor = getEditor()
+        editor.putString(accessTokens["REFRESH_TOKEN"], refreshToken)
+        editor.apply()
+    }
+
+    override fun readRefreshToken(): String? {
+        return getSharedPreferences().getString(accessTokens["REFRESH_TOKEN"], null)
     }
 }

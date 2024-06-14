@@ -66,4 +66,10 @@ interface SecureSharedPrefsManager {
 
     fun savePassportStatus(passportStatus: PassportStatus)
     fun readPassportStatus(): PassportStatus
+
+    fun saveAccessToken(accessToken: String)
+    fun readAccessToken(): String?
+
+    fun saveRefreshToken(refreshToken: String)
+    fun readRefreshToken(): String?
 }

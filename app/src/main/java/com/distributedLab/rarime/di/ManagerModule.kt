@@ -140,9 +140,17 @@ class APIModule {
     @Provides
     @Singleton
     fun provideAuthManager(
-        authAPIManager: AuthAPIManager
+        @ApplicationContext context: Context,
+        authAPIManager: AuthAPIManager,
+        identityManager: IdentityManager,
+        dataStoreManager: SecureSharedPrefsManager
     ): AuthManager {
-        return AuthManager(authAPIManager)
+        return AuthManager(
+            context,
+            authAPIManager,
+            identityManager,
+            dataStoreManager
+        )
     }
 
     @Provides
