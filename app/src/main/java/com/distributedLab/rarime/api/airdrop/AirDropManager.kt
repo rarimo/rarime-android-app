@@ -92,7 +92,7 @@ class AirDropManager @Inject constructor(
         val queryProofInputs = profiler.buildAirdropQueryIdentityInputs(
             eDocument.dg1!!.decodeHexString(),
             smtProofJson.toByteArray(Charsets.UTF_8),
-            airDropParams.data.attributes.query_selector,
+            airDropParams.data.attributes.query_selector.toString(),
             registrationProof.pub_signals[0],
             identityInfo.issueTimestamp.toString(),
             passportInfo.identityReissueCounter.toString(),

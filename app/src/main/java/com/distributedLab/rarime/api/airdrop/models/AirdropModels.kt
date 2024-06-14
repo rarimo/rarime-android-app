@@ -79,5 +79,5 @@ data class AirdropEventParamsAttributes(
 //    @JsonProperty("started_at")
     val started_at: Long,
 //    @JsonProperty("query_selector")
-    val query_selector: String,
+    val query_selector: Long,
 )
