@@ -1,10 +1,8 @@
 package com.distributedLab.rarime.api.airdrop
 
-import android.util.Log
 import com.distributedLab.rarime.api.airdrop.models.AirDropResponseBody
 import com.distributedLab.rarime.api.airdrop.models.AirdropEventParamsBody
 import com.distributedLab.rarime.api.airdrop.models.CreateAirDropBody
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
@@ -14,7 +12,6 @@ class AirDropAPIManager @Inject constructor(private val airDropAPI: AirDropAPI) 
     suspend fun createAirDrop(body: CreateAirDropBody): AirDropResponseBody? {
         return withContext(Dispatchers.IO) {
             try {
-                Log.i("createAirDrop", Gson().toJson(body))
                 airDropAPI.createAirDrop(body)
             } catch (e: HttpException) {
                 if (e.response()?.code() != 409) {
