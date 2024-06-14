@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.api.airdrop.AirDropManager
 import com.distributedLab.rarime.api.auth.AuthManager
+import com.distributedLab.rarime.api.points.PointsManager
 import com.distributedLab.rarime.data.tokens.PointsToken
 import com.distributedLab.rarime.manager.IdentityManager
 import com.distributedLab.rarime.store.SecureSharedPrefsManager
@@ -25,14 +26,19 @@ class MainViewModel @Inject constructor(
     private val walletManager: WalletManager,
     private val airDropManager: AirDropManager,
     private val authManager: AuthManager,
-    private val identityManager: IdentityManager
+    private val identityManager: IdentityManager,
+    private val pointsManager: PointsManager
 ) : ViewModel() {
     // FIXME: recomposability
-    val pointsWalletAsset = walletManager.walletAssets.value.firstOrNull { it.token is PointsToken }
+//    val pointsWalletAsset = walletManager.walletAssets.value.firstOrNull { it.token is PointsToken }
+//
+//    val pointsToken: PointsToken? = pointsWalletAsset?.token as PointsToken
+//
+//    val isPointsBalanceCreated = pointsToken?.getIsBalanceCreated() ?: false
 
-    val pointsToken: PointsToken? = pointsWalletAsset?.token as PointsToken
 
-    val isPointsBalanceCreated = pointsToken?.getIsBalanceCreated() ?: false
+    // FIXME: temp
+    val pointsBalance = pointsManager.pointsBalance
 
     suspend fun initApp() {
         try {
@@ -46,6 +52,7 @@ class MainViewModel @Inject constructor(
             }
         }
 
+        pointsManager.getPointsBalance()
         walletManager.loadBalances()
         airDropManager.getAirDropByNullifier()
     }

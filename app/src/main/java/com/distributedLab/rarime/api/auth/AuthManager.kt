@@ -74,8 +74,6 @@ class AuthManager @Inject constructor(
             revealPkIdentityHash = 0
         )
 
-        Log.i("login", Gson().toJson(authProofInputs))
-
         val queryProof = withContext(Dispatchers.Default) {
             zkp.generateZKP(
                 "circuit_auth_final.zkey",

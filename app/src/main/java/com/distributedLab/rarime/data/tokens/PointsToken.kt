@@ -24,7 +24,7 @@ class PointsToken @Inject constructor(
         decimals = 0
 
         try {
-            balanceDetails = pointsManager.getPointsBalance().data
+            balanceDetails = pointsManager.getPointsBalance()?.data
         } catch (e: Exception) {
 
         }

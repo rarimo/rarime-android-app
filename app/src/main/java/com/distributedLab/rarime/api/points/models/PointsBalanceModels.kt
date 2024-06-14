@@ -4,6 +4,15 @@ import com.distributedLab.rarime.util.data.Proof
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
+enum class ReferralCodeStatuses(val value: String) {
+    ACTIVE("active"),
+    BANNED("banned"),
+    LIMITED("limited"),
+    AWAITING("awaiting"),
+    REWARDED("rewarded"),
+    CONSUMED("consumed"),
+}
+
 @JsonClass(generateAdapter = true)
 data class PointsBalanceBody(
     val data: PointsBalanceData
@@ -20,20 +29,24 @@ data class PointsBalanceData(
 @JsonClass(generateAdapter = true)
 data class PointsBalanceDataAttributes(
     val amount: Long,
-    @Json(name = "is_disabled")
-    val isDisabled: Boolean,
-    @Json(name = "is_verified")
-    val isVerified: Boolean = false,
-    @Json(name = "created_at")
-    val createdAt: Long,
-    @Json(name = "updated_at")
-    val updatedAt: Long,
-    val rank: Long,
-    @Json(name = "active_referral_codes")
-    val activeReferralCodes: List<String>,
-    @Json(name = "consumed_referral_codes")
-    val consumedReferralCodes: List<String>,
+//    @Json(name = "is_disabled")
+    val is_disabled: Boolean,
+//    @Json(name = "is_verified")
+    val is_verified: Boolean = false,
+//    @Json(name = "created_at")
+    val created_at: Long,
+//    @Json(name = "updated_at")
+    val updated_at: Long,
+    val rank: Long?,
+    @Json(name = "referral_codes")
+    val referral_codes: List<ReferralCode>?,
     val level: Long,
+)
+
+@JsonClass(generateAdapter = true)
+data class ReferralCode(
+    val id: String,
+    val status: String
 )
 
 @JsonClass(generateAdapter = true)

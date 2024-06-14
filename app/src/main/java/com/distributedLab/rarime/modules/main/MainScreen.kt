@@ -33,7 +33,6 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.data.enums.SecurityCheckState
 import com.distributedLab.rarime.modules.passportVerify.VerifySpecificScreen
 import com.distributedLab.rarime.modules.passportVerify.VerifyPoitntsScreen
@@ -117,7 +116,7 @@ fun MainScreenContent() {
     val isModalShown = mainViewModel.isModalShown.collectAsState()
     val modalContent = mainViewModel.modalContent.collectAsState()
 
-    val isPointsBalanceCreated = mainViewModel.isPointsBalanceCreated
+    val pointsBalance by mainViewModel.pointsBalance.collectAsState()
 
     val enterProgramSheetState = rememberAppSheetState()
 
@@ -134,13 +133,19 @@ fun MainScreenContent() {
     }
 
     fun navigateWithPopUp(route: String) {
-        if (route == Screen.Main.Rewards.RewardsMain.route && !isPointsBalanceCreated) {
-            enterProgramSheetState.show()
+        var nextRoute = route
 
-            return
+        if (route == Screen.Main.Rewards.RewardsMain.route) {
+            pointsBalance?.data?.attributes?.created_at?.let {
+                nextRoute = Screen.Claim.Reserve.route
+            } ?: run {
+                enterProgramSheetState.show()
+
+                return
+            }
         }
 
-        navController.navigate(route) {
+        navController.navigate(nextRoute) {
             popUpTo(navController.graph.id) { inclusive = true }
             restoreState = true
             launchSingleTop = true

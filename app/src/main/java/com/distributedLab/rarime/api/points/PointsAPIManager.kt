@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.api.points
 
+import android.util.Log
 import com.distributedLab.rarime.api.points.models.ClaimEventBody
 import com.distributedLab.rarime.api.points.models.CreateBalanceBody
 import com.distributedLab.rarime.api.points.models.PointsBalanceBody
@@ -8,6 +9,7 @@ import com.distributedLab.rarime.api.points.models.PointsPrice
 import com.distributedLab.rarime.api.points.models.PointsWithdrawalBody
 import com.distributedLab.rarime.api.points.models.VerifyPassportBody
 import com.distributedLab.rarime.api.points.models.WithdrawBody
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
@@ -35,14 +37,16 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
         }
     }
 
-    suspend fun getPointsBalance(userNullifierHex: String, authorization: String): PointsBalanceBody {
-        return withContext(Dispatchers.IO) {
-            try {
-                jsonApiPointsSvcManager.getPointsBalance(userNullifierHex, authorization)
-            } catch (e: HttpException) {
-                throw Exception(e.toString())
-            }
+    suspend fun getPointsBalance(userNullifierHex: String, authorization: String): PointsBalanceBody? {
+        try {
+            val response = jsonApiPointsSvcManager.getPointsBalance(userNullifierHex, authorization)
+
+            return response
+        } catch (e: HttpException) {
+            throw Exception(e.toString())
         }
+
+        return null
     }
 
     suspend fun verifyPassport(userNullifierHex: String, body: VerifyPassportBody) {

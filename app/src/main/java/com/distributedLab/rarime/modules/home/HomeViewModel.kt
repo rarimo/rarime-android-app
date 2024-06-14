@@ -2,6 +2,7 @@ package com.distributedLab.rarime.modules.home
 
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.api.airdrop.AirDropManager
+import com.distributedLab.rarime.api.points.PointsManager
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.PassportIdentifier
 import com.distributedLab.rarime.data.tokens.PointsToken
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val passportManager: PassportManager,
     walletManager: WalletManager,
-    private val airDropManager: AirDropManager
+    private val airDropManager: AirDropManager,
+    private val pointsManager: PointsManager
 ) : ViewModel() {
     val isAirDropClaimed = airDropManager.isAirDropClaimed
 
@@ -29,13 +31,16 @@ class HomeViewModel @Inject constructor(
     val rmoAsset: StateFlow<WalletAsset?>
         get() = _rmoAsset
 
-    var _pointsToken = MutableStateFlow(
-        walletManager.walletAssets.value.find { it.token is PointsToken }?.token as PointsToken?
-    )
-        private set
+//    var _pointsToken = MutableStateFlow(
+//        walletManager.walletAssets.value.find { it.token is PointsToken }?.token as PointsToken?
+//    )
+//        private set
+//
+//    val pointsToken: StateFlow<PointsToken?>
+//        get() = _pointsToken.asStateFlow()
 
-    val pointsToken: StateFlow<PointsToken?>
-        get() = _pointsToken.asStateFlow()
+    // FIXME: temp
+    val pointsBalance = pointsManager.pointsBalance
 
     var passport = passportManager.passport
     var passportCardLook = passportManager.passportCardLook

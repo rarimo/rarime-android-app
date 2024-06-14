@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.modules.home.components.passport
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -33,6 +35,7 @@ import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Constants
 import com.distributedLab.rarime.util.Screen
+import com.google.gson.Gson
 
 @Composable
 fun HomeScreenPassportMain(
@@ -60,8 +63,12 @@ fun HomeScreenPassportMainContent(
     val isIncognito by homeViewModel.isIncognito
     val passportStatus by homeViewModel.passportStatus.collectAsState()
 
-    val pointsToken by homeViewModel.pointsToken.collectAsState()
+    val pointsBalance by homeViewModel.pointsBalance.collectAsState()
     val isAirDropClaimed by homeViewModel.isAirDropClaimed.collectAsState()
+
+    LaunchedEffect(pointsBalance) {
+        Log.i("PointsBalance", Gson().toJson(pointsBalance))
+    }
 
     val rarimoInfoSheetState = rememberAppSheetState()
     val specificAppSheetState = rememberAppSheetState()
@@ -90,7 +97,10 @@ fun HomeScreenPassportMainContent(
                 onIdentifiersChange = { homeViewModel.onPassportIdentifiersChange(it) }
             )
 
-            if ((pointsToken?.balanceDetails?.attributes?.isVerified == null || pointsToken?.balanceDetails?.attributes?.isVerified == false) && passportStatus == PassportStatus.ALLOWED) {
+            val isVerified = pointsBalance?.data?.attributes?.is_verified ?: false
+            val isBalanceCreated = pointsBalance?.data?.attributes?.created_at != null
+
+            if (!isVerified && passportStatus == PassportStatus.ALLOWED) {
                 ActionCard(title = stringResource(R.string.reserve_tokens),
                     description = stringResource(
                         R.string.you_re_entitled_of_x_rmo, Constants.AIRDROP_REWARD
@@ -103,9 +113,9 @@ fun HomeScreenPassportMainContent(
                         )
                     },
                     onClick = {
-                        pointsToken?.balanceDetails?.let {
+                        if (isBalanceCreated) {
                             navigate(Screen.Claim.Reserve.route)
-                        } ?: run {
+                        } else {
                             verifyPassportSheetState.show()
                         }
                     })

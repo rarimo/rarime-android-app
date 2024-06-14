@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.api.points
 
+import android.util.Log
 import com.distributedLab.rarime.api.auth.AuthManager
 import com.distributedLab.rarime.api.points.models.CreateBalanceAttributes
 import com.distributedLab.rarime.api.points.models.CreateBalanceBody
@@ -12,6 +13,10 @@ import com.distributedLab.rarime.api.points.models.WithdrawBody
 import com.distributedLab.rarime.api.points.models.WithdrawPayload
 import com.distributedLab.rarime.api.points.models.WithdrawPayloadAttributes
 import com.distributedLab.rarime.manager.IdentityManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 class PointsManager @Inject constructor(
@@ -19,6 +24,11 @@ class PointsManager @Inject constructor(
     private val identityManager: IdentityManager,
     private val authManager: AuthManager,
 ) {
+    private var _pointsBalance = MutableStateFlow<PointsBalanceBody?>(null)
+
+    val pointsBalance: StateFlow<PointsBalanceBody?>
+        get() = _pointsBalance.asStateFlow()
+
     suspend fun createPointsBalance(referralCode: String) {
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
@@ -39,14 +49,20 @@ class PointsManager @Inject constructor(
         )
     }
 
-    suspend fun getPointsBalance(): PointsBalanceBody {
+    suspend fun getPointsBalance(): PointsBalanceBody? {
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
         if (userNullifierHex.isEmpty()) {
             throw Exception("user nullifier is null")
         }
 
-        return pointsAPIManager.getPointsBalance(userNullifierHex, "Bearer ${authManager.accessToken.value!!}")
+        val response = pointsAPIManager.getPointsBalance(userNullifierHex, "Bearer ${authManager.accessToken.value!!}")
+
+        _pointsBalance.value = response
+
+        Log.i("_pointsBalance.value", _pointsBalance.value.toString())
+
+        return response
     }
 
     suspend fun verifyPassport() {
