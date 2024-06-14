@@ -15,14 +15,14 @@ import retrofit2.http.Path
 
 interface AuthAPI {
     @POST("${BaseConfig.RELAYER_URL}/integrations/decentralized-auth-svc/v1/authorize")
-    fun authorize(@Body payload: RequestAuthorizeBody): Response<RequestAuthorizeResponse>
+    fun authorize(@Body payload: RequestAuthorizeBody): RequestAuthorizeResponse
 
     @GET("${BaseConfig.RELAYER_URL}/integrations/decentralized-auth-svc/v1/authorize/{nullifier}/challenge")
-    fun getChallenge(@Path("nullifier") nullifier: String): Response<AuthChallenge>
+    fun getChallenge(@Path("nullifier") nullifier: String): AuthChallenge
 
     @GET("${BaseConfig.RELAYER_URL}/integrations/decentralized-auth-svc/v1/refresh")
-    fun refresh(@Header("Authorize") authorize: String): Response<RequestAuthorizePayload>
+    fun refresh(@Header("Authorization") authorization: String): RequestAuthorizePayload
 
     @GET("${BaseConfig.RELAYER_URL}/integrations/decentralized-auth-svc/v1/validate")
-    fun validate(@Header("Authorize") authorize: String): Response<ValidateResponse>
+    fun validate(@Header("Authorization") authorization: String): ValidateResponse
 }

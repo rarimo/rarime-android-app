@@ -56,13 +56,23 @@ class IdentityManager @Inject constructor(
         } ?: ""
     }
 
-    fun getUserNullifier(): String {
+    fun getUserAirDropNullifier(): String {
+        return profiler.value.calculateAirdropEventNullifier(BaseConfig.AIRDROP_SVC_ID)
+    }
+
+    fun getUserAirDropNullifierHex(): String {
+        return "0x" + BigInteger(this.getUserAirDropNullifier())
+            .toByteArray()
+            .toHexString()
+    }
+
+    fun getUserPointsNullifier(): String {
         // TODO: rename, not for airdrop only
         return profiler.value.calculateAirdropEventNullifier(BaseConfig.POINTS_SVC_ID)
     }
 
-    fun getUserNullifierHex(): String {
-        return "0x" + BigInteger(this.getUserNullifier())
+    fun getUserPointsNullifierHex(): String {
+        return "0x" + BigInteger(this.getUserPointsNullifier())
             .toByteArray()
             .toHexString()
     }

@@ -18,7 +18,7 @@ class PointsManager @Inject constructor(
     private val identityManager: IdentityManager
 ) {
     suspend fun createPointsBalance(referralCode: String) {
-        val userNullifierHex = identityManager.getUserNullifierHex()
+        val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
         if (userNullifierHex.isEmpty()) {
             throw Exception("user nullifier is null")
@@ -38,7 +38,7 @@ class PointsManager @Inject constructor(
     }
 
     suspend fun getPointsBalance(): PointsBalance? {
-        val userNullifierHex = identityManager.getUserNullifierHex()
+        val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
         if (userNullifierHex.isEmpty()) {
             throw Exception("user nullifier is null")
@@ -48,7 +48,7 @@ class PointsManager @Inject constructor(
     }
 
     suspend fun verifyPassport() {
-        val userNullifierHex = identityManager.getUserNullifierHex()
+        val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
         if (userNullifierHex.isEmpty()) {
             throw Exception("user nullifier is null")
@@ -73,7 +73,7 @@ class PointsManager @Inject constructor(
     }
 
     suspend fun withdrawPoints(amount: String) {
-        val userNullifierHex = identityManager.getUserNullifierHex()
+        val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
         if (userNullifierHex.isEmpty()) {
             throw Exception("user nullifier is null")

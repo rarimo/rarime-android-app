@@ -2,10 +2,8 @@ package com.distributedLab.rarime.api.airdrop
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.api.airdrop.models.AirDropStatuses
-import com.distributedLab.rarime.api.airdrop.models.AirdropEventParamsBody
 import com.distributedLab.rarime.api.airdrop.models.CreateAirDrop
 import com.distributedLab.rarime.api.airdrop.models.CreateAirDropAttributes
 import com.distributedLab.rarime.api.airdrop.models.CreateAirDropBody
@@ -44,7 +42,7 @@ class AirDropManager @Inject constructor(
     private var _isAirdropClaimed = MutableStateFlow(false)
 
     val isAirDropClaimed: StateFlow<Boolean>
-        public get() = _isAirdropClaimed.asStateFlow()
+        get() = _isAirdropClaimed.asStateFlow()
 
     private suspend fun generateAirdropQueryProof(
         registrationProof: ZkProof, eDocument: EDocument, privateKey: ByteArray
@@ -94,12 +92,12 @@ class AirDropManager @Inject constructor(
         val queryProofInputs = profiler.buildAirdropQueryIdentityInputs(
             eDocument.dg1!!.decodeHexString(),
             smtProofJson.toByteArray(Charsets.UTF_8),
-            airDropParams.data.attributes.query_selector.toString(),
+            airDropParams.data.attributes.query_selector,
             registrationProof.pub_signals[0],
             identityInfo.issueTimestamp.toString(),
             passportInfo.identityReissueCounter.toString(),
             airDropParams.data.attributes.event_id,
-            airDropParams.data.attributes.started_at.toLong()
+            airDropParams.data.attributes.started_at
         )
 
         val queryProof = withContext(Dispatchers.Default) {
@@ -164,11 +162,12 @@ class AirDropManager @Inject constructor(
     }
 
     suspend fun getAirDropByNullifier() {
-        val nullifier = identityManager.getUserNullifier()
+        val nullifier = identityManager.getUserAirDropNullifier()
 
         try {
             val response = airDropAPIManager.getAirDropByNullifier(nullifier)
-            _isAirdropClaimed.value = response.data.attributes.status == AirDropStatuses.COMPLETED
+
+            _isAirdropClaimed.value = response.data.attributes.status == AirDropStatuses.COMPLETED.value
         } catch (e: Exception) {
             _isAirdropClaimed.value = false
         }
