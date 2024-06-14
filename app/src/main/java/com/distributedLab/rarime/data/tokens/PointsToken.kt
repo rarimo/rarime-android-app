@@ -1,7 +1,7 @@
 package com.distributedLab.rarime.data.tokens
 
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.api.points.models.PointsBalance
+import com.distributedLab.rarime.api.points.models.PointsBalanceData
 import com.distributedLab.rarime.api.points.PointsManager
 import com.distributedLab.rarime.modules.wallet.models.Transaction
 import java.math.BigInteger
@@ -16,7 +16,7 @@ class PointsToken @Inject constructor(
     override var decimals: Int = 0
     override var icon: Int = R.drawable.ic_rarimo
 
-    var balanceDetails: PointsBalance? = null
+    var balanceDetails: PointsBalanceData? = null
 
     override suspend fun loadDetails() {
         name = "Reserved RMO"
@@ -24,7 +24,7 @@ class PointsToken @Inject constructor(
         decimals = 0
 
         try {
-            balanceDetails = pointsManager.getPointsBalance()
+            balanceDetails = pointsManager.getPointsBalance().data
         } catch (e: Exception) {
 
         }
@@ -43,6 +43,6 @@ class PointsToken @Inject constructor(
     }
 
     fun getIsBalanceCreated(): Boolean {
-        return balanceDetails?.isDisabled == false
+        return balanceDetails?.let { true } ?: false
     }
 }

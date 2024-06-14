@@ -20,7 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.api.points.models.PointsEvent
+import com.distributedLab.rarime.api.points.models.PointsEventData
 import com.distributedLab.rarime.modules.rewards.view_models.CONST_MOCKED_EVENTS_LIST
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.AppSkeleton
@@ -31,7 +31,7 @@ import com.distributedLab.rarime.util.Screen
 fun ActiveTaskItem(
     modifier: Modifier = Modifier,
     navigate: (String) -> Unit,
-    pointEvent: PointsEvent
+    pointEvent: PointsEventData
 ) {
     Row (
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -70,13 +70,13 @@ fun ActiveTaskItem(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(
-                    text = pointEvent.meta.static.title,
+                    text = pointEvent.attributes.meta.static.title,
                     style = RarimeTheme.typography.subtitle4,
                     color = RarimeTheme.colors.textPrimary,
                 )
 
                 Text (
-                    text = pointEvent.meta.static.shortDescription,
+                    text = pointEvent.attributes.meta.static.shortDescription,
                     style = RarimeTheme.typography.body4,
                     color = RarimeTheme.colors.textSecondary,
                 )
@@ -86,7 +86,7 @@ fun ActiveTaskItem(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                RewardAmountPreview(amount = pointEvent.meta.static.reward)
+                RewardAmountPreview(amount = pointEvent.attributes.meta.static.reward)
 
                 AppIcon(
                     id = R.drawable.ic_caret_right,

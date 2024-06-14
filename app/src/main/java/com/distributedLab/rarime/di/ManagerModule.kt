@@ -113,21 +113,19 @@ class APIModule {
 
     @Provides
     @Singleton
-    fun providePointsAPIManager(
-        @Named("jsonApiRetrofit") retrofit: Retrofit,
-        // TODO: remove
-        identityManager: IdentityManager
-    ): PointsAPIManager =
+    fun providePointsAPIManager(@Named("jsonApiRetrofit") retrofit: Retrofit): PointsAPIManager =
         PointsAPIManager(retrofit.create(PointsAPI::class.java))
 
     @Provides
     @Singleton
     fun providePointsManager(
         pointsAPIManager: PointsAPIManager,
-        identityManager: IdentityManager
+        identityManager: IdentityManager,
+        authManager: AuthManager,
     ): PointsManager = PointsManager(
         pointsAPIManager,
         identityManager,
+        authManager
     )
 
     @Provides

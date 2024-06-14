@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.ZoneId
+import java.util.Base64
 import javax.inject.Inject
 
 data class AuthProofInputs(
@@ -59,6 +60,8 @@ class AuthManager @Inject constructor(
 
         val challenge = authAPIManager.getChallenge(nullifierHex)
 
+        val decodedChallenge = Base64.getDecoder().decode(challenge.data.attributes.challenge)
+
         val assetContext: Context = context.createPackageContext("com.distributedLab.rarime", 0)
         val assetManager = assetContext.assets
 
@@ -67,9 +70,11 @@ class AuthManager @Inject constructor(
         val authProofInputs = AuthProofInputs(
             skIdentity = "0x" + identityManager.privateKey.value,
             eventID = BaseConfig.POINTS_SVC_ID,
-            eventData = "0x" + challenge.data.attributes.challenge.toHexString(),
+            eventData = "0x" + decodedChallenge.toHexString(),
             revealPkIdentityHash = 0
         )
+
+        Log.i("login", Gson().toJson(authProofInputs))
 
         val queryProof = withContext(Dispatchers.Default) {
             zkp.generateZKP(

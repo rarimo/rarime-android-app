@@ -9,11 +9,20 @@ enum class PointsEventStatuses(val value: String) {
     CLAIMED("claimed"),
 }
 
+data class PointsEventBody(
+    val data: PointsEventData
+)
+
 @JsonClass(generateAdapter = true)
-data class PointsEvent(
+data class PointsEventData(
     @Json(name = "id") val id: String,
     @Json(name = "type") val type: String,
 
+    val attributes: PointsEventAttributes,
+)
+
+@JsonClass(generateAdapter = true)
+data class PointsEventAttributes(
     val status: PointsEventStatuses,
 
     @Json(name = "created_at") val createdAt: Long,
@@ -24,7 +33,7 @@ data class PointsEvent(
     @Json(name = "points_amount") val pointsAmount: Long,
 
     // TODO: relationship
-    val balance: PointsBalance?,
+    val balance: PointsBalanceData?,
 )
 
 @JsonClass(generateAdapter = true)
@@ -54,11 +63,11 @@ data class PointsEventMetaDynamic(
 
 @JsonClass(generateAdapter = true)
 data class ClaimEventBody(
-    @Json(name = "data") val data: ClaimEventPayload
+    @Json(name = "data") val data: ClaimEventData
 )
 
 @JsonClass(generateAdapter = true)
-data class ClaimEventPayload(
+data class ClaimEventData(
     val id: String,
     val type: String,
 )

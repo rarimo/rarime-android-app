@@ -90,7 +90,7 @@ fun HomeScreenPassportMainContent(
                 onIdentifiersChange = { homeViewModel.onPassportIdentifiersChange(it) }
             )
 
-            if ((pointsToken?.balanceDetails?.isVerified == null || pointsToken?.balanceDetails?.isVerified == false) && passportStatus == PassportStatus.ALLOWED) {
+            if ((pointsToken?.balanceDetails?.attributes?.isVerified == null || pointsToken?.balanceDetails?.attributes?.isVerified == false) && passportStatus == PassportStatus.ALLOWED) {
                 ActionCard(title = stringResource(R.string.reserve_tokens),
                     description = stringResource(
                         R.string.you_re_entitled_of_x_rmo, Constants.AIRDROP_REWARD

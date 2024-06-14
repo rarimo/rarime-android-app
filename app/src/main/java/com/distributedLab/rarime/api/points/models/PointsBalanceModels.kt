@@ -5,10 +5,20 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class PointsBalance(
+data class PointsBalanceBody(
+    val data: PointsBalanceData
+)
+
+@JsonClass(generateAdapter = true)
+data class PointsBalanceData(
     @Json(name = "id") val id: String,
     @Json(name = "type") val type: String,
 
+    val attributes: PointsBalanceDataAttributes,
+)
+
+@JsonClass(generateAdapter = true)
+data class PointsBalanceDataAttributes(
     val amount: Long,
     @Json(name = "is_disabled")
     val isDisabled: Boolean,
@@ -27,17 +37,27 @@ data class PointsBalance(
 )
 
 @JsonClass(generateAdapter = true)
-data class PointsWithdrawal(
-    @Json(name = "id") val id: String,
-    @Json(name = "type") val type: String,
+data class PointsWithdrawalBody(
+    val data: PointsWithdrawalData
+)
 
+@JsonClass(generateAdapter = true)
+data class PointsWithdrawalData(
+    val id: String,
+    val type: String,
+
+    val attributes: PointsWithdrawalDataAttributes
+)
+
+@JsonClass(generateAdapter = true)
+data class PointsWithdrawalDataAttributes(
     val amount: Long,
     val address: String,
 
     @Json(name = "created_at")
     val createdAt: Long,
 
-    val balance: PointsBalance?,
+    val balance: PointsBalanceData?,
 )
 
 @JsonClass(generateAdapter = true)
@@ -50,11 +70,11 @@ data class PointsPrice(
 
 @JsonClass(generateAdapter = true)
 data class CreateBalanceBody(
-    @Json(name = "data") val data: CreateBalancePayload
+    @Json(name = "data") val data: CreateBalanceData
 )
 
 @JsonClass(generateAdapter = true)
-data class CreateBalancePayload(
+data class CreateBalanceData(
     @Json(name = "id") val id: String,
     @Json(name = "type") val type: String,
 
@@ -68,11 +88,11 @@ data class CreateBalanceAttributes(
 
 @JsonClass(generateAdapter = true)
 data class VerifyPassportBody(
-    @Json(name = "data") val data: VerifyPassportPayload
+    @Json(name = "data") val data: VerifyPassportData
 )
 
 @JsonClass(generateAdapter = true)
-data class VerifyPassportPayload(
+data class VerifyPassportData(
     @Json(name = "id") val id: String,
     @Json(name = "type") val type: String,
 

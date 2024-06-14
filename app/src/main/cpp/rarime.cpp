@@ -1,6 +1,7 @@
 #include "include/prover.h"
 #include "witnesscalc_registerIdentityUniversal.h"
 #include "witnesscalc_queryIdentity.h"
+#include "witnesscalc_auth.h"
 
 #include <jni.h>
 #include <iostream>
@@ -183,7 +184,7 @@ Java_com_distributedLab_rarime_util_ZkpUtil_auth(JNIEnv *env, jobject thiz,
     unsigned long wtnsSize = env->GetLongArrayElements(wtns_size, nullptr)[0];
 
 
-    int result = witnesscalc_queryIdentity(
+    int result = witnesscalc_auth(
             circuitBuffer, static_cast<unsigned long>(circuit_size),
             jsonBuffer, static_cast<unsigned long>(json_size),
             wtnsBuffer, &wtnsSize,

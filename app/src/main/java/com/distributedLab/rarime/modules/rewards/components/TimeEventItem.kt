@@ -22,7 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.api.points.models.PointsEvent
+import com.distributedLab.rarime.api.points.models.PointsEventData
 import com.distributedLab.rarime.modules.rewards.view_models.CONST_MOCKED_EVENTS_LIST
 import com.distributedLab.rarime.ui.components.AppSkeleton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
@@ -32,7 +32,7 @@ import com.distributedLab.rarime.util.Screen
 fun TimeEventItem(
     modifier: Modifier = Modifier,
     navigate: (String) -> Unit,
-    pointsEvent: PointsEvent
+    pointsEventData: PointsEventData
 ) {
     Row(
         modifier = modifier
@@ -50,7 +50,7 @@ fun TimeEventItem(
         Image(
             // painter = rememberAsyncImagePainter(pointsEvent.meta.static.logo),
             painter = painterResource(id = R.drawable.event_stub),
-            contentDescription = pointsEvent.meta.static.title,
+            contentDescription = pointsEventData.attributes.meta.static.title,
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .width(64.dp)
@@ -62,7 +62,7 @@ fun TimeEventItem(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(
-                text = pointsEvent.meta.static.title,
+                text = pointsEventData.attributes.meta.static.title,
                 style = RarimeTheme.typography.subtitle4,
                 color = RarimeTheme.colors.textPrimary,
             )
@@ -71,7 +71,7 @@ fun TimeEventItem(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                RewardAmountPreview(amount = pointsEvent.meta.static.reward)
+                RewardAmountPreview(amount = pointsEventData.attributes.meta.static.reward)
 
                 Text(
                     text = "2 days left", // TODO: add date diff
@@ -138,7 +138,7 @@ private fun TimeEventsListPreview () {
         TimeEventItem(
             modifier = Modifier.fillMaxWidth(),
             navigate = {},
-            pointsEvent = CONST_MOCKED_EVENTS_LIST[0]
+            pointsEventData = CONST_MOCKED_EVENTS_LIST[0]
         )
 
         TimeEventItemSkeleton()

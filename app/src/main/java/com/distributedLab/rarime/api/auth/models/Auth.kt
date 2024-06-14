@@ -60,7 +60,7 @@ data class AuthChallengeData(
 
 @JsonClass(generateAdapter = true)
 data class AuthChallengeDataAttributes(
-    val challenge: ByteArray,
+    val challenge: String,
 )
 
 @JsonClass(generateAdapter = true)

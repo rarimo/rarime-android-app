@@ -32,7 +32,6 @@ import com.distributedLab.rarime.modules.rewards.view_models.RewardsEventItemVie
 import com.distributedLab.rarime.modules.wallet.WalletRouteLayout
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
-import com.distributedLab.rarime.ui.components.MARKDOWN_CONTENT
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import dev.jeziellago.compose.markdowntext.MarkdownText
@@ -45,7 +44,7 @@ fun RewardsEventItemScreen(
 ) {
     val uriHandler = LocalUriHandler.current
 
-    val _pointsEvent = rewardsEventItemViewModel.pointsEvent.collectAsState()
+    val _pointsEvent = rewardsEventItemViewModel.pointsEventData.collectAsState()
 
     val scope = rememberCoroutineScope()
 
@@ -84,7 +83,7 @@ fun RewardsEventItemScreen(
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             Text (
-                                text = pointsEvent.meta.static.title,
+                                text = pointsEvent.attributes.meta.static.title,
                                 style = RarimeTheme.typography.subtitle2,
                                 color = RarimeTheme.colors.textPrimary,
                             )
@@ -93,7 +92,7 @@ fun RewardsEventItemScreen(
                                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                RewardAmountPreview(amount = pointsEvent.meta.static.reward)
+                                RewardAmountPreview(amount = pointsEvent.attributes.meta.static.reward)
 
                                 Text(
                                     // TODO: implement date diff
@@ -130,7 +129,7 @@ fun RewardsEventItemScreen(
                             .verticalScroll(rememberScrollState())
                     ) {
                         MarkdownText(
-                            markdown = pointsEvent.meta.static.description
+                            markdown = pointsEvent.attributes.meta.static.description
                         )
                     }
                 }
@@ -150,7 +149,7 @@ fun RewardsEventItemScreen(
                             modifier = Modifier.fillMaxWidth(),
                             text = "Let's start",
                             onClick = {
-                                uriHandler.openUri(pointsEvent.meta.static.actionUrl)
+                                uriHandler.openUri(pointsEvent.attributes.meta.static.actionUrl)
                             }
                         )
                     }

@@ -3,8 +3,9 @@ package com.distributedLab.rarime.modules.rewards.view_models
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.api.auth.AuthManager
+import com.distributedLab.rarime.api.points.models.PointsEventAttributes
 import com.distributedLab.rarime.data.tokens.PointsToken
-import com.distributedLab.rarime.api.points.models.PointsEvent
+import com.distributedLab.rarime.api.points.models.PointsEventData
 import com.distributedLab.rarime.api.points.models.PointsEventMeta
 import com.distributedLab.rarime.api.points.models.PointsEventMetaDynamic
 import com.distributedLab.rarime.api.points.models.PointsEventMetaStatic
@@ -21,83 +22,89 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 val CONST_MOCKED_EVENTS_LIST = listOf(
-    PointsEvent(
+    PointsEventData(
         id = "1",
         type = "balance",
-        status = PointsEventStatuses.OPEN,
-        createdAt = 0,
-        updatedAt = 0,
-        meta = PointsEventMeta(
-            static = PointsEventMetaStatic(
-                name = "Lorem ipsum 1",
-                reward = 5,
-                title = "Lorem ipsum 1",
-                description = MARKDOWN_CONTENT,
-                shortDescription = "Lorem ipsum dolor sit amet!",
-                frequency = "",
-                startsAt = "",
-                expiresAt = "",
-                actionUrl = "",
-                logo = "https://images.unsplash.com/photo-1717263608216-51a63715d209?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        attributes = PointsEventAttributes(
+            status = PointsEventStatuses.OPEN,
+            createdAt = 0,
+            updatedAt = 0,
+            meta = PointsEventMeta(
+                static = PointsEventMetaStatic(
+                    name = "Lorem ipsum 1",
+                    reward = 5,
+                    title = "Lorem ipsum 1",
+                    description = MARKDOWN_CONTENT,
+                    shortDescription = "Lorem ipsum dolor sit amet!",
+                    frequency = "",
+                    startsAt = "",
+                    expiresAt = "",
+                    actionUrl = "",
+                    logo = "https://images.unsplash.com/photo-1717263608216-51a63715d209?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                ),
+                dynamic = PointsEventMetaDynamic(
+                    id = "",
+                ),
             ),
-            dynamic = PointsEventMetaDynamic(
-                id = "",
-            ),
-        ),
-        pointsAmount = 0,
-        balance = null,
+            pointsAmount = 0,
+            balance = null,
+        )
     ),
-    PointsEvent(
+    PointsEventData(
         id = "2",
         type = "balance",
-        status = PointsEventStatuses.CLAIMED,
-        createdAt = 0,
-        updatedAt = 0,
-        meta = PointsEventMeta(
-            static = PointsEventMetaStatic(
-                name = "Lorem ipsum 2",
-                reward = 50,
-                title = "Lorem ipsum 2",
-                description = MARKDOWN_CONTENT,
-                shortDescription = "Lorem ipsum dolor sit amet concestetur!",
-                frequency = "",
-                startsAt = "",
-                expiresAt = "",
-                actionUrl = "",
-                logo = "https://images.unsplash.com/photo-1717263608216-51a63715d209?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        attributes = PointsEventAttributes(
+            status = PointsEventStatuses.CLAIMED,
+            createdAt = 0,
+            updatedAt = 0,
+            meta = PointsEventMeta(
+                static = PointsEventMetaStatic(
+                    name = "Lorem ipsum 2",
+                    reward = 50,
+                    title = "Lorem ipsum 2",
+                    description = MARKDOWN_CONTENT,
+                    shortDescription = "Lorem ipsum dolor sit amet concestetur!",
+                    frequency = "",
+                    startsAt = "",
+                    expiresAt = "",
+                    actionUrl = "",
+                    logo = "https://images.unsplash.com/photo-1717263608216-51a63715d209?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                ),
+                dynamic = PointsEventMetaDynamic(
+                    id = "",
+                ),
             ),
-            dynamic = PointsEventMetaDynamic(
-                id = "",
-            ),
+            pointsAmount = 0,
+            balance = null,
         ),
-        pointsAmount = 0,
-        balance = null,
     ),
-    PointsEvent(
+    PointsEventData(
         id = "3",
         type = "balance",
-        status = PointsEventStatuses.FULFILLED,
-        createdAt = 0,
-        updatedAt = 0,
-        meta = PointsEventMeta(
-            static = PointsEventMetaStatic(
-                name = "Lorem ipsum 3",
-                reward = 500,
-                title = "Lorem ipsum 3",
-                description = MARKDOWN_CONTENT,
-                shortDescription = "Lorem ipsum dolor sit amet concestetur! Lorem ipsum dolor sit amet concestetur!",
-                frequency = "",
-                startsAt = "",
-                expiresAt = "",
-                actionUrl = "",
-                logo = "https://images.unsplash.com/photo-1717263608216-51a63715d209?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        attributes = PointsEventAttributes(
+            status = PointsEventStatuses.FULFILLED,
+            createdAt = 0,
+            updatedAt = 0,
+            meta = PointsEventMeta(
+                static = PointsEventMetaStatic(
+                    name = "Lorem ipsum 3",
+                    reward = 500,
+                    title = "Lorem ipsum 3",
+                    description = MARKDOWN_CONTENT,
+                    shortDescription = "Lorem ipsum dolor sit amet concestetur! Lorem ipsum dolor sit amet concestetur!",
+                    frequency = "",
+                    startsAt = "",
+                    expiresAt = "",
+                    actionUrl = "",
+                    logo = "https://images.unsplash.com/photo-1717263608216-51a63715d209?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                ),
+                dynamic = PointsEventMetaDynamic(
+                    id = "",
+                ),
             ),
-            dynamic = PointsEventMetaDynamic(
-                id = "",
-            ),
-        ),
-        pointsAmount = 0,
-        balance = null,
+            pointsAmount = 0,
+            balance = null,
+        )
     ),
 )
 
@@ -431,16 +438,16 @@ class RewardsViewModel @Inject constructor(
     val pointsWalletAsset: StateFlow<WalletAsset?>
         get() = _pointsWalletAsset.asStateFlow()
 
-    var _limitedTimeEvents = MutableStateFlow<List<PointsEvent>?>(null)
+    var _limitedTimeEvents = MutableStateFlow<List<PointsEventData>?>(null)
         private set
 
-    val limitedTimeEvents: StateFlow<List<PointsEvent>?>
+    val limitedTimeEvents: StateFlow<List<PointsEventData>?>
         get() = _limitedTimeEvents.asStateFlow()
 
-    var _activeTasksEvents = MutableStateFlow<List<PointsEvent>?>(null)
+    var _activeTasksEvents = MutableStateFlow<List<PointsEventData>?>(null)
         private set
 
-    val activeTasksEvents: StateFlow<List<PointsEvent>?>
+    val activeTasksEvents: StateFlow<List<PointsEventData>?>
         get() = _activeTasksEvents.asStateFlow()
 
     var _leaderBoardList = MutableStateFlow(listOf<LeaderBoardItem>())

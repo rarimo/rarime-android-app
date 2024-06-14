@@ -1,12 +1,13 @@
 package com.distributedLab.rarime.api.points
 
+import com.distributedLab.rarime.api.auth.AuthManager
 import com.distributedLab.rarime.api.points.models.CreateBalanceAttributes
 import com.distributedLab.rarime.api.points.models.CreateBalanceBody
-import com.distributedLab.rarime.api.points.models.CreateBalancePayload
-import com.distributedLab.rarime.api.points.models.PointsBalance
+import com.distributedLab.rarime.api.points.models.CreateBalanceData
+import com.distributedLab.rarime.api.points.models.PointsBalanceBody
 import com.distributedLab.rarime.api.points.models.VerifyPassportAttributes
 import com.distributedLab.rarime.api.points.models.VerifyPassportBody
-import com.distributedLab.rarime.api.points.models.VerifyPassportPayload
+import com.distributedLab.rarime.api.points.models.VerifyPassportData
 import com.distributedLab.rarime.api.points.models.WithdrawBody
 import com.distributedLab.rarime.api.points.models.WithdrawPayload
 import com.distributedLab.rarime.api.points.models.WithdrawPayloadAttributes
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 class PointsManager @Inject constructor(
     private val pointsAPIManager: PointsAPIManager,
-    private val identityManager: IdentityManager
+    private val identityManager: IdentityManager,
+    private val authManager: AuthManager,
 ) {
     suspend fun createPointsBalance(referralCode: String) {
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
@@ -26,7 +28,7 @@ class PointsManager @Inject constructor(
 
         pointsAPIManager.createPointsBalance(
             CreateBalanceBody(
-                data = CreateBalancePayload(
+                data = CreateBalanceData(
                     id = userNullifierHex,
                     type = "create_balance",
                     attributes = CreateBalanceAttributes(
@@ -37,14 +39,14 @@ class PointsManager @Inject constructor(
         )
     }
 
-    suspend fun getPointsBalance(): PointsBalance? {
+    suspend fun getPointsBalance(): PointsBalanceBody {
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
         if (userNullifierHex.isEmpty()) {
             throw Exception("user nullifier is null")
         }
 
-        return pointsAPIManager.getPointsBalance(userNullifierHex)
+        return pointsAPIManager.getPointsBalance(userNullifierHex, "Bearer ${authManager.accessToken.value!!}")
     }
 
     suspend fun verifyPassport() {
@@ -61,7 +63,7 @@ class PointsManager @Inject constructor(
         pointsAPIManager.verifyPassport(
             userNullifierHex,
             VerifyPassportBody(
-                data = VerifyPassportPayload(
+                data = VerifyPassportData(
                     id = userNullifierHex,
                     type = "verify_passport",
                     attributes = VerifyPassportAttributes(

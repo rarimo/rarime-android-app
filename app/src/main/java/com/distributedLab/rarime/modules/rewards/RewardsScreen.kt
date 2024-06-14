@@ -36,7 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.data.tokens.PreviewerToken
-import com.distributedLab.rarime.api.points.models.PointsEvent
+import com.distributedLab.rarime.api.points.models.PointsEventData
 import com.distributedLab.rarime.manager.WalletAsset
 import com.distributedLab.rarime.modules.home.components.passport.StatusCard
 import com.distributedLab.rarime.modules.rewards.components.ActiveTasksList
@@ -322,7 +322,7 @@ fun RewardsScreenUserStatistic(
 
 @Composable
 fun LimitedEventsList(
-    navigate: (String) -> Unit, limitedTimeEvents: List<PointsEvent>?
+    navigate: (String) -> Unit, limitedTimeEvents: List<PointsEventData>?
 ) {
     Column {
         Row(
@@ -357,7 +357,7 @@ fun LimitedEventsList(
                 )
             } else {
                 TimeEventsList(
-                    modifier = Modifier.fillMaxWidth(), navigate = navigate, pointsEvents = it
+                    modifier = Modifier.fillMaxWidth(), navigate = navigate, pointsEventData = it
                 )
             }
         } ?: TimeEventsListSkeleton()
@@ -366,7 +366,7 @@ fun LimitedEventsList(
 
 @Composable
 fun ActiveTastsList(
-    navigate: (String) -> Unit, activeTasksEvents: List<PointsEvent>?
+    navigate: (String) -> Unit, activeTasksEvents: List<PointsEventData>?
 ) {
     Column {
         Row(
@@ -389,7 +389,7 @@ fun ActiveTastsList(
                 )
             } else {
                 ActiveTasksList(
-                    navigate = navigate, pointsEvents = it
+                    navigate = navigate, pointsEventData = it
                 )
             }
         } ?: ActiveTasksListSkeleton()

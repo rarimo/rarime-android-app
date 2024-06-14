@@ -2,10 +2,10 @@ package com.distributedLab.rarime.api.points
 
 import com.distributedLab.rarime.api.points.models.ClaimEventBody
 import com.distributedLab.rarime.api.points.models.CreateBalanceBody
-import com.distributedLab.rarime.api.points.models.PointsBalance
-import com.distributedLab.rarime.api.points.models.PointsEvent
+import com.distributedLab.rarime.api.points.models.PointsBalanceBody
+import com.distributedLab.rarime.api.points.models.PointsEventBody
 import com.distributedLab.rarime.api.points.models.PointsPrice
-import com.distributedLab.rarime.api.points.models.PointsWithdrawal
+import com.distributedLab.rarime.api.points.models.PointsWithdrawalBody
 import com.distributedLab.rarime.api.points.models.VerifyPassportBody
 import com.distributedLab.rarime.api.points.models.WithdrawBody
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: PointsAPI) {
     /* BALANCE */
-    suspend fun createPointsBalance(body: CreateBalanceBody): PointsBalance {
+    suspend fun createPointsBalance(body: CreateBalanceBody): PointsBalanceBody {
         return withContext(Dispatchers.IO) {
             try {
                 jsonApiPointsSvcManager.createPointsBalance(body)
@@ -25,7 +25,7 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
         }
     }
 
-    suspend fun getLeaderboard(): List<PointsBalance> {
+    suspend fun getLeaderboard(): List<PointsBalanceBody> {
         return withContext(Dispatchers.IO) {
             try {
                 jsonApiPointsSvcManager.getLeaderboard()
@@ -35,10 +35,10 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
         }
     }
 
-    suspend fun getPointsBalance(userNullifierHex: String): PointsBalance {
+    suspend fun getPointsBalance(userNullifierHex: String, authorization: String): PointsBalanceBody {
         return withContext(Dispatchers.IO) {
             try {
-                jsonApiPointsSvcManager.getPointsBalance(userNullifierHex)
+                jsonApiPointsSvcManager.getPointsBalance(userNullifierHex, authorization)
             } catch (e: HttpException) {
                 throw Exception(e.toString())
             }
@@ -55,7 +55,7 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
         }
     }
 
-    suspend fun getWithdrawalHistory(nullifier: String): List<PointsWithdrawal> {
+    suspend fun getWithdrawalHistory(nullifier: String): List<PointsWithdrawalBody> {
         return withContext(Dispatchers.IO) {
             try {
                 jsonApiPointsSvcManager.getWithdrawalHistory(nullifier)
@@ -65,7 +65,7 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
         }
     }
 
-    suspend fun withdrawPoints(userNullifierHex: String, body: WithdrawBody): PointsWithdrawal {
+    suspend fun withdrawPoints(userNullifierHex: String, body: WithdrawBody): PointsWithdrawalBody {
         return withContext(Dispatchers.IO) {
             try {
                 jsonApiPointsSvcManager.withdrawPoints(userNullifierHex, body)
@@ -75,7 +75,7 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
         }
     }
 
-    suspend fun getPointPrice(): PointsPrice? {
+    suspend fun getPointPrice(): PointsPrice {
         return withContext(Dispatchers.IO) {
             try {
                 jsonApiPointsSvcManager.getPointPrice()
@@ -90,7 +90,7 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
 
     /* EVENTS */
 
-    suspend fun getEventsList(): List<PointsEvent> {
+    suspend fun getEventsList(): List<PointsEventBody> {
         return withContext(Dispatchers.IO) {
             try {
                 jsonApiPointsSvcManager.getEventsList()
@@ -100,7 +100,7 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
         }
     }
 
-    suspend fun getEvent(id: String): PointsEvent {
+    suspend fun getEvent(id: String): PointsEventBody {
         return withContext(Dispatchers.IO) {
             try {
                 jsonApiPointsSvcManager.getEvent(id)
@@ -110,7 +110,7 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
         }
     }
 
-    suspend fun claimPointsByEvent(id: String, body: ClaimEventBody): PointsEvent? {
+    suspend fun claimPointsByEvent(id: String, body: ClaimEventBody): PointsEventBody {
         return withContext(Dispatchers.IO) {
             try {
                 jsonApiPointsSvcManager.claimPointsByEvent(id, body)

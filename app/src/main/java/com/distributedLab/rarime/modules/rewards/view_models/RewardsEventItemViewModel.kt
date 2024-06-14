@@ -2,7 +2,7 @@ package com.distributedLab.rarime.modules.rewards.view_models
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.distributedLab.rarime.api.points.models.PointsEvent
+import com.distributedLab.rarime.api.points.models.PointsEventData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,14 +14,14 @@ class RewardsEventItemViewModel @Inject constructor(
 ): ViewModel() {
     val itemId: String = checkNotNull(savedStateHandle["item_id"])
 
-    var _pointsEvent = MutableStateFlow<PointsEvent?>(null)
+    var _pointsEventData = MutableStateFlow<PointsEventData?>(null)
         private set
 
-    val pointsEvent: StateFlow<PointsEvent?>
-        get() = _pointsEvent.asStateFlow()
+    val pointsEventData: StateFlow<PointsEventData?>
+        get() = _pointsEventData.asStateFlow()
 
     suspend fun loadPointsEvent () {
         // _pointsEvent.value = pointsManager.getEvent(itemId)
-        _pointsEvent.value = CONST_MOCKED_EVENTS_LIST[0]
+        _pointsEventData.value = CONST_MOCKED_EVENTS_LIST[0]
     }
 }
