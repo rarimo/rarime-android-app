@@ -49,10 +49,14 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
         return null
     }
 
-    suspend fun verifyPassport(userNullifierHex: String, body: VerifyPassportBody) {
+    suspend fun verifyPassport(
+        userNullifierHex: String,
+        body: VerifyPassportBody,
+        authorization: String,
+    ) {
         withContext(Dispatchers.IO) {
             try {
-                jsonApiPointsSvcManager.verifyPassport(userNullifierHex, body)
+                jsonApiPointsSvcManager.verifyPassport(userNullifierHex, body, authorization)
             } catch (e: HttpException) {
                 throw Exception(e.toString())
             }

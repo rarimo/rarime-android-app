@@ -119,13 +119,19 @@ class APIModule {
     @Provides
     @Singleton
     fun providePointsManager(
+        @ApplicationContext context: Context,
+        contractManager: ContractManager,
         pointsAPIManager: PointsAPIManager,
         identityManager: IdentityManager,
         authManager: AuthManager,
+        dataStoreManager: SecureSharedPrefsManager
     ): PointsManager = PointsManager(
+        context,
+        contractManager,
         pointsAPIManager,
         identityManager,
-        authManager
+        authManager,
+        dataStoreManager
     )
 
     @Provides

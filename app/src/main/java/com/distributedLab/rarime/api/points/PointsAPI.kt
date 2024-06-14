@@ -33,7 +33,8 @@ interface PointsAPI {
     @POST("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances/{nullifier}/verifypassport")
     suspend fun verifyPassport(
         @Path("nullifier") nullifier: String,
-        @Body payload: VerifyPassportBody
+        @Body payload: VerifyPassportBody,
+        @Header("Authorization") authorization: String
     ): Unit
 
     @GET("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances/{nullifier}/withdrawals")

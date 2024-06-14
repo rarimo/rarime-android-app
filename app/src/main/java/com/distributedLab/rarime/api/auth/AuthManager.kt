@@ -12,6 +12,7 @@ import com.distributedLab.rarime.manager.IdentityManager
 import com.distributedLab.rarime.store.SecureSharedPrefsManager
 import com.distributedLab.rarime.util.ZKPUseCase
 import com.distributedLab.rarime.util.ZkpUtil
+import com.distributedLab.rarime.util.data.ZkProof
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,12 +56,10 @@ class AuthManager @Inject constructor(
         get() = _isAuthorized.asStateFlow()
 
     @OptIn(ExperimentalStdlibApi::class)
-    suspend fun login() {
-        val nullifierHex = identityManager.getUserPointsNullifierHex()
+    suspend fun getAuthQueryProof(nullifierHex: String): ZkProof {
+        val challengeBody = authAPIManager.getChallenge(nullifierHex)
 
-        val challenge = authAPIManager.getChallenge(nullifierHex)
-
-        val decodedChallenge = Base64.getDecoder().decode(challenge.data.attributes.challenge)
+        val decodedChallenge = Base64.getDecoder().decode(challengeBody.data.attributes.challenge)
 
         val assetContext: Context = context.createPackageContext("com.distributedLab.rarime", 0)
         val assetManager = assetContext.assets
@@ -82,6 +81,14 @@ class AuthManager @Inject constructor(
                 ZkpUtil::auth
             )
         }
+
+        return queryProof
+    }
+
+    suspend fun login() {
+        val nullifierHex = identityManager.getUserPointsNullifierHex()
+
+        val queryProof = getAuthQueryProof(nullifierHex)
 
         val response = authAPIManager.authorize(
             RequestAuthorizeBody(

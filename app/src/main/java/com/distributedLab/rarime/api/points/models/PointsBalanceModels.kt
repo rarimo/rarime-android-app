@@ -1,6 +1,7 @@
 package com.distributedLab.rarime.api.points.models
 
 import com.distributedLab.rarime.util.data.Proof
+import com.distributedLab.rarime.util.data.ZkProof
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -107,14 +108,14 @@ data class VerifyPassportBody(
 @JsonClass(generateAdapter = true)
 data class VerifyPassportData(
     @Json(name = "id") val id: String,
-    @Json(name = "type") val type: String,
+    @Json(name = "type") val type: String = "verify_passport",
 
     val attributes: VerifyPassportAttributes
 )
 
 @JsonClass(generateAdapter = true)
 data class VerifyPassportAttributes(
-    val proof: Proof
+    val proof: ZkProof
 )
 
 @JsonClass(generateAdapter = true)
