@@ -2,6 +2,7 @@ package com.distributedLab.rarime.api.points
 
 import android.content.Context
 import android.util.Log
+import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.api.auth.AuthManager
 import com.distributedLab.rarime.api.points.models.CreateBalanceAttributes
@@ -108,7 +109,6 @@ class PointsManager @Inject constructor(
 
         val registrationSmtContract = contractManager.getPoseidonSMT(registrationSmtAddress)
 
-
         val proofIndex = Identity.calculateProofIndex(
             registrationProof.pub_signals[0], registrationProof.pub_signals[2]
         )
@@ -133,19 +133,15 @@ class PointsManager @Inject constructor(
         val passportInfo = passportInfoRaw.component1()
         val identityInfo = passportInfoRaw.component2()
 
-        val airDropParams = withContext(Dispatchers.IO) {
-            airDropAPIManager.getAirDropParams()!!
-        }
-
         val queryProofInputs = profiler.buildAirdropQueryIdentityInputs(
             eDocument.dg1!!.decodeHexString(),
             smtProofJson.toByteArray(Charsets.UTF_8),
-            airDropParams.data.attributes.query_selector.toString(),
+            "23073",
             registrationProof.pub_signals[0],
             identityInfo.issueTimestamp.toString(),
             passportInfo.identityReissueCounter.toString(),
-            airDropParams.data.attributes.event_id,
-            airDropParams.data.attributes.started_at
+            BaseConfig.POINTS_SVC_ID,
+            1715698750,
         )
 
         val queryProof = withContext(Dispatchers.Default) {
