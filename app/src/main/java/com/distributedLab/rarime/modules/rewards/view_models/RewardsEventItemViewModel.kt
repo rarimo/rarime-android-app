@@ -2,15 +2,18 @@ package com.distributedLab.rarime.modules.rewards.view_models
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.distributedLab.rarime.api.points.PointsManager
 import com.distributedLab.rarime.api.points.models.PointsEventData
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
+@HiltViewModel
 class RewardsEventItemViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-//    private val pointsManager: PointsManager,
+    private val savedStateHandle: SavedStateHandle,
+    private val pointsManager: PointsManager,
 ): ViewModel() {
     val itemId: String = checkNotNull(savedStateHandle["item_id"])
 
@@ -21,7 +24,6 @@ class RewardsEventItemViewModel @Inject constructor(
         get() = _pointsEventData.asStateFlow()
 
     suspend fun loadPointsEvent () {
-        // _pointsEvent.value = pointsManager.getEvent(itemId)
-        _pointsEventData.value = CONST_MOCKED_EVENTS_LIST[0]
+        _pointsEventData.value = pointsManager.getEventById(itemId)?.data
     }
 }

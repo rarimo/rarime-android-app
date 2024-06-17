@@ -10,6 +10,7 @@ import com.distributedLab.rarime.api.points.models.CreateBalanceAttributes
 import com.distributedLab.rarime.api.points.models.CreateBalanceBody
 import com.distributedLab.rarime.api.points.models.CreateBalanceData
 import com.distributedLab.rarime.api.points.models.PointsBalanceBody
+import com.distributedLab.rarime.api.points.models.PointsEventBody
 import com.distributedLab.rarime.api.points.models.PointsEventStatuses
 import com.distributedLab.rarime.api.points.models.PointsEventsListBody
 import com.distributedLab.rarime.api.points.models.VerifyPassportAttributes
@@ -254,5 +255,18 @@ class PointsManager @Inject constructor(
                 "filter[status]" to PointsEventStatuses.FULFILLED.value,
             )
         )
+    }
+
+    suspend fun getEventById(eventId: String): PointsEventBody? {
+        return withContext(Dispatchers.IO) {
+            try {
+                pointsAPIManager.getEvent(
+                    id = eventId,
+                    authorization = "Bearer ${authManager.accessToken.value!!}"
+                )
+            } catch (e: Exception) {
+                null
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.modules.rewards
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.rememberAsyncImagePainter
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.rewards.components.RewardAmountPreview
 import com.distributedLab.rarime.modules.rewards.view_models.RewardsEventItemViewModel
@@ -34,6 +36,7 @@ import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.DateUtil
 import dev.jeziellago.compose.markdowntext.MarkdownText
 import kotlinx.coroutines.launch
 
@@ -50,7 +53,12 @@ fun RewardsEventItemScreen(
 
     LaunchedEffect(Unit) {
         scope.launch {
-            rewardsEventItemViewModel.loadPointsEvent()
+            // TODO: add loader
+            try {
+                rewardsEventItemViewModel.loadPointsEvent()
+            } catch (e: Exception) {
+                Log.e("RewardsEventItemScreen", "Error loading points event", e)
+            }
         }
     }
 
@@ -94,12 +102,13 @@ fun RewardsEventItemScreen(
                             ) {
                                 RewardAmountPreview(amount = pointsEvent.attributes.meta.static.reward)
 
-                                Text(
-                                    // TODO: implement date diff
-                                    text = "Exp: 24 sep, 2024, 10:00am",
-                                    style = RarimeTheme.typography.caption2,
-                                    color = RarimeTheme.colors.textSecondary,
-                                )
+                                pointsEvent.attributes.meta.static.expiresAt?.let {
+                                    Text(
+                                        text = DateUtil.formatDateString(it),
+                                        style = RarimeTheme.typography.caption2,
+                                        color = RarimeTheme.colors.textSecondary,
+                                    )
+                                }
                             }
                         }
 
@@ -107,9 +116,10 @@ fun RewardsEventItemScreen(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Image(
-                                // TODO: implement images
-                                // painter = rememberAsyncImagePainter("https://images.unsplash.com/photo-1717263608216-51a63715d209?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"),
-                                painter = painterResource(id = R.drawable.event_stub),
+                                painter = pointsEvent.attributes.meta.static.logo?.let {
+                                    rememberAsyncImagePainter(it)
+                                    // TODO: change event_stub
+                                } ?: painterResource(id = R.drawable.event_stub),
                                 contentDescription = "Limited time event",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier

@@ -111,17 +111,13 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
         } catch (e: HttpException) {
             throw Exception(e.toString())
         }
-
-        return null
     }
 
-    suspend fun getEvent(id: String): PointsEventBody {
-        return withContext(Dispatchers.IO) {
-            try {
-                jsonApiPointsSvcManager.getEvent(id)
-            } catch (e: HttpException) {
-                throw Exception(e.toString())
-            }
+    suspend fun getEvent(id: String, authorization: String): PointsEventBody {
+        try {
+            return jsonApiPointsSvcManager.getEvent(id, authorization)
+        } catch (e: HttpException) {
+            throw Exception(e.toString())
         }
     }
 

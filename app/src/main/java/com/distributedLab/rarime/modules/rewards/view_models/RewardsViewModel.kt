@@ -40,7 +40,7 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
                     shortDescription = "Lorem ipsum dolor sit amet!",
                     frequency = "",
                     startsAt = "",
-                    expiresAt = "",
+                    expiresAt = null,
                     actionUrl = "",
                     logo = "https://images.unsplash.com/photo-1717263608216-51a63715d209?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                     flag = "",
@@ -467,12 +467,6 @@ class RewardsViewModel @Inject constructor(
 
         _limitedTimeEvents.value = pointsManager.getTimeLimitedEvents().data
         _activeTasksEvents.value = pointsManager.getActiveEvents().data
-
-        Log.i("_limitedTimeEvents.value", _limitedTimeEvents.value.toString())
-        Log.i("_activeTasksEvents.value", _activeTasksEvents.value.toString())
-
-//        _limitedTimeEvents.value = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
-//        _activeTasksEvents.value = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
 
         _pointsWalletAsset.value = getPointsWalletAsset()
         _leaderBoardList.value = MOCKED_LEADER_BOARD_LIST.mapIndexed { idx, it ->

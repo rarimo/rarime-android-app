@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,7 +42,7 @@ fun ActiveTaskItem(
                 navigate(
                     Screen.Main.Rewards.RewardsEventsItem.route.replace(
                         "{item_id}",
-                        "1", // pointsEvent.id
+                        pointEvent.id,
                     )
                 )
             }
@@ -66,7 +67,7 @@ fun ActiveTaskItem(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column (
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).absolutePadding(right = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(

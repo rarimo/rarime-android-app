@@ -61,7 +61,10 @@ interface PointsAPI {
     ): PointsEventsListBody
 
     @GET("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/events/{id}")
-    suspend fun getEvent(@Path("id") id: String): PointsEventBody
+    suspend fun getEvent(
+        @Path("id") id: String,
+        @Header("Authorization") authorization: String,
+    ): PointsEventBody
 
     @PATCH("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/events/{id}")
     suspend fun claimPointsByEvent(@Path("id") id: String, @Body payload: ClaimEventBody): PointsEventBody
