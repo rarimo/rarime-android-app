@@ -1,41 +1,77 @@
 package com.distributedLab.rarime.api.points.models
 
 import com.distributedLab.rarime.util.data.Proof
+import com.distributedLab.rarime.util.data.ZkProof
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
+enum class ReferralCodeStatuses(val value: String) {
+    ACTIVE("active"),
+    BANNED("banned"),
+    LIMITED("limited"),
+    AWAITING("awaiting"),
+    REWARDED("rewarded"),
+    CONSUMED("consumed"),
+}
+
 @JsonClass(generateAdapter = true)
-data class PointsBalance(
+data class PointsBalanceBody(
+    val data: PointsBalanceData
+)
+
+@JsonClass(generateAdapter = true)
+data class PointsBalanceData(
     @Json(name = "id") val id: String,
     @Json(name = "type") val type: String,
 
+    val attributes: PointsBalanceDataAttributes,
+)
+
+@JsonClass(generateAdapter = true)
+data class PointsBalanceDataAttributes(
     val amount: Long,
-    @Json(name = "is_disabled")
-    val isDisabled: Boolean,
-    @Json(name = "created_at")
-    val createdAt: Long,
-    @Json(name = "updated_at")
-    val updatedAt: Long,
-    val rank: Long,
-    @Json(name = "active_referral_codes")
-    val activeReferralCodes: List<String>,
-    @Json(name = "consumed_referral_codes")
-    val consumedReferralCodes: List<String>,
+//    @Json(name = "is_disabled")
+    val is_disabled: Boolean,
+//    @Json(name = "is_verified")
+    val is_verified: Boolean = false,
+//    @Json(name = "created_at")
+    val created_at: Long,
+//    @Json(name = "updated_at")
+    val updated_at: Long,
+    val rank: Long?,
+    @Json(name = "referral_codes")
+    val referral_codes: List<ReferralCode>?,
     val level: Long,
 )
 
 @JsonClass(generateAdapter = true)
-data class PointsWithdrawal(
-    @Json(name = "id") val id: String,
-    @Json(name = "type") val type: String,
+data class ReferralCode(
+    val id: String,
+    val status: String
+)
 
+@JsonClass(generateAdapter = true)
+data class PointsWithdrawalBody(
+    val data: PointsWithdrawalData
+)
+
+@JsonClass(generateAdapter = true)
+data class PointsWithdrawalData(
+    val id: String,
+    val type: String,
+
+    val attributes: PointsWithdrawalDataAttributes
+)
+
+@JsonClass(generateAdapter = true)
+data class PointsWithdrawalDataAttributes(
     val amount: Long,
     val address: String,
 
     @Json(name = "created_at")
     val createdAt: Long,
 
-    val balance: PointsBalance?,
+    val balance: PointsBalanceData?,
 )
 
 @JsonClass(generateAdapter = true)
@@ -48,11 +84,11 @@ data class PointsPrice(
 
 @JsonClass(generateAdapter = true)
 data class CreateBalanceBody(
-    @Json(name = "data") val data: CreateBalancePayload
+    @Json(name = "data") val data: CreateBalanceData
 )
 
 @JsonClass(generateAdapter = true)
-data class CreateBalancePayload(
+data class CreateBalanceData(
     @Json(name = "id") val id: String,
     @Json(name = "type") val type: String,
 
@@ -66,20 +102,20 @@ data class CreateBalanceAttributes(
 
 @JsonClass(generateAdapter = true)
 data class VerifyPassportBody(
-    @Json(name = "data") val data: VerifyPassportPayload
+    @Json(name = "data") val data: VerifyPassportData
 )
 
 @JsonClass(generateAdapter = true)
-data class VerifyPassportPayload(
+data class VerifyPassportData(
     @Json(name = "id") val id: String,
-    @Json(name = "type") val type: String,
+    @Json(name = "type") val type: String = "verify_passport",
 
     val attributes: VerifyPassportAttributes
 )
 
 @JsonClass(generateAdapter = true)
 data class VerifyPassportAttributes(
-    val proof: Proof
+    val proof: ZkProof
 )
 
 @JsonClass(generateAdapter = true)

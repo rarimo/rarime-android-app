@@ -3,7 +3,7 @@ package com.distributedLab.rarime.modules.rewards.view_models
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.data.tokens.PointsToken
 import com.distributedLab.rarime.data.tokens.RarimoToken
-import com.distributedLab.rarime.api.points.PointsAPIManager
+import com.distributedLab.rarime.api.points.PointsManager
 import com.distributedLab.rarime.manager.WalletAsset
 import com.distributedLab.rarime.manager.WalletManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RewardsClaimViewModel @Inject constructor(
     private val walletManager: WalletManager,
-    private val pointsAPIManager: PointsAPIManager,
+    private val pointsManager: PointsManager,
 ) : ViewModel() {
     val walletAssets = walletManager.walletAssets
 
@@ -44,8 +44,8 @@ class RewardsClaimViewModel @Inject constructor(
         _rarimoWalletAsset.value = getRarimoWalletAsset()
     }
 
-    suspend fun withdrawPoints(amount: Double) {
-        pointsAPIManager.withdrawPoints(amount)
+    suspend fun withdrawPoints(amount: String) {
+        pointsManager.withdrawPoints(amount)
     }
 
     suspend fun reloadWalletAssets() {

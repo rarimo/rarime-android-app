@@ -20,7 +20,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -64,17 +68,23 @@ fun Invitation(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
+    var isSubmitting by remember { mutableStateOf(false) }
+
     fun verifyCode() {
         scope.launch {
+            isSubmitting = true
+
             try {
                 invitationViewModel.createBalance(invitationCodeState.text)
                 onNext()
             } catch (e: Exception) {
-                Log.e("verifyCode", e.message ?: "no message")
+                Log.e("verifyCode", e.toString())
                 invitationCodeState.updateErrorMessage(
                     context.getString(R.string.invalid_referal_code)
                 )
             }
+
+            isSubmitting = false
         }
     }
 
@@ -95,6 +105,7 @@ fun Invitation(
             AppTextField(
                 state = invitationCodeState,
                 placeholder = "Enter invitation code",
+                enabled = !isSubmitting,
                 trailingItem = {
                     Row(
                         modifier = Modifier.padding(8.dp)
@@ -105,7 +116,7 @@ fun Invitation(
                                 .height(32.dp),
                             icon = R.drawable.ic_arrow_right,
                             onClick = { verifyCode() },
-                            enabled = invitationCodeState.text.isNotEmpty(),
+                            enabled = invitationCodeState.text.isNotEmpty() && !isSubmitting,
                             colors = ButtonColors(
                                 containerColor = RarimeTheme.colors.primaryMain,
                                 contentColor = RarimeTheme.colors.textPrimary,

@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.modules.home.components.passport
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -28,10 +30,12 @@ import com.distributedLab.rarime.ui.components.ActionCard
 import com.distributedLab.rarime.ui.components.ActionCardVariants
 import com.distributedLab.rarime.ui.components.AppBottomSheet
 import com.distributedLab.rarime.ui.components.AppIcon
+import com.distributedLab.rarime.ui.components.enter_program.EnterProgramFlow
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Constants
 import com.distributedLab.rarime.util.Screen
+import com.google.gson.Gson
 
 @Composable
 fun HomeScreenPassportMain(
@@ -59,11 +63,16 @@ fun HomeScreenPassportMainContent(
     val isIncognito by homeViewModel.isIncognito
     val passportStatus by homeViewModel.passportStatus.collectAsState()
 
-    val isReserved by homeViewModel.isReserved.collectAsState()
-    val isSpecificClaimed by homeViewModel.isSpecificClaimed.collectAsState()
+    val pointsBalance by homeViewModel.pointsBalance.collectAsState()
+    val isAirDropClaimed by homeViewModel.isAirDropClaimed.collectAsState()
+
+    LaunchedEffect(pointsBalance) {
+        Log.i("PointsBalance", Gson().toJson(pointsBalance))
+    }
 
     val rarimoInfoSheetState = rememberAppSheetState()
     val specificAppSheetState = rememberAppSheetState()
+    val verifyPassportSheetState = rememberAppSheetState()
 
     Column(
         modifier = Modifier.padding(12.dp)
@@ -77,15 +86,21 @@ fun HomeScreenPassportMainContent(
         Column(
             modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            PassportCard(passport = passport.value!!,
+            PassportCard(
+                passport = passport.value!!,
                 isIncognito = isIncognito,
                 look = passportCardLook,
                 identifiers = passportIdentifiers,
                 onLookChange = { homeViewModel.onPassportCardLookChange(it) },
                 onIncognitoChange = { homeViewModel.onIncognitoChange(it) },
                 passportStatus = passportStatus,
-                onIdentifiersChange = { homeViewModel.onPassportIdentifiersChange(it) })
-            if (!isReserved && passportStatus == PassportStatus.ALLOWED) {
+                onIdentifiersChange = { homeViewModel.onPassportIdentifiersChange(it) }
+            )
+
+            val isVerified = pointsBalance?.data?.attributes?.is_verified ?: false
+            val isBalanceCreated = pointsBalance?.data?.attributes?.created_at != null
+
+            if (!isVerified && passportStatus == PassportStatus.ALLOWED) {
                 ActionCard(title = stringResource(R.string.reserve_tokens),
                     description = stringResource(
                         R.string.you_re_entitled_of_x_rmo, Constants.AIRDROP_REWARD
@@ -97,10 +112,16 @@ fun HomeScreenPassportMainContent(
                             contentDescription = "decor",
                         )
                     },
-                    onClick = { navigate(Screen.Claim.Reserve.route) })
+                    onClick = {
+                        if (isBalanceCreated) {
+                            navigate(Screen.Claim.Reserve.route)
+                        } else {
+                            verifyPassportSheetState.show()
+                        }
+                    })
             }
 
-            if (!isSpecificClaimed && passportStatus == PassportStatus.ALLOWED) {
+            if (!isAirDropClaimed && passportStatus == PassportStatus.ALLOWED) {
                 ActionCard(title = stringResource(id = R.string.specific_citizens),
                     description = stringResource(R.string.programmable_rewards),
                     leadingContent = {
@@ -114,9 +135,8 @@ fun HomeScreenPassportMainContent(
                     onClick = { specificAppSheetState.show() })
             }
 
-
-
-            ActionCard(title = stringResource(id = R.string.app_name),
+            ActionCard(
+                title = stringResource(id = R.string.app_name),
                 description = stringResource(R.string.learn_more_about_the_app),
                 leadingContent = {
                     AppIcon(id = R.drawable.ic_info, size = 24.dp)
@@ -124,14 +144,24 @@ fun HomeScreenPassportMainContent(
                 variant = ActionCardVariants.Outlined,
                 onClick = {
                     rarimoInfoSheetState.show()
-                })
-
-
+                }
+            )
         }
-
 
         AppBottomSheet(state = rarimoInfoSheetState, fullScreen = true) { hide ->
             RarimeInfoScreen(onClose = { hide {} })
+        }
+
+        AppBottomSheet(
+            state = verifyPassportSheetState,
+            fullScreen = true,
+            isHeaderEnabled = false
+        ) { hide ->
+            EnterProgramFlow(
+                navigate = { navigate(Screen.Claim.Reserve.route) },
+                sheetState = verifyPassportSheetState,
+                hide = hide
+            )
         }
 
         AppBottomSheet(state = specificAppSheetState, fullScreen = true) { hide ->

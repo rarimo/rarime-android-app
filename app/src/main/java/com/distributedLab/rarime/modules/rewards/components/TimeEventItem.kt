@@ -21,18 +21,20 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.api.points.models.PointsEvent
+import com.distributedLab.rarime.api.points.models.PointsEventData
 import com.distributedLab.rarime.modules.rewards.view_models.CONST_MOCKED_EVENTS_LIST
 import com.distributedLab.rarime.ui.components.AppSkeleton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
+import com.distributedLab.rarime.util.DateUtil
 import com.distributedLab.rarime.util.Screen
 
 @Composable
 fun TimeEventItem(
     modifier: Modifier = Modifier,
     navigate: (String) -> Unit,
-    pointsEvent: PointsEvent
+    pointsEventData: PointsEventData
 ) {
     Row(
         modifier = modifier
@@ -40,7 +42,7 @@ fun TimeEventItem(
                 navigate(
                     Screen.Main.Rewards.RewardsEventsItem.route.replace(
                         "{item_id}",
-                        "1", // pointsEvent.id
+                        pointsEventData.id,
                     )
                 )
             },
@@ -48,9 +50,11 @@ fun TimeEventItem(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
-            // painter = rememberAsyncImagePainter(pointsEvent.meta.static.logo),
-            painter = painterResource(id = R.drawable.event_stub),
-            contentDescription = pointsEvent.meta.static.title,
+            painter = pointsEventData.attributes.meta.static.logo?.let {
+                rememberAsyncImagePainter(it)
+                // TODO: change event_stub
+            } ?: painterResource(id = R.drawable.event_stub),
+            contentDescription = pointsEventData.attributes.meta.static.title,
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .width(64.dp)
@@ -58,26 +62,28 @@ fun TimeEventItem(
                 .clip(RoundedCornerShape(8.dp)),
         )
 
-        Column (
+        Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(
-                text = pointsEvent.meta.static.title,
+                text = pointsEventData.attributes.meta.static.title,
                 style = RarimeTheme.typography.subtitle4,
                 color = RarimeTheme.colors.textPrimary,
             )
 
-            Row (
+            Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                RewardAmountPreview(amount = pointsEvent.meta.static.reward)
+                RewardAmountPreview(amount = pointsEventData.attributes.meta.static.reward)
 
-                Text(
-                    text = "2 days left", // TODO: add date diff
-                    style = RarimeTheme.typography.caption2,
-                    color = RarimeTheme.colors.textSecondary,
-                )
+                pointsEventData.attributes.meta.static.expiresAt?.let {
+                    Text(
+                        text = DateUtil.stringToTimeLeft(it),
+                        style = RarimeTheme.typography.caption2,
+                        color = RarimeTheme.colors.textSecondary,
+                    )
+                }
             }
         }
     }
@@ -96,7 +102,7 @@ fun TimeEventItemSkeleton() {
             cornerRadius = 16f
         )
 
-        Column (
+        Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             AppSkeleton(
@@ -105,7 +111,7 @@ fun TimeEventItemSkeleton() {
                     .height(14.dp)
             )
 
-            Row (
+            Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -127,8 +133,8 @@ fun TimeEventItemSkeleton() {
 
 @Preview
 @Composable
-private fun TimeEventsListPreview () {
-    Column (
+private fun TimeEventsListPreview() {
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary)
@@ -138,7 +144,7 @@ private fun TimeEventsListPreview () {
         TimeEventItem(
             modifier = Modifier.fillMaxWidth(),
             navigate = {},
-            pointsEvent = CONST_MOCKED_EVENTS_LIST[0]
+            pointsEventData = CONST_MOCKED_EVENTS_LIST[0]
         )
 
         TimeEventItemSkeleton()

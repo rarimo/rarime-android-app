@@ -1,56 +1,56 @@
 package com.distributedLab.rarime.api.auth
 
-import com.distributedLab.rarime.api.auth.models.AuthChallenge
+import coil.network.HttpException
+import com.distributedLab.rarime.api.auth.models.AuthChallengeBody
+import com.distributedLab.rarime.api.auth.models.AuthChallengeData
 import com.distributedLab.rarime.api.auth.models.RequestAuthorizeBody
-import com.distributedLab.rarime.api.auth.models.RequestAuthorizePayload
-import com.distributedLab.rarime.api.auth.models.RequestAuthorizeResponse
+import com.distributedLab.rarime.api.auth.models.RequestAuthorizeResponseBody
 import com.distributedLab.rarime.api.auth.models.ValidateResponse
+import com.distributedLab.rarime.api.auth.models.ValidateResponseBody
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class AuthAPIManager @Inject constructor(
     private val authAPI: AuthAPI
 ) {
-    suspend fun authorize(payload: RequestAuthorizePayload): RequestAuthorizeResponse? {
-        val response = authAPI.authorize(
-            RequestAuthorizeBody(
-                data = payload
-            )
-        )
-
-        if (response.isSuccessful) {
-            return response.body()
+    suspend fun authorize(body: RequestAuthorizeBody): RequestAuthorizeResponseBody {
+        return withContext(Dispatchers.IO) {
+            try {
+                authAPI.authorize(body)
+            } catch (e: Exception) {
+                throw Exception(e.toString())
+            }
         }
-
-        return null
     }
 
-    suspend fun getChallenge(nullifier: String): AuthChallenge? {
-        val response = authAPI.getChallenge(nullifier)
-
-        if (response.isSuccessful) {
-            return response.body()
+    suspend fun getChallenge(nullifier: String): AuthChallengeBody {
+        return withContext(Dispatchers.IO) {
+            try {
+                authAPI.getChallenge(nullifier)
+            } catch (e: HttpException) {
+                throw Exception(e.toString())
+            }
         }
-
-        return null
     }
 
-    suspend fun refresh(authorize: String): RequestAuthorizePayload? {
-        val response = authAPI.refresh(authorize)
-
-        if (response.isSuccessful) {
-            return response.body()
+    suspend fun refresh(authorization: String): RequestAuthorizeResponseBody {
+        return withContext(Dispatchers.IO) {
+            try {
+                authAPI.refresh(authorization)
+            } catch (e: Exception) {
+                throw Exception(e.toString())
+            }
         }
-
-        return null
     }
 
-    suspend fun validate(authorize: String): ValidateResponse? {
-        val response = authAPI.validate(authorize)
-
-        if (response.isSuccessful) {
-            return response.body()
+    suspend fun validate(authorization: String): ValidateResponseBody {
+        return withContext(Dispatchers.IO) {
+            try {
+                authAPI.validate(authorization)
+            } catch (e: Exception) {
+                throw Exception(e.toString())
+            }
         }
-
-        return null
     }
 }

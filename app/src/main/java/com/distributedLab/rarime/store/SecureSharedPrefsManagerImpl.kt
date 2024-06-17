@@ -44,8 +44,8 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "REGISTRATION_PROOF" to "REGISTRATION_PROOF",
         "TX" to "TX",
         "PASSPORT_STATUS" to "PASSPORT_STATUS",
-        "IS_SPECIFIC_CLAIMED" to "IS_SPECIFIC_CLAIMED",
-        "IS_RARIMO_RESERVED" to "IS_RARIMO_RESERVED"
+        "ACCESS_TOKEN" to "ACCESS_TOKEN",
+        "REFRESH_TOKEN" to "REFRESH_TOKEN"
     )
 
     private val PREFS_FILE_NAME = "sharedPrefFile1"
@@ -330,7 +330,6 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         saveTransactions(allTransactions)
     }
 
-
     private fun saveTransactions(transactions: List<Transaction>) {
         val editor = getEditor()
         val jsonTx = Gson().toJson(transactions)
@@ -338,27 +337,23 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         editor.apply()
     }
 
-
-    override fun saveIsReserved() {
+    override fun saveAccessToken(accessToken: String) {
         val editor = getEditor()
-        editor.putBoolean(accessTokens["IS_RARIMO_RESERVED"], true)
+        editor.putString(accessTokens["ACCESS_TOKEN"], accessToken)
         editor.apply()
     }
 
-    override fun saveIsSpecificClaimed() {
+    override fun readAccessToken(): String? {
+        return getSharedPreferences().getString(accessTokens["ACCESS_TOKEN"], null)
+    }
+
+    override fun saveRefreshToken(refreshToken: String) {
         val editor = getEditor()
-        editor.putBoolean(accessTokens["IS_SPECIFIC_CLAIMED"], true)
+        editor.putString(accessTokens["REFRESH_TOKEN"], refreshToken)
         editor.apply()
     }
 
-    override fun readIsReserved(): Boolean {
-        val sharedPrefs = getSharedPreferences()
-        return sharedPrefs.getBoolean(accessTokens["IS_RARIMO_RESERVED"], false)
+    override fun readRefreshToken(): String? {
+        return getSharedPreferences().getString(accessTokens["REFRESH_TOKEN"], null)
     }
-
-    override fun readIsSpecificClaimed(): Boolean {
-        val sharedPrefs = getSharedPreferences()
-        return sharedPrefs.getBoolean(accessTokens["IS_SPECIFIC_CLAIMED"], false)
-    }
-
 }

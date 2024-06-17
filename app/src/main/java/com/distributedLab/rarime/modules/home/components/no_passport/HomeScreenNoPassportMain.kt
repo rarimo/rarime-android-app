@@ -111,7 +111,7 @@ fun HomeScreenNoPassportMainContent(
                 isHeaderEnabled = false,
             ) { hide ->
                 EnterProgramFlow(
-                    navigate = navigate,
+                    navigate = { navigate(Screen.ScanPassport.ScanPassportPoints.route) },
                     sheetState = nonSpecificAppSheetState,
                     hide = hide
                 )

@@ -1,58 +1,87 @@
 package com.distributedLab.rarime.api.auth.models
 
+import com.distributedLab.rarime.util.data.Proof
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class RequestAuthorizeBody(
-    val data: RequestAuthorizePayload,
+    val data: RequestAuthorizeData,
 )
 
 @JsonClass(generateAdapter = true)
-data class RequestAuthorizePayload(
+data class RequestAuthorizeData(
+    val id: String,
+    val type: String = "authorize",
+
+    val attributes: RequestAuthorizeDataAttributes,
+)
+
+@JsonClass(generateAdapter = true)
+data class RequestAuthorizeDataAttributes(
+    val proof: Proof,
+)
+
+@JsonClass(generateAdapter = true)
+data class RequestAuthorizeResponseBody(
+    val data: RequestAuthorizeResponseData,
+)
+
+@JsonClass(generateAdapter = true)
+data class RequestAuthorizeResponseData(
     val id: String,
     val type: String,
 
-    val attributes: RequestAuthorizePayloadAttributes,
+    val attributes: RequestAuthorizeResponseDataAttributes
 )
 
-@JsonClass(generateAdapter = true)
-data class RequestAuthorizePayloadAttributes(
-    val proof: Map<String, Any>,
-)
-
-@JsonClass(generateAdapter = true)
-data class RequestAuthorizeResponse(
-    val id: String,
-    val type: String,
-
-    val accessToken: AuthToken,
-    val refreshToken: AuthToken,
+data class RequestAuthorizeResponseDataAttributes(
+    val access_token: AuthToken,
+    val refresh_token: AuthToken,
 )
 
 @JsonClass(generateAdapter = true)
 data class AuthToken(
     val token: String,
-    val tokenType: String,
+    val token_type: String,
 )
 
 @JsonClass(generateAdapter = true)
-data class AuthChallenge(
-    val id: String,
-    val type: String,
+data class AuthChallengeBody(
+    val data: AuthChallengeData,
+)
 
+@JsonClass(generateAdapter = true)
+data class AuthChallengeData(
+    val id: String,
+    val type: String = "challenge",
+
+    val attributes: AuthChallengeDataAttributes,
+)
+
+@JsonClass(generateAdapter = true)
+data class AuthChallengeDataAttributes(
     val challenge: String,
+)
+
+@JsonClass(generateAdapter = true)
+data class ValidateResponseBody(
+    val data: ValidateResponse
 )
 
 @JsonClass(generateAdapter = true)
 data class ValidateResponse(
     val id: String,
-    val type: String,
+    val type: String = "validation",
 
+    val attributes: ValidateResponseAttributes,
+)
+
+@JsonClass(generateAdapter = true)
+data class ValidateResponseAttributes(
     val claims: List<Claim>,
 )
-@JsonClass(generateAdapter = true)
 
+@JsonClass(generateAdapter = true)
 data class Claim(
-    val address: String,
     val nullifier: String,
 )
