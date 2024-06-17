@@ -43,6 +43,6 @@ class PointsToken @Inject constructor(
     }
 
     fun getIsBalanceCreated(): Boolean {
-        return balanceDetails?.let { true } ?: false
+        return balanceDetails != null
     }
 }
