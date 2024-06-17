@@ -5,6 +5,7 @@ import com.distributedLab.rarime.api.points.models.CreateBalanceBody
 import com.distributedLab.rarime.api.points.models.PointsBalanceBody
 import com.distributedLab.rarime.api.points.models.PointsEventBody
 import com.distributedLab.rarime.api.points.models.PointsEventsListBody
+import com.distributedLab.rarime.api.points.models.PointsEventsTypesBody
 import com.distributedLab.rarime.api.points.models.PointsPrice
 import com.distributedLab.rarime.api.points.models.PointsWithdrawalBody
 import com.distributedLab.rarime.api.points.models.VerifyPassportBody
@@ -21,7 +22,10 @@ interface PointsAPI {
     /* BALANCE */
 
     @POST("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances")
-    suspend fun createPointsBalance(@Body payload: CreateBalanceBody): PointsBalanceBody
+    suspend fun createPointsBalance(
+        @Body payload: CreateBalanceBody,
+        @Header("Authorization") authorization: String
+    ): PointsBalanceBody
 
     @GET("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances")
     suspend fun getLeaderboard(): List<PointsBalanceBody>
@@ -53,6 +57,9 @@ interface PointsAPI {
 //    suspend fun isWithdrawalAllowed(): Boolean
 
     /* EVENTS */
+
+    @GET("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/event_types")
+    suspend fun getEventTypes(@QueryMap params: Map<String, String>): PointsEventsTypesBody
 
     @GET("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/events")
     suspend fun getEventsList(

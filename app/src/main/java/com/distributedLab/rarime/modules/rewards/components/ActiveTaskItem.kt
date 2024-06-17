@@ -71,7 +71,7 @@ fun ActiveTaskItem(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(
-                    text = pointEvent.attributes.meta.static.title,
+                    text = "${pointEvent.attributes.meta.static.title}/${pointEvent.attributes.status.toString()}",
                     style = RarimeTheme.typography.subtitle4,
                     color = RarimeTheme.colors.textPrimary,
                 )

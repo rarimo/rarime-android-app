@@ -1,16 +1,15 @@
 package com.distributedLab.rarime.api.points
 
-import android.util.Log
 import com.distributedLab.rarime.api.points.models.ClaimEventBody
 import com.distributedLab.rarime.api.points.models.CreateBalanceBody
 import com.distributedLab.rarime.api.points.models.PointsBalanceBody
 import com.distributedLab.rarime.api.points.models.PointsEventBody
 import com.distributedLab.rarime.api.points.models.PointsEventsListBody
+import com.distributedLab.rarime.api.points.models.PointsEventsTypesBody
 import com.distributedLab.rarime.api.points.models.PointsPrice
 import com.distributedLab.rarime.api.points.models.PointsWithdrawalBody
 import com.distributedLab.rarime.api.points.models.VerifyPassportBody
 import com.distributedLab.rarime.api.points.models.WithdrawBody
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
@@ -18,10 +17,10 @@ import javax.inject.Inject
 
 class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: PointsAPI) {
     /* BALANCE */
-    suspend fun createPointsBalance(body: CreateBalanceBody): PointsBalanceBody {
+    suspend fun createPointsBalance(body: CreateBalanceBody, authorization: String): PointsBalanceBody {
         return withContext(Dispatchers.IO) {
             try {
-                jsonApiPointsSvcManager.createPointsBalance(body)
+                jsonApiPointsSvcManager.createPointsBalance(body, authorization)
             } catch (e: HttpException) {
                 throw Exception(e.toString())
             }
@@ -99,10 +98,20 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
 
     /* EVENTS */
 
+    suspend fun getEventTypes(
+        params: Map<String, String>
+    ): PointsEventsTypesBody {
+        try {
+            return jsonApiPointsSvcManager.getEventTypes(params)
+        } catch (e: HttpException) {
+            throw Exception(e.toString())
+        }
+    }
+
     suspend fun getEventsList(
         authorization: String,
         params: Map<String, String>
-    ): PointsEventsListBody? {
+    ): PointsEventsListBody {
         try {
             return jsonApiPointsSvcManager.getEventsList(
                 authorization,

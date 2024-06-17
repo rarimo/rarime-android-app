@@ -5,7 +5,11 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.Date
 import java.util.Locale
 
@@ -26,13 +30,28 @@ object DateUtil {
         return date
     }
 
-    fun stringToLocalDateTime(dateStr: String?, dateFormat: DateTimeFormatter): LocalDateTime? {
-        return try {
-            LocalDateTime.parse(dateStr, dateFormat)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
+    fun parseDateString(dateStr: String): LocalDateTime? {
+        val formatters = listOf(
+            DateTimeFormatter.ISO_OFFSET_DATE_TIME,  // e.g., "2024-08-01T00:00:00Z"
+            DateTimeFormatter.ISO_ZONED_DATE_TIME,   // e.g., "2024-08-01T00:00:00+01:00[Europe/London]"
+            DateTimeFormatter.ISO_LOCAL_DATE_TIME,   // e.g., "2024-08-01T00:00:00"
+            DateTimeFormatter.ISO_INSTANT            // e.g., "2024-08-01T00:00:00.000Z"
+        )
+
+        for (formatter in formatters) {
+            try {
+                return when (formatter) {
+                    DateTimeFormatter.ISO_OFFSET_DATE_TIME -> OffsetDateTime.parse(dateStr, formatter).toLocalDateTime()
+                    DateTimeFormatter.ISO_ZONED_DATE_TIME -> ZonedDateTime.parse(dateStr, formatter).toLocalDateTime()
+                    DateTimeFormatter.ISO_LOCAL_DATE_TIME -> LocalDateTime.parse(dateStr, formatter)
+                    DateTimeFormatter.ISO_INSTANT -> LocalDateTime.ofInstant(OffsetDateTime.parse(dateStr, formatter).toInstant(), ZoneOffset.UTC)
+                    else -> null
+                }
+            } catch (e: DateTimeParseException) {
+                // Continue to the next formatter
+            }
         }
+        return null
     }
 
     fun getTimeLeft(targetDate: LocalDateTime): String {
@@ -49,9 +68,7 @@ object DateUtil {
     }
 
     fun stringToTimeLeft(dateStr: String): String {
-        val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-
-        val targetDate = stringToLocalDateTime(dateStr, dateFormat)
+        val targetDate = parseDateString(dateStr)
 
         if (targetDate != null) {
             return getTimeLeft(targetDate)

@@ -20,6 +20,8 @@ object BaseConfig {
     const val POINTS_SVC_ID = "0x77fabbc6cb41a11d4fb6918696b3550d5d602f252436dd587f9065b7c4e62b"
     const val AIRDROP_SVC_ID = "0xac42d1a986804618c7a793fbe814d9b31e47be51e082806363dca6958f3062"
 
+    const val INVITATION_BASE_URL = "https://app.rarime.com/r"
+
     val RARIMO_CHAINS: Map<String, ChainInfo> = mapOf(
         RarimoChains.MainnetBeta.chainId to ChainInfo(
             chainId = "rarimo_42-1",

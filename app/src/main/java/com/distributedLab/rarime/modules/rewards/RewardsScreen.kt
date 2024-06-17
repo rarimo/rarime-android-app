@@ -166,7 +166,7 @@ fun RewardsScreenContent(
             Spacer(modifier = Modifier.height(22.dp))
 
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 RewardsScreenUserStatistic(
@@ -189,6 +189,8 @@ fun RewardsScreenContent(
                         navigate = navigate, activeTasksEvents = activeTasksEvents.value
                     )
                 }
+
+                Spacer(modifier = Modifier.height(100.dp))
             }
         }
     }

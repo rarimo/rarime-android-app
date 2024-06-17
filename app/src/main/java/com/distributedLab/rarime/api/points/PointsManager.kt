@@ -6,6 +6,7 @@ import coil.network.HttpException
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.api.auth.AuthManager
+import com.distributedLab.rarime.api.points.models.BaseEvents
 import com.distributedLab.rarime.api.points.models.CreateBalanceAttributes
 import com.distributedLab.rarime.api.points.models.CreateBalanceBody
 import com.distributedLab.rarime.api.points.models.CreateBalanceData
@@ -13,6 +14,7 @@ import com.distributedLab.rarime.api.points.models.PointsBalanceBody
 import com.distributedLab.rarime.api.points.models.PointsEventBody
 import com.distributedLab.rarime.api.points.models.PointsEventStatuses
 import com.distributedLab.rarime.api.points.models.PointsEventsListBody
+import com.distributedLab.rarime.api.points.models.PointsEventsTypesBody
 import com.distributedLab.rarime.api.points.models.VerifyPassportAttributes
 import com.distributedLab.rarime.api.points.models.VerifyPassportBody
 import com.distributedLab.rarime.api.points.models.VerifyPassportData
@@ -67,7 +69,8 @@ class PointsManager @Inject constructor(
                         referredBy = referralCode
                     )
                 )
-            )
+            ),
+            "Bearer ${authManager.accessToken.value!!}"
         )
     }
 
@@ -78,6 +81,7 @@ class PointsManager @Inject constructor(
             throw Exception("user nullifier is null")
         }
 
+        // FIXME: app crash on first-first login
         val response = pointsAPIManager.getPointsBalance(
             userNullifierHex,
             "Bearer ${authManager.accessToken.value!!}"
@@ -210,6 +214,18 @@ class PointsManager @Inject constructor(
         )
     }
 
+    suspend fun getEventTypes(): PointsEventsTypesBody {
+        return withContext(Dispatchers.IO) {
+            try {
+                pointsAPIManager.getEventTypes(
+                    mapOf()
+                )
+            } catch (e: HttpException) {
+                PointsEventsTypesBody(data = emptyList())
+            }
+        }
+    }
+
     suspend fun getEvents(
         filterParams: Map<String, String> = mapOf()
     ): PointsEventsListBody {
@@ -244,15 +260,26 @@ class PointsManager @Inject constructor(
         return getEvents(
             mapOf(
                 "filter[status]" to PointsEventStatuses.OPEN.value,
-                "filter[has_expiration]" to true.toString(),
+                "filter[has_expiration]" to "true",
             )
         )
     }
 
     suspend fun getActiveEvents(): PointsEventsListBody {
+        val names = listOf(
+            BaseEvents.REFERRAL_COMMON.value,
+            BaseEvents.PASSPORT_SCAN.value,
+        )
+
+        val statuses = listOf(
+            PointsEventStatuses.OPEN.value,
+            PointsEventStatuses.FULFILLED.value,
+        )
+
         return getEvents(
-            mapOf(
-                "filter[status]" to PointsEventStatuses.FULFILLED.value,
+            filterParams = mapOf(
+                "filter[status]" to statuses.joinToString(","),
+                "filter[meta.static.name]" to names.joinToString(","),
             )
         )
     }
