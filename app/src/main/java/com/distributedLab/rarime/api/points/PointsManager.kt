@@ -2,6 +2,7 @@ package com.distributedLab.rarime.api.points
 
 import android.content.Context
 import android.util.Log
+import coil.network.HttpException
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.api.auth.AuthManager
@@ -9,6 +10,8 @@ import com.distributedLab.rarime.api.points.models.CreateBalanceAttributes
 import com.distributedLab.rarime.api.points.models.CreateBalanceBody
 import com.distributedLab.rarime.api.points.models.CreateBalanceData
 import com.distributedLab.rarime.api.points.models.PointsBalanceBody
+import com.distributedLab.rarime.api.points.models.PointsEventStatuses
+import com.distributedLab.rarime.api.points.models.PointsEventsListBody
 import com.distributedLab.rarime.api.points.models.VerifyPassportAttributes
 import com.distributedLab.rarime.api.points.models.VerifyPassportBody
 import com.distributedLab.rarime.api.points.models.VerifyPassportData
@@ -81,17 +84,7 @@ class PointsManager @Inject constructor(
 
         _pointsBalance.value = response
 
-        Log.i("_pointsBalance.value", _pointsBalance.value.toString())
-
         return response
-    }
-
-    private fun padElementsZeroes(elements: List<String>, length: Int): List<String> {
-        if (elements.size >= length) {
-            return elements
-        }
-
-        return elements + List(length - elements.size) { "0" }
     }
 
     private suspend fun generateVerifyPassportQueryProof(
@@ -141,7 +134,7 @@ class PointsManager @Inject constructor(
             identityInfo.issueTimestamp.toString(),
             passportInfo.identityReissueCounter.toString(),
             BaseConfig.POINTS_SVC_ID,
-            1715698750,
+            1715688000,
         )
 
         val queryProof = withContext(Dispatchers.Default) {
@@ -162,16 +155,6 @@ class PointsManager @Inject constructor(
         if (userNullifierHex.isEmpty()) {
             throw Exception("user nullifier is null")
         }
-
-//        val queryProof = authManager.getAuthQueryProof(userNullifierHex)
-
-//        var pubSignals = padElementsZeroes(queryProof.pub_signals, 22).mapIndexed { idx, it ->
-//            if (idx == 12) {
-//                "23073"
-//            }
-//
-//            it
-//        }
 
         val eDocument = dataStoreManager.readEDocument()!!
         val registrationProof = dataStoreManager.readRegistrationProof()!!
@@ -222,6 +205,53 @@ class PointsManager @Inject constructor(
                         proof = identityManager.registrationProof.value!!.proof
                     )
                 )
+            )
+        )
+    }
+
+    suspend fun getEvents(
+        filterParams: Map<String, String> = mapOf()
+    ): PointsEventsListBody {
+        val userPointsNullifierHex = identityManager.getUserPointsNullifierHex()
+
+        if (userPointsNullifierHex.isEmpty()) {
+            throw Exception("user nullifier is null")
+        }
+
+        val params = filterParams.toMutableMap().apply {
+            put("filter[nullifier]", userPointsNullifierHex)
+        }
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val response =
+                    pointsAPIManager.getEventsList(
+                        authorization = "Bearer ${authManager.accessToken.value!!}",
+                        params = params
+                    )
+
+                Log.i("PointsManager", response.toString())
+
+                response ?: PointsEventsListBody(data = emptyList())
+            } catch (e: HttpException) {
+                PointsEventsListBody(data = emptyList())
+            }
+        }
+    }
+
+    suspend fun getTimeLimitedEvents(): PointsEventsListBody {
+        return getEvents(
+            mapOf(
+                "filter[status]" to PointsEventStatuses.OPEN.value,
+                "filter[has_expiration]" to true.toString(),
+            )
+        )
+    }
+
+    suspend fun getActiveEvents(): PointsEventsListBody {
+        return getEvents(
+            mapOf(
+                "filter[status]" to PointsEventStatuses.FULFILLED.value,
             )
         )
     }

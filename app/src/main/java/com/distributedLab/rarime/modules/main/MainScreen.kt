@@ -136,9 +136,7 @@ fun MainScreenContent() {
         var nextRoute = route
 
         if (route == Screen.Main.Rewards.RewardsMain.route) {
-            pointsBalance?.data?.attributes?.created_at?.let {
-                nextRoute = Screen.Claim.Reserve.route
-            } ?: run {
+            pointsBalance?.data?.attributes?.let {} ?: run {
                 enterProgramSheetState.show()
 
                 return

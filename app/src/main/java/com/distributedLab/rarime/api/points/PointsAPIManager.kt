@@ -5,6 +5,7 @@ import com.distributedLab.rarime.api.points.models.ClaimEventBody
 import com.distributedLab.rarime.api.points.models.CreateBalanceBody
 import com.distributedLab.rarime.api.points.models.PointsBalanceBody
 import com.distributedLab.rarime.api.points.models.PointsEventBody
+import com.distributedLab.rarime.api.points.models.PointsEventsListBody
 import com.distributedLab.rarime.api.points.models.PointsPrice
 import com.distributedLab.rarime.api.points.models.PointsWithdrawalBody
 import com.distributedLab.rarime.api.points.models.VerifyPassportBody
@@ -98,14 +99,20 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
 
     /* EVENTS */
 
-    suspend fun getEventsList(): List<PointsEventBody> {
-        return withContext(Dispatchers.IO) {
-            try {
-                jsonApiPointsSvcManager.getEventsList()
-            } catch (e: HttpException) {
-                throw Exception(e.toString())
-            }
+    suspend fun getEventsList(
+        authorization: String,
+        params: Map<String, String>
+    ): PointsEventsListBody? {
+        try {
+            return jsonApiPointsSvcManager.getEventsList(
+                authorization,
+                params,
+            )
+        } catch (e: HttpException) {
+            throw Exception(e.toString())
         }
+
+        return null
     }
 
     suspend fun getEvent(id: String): PointsEventBody {

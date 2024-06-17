@@ -47,7 +47,7 @@ class AuthManager @Inject constructor(
         get() = _refreshToken.asStateFlow()
 
     private fun getIsAuthorized(): Boolean {
-        return _accessToken.value != null && isAccessTokenExpired() == true
+        return _accessToken.value != null && isAccessTokenExpired() == false
     }
 
     private var _isAuthorized = MutableStateFlow(getIsAuthorized())

@@ -149,7 +149,7 @@ fun RewardsEventItemScreen(
                             modifier = Modifier.fillMaxWidth(),
                             text = "Let's start",
                             onClick = {
-                                uriHandler.openUri(pointsEvent.attributes.meta.static.actionUrl)
+                                pointsEvent.attributes.meta.static.actionUrl?.let { uriHandler.openUri(it) }
                             }
                         )
                     }

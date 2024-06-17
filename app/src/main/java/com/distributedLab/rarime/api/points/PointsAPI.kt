@@ -4,6 +4,7 @@ import com.distributedLab.rarime.api.points.models.ClaimEventBody
 import com.distributedLab.rarime.api.points.models.CreateBalanceBody
 import com.distributedLab.rarime.api.points.models.PointsBalanceBody
 import com.distributedLab.rarime.api.points.models.PointsEventBody
+import com.distributedLab.rarime.api.points.models.PointsEventsListBody
 import com.distributedLab.rarime.api.points.models.PointsPrice
 import com.distributedLab.rarime.api.points.models.PointsWithdrawalBody
 import com.distributedLab.rarime.api.points.models.VerifyPassportBody
@@ -14,6 +15,7 @@ import retrofit2.http.Header
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.QueryMap
 
 interface PointsAPI {
     /* BALANCE */
@@ -53,7 +55,10 @@ interface PointsAPI {
     /* EVENTS */
 
     @GET("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/events")
-    suspend fun getEventsList(): List<PointsEventBody>
+    suspend fun getEventsList(
+        @Header("Authorization") authorization: String,
+        @QueryMap params: Map<String, String>
+    ): PointsEventsListBody
 
     @GET("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/events/{id}")
     suspend fun getEvent(@Path("id") id: String): PointsEventBody

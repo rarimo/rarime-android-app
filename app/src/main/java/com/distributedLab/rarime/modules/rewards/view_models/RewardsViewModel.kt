@@ -1,8 +1,10 @@
 package com.distributedLab.rarime.modules.rewards.view_models
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.api.auth.AuthManager
+import com.distributedLab.rarime.api.points.PointsManager
 import com.distributedLab.rarime.api.points.models.PointsEventAttributes
 import com.distributedLab.rarime.data.tokens.PointsToken
 import com.distributedLab.rarime.api.points.models.PointsEventData
@@ -26,7 +28,7 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
         id = "1",
         type = "balance",
         attributes = PointsEventAttributes(
-            status = PointsEventStatuses.OPEN,
+            status = PointsEventStatuses.OPEN.value,
             createdAt = 0,
             updatedAt = 0,
             meta = PointsEventMeta(
@@ -41,6 +43,7 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
                     expiresAt = "",
                     actionUrl = "",
                     logo = "https://images.unsplash.com/photo-1717263608216-51a63715d209?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    flag = "",
                 ),
                 dynamic = PointsEventMetaDynamic(
                     id = "",
@@ -54,7 +57,7 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
         id = "2",
         type = "balance",
         attributes = PointsEventAttributes(
-            status = PointsEventStatuses.CLAIMED,
+            status = PointsEventStatuses.CLAIMED.value,
             createdAt = 0,
             updatedAt = 0,
             meta = PointsEventMeta(
@@ -69,6 +72,7 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
                     expiresAt = "",
                     actionUrl = "",
                     logo = "https://images.unsplash.com/photo-1717263608216-51a63715d209?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    flag = ""
                 ),
                 dynamic = PointsEventMetaDynamic(
                     id = "",
@@ -82,7 +86,7 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
         id = "3",
         type = "balance",
         attributes = PointsEventAttributes(
-            status = PointsEventStatuses.FULFILLED,
+            status = PointsEventStatuses.FULFILLED.value,
             createdAt = 0,
             updatedAt = 0,
             meta = PointsEventMeta(
@@ -97,6 +101,7 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
                     expiresAt = "",
                     actionUrl = "",
                     logo = "https://images.unsplash.com/photo-1717263608216-51a63715d209?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    flag = ""
                 ),
                 dynamic = PointsEventMetaDynamic(
                     id = "",
@@ -421,6 +426,7 @@ class RewardsViewModel @Inject constructor(
     private val walletManager: WalletManager,
     private val passportManager: PassportManager,
     private val authManager: AuthManager,
+    private val pointsManager: PointsManager,
 ) : ViewModel() {
     val passportStatus = passportManager.passportStatus
 
@@ -459,8 +465,14 @@ class RewardsViewModel @Inject constructor(
     suspend fun init() {
         delay(1000L * 3)
 
-        _limitedTimeEvents.value = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
-        _activeTasksEvents.value = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
+        _limitedTimeEvents.value = pointsManager.getTimeLimitedEvents().data
+        _activeTasksEvents.value = pointsManager.getActiveEvents().data
+
+        Log.i("_limitedTimeEvents.value", _limitedTimeEvents.value.toString())
+        Log.i("_activeTasksEvents.value", _activeTasksEvents.value.toString())
+
+//        _limitedTimeEvents.value = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
+//        _activeTasksEvents.value = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
 
         _pointsWalletAsset.value = getPointsWalletAsset()
         _leaderBoardList.value = MOCKED_LEADER_BOARD_LIST.mapIndexed { idx, it ->

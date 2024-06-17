@@ -9,6 +9,12 @@ enum class PointsEventStatuses(val value: String) {
     CLAIMED("claimed"),
 }
 
+@JsonClass(generateAdapter = true)
+data class PointsEventsListBody(
+    val data: List<PointsEventData>
+)
+
+@JsonClass(generateAdapter = true)
 data class PointsEventBody(
     val data: PointsEventData
 )
@@ -23,14 +29,14 @@ data class PointsEventData(
 
 @JsonClass(generateAdapter = true)
 data class PointsEventAttributes(
-    val status: PointsEventStatuses,
+    val status: String,
 
     @Json(name = "created_at") val createdAt: Long,
     @Json(name = "updated_at") val updatedAt: Long,
 
     val meta: PointsEventMeta,
 
-    @Json(name = "points_amount") val pointsAmount: Long,
+    @Json(name = "points_amount") val pointsAmount: Long?,
 
     // TODO: relationship
     val balance: PointsBalanceData?,
@@ -39,7 +45,7 @@ data class PointsEventAttributes(
 @JsonClass(generateAdapter = true)
 data class PointsEventMeta(
     val static: PointsEventMetaStatic,
-    val dynamic: PointsEventMetaDynamic,
+    val dynamic: PointsEventMetaDynamic?,
 )
 
 @JsonClass(generateAdapter = true)
@@ -50,10 +56,12 @@ data class PointsEventMetaStatic(
     val description: String,
     @Json(name = "short_description") val shortDescription: String,
     val frequency: String,
-    @Json(name = "starts_at") val startsAt: String,
-    @Json(name = "expires_at") val expiresAt: String,
-    @Json(name = "action_url") val actionUrl: String,
-    val logo: String,
+    val flag: String,
+
+    @Json(name = "starts_at") val startsAt: String?,
+    @Json(name = "expires_at") val expiresAt: String?,
+    @Json(name = "action_url") val actionUrl: String?,
+    val logo: String?,
 )
 
 @JsonClass(generateAdapter = true)

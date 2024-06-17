@@ -71,6 +71,7 @@ fun RewardsScreen(
     val isAuthorized = rewardsViewModel.isAuthorized.collectAsState()
 
     CompositionLocalProvider(localRewardsScreenViewModel provides rewardsViewModel) {
+        // TODO: move to global init
         if (isAuthorized.value) {
             RewardsScreenContent(navigate)
         } else {
@@ -131,7 +132,11 @@ fun RewardsScreenContent(
 
     LaunchedEffect(Unit) {
         scope.launch {
-            rewardsViewModel.init()
+            try {
+                rewardsViewModel.init()
+            } catch (e: Exception) {
+                Log.e("RewardsScreenContent", "init: ${e.message}")
+            }
         }
     }
 
