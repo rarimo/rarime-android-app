@@ -19,9 +19,9 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val passportManager: PassportManager,
-    walletManager: WalletManager,
     private val airDropManager: AirDropManager,
-    private val pointsManager: PointsManager
+    private val pointsManager: PointsManager,
+    private val walletManager: WalletManager
 ) : ViewModel() {
     val isAirDropClaimed = airDropManager.isAirDropClaimed
 
@@ -55,6 +55,10 @@ class HomeViewModel @Inject constructor(
 
     fun onIncognitoChange(isIncognito: Boolean) {
         passportManager.updateIsIncognitoMode(isIncognito)
+    }
+
+    suspend fun loadBalances() {
+        walletManager.loadBalances()
     }
 
     fun onPassportIdentifiersChange(passportIdentifiers: List<PassportIdentifier>) {

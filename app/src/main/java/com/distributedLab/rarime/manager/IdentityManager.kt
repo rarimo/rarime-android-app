@@ -37,10 +37,10 @@ class IdentityManager @Inject constructor(
         return profiler.rarimoAddress
     }
 
-    val evmAddress: String by lazy {
-        _privateKey.value?.let {
-            Credentials.create(privateKey.value)?.address
-        } ?: ""
+    fun evmAddress(): String {
+        if (_privateKey.value != null)
+            return Credentials.create(_privateKey.value).address
+        return ""
     }
 
     fun getPassportNullifier(): String {

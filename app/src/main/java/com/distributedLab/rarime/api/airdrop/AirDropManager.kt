@@ -9,7 +9,7 @@ import com.distributedLab.rarime.api.airdrop.models.CreateAirDropAttributes
 import com.distributedLab.rarime.api.airdrop.models.CreateAirDropBody
 import com.distributedLab.rarime.data.ProofTxFull
 import com.distributedLab.rarime.store.SecureSharedPrefsManager
-import com.distributedLab.rarime.manager.ContractManager
+import com.distributedLab.rarime.manager.RarimoContractManager
 import com.distributedLab.rarime.manager.IdentityManager
 import com.distributedLab.rarime.modules.passportScan.models.EDocument
 import com.distributedLab.rarime.modules.wallet.models.Transaction
@@ -35,7 +35,7 @@ import kotlin.time.Duration.Companion.seconds
 class AirDropManager @Inject constructor(
     private val airDropAPIManager: AirDropAPIManager,
     private val context: Context,
-    private val contractManager: ContractManager,
+    private val rarimoContractManager: RarimoContractManager,
     private val identityManager: IdentityManager,
     private val dataStoreManager: SecureSharedPrefsManager,
 ) {
@@ -51,13 +51,13 @@ class AirDropManager @Inject constructor(
         val assetManager = assetContext.assets
 
         val zkp = ZKPUseCase(context, assetManager)
-        val registrationContract = contractManager.getRegistration()
+        val registrationContract = rarimoContractManager.getRegistration()
 
         val registrationSmtAddress = withContext(Dispatchers.IO) {
             registrationContract.registrationSmt().send()
         }
 
-        val registrationSmtContract = contractManager.getPoseidonSMT(registrationSmtAddress)
+        val registrationSmtContract = rarimoContractManager.getPoseidonSMT(registrationSmtAddress)
 
 
         val proofIndex = Identity.calculateProofIndex(

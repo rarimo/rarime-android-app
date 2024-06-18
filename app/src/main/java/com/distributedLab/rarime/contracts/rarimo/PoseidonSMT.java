@@ -1,7 +1,6 @@
-package com.distributedLab.rarime.contracts;
+package com.distributedLab.rarime.contracts.rarimo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.web3j.abi.EventEncoder;
 import org.web3j.abi.TypeReference;
@@ -31,7 +30,6 @@ import org.web3j.tx.gas.ContractGasProvider;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;

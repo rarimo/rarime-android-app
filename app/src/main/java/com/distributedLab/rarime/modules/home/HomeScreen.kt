@@ -2,13 +2,16 @@ package com.distributedLab.rarime.modules.home
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.modules.home.components.no_passport.HomeScreenNoPassportMain
 import com.distributedLab.rarime.modules.home.components.passport.HomeScreenPassportMain
+import kotlinx.coroutines.launch
 
 val LocalHomeViewModel = compositionLocalOf<HomeViewModel> { error("No HomeViewModel provided") }
 

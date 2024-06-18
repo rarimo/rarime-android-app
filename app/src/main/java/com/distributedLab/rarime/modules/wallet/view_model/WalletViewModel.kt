@@ -19,4 +19,8 @@ class WalletViewModel @Inject constructor(
     fun updateSelectedWalletAsset(walletAsset: WalletAsset) {
         walletManager.setSelectedWalletAsset(walletAsset)
     }
+
+    suspend fun updateBalances() {
+        walletManager.loadBalances()
+    }
 }

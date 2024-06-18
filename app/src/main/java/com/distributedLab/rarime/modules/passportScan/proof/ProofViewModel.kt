@@ -7,11 +7,11 @@ import androidx.lifecycle.AndroidViewModel
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.api.registration.RegistrationManager
-import com.distributedLab.rarime.contracts.PoseidonSMT.Proof
+import com.distributedLab.rarime.contracts.rarimo.PoseidonSMT.Proof
 import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.data.ProofTx
 import com.distributedLab.rarime.store.SecureSharedPrefsManager
-import com.distributedLab.rarime.manager.ContractManager
+import com.distributedLab.rarime.manager.RarimoContractManager
 import com.distributedLab.rarime.manager.IdentityManager
 import com.distributedLab.rarime.manager.PassportManager
 import com.distributedLab.rarime.modules.passportScan.models.EDocument
@@ -49,7 +49,7 @@ class ProofViewModel @Inject constructor(
     private val dataStoreManager: SecureSharedPrefsManager,
     private val passportManager: PassportManager,
     private val registrationManager: RegistrationManager,
-    private val contractManager: ContractManager,
+    private val rarimoContractManager: RarimoContractManager,
     identityManager: IdentityManager,
 ) : AndroidViewModel(application) {
     private val privateKeyBytes = identityManager.privateKeyBytes
@@ -76,7 +76,7 @@ class ProofViewModel @Inject constructor(
         val certificate = SecurityUtil.convertToPEM(sodFile.docSigningCertificate)
 
         val certificatesSMTAddress = withContext(Dispatchers.IO) {
-            val registrationContract = contractManager.getRegistration()
+            val registrationContract = rarimoContractManager.getRegistration()
             registrationContract.certificatesSmt().send()
         }
 
@@ -88,7 +88,7 @@ class ProofViewModel @Inject constructor(
             val slaveCertificateIndex =
                 x509Util.getSlaveCertificateIndex(certificate.toByteArray(), icao)
             val indexHex = slaveCertificateIndex.toHexString()
-            val poseidonSMT = contractManager.getPoseidonSMT(certificatesSMTAddress)
+            val poseidonSMT = rarimoContractManager.getPoseidonSMT(certificatesSMTAddress)
             poseidonSMT.getProof(indexHex.decodeHexString()).send()
         }
 
@@ -117,7 +117,7 @@ class ProofViewModel @Inject constructor(
         Log.i(TAG, "Passport certificate EVM Tx Hash " + response.data.attributes.tx_hash)
 
 
-        val res = contractManager.checkIsTransactionSuccessful(response.data.attributes.tx_hash)
+        val res = rarimoContractManager.checkIsTransactionSuccessful(response.data.attributes.tx_hash)
         if (!res) {
             Log.e(TAG, "Transaction failed" + response.data.attributes.tx_hash)
         }
@@ -201,7 +201,7 @@ class ProofViewModel @Inject constructor(
 
         withContext(Dispatchers.IO) {
             val response = registrationManager.register(callData)
-            contractManager.checkIsTransactionSuccessful(response!!.data.attributes.tx_hash)
+            rarimoContractManager.checkIsTransactionSuccessful(response!!.data.attributes.tx_hash)
         }
     }
 
@@ -214,7 +214,7 @@ class ProofViewModel @Inject constructor(
         val cert = sodFile.docSigningCertificate
         val certPem = SecurityUtil.convertToPEM(cert)
 
-        val registrationContract = contractManager.getRegistration()
+        val registrationContract = rarimoContractManager.getRegistration()
 
         val certificatesSMTAddress = withContext(Dispatchers.IO) {
             registrationContract.certificatesSmt().send()
@@ -229,7 +229,7 @@ class ProofViewModel @Inject constructor(
             val slaveCertificateIndex =
                 x509Utils.getSlaveCertificateIndex(certPem.toByteArray(), icao)
             val indexHex = slaveCertificateIndex.toHexString()
-            val contract = contractManager.getPoseidonSMT(certificatesSMTAddress)
+            val contract = rarimoContractManager.getPoseidonSMT(certificatesSMTAddress)
 
             contract.getProof(indexHex.decodeHexString()).send()
         }

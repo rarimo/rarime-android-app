@@ -1,4 +1,4 @@
-package com.distributedLab.rarime.contracts;
+package com.distributedLab.rarime.contracts.rarimo;
 
 import java.math.BigInteger;
 import java.util.Arrays;

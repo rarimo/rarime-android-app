@@ -56,13 +56,17 @@ fun WalletScreen(
     val userAssets by walletViewModel.walletAssets.collectAsState()
     val selectedUserAsset by walletViewModel.selectedWalletAsset.collectAsState()
 
-    var scaffoldState = rememberBottomSheetScaffoldState()
+    val scaffoldState = rememberBottomSheetScaffoldState()
     LaunchedEffect(scaffoldState.bottomSheetState.currentValue) {
         if (scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
             mainViewModel.setBottomBarVisibility(false)
         } else {
             mainViewModel.setBottomBarVisibility(true)
         }
+    }
+
+    LaunchedEffect(Unit) {
+        walletViewModel.updateBalances()
     }
 
     BottomSheetScaffold (
@@ -185,7 +189,6 @@ fun WalletScreen(
                             )
                         }
                     }
-
                     HorizontalDivider()
                 }
             }

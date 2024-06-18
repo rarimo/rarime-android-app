@@ -1,6 +1,7 @@
 package com.distributedLab.rarime.modules.wallet.view_model
 
 import androidx.lifecycle.ViewModel
+import com.distributedLab.rarime.data.tokens.Erc20Token
 import com.distributedLab.rarime.manager.WalletManager
 import com.distributedLab.rarime.util.NumberUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,14 +18,19 @@ class WalletSendViewModel @Inject constructor(
         private set
 
     suspend fun sendTokens(to: String, humanAmount: String) {
-        selectedWalletAsset.value?.let { it ->
-            val bigIntAmount = NumberUtil.toBigIntAmount(humanAmount.toDouble(), it.token.decimals)
-
-            withContext(Dispatchers.IO) {
-                it.token.transfer(to, BigInteger.valueOf(bigIntAmount.toLong()))
+        withContext(Dispatchers.IO) {
+            selectedWalletAsset.value.let { it ->
+//                val bigIntAmount: Double = if (it.token !is Erc20Token){
+//                    NumberUtil.toBigIntAmount(humanAmount.toDouble(), it.token.decimals)
+//                }else{
+//                    humanAmount.toDouble()
+//                }
+                it.token.transfer(to, BigInteger(humanAmount))
                 it.loadBalance()
+
             }
         }
+
     }
 
     suspend fun fetchBalance() {

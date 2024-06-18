@@ -22,8 +22,8 @@ import com.distributedLab.rarime.api.points.models.WithdrawBody
 import com.distributedLab.rarime.api.points.models.WithdrawPayload
 import com.distributedLab.rarime.api.points.models.WithdrawPayloadAttributes
 import com.distributedLab.rarime.data.ProofTxFull
-import com.distributedLab.rarime.manager.ContractManager
 import com.distributedLab.rarime.manager.IdentityManager
+import com.distributedLab.rarime.manager.RarimoContractManager
 import com.distributedLab.rarime.modules.passportScan.models.EDocument
 import com.distributedLab.rarime.store.SecureSharedPrefsManager
 import com.distributedLab.rarime.util.ZKPUseCase
@@ -42,7 +42,7 @@ import javax.inject.Inject
 
 class PointsManager @Inject constructor(
     private val context: Context,
-    private val contractManager: ContractManager,
+    private val contractManager: RarimoContractManager,
     private val pointsAPIManager: PointsAPIManager,
     private val identityManager: IdentityManager,
     private val authManager: AuthManager,
