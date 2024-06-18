@@ -26,12 +26,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.modules.main.LocalMainViewModel
 import com.distributedLab.rarime.modules.passportVerify.viewModels.ReserveTokenViewModel
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.UiPrivacyCheckbox
+import com.distributedLab.rarime.ui.components.enter_program.components.NonSpecificCongratsModalContent
 import com.distributedLab.rarime.ui.components.rememberAppCheckboxState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Constants
@@ -42,6 +44,7 @@ import kotlinx.coroutines.launch
 fun VerifyPoitntsScreen(
     reserveTokenViewModel: ReserveTokenViewModel = hiltViewModel(), onFinish: () -> Unit
 ) {
+    val mainViewModal = LocalMainViewModel.current
     var isReserving by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
@@ -50,6 +53,16 @@ fun VerifyPoitntsScreen(
         isReserving = true
         try {
             reserveTokenViewModel.reserve()
+
+            mainViewModal.setModalVisibility(true)
+            mainViewModal.setModalContent {
+                NonSpecificCongratsModalContent(
+                    onClose = {
+                        mainViewModal.setModalVisibility(false)
+                    }
+                )
+            }
+
             onFinish()
         } catch(e: Exception) {
             Log.e("VerifyPoitntsScreen", "Error reserving tokens", e)

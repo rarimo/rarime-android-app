@@ -24,12 +24,10 @@ class AirDropAPIManager @Inject constructor(private val airDropAPI: AirDropAPI) 
     }
 
     suspend fun getAirDropByNullifier(nullifier: String): AirDropResponseBody {
-        return withContext(Dispatchers.IO) {
-            try {
-                airDropAPI.getAirDropByNullifier(nullifier)
-            } catch (e: Exception) {
-                throw Exception(e.toString())
-            }
+        try {
+            return airDropAPI.getAirDropByNullifier(nullifier)
+        } catch (e: Exception) {
+            throw Exception(e.toString())
         }
     }
 

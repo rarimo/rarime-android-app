@@ -53,7 +53,7 @@ class RarimoToken @Inject constructor(
 
     override suspend fun transfer(to: String, amount: BigInteger): Transaction {
         val response = withContext(Dispatchers.IO) {
-            identityManager.profiler?.value?.walletSend(
+            identityManager.profiler.walletSend(
                 to,
                 amount.toString(),
                 chainInfo.chainId,
