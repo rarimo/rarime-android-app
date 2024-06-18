@@ -38,6 +38,12 @@ fun NewIdentityScreen(
     onBack: () -> Unit,
     newIdentityViewModel: NewIdentityViewModel = hiltViewModel()
 ) {
+    /**
+     * We need to block the button, after saving the private key,
+     * because of login in mainScreen is time consuming process
+     */
+    var isPending by remember { mutableStateOf(false) }
+
     val clipboardManager = LocalClipboardManager.current
     var isCopied by remember { mutableStateOf(false) }
 
@@ -58,9 +64,17 @@ fun NewIdentityScreen(
         nextButton = {
             PrimaryButton(modifier = Modifier.fillMaxWidth(),
                 size = ButtonSize.Large,
-                text = stringResource(R.string.continue_btn),
+                text = stringResource(
+                    if (isPending) R.string.wait_btn else R.string.continue_btn
+                ),
                 rightIcon = R.drawable.ic_arrow_right,
-                onClick = { newIdentityViewModel.identityManager.savePrivateKey(); onNext.invoke() })
+                enabled = !isPending,
+                onClick = {
+                    isPending = true
+                    newIdentityViewModel.identityManager.savePrivateKey();
+                    onNext.invoke()
+                }
+            )
         }) {
         CardContainer {
             Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {

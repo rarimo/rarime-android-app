@@ -1,6 +1,7 @@
 package com.distributedLab.rarime.modules.main
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloatAsState
@@ -64,6 +65,7 @@ import com.distributedLab.rarime.modules.wallet.WalletScreen
 import com.distributedLab.rarime.modules.wallet.WalletSendScreen
 import com.distributedLab.rarime.ui.components.AppBottomSheet
 import com.distributedLab.rarime.ui.components.AppIcon
+import com.distributedLab.rarime.ui.components.AppSheetState
 import com.distributedLab.rarime.ui.components.AppWebView
 import com.distributedLab.rarime.ui.components.enter_program.EnterProgramFlow
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
@@ -91,6 +93,46 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
 
     val appLoadingState = mainViewModel.appLoadingState
 
+    val navController: NavHostController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+    val currentRoute = navBackStackEntry?.destination?.route
+    LaunchedEffect(currentRoute) {
+        mainViewModel.setBottomBarVisibility(currentRoute != null && currentRoute in mainRoutes)
+    }
+
+    val pointsBalance by mainViewModel.pointsBalance.collectAsState()
+
+    val enterProgramSheetState = rememberAppSheetState()
+
+    val startDestination = if (mainViewModel.isScreenLocked.value) {
+        Screen.Lock.route
+    } else if (mainViewModel.biometricsState.value != SecurityCheckState.UNSET) {
+        Screen.Main.route
+    } else if (mainViewModel.passcodeState.value != SecurityCheckState.UNSET) {
+        Screen.EnableBiometrics.route
+    } else if (mainViewModel.isIntroFinished.value) {
+        Screen.Passcode.route
+    } else {
+        Screen.Intro.route
+    }
+
+    fun navigateWithPopUp(route: String) {
+        if (route == Screen.Main.Rewards.RewardsMain.route) {
+            pointsBalance?.data?.attributes?.let {} ?: run {
+                enterProgramSheetState.show()
+
+                return
+            }
+        }
+
+        navController.navigate(route) {
+            popUpTo(navController.graph.id) { inclusive = true }
+            restoreState = true
+            launchSingleTop = true
+        }
+    }
+
     LaunchedEffect(Unit) {
         coroutineScope.launch {
             mainViewModel.initApp()
@@ -108,7 +150,13 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
             }
 
             AppLoadingStates.LOADED -> {
-                MainScreenContent()
+                MainScreenContent(
+                    navController = navController,
+                    currentRoute = currentRoute,
+                    navigateWithPopUp = { navigateWithPopUp(it) },
+                    startDestination = startDestination,
+                    enterProgramSheetState = enterProgramSheetState,
+                )
             }
         }
     }
@@ -162,57 +210,22 @@ private fun AppLoadingFailedScreen() {
 // so no need to use scaffold padding
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreenContent() {
-    val mainViewModel = LocalMainViewModel.current
-    val navController: NavHostController = rememberNavController()
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-
+fun MainScreenContent(
+    navController: NavHostController,
+    currentRoute: String?,
+    navigateWithPopUp: (String) -> Unit,
+    startDestination: String,
+    enterProgramSheetState: AppSheetState,
+) {
     val coroutineScope = rememberCoroutineScope()
 
-    val currentRoute = navBackStackEntry?.destination?.route
-    LaunchedEffect(currentRoute) {
-        mainViewModel.setBottomBarVisibility(currentRoute != null && currentRoute in mainRoutes)
-    }
-
+    val mainViewModel = LocalMainViewModel.current
     val context = LocalContext.current
-    var appIcon by remember { mutableStateOf(AppIconUtil.getIcon(context)) }
 
     val isModalShown = mainViewModel.isModalShown.collectAsState()
     val modalContent = mainViewModel.modalContent.collectAsState()
 
-    val pointsBalance by mainViewModel.pointsBalance.collectAsState()
-
-    val enterProgramSheetState = rememberAppSheetState()
-
-    val startDestination = if (mainViewModel.isScreenLocked.value) {
-        Screen.Lock.route
-    } else if (mainViewModel.biometricsState.value != SecurityCheckState.UNSET) {
-        Screen.Main.route
-    } else if (mainViewModel.passcodeState.value != SecurityCheckState.UNSET) {
-        Screen.EnableBiometrics.route
-    } else if (mainViewModel.isIntroFinished.value) {
-        Screen.Passcode.route
-    } else {
-        Screen.Intro.route
-    }
-
-    fun navigateWithPopUp(route: String) {
-        var nextRoute = route
-
-        if (route == Screen.Main.Rewards.RewardsMain.route) {
-            pointsBalance?.data?.attributes?.let {} ?: run {
-                enterProgramSheetState.show()
-
-                return
-            }
-        }
-
-        navController.navigate(nextRoute) {
-            popUpTo(navController.graph.id) { inclusive = true }
-            restoreState = true
-            launchSingleTop = true
-        }
-    }
+    var appIcon by remember { mutableStateOf(AppIconUtil.getIcon(context)) }
 
     AppTheme(colorScheme = mainViewModel.colorScheme.value) {
         Scaffold(
@@ -270,7 +283,6 @@ fun MainScreenContent() {
                                 coroutineScope.launch {
                                     mainViewModel.finishIntro()
                                     navController.navigate(Screen.Passcode.route)
-                                    mainViewModel.initApp()
                                 }
                             },
                             onBack = { navController.popBackStack() }

@@ -17,10 +17,12 @@ import com.distributedLab.rarime.manager.SecurityManager
 import com.distributedLab.rarime.manager.SettingsManager
 import com.distributedLab.rarime.manager.WalletManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 enum class AppLoadingStates {
@@ -55,6 +57,27 @@ class MainViewModel @Inject constructor(
         appLoadingState.value = AppLoadingStates.LOADING
 
         try {
+            tryLogin()
+
+            delay(500)
+
+            loadUserDetails()
+        } catch (e: Exception) {
+            appLoadingState.value = AppLoadingStates.LOAD_FAILED
+            Log.e("MainScreen", "Failed to init app", e)
+        }
+
+        appLoadingState.value = AppLoadingStates.LOADED
+    }
+
+    private suspend fun loadUserDetails() {
+        try { pointsManager.getPointsBalance() } catch (e: Exception) {}
+        try { walletManager.loadBalances() } catch (e: Exception) {}
+        try { airDropManager.getAirDropByNullifier() } catch (e: Exception) {}
+    }
+
+    private suspend fun tryLogin() {
+        withContext(Dispatchers.IO) {
             try {
                 if (authManager.isAccessTokenExpired()) {
                     authManager.refresh()
@@ -62,18 +85,7 @@ class MainViewModel @Inject constructor(
             } catch (e: Exception) {
                 authManager.login()
             }
-
-            delay(500)
-
-            try { pointsManager.getPointsBalance() } catch (e: Exception) {}
-            try { walletManager.loadBalances() } catch (e: Exception) {}
-            try { airDropManager.getAirDropByNullifier() } catch (e: Exception) {}
-        } catch (e: Exception) {
-            appLoadingState.value = AppLoadingStates.LOAD_FAILED
-            Log.e("MainScreen", "Failed to init app", e)
         }
-
-        appLoadingState.value = AppLoadingStates.LOADED
     }
 
     var _isModalShown = MutableStateFlow(false)
@@ -112,8 +124,12 @@ class MainViewModel @Inject constructor(
         isBottomBarShown.value = isVisible
     }
 
-    fun finishIntro() {
-        isIntroFinished.value = true
-        dataStoreManager.saveIsIntroFinished(true)
+    suspend fun finishIntro() {
+        withContext(Dispatchers.IO) {
+            tryLogin()
+
+            isIntroFinished.value = true
+            dataStoreManager.saveIsIntroFinished(true)
+        }
     }
 }
