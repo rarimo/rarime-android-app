@@ -11,6 +11,7 @@
     <string name="skip_btn">Пропустити</string>
     <string name="next_btn">Далі</string>
     <string name="continue_btn">Продовжити</string>
+    <string name="wait_btn">Почекайте...</string>
     <string name="enable_btn">Увімкнути</string>
     <string name="maybe_later_btn">Пізніше</string>
     <string name="step_indicator">Крок %1$s/%2$s</string>

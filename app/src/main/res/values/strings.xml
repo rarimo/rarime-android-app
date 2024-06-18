@@ -11,6 +11,7 @@
     <string name="skip_btn">Skip</string>
     <string name="next_btn">Next</string>
     <string name="continue_btn">Continue</string>
+    <string name="wait_btn">Wait...</string>
     <string name="enable_btn">Enable</string>
     <string name="maybe_later_btn">Maybe Later</string>
     <string name="step_indicator">Step %1$s/%2$s</string>
