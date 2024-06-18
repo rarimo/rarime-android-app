@@ -18,6 +18,8 @@ import com.distributedLab.rarime.manager.SettingsManager
 import com.distributedLab.rarime.manager.WalletManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -70,10 +72,15 @@ class MainViewModel @Inject constructor(
         appLoadingState.value = AppLoadingStates.LOADED
     }
 
-    private suspend fun loadUserDetails() {
-        try { pointsManager.getPointsBalance() } catch (e: Exception) {}
-        try { walletManager.loadBalances() } catch (e: Exception) {}
-        try { airDropManager.getAirDropByNullifier() } catch (e: Exception) {}
+    private suspend fun loadUserDetails() = coroutineScope {
+        val pointsBalance = async { try { pointsManager.getPointsBalance() } catch (e: Exception) { /* Handle exception */ } }
+        val walletBalances = async { try { walletManager.loadBalances() } catch (e: Exception) { /* Handle exception */ } }
+        val airDropDetails = async { try { airDropManager.getAirDropByNullifier() } catch (e: Exception) { /* Handle exception */ } }
+
+        // Await for all the async operations to complete
+        pointsBalance.await()
+        walletBalances.await()
+        airDropDetails.await()
     }
 
     private suspend fun tryLogin() {
@@ -127,6 +134,8 @@ class MainViewModel @Inject constructor(
     suspend fun finishIntro() {
         withContext(Dispatchers.IO) {
             tryLogin()
+
+            loadUserDetails()
 
             isIntroFinished.value = true
             dataStoreManager.saveIsIntroFinished(true)
