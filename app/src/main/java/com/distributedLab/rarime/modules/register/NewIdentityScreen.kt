@@ -45,7 +45,6 @@ fun NewIdentityScreen(
         mutableStateOf(newIdentityViewModel.getPrivateKey())
     }
 
-
     if (isCopied) {
         LaunchedEffect(Unit) {
             delay(3.seconds)

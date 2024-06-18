@@ -1,7 +1,11 @@
 package com.distributedLab.rarime.modules.main
 
+import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.api.airdrop.AirDropManager
 import com.distributedLab.rarime.api.auth.AuthManager
@@ -13,10 +17,17 @@ import com.distributedLab.rarime.manager.SecurityManager
 import com.distributedLab.rarime.manager.SettingsManager
 import com.distributedLab.rarime.manager.WalletManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
+
+enum class AppLoadingStates {
+    LOADING,
+    LOADED,
+    LOAD_FAILED,
+}
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -29,32 +40,40 @@ class MainViewModel @Inject constructor(
     private val identityManager: IdentityManager,
     private val pointsManager: PointsManager
 ) : ViewModel() {
-    // FIXME: recomposability
-//    val pointsWalletAsset = walletManager.walletAssets.value.firstOrNull { it.token is PointsToken }
-//
-//    val pointsToken: PointsToken? = pointsWalletAsset?.token as PointsToken
-//
-//    val isPointsBalanceCreated = pointsToken?.getIsBalanceCreated() ?: false
-
+    var appLoadingState = mutableStateOf(AppLoadingStates.LOADING)
+        private set
 
     // FIXME: temp
     val pointsBalance = pointsManager.pointsBalance
 
     suspend fun initApp() {
-        try {
-            if (authManager.isAccessTokenExpired()) {
-                authManager.refresh()
-            }
-        } catch (e: Exception) {
-            // TODO: is it correct?
-            identityManager.privateKey.value?.let {
-                authManager.login()
-            }
+        if (identityManager.privateKey.value == null) {
+            appLoadingState.value = AppLoadingStates.LOADED
+            return
         }
 
-        pointsManager.getPointsBalance()
-        walletManager.loadBalances()
-        airDropManager.getAirDropByNullifier()
+        appLoadingState.value = AppLoadingStates.LOADING
+
+        try {
+            try {
+                if (authManager.isAccessTokenExpired()) {
+                    authManager.refresh()
+                }
+            } catch (e: Exception) {
+                authManager.login()
+            }
+
+            delay(500)
+
+            try { pointsManager.getPointsBalance() } catch (e: Exception) {}
+            try { walletManager.loadBalances() } catch (e: Exception) {}
+            try { airDropManager.getAirDropByNullifier() } catch (e: Exception) {}
+        } catch (e: Exception) {
+            appLoadingState.value = AppLoadingStates.LOAD_FAILED
+            Log.e("MainScreen", "Failed to init app", e)
+        }
+
+        appLoadingState.value = AppLoadingStates.LOADED
     }
 
     var _isModalShown = MutableStateFlow(false)

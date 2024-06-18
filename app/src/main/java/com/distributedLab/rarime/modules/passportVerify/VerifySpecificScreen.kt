@@ -26,12 +26,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.modules.home.components.no_passport.specific.SpecificCongratsModalContent
+import com.distributedLab.rarime.modules.main.LocalMainViewModel
 import com.distributedLab.rarime.modules.passportVerify.viewModels.ClaimSpecificTokenViewModel
 import com.distributedLab.rarime.ui.base.ButtonSize
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.UiPrivacyCheckbox
+import com.distributedLab.rarime.ui.components.enter_program.components.NonSpecificCongratsModalContent
 import com.distributedLab.rarime.ui.components.rememberAppCheckboxState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Constants
@@ -41,6 +44,8 @@ import kotlinx.coroutines.launch
 fun VerifySpecificScreen(
     claimTokenViewModel: ClaimSpecificTokenViewModel = hiltViewModel(), onFinish: () -> Unit
 ) {
+    val mainViewModal = LocalMainViewModel.current
+
     var isClaiming by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val termsAcceptedState = rememberAppCheckboxState()
@@ -49,6 +54,15 @@ fun VerifySpecificScreen(
         isClaiming = true
         try {
             claimTokenViewModel.claimAirdrop()
+
+            mainViewModal.setModalVisibility(true)
+            mainViewModal.setModalContent {
+                SpecificCongratsModalContent(
+                    onClose = {
+                        mainViewModal.setModalVisibility(false)
+                    }
+                )
+            }
         } catch (e: Exception) {
             Log.e("ClaimSpecificToken", e.toString())
         }

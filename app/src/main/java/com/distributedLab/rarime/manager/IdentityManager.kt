@@ -28,15 +28,13 @@ class IdentityManager @Inject constructor(
     val privateKeyBytes: ByteArray?
         get() = _privateKey.value?.decodeHexString()
 
-    private val _profiler = MutableStateFlow(Profile().newProfile(privateKeyBytes))
-
-    val profiler: StateFlow<Profile>
+    val profiler: Profile
         get() {
-            return _profiler.asStateFlow()
+            return Profile().newProfile(privateKeyBytes)
         }
 
     fun rarimoAddress(): String {
-        return profiler.value.rarimoAddress
+        return profiler.rarimoAddress
     }
 
     fun evmAddress(): String {
@@ -50,7 +48,7 @@ class IdentityManager @Inject constructor(
     }
 
     fun getUserAirDropNullifier(): String {
-        return profiler.value.calculateEventNullifierInt(BaseConfig.AIRDROP_SVC_ID)
+        return profiler.calculateEventNullifierInt(BaseConfig.AIRDROP_SVC_ID)
     }
 
     fun getUserAirDropNullifierHex(): String {
@@ -60,7 +58,7 @@ class IdentityManager @Inject constructor(
     }
 
     fun getUserPointsNullifier(): String {
-        return profiler.value.calculateEventNullifierInt(BaseConfig.POINTS_SVC_ID)
+        return profiler.calculateEventNullifierInt(BaseConfig.POINTS_SVC_ID)
     }
 
     fun getUserPointsNullifierHex(): String {
