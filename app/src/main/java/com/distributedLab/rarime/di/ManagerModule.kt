@@ -130,7 +130,7 @@ class APIModule {
     @Singleton
     fun providePointsManager(
         @ApplicationContext context: Context,
-        contractManager: ContractManager,
+        contractManager: RarimoContractManager,
         pointsAPIManager: PointsAPIManager,
         identityManager: IdentityManager,
         authManager: AuthManager,
@@ -196,8 +196,6 @@ class APIModule {
         dataStoreManager: SecureSharedPrefsManager,
         identityManager: IdentityManager,
         pointsManager: PointsManager,
-        cosmosManager: CosmosManager
-        pointsAPIManager: PointsAPIManager,
         cosmosManager: CosmosManager,
         erc20Manager: Erc20Manager,
         stableCoinContractManager: StableCoinContractManager
