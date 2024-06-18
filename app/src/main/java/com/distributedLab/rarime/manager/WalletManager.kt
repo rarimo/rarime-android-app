@@ -4,14 +4,15 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.api.cosmos.CosmosManager
+import com.distributedLab.rarime.api.erc20.Erc20Manager
 import com.distributedLab.rarime.api.points.PointsAPIManager
 import com.distributedLab.rarime.data.RarimoChains
 import com.distributedLab.rarime.data.tokens.Erc20Token
 import com.distributedLab.rarime.data.tokens.PointsToken
 import com.distributedLab.rarime.data.tokens.RarimoToken
 import com.distributedLab.rarime.data.tokens.Token
-import com.distributedLab.rarime.store.SecureSharedPrefsManager
 import com.distributedLab.rarime.modules.wallet.models.Transaction
+import com.distributedLab.rarime.store.SecureSharedPrefsManager
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +27,14 @@ data class WalletAssetJSON(
 )
 
 class WalletAsset(val userAddress: String, val token: Token) {
-    var balance = mutableStateOf(BigInteger.ZERO)
+    private var _balance = MutableStateFlow(BigInteger.ZERO)
+
+    val balance: StateFlow<BigInteger>
+        get() = _balance.asStateFlow()
+
+    fun updateBalance(balance: BigInteger) {
+        _balance.value = balance
+    }
 
     var transactions = mutableStateOf(listOf<Transaction>())
 
@@ -34,14 +42,15 @@ class WalletAsset(val userAddress: String, val token: Token) {
         return Gson().toJson(
             WalletAssetJSON(
                 tokenSymbol = token.symbol,
-                balance = balance.value.toString(),
+                balance = _balance.value.toString(),
                 transactions = transactions.value
             )
         )
     }
 
     suspend fun loadBalance() {
-        balance.value = token.balanceOf(userAddress)
+        _balance.value = token.balanceOf(userAddress)
+        Log.i("WalletAssetBalance", _balance.value.toString())
     }
 
     suspend fun loadTransactions() {
@@ -49,7 +58,7 @@ class WalletAsset(val userAddress: String, val token: Token) {
     }
 
     fun humanBalance(): Double {
-        return balance.value.divide(
+        return _balance.value.divide(
             BigInteger.TEN.pow(token.decimals)
         ).toDouble()
     }
@@ -59,7 +68,9 @@ class WalletManager @Inject constructor(
     private val dataStoreManager: SecureSharedPrefsManager,
     private val identityManager: IdentityManager,
     private val pointsAPIManager: PointsAPIManager,
-    private val cosmosManager: CosmosManager
+    private val cosmosManager: CosmosManager,
+    private val stableCoinContractManager: StableCoinContractManager,
+    private val erc20Manager: Erc20Manager
 ) {
     var _isPointsBalanceCreated = MutableStateFlow(false)
         private set
@@ -77,13 +88,15 @@ class WalletManager @Inject constructor(
                         cosmosManager,
                     )
                 ), WalletAsset(
-                    identityManager.evmAddress,
-                    Erc20Token("0x0000000000000000000000000000000000000000")
+                    identityManager.evmAddress(), Erc20Token(
+                        BaseConfig.STABLE_COIN_ADDRESS,
+                        stableCoinContractManager,
+                        erc20Manager,
+                        identityManager
+                    )
                 ), WalletAsset(
-                    identityManager.rarimoAddress(),
-                    PointsToken(
-                        identityManager = identityManager,
-                        pointsAPIManager = pointsAPIManager
+                    identityManager.rarimoAddress(), PointsToken(
+                        identityManager = identityManager, pointsAPIManager = pointsAPIManager
                     )
                 )
             )
@@ -136,7 +149,7 @@ class WalletManager @Inject constructor(
             _walletAssets.value.forEach {
                 it.token.loadDetails()
 
-                // TODO: Promise.all
+                Log.i("loadBalances", it.token.symbol)
                 it.loadBalance()
                 it.loadTransactions()
             }

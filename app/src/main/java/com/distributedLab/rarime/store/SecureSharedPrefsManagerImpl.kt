@@ -213,7 +213,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
                     parsedWalletAssets.find { asset -> asset.tokenSymbol == it.token.symbol }
 
                 if (walletAsset != null) {
-                    it.balance.value = BigInteger(walletAsset.balance)
+                    it.updateBalance(BigInteger(walletAsset.balance))
                     it.transactions.value = walletAsset.transactions
                 }
                 it

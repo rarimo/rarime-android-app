@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val passportManager: PassportManager, walletManager: WalletManager
+    private val passportManager: PassportManager,private val walletManager: WalletManager
 ) : ViewModel() {
 
     private val _rmoAsset =
@@ -39,6 +39,10 @@ class HomeViewModel @Inject constructor(
 
     fun onIncognitoChange(isIncognito: Boolean) {
         passportManager.updateIsIncognitoMode(isIncognito)
+    }
+
+    suspend fun loadBalances() {
+        walletManager.loadBalances()
     }
 
     fun onPassportIdentifiersChange(passportIdentifiers: List<PassportIdentifier>) {

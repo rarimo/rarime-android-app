@@ -1,38 +1,30 @@
 package com.distributedLab.rarime.manager
 
-import com.distributedLab.rarime.BaseConfig
-import com.distributedLab.rarime.contracts.PoseidonSMT
-import com.distributedLab.rarime.contracts.Registration
+import com.distributedLab.rarime.contracts.Erc20Contract
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.web3j.crypto.Credentials
 import org.web3j.crypto.Keys
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.methods.response.TransactionReceipt
+import org.web3j.tx.ReadonlyTransactionManager
 import org.web3j.tx.gas.DefaultGasProvider
 import org.web3j.tx.response.PollingTransactionReceiptProcessor
 import org.web3j.tx.response.TransactionReceiptProcessor
 import javax.inject.Inject
 
-class ContractManager @Inject constructor(private val web3j: Web3j) {
-    fun getRegistration(): Registration {
+class StableCoinContractManager @Inject constructor(private val web3j: Web3j) {
+    fun getErc20ContractReadOnly(address: String): Erc20Contract {
         val ecKeyPair = Keys.createEcKeyPair()
 
         val credentials = Credentials.create(ecKeyPair)
         val gasProvider = DefaultGasProvider()
 
-        return Registration.load(
-            BaseConfig.REGISTER_CONTRACT_ADDRESS, web3j, credentials, gasProvider
-        )
-    }
 
-    fun getPoseidonSMT(address: String): PoseidonSMT {
-        val ecKeyPair = Keys.createEcKeyPair()
-        val credentials = Credentials.create(ecKeyPair)
-        val gasProvider = DefaultGasProvider()
+        val transactionManager = ReadonlyTransactionManager(web3j, credentials.address)
 
-        return PoseidonSMT.load(
-            address, web3j, credentials, gasProvider
+        return Erc20Contract.load(
+            address, web3j, transactionManager, gasProvider
         )
     }
 

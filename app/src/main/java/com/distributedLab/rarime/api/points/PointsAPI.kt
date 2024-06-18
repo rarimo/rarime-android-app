@@ -1,4 +1,5 @@
 package com.distributedLab.rarime.api.points
+
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.api.points.models.ClaimEventBody
 import com.distributedLab.rarime.api.points.models.CreateBalanceBody
@@ -15,8 +16,7 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 
-interface PointsAPI {
-    /* BALANCE */
+interface PointsAPI {/* BALANCE */
 
     @POST("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances")
     suspend fun createPointsBalance(@Body payload: CreateBalanceBody): Response<PointsBalance>
@@ -29,15 +29,16 @@ interface PointsAPI {
 
     @POST("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances/{nullifier}/verifypassport")
     suspend fun verifyPassport(
-        @Path("nullifier") nullifier: String,
-        @Body payload: VerifyPassportBody
+        @Path("nullifier") nullifier: String, @Body payload: VerifyPassportBody
     ): Response<Unit>
 
     @GET("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances/{nullifier}/withdrawals")
     suspend fun getWithdrawalHistory(@Path("nullifier") nullifier: String): Response<List<PointsWithdrawal>>
 
     @POST("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances/{nullifier}/withdrawals")
-    suspend fun withdrawPoints(@Path("nullifier") nullifier: String, @Body payload: WithdrawBody): Response<PointsWithdrawal>
+    suspend fun withdrawPoints(
+        @Path("nullifier") nullifier: String, @Body payload: WithdrawBody
+    ): Response<PointsWithdrawal>
 
     @GET("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/point_price")
     suspend fun getPointPrice(): Response<PointsPrice>
@@ -55,5 +56,7 @@ interface PointsAPI {
     suspend fun getEvent(@Path("id") id: String): Response<PointsEvent>
 
     @PATCH("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/events/{id}")
-    suspend fun claimPointsByEvent(@Path("id") id: String, @Body payload: ClaimEventBody): Response<PointsEvent>
+    suspend fun claimPointsByEvent(
+        @Path("id") id: String, @Body payload: ClaimEventBody
+    ): Response<PointsEvent>
 }

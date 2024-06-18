@@ -13,7 +13,7 @@ object BaseConfig {
     const val EVM_RPC_URL = "https://rpc.evm.node1.mainnet-beta.rarimo.com"
     const val REGISTER_CONTRACT_ADDRESS = "0x31C9baC74fa7482cDCf33d09B8476250b460B058"
     const val COSMOS_RPC_URL = "https://rpc-api.node1.mainnet-beta.rarimo.com"
-
+    const val EVM_SERVICE_URL = "https://api.orgs.app.stage.rarime.com/integrations/evm-airdrop-svc-glo"
     const val DISCORD_URL = "https://discord.gg/Bzjm5MDXrU"
     const val TWITTER_URL = "https://x.com/Rarimo_protocol"
 
@@ -117,4 +117,6 @@ object BaseConfig {
     const val ICAO_COSMOS_RPC = "core-api.node1.mainnet-beta.rarimo.com:443"
     const val MASTER_CERTIFICATES_FILENAME = "icaopkd-list.ldif"
     const val MASTER_CERTIFICATES_BUCKETNAME = "rarimo-temp"
+    const val EVM_STABLE_COIN_RPC = "https://ethereum-sepolia-rpc.publicnode.com"
+    const val STABLE_COIN_ADDRESS = "0xbd03f0fC994fd1015eAdc37c943055330e238Ad9"
 }
