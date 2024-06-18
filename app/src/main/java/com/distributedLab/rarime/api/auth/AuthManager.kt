@@ -81,7 +81,6 @@ class AuthManager @Inject constructor(
                 ZkpUtil::auth
             )
         }
-
         return queryProof
     }
 

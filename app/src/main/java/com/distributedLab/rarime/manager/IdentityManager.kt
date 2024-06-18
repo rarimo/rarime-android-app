@@ -38,7 +38,9 @@ class IdentityManager @Inject constructor(
     }
 
     fun evmAddress(): String {
-        return Credentials.create(_privateKey.value).address
+        if (_privateKey.value != null)
+            return Credentials.create(_privateKey.value).address
+        return ""
     }
 
     fun getPassportNullifier(): String {

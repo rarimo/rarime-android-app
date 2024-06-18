@@ -19,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -118,23 +119,23 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
 
 @Composable
 private fun AppLoadingScreen() {
-    val scale = remember { mutableStateOf(1f) }
+    val scale = remember { mutableFloatStateOf(1f) }
 
     LaunchedEffect(Unit) {
         while (true) {
-            scale.value = 1.1f
+            scale.floatValue = 1.1f
             delay(500)
-            scale.value = 1f
+            scale.floatValue = 1f
             delay(500)
         }
     }
 
     val animatedScale by animateFloatAsState(
-        targetValue = scale.value,
+        targetValue = scale.floatValue,
         animationSpec = infiniteRepeatable(
             animation = tween(500),
             repeatMode = RepeatMode.Reverse
-        )
+        ), label = ""
     )
 
     Box(

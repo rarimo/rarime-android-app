@@ -46,7 +46,7 @@ class Erc20Token(
 
         this.name = name
         this.symbol = symbol
-        this.decimals = decimals
+        this.decimals = 0
     }
 
     override suspend fun balanceOf(address: String): BigInteger {
@@ -62,7 +62,7 @@ class Erc20Token(
         val permitHashRequest = PermitHashRequest(
             data = PermitHashDataRequest(
                 type = "transfer_erc20", attributes = PermitHashAttributesRequest(
-                    sender = identityManager.evmAddress(),
+                    sender = identityManager.evmAddress()!!,
                     amount = amount.toLong(),
                     deadline = deadLine
                 )
