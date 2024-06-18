@@ -46,7 +46,6 @@ class MainActivity : AppCompatActivity() {
         adapter.enableForegroundDispatch(this, pendingIntent, null, filter)
     }
 
-
     private fun disableNFCForegroundDispatch() {
         Log.d("Turn of NFC", "Turn of NFCForegroundDispatch")
         adapter.disableForegroundDispatch(this)

@@ -3,10 +3,15 @@ package com.distributedLab.rarime.modules.main
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -18,10 +23,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -57,6 +65,7 @@ import com.distributedLab.rarime.modules.wallet.WalletReceiveScreen
 import com.distributedLab.rarime.modules.wallet.WalletScreen
 import com.distributedLab.rarime.modules.wallet.WalletSendScreen
 import com.distributedLab.rarime.ui.components.AppBottomSheet
+import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.AppWebView
 import com.distributedLab.rarime.ui.components.enter_program.EnterProgramFlow
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
@@ -66,6 +75,7 @@ import com.distributedLab.rarime.util.AppIconUtil
 import com.distributedLab.rarime.util.Constants
 import com.distributedLab.rarime.util.LocaleUtil
 import com.distributedLab.rarime.util.Screen
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 val mainRoutes = listOf(
@@ -81,18 +91,72 @@ val LocalMainViewModel = compositionLocalOf<MainViewModel> { error("No MainViewM
 fun MainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
     val coroutineScope = rememberCoroutineScope()
 
+    val appLoadingState = mainViewModel.appLoadingState
+
     LaunchedEffect(Unit) {
         coroutineScope.launch {
-            try {
-                mainViewModel.initApp()
-            } catch (e: Exception) {
-                Log.e("MainScreen", "Failed to init app", e)
-            }
+            mainViewModel.initApp()
         }
     }
 
     CompositionLocalProvider(LocalMainViewModel provides mainViewModel) {
-        MainScreenContent()
+        when (appLoadingState.value) {
+            AppLoadingStates.LOADING -> {
+                AppLoadingScreen()
+            }
+
+            AppLoadingStates.LOAD_FAILED -> {
+                AppLoadingFailedScreen()
+            }
+
+            AppLoadingStates.LOADED -> {
+                MainScreenContent()
+            }
+        }
+    }
+}
+
+@Composable
+private fun AppLoadingScreen() {
+    val scale = remember { mutableStateOf(1f) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            scale.value = 1.1f
+            delay(500)
+            scale.value = 1f
+            delay(500)
+        }
+    }
+
+    val animatedScale by animateFloatAsState(
+        targetValue = scale.value,
+        animationSpec = infiniteRepeatable(
+            animation = tween(500),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        AppIcon(
+            modifier = Modifier
+                .scale(animatedScale),
+            id = R.drawable.ic_rarime,
+            size = 140.dp
+        )
+    }
+}
+
+@Composable
+private fun AppLoadingFailedScreen() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        AppIcon(id = R.drawable.ic_warning, tint = RarimeTheme.colors.errorDark, size = 140.dp)
     }
 }
 
@@ -104,6 +168,8 @@ fun MainScreenContent() {
     val mainViewModel = LocalMainViewModel.current
     val navController: NavHostController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+    val coroutineScope = rememberCoroutineScope()
 
     val currentRoute = navBackStackEntry?.destination?.route
     LaunchedEffect(currentRoute) {
@@ -188,7 +254,7 @@ fun MainScreenContent() {
                 //Scan Flow
                 composable(Screen.ScanPassport.ScanPassportSpecific.route) {
                     ScanPassportScreen(onClose = { navController.popBackStack() },
-                        onClaim = {  navigateWithPopUp(Screen.Claim.Specific.route) })
+                        onClaim = { navigateWithPopUp(Screen.Claim.Specific.route) })
                 }
 
                 composable(Screen.ScanPassport.ScanPassportPoints.route) {
@@ -201,10 +267,16 @@ fun MainScreenContent() {
                     route = Screen.Register.route
                 ) {
                     composable(Screen.Register.NewIdentity.route) {
-                        NewIdentityScreen(onNext = {
-                            mainViewModel.finishIntro()
-                            navController.navigate(Screen.Passcode.route)
-                        }, onBack = { navController.popBackStack() })
+                        NewIdentityScreen(
+                            onNext = {
+                                coroutineScope.launch {
+                                    mainViewModel.finishIntro()
+                                    navController.navigate(Screen.Passcode.route)
+                                    mainViewModel.initApp()
+                                }
+                            },
+                            onBack = { navController.popBackStack() }
+                        )
                     }
                 }
 
@@ -227,6 +299,14 @@ fun MainScreenContent() {
                     }
                 }
 
+                composable(Screen.EnableBiometrics.route) {
+                    EnableBiometricsScreen(onNext = {
+                        navigateWithPopUp(Screen.Main.route)
+                    }, onSkip = {
+                        navigateWithPopUp(Screen.Main.route)
+                    })
+                }
+
                 composable(Screen.Claim.Specific.route) {
                     VerifySpecificScreen {
                         navigateWithPopUp(Screen.Main.route)
@@ -237,14 +317,6 @@ fun MainScreenContent() {
                     VerifyPoitntsScreen {
                         navigateWithPopUp(Screen.Main.route)
                     }
-                }
-
-                composable(Screen.EnableBiometrics.route) {
-                    EnableBiometricsScreen(onNext = {
-                        navigateWithPopUp(Screen.Main.route)
-                    }, onSkip = {
-                        navigateWithPopUp(Screen.Main.route)
-                    })
                 }
 
                 navigation(

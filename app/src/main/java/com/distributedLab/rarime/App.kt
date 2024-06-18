@@ -6,10 +6,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.security.Security
 
 @HiltAndroidApp
-
 class App: Application() {
-
-
     override fun onCreate() {
         super.onCreate()
         setupBouncyCastle()
