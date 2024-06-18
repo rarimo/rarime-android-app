@@ -37,13 +37,14 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.http.HttpService
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Named
 import javax.inject.Singleton
-
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class ManagerModule {
@@ -58,11 +59,25 @@ class APIModule {
     @Provides
     @Singleton
     @Named("jsonApiRetrofit")
-    fun provideJsonApiRetrofit(): Retrofit = Retrofit.Builder().addConverterFactory(
-        MoshiConverterFactory.create(
-            Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-        )
-    ).baseUrl("http://NONE").build()
+    fun provideJsonApiRetrofit(): Retrofit =
+        Retrofit
+            .Builder()
+            .addConverterFactory(
+                MoshiConverterFactory.create(
+                    Moshi.Builder()
+                        .add(KotlinJsonAdapterFactory())
+                        .build()
+                )
+            )
+            .baseUrl("http://NONE")
+            .client(OkHttpClient
+                .Builder()
+                .addInterceptor(
+                    HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+                )
+                .build()
+            )
+            .build()
 
     @Provides
     @Singleton
@@ -108,19 +123,25 @@ class APIModule {
 
     @Provides
     @Singleton
-    fun providePointsAPIManager(
-        @Named("jsonApiRetrofit") retrofit: Retrofit,
-        // TODO: remove
-        identityManager: IdentityManager
-    ): PointsAPIManager = PointsAPIManager(retrofit.create(PointsAPI::class.java), identityManager)
+    fun providePointsAPIManager(@Named("jsonApiRetrofit") retrofit: Retrofit): PointsAPIManager =
+        PointsAPIManager(retrofit.create(PointsAPI::class.java))
 
     @Provides
     @Singleton
     fun providePointsManager(
-        pointsAPIManager: PointsAPIManager, identityManager: IdentityManager
+        @ApplicationContext context: Context,
+        contractManager: ContractManager,
+        pointsAPIManager: PointsAPIManager,
+        identityManager: IdentityManager,
+        authManager: AuthManager,
+        dataStoreManager: SecureSharedPrefsManager
     ): PointsManager = PointsManager(
+        context,
+        contractManager,
         pointsAPIManager,
         identityManager,
+        authManager,
+        dataStoreManager
     )
 
     @Provides
@@ -132,9 +153,17 @@ class APIModule {
     @Provides
     @Singleton
     fun provideAuthManager(
-        authAPIManager: AuthAPIManager
+        @ApplicationContext context: Context,
+        authAPIManager: AuthAPIManager,
+        identityManager: IdentityManager,
+        dataStoreManager: SecureSharedPrefsManager
     ): AuthManager {
-        return AuthManager(authAPIManager)
+        return AuthManager(
+            context,
+            authAPIManager,
+            identityManager,
+            dataStoreManager
+        )
     }
 
     @Provides
@@ -166,6 +195,8 @@ class APIModule {
     fun provideWalletManager(
         dataStoreManager: SecureSharedPrefsManager,
         identityManager: IdentityManager,
+        pointsManager: PointsManager,
+        cosmosManager: CosmosManager
         pointsAPIManager: PointsAPIManager,
         cosmosManager: CosmosManager,
         erc20Manager: Erc20Manager,
@@ -174,7 +205,7 @@ class APIModule {
         return WalletManager(
             dataStoreManager = dataStoreManager,
             identityManager = identityManager,
-            pointsAPIManager = pointsAPIManager,
+            pointsManager = pointsManager,
             cosmosManager = cosmosManager,
             erc20Manager = erc20Manager,
             stableCoinContractManager = stableCoinContractManager

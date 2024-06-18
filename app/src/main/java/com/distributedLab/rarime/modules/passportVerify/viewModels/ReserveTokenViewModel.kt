@@ -1,6 +1,7 @@
 package com.distributedLab.rarime.modules.passportVerify.viewModels
 
 import androidx.lifecycle.ViewModel
+import com.distributedLab.rarime.api.auth.AuthManager
 import com.distributedLab.rarime.api.points.PointsManager
 import com.distributedLab.rarime.manager.PassportManager
 import com.distributedLab.rarime.manager.WalletManager
@@ -11,13 +12,14 @@ import javax.inject.Inject
 @HiltViewModel
 class ReserveTokenViewModel @Inject constructor(
     val walletManager: WalletManager, private val passportManager: PassportManager,
-    val pointsManager: PointsManager
+    val pointsManager: PointsManager,
+    val authManager: AuthManager,
 ) : ViewModel() {
 
-    //TODO: Reserve flow
     suspend fun reserve() {
         pointsManager.verifyPassport()
-        walletManager.updateIsReserved()
+        pointsManager.getPointsBalance()
+        walletManager.loadBalances()
     }
 
     fun getFlag(): String {

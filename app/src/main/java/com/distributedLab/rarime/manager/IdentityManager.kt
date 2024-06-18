@@ -32,11 +32,6 @@ class IdentityManager @Inject constructor(
 
     val profiler: StateFlow<Profile>
         get() {
-            if (_profiler == null) {
-                // FIXME: setting in getter
-                _profiler.value = Profile().newProfile(privateKeyBytes)
-
-            }
             return _profiler.asStateFlow()
         }
 
@@ -54,13 +49,22 @@ class IdentityManager @Inject constructor(
         } ?: ""
     }
 
-    fun getUserNullifier(): String {
-        // TODO: rename, not for airdrop only
-        return profiler.value.calculateAirdropEventNullifier(BaseConfig.POINTS_SVC_ID)
+    fun getUserAirDropNullifier(): String {
+        return profiler.value.calculateEventNullifierInt(BaseConfig.AIRDROP_SVC_ID)
     }
 
-    fun getUserNullifierHex(): String {
-        return "0x" + BigInteger(this.getUserNullifier())
+    fun getUserAirDropNullifierHex(): String {
+        return "0x" + BigInteger(this.getUserAirDropNullifier())
+            .toByteArray()
+            .toHexString()
+    }
+
+    fun getUserPointsNullifier(): String {
+        return profiler.value.calculateEventNullifierInt(BaseConfig.POINTS_SVC_ID)
+    }
+
+    fun getUserPointsNullifierHex(): String {
+        return "0x" + BigInteger(this.getUserPointsNullifier())
             .toByteArray()
             .toHexString()
     }

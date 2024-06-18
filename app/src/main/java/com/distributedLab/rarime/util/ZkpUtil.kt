@@ -48,6 +48,18 @@ object ZkpUtil {
     ): Int
 
 
+    external fun auth(
+        circuitBuffer: ByteArray,
+        circuitSize: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+
     init {
         System.loadLibrary("rarime")
     }

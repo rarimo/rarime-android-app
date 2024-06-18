@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.modules.passportVerify
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -46,7 +47,11 @@ fun VerifySpecificScreen(
 
     suspend fun claimTokens() {
         isClaiming = true
-        claimTokenViewModel.claimAirdrop()
+        try {
+            claimTokenViewModel.claimAirdrop()
+        } catch (e: Exception) {
+            Log.e("ClaimSpecificToken", e.toString())
+        }
         isClaiming = false
         onFinish()
     }

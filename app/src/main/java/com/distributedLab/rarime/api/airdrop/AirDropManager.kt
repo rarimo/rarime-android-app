@@ -2,9 +2,8 @@ package com.distributedLab.rarime.api.airdrop
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.api.airdrop.models.AirdropEventParamsBody
+import com.distributedLab.rarime.api.airdrop.models.AirDropStatuses
 import com.distributedLab.rarime.api.airdrop.models.CreateAirDrop
 import com.distributedLab.rarime.api.airdrop.models.CreateAirDropAttributes
 import com.distributedLab.rarime.api.airdrop.models.CreateAirDropBody
@@ -25,6 +24,9 @@ import identity.Identity
 import identity.Profile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import java.util.Date
 import javax.inject.Inject
@@ -37,7 +39,10 @@ class AirDropManager @Inject constructor(
     private val identityManager: IdentityManager,
     private val dataStoreManager: SecureSharedPrefsManager,
 ) {
-    private var isAirdropClaimed = mutableStateOf(false)
+    private var _isAirdropClaimed = MutableStateFlow(false)
+
+    val isAirDropClaimed: StateFlow<Boolean>
+        get() = _isAirdropClaimed.asStateFlow()
 
     private suspend fun generateAirdropQueryProof(
         registrationProof: ZkProof, eDocument: EDocument, privateKey: ByteArray
@@ -70,7 +75,6 @@ class AirDropManager @Inject constructor(
 
         Log.i("pubSignal", Identity.bigIntToBytes(registrationProof.pub_signals[0]).size.toString())
 
-
         val passportInfoRaw = withContext(Dispatchers.IO) {
             registrationContract.getPassportInfo(
                 Identity.bigIntToBytes(registrationProof.pub_signals[0])
@@ -87,12 +91,12 @@ class AirDropManager @Inject constructor(
         val queryProofInputs = profiler.buildAirdropQueryIdentityInputs(
             eDocument.dg1!!.decodeHexString(),
             smtProofJson.toByteArray(Charsets.UTF_8),
-            airDropParams.data.attributes.querySelector.toString(),
+            airDropParams.data.attributes.query_selector.toString(),
             registrationProof.pub_signals[0],
             identityInfo.issueTimestamp.toString(),
             passportInfo.identityReissueCounter.toString(),
-            airDropParams.data.attributes.eventId,
-            airDropParams.data.attributes.startedAt.toLong()
+            airDropParams.data.attributes.event_id,
+            airDropParams.data.attributes.started_at
         )
 
         val queryProof = withContext(Dispatchers.Default) {
@@ -116,19 +120,20 @@ class AirDropManager @Inject constructor(
                 attributes = CreateAirDropAttributes(
                     address = rarimoAddress,
 //                    "SHA256withRSA",
-                    zkProof = zkProof
+                    zk_proof = zkProof
                 )
             )
         )
 
 
         withContext(Dispatchers.IO) {
-            val resp = airDropAPIManager.createAirDrop(payload)
+            airDropAPIManager.createAirDrop(payload)
         }
     }
 
     suspend fun claimAirdrop() {
-        if (isAirdropClaimed.value) return
+        if (_isAirdropClaimed.value) return
+
         val eDocument = dataStoreManager.readEDocument()!!
         val registrationProof = dataStoreManager.readRegistrationProof()!!
 
@@ -151,11 +156,20 @@ class AirDropManager @Inject constructor(
             // FIXME: use tx from token and remove transaction key from store
             dataStoreManager.addTransaction(transaction)
 
-            isAirdropClaimed.value = true
+            _isAirdropClaimed.value = true
         }
     }
 
-    suspend fun getAirDropParams(): AirdropEventParamsBody {
-        return airDropAPIManager.getAirDropParams()
+    suspend fun getAirDropByNullifier() {
+        val nullifier = identityManager.getUserAirDropNullifier()
+
+        try {
+            val response = airDropAPIManager.getAirDropByNullifier(nullifier)
+
+            _isAirdropClaimed.value = response.data.attributes.status == AirDropStatuses.COMPLETED.value
+        } catch (e: Exception) {
+            _isAirdropClaimed.value = false
+        }
+
     }
 }

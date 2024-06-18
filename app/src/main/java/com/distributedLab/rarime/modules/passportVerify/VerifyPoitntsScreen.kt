@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.modules.passportVerify
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -47,9 +48,13 @@ fun VerifyPoitntsScreen(
     val termsAcceptedState = rememberAppCheckboxState()
     suspend fun reserveTokens() {
         isReserving = true
-        reserveTokenViewModel.reserve()
+        try {
+            reserveTokenViewModel.reserve()
+            onFinish()
+        } catch(e: Exception) {
+            Log.e("VerifyPoitntsScreen", "Error reserving tokens", e)
+        }
         isReserving = false
-        onFinish()
     }
 
     Column(

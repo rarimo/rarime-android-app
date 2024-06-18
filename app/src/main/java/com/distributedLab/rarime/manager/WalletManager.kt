@@ -6,6 +6,7 @@ import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.api.cosmos.CosmosManager
 import com.distributedLab.rarime.api.erc20.Erc20Manager
 import com.distributedLab.rarime.api.points.PointsAPIManager
+import com.distributedLab.rarime.api.points.PointsManager
 import com.distributedLab.rarime.data.RarimoChains
 import com.distributedLab.rarime.data.tokens.Erc20Token
 import com.distributedLab.rarime.data.tokens.PointsToken
@@ -27,14 +28,7 @@ data class WalletAssetJSON(
 )
 
 class WalletAsset(val userAddress: String, val token: Token) {
-    private var _balance = MutableStateFlow(BigInteger.ZERO)
-
-    val balance: StateFlow<BigInteger>
-        get() = _balance.asStateFlow()
-
-    fun updateBalance(balance: BigInteger) {
-        _balance.value = balance
-    }
+    var balance = mutableStateOf(BigInteger.ZERO)
 
     var transactions = mutableStateOf(listOf<Transaction>())
 
@@ -42,15 +36,14 @@ class WalletAsset(val userAddress: String, val token: Token) {
         return Gson().toJson(
             WalletAssetJSON(
                 tokenSymbol = token.symbol,
-                balance = _balance.value.toString(),
+                balance = balance.value.toString(),
                 transactions = transactions.value
             )
         )
     }
 
     suspend fun loadBalance() {
-        _balance.value = token.balanceOf(userAddress)
-        Log.i("WalletAssetBalance", _balance.value.toString())
+        balance.value = token.balanceOf(userAddress)
     }
 
     suspend fun loadTransactions() {
@@ -58,7 +51,7 @@ class WalletAsset(val userAddress: String, val token: Token) {
     }
 
     fun humanBalance(): Double {
-        return _balance.value.divide(
+        return balance.value.divide(
             BigInteger.TEN.pow(token.decimals)
         ).toDouble()
     }
@@ -67,17 +60,11 @@ class WalletAsset(val userAddress: String, val token: Token) {
 class WalletManager @Inject constructor(
     private val dataStoreManager: SecureSharedPrefsManager,
     private val identityManager: IdentityManager,
-    private val pointsAPIManager: PointsAPIManager,
+    private val pointsManager: PointsManager,
     private val cosmosManager: CosmosManager,
     private val stableCoinContractManager: StableCoinContractManager,
     private val erc20Manager: Erc20Manager
 ) {
-    var _isPointsBalanceCreated = MutableStateFlow(false)
-        private set
-
-    val isPointsBalanceCreated: StateFlow<Boolean>
-        get() = _isPointsBalanceCreated.asStateFlow()
-
     private var _walletAssets = MutableStateFlow(
         dataStoreManager.readWalletAssets(
             listOf(
@@ -95,44 +82,20 @@ class WalletManager @Inject constructor(
                         identityManager
                     )
                 ), WalletAsset(
-                    identityManager.rarimoAddress(), PointsToken(
-                        identityManager = identityManager, pointsAPIManager = pointsAPIManager
+                    identityManager.rarimoAddress(),
+                    PointsToken(
+                        pointsManager = pointsManager
                     )
                 )
             )
         )
     )
 
-    private val _isSpecificClaimed = MutableStateFlow(
-        dataStoreManager.readIsSpecificClaimed()
-    )
-    val isSpecificClaimed: StateFlow<Boolean>
-        get() = _isSpecificClaimed.asStateFlow()
-
-
-    private val _isReserved = MutableStateFlow(
-        dataStoreManager.readIsReserved()
-    )
-
-    val isReserved: StateFlow<Boolean>
-        get() = _isReserved.asStateFlow()
-
-
     val walletAssets: StateFlow<List<WalletAsset>>
         get() = _walletAssets.asStateFlow()
 
     private val _selectedWalletAsset =
         MutableStateFlow(dataStoreManager.readSelectedWalletAsset(walletAssets.value))
-
-    fun updateIsReserved() {
-        _isReserved.value = true
-        dataStoreManager.saveIsReserved()
-    }
-
-    fun updateIsSpecificClaimed() {
-        _isSpecificClaimed.value = true
-        dataStoreManager.readIsSpecificClaimed()
-    }
 
     val selectedWalletAsset: StateFlow<WalletAsset>
         get() = _selectedWalletAsset.asStateFlow()
@@ -157,6 +120,4 @@ class WalletManager @Inject constructor(
             dataStoreManager.saveWalletAssets(_walletAssets.value)
         }
     }
-
-    private var isAirdropClaimed = mutableStateOf(false)
 }

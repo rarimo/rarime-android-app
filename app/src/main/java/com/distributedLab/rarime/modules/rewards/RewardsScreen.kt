@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.modules.rewards
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,7 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.data.tokens.PreviewerToken
-import com.distributedLab.rarime.api.points.models.PointsEvent
+import com.distributedLab.rarime.api.points.models.PointsEventData
 import com.distributedLab.rarime.manager.WalletAsset
 import com.distributedLab.rarime.modules.home.components.passport.StatusCard
 import com.distributedLab.rarime.modules.rewards.components.ActiveTasksList
@@ -67,8 +68,45 @@ val localRewardsScreenViewModel =
 fun RewardsScreen(
     navigate: (String) -> Unit, rewardsViewModel: RewardsViewModel = hiltViewModel()
 ) {
+    val isAuthorized = rewardsViewModel.isAuthorized.collectAsState()
+
     CompositionLocalProvider(localRewardsScreenViewModel provides rewardsViewModel) {
-        RewardsScreenContent(navigate)
+        // TODO: move to global init
+        if (isAuthorized.value) {
+            RewardsScreenContent(navigate)
+        } else {
+            RewardsUnauthorized()
+        }
+    }
+}
+
+@Composable
+fun RewardsUnauthorized() {
+    val rewardsViewModel = localRewardsScreenViewModel.current
+
+    val coroutineScope = rememberCoroutineScope()
+
+    suspend fun login() {
+        try {
+            rewardsViewModel.login()
+        } catch (e: Exception) {
+            Log.e("HomeViewModel", "login: ${e.message}")
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(RarimeTheme.colors.backgroundPrimary)
+            .padding(12.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // TODO: implement properly
+        PrimaryButton(
+            text = "Login",
+            onClick = { coroutineScope.launch { login() } }
+        )
     }
 }
 
@@ -94,7 +132,11 @@ fun RewardsScreenContent(
 
     LaunchedEffect(Unit) {
         scope.launch {
-            rewardsViewModel.init()
+            try {
+                rewardsViewModel.init()
+            } catch (e: Exception) {
+                Log.e("RewardsScreenContent", "init: ${e.message}")
+            }
         }
     }
 
@@ -124,7 +166,7 @@ fun RewardsScreenContent(
             Spacer(modifier = Modifier.height(22.dp))
 
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 RewardsScreenUserStatistic(
@@ -147,6 +189,8 @@ fun RewardsScreenContent(
                         navigate = navigate, activeTasksEvents = activeTasksEvents.value
                     )
                 }
+
+                Spacer(modifier = Modifier.height(100.dp))
             }
         }
     }
@@ -285,7 +329,7 @@ fun RewardsScreenUserStatistic(
 
 @Composable
 fun LimitedEventsList(
-    navigate: (String) -> Unit, limitedTimeEvents: List<PointsEvent>?
+    navigate: (String) -> Unit, limitedTimeEvents: List<PointsEventData>?
 ) {
     Column {
         Row(
@@ -320,7 +364,7 @@ fun LimitedEventsList(
                 )
             } else {
                 TimeEventsList(
-                    modifier = Modifier.fillMaxWidth(), navigate = navigate, pointsEvents = it
+                    modifier = Modifier.fillMaxWidth(), navigate = navigate, pointsEventData = it
                 )
             }
         } ?: TimeEventsListSkeleton()
@@ -329,7 +373,7 @@ fun LimitedEventsList(
 
 @Composable
 fun ActiveTastsList(
-    navigate: (String) -> Unit, activeTasksEvents: List<PointsEvent>?
+    navigate: (String) -> Unit, activeTasksEvents: List<PointsEventData>?
 ) {
     Column {
         Row(
@@ -352,7 +396,7 @@ fun ActiveTastsList(
                 )
             } else {
                 ActiveTasksList(
-                    navigate = navigate, pointsEvents = it
+                    navigate = navigate, pointsEventData = it
                 )
             }
         } ?: ActiveTasksListSkeleton()

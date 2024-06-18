@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.distributedLab.rarime.api.points.models.PointsEvent
+import com.distributedLab.rarime.api.points.models.PointsEventData
 import com.distributedLab.rarime.modules.rewards.view_models.CONST_MOCKED_EVENTS_LIST
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.theme.RarimeTheme
@@ -18,15 +18,15 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 fun ActiveTasksList(
     modifier: Modifier = Modifier,
     navigate: (String) -> Unit,
-    pointsEvents: List<PointsEvent>
+    pointsEventData: List<PointsEventData>
 ) {
     Column (
         modifier = modifier
     ) {
-        pointsEvents.forEachIndexed { idx, item ->
+        pointsEventData.forEachIndexed { idx, item ->
             ActiveTaskItem(navigate = navigate, pointEvent = item)
 
-            if (idx != pointsEvents.size - 1) {
+            if (idx != pointsEventData.size - 1) {
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
@@ -56,7 +56,7 @@ private fun TimeEventsListPreview () {
     ) {
         ActiveTasksList(
             navigate = {},
-            pointsEvents = CONST_MOCKED_EVENTS_LIST
+            pointsEventData = CONST_MOCKED_EVENTS_LIST
         )
 
         ActiveTasksListSkeleton()

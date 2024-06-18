@@ -1,163 +1,96 @@
 package com.distributedLab.rarime.api.points
 
-import android.util.Log
 import com.distributedLab.rarime.api.points.models.ClaimEventBody
-import com.distributedLab.rarime.api.points.models.ClaimEventPayload
-import com.distributedLab.rarime.api.points.models.CreateBalanceAttributes
 import com.distributedLab.rarime.api.points.models.CreateBalanceBody
-import com.distributedLab.rarime.api.points.models.CreateBalancePayload
-import com.distributedLab.rarime.api.points.models.PointsBalance
-import com.distributedLab.rarime.api.points.models.PointsEvent
+import com.distributedLab.rarime.api.points.models.PointsBalanceBody
+import com.distributedLab.rarime.api.points.models.PointsEventBody
+import com.distributedLab.rarime.api.points.models.PointsEventsListBody
+import com.distributedLab.rarime.api.points.models.PointsEventsTypesBody
 import com.distributedLab.rarime.api.points.models.PointsPrice
-import com.distributedLab.rarime.api.points.models.PointsWithdrawal
-import com.distributedLab.rarime.api.points.models.VerifyPassportAttributes
+import com.distributedLab.rarime.api.points.models.PointsWithdrawalBody
 import com.distributedLab.rarime.api.points.models.VerifyPassportBody
-import com.distributedLab.rarime.api.points.models.VerifyPassportPayload
 import com.distributedLab.rarime.api.points.models.WithdrawBody
-import com.distributedLab.rarime.api.points.models.WithdrawPayload
-import com.distributedLab.rarime.api.points.models.WithdrawPayloadAttributes
-import com.distributedLab.rarime.manager.IdentityManager
-import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import javax.inject.Inject
 
-class PointsAPIManager @Inject constructor(
-    private val jsonApiPointsSvcManager: PointsAPI,
-    private val identityManager: IdentityManager
-) {
+class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: PointsAPI) {
     /* BALANCE */
-
-    suspend fun createPointsBalance(referralCode: String): PointsBalance? {
-        val userNullifier = identityManager.getUserNullifier()
-        val userNullifierHex = identityManager.getUserNullifierHex()
-
-        if (userNullifierHex.isEmpty()) {
-            throw Exception("user nullifier is null")
-        }
-
-        val body = CreateBalanceBody(
-            data = CreateBalancePayload(
-                id = userNullifierHex,
-                type = "create_balance",
-                attributes = CreateBalanceAttributes(
-                    referredBy = referralCode
-                )
-            )
-        )
-
-        Log.i("user nullifier", userNullifier)
-        Log.i("create balance body", Gson().toJson(body))
-
-        val response = jsonApiPointsSvcManager.createPointsBalance(body)
-
-        if (response.isSuccessful) {
-            return response.body()!!
-        }
-
-        throw Exception(response.errorBody()?.string().toString())
-    }
-
-    suspend fun getLeaderboard(): List<PointsBalance>? {
-        val response = jsonApiPointsSvcManager.getLeaderboard()
-
-        if (response.isSuccessful) {
-            return response.body()!!
-        }
-
-        throw Exception(response.errorBody()?.string().toString())
-    }
-
-    suspend fun getPointsBalance(): PointsBalance? {
-        val userNullifierHex = identityManager.getUserNullifierHex()
-
-        if (userNullifierHex.isEmpty()) {
-            throw Exception("user nullifier is null")
-        }
-
-        val response = jsonApiPointsSvcManager.getPointsBalance(userNullifierHex)
-
-        if (response.isSuccessful) {
-            return response.body()!!
-        }
-
-        throw Exception(response.errorBody()?.string().toString())
-    }
-
-    suspend fun verifyPassport(): Unit {
-        val userNullifierHex = identityManager.getUserNullifierHex()
-
-        if (userNullifierHex.isEmpty()) {
-            throw Exception("user nullifier is null")
-        }
-
-        if (identityManager.registrationProof.value == null) {
-            throw Exception("registration proof is null")
-        }
-
-        val body = VerifyPassportBody(
-            data = VerifyPassportPayload(
-                id = userNullifierHex,
-                type = "verify_passport",
-                attributes = VerifyPassportAttributes(
-                    proof = identityManager.registrationProof.value!!.proof
-                )
-            )
-        )
-
-        val response = jsonApiPointsSvcManager.verifyPassport(userNullifierHex, body)
-
-        if (!response.isSuccessful) {
-            // TODO: get error code
-            throw Exception("Failed to verify passport")
+    suspend fun createPointsBalance(body: CreateBalanceBody, authorization: String): PointsBalanceBody {
+        return withContext(Dispatchers.IO) {
+            try {
+                jsonApiPointsSvcManager.createPointsBalance(body, authorization)
+            } catch (e: HttpException) {
+                throw Exception(e.toString())
+            }
         }
     }
 
-    suspend fun getWithdrawalHistory(nullifier: String): List<PointsWithdrawal>? {
-        val response = jsonApiPointsSvcManager.getWithdrawalHistory(nullifier)
-
-        if (response.isSuccessful) {
-            return response.body()!!
+    suspend fun getLeaderboard(): List<PointsBalanceBody> {
+        return withContext(Dispatchers.IO) {
+            try {
+                jsonApiPointsSvcManager.getLeaderboard()
+            } catch (e: HttpException) {
+                throw Exception(e.toString())
+            }
         }
-
-        throw Exception(response.errorBody()?.string().toString())
     }
 
-    suspend fun withdrawPoints(amount: Double): PointsWithdrawal? {
-        val userNullifierHex = identityManager.getUserNullifierHex()
+    suspend fun getPointsBalance(userNullifierHex: String, authorization: String): PointsBalanceBody? {
+        try {
+            val response = jsonApiPointsSvcManager.getPointsBalance(userNullifierHex, authorization)
 
-        if (userNullifierHex.isEmpty()) {
-            throw Exception("user nullifier is null")
+            return response
+        } catch (e: HttpException) {
+            throw Exception(e.toString())
         }
 
-        val response = jsonApiPointsSvcManager.withdrawPoints(
-            userNullifierHex,
-            WithdrawBody(
-                data = WithdrawPayload(
-                    id = userNullifierHex,
-                    type = "withdraw",
-                    attributes = WithdrawPayloadAttributes(
-                        amount = amount.toLong(),
-                        address = identityManager.rarimoAddress(),
-                        proof = identityManager.registrationProof.value!!.proof
-                    )
-                )
-            )
-        )
-
-        if (response.isSuccessful) {
-            return response.body()!!
-        }
-
-        throw Exception(response.errorBody()?.string().toString())
+        return null
     }
 
-    suspend fun getPointPrice(): PointsPrice? {
-        val response = jsonApiPointsSvcManager.getPointPrice()
-
-        if (response.isSuccessful) {
-            return response.body()!!
+    suspend fun verifyPassport(
+        userNullifierHex: String,
+        body: VerifyPassportBody,
+        authorization: String,
+    ) {
+        withContext(Dispatchers.IO) {
+            try {
+                jsonApiPointsSvcManager.verifyPassport(userNullifierHex, body, authorization)
+            } catch (e: HttpException) {
+                throw Exception(e.toString())
+            }
         }
+    }
 
-        throw Exception(response.errorBody()?.string().toString())
+    suspend fun getWithdrawalHistory(nullifier: String): List<PointsWithdrawalBody> {
+        return withContext(Dispatchers.IO) {
+            try {
+                jsonApiPointsSvcManager.getWithdrawalHistory(nullifier)
+            } catch (e: HttpException) {
+                throw Exception(e.toString())
+            }
+        }
+    }
+
+    suspend fun withdrawPoints(userNullifierHex: String, body: WithdrawBody): PointsWithdrawalBody {
+        return withContext(Dispatchers.IO) {
+            try {
+                jsonApiPointsSvcManager.withdrawPoints(userNullifierHex, body)
+            } catch (e: HttpException) {
+                throw Exception(e.toString())
+            }
+        }
+    }
+
+    suspend fun getPointPrice(): PointsPrice {
+        return withContext(Dispatchers.IO) {
+            try {
+                jsonApiPointsSvcManager.getPointPrice()
+            } catch (e: HttpException) {
+                throw Exception(e.toString())
+            }
+        }
     }
 
     // TODO: implement
@@ -165,37 +98,45 @@ class PointsAPIManager @Inject constructor(
 
     /* EVENTS */
 
-    suspend fun getEventsList(): List<PointsEvent>? {
-        val response = jsonApiPointsSvcManager.getEventsList()
-
-        if (response.isSuccessful) {
-            return response.body()!!
+    suspend fun getEventTypes(
+        params: Map<String, String>
+    ): PointsEventsTypesBody {
+        try {
+            return jsonApiPointsSvcManager.getEventTypes(params)
+        } catch (e: HttpException) {
+            throw Exception(e.toString())
         }
-
-        throw Exception(response.errorBody()?.string().toString())
     }
 
-    suspend fun getEvent(id: String): PointsEvent? {
-        val response = jsonApiPointsSvcManager.getEvent(id)
-
-        if (response.isSuccessful) {
-            return response.body()!!
-        }
-
-        throw Exception(response.errorBody()?.string().toString())
-    }
-
-    suspend fun claimPointsByEvent(id: String, payload: ClaimEventPayload): PointsEvent? {
-        val response = jsonApiPointsSvcManager.claimPointsByEvent(
-            id, ClaimEventBody(
-                data = payload
+    suspend fun getEventsList(
+        authorization: String,
+        params: Map<String, String>
+    ): PointsEventsListBody {
+        try {
+            return jsonApiPointsSvcManager.getEventsList(
+                authorization,
+                params,
             )
-        )
-
-        if (response.isSuccessful) {
-            return response.body()!!
+        } catch (e: HttpException) {
+            throw Exception(e.toString())
         }
+    }
 
-        throw Exception(response.errorBody()?.string().toString())
+    suspend fun getEvent(id: String, authorization: String): PointsEventBody {
+        try {
+            return jsonApiPointsSvcManager.getEvent(id, authorization)
+        } catch (e: HttpException) {
+            throw Exception(e.toString())
+        }
+    }
+
+    suspend fun claimPointsByEvent(id: String, body: ClaimEventBody): PointsEventBody {
+        return withContext(Dispatchers.IO) {
+            try {
+                jsonApiPointsSvcManager.claimPointsByEvent(id, body)
+            } catch (e: HttpException) {
+                throw Exception(e.toString())
+            }
+        }
     }
 }
