@@ -37,9 +37,17 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
         }
     }
 
-    suspend fun getPointsBalance(userNullifierHex: String, authorization: String): PointsBalanceBody? {
+    suspend fun getPointsBalance(
+        userNullifierHex: String,
+        authorization: String,
+        queryParams: Map<String, String>
+    ): PointsBalanceBody? {
         try {
-            val response = jsonApiPointsSvcManager.getPointsBalance(userNullifierHex, authorization)
+            val response = jsonApiPointsSvcManager.getPointsBalance(
+                userNullifierHex,
+                authorization,
+                queryParams,
+            )
 
             return response
         } catch (e: HttpException) {

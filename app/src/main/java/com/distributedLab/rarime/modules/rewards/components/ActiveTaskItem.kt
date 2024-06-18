@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.api.points.models.BaseEvents
 import com.distributedLab.rarime.api.points.models.PointsEventData
 import com.distributedLab.rarime.modules.rewards.view_models.CONST_MOCKED_EVENTS_LIST
 import com.distributedLab.rarime.ui.components.AppIcon
@@ -28,13 +29,23 @@ import com.distributedLab.rarime.ui.components.AppSkeleton
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Screen
 
+val ICONS_BY_BASE_EVENT_MAP = mapOf(
+    BaseEvents.PASSPORT_SCAN.value to R.drawable.ic_user_focus,
+    BaseEvents.REFERRAL_COMMON.value to R.drawable.ic_users,
+    BaseEvents.REFERRAL_SPECIFIC.value to R.drawable.ic_user,
+    BaseEvents.BE_REFERRED.value to R.drawable.ic_user,
+    BaseEvents.FREE_WEEKLY.value to R.drawable.ic_star_four,
+)
+
 @Composable
 fun ActiveTaskItem(
     modifier: Modifier = Modifier,
     navigate: (String) -> Unit,
     pointEvent: PointsEventData
 ) {
-    Row (
+    val eventIcon = ICONS_BY_BASE_EVENT_MAP[pointEvent.attributes.meta.static.name] ?: R.drawable.ic_users
+
+    Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
@@ -47,7 +58,7 @@ fun ActiveTaskItem(
                 )
             }
     ) {
-        Box (
+        Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .clip(RoundedCornerShape(100.dp))
@@ -56,34 +67,36 @@ fun ActiveTaskItem(
                 .background(RarimeTheme.colors.baseBlack)
         ) {
             AppIcon(
-                id = R.drawable.ic_users,
+                id = eventIcon,
                 tint = RarimeTheme.colors.baseWhite
             )
         }
 
-        Row (
+        Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Column (
-                modifier = Modifier.weight(1f).absolutePadding(right = 8.dp),
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .absolutePadding(right = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(
-                    text = "${pointEvent.attributes.meta.static.title}/${pointEvent.attributes.status.toString()}",
+                    text = pointEvent.attributes.meta.static.title,
                     style = RarimeTheme.typography.subtitle4,
                     color = RarimeTheme.colors.textPrimary,
                 )
 
-                Text (
+                Text(
                     text = pointEvent.attributes.meta.static.shortDescription,
                     style = RarimeTheme.typography.body4,
                     color = RarimeTheme.colors.textSecondary,
                 )
             }
 
-            Row (
+            Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -100,7 +113,7 @@ fun ActiveTaskItem(
 
 @Composable
 fun ActiveTaskItemSkeleton() {
-    Row (
+    Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -110,12 +123,12 @@ fun ActiveTaskItemSkeleton() {
                 .height(40.dp)
         )
 
-        Row (
+        Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Column (
+            Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
@@ -131,7 +144,7 @@ fun ActiveTaskItemSkeleton() {
                 )
             }
 
-            Row (
+            Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -153,8 +166,8 @@ fun ActiveTaskItemSkeleton() {
 
 @Preview
 @Composable
-private fun TimeEventsListPreview () {
-    Column (
+private fun TimeEventsListPreview() {
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary)

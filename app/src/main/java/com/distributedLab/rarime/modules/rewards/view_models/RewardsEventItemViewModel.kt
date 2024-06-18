@@ -23,6 +23,8 @@ class RewardsEventItemViewModel @Inject constructor(
     val pointsEventData: StateFlow<PointsEventData?>
         get() = _pointsEventData.asStateFlow()
 
+    val pointsBalance = pointsManager.pointsBalance
+
     suspend fun loadPointsEvent () {
         _pointsEventData.value = pointsManager.getEventById(itemId)?.data
     }

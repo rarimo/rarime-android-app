@@ -86,7 +86,7 @@ dependencies {
 //    implementation("moe.banana:moshi-jsonapi:master-SNAPSHOT")
 
     implementation("com.github.jeziellago:compose-markdown:0.5.0")
-    implementation("io.coil-kt:coil-compose:2.0.0-rc01")
+    implementation("io.coil-kt:coil-compose:2.6.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
