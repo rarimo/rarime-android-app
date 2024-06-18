@@ -10,11 +10,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
 import com.distributedLab.rarime.modules.main.MainScreen
 import com.distributedLab.rarime.modules.passportScan.nfc.NfcViewModel
+import com.distributedLab.rarime.util.FileDownloaderInternal
+import com.distributedLab.rarime.util.ZkpUtil
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Objects
 
@@ -35,6 +39,28 @@ class MainActivity : AppCompatActivity() {
         setContent {
             MainScreen()
         }
+
+
+//        lifecycleScope.launch {
+//            while (true) {
+//                val status = fileDownloader.checkDownloadStatus()
+//                Log.i(status, status)
+//                delay(1000L) // Check status every second
+//                if (!status.contains("Download successful")) continue
+//                val filePath = status.split("Download successful: ")[1]
+//                val res = fileDownloader.unzipDownloadedFile()
+//
+//                val fileUzipePath = res.split("File unzipped to: ")[1]
+//                val zkpres = ZkpUtil.test(fileUzipePath)
+//                if (zkpres == 0) break
+//                else throw IllegalStateException("File is not unzipped")
+//            }
+//            setContent {
+//                MainScreen()
+//            }
+//        }
+
+
     }
 
     private fun enableForegroundDispatch() {

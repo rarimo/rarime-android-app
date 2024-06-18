@@ -3,6 +3,7 @@ package com.distributedLab.rarime.util
 import android.content.Context
 import android.content.res.AssetManager
 import com.distributedLab.rarime.util.ZkpUtil.groth16ProverBig
+import com.distributedLab.rarime.util.ZkpUtil.groth16ProverInternalStorage
 import com.distributedLab.rarime.util.data.Proof
 import com.distributedLab.rarime.util.data.ZkProof
 import com.google.gson.Gson
@@ -23,16 +24,17 @@ object ZkpUtil {
     ): Int
 
 
-
-    external fun registerIdentityUniversal(
-        circuitBuffer: ByteArray,
-        circuitSize: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
+    external fun groth16ProverInternalStorage(
+        fileName: String,
         wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
+        wtnsSize: Long,
+        proofBuffer: ByteArray,
+        proofSize: LongArray,
+        publicBuffer: ByteArray,
+        publicSize: LongArray,
         errorMsg: ByteArray,
-        errorMsgMaxSize: Long
+        errorMsgMaxSize: Long,
+        assetManager: AssetManager
     ): Int
 
 
@@ -59,6 +61,26 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
+    external fun registerIdentityUniversalRSA2048(
+        datFilePath: String,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+    external fun registerIdentityUniversalRSA4096(
+        datFilePath: String,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
 
     init {
         System.loadLibrary("rarime")
@@ -67,6 +89,95 @@ object ZkpUtil {
 }
 
 class ZKPUseCase(val context: Context, assetManager: AssetManager) {
+
+    fun generateRegisterZKP(
+        zkeyFilePath: String, datFilePath: String, inputs: ByteArray, proofFunction: (
+            datFilePath: String, jsonBuffer: ByteArray, jsonSize: Long, wtnsBuffer: ByteArray, wtnsSize: LongArray, errorMsg: ByteArray, errorMsgMaxSize: Long
+        ) -> Int
+    ): ZkProof {
+
+
+        val msg = ByteArray(256)
+
+        val witnessLen = LongArray(1)
+        witnessLen[0] = 100 * 1024 * 1024
+
+        val byteArr = ByteArray(100 * 1024 * 1024)
+
+        val res = proofFunction(
+            datFilePath,
+            inputs,
+            inputs.size.toLong(),
+            byteArr,
+            witnessLen,
+            msg,
+            256
+        )
+
+        if (res == 2) {
+            throw Exception("Not enough memory for zkp")
+        }
+
+        if (res == 1) {
+            throw Exception("Error during zkp ${msg.decodeToString()}")
+        }
+
+        val pubData = ByteArray(2 * 1024 * 1024)
+
+
+        val pubLen = LongArray(1)
+        pubLen[0] = pubData.size.toLong()
+
+        val proofData = ByteArray(4 * 1024 * 1024)
+        val proofLen = LongArray(1)
+        proofLen[0] = proofData.size.toLong()
+
+        val witnessData = byteArr.copyOfRange(0, witnessLen[0].toInt())
+
+        val verification = groth16ProverInternalStorage(
+            zkeyFilePath,
+            witnessData,
+            witnessLen[0],
+            proofData,
+            proofLen,
+            pubData,
+            pubLen,
+            msg,
+            256,
+            context.assets
+        )
+
+        if (verification == -1) {
+            throw Exception("Error during zkp: file opening failure")
+        }
+
+        if (verification == 2) {
+            throw Exception("Not enough memory for verification ${msg.decodeToString()}")
+        }
+
+        if (verification == 1) {
+            throw Exception("Error during verification ${msg.decodeToString()}")
+        }
+
+        val proofDataZip = proofData.copyOfRange(0, proofLen[0].toInt())
+
+        val index = findLastIndexOfSubstring(
+            proofDataZip.toString(Charsets.UTF_8), "\"protocol\":\"groth16\"}"
+        )
+        val indexPubData = findLastIndexOfSubstring(
+            pubData.decodeToString(), "]"
+        )
+
+        val formatedPubData = pubData.decodeToString().slice(0..indexPubData)
+
+        val foramtedProof = proofDataZip.toString(Charsets.UTF_8).slice(0..index)
+        val proof = Proof.fromJson(foramtedProof)
+
+        return ZkProof(
+            proof = proof, pub_signals = getPubSignals(formatedPubData).toList()
+        )
+    }
+
     fun generateZKP(
         zkeyFileName: String, datFile: Int, inputs: ByteArray, proofFunction: (
             circuitBuffer: ByteArray, circuitSize: Long, jsonBuffer: ByteArray, jsonSize: Long, wtnsBuffer: ByteArray, wtnsSize: LongArray, errorMsg: ByteArray, errorMsgMaxSize: Long

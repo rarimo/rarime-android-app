@@ -1,9 +1,9 @@
 package com.distributedLab.rarime.manager
 
 import com.distributedLab.rarime.BaseConfig
-import com.distributedLab.rarime.contracts.Erc20Contract
 import com.distributedLab.rarime.contracts.rarimo.PoseidonSMT
 import com.distributedLab.rarime.contracts.rarimo.Registration
+import com.distributedLab.rarime.contracts.rarimo.StateKeeper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.web3j.crypto.Credentials
@@ -28,6 +28,17 @@ class RarimoContractManager @Inject constructor(@Named("RARIMO") private val web
         )
     }
 
+
+    fun getStateKeeper(): StateKeeper {
+        val ecKeyPair = Keys.createEcKeyPair()
+
+        val credentials = Credentials.create(ecKeyPair)
+        val gasProvider = DefaultGasProvider()
+
+        return StateKeeper.load(
+            BaseConfig.STATE_KEEPER_CONTRACT_ADDRESS, web3j, credentials, gasProvider
+        )
+    }
 
 
     fun getPoseidonSMT(address: String): PoseidonSMT {

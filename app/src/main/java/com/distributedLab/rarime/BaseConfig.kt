@@ -120,4 +120,11 @@ object BaseConfig {
     const val MASTER_CERTIFICATES_BUCKETNAME = "rarimo-temp"
     const val EVM_STABLE_COIN_RPC = "https://ethereum-sepolia-rpc.publicnode.com"
     const val STABLE_COIN_ADDRESS = "0xbd03f0fC994fd1015eAdc37c943055330e238Ad9"
+
+    const val CERTIFICATES_SMT_CONTRACT_ADDRESS = "0x497aC4f35228F36bE9C0Fe08812878941bcbd23e"
+
+    const val STATE_KEEPER_CONTRACT_ADDRESS = "0x3a365028d4483d46ae29C782881bAB56696FA45F"
+
+    const val REGISTER_IDENTITY_CIRCUIT_DATA_RSA2048 = "https://storage.googleapis.com/rarimo-store/rdi1/registerIdentityUniversalRSA2048-download.zip"
+    const val REGISTER_IDENTITY_CIRCUIT_DATA_RSA4096 = "https://storage.googleapis.com/rarimo-store/rdi1/registerIdentityUniversalRSA4096-download.zip"
 }
