@@ -81,10 +81,13 @@ class PointsManager @Inject constructor(
             throw Exception("user nullifier is null")
         }
 
-        // FIXME: app crash on first-first login
         val response = pointsAPIManager.getPointsBalance(
             userNullifierHex,
-            "Bearer ${authManager.accessToken.value!!}"
+            "Bearer ${authManager.accessToken.value!!}",
+            mapOf(
+                "rank" to "true",
+                "referral_codes" to "true",
+            )
         )
 
         _pointsBalance.value = response

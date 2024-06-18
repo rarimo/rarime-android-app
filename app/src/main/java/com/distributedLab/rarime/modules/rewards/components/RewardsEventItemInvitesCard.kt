@@ -97,12 +97,13 @@ private fun RewardsEventItemInvitesCardContainer(
 }
 
 @Composable
-fun RewardsEventItemInvitesCard(code: ReferralCode) {
+fun RewardsEventItemInvitesCard(
+    code: ReferralCode,
+    rewardAmount: Long
+) {
     val context = LocalContext.current
 
-    Column(
-        modifier = Modifier.padding(vertical = 12.dp, horizontal = 24.dp)
-    ) {
+    Column {
         when (code.status) {
             ReferralCodeStatuses.REWARDED.value -> {
                 RewardsEventItemInvitesCardContainer(
@@ -110,7 +111,9 @@ fun RewardsEventItemInvitesCard(code: ReferralCode) {
                     isCodeDisabled = true,
                     description = "Rewarded",
                     actionContent = {
-                        RewardAmountPreview()
+                        RewardAmountPreview(
+                            amount = rewardAmount,
+                        )
                     }
                 )
             }
@@ -121,7 +124,9 @@ fun RewardsEventItemInvitesCard(code: ReferralCode) {
                     isCodeDisabled = true,
                     description = "used • friend need to scan passport",
                     actionContent = {
-                        RewardAmountPreview()
+                        RewardAmountPreview(
+                            amount = rewardAmount,
+                        )
                     }
                 )
             }
@@ -157,7 +162,9 @@ fun RewardsEventItemInvitesCard(code: ReferralCode) {
                     isCodeDisabled = true,
                     description = "Your friends country (known after scanning passport) is not allowed to participate in the referral program",
                     actionContent = {
-                        RewardAmountPreview()
+                        RewardAmountPreview(
+                            amount = rewardAmount,
+                        )
                     }
                 )
             }
@@ -168,7 +175,9 @@ fun RewardsEventItemInvitesCard(code: ReferralCode) {
                     isCodeDisabled = true,
                     description = "The limit of reserved tokens in your friends country is reached",
                     actionContent = {
-                        RewardAmountPreview()
+                        RewardAmountPreview(
+                            amount = rewardAmount,
+                        )
                     }
                 )
             }
@@ -179,7 +188,9 @@ fun RewardsEventItemInvitesCard(code: ReferralCode) {
                     isCodeDisabled = true,
                     description = "Friend has scanned passport • need your passport scan",
                     actionContent = {
-                        RewardAmountPreview()
+                        RewardAmountPreview(
+                            amount = rewardAmount,
+                        )
                     }
                 )
             }
@@ -195,44 +206,36 @@ private fun RewardsEventItemInvitesCardPreview() {
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(40.dp)
     ) {
-        RewardsEventItemInvitesCard(
-            code = ReferralCode(
-                id = "QrisPfszkps",
+        listOf(
+            ReferralCode(
+                id = "QrisPfszkps_1",
                 status = ReferralCodeStatuses.REWARDED.value
-            )
-        )
-
-        RewardsEventItemInvitesCard(
-            code = ReferralCode(
-                id = "QrisPfszkps",
-                status = ReferralCodeStatuses.CONSUMED.value
-            )
-        )
-        RewardsEventItemInvitesCard(
-            code = ReferralCode(
-                id = "QrisPfszkps",
+            ),
+            ReferralCode(
+                id = "QrisPfszkps_2",
+                status = ReferralCodeStatuses.CONSUMED.value,
+            ),
+            ReferralCode(
+                id = "QrisPfszkps_3",
                 status = ReferralCodeStatuses.ACTIVE.value
-            )
-        )
-
-        RewardsEventItemInvitesCard(
-            code = ReferralCode(
-                id = "QrisPfszkps",
+            ),
+            ReferralCode(
+                id = "QrisPfszkps_4",
                 status = ReferralCodeStatuses.BANNED.value
-            )
-        )
-        RewardsEventItemInvitesCard(
-            code = ReferralCode(
-                id = "QrisPfszkps",
+            ),
+            ReferralCode(
+                id = "QrisPfszkps_5",
                 status = ReferralCodeStatuses.LIMITED.value
-            )
-        )
-
-        RewardsEventItemInvitesCard(
-            code = ReferralCode(
-                id = "QrisPfszkps",
+            ),
+            ReferralCode(
+                id = "QrisPfszkps_6",
                 status = ReferralCodeStatuses.AWAITING.value
             )
-        )
+        ).forEach {
+            RewardsEventItemInvitesCard(
+                code = it,
+                rewardAmount = 100
+            )
+        }
     }
 }

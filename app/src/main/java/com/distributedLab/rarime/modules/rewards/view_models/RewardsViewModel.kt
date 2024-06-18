@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.api.auth.AuthManager
 import com.distributedLab.rarime.api.points.PointsManager
+import com.distributedLab.rarime.api.points.models.BaseEvents
 import com.distributedLab.rarime.api.points.models.PointsEventAttributes
 import com.distributedLab.rarime.data.tokens.PointsToken
 import com.distributedLab.rarime.api.points.models.PointsEventData
@@ -33,8 +34,8 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
             updatedAt = 0,
             meta = PointsEventMeta(
                 static = PointsEventMetaStatic(
-                    name = "Lorem ipsum 1",
-                    reward = 5,
+                    name = BaseEvents.PASSPORT_SCAN.value,
+                    reward = 50,
                     title = "Lorem ipsum 1",
                     description = MARKDOWN_CONTENT,
                     shortDescription = "Lorem ipsum dolor sit amet!",
@@ -62,7 +63,7 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
             updatedAt = 0,
             meta = PointsEventMeta(
                 static = PointsEventMetaStatic(
-                    name = "Lorem ipsum 2",
+                    name = BaseEvents.REFERRAL_COMMON.value,
                     reward = 50,
                     title = "Lorem ipsum 2",
                     description = MARKDOWN_CONTENT,
@@ -91,7 +92,7 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
             updatedAt = 0,
             meta = PointsEventMeta(
                 static = PointsEventMetaStatic(
-                    name = "Lorem ipsum 3",
+                    name = BaseEvents.FREE_WEEKLY.value,
                     reward = 500,
                     title = "Lorem ipsum 3",
                     description = MARKDOWN_CONTENT,
