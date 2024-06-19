@@ -54,7 +54,28 @@ fun ActiveTaskItem(
 
     // TODO: temp solution
     val isEventDisabled = pointEvent.attributes.meta.static.name == BaseEvents.PASSPORT_SCAN.value &&
-            passportStatus.value != PassportStatus.ALLOWED
+            (passportStatus.value == PassportStatus.WAITLIST || passportStatus.value == PassportStatus.NOT_ALLOWED)
+
+    fun handleBaseEvents() {
+        when (pointEvent.attributes.meta.static.name) {
+            BaseEvents.PASSPORT_SCAN.value -> {
+                when (passportStatus.value) {
+                    PassportStatus.ALLOWED -> {
+                        navigate(Screen.Claim.Reserve.route)
+                    }
+                    else -> {
+                        navigate(Screen.Main.Home.route)
+                    }
+                }
+            }
+            else -> {
+                Screen.Main.Rewards.RewardsEventsItem.route.replace(
+                    "{item_id}",
+                    pointEvent.id,
+                )
+            }
+        }
+    }
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -62,12 +83,7 @@ fun ActiveTaskItem(
         modifier = modifier
             .clickable {
                 if (!isEventDisabled) {
-                    navigate(
-                        Screen.Main.Rewards.RewardsEventsItem.route.replace(
-                            "{item_id}",
-                            pointEvent.id,
-                        )
-                    )
+                    handleBaseEvents()
                 }
             }
             .alpha(if (isEventDisabled) 0.25f else 1f )
