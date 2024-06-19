@@ -262,7 +262,9 @@ fun RewardsScreenUserStatistic(
                         text = stringResource(R.string.rewards_claim_btn),
                         leftIcon = R.drawable.ic_swap,
                         onClick = { navigate(Screen.Main.Rewards.RewardsClaim.route) },
-                        enabled = passportStatus == PassportStatus.ALLOWED && pointsWalletAsset.balance.value.toDouble() > 0.0,
+                        // TODO: implement in next releases
+//                        enabled = passportStatus == PassportStatus.ALLOWED && pointsWalletAsset.balance.value.toDouble() > 0.0,
+                        enabled = false,
                     )
                 }
 
