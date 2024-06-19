@@ -15,6 +15,7 @@ import com.distributedLab.rarime.api.points.models.PointsEventBody
 import com.distributedLab.rarime.api.points.models.PointsEventStatuses
 import com.distributedLab.rarime.api.points.models.PointsEventsListBody
 import com.distributedLab.rarime.api.points.models.PointsEventsTypesBody
+import com.distributedLab.rarime.api.points.models.PointsLeaderBoardBody
 import com.distributedLab.rarime.api.points.models.VerifyPassportAttributes
 import com.distributedLab.rarime.api.points.models.VerifyPassportBody
 import com.distributedLab.rarime.api.points.models.VerifyPassportData
@@ -254,9 +255,7 @@ class PointsManager @Inject constructor(
                         params = params
                     )
 
-                Log.i("PointsManager", response.toString())
-
-                response ?: PointsEventsListBody(data = emptyList())
+                response
             } catch (e: HttpException) {
                 PointsEventsListBody(data = emptyList())
             }
@@ -300,6 +299,21 @@ class PointsManager @Inject constructor(
                 )
             } catch (e: Exception) {
                 null
+            }
+        }
+    }
+
+    suspend fun getLeaderBoard(): PointsLeaderBoardBody {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = pointsAPIManager.getLeaderboard()
+
+                Log.i("PointsManager:getLeaderBoard", response.toString())
+
+                response
+            } catch (e: Exception) {
+                Log.e("getLeaderBoard", e.toString())
+                PointsLeaderBoardBody(data = emptyList())
             }
         }
     }

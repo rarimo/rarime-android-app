@@ -17,11 +17,14 @@ import com.distributedLab.rarime.manager.PassportManager
 import com.distributedLab.rarime.manager.WalletAsset
 import com.distributedLab.rarime.manager.WalletManager
 import com.distributedLab.rarime.ui.components.MARKDOWN_CONTENT
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 val CONST_MOCKED_EVENTS_LIST = listOf(
@@ -466,17 +469,29 @@ class RewardsViewModel @Inject constructor(
     suspend fun init() {
         delay(1000L * 3)
 
-        _limitedTimeEvents.value = pointsManager.getTimeLimitedEvents().data
-        _activeTasksEvents.value = pointsManager.getActiveEvents().data
+        coroutineScope {
+            launch {
+                _limitedTimeEvents.value = pointsManager.getTimeLimitedEvents().data
+            }
+            launch {
+                _activeTasksEvents.value = pointsManager.getActiveEvents().data
+            }
+            launch {
+                _pointsWalletAsset.value = getPointsWalletAsset()
+            }
+            launch {
+                val response = pointsManager.getLeaderBoard()
 
-        _pointsWalletAsset.value = getPointsWalletAsset()
-        _leaderBoardList.value = MOCKED_LEADER_BOARD_LIST.mapIndexed { idx, it ->
-            if (idx == 0) {
-                pointsWalletAsset.value?.userAddress?.let { userAddress ->
-                    it.copy(address = userAddress)
-                } ?: it
-            } else {
-                it
+                val mappedLeaderBoard = response.data.mapIndexed { idx, it ->
+                    LeaderBoardItem(
+                        number = idx + 1,
+                        address = it.id,
+                        balance = it.attributes.amount.toDouble(),
+                        tokenIcon = R.drawable.ic_rarimo
+                    )
+                }
+
+                _leaderBoardList.value = mappedLeaderBoard.toList()
             }
         }
     }

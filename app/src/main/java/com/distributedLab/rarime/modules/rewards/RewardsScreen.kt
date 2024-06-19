@@ -157,10 +157,12 @@ fun RewardsScreenContent(
                     color = RarimeTheme.colors.textPrimary
                 )
 
-                RewardsRatingBadge(
-                    leaderBoardList = leaderBoardList.value,
-                    walletAsset = walletAsset,
-                )
+                if (leaderBoardList.value.isNotEmpty()) {
+                    RewardsRatingBadge(
+                        leaderBoardList = leaderBoardList.value,
+                        walletAsset = walletAsset,
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(22.dp))
@@ -423,12 +425,12 @@ fun RewardsRatingBadge(
         )
 
         Text(
-            text = "241",
+            text = leaderBoardList.size.toString(),
             color = RarimeTheme.colors.warningDarker,
         )
     }
 
-    AppBottomSheet(state = leaderboardSheetState, fullScreen = true) { hide ->
+    AppBottomSheet(state = leaderboardSheetState, fullScreen = true) {
         RewardsLeaderBoard(
             leaderBoardList,
             walletAsset.userAddress,

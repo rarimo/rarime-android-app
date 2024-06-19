@@ -6,6 +6,7 @@ import com.distributedLab.rarime.api.points.models.PointsBalanceBody
 import com.distributedLab.rarime.api.points.models.PointsEventBody
 import com.distributedLab.rarime.api.points.models.PointsEventsListBody
 import com.distributedLab.rarime.api.points.models.PointsEventsTypesBody
+import com.distributedLab.rarime.api.points.models.PointsLeaderBoardBody
 import com.distributedLab.rarime.api.points.models.PointsPrice
 import com.distributedLab.rarime.api.points.models.PointsWithdrawalBody
 import com.distributedLab.rarime.api.points.models.VerifyPassportBody
@@ -28,7 +29,7 @@ interface PointsAPI {
     ): PointsBalanceBody
 
     @GET("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances")
-    suspend fun getLeaderboard(): List<PointsBalanceBody>
+    suspend fun getLeaderboard(): PointsLeaderBoardBody
 
     @GET("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances/{nullifier}")
     suspend fun getPointsBalance(
