@@ -37,6 +37,7 @@ import com.distributedLab.rarime.R
 import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.data.tokens.PreviewerToken
 import com.distributedLab.rarime.api.points.models.PointsEventData
+import com.distributedLab.rarime.data.tokens.PointsToken
 import com.distributedLab.rarime.manager.WalletAsset
 import com.distributedLab.rarime.modules.home.components.passport.StatusCard
 import com.distributedLab.rarime.modules.rewards.components.ActiveTasksList
@@ -168,7 +169,9 @@ fun RewardsScreenContent(
             Spacer(modifier = Modifier.height(22.dp))
 
             Column(
-                modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 RewardsScreenUserStatistic(
@@ -207,6 +210,8 @@ fun RewardsScreenUserStatistic(
     levelProgress: Float,
 ) {
     val levelingSheetState = rememberAppSheetState()
+
+    val pointsBalanceData = pointsWalletAsset.token as PointsToken
 
     Column(
         verticalArrangement = Arrangement.spacedBy((-43).dp)
@@ -327,7 +332,7 @@ fun RewardsScreenUserStatistic(
     }
 
     AppBottomSheet(state = levelingSheetState, fullScreen = true) { hide ->
-        RewardsLeveling()
+        pointsBalanceData.balanceDetails?.let { RewardsLeveling(it) }
     }
 }
 

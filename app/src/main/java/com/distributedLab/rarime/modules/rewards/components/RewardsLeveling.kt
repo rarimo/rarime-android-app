@@ -1,5 +1,6 @@
 package com.distributedLab.rarime.modules.rewards.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -12,9 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,7 +32,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.api.points.models.PointsBalanceBody
 import com.distributedLab.rarime.api.points.models.PointsBalanceData
 import com.distributedLab.rarime.api.points.models.PointsBalanceDataAttributes
 import com.distributedLab.rarime.ui.components.AppIcon
@@ -207,9 +210,10 @@ val LEVELING: List<RewardLevel> = listOf(
 
 val INFINITY_STUB = 999999999999999.0
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun RewardsLeveling(pointsBalance: PointsBalanceBody) {
-    val balance = pointsBalance.data.attributes.amount.toDouble()
+fun RewardsLeveling(pointsBalance: PointsBalanceData) {
+    val balance = pointsBalance.attributes.amount.toDouble()
 
     val leveling = LEVELING.map {
         // if user has pass current level
@@ -220,7 +224,7 @@ fun RewardsLeveling(pointsBalance: PointsBalanceBody) {
         // if user is in current level
         } else if (balance > it.minAmount && (it.maxAmount == null || balance < it.maxAmount)) {
             it.copy(
-                amount = pointsBalance.data.attributes.amount.toDouble()
+                amount = pointsBalance.attributes.amount.toDouble()
             )
         } else { it }
     }
@@ -228,6 +232,15 @@ fun RewardsLeveling(pointsBalance: PointsBalanceBody) {
     var selectedLevelingCardId by remember { mutableStateOf(leveling.indexOf(
         leveling.find { it.amount == balance }
     )) }
+
+    val pagerState = rememberPagerState(
+        initialPage = selectedLevelingCardId,
+        pageCount = { leveling.size },
+        initialPageOffsetFraction = 0f,
+    )
+    LaunchedEffect(pagerState.currentPage) {
+        selectedLevelingCardId = pagerState.currentPage
+    }
 
     Column (
         modifier = Modifier
@@ -264,7 +277,12 @@ fun RewardsLeveling(pointsBalance: PointsBalanceBody) {
             modifier = Modifier.padding(horizontal = 12.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            leveling.forEach {
+            HorizontalPager(
+                state = pagerState,
+                pageSpacing = 12.dp
+            ) { idx ->
+                val level = leveling[idx]
+
                 CardContainer {
                     Column (
                         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -279,11 +297,11 @@ fun RewardsLeveling(pointsBalance: PointsBalanceBody) {
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 Text (
-                                    text = it.title,
+                                    text = level.title,
                                     style = RarimeTheme.typography.h5,
                                 )
                                 Text (
-                                    text = it.subtitle,
+                                    text = level.subtitle,
                                     style = RarimeTheme.typography.body3,
                                     color = RarimeTheme.colors.textSecondary,
                                 )
@@ -303,18 +321,18 @@ fun RewardsLeveling(pointsBalance: PointsBalanceBody) {
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text (
-                                text = NumberUtil.formatAmount(it.amount),
+                                text = NumberUtil.formatAmount(level.amount),
                                 style = RarimeTheme.typography.subtitle3,
                                 color = RarimeTheme.colors.textPrimary,
                             )
                             Text(
-                                text = " / " + (it.maxAmount?.let { maxAmount -> NumberUtil.formatAmount(maxAmount) } ?: "∞"),
+                                text = " / " + (level.maxAmount?.let { maxAmount -> NumberUtil.formatAmount(maxAmount) } ?: "∞"),
                                 color = RarimeTheme.colors.textSecondary,
                             )
                         }
 
                         UiLinearProgressBar(
-                            percentage = NumberUtil.formatAmount((it.amount / (it.maxAmount ?: INFINITY_STUB) * 100) / 100.0).toFloat(),
+                            percentage = NumberUtil.formatAmount((level.amount / (level.maxAmount ?: INFINITY_STUB) * 100) / 100.0).toFloat(),
                             trackColors = listOf(
                                 RarimeTheme.colors.primaryMain,
                                 RarimeTheme.colors.primaryDark,
@@ -376,21 +394,19 @@ fun RewardsLevelingPreview() {
             .background(RarimeTheme.colors.baseBlack)
     ) {
         RewardsLeveling(
-            pointsBalance = PointsBalanceBody(
-                data = PointsBalanceData(
-                    id = "",
-                    type = "",
+            pointsBalance = PointsBalanceData(
+                id = "",
+                type = "",
 
-                    attributes = PointsBalanceDataAttributes(
-                        amount = 9,
-                        is_disabled = false,
-                        is_verified = true,
-                        created_at = 0,
-                        updated_at = 0,
-                        rank = 0,
-                        referral_codes = null,
-                        level = 1,
-                    )
+                attributes = PointsBalanceDataAttributes(
+                    amount = 9,
+                    is_disabled = false,
+                    is_verified = true,
+                    created_at = 0,
+                    updated_at = 0,
+                    rank = 0,
+                    referral_codes = null,
+                    level = 1,
                 )
             )
         )
