@@ -15,14 +15,19 @@ enum class ReferralCodeStatuses(val value: String) {
 }
 
 @JsonClass(generateAdapter = true)
+data class PointsLeaderBoardBody(
+    val data: List<PointsBalanceData>
+)
+
+@JsonClass(generateAdapter = true)
 data class PointsBalanceBody(
     val data: PointsBalanceData
 )
 
 @JsonClass(generateAdapter = true)
 data class PointsBalanceData(
-    @Json(name = "id") val id: String,
-    @Json(name = "type") val type: String,
+    val id: String,
+    val type: String,
 
     val attributes: PointsBalanceDataAttributes,
 )
@@ -31,9 +36,9 @@ data class PointsBalanceData(
 data class PointsBalanceDataAttributes(
     val amount: Long,
 //    @Json(name = "is_disabled")
-    val is_disabled: Boolean,
+    val is_disabled: Boolean?,
 //    @Json(name = "is_verified")
-    val is_verified: Boolean = false,
+    val is_verified: Boolean? = false,
 //    @Json(name = "created_at")
     val created_at: Long,
 //    @Json(name = "updated_at")

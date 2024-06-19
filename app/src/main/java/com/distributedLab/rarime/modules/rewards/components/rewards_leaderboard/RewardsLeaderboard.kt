@@ -17,6 +17,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,8 +40,30 @@ fun RewardsLeaderBoard (
 ) {
     val scrollState = rememberLazyListState()
 
-    val topThree = leaderboardList.take(3)
-    val rest = leaderboardList.drop(3)
+    var topThree: List<LeaderBoardItem> by remember { mutableStateOf(emptyList()) }
+    var rest: List<LeaderBoardItem> by remember { mutableStateOf(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        if (leaderboardList.size >= 3) {
+            topThree = listOf(
+                leaderboardList[1],
+                leaderboardList[0],
+                leaderboardList[2]
+            )
+            rest = leaderboardList.drop(3)
+        } else {
+            topThree = leaderboardList
+        }
+    }
+
+    val topLeaderBoardModifiersMap = mapOf(
+        1 to Modifier
+            .requiredHeight(146.dp)
+            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            .background(RarimeTheme.colors.primaryMain),
+        2 to Modifier.requiredHeight(120.dp),
+        3 to Modifier.requiredHeight(104.dp),
+    )
 
     Column (
         modifier = Modifier
@@ -56,34 +83,16 @@ fun RewardsLeaderBoard (
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.Bottom
         ) {
-            TopLeaderColumn(
-                modifier = Modifier.requiredHeight(120.dp),
-                number = 2,
-                address = topThree[1].address,
-                balance = topThree[1].balance,
-                tokenIcon = R.drawable.ic_rarimo,
-                isCurrentUser = topThree[1].address == userAddress,
-            )
-            TopLeaderColumn(
-                modifier = Modifier
-                    .requiredHeight(146.dp)
-                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                    .background(RarimeTheme.colors.primaryMain),
-                number = 1,
-                address = topThree[0].address,
-                balance = topThree[0].balance,
-                tokenIcon = R.drawable.ic_rarimo,
-                isCurrentUser = topThree[0].address == userAddress,
-            )
-            TopLeaderColumn(
-                modifier = Modifier
-                    .requiredHeight(104.dp),
-                number = 3,
-                address = topThree[2].address,
-                balance = topThree[2].balance,
-                tokenIcon = R.drawable.ic_rarimo,
-                isCurrentUser = topThree[2].address == userAddress,
-            )
+            topThree.forEachIndexed { idx, it ->
+                TopLeaderColumn(
+                    modifier = topLeaderBoardModifiersMap[it.number]!!,
+                    number = it.number,
+                    address = it.address,
+                    balance = it.balance,
+                    tokenIcon = R.drawable.ic_rarimo,
+                    isCurrentUser = it.address == userAddress,
+                )
+            }
         }
         Column (
             modifier = Modifier
@@ -97,25 +106,28 @@ fun RewardsLeaderBoard (
                 RewardsLeaderBoardHead()
                 HorizontalDivider()
             }
-            LazyColumn (
-                modifier = Modifier.weight(1f),
-                state = scrollState,
-            ) {
-                itemsIndexed(rest) { idx, it ->
-                    RewardsLeaderBoardItem(
-                        it,
-                        isCurrentUser = it.address == userAddress,
-                    )
 
-                    if (idx != rest.size - 1) {
-                        HorizontalDivider()
+            if (rest.isNotEmpty()) {
+                LazyColumn (
+                    modifier = Modifier.weight(1f),
+                    state = scrollState,
+                ) {
+                    itemsIndexed(rest) { idx, it ->
+                        RewardsLeaderBoardItem(
+                            it,
+                            isCurrentUser = it.address == userAddress,
+                        )
+
+                        if (idx != rest.size - 1) {
+                            HorizontalDivider()
+                        }
                     }
                 }
-            }
-            rest.find { it.address == userAddress }?.let {
-                Column () {
-                    HorizontalDivider()
-                    RewardsLeaderBoardItem(it, true)
+                rest.find { it.address == userAddress }?.let {
+                    Column () {
+                        HorizontalDivider()
+                        RewardsLeaderBoardItem(it, true)
+                    }
                 }
             }
         }
@@ -125,5 +137,5 @@ fun RewardsLeaderBoard (
 @Preview
 @Composable
 fun RewardsLeaderBoardPreview() {
-    RewardsLeaderBoard(MOCKED_LEADER_BOARD_LIST, MOCKED_LEADER_BOARD_LIST[5].address)
+    RewardsLeaderBoard(MOCKED_LEADER_BOARD_LIST.take(4), MOCKED_LEADER_BOARD_LIST[0].address)
 }

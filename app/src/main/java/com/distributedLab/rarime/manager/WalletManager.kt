@@ -83,7 +83,7 @@ class WalletManager @Inject constructor(
                         identityManager
                     )
                 ), WalletAsset(
-                    identityManager.rarimoAddress(), PointsToken(
+                    identityManager.getUserPointsNullifierHex(), PointsToken(
                         pointsManager = pointsManager
                     )
                 )
