@@ -72,4 +72,5 @@ interface SecureSharedPrefsManager {
 
     fun saveRefreshToken(refreshToken: String)
     fun readRefreshToken(): String?
+    fun clearAllData()
 }

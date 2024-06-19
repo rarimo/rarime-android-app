@@ -1,21 +1,26 @@
 package com.distributedLab.rarime.modules.passportScan.proof
 
 import android.app.Application
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.distributedLab.rarime.BaseConfig
-import com.distributedLab.rarime.R
+import com.distributedLab.rarime.api.auth.AuthManager
 import com.distributedLab.rarime.api.registration.RegistrationManager
 import com.distributedLab.rarime.contracts.rarimo.PoseidonSMT.Proof
-import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.data.ProofTx
-import com.distributedLab.rarime.store.SecureSharedPrefsManager
-import com.distributedLab.rarime.manager.RarimoContractManager
+import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.manager.IdentityManager
 import com.distributedLab.rarime.manager.PassportManager
+import com.distributedLab.rarime.manager.RarimoContractManager
+import com.distributedLab.rarime.modules.passportScan.CircuitUseCase
+import com.distributedLab.rarime.modules.passportScan.DownloadRequest
 import com.distributedLab.rarime.modules.passportScan.models.EDocument
+import com.distributedLab.rarime.modules.passportScan.models.RegisteredCircuitData
 import com.distributedLab.rarime.modules.passportScan.nfc.SODFileOwn
+import com.distributedLab.rarime.store.SecureSharedPrefsManager
 import com.distributedLab.rarime.util.Constants
 import com.distributedLab.rarime.util.SecurityUtil
 import com.distributedLab.rarime.util.ZKPUseCase
@@ -28,6 +33,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import identity.CallDataBuilder
+import identity.Identity
 import identity.Profile
 import identity.X509Util
 import kotlinx.coroutines.Dispatchers
@@ -50,6 +56,7 @@ class ProofViewModel @Inject constructor(
     private val passportManager: PassportManager,
     private val registrationManager: RegistrationManager,
     private val rarimoContractManager: RarimoContractManager,
+    private val authManager: AuthManager,
     identityManager: IdentityManager,
 ) : AndroidViewModel(application) {
     private val privateKeyBytes = identityManager.privateKeyBytes
@@ -68,42 +75,63 @@ class ProofViewModel @Inject constructor(
         return proof
     }
 
-    private suspend fun registerCertificate(eDocument: EDocument) {
+    private suspend fun registerCertificate(eDocument: EDocument): RegisteredCircuitData {
         val sodStream = eDocument.sod!!.decodeHexString().inputStream()
         val sodFile = SODFileOwn(sodStream)
+
+        val publicKey = sodFile.docSigningCertificate.publicKey
+        val publicKeyPem = publicKey.publicKeyToPem()
+        val publicKeyBytes = publicKeyPem.toByteArray()
+
+        val x509Util = X509Util()
+
+        val pubKeySize = x509Util.getRSASize(publicKeyBytes)
 
 
         val certificate = SecurityUtil.convertToPEM(sodFile.docSigningCertificate)
 
-        val certificatesSMTAddress = withContext(Dispatchers.IO) {
-            val registrationContract = rarimoContractManager.getRegistration()
-            registrationContract.certificatesSmt().send()
-        }
 
-        val x509Util = X509Util()
+        val certificatesSMTAddress = BaseConfig.CERTIFICATES_SMT_CONTRACT_ADDRESS
 
+        val certificatesSMTContract = rarimoContractManager.getPoseidonSMT(certificatesSMTAddress)
+
+
+        val icao = readICAO(context = application.applicationContext)
+        val slaveCertificateIndex =
+            x509Util.getSlaveCertificateIndex(certificate.toByteArray(), icao)
 
         val proof = withContext(Dispatchers.IO) {
-            val icao = readICAO(context = application.applicationContext)
-            val slaveCertificateIndex =
-                x509Util.getSlaveCertificateIndex(certificate.toByteArray(), icao)
-            val indexHex = slaveCertificateIndex.toHexString()
-            val poseidonSMT = rarimoContractManager.getPoseidonSMT(certificatesSMTAddress)
-            poseidonSMT.getProof(indexHex.decodeHexString()).send()
+            certificatesSMTContract.getProof(slaveCertificateIndex).send()
         }
+
+
 
 
         if (proof?.existence == true) {
-            return
+            Log.i("ProofViewModel", "Passport certificate is already registered")
+            return if (pubKeySize == 4096L) {
+                RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA4096
+            } else {
+                RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA2048
+            }
         }
-
         val callDataBuilder = CallDataBuilder()
         val callData = callDataBuilder.buildRegisterCertificateCalldata(
             BaseConfig.ICAO_COSMOS_RPC,
             certificate.toByteArray(),
             BaseConfig.MASTER_CERTIFICATES_BUCKETNAME,
-            BaseConfig.MASTER_CERTIFICATES_FILENAME
+            BaseConfig.MASTER_CERTIFICATES_FILENAME //TODO: CHECK VAL
         )
+
+
+//        val proof = withContext(Dispatchers.IO) {
+//            val icao = readICAO(context = application.applicationContext)
+//            val slaveCertificateIndex =
+//                x509Util.getSlaveCertificateIndex(certificate.toByteArray(), icao)
+//            val indexHex = slaveCertificateIndex.toHexString()
+//            val poseidonSMT = rarimoContractManager.getPoseidonSMT(certificatesSMTAddress)
+//            poseidonSMT.getProof(indexHex.decodeHexString()).send()
+//        }
 
 
         val response = withContext(Dispatchers.IO) {
@@ -111,35 +139,59 @@ class ProofViewModel @Inject constructor(
         }
 
         if (response == null) {
-            return
+            throw IllegalStateException("Registration error")
         }
 
         Log.i(TAG, "Passport certificate EVM Tx Hash " + response.data.attributes.tx_hash)
 
 
-        val res = rarimoContractManager.checkIsTransactionSuccessful(response.data.attributes.tx_hash)
+        val res =
+            rarimoContractManager.checkIsTransactionSuccessful(response.data.attributes.tx_hash)
         if (!res) {
             Log.e(TAG, "Transaction failed" + response.data.attributes.tx_hash)
         }
+        return if (pubKeySize == 4096L) {
+            RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA4096
+        } else {
+            RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA2048
+        }
     }
 
-    private suspend fun generateRegisterIdentityProof(eDocument: EDocument): ZkProof {
+    private suspend fun generateRegisterIdentityProof(
+        eDocument: EDocument,
+        registeredCircuitData: RegisteredCircuitData,
+        filePaths: DownloadRequest?
+    ): ZkProof {
         val inputs = buildRegistrationCircuits(eDocument)
 
-        Log.i("INPUTS", inputs.decodeToString())
+        //copyToClipboard(application as Context, inputs.decodeToString())
         val assetContext: Context =
             (application as Context).createPackageContext("com.distributedLab.rarime", 0)
         val assetManager = assetContext.assets
 
         val zkp = ZKPUseCase(application as Context, assetManager)
 
+
         val proof = withContext(Dispatchers.Default) {
-            zkp.generateZKP(
-                "circuit_registration.zkey",
-                R.raw.register_identity_universal,
-                inputs,
-                ZkpUtil::registerIdentityUniversal
-            )
+            when (registeredCircuitData) {
+                RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA2048 -> zkp.generateRegisterZKP(
+                    filePaths!!.zkey,
+                    filePaths.zkeyLen,
+                    filePaths.dat,
+                    filePaths.datLen,
+                    inputs,
+                    ZkpUtil::registerIdentityUniversalRSA2048
+                )
+
+                RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA4096 -> zkp.generateRegisterZKP(
+                    filePaths!!.zkey,
+                    filePaths.zkeyLen,
+                    filePaths.dat,
+                    filePaths.datLen,
+                    inputs,
+                    ZkpUtil::registerIdentityUniversalRSA4096
+                )
+            }
         }
 
         this.proof = proof
@@ -153,25 +205,51 @@ class ProofViewModel @Inject constructor(
 
             passportManager.setPassport(eDocument)
 
+
             if (Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.issuerAuthority)) {
                 passportManager.updatePassportStatus(PassportStatus.NOT_ALLOWED)
             }
 
-            registerCertificate(eDocument)
+            if (authManager.isAccessTokenExpired()) {
+                authManager.refresh()
+            }
 
+            val registeredCircuitData = registerCertificate(eDocument)
+
+            val filePaths = withContext(Dispatchers.Default) {
+                CircuitUseCase(application as Context).download(registeredCircuitData)
+            }
             _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
-            val proof = generateRegisterIdentityProof(eDocument)
+            val proof = generateRegisterIdentityProof(eDocument, registeredCircuitData, filePaths)
+
+            val stateKeeperContract = rarimoContractManager.getStateKeeper()
+
+            val passportInfo = withContext(Dispatchers.IO) {
+                stateKeeperContract.getPassportInfo(Identity.bigIntToBytes(proof.pub_signals[0]))
+                    .send().component1()
+            }
+
+            val ZERO_BYTES32 = ByteArray(32) { 0 }
+
+            if (passportInfo.activeIdentity.contentEquals(ZERO_BYTES32)) {
+                Log.i("User Revoked", "Passport is registered")
+            }
+
+            val certificatePubKeySize = when (registeredCircuitData) {
+                RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA2048 -> 2048L
+                RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA4096 -> 4096L
+            }
 
             dataStoreManager.saveRegistrationProof(proof)
 
             _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
-            register(proof, eDocument)
+            register(proof, eDocument, certificatePubKeySize, true)
 
 
             _state.value = PassportProofState.FINALIZING
 
             passportManager.updatePassportStatus(PassportStatus.ALLOWED)
-            
+
             delay(second * 1)
         } catch (e: Exception) {
             if (passportManager.passportStatus.value != PassportStatus.NOT_ALLOWED) {
@@ -183,7 +261,9 @@ class ProofViewModel @Inject constructor(
 
     }
 
-    private suspend fun register(zkProof: ZkProof, eDocument: EDocument) {
+    private suspend fun register(
+        zkProof: ZkProof, eDocument: EDocument, certificateSize: Long, isUserRevoking: Boolean
+    ) {
         val jsonProof = Gson().toJson(zkProof)
 
         val dG15File = DG15File(eDocument.dg15!!.decodeHexString().inputStream())
@@ -196,7 +276,8 @@ class ProofViewModel @Inject constructor(
             eDocument.aaSignature,
             pubKeyPem.toByteArray(),
             masterCertProof.root,
-            false
+            certificateSize,
+            isUserRevoking
         )
 
         withContext(Dispatchers.IO) {
@@ -214,11 +295,7 @@ class ProofViewModel @Inject constructor(
         val cert = sodFile.docSigningCertificate
         val certPem = SecurityUtil.convertToPEM(cert)
 
-        val registrationContract = rarimoContractManager.getRegistration()
-
-        val certificatesSMTAddress = withContext(Dispatchers.IO) {
-            registrationContract.certificatesSmt().send()
-        }
+        val certificatesSMTAddress = BaseConfig.CERTIFICATES_SMT_CONTRACT_ADDRESS
 
         val x509Utils = X509Util()
 
@@ -273,7 +350,6 @@ class ProofViewModel @Inject constructor(
             eDocument.dg15!!.decodeHexString(),
             publicKeyPem.toByteArray(Charsets.UTF_8),
             signature,
-            isEcdsaActiveAuthentication,
             proofJson.toByteArray(Charsets.UTF_8)
         )
 
@@ -298,5 +374,11 @@ class ProofViewModel @Inject constructor(
         }
     }
 
+    //DEV
+    fun copyToClipboard(context: Context, text: String) {
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("Copied Text", text)
+        clipboard.setPrimaryClip(clip)
+    }
 
 }

@@ -48,7 +48,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "REFRESH_TOKEN" to "REFRESH_TOKEN"
     )
 
-    private val PREFS_FILE_NAME = "sharedPrefFile1"
+    private val PREFS_FILE_NAME = "sharedPrefFile12"
     private var sharedPref: SharedPreferences? = null
 
 
@@ -354,5 +354,14 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
 
     override fun readRefreshToken(): String? {
         return getSharedPreferences().getString(accessTokens["REFRESH_TOKEN"], null)
+    }
+
+    override fun clearAllData() {
+        val editor = getEditor()
+        for (entry in accessTokens.entries.iterator()) {
+            editor.remove(entry.value)
+        }
+        editor.clear()
+        editor.apply()
     }
 }

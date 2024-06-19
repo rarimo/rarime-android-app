@@ -11,7 +11,7 @@ import com.distributedLab.rarime.data.RarimoChains
 object BaseConfig {
     const val RELAYER_URL = "https://api.orgs.app.stage.rarime.com"
     const val EVM_RPC_URL = "https://rpc.evm.node1.mainnet-beta.rarimo.com"
-    const val REGISTER_CONTRACT_ADDRESS = "0x31C9baC74fa7482cDCf33d09B8476250b460B058"
+    const val REGISTER_CONTRACT_ADDRESS = "0x6FD2568A0a3692E2B0d6d4258845E57bcAc53Db2"
     const val COSMOS_RPC_URL = "https://rpc-api.node1.mainnet-beta.rarimo.com"
     const val EVM_SERVICE_URL = "https://api.orgs.app.stage.rarime.com/integrations/evm-airdrop-svc-glo"
     const val DISCORD_URL = "https://discord.gg/Bzjm5MDXrU"
@@ -120,4 +120,10 @@ object BaseConfig {
     const val MASTER_CERTIFICATES_BUCKETNAME = "rarimo-temp"
     const val EVM_STABLE_COIN_RPC = "https://ethereum-sepolia-rpc.publicnode.com"
     const val STABLE_COIN_ADDRESS = "0xbd03f0fC994fd1015eAdc37c943055330e238Ad9"
+
+    const val CERTIFICATES_SMT_CONTRACT_ADDRESS = "0x4EECcb639990917fA43f7cbf23b5350e419DC129"
+
+    const val STATE_KEEPER_CONTRACT_ADDRESS = "0x3CfB92B692045C73888904e6e81F9B78fcFC6FE4"
+    const val REGISTER_IDENTITY_CIRCUIT_DATA_RSA2048 = "https://storage.googleapis.com/rarimo-store/rdi2/registerIdentityUniversalRSA2048-download.zip"
+    const val REGISTER_IDENTITY_CIRCUIT_DATA_RSA4096 = "https://storage.googleapis.com/rarimo-store/rdi2/registerIdentityUniversalRSA4096-download.zip"
 }
