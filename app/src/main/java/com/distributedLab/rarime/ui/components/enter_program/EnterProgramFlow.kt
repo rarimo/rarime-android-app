@@ -47,9 +47,10 @@ fun EnterProgramFlow(
     sheetState: AppSheetState,
     hide: HideSheetFn,
     passportStatus: PassportStatus = PassportStatus.UNSCANNED,
+    initialStep: UNSPECIFIED_PASSPORT_STEPS = UNSPECIFIED_PASSPORT_STEPS.INVITATION
 ) {
     var currStep by remember {
-        mutableStateOf(UNSPECIFIED_PASSPORT_STEPS.INVITATION)
+        mutableStateOf(initialStep)
     }
 
     AnimatedVisibility(
