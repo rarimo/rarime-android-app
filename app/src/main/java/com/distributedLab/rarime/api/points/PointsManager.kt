@@ -60,18 +60,22 @@ class PointsManager @Inject constructor(
             throw Exception("user nullifier is null")
         }
 
-        pointsAPIManager.createPointsBalance(
-            CreateBalanceBody(
-                data = CreateBalanceData(
-                    id = userNullifierHex,
-                    type = "create_balance",
-                    attributes = CreateBalanceAttributes(
-                        referredBy = referralCode
+        withContext(Dispatchers.IO) {
+            val response = pointsAPIManager.createPointsBalance(
+                CreateBalanceBody(
+                    data = CreateBalanceData(
+                        id = userNullifierHex,
+                        type = "create_balance",
+                        attributes = CreateBalanceAttributes(
+                            referredBy = referralCode
+                        )
                     )
-                )
-            ),
-            "Bearer ${authManager.accessToken.value!!}"
-        )
+                ),
+                "Bearer ${authManager.accessToken.value!!}"
+            )
+
+            _pointsBalance.value = response
+        }
     }
 
     suspend fun getPointsBalance(): PointsBalanceBody? {

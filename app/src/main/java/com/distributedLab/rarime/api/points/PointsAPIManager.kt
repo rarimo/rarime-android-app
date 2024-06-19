@@ -18,12 +18,10 @@ import javax.inject.Inject
 class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: PointsAPI) {
     /* BALANCE */
     suspend fun createPointsBalance(body: CreateBalanceBody, authorization: String): PointsBalanceBody {
-        return withContext(Dispatchers.IO) {
-            try {
-                jsonApiPointsSvcManager.createPointsBalance(body, authorization)
-            } catch (e: HttpException) {
-                throw Exception(e.toString())
-            }
+        try {
+            return jsonApiPointsSvcManager.createPointsBalance(body, authorization)
+        } catch (e: HttpException) {
+            throw Exception(e.toString())
         }
     }
 
