@@ -178,16 +178,16 @@ fun RewardsScreenContent(
                     levelProgress = levelProgress,
                 )
 
-                if (passportStatus.value == PassportStatus.ALLOWED) {
-                    CardContainer {
-                        LimitedEventsList(
-                            navigate = navigate, limitedTimeEvents = limitedTimeEvents.value
-                        )
+                limitedTimeEvents.value?.let {
+                    if (passportStatus.value == PassportStatus.ALLOWED && it.isNotEmpty()) {
+                        CardContainer {
+                            LimitedEventsList(navigate = navigate, limitedTimeEvents = it)
+                        }
                     }
                 }
 
                 CardContainer {
-                    ActiveTastsList(
+                    ActiveTasksList(
                         navigate = navigate, activeTasksEvents = activeTasksEvents.value
                     )
                 }
@@ -374,7 +374,7 @@ fun LimitedEventsList(
 }
 
 @Composable
-fun ActiveTastsList(
+fun ActiveTasksList(
     navigate: (String) -> Unit, activeTasksEvents: List<PointsEventData>?
 ) {
     Column {
@@ -505,13 +505,13 @@ private fun RewardsEventsListsPreview() {
         Column(
             modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            ActiveTastsList(
+            ActiveTasksList(
                 navigate = {}, activeTasksEvents = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
             )
-            ActiveTastsList(
+            ActiveTasksList(
                 navigate = {}, activeTasksEvents = listOf()
             )
-            ActiveTastsList(
+            ActiveTasksList(
                 navigate = {}, activeTasksEvents = null
             )
         }
