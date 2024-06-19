@@ -39,6 +39,10 @@ class SecurityManager @Inject constructor(
     fun updatePasscodeState(state: SecurityCheckState) {
         passcodeState.value = state
         dataStoreManager.savePasscodeState(state)
+
+        if (state == SecurityCheckState.DISABLED) {
+            updateBiometricsState(state)
+        }
     }
 
     fun setPasscode(newPasscode: String) {
