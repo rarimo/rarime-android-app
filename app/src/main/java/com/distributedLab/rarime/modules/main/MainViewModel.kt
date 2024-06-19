@@ -12,6 +12,7 @@ import com.distributedLab.rarime.api.auth.AuthManager
 import com.distributedLab.rarime.api.points.PointsManager
 import com.distributedLab.rarime.data.tokens.PointsToken
 import com.distributedLab.rarime.manager.IdentityManager
+import com.distributedLab.rarime.manager.PassportManager
 import com.distributedLab.rarime.store.SecureSharedPrefsManager
 import com.distributedLab.rarime.manager.SecurityManager
 import com.distributedLab.rarime.manager.SettingsManager
@@ -42,8 +43,11 @@ class MainViewModel @Inject constructor(
     private val airDropManager: AirDropManager,
     private val authManager: AuthManager,
     private val identityManager: IdentityManager,
-    private val pointsManager: PointsManager
+    private val pointsManager: PointsManager,
+    private val passportManager: PassportManager
 ) : ViewModel() {
+    val passportStatus = passportManager.passportStatus
+
     var appLoadingState = mutableStateOf(AppLoadingStates.LOADING)
         private set
 

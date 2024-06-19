@@ -11,6 +11,8 @@ import com.distributedLab.rarime.manager.PassportManager
 import com.distributedLab.rarime.manager.WalletAsset
 import com.distributedLab.rarime.manager.WalletManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,14 +33,6 @@ class HomeViewModel @Inject constructor(
     val rmoAsset: StateFlow<WalletAsset?>
         get() = _rmoAsset
 
-//    var _pointsToken = MutableStateFlow(
-//        walletManager.walletAssets.value.find { it.token is PointsToken }?.token as PointsToken?
-//    )
-//        private set
-//
-//    val pointsToken: StateFlow<PointsToken?>
-//        get() = _pointsToken.asStateFlow()
-
     // FIXME: temp
     val pointsBalance = pointsManager.pointsBalance
 
@@ -57,11 +51,18 @@ class HomeViewModel @Inject constructor(
         passportManager.updateIsIncognitoMode(isIncognito)
     }
 
-    suspend fun loadBalances() {
-        walletManager.loadBalances()
-    }
-
     fun onPassportIdentifiersChange(passportIdentifiers: List<PassportIdentifier>) {
         passportManager.updatePassportIdentifiers(passportIdentifiers)
+    }
+
+    suspend fun loadUserDetails () = coroutineScope {
+        val pointsBalance = async { try { pointsManager.getPointsBalance() } catch (e: Exception) { /* Handle exception */ } }
+        val walletBalances = async { try { walletManager.loadBalances() } catch (e: Exception) { /* Handle exception */ } }
+        val airDropDetails = async { try { airDropManager.getAirDropByNullifier() } catch (e: Exception) { /* Handle exception */ } }
+
+        // Await for all the async operations to complete
+        pointsBalance.await()
+        walletBalances.await()
+        airDropDetails.await()
     }
 }

@@ -15,14 +15,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.api.points.models.BaseEvents
 import com.distributedLab.rarime.api.points.models.PointsEventData
+import com.distributedLab.rarime.data.enums.PassportStatus
+import com.distributedLab.rarime.modules.rewards.localRewardsScreenViewModel
 import com.distributedLab.rarime.modules.rewards.view_models.CONST_MOCKED_EVENTS_LIST
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.AppSkeleton
@@ -43,20 +47,46 @@ fun ActiveTaskItem(
     navigate: (String) -> Unit,
     pointEvent: PointsEventData
 ) {
+    val rewardsViewModel = localRewardsScreenViewModel.current
     val eventIcon = ICONS_BY_BASE_EVENT_MAP[pointEvent.attributes.meta.static.name] ?: R.drawable.ic_users
+
+    val passportStatus = rewardsViewModel.passportStatus.collectAsState()
+
+    // TODO: temp solution
+    val isEventDisabled = pointEvent.attributes.meta.static.name == BaseEvents.PASSPORT_SCAN.value &&
+            (passportStatus.value == PassportStatus.WAITLIST || passportStatus.value == PassportStatus.NOT_ALLOWED)
+
+    fun handleBaseEvents() {
+        when (pointEvent.attributes.meta.static.name) {
+            BaseEvents.PASSPORT_SCAN.value -> {
+                when (passportStatus.value) {
+                    PassportStatus.ALLOWED -> {
+                        navigate(Screen.Claim.Reserve.route)
+                    }
+                    else -> {
+                        navigate(Screen.Main.Home.route)
+                    }
+                }
+            }
+            else -> {
+                Screen.Main.Rewards.RewardsEventsItem.route.replace(
+                    "{item_id}",
+                    pointEvent.id,
+                )
+            }
+        }
+    }
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clickable {
-                navigate(
-                    Screen.Main.Rewards.RewardsEventsItem.route.replace(
-                        "{item_id}",
-                        pointEvent.id,
-                    )
-                )
+                if (!isEventDisabled) {
+                    handleBaseEvents()
+                }
             }
+            .alpha(if (isEventDisabled) 0.25f else 1f )
     ) {
         Box(
             contentAlignment = Alignment.Center,

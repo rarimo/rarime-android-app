@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.ui.components.AppBottomSheet
 import com.distributedLab.rarime.ui.components.AppSheetState
 import com.distributedLab.rarime.ui.components.HideSheetFn
@@ -32,7 +33,6 @@ import com.distributedLab.rarime.ui.components.enter_program.components.Invitati
 import com.distributedLab.rarime.ui.components.enter_program.components.PolicyConfirmation
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
-import com.distributedLab.rarime.util.Screen
 
 enum class UNSPECIFIED_PASSPORT_STEPS(val value: Int) {
     INVITATION(1),
@@ -43,12 +43,14 @@ enum class UNSPECIFIED_PASSPORT_STEPS(val value: Int) {
 
 @Composable
 fun EnterProgramFlow(
-    navigate: () -> Unit,
+    onFinish: () -> Unit,
     sheetState: AppSheetState,
     hide: HideSheetFn,
+    passportStatus: PassportStatus = PassportStatus.UNSCANNED,
+    initialStep: UNSPECIFIED_PASSPORT_STEPS = UNSPECIFIED_PASSPORT_STEPS.INVITATION
 ) {
     var currStep by remember {
-        mutableStateOf(UNSPECIFIED_PASSPORT_STEPS.INVITATION)
+        mutableStateOf(initialStep)
     }
 
     AnimatedVisibility(
@@ -76,7 +78,16 @@ fun EnterProgramFlow(
                 modifier = Modifier.weight(1f)
             ) {
                 Invitation(
-                    onNext = { currStep = UNSPECIFIED_PASSPORT_STEPS.POLICY_CONFIRMATION },
+                    onNext = {
+                        when(passportStatus) {
+                            PassportStatus.WAITLIST -> {
+                                onFinish()
+                            }
+                            else -> {
+                                currStep = UNSPECIFIED_PASSPORT_STEPS.POLICY_CONFIRMATION
+                            }
+                        }
+                    },
                     updateStep = { currStep = it }
                 )
             }
@@ -106,7 +117,7 @@ fun EnterProgramFlow(
             PolicyConfirmation(
                 onNext = {
                     hide({
-                        navigate()
+                        onFinish()
                     })
                 }
             )
@@ -168,7 +179,7 @@ private fun EnterProgramFlowPreview() {
         isHeaderEnabled = false,
     ) { hide ->
         EnterProgramFlow(
-            navigate = {},
+            onFinish = {},
             sheetState = nonSpecificAppSheetState,
             hide = hide
         )
