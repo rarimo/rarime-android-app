@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.api.points.PointsManager
 import com.distributedLab.rarime.api.points.models.PointsEventData
+import com.distributedLab.rarime.manager.WalletManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,6 +15,7 @@ import javax.inject.Inject
 class RewardsEventItemViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val pointsManager: PointsManager,
+    private val walletManager: WalletManager,
 ): ViewModel() {
     val itemId: String = checkNotNull(savedStateHandle["item_id"])
 
@@ -23,7 +25,7 @@ class RewardsEventItemViewModel @Inject constructor(
     val pointsEventData: StateFlow<PointsEventData?>
         get() = _pointsEventData.asStateFlow()
 
-    val pointsBalance = pointsManager.pointsBalance
+    val pointsToken = walletManager.pointsToken
 
     suspend fun loadPointsEvent () {
         _pointsEventData.value = pointsManager.getEventById(itemId)?.data

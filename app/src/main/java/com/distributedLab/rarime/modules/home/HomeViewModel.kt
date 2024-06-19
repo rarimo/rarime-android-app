@@ -34,8 +34,7 @@ class HomeViewModel @Inject constructor(
     val rmoAsset: StateFlow<WalletAsset?>
         get() = _rmoAsset
 
-    // FIXME: temp
-    val pointsBalance = pointsManager.pointsBalance
+    val pointsToken = walletManager.pointsToken
 
     var passport = passportManager.passport
     var passportCardLook = passportManager.passportCardLook
@@ -60,13 +59,21 @@ class HomeViewModel @Inject constructor(
         passportManager.updatePassportIdentifiers(passportIdentifiers)
     }
 
-    suspend fun loadUserDetails () = coroutineScope {
-        val pointsBalance = async { try { pointsManager.getPointsBalance() } catch (e: Exception) { /* Handle exception */ } }
-        val walletBalances = async { try { walletManager.loadBalances() } catch (e: Exception) { /* Handle exception */ } }
-        val airDropDetails = async { try { airDropManager.getAirDropByNullifier() } catch (e: Exception) { /* Handle exception */ } }
+    suspend fun loadUserDetails() = coroutineScope {
+        val walletBalances = async {
+            try {
+                walletManager.loadBalances()
+            } catch (e: Exception) { /* Handle exception */
+            }
+        }
+        val airDropDetails = async {
+            try {
+                airDropManager.getAirDropByNullifier()
+            } catch (e: Exception) { /* Handle exception */
+            }
+        }
 
         // Await for all the async operations to complete
-        pointsBalance.await()
         walletBalances.await()
         airDropDetails.await()
     }

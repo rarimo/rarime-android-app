@@ -102,7 +102,8 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
         mainViewModel.setBottomBarVisibility(currentRoute != null && currentRoute in mainRoutes)
     }
 
-    val pointsBalance by mainViewModel.pointsBalance.collectAsState()
+    val pointsToken = mainViewModel.pointsToken.collectAsState()
+    val pointsBalanceData = pointsToken.value?.balanceDetails
 
     val enterProgramSheetState = rememberAppSheetState()
 
@@ -120,7 +121,7 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
 
     fun navigateWithPopUp(route: String) {
         if (route == Screen.Main.Rewards.RewardsMain.route) {
-            pointsBalance?.data?.attributes?.let {} ?: run {
+            pointsBalanceData?.attributes?.let {} ?: run {
                 enterProgramSheetState.show()
 
                 return

@@ -2,15 +2,10 @@ package com.distributedLab.rarime.modules.main
 
 import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.api.airdrop.AirDropManager
 import com.distributedLab.rarime.api.auth.AuthManager
-import com.distributedLab.rarime.api.points.PointsManager
-import com.distributedLab.rarime.data.tokens.PointsToken
 import com.distributedLab.rarime.manager.IdentityManager
 import com.distributedLab.rarime.manager.PassportManager
 import com.distributedLab.rarime.store.SecureSharedPrefsManager
@@ -43,7 +38,6 @@ class MainViewModel @Inject constructor(
     private val airDropManager: AirDropManager,
     private val authManager: AuthManager,
     private val identityManager: IdentityManager,
-    private val pointsManager: PointsManager,
     private val passportManager: PassportManager
 ) : ViewModel() {
     val passportStatus = passportManager.passportStatus
@@ -51,8 +45,7 @@ class MainViewModel @Inject constructor(
     var appLoadingState = mutableStateOf(AppLoadingStates.LOADING)
         private set
 
-    // FIXME: temp
-    val pointsBalance = pointsManager.pointsBalance
+    val pointsToken = walletManager.pointsToken
 
     suspend fun initApp() {
         if (identityManager.privateKey.value == null) {
@@ -77,12 +70,10 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun loadUserDetails() = coroutineScope {
-        val pointsBalance = async { try { pointsManager.getPointsBalance() } catch (e: Exception) { /* Handle exception */ } }
         val walletBalances = async { try { walletManager.loadBalances() } catch (e: Exception) { /* Handle exception */ } }
         val airDropDetails = async { try { airDropManager.getAirDropByNullifier() } catch (e: Exception) { /* Handle exception */ } }
 
         // Await for all the async operations to complete
-        pointsBalance.await()
         walletBalances.await()
         airDropDetails.await()
     }

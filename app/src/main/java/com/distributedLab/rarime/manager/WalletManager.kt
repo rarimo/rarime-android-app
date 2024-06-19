@@ -99,6 +99,12 @@ class WalletManager @Inject constructor(
     val selectedWalletAsset: StateFlow<WalletAsset>
         get() = _selectedWalletAsset.asStateFlow()
 
+    private var _pointsToken =
+        MutableStateFlow(_walletAssets.value.find { it.token is PointsToken }?.token as PointsToken?)
+
+    val pointsToken: StateFlow<PointsToken?>
+        get() = _pointsToken.asStateFlow()
+
     fun setSelectedWalletAsset(walletAsset: WalletAsset) {
         _selectedWalletAsset.value = walletAsset
         Log.i("setSelectedWalletAsset", _selectedWalletAsset.value.toJSON())

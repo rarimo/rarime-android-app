@@ -26,6 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.api.points.models.PointsBalanceData
+import com.distributedLab.rarime.api.points.models.PointsBalanceDataAttributes
 import com.distributedLab.rarime.api.points.models.ReferralCode
 import com.distributedLab.rarime.api.points.models.ReferralCodeStatuses
 import com.distributedLab.rarime.ui.components.AppIcon
@@ -99,9 +101,18 @@ private fun RewardsEventItemInvitesCardContainer(
 @Composable
 fun RewardsEventItemInvitesCard(
     code: ReferralCode,
-    rewardAmount: Long
+    rewardAmount: Long,
+    pointsBalance: PointsBalanceData,
 ) {
     val context = LocalContext.current
+    
+    val notActiveActionContent = @Composable {
+        if (pointsBalance.attributes.is_verified == true) {
+            RewardAmountPreview(
+                amount = rewardAmount,
+            )
+        }
+    }
 
     Column {
         when (code.status) {
@@ -111,9 +122,7 @@ fun RewardsEventItemInvitesCard(
                     isCodeDisabled = true,
                     description = "Rewarded",
                     actionContent = {
-                        RewardAmountPreview(
-                            amount = rewardAmount,
-                        )
+                        notActiveActionContent()
                     }
                 )
             }
@@ -124,9 +133,7 @@ fun RewardsEventItemInvitesCard(
                     isCodeDisabled = true,
                     description = "used • friend need to scan passport",
                     actionContent = {
-                        RewardAmountPreview(
-                            amount = rewardAmount,
-                        )
+                        notActiveActionContent()
                     }
                 )
             }
@@ -162,9 +169,7 @@ fun RewardsEventItemInvitesCard(
                     isCodeDisabled = true,
                     description = "Your friends country (known after scanning passport) is not allowed to participate in the referral program",
                     actionContent = {
-                        RewardAmountPreview(
-                            amount = rewardAmount,
-                        )
+                        notActiveActionContent()
                     }
                 )
             }
@@ -175,9 +180,7 @@ fun RewardsEventItemInvitesCard(
                     isCodeDisabled = true,
                     description = "The limit of reserved tokens in your friends country is reached",
                     actionContent = {
-                        RewardAmountPreview(
-                            amount = rewardAmount,
-                        )
+                        notActiveActionContent()
                     }
                 )
             }
@@ -188,9 +191,7 @@ fun RewardsEventItemInvitesCard(
                     isCodeDisabled = true,
                     description = "Friend has scanned passport • need your passport scan",
                     actionContent = {
-                        RewardAmountPreview(
-                            amount = rewardAmount,
-                        )
+                        notActiveActionContent()
                     }
                 )
             }
@@ -234,7 +235,21 @@ private fun RewardsEventItemInvitesCardPreview() {
         ).forEach {
             RewardsEventItemInvitesCard(
                 code = it,
-                rewardAmount = 100
+                rewardAmount = 100,
+                pointsBalance = PointsBalanceData(
+                    id = "",
+                    type = "",
+                    attributes = PointsBalanceDataAttributes(
+                        amount = 0,
+                        is_disabled = false,
+                        is_verified = true,
+                        created_at = 0,
+                        updated_at = 0,
+                        rank = 0,
+                        referral_codes = listOf(),
+                        level = 1,
+                    )
+                )
             )
         }
     }
