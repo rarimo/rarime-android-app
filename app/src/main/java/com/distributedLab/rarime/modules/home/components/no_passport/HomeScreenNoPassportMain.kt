@@ -28,6 +28,7 @@ import com.distributedLab.rarime.ui.components.ActionCardVariants
 import com.distributedLab.rarime.ui.components.AppBottomSheet
 import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.enter_program.EnterProgramFlow
+import com.distributedLab.rarime.ui.components.enter_program.UNSPECIFIED_PASSPORT_STEPS
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Screen
@@ -49,6 +50,10 @@ fun HomeScreenNoPassportMain(
 fun HomeScreenNoPassportMainContent(
     navigate: (String) -> Unit, rmoAsset: WalletAsset
 ) {
+    val homeViewModel = LocalHomeViewModel.current
+
+    val pointsBalance = homeViewModel.pointsBalance.collectAsState()
+
     val rarimoInfoSheetState = rememberAppSheetState()
 
     val nonSpecificAppSheetState = rememberAppSheetState()
@@ -111,9 +116,10 @@ fun HomeScreenNoPassportMainContent(
                 isHeaderEnabled = false,
             ) { hide ->
                 EnterProgramFlow(
-                    navigate = { navigate(Screen.ScanPassport.ScanPassportPoints.route) },
+                    onFinish = { navigate(Screen.ScanPassport.ScanPassportPoints.route) },
                     sheetState = nonSpecificAppSheetState,
-                    hide = hide
+                    hide = hide,
+                    initialStep = pointsBalance.value?.let { UNSPECIFIED_PASSPORT_STEPS.POLICY_CONFIRMATION } ?: UNSPECIFIED_PASSPORT_STEPS.INVITATION
                 )
             }
 

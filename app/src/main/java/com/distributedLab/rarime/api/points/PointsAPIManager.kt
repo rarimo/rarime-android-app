@@ -6,6 +6,7 @@ import com.distributedLab.rarime.api.points.models.PointsBalanceBody
 import com.distributedLab.rarime.api.points.models.PointsEventBody
 import com.distributedLab.rarime.api.points.models.PointsEventsListBody
 import com.distributedLab.rarime.api.points.models.PointsEventsTypesBody
+import com.distributedLab.rarime.api.points.models.PointsLeaderBoardBody
 import com.distributedLab.rarime.api.points.models.PointsPrice
 import com.distributedLab.rarime.api.points.models.PointsWithdrawalBody
 import com.distributedLab.rarime.api.points.models.VerifyPassportBody
@@ -18,22 +19,20 @@ import javax.inject.Inject
 class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: PointsAPI) {
     /* BALANCE */
     suspend fun createPointsBalance(body: CreateBalanceBody, authorization: String): PointsBalanceBody {
-        return withContext(Dispatchers.IO) {
-            try {
-                jsonApiPointsSvcManager.createPointsBalance(body, authorization)
-            } catch (e: HttpException) {
-                throw Exception(e.toString())
-            }
+        try {
+            return jsonApiPointsSvcManager.createPointsBalance(body, authorization)
+        } catch (e: HttpException) {
+            throw Exception(e.toString())
         }
     }
 
-    suspend fun getLeaderboard(): List<PointsBalanceBody> {
-        return withContext(Dispatchers.IO) {
-            try {
-                jsonApiPointsSvcManager.getLeaderboard()
-            } catch (e: HttpException) {
-                throw Exception(e.toString())
-            }
+    suspend fun getLeaderboard(): PointsLeaderBoardBody {
+        try {
+            val response = jsonApiPointsSvcManager.getLeaderboard()
+
+            return response
+        } catch (e: HttpException) {
+            throw Exception(e.toString())
         }
     }
 

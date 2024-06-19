@@ -157,10 +157,12 @@ fun RewardsScreenContent(
                     color = RarimeTheme.colors.textPrimary
                 )
 
-                RewardsRatingBadge(
-                    leaderBoardList = leaderBoardList.value,
-                    walletAsset = walletAsset,
-                )
+                if (leaderBoardList.value.isNotEmpty()) {
+                    RewardsRatingBadge(
+                        leaderBoardList = leaderBoardList.value,
+                        walletAsset = walletAsset,
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(22.dp))
@@ -176,16 +178,16 @@ fun RewardsScreenContent(
                     levelProgress = levelProgress,
                 )
 
-                if (passportStatus.value == PassportStatus.ALLOWED) {
-                    CardContainer {
-                        LimitedEventsList(
-                            navigate = navigate, limitedTimeEvents = limitedTimeEvents.value
-                        )
+                limitedTimeEvents.value?.let {
+                    if (passportStatus.value == PassportStatus.ALLOWED && it.isNotEmpty()) {
+                        CardContainer {
+                            LimitedEventsList(navigate = navigate, limitedTimeEvents = it)
+                        }
                     }
                 }
 
                 CardContainer {
-                    ActiveTastsList(
+                    ActiveTasksList(
                         navigate = navigate, activeTasksEvents = activeTasksEvents.value
                     )
                 }
@@ -260,7 +262,9 @@ fun RewardsScreenUserStatistic(
                         text = stringResource(R.string.rewards_claim_btn),
                         leftIcon = R.drawable.ic_swap,
                         onClick = { navigate(Screen.Main.Rewards.RewardsClaim.route) },
-                        enabled = passportStatus == PassportStatus.ALLOWED && pointsWalletAsset.balance.value.toDouble() > 0.0,
+                        // TODO: implement in next releases
+//                        enabled = passportStatus == PassportStatus.ALLOWED && pointsWalletAsset.balance.value.toDouble() > 0.0,
+                        enabled = false,
                     )
                 }
 
@@ -372,7 +376,7 @@ fun LimitedEventsList(
 }
 
 @Composable
-fun ActiveTastsList(
+fun ActiveTasksList(
     navigate: (String) -> Unit, activeTasksEvents: List<PointsEventData>?
 ) {
     Column {
@@ -423,12 +427,12 @@ fun RewardsRatingBadge(
         )
 
         Text(
-            text = "241",
+            text = leaderBoardList.size.toString(),
             color = RarimeTheme.colors.warningDarker,
         )
     }
 
-    AppBottomSheet(state = leaderboardSheetState, fullScreen = true) { hide ->
+    AppBottomSheet(state = leaderboardSheetState, fullScreen = true) {
         RewardsLeaderBoard(
             leaderBoardList,
             walletAsset.userAddress,
@@ -503,13 +507,13 @@ private fun RewardsEventsListsPreview() {
         Column(
             modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            ActiveTastsList(
+            ActiveTasksList(
                 navigate = {}, activeTasksEvents = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
             )
-            ActiveTastsList(
+            ActiveTasksList(
                 navigate = {}, activeTasksEvents = listOf()
             )
-            ActiveTastsList(
+            ActiveTasksList(
                 navigate = {}, activeTasksEvents = null
             )
         }

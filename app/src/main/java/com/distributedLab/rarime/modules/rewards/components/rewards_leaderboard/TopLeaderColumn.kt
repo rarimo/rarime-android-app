@@ -55,7 +55,7 @@ fun TopLeaderColumn(
                 verticalArrangement = Arrangement.Bottom,
                 modifier = Modifier
                     .fillMaxHeight()
-                    .requiredWidth(54.dp)
+                    .requiredWidth(60.dp)
             ) {
                 if (isCurrentUser) {
                     Box (

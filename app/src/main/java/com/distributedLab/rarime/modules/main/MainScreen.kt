@@ -1,7 +1,6 @@
 package com.distributedLab.rarime.modules.main
 
 import android.annotation.SuppressLint
-import android.content.Context
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloatAsState
@@ -41,6 +40,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.distributedLab.rarime.R
+import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.data.enums.SecurityCheckState
 import com.distributedLab.rarime.modules.passportVerify.VerifySpecificScreen
 import com.distributedLab.rarime.modules.passportVerify.VerifyPoitntsScreen
@@ -222,6 +222,8 @@ fun MainScreenContent(
 
     val mainViewModel = LocalMainViewModel.current
     val context = LocalContext.current
+
+    val passportStatus = mainViewModel.passportStatus.collectAsState()
 
     val isModalShown = mainViewModel.isModalShown.collectAsState()
     val modalContent = mainViewModel.modalContent.collectAsState()
@@ -415,9 +417,26 @@ fun MainScreenContent(
                 isHeaderEnabled = false,
             ) { hide ->
                 EnterProgramFlow(
-                    navigate = { navController.navigate(Screen.ScanPassport.ScanPassportPoints.route) },
+                    onFinish = {
+                        hide {
+                            when (passportStatus.value) {
+                                PassportStatus.UNSCANNED -> {
+                                    navController.navigate(Screen.ScanPassport.ScanPassportPoints.route)
+                                }
+
+                                PassportStatus.WAITLIST -> {
+                                    navController.navigate(Screen.Main.Rewards.RewardsMain.route)
+                                }
+
+                                else -> {
+                                    navController.navigate(Screen.Claim.Reserve.route)
+                                }
+                            }
+                        }
+                    },
                     sheetState = enterProgramSheetState,
-                    hide = hide
+                    hide = hide,
+                    passportStatus = passportStatus.value,
                 )
             }
         }

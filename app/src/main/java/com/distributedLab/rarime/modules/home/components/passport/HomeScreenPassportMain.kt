@@ -13,6 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,6 +41,7 @@ import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Constants
 import com.distributedLab.rarime.util.Screen
 import com.google.gson.Gson
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreenPassportMain(
@@ -55,7 +60,11 @@ fun HomeScreenPassportMain(
 fun HomeScreenPassportMainContent(
     navigate: (String) -> Unit, rmoAsset: WalletAsset
 ) {
+    val scope = rememberCoroutineScope()
+
     val homeViewModel = LocalHomeViewModel.current
+
+    var isLoading by remember { mutableStateOf(false) }
 
     val passport = homeViewModel.passport
 
@@ -74,6 +83,14 @@ fun HomeScreenPassportMainContent(
     val rarimoInfoSheetState = rememberAppSheetState()
     val specificAppSheetState = rememberAppSheetState()
     val verifyPassportSheetState = rememberAppSheetState()
+
+    fun reloadUserDetails() = run {
+        scope.launch {
+            isLoading = true
+            homeViewModel.loadUserDetails()
+            isLoading = false
+        }
+    }
 
     Column(
         modifier = Modifier.padding(12.dp)
@@ -104,25 +121,49 @@ fun HomeScreenPassportMainContent(
             val isVerified = pointsBalance?.data?.attributes?.is_verified ?: false
             val isBalanceCreated = pointsBalance?.data?.attributes?.created_at != null
 
-            if (!isVerified && passportStatus == PassportStatus.ALLOWED) {
-                ActionCard(title = stringResource(R.string.reserve_tokens),
-                    description = stringResource(
-                        R.string.you_re_entitled_of_x_rmo, Constants.AIRDROP_REWARD
-                    ),
-                    leadingContent = {
-                        Image(
-                            modifier = Modifier.size(42.dp),
-                            painter = painterResource(id = R.drawable.reward_coin),
-                            contentDescription = "decor",
+            if (!isVerified) {
+                when (passportStatus) {
+                    PassportStatus.ALLOWED -> {
+                        ActionCard(
+                            title = stringResource(R.string.reserve_tokens),
+                            description = stringResource(
+                                R.string.you_re_entitled_of_x_rmo,
+                                Constants.AIRDROP_REWARD
+                            ),
+                            leadingContent = {
+                                Image(
+                                    modifier = Modifier.size(42.dp),
+                                    painter = painterResource(id = R.drawable.reward_coin),
+                                    contentDescription = "decor",
+                                )
+                            },
+                            onClick = {
+                                if (isBalanceCreated) {
+                                    navigate(Screen.Claim.Reserve.route)
+                                } else {
+                                    verifyPassportSheetState.show()
+                                }
+                            }
                         )
-                    },
-                    onClick = {
-                        if (isBalanceCreated) {
-                            navigate(Screen.Claim.Reserve.route)
-                        } else {
-                            verifyPassportSheetState.show()
-                        }
-                    })
+                    }
+
+                    PassportStatus.WAITLIST -> {
+                        pointsBalance?.let {} ?: ActionCard(
+                            title = stringResource(id = R.string.join_waitlist_btn),
+                            description = stringResource(id = R.string.joined_waitlist_description),
+                            leadingContent = {
+                                Image(
+                                    modifier = Modifier.size(42.dp),
+                                    painter = painterResource(id = R.drawable.reward_coin),
+                                    contentDescription = "decor",
+                                )
+                            },
+                            onClick = { verifyPassportSheetState.show() }
+                        )
+                    }
+
+                    else -> {}
+                }
             }
 
             if (!isAirDropClaimed && passportStatus == PassportStatus.ALLOWED) {
@@ -162,7 +203,16 @@ fun HomeScreenPassportMainContent(
             isHeaderEnabled = false
         ) { hide ->
             EnterProgramFlow(
-                navigate = { navigate(Screen.Claim.Reserve.route) },
+                onFinish = {
+                    when (passportStatus) {
+                        PassportStatus.WAITLIST -> {
+                            reloadUserDetails()
+                        }
+                        else -> {
+                            navigate(Screen.Claim.Reserve.route)
+                        }
+                    }
+                },
                 sheetState = verifyPassportSheetState,
                 hide = hide
             )
