@@ -15,6 +15,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -79,8 +83,14 @@ private fun GradientDivider(
     )
 }
 
+data class LevelReward(
+    val title: String,
+    val subtitle: String,
+    val iconId: Int,
+)
+
 @Composable
-private fun RewardsItem () {
+private fun RewardsItem (levelReward: LevelReward) {
     Row (
         modifier = Modifier
             .fillMaxWidth()
@@ -98,18 +108,18 @@ private fun RewardsItem () {
                 .height(40.dp),
             contentAlignment = Alignment.Center
         ) {
-            AppIcon(id = R.drawable.ic_users, size = 20.dp)
+            AppIcon(id = levelReward.iconId, size = 20.dp)
         }
 
         Column (
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text (
-                text = "X2 RMO Coins",
+                text = levelReward.title,
                 style = RarimeTheme.typography.subtitle4,
             )
             Text (
-                text = "Invite friends in to app",
+                text = levelReward.subtitle,
                 style = RarimeTheme.typography.body4,
                 color = RarimeTheme.colors.textSecondary,
             )
@@ -117,12 +127,6 @@ private fun RewardsItem () {
 
     }
 }
-
-data class LevelReward(
-    val title: String,
-    val subtitle: String,
-    val iconId: Int,
-)
 
 data class RewardLevel(
     val title: String,
@@ -149,6 +153,11 @@ val LEVELING: List<RewardLevel> = listOf(
                 title = "X2 RMO Coins",
                 subtitle = "Invite friends in to app",
                 iconId = R.drawable.ic_users,
+            ),
+            LevelReward(
+                title = "X2 RMO Coins",
+                subtitle = "Invite friends in to app",
+                iconId = R.drawable.ic_users,
             )
         ),
     ),
@@ -161,6 +170,16 @@ val LEVELING: List<RewardLevel> = listOf(
         minAmount = 30.0,
         maxAmount = 50.0,
         rewards = listOf(
+            LevelReward(
+                title = "X2 RMO Coins",
+                subtitle = "Invite friends in to app",
+                iconId = R.drawable.ic_users,
+            ),
+            LevelReward(
+                title = "X2 RMO Coins",
+                subtitle = "Invite friends in to app",
+                iconId = R.drawable.ic_users,
+            ),
             LevelReward(
                 title = "X2 RMO Coins",
                 subtitle = "Invite friends in to app",
@@ -206,6 +225,10 @@ fun RewardsLeveling(pointsBalance: PointsBalanceBody) {
         } else { it }
     }
 
+    var selectedLevelingCardId by remember { mutableStateOf(leveling.indexOf(
+        leveling.find { it.amount == balance }
+    )) }
+
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -226,15 +249,13 @@ fun RewardsLeveling(pointsBalance: PointsBalanceBody) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            StageIndicator(number = 1, isActive = false)
+            leveling.forEachIndexed { idx, it ->
+                StageIndicator(number = idx + 1, isActive = selectedLevelingCardId == idx)
 
-            GradientDivider()
-
-            StageIndicator(number = 2, isActive = true)
-
-            GradientDivider()
-
-            StageIndicator(number = 3, isActive = false)
+                if (idx < leveling.size - 1) {
+                    GradientDivider()
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(26.dp))
@@ -244,7 +265,7 @@ fun RewardsLeveling(pointsBalance: PointsBalanceBody) {
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             leveling.forEach {
-                CardContainer() {
+                CardContainer {
                     Column (
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.fillMaxWidth()
@@ -311,7 +332,11 @@ fun RewardsLeveling(pointsBalance: PointsBalanceBody) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        StepIndicator(itemsCount = 3, selectedIndex = 1)
+        StepIndicator(
+            itemsCount = leveling.size,
+            selectedIndex = selectedLevelingCardId,
+            updateSelectedIndex = { selectedLevelingCardId = it },
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -333,8 +358,9 @@ fun RewardsLeveling(pointsBalance: PointsBalanceBody) {
             Column (
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                RewardsItem()
-                RewardsItem()
+                leveling[selectedLevelingCardId].rewards.forEach {
+                    RewardsItem(it)
+                }
             }
         }
 
@@ -356,7 +382,7 @@ fun RewardsLevelingPreview() {
                     type = "",
 
                     attributes = PointsBalanceDataAttributes(
-                        amount = 59,
+                        amount = 9,
                         is_disabled = false,
                         is_verified = true,
                         created_at = 0,
