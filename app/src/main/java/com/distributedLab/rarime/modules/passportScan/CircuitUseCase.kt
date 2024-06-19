@@ -7,12 +7,13 @@ import com.distributedLab.rarime.modules.passportScan.models.RegisteredCircuitDa
 import com.distributedLab.rarime.util.FileDownloaderInternal
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
+import java.io.File
 
 data class DownloadRequest(
-    val zkey: String, val dat: String
+    val zkey: String, val zkeyLen: Long, val dat: String, val datLen: Long
 )
 
-class CircuitUseCase(context: Context) {
+class CircuitUseCase(val context: Context) {
     private val fileDownloader = FileDownloaderInternal(context)
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -28,13 +29,35 @@ class CircuitUseCase(context: Context) {
                 Log.e("Download", "Download coroutine cancelled")
             }
 
+            if (fileExists(context, CIRCUIT_NAME_ARCHIVE)) {
+                val zkeyLen = fileDownloader.getFileAbsolute(getZkeyFilePath(circuitData)).length()
+                val datLen = fileDownloader.getFileAbsolute(getDatFilePath(circuitData)).length()
+                val downloadRequest = DownloadRequest(
+                    zkey = getZkeyFilePath(circuitData),
+                    zkeyLen,
+                    dat = getDatFilePath(circuitData),
+                    datLen
+                )
+                Log.i("Download", "Already downloaded")
+                continuation.resume(downloadRequest) {}
+                return@suspendCancellableCoroutine
+            }
+
+
             fileDownloader.downloadFile(circuitURL, CIRCUIT_NAME_ARCHIVE) { success ->
                 if (success) {
                     val archive = fileDownloader.getFile(CIRCUIT_NAME_ARCHIVE)
                     val resultOfUnzip = fileDownloader.unzipFile(archive)
                     if (resultOfUnzip) {
+
+                        fileDownloader.getFile(getZkeyFilePath(circuitData)).length()
+                        val zkeyLen = fileDownloader.getFileAbsolute(getZkeyFilePath(circuitData)).length()
+                        val datLen = fileDownloader.getFileAbsolute(getDatFilePath(circuitData)).length()
                         val downloadRequest = DownloadRequest(
-                            zkey = getZkeyFilePath(circuitData), dat = getDatFilePath(circuitData)
+                            zkey = getZkeyFilePath(circuitData),
+                            zkeyLen,
+                            dat = getDatFilePath(circuitData),
+                            datLen
                         )
                         continuation.resume(downloadRequest) {}
                     } else {
@@ -46,14 +69,20 @@ class CircuitUseCase(context: Context) {
                     continuation.resume(null) {}
                 }
             }
+
         }
 
-    private fun getZkeyFilePath(circuitData: RegisteredCircuitData): String {
-        return "${circuitData.value}-download/${circuitData.value}.dat"
+    fun getDatFilePath(circuitData: RegisteredCircuitData): String {
+        return "${context.filesDir}/${circuitData.value}-download/${circuitData.value}.dat"
     }
 
-    private fun getDatFilePath(circuitData: RegisteredCircuitData): String {
-        return "${circuitData.value}-download/circuit_final.zkey"
+    fun fileExists(context: Context, fileName: String): Boolean {
+        val file = File(context.filesDir, fileName)
+        return file.exists()
+    }
+
+     fun getZkeyFilePath(circuitData: RegisteredCircuitData): String {
+        return "${context.filesDir}/${circuitData.value}-download/circuit_final.zkey"
     }
 
     private companion object {

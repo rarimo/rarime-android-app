@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.distributedLab.rarime.modules.main.MainScreen
+import com.distributedLab.rarime.modules.passportScan.CircuitUseCase
+import com.distributedLab.rarime.modules.passportScan.models.RegisteredCircuitData
 import com.distributedLab.rarime.modules.passportScan.nfc.NfcViewModel
 import com.distributedLab.rarime.util.FileDownloaderInternal
 import com.distributedLab.rarime.util.ZkpUtil
@@ -76,6 +78,8 @@ class MainActivity : AppCompatActivity() {
         Log.d("Turn of NFC", "Turn of NFCForegroundDispatch")
         adapter.disableForegroundDispatch(this)
     }
+
+
 
     override fun onNewIntent(intent: Intent?) {
 

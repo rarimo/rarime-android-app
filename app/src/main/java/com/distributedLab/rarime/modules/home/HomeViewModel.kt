@@ -5,15 +5,14 @@ import com.distributedLab.rarime.api.airdrop.AirDropManager
 import com.distributedLab.rarime.api.points.PointsManager
 import com.distributedLab.rarime.data.enums.PassportCardLook
 import com.distributedLab.rarime.data.enums.PassportIdentifier
-import com.distributedLab.rarime.data.tokens.PointsToken
 import com.distributedLab.rarime.data.tokens.RarimoToken
 import com.distributedLab.rarime.manager.PassportManager
 import com.distributedLab.rarime.manager.WalletAsset
 import com.distributedLab.rarime.manager.WalletManager
+import com.distributedLab.rarime.store.SecureSharedPrefsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,8 +20,10 @@ class HomeViewModel @Inject constructor(
     private val passportManager: PassportManager,
     private val airDropManager: AirDropManager,
     private val pointsManager: PointsManager,
-    private val walletManager: WalletManager
-) : ViewModel() {
+    private val walletManager: WalletManager,
+    private val dataStoreManager: SecureSharedPrefsManager,
+
+    ) : ViewModel() {
     val isAirDropClaimed = airDropManager.isAirDropClaimed
 
     private val _rmoAsset =
@@ -57,8 +58,8 @@ class HomeViewModel @Inject constructor(
         passportManager.updateIsIncognitoMode(isIncognito)
     }
 
-    suspend fun loadBalances() {
-        walletManager.loadBalances()
+    fun clearAllData() {
+        dataStoreManager.clearAllData()
     }
 
     fun onPassportIdentifiersChange(passportIdentifiers: List<PassportIdentifier>) {

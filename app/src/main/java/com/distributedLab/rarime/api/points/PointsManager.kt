@@ -102,16 +102,15 @@ class PointsManager @Inject constructor(
         val assetManager = assetContext.assets
 
         val zkp = ZKPUseCase(context, assetManager)
-        val registrationContract = contractManager.getRegistration()
 
-        val registrationSmtAddress = withContext(Dispatchers.IO) {
-            registrationContract.registrationSmt().send()
-        }
 
-        val registrationSmtContract = contractManager.getPoseidonSMT(registrationSmtAddress)
+        val registrationSmtContract = contractManager.getPoseidonSMT(BaseConfig.REGISTER_CONTRACT_ADDRESS)
+        val stateKeeperContract = contractManager.getStateKeeper()
+
+
 
         val proofIndex = Identity.calculateProofIndex(
-            registrationProof.pub_signals[0], registrationProof.pub_signals[2]
+            registrationProof.pub_signals[0], registrationProof.pub_signals[3]
         )
 
         val smtProofRaw = withContext(Dispatchers.IO) {
@@ -126,7 +125,7 @@ class PointsManager @Inject constructor(
         Log.i("pubSignal", Identity.bigIntToBytes(registrationProof.pub_signals[0]).size.toString())
 
         val passportInfoRaw = withContext(Dispatchers.IO) {
-            registrationContract.getPassportInfo(
+            stateKeeperContract.getPassportInfo(
                 Identity.bigIntToBytes(registrationProof.pub_signals[0])
             ).send()
         }

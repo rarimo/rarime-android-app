@@ -1,6 +1,8 @@
 package com.distributedLab.rarime.modules.passportScan.proof
 
 import android.app.Application
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
@@ -98,7 +100,11 @@ class ProofViewModel @Inject constructor(
         val slaveCertificateIndex =
             x509Util.getSlaveCertificateIndex(certificate.toByteArray(), icao)
 
-        val proof = certificatesSMTContract.getProof(slaveCertificateIndex).send()
+        val proof = withContext(Dispatchers.IO) {
+            certificatesSMTContract.getProof(slaveCertificateIndex).send()
+        }
+
+
 
 
         if (proof?.existence == true) {
@@ -158,26 +164,30 @@ class ProofViewModel @Inject constructor(
     ): ZkProof {
         val inputs = buildRegistrationCircuits(eDocument)
 
-
-        Log.i("INPUTS", inputs.decodeToString())
+        //copyToClipboard(application as Context, inputs.decodeToString())
         val assetContext: Context =
             (application as Context).createPackageContext("com.distributedLab.rarime", 0)
         val assetManager = assetContext.assets
 
         val zkp = ZKPUseCase(application as Context, assetManager)
 
+
         val proof = withContext(Dispatchers.Default) {
             when (registeredCircuitData) {
                 RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA2048 -> zkp.generateRegisterZKP(
                     filePaths!!.zkey,
+                    filePaths.zkeyLen,
                     filePaths.dat,
+                    filePaths.datLen,
                     inputs,
                     ZkpUtil::registerIdentityUniversalRSA2048
                 )
 
                 RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA4096 -> zkp.generateRegisterZKP(
                     filePaths!!.zkey,
+                    filePaths.zkeyLen,
                     filePaths.dat,
+                    filePaths.datLen,
                     inputs,
                     ZkpUtil::registerIdentityUniversalRSA4096
                 )
@@ -214,18 +224,26 @@ class ProofViewModel @Inject constructor(
 
             val stateKeeperContract = rarimoContractManager.getStateKeeper()
 
-            val passportInfo = stateKeeperContract.getPassportInfo(Identity.bigIntToBytes(proof.pub_signals[0])).send().component1()
+            val passportInfo = withContext(Dispatchers.IO) {
+                stateKeeperContract.getPassportInfo(Identity.bigIntToBytes(proof.pub_signals[0]))
+                    .send().component1()
+            }
 
             val ZERO_BYTES32 = ByteArray(32) { 0 }
 
             if (passportInfo.activeIdentity.contentEquals(ZERO_BYTES32)) {
+                Log.i("User Revoked", "Passport is registered")
+            }
 
+            val certificatePubKeySize = when (registeredCircuitData) {
+                RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA2048 -> 2048L
+                RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA4096 -> 4096L
             }
 
             dataStoreManager.saveRegistrationProof(proof)
 
             _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
-            register(proof, eDocument, 6)
+            register(proof, eDocument, certificatePubKeySize, true)
 
 
             _state.value = PassportProofState.FINALIZING
@@ -243,7 +261,9 @@ class ProofViewModel @Inject constructor(
 
     }
 
-    private suspend fun register(zkProof: ZkProof, eDocument: EDocument, certificateSize: Long) {
+    private suspend fun register(
+        zkProof: ZkProof, eDocument: EDocument, certificateSize: Long, isUserRevoking: Boolean
+    ) {
         val jsonProof = Gson().toJson(zkProof)
 
         val dG15File = DG15File(eDocument.dg15!!.decodeHexString().inputStream())
@@ -257,7 +277,7 @@ class ProofViewModel @Inject constructor(
             pubKeyPem.toByteArray(),
             masterCertProof.root,
             certificateSize,
-            false
+            isUserRevoking
         )
 
         withContext(Dispatchers.IO) {
@@ -354,5 +374,11 @@ class ProofViewModel @Inject constructor(
         }
     }
 
+    //DEV
+    fun copyToClipboard(context: Context, text: String) {
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("Copied Text", text)
+        clipboard.setPrimaryClip(clip)
+    }
 
 }

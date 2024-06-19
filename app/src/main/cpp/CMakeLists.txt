@@ -11,10 +11,10 @@ set_target_properties(rapidsnark PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR
 
 
 add_library(register_identity_universal_rsa2048 SHARED IMPORTED)
-set_target_properties(register_identity_universal PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/lib/libwitnesscalc_registerIdentityUniversalRSA2048.so)
+set_target_properties(register_identity_universal_rsa2048 PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/lib/libwitnesscalc_registerIdentityUniversalRSA2048.so)
 
 add_library(register_identity_universal_rsa4096 SHARED IMPORTED)
-set_target_properties(register_identity_universal PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/lib/libwitnesscalc_registerIdentityUniversalRSA4096.so)
+set_target_properties(register_identity_universal_rsa4096 PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/lib/libwitnesscalc_registerIdentityUniversalRSA4096.so)
 
 
 add_library(query_identity SHARED IMPORTED)

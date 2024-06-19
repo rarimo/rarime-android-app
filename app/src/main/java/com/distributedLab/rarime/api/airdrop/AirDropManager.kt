@@ -2,6 +2,7 @@ package com.distributedLab.rarime.api.airdrop
 
 import android.content.Context
 import android.util.Log
+import com.distributedLab.rarime.BaseConfig
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.api.airdrop.models.AirDropStatuses
 import com.distributedLab.rarime.api.airdrop.models.CreateAirDrop
@@ -51,17 +52,12 @@ class AirDropManager @Inject constructor(
         val assetManager = assetContext.assets
 
         val zkp = ZKPUseCase(context, assetManager)
-        val registrationContract = rarimoContractManager.getRegistration()
+        val stateKeeperContract = rarimoContractManager.getStateKeeper()
 
-        val registrationSmtAddress = withContext(Dispatchers.IO) {
-            registrationContract.registrationSmt().send()
-        }
-
-        val registrationSmtContract = rarimoContractManager.getPoseidonSMT(registrationSmtAddress)
-
+        val registrationSmtContract = rarimoContractManager.getPoseidonSMT(BaseConfig.REGISTER_CONTRACT_ADDRESS)
 
         val proofIndex = Identity.calculateProofIndex(
-            registrationProof.pub_signals[0], registrationProof.pub_signals[2]
+            registrationProof.pub_signals[0], registrationProof.pub_signals[3]
         )
 
         val smtProofRaw = withContext(Dispatchers.IO) {
@@ -73,10 +69,9 @@ class AirDropManager @Inject constructor(
 
         val profiler = Profile().newProfile(privateKey)
 
-        Log.i("pubSignal", Identity.bigIntToBytes(registrationProof.pub_signals[0]).size.toString())
 
         val passportInfoRaw = withContext(Dispatchers.IO) {
-            registrationContract.getPassportInfo(
+            stateKeeperContract.getPassportInfo(
                 Identity.bigIntToBytes(registrationProof.pub_signals[0])
             ).send()
         }

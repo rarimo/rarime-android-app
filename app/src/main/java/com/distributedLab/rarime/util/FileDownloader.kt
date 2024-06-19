@@ -1,14 +1,7 @@
 package com.distributedLab.rarime.util
 
-import android.app.DownloadManager
 import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.net.Uri
-import android.os.Environment
 import android.util.Log
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.ResponseBody
@@ -24,7 +17,7 @@ class FileDownloaderInternal(private val context: Context) {
 
     private val client = OkHttpClient()
 
-    fun downloadFile(url: String, fileName: String, callback: (Boolean) -> Unit) {
+    fun downloadFile(url: String, fileName: String,callback: (Boolean) -> Unit) {
         val request = Request.Builder().url(url).build()
 
         client.newCall(request).enqueue(object : okhttp3.Callback {
@@ -78,10 +71,15 @@ class FileDownloaderInternal(private val context: Context) {
         return File(context.filesDir, fileName)
     }
 
+    fun getFileAbsolute(fullPath: String): File {
+        return File("", fullPath)
+    }
+
     fun unzipFile(zipFile: File): Boolean {
         var inputStream: ZipInputStream? = null
         return try {
             inputStream = ZipInputStream(FileInputStream(zipFile))
+
             var zipEntry: ZipEntry? = inputStream.nextEntry
             while (zipEntry != null) {
                 val newFile = File(context.filesDir, zipEntry.name)

@@ -26,48 +26,48 @@ using namespace std;
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
+
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_distributedLab_rarime_util_ZkpUtil_groth16InternalStorage(JNIEnv *env, jobject thiz,
-                                                             jstring filePath,
-                                                             jbyteArray wtns_buffer,
-                                                             jlong wtns_size,
-                                                             jbyteArray proof_buffer,
-                                                             jlongArray proof_size,
-                                                             jbyteArray public_buffer,
-                                                             jlongArray public_size,
-                                                             jbyteArray error_msg,
-                                                             jlong error_msg_max_size) {
+                                                                   jstring filePath, jlong fileSizeJ,
+                                                                   jbyteArray wtns_buffer,
+                                                                   jlong wtns_size,
+                                                                   jbyteArray proof_bufferJ,
+                                                                   jlongArray proof_size,
+                                                                   jbyteArray public_buffer,
+                                                                   jlongArray public_size,
+                                                                   jbyteArray error_msg,
+                                                                   jlong error_msg_max_size) {
 
     const char *nativeFilePath = env->GetStringUTFChars(filePath, nullptr);
+    unsigned long fileSize = static_cast<unsigned long>(fileSizeJ);
 
     // Read the file from the internal storage
-    std::ifstream file(nativeFilePath, std::ios::binary | std::ios::ate);
+    std::ifstream file(nativeFilePath, std::ios::binary);
     if (!file.is_open()) {
         LOGE("Failed to open file: %s", nativeFilePath);
         env->ReleaseStringUTFChars(filePath, nativeFilePath);
         return -1; // Error code for file opening failure
     }
 
-    // Get the file size
-    std::streamsize fileSize = file.tellg();
-    file.seekg(0, std::ios::beg);
+    // Allocate buffer for the file content
+    std::vector<char> circuitBuffer(fileSize);
 
     // Read the file content into a buffer
-    std::vector<char> buffer(fileSize);
-    if (!file.read(buffer.data(), fileSize)) {
+    file.read(circuitBuffer.data(), fileSize);
+    if (!file) {
         LOGE("Failed to read file: %s", nativeFilePath);
         env->ReleaseStringUTFChars(filePath, nativeFilePath);
-        return -1; // Error code for file reading failure
+        return -2; // Error code for file reading failure
     }
     file.close();
 
-    // Release the file path string
     env->ReleaseStringUTFChars(filePath, nativeFilePath);
 
     // Get the buffers from Java
     const void *wtnsBuffer = env->GetByteArrayElements(wtns_buffer, nullptr);
-    char *proofBuffer = reinterpret_cast<char *>(env->GetByteArrayElements(proof_buffer, nullptr));
+    char *proofBuffer = reinterpret_cast<char *>(env->GetByteArrayElements(proof_bufferJ, nullptr));
     char *publicBuffer = reinterpret_cast<char *>(env->GetByteArrayElements(public_buffer, nullptr));
     char *errorMsg = reinterpret_cast<char *>(env->GetByteArrayElements(error_msg, nullptr));
 
@@ -79,7 +79,7 @@ Java_com_distributedLab_rarime_util_ZkpUtil_groth16InternalStorage(JNIEnv *env, 
     unsigned long publicSize = static_cast<unsigned long>(publicSizePtr[0]);
 
     // Call the groth16 prover function
-    int result = groth16_prover(buffer.data(), buffer.size(),
+    int result = groth16_prover(circuitBuffer.data(), fileSize,
                                 wtnsBuffer, static_cast<unsigned long>(wtns_size),
                                 proofBuffer, &proofSize,
                                 publicBuffer, &publicSize,
@@ -90,7 +90,7 @@ Java_com_distributedLab_rarime_util_ZkpUtil_groth16InternalStorage(JNIEnv *env, 
     env->SetLongArrayRegion(public_size, 0, 1, reinterpret_cast<const jlong *>(&publicSize));
 
     env->ReleaseByteArrayElements(wtns_buffer, reinterpret_cast<jbyte *>(const_cast<void *>(wtnsBuffer)), 0);
-    env->ReleaseByteArrayElements(proof_buffer, reinterpret_cast<jbyte *>(proofBuffer), 0);
+    env->ReleaseByteArrayElements(proof_bufferJ, reinterpret_cast<jbyte *>(proofBuffer), 0);
     env->ReleaseByteArrayElements(public_buffer, reinterpret_cast<jbyte *>(publicBuffer), 0);
     env->ReleaseByteArrayElements(error_msg, reinterpret_cast<jbyte *>(errorMsg), 0);
     env->ReleaseLongArrayElements(proof_size, proofSizePtr, 0);
@@ -246,7 +246,7 @@ Java_com_distributedLab_rarime_util_ZkpUtil_auth(JNIEnv *env, jobject thiz,
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_distributedLab_rarime_util_ZkpUtil_registerIdentityUniversalRSA2048(JNIEnv *env, jobject thiz,
-                                                                             jstring filePath,
+                                                                             jstring filePath,jlong fileSizeJ,
                                                                              jbyteArray json_buffer, jlong json_size,
                                                                              jbyteArray wtns_buffer, jlongArray wtns_size,
                                                                              jbyteArray error_msg, jlong error_msg_max_size) {
@@ -259,8 +259,7 @@ Java_com_distributedLab_rarime_util_ZkpUtil_registerIdentityUniversalRSA2048(JNI
         return -1; // Error code for file opening failure
     }
 
-    // Get the file size
-    std::streamsize fileSize = file.tellg();
+    unsigned long fileSize = static_cast<unsigned long>(fileSizeJ);
     file.seekg(0, std::ios::beg);
 
     // Read the file content into a buffer
@@ -301,27 +300,31 @@ Java_com_distributedLab_rarime_util_ZkpUtil_registerIdentityUniversalRSA2048(JNI
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_distributedLab_rarime_util_ZkpUtil_registerIdentityUniversalRSA4096(JNIEnv *env, jobject thiz,
-                                                                             jstring filePath,
+                                                                             jstring filePath,jlong fileSizeJ,
                                                                              jbyteArray json_buffer, jlong json_size,
                                                                              jbyteArray wtns_buffer, jlongArray wtns_size,
                                                                              jbyteArray error_msg, jlong error_msg_max_size) {
     const char *nativeFilePath = env->GetStringUTFChars(filePath, nullptr);
+    unsigned long fileSize = static_cast<unsigned long>(fileSizeJ);
+
+    // Allocate buffer for the file content
+    char *circuitBuffer = new char[fileSize];
 
     // Read the file from the internal storage
-    std::ifstream file(nativeFilePath, std::ios::binary | std::ios::ate);
+    std::ifstream file(nativeFilePath, std::ios::binary);
     if (!file.is_open()) {
+        LOGE("Failed to open file: %s", nativeFilePath);
         env->ReleaseStringUTFChars(filePath, nativeFilePath);
+        delete[] circuitBuffer;
         return -1; // Error code for file opening failure
     }
 
-    // Get the file size
-    std::streamsize fileSize = file.tellg();
-    file.seekg(0, std::ios::beg);
-
-    // Read the file content into a buffer
-    std::vector<char> circuitBuffer(fileSize);
-    if (!file.read(circuitBuffer.data(), fileSize)) {
+    // Read the file content into the buffer
+    file.read(circuitBuffer, fileSize);
+    if (!file) {
+        LOGE("Failed to read file: %s", nativeFilePath);
         env->ReleaseStringUTFChars(filePath, nativeFilePath);
+        delete[] circuitBuffer;
         return -2; // Error code for file reading failure
     }
     file.close();
@@ -336,7 +339,7 @@ Java_com_distributedLab_rarime_util_ZkpUtil_registerIdentityUniversalRSA4096(JNI
     unsigned long wtnsSize = env->GetLongArrayElements(wtns_size, nullptr)[0];
 
     int result = witnesscalc_registerIdentityUniversalRSA4096(
-            circuitBuffer.data(), static_cast<unsigned long>(fileSize),
+            circuitBuffer, static_cast<unsigned long>(fileSize),
             jsonBuffer, static_cast<unsigned long>(json_size),
             wtnsBuffer, &wtnsSize,
             errorMsg, static_cast<unsigned long>(error_msg_max_size)
@@ -344,10 +347,10 @@ Java_com_distributedLab_rarime_util_ZkpUtil_registerIdentityUniversalRSA4096(JNI
 
     // Set the result and release the resources
     env->SetLongArrayRegion(wtns_size, 0, 1, reinterpret_cast<jlong *>(&wtnsSize));
-
     env->ReleaseByteArrayElements(json_buffer, reinterpret_cast<jbyte *>(const_cast<char *>(jsonBuffer)), 0);
     env->ReleaseByteArrayElements(wtns_buffer, reinterpret_cast<jbyte *>(wtnsBuffer), 0);
     env->ReleaseByteArrayElements(error_msg, reinterpret_cast<jbyte *>(errorMsg), 0);
-
+    delete[] circuitBuffer;
     return result;
 }
+
