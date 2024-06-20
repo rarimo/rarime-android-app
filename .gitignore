@@ -15,4 +15,4 @@
 .cxx
 local.properties
 *.zkey
-/app/src/main/java/com/rarilabs/rarime/config/SensetiveData.kt
+/app/src/main/java/com/rarilabs/rarime/config/
