@@ -26,6 +26,7 @@ import com.distributedLab.rarime.R
 import com.distributedLab.rarime.api.points.models.BaseEvents
 import com.distributedLab.rarime.api.points.models.PointsEventData
 import com.distributedLab.rarime.data.enums.PassportStatus
+import com.distributedLab.rarime.data.tokens.PointsToken
 import com.distributedLab.rarime.modules.rewards.localRewardsScreenViewModel
 import com.distributedLab.rarime.modules.rewards.view_models.CONST_MOCKED_EVENTS_LIST
 import com.distributedLab.rarime.ui.components.AppIcon
@@ -48,6 +49,11 @@ fun ActiveTaskItem(
     pointEvent: PointsEventData
 ) {
     val rewardsViewModel = localRewardsScreenViewModel.current
+
+    val pointsWalletAsset = rewardsViewModel.pointsWalletAsset.collectAsState()
+
+    val pointsToken = pointsWalletAsset.value?.token as PointsToken?
+
     val eventIcon = ICONS_BY_BASE_EVENT_MAP[pointEvent.attributes.meta.static.name] ?: R.drawable.ic_users
 
     val passportStatus = rewardsViewModel.passportStatus.collectAsState()
@@ -69,10 +75,10 @@ fun ActiveTaskItem(
                 }
             }
             else -> {
-                Screen.Main.Rewards.RewardsEventsItem.route.replace(
+                navigate(Screen.Main.Rewards.RewardsEventsItem.route.replace(
                     "{item_id}",
                     pointEvent.id,
-                )
+                ))
             }
         }
     }
@@ -86,7 +92,7 @@ fun ActiveTaskItem(
                     handleBaseEvents()
                 }
             }
-            .alpha(if (isEventDisabled) 0.25f else 1f )
+            .alpha(if (isEventDisabled) 0.25f else 1f)
     ) {
         Box(
             contentAlignment = Alignment.Center,
@@ -130,7 +136,9 @@ fun ActiveTaskItem(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                RewardAmountPreview(amount = pointEvent.attributes.meta.static.reward)
+                if (pointsToken?.balanceDetails != null && pointsToken.balanceDetails!!.attributes.is_verified == true) {
+                    RewardAmountPreview(amount = pointEvent.attributes.meta.static.reward)
+                }
 
                 AppIcon(
                     id = R.drawable.ic_caret_right,

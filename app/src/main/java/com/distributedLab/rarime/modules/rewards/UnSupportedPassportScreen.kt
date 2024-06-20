@@ -13,6 +13,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -21,21 +24,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.modules.rewards.view_models.UnSupportedPassportViewModel
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.Country
 
 @Composable
 fun UnSupportedPassport(
-    issuerAuthority: String,
-    unSupportedPassportViewModel: UnSupportedPassportViewModel = hiltViewModel()
+    issuerAuthority: String
 ) {
 
     val rewardsViewModel = localRewardsScreenViewModel.current
 
-    val leaderBoardList = rewardsViewModel.leaderBoardList.collectAsState()
+    val leaderBoardList by rewardsViewModel.leaderBoardList.collectAsState()
 
-    val pointWalletAsset = unSupportedPassportViewModel.pointsWalletAsset
+    val pointWalletAsset = rewardsViewModel.pointsWalletAsset
+
+    val isRewardsLoaded by remember(leaderBoardList) {
+        derivedStateOf { leaderBoardList.isNotEmpty() }
+    }
+
 
     Column(
         modifier = Modifier
@@ -55,10 +61,13 @@ fun UnSupportedPassport(
                 color = RarimeTheme.colors.textPrimary
             )
             pointWalletAsset.value?.let {
-                RewardsRatingBadge(
-                    leaderBoardList = leaderBoardList.value,
-                    walletAsset = it
-                )
+                if (isRewardsLoaded) {
+                    RewardsRatingBadge(
+                        leaderBoardList = leaderBoardList, walletAsset = it
+                    )
+                } else {
+                    RewardsRatingBadgeSkeleton()
+                }
             }
         }
 

@@ -8,6 +8,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -59,12 +60,13 @@ fun EnterProgramFlow(
         exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp),
+                    .absolutePadding(top = 12.dp, left = 24.dp, right = 24.dp),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -129,7 +131,9 @@ fun EnterProgramFlow(
         enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
         exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
     ) {
-        Column {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

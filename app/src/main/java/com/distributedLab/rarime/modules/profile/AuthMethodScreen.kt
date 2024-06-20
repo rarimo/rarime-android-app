@@ -71,16 +71,18 @@ fun AuthMethodScreen(
             title = stringResource(R.string.auth_method), onBack = onBack
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                if (isBiometricsAvailable) {
-                    AuthMethodItem(iconId = R.drawable.ic_fingerprint,
-                        label = stringResource(R.string.biometrics),
-                        checked = biometricsState == SecurityCheckState.ENABLED,
-                        onCheckedChange = { handleBiometricsStateChange(it) })
-                }
                 AuthMethodItem(iconId = R.drawable.ic_password,
                     label = stringResource(R.string.passcode),
                     checked = passcodeState == SecurityCheckState.ENABLED,
                     onCheckedChange = { isPasscodeShown = true })
+
+                if (isBiometricsAvailable) {
+                    AuthMethodItem(iconId = R.drawable.ic_fingerprint,
+                        label = stringResource(R.string.biometrics),
+                        checked = biometricsState == SecurityCheckState.ENABLED,
+                        onCheckedChange = { handleBiometricsStateChange(it) },
+                        enabled = passcodeState == SecurityCheckState.ENABLED)
+                }
             }
         }
     }
@@ -88,7 +90,7 @@ fun AuthMethodScreen(
 
 @Composable
 private fun AuthMethodItem(
-    @DrawableRes iconId: Int, label: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit
+    @DrawableRes iconId: Int, label: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit, enabled: Boolean = true
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -96,7 +98,7 @@ private fun AuthMethodItem(
         modifier = Modifier
             .fillMaxWidth()
             .background(RarimeTheme.colors.backgroundOpacity, RoundedCornerShape(12.dp))
-            .padding(16.dp)
+            .padding(16.dp),
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -117,7 +119,7 @@ private fun AuthMethodItem(
             )
         }
         AppSwitch(
-            checked = checked, onCheckedChange = onCheckedChange
+            checked = checked, onCheckedChange = onCheckedChange, enabled = enabled
         )
     }
 }

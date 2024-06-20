@@ -124,24 +124,32 @@ fun WalletScreen(
                             color = RarimeTheme.colors.textPrimary
                         )
 
-                        TextDropdown(
-                            value = selectedUserAsset.token.symbol,
-                            options = userAssets.map {
-                                DropdownOption(
-                                    label = it.token.symbol,
-                                    value = it.token.symbol
-                                )
-                            },
-                            onChange = { symb ->
-                                run {
-                                    val asset = userAssets.find { it.token.symbol == symb }
-                                    Log.i("onChange: walletViewModel:", symb)
-                                    Log.i("onChange: asset:", asset?.token?.symbol ?: "nope")
+                        // TODO: rollback at next releases
+                        if (userAssets.size > 1) {
+                            TextDropdown(
+                                value = selectedUserAsset.token.symbol,
+                                options = userAssets.map {
+                                    DropdownOption(
+                                        label = it.token.symbol,
+                                        value = it.token.symbol
+                                    )
+                                },
+                                onChange = { symb ->
+                                    run {
+                                        val asset = userAssets.find { it.token.symbol == symb }
+                                        Log.i("onChange: walletViewModel:", symb)
+                                        Log.i("onChange: asset:", asset?.token?.symbol ?: "nope")
 
-                                    asset?.let { newAsset -> walletViewModel.updateSelectedWalletAsset(newAsset) }
+                                        asset?.let { newAsset -> walletViewModel.updateSelectedWalletAsset(newAsset) }
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        } else {
+                            Text(
+                                text = selectedUserAsset.token.symbol,
+                                style = RarimeTheme.typography.overline2,
+                            )
+                        }
                     }
                     Text(
                         text = "---",

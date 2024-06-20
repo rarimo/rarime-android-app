@@ -35,9 +35,6 @@ import com.google.gson.Gson
 import identity.Identity
 import identity.Profile
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -49,11 +46,6 @@ class PointsManager @Inject constructor(
     private val authManager: AuthManager,
     private val dataStoreManager: SecureSharedPrefsManager,
 ) {
-    private var _pointsBalance = MutableStateFlow<PointsBalanceBody?>(null)
-
-    val pointsBalance: StateFlow<PointsBalanceBody?>
-        get() = _pointsBalance.asStateFlow()
-
     suspend fun createPointsBalance(referralCode: String) {
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
@@ -62,7 +54,7 @@ class PointsManager @Inject constructor(
         }
 
         withContext(Dispatchers.IO) {
-            val response = pointsAPIManager.createPointsBalance(
+            pointsAPIManager.createPointsBalance(
                 CreateBalanceBody(
                     data = CreateBalanceData(
                         id = userNullifierHex,
@@ -74,8 +66,6 @@ class PointsManager @Inject constructor(
                 ),
                 "Bearer ${authManager.accessToken.value!!}"
             )
-
-            _pointsBalance.value = response
         }
     }
 
@@ -94,8 +84,6 @@ class PointsManager @Inject constructor(
                 "referral_codes" to "true",
             )
         )
-
-        _pointsBalance.value = response
 
         return response
     }

@@ -40,13 +40,12 @@ import com.distributedLab.rarime.R
 import com.distributedLab.rarime.modules.home.components.HomeIntroLayout
 import com.distributedLab.rarime.ui.base.BaseIconButton
 import com.distributedLab.rarime.ui.components.AppTextField
+import com.distributedLab.rarime.ui.components.AppTextFieldState
 import com.distributedLab.rarime.ui.components.HorizontalDivider
 import com.distributedLab.rarime.ui.components.enter_program.UNSPECIFIED_PASSPORT_STEPS
 import com.distributedLab.rarime.ui.components.rememberAppTextFieldState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 data class SocialItem(
     val icon: Int,
@@ -56,12 +55,10 @@ data class SocialItem(
 
 @Composable
 fun Invitation(
-    modifier: Modifier = Modifier,
     onNext: () -> Unit = { },
     updateStep: (step: UNSPECIFIED_PASSPORT_STEPS) -> Unit = { },
     invitationViewModel: InvitationViewModel = hiltViewModel()
 ) {
-    val uriHandler = LocalUriHandler.current
 
     val invitationCodeState = rememberAppTextFieldState(initialText = "")
 
@@ -87,6 +84,23 @@ fun Invitation(
             isSubmitting = false
         }
     }
+
+    InvitationContent(
+        invitationCodeState = invitationCodeState,
+        isSubmitting = isSubmitting,
+        verifyCode = { verifyCode() },
+        updateStep = updateStep,
+    )
+}
+
+@Composable
+private fun InvitationContent(
+    invitationCodeState: AppTextFieldState,
+    isSubmitting: Boolean,
+    verifyCode: () -> Unit,
+    updateStep: (step: UNSPECIFIED_PASSPORT_STEPS) -> Unit,
+) {
+    val uriHandler = LocalUriHandler.current
 
     HomeIntroLayout(
         title = stringResource(id = R.string.other_passport_card_title),
@@ -203,17 +217,11 @@ fun Invitation(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = "Supported countries",
-                    style = RarimeTheme.typography.buttonSmall,
-                    color = RarimeTheme.colors.textSecondary
-                )
-
-                Text(
                     modifier = Modifier
                         .clickable {
                             updateStep(UNSPECIFIED_PASSPORT_STEPS.ABOUT_PROGRAM)
                         },
-                    text = "Learn more about the program",
+                    text = stringResource(id = R.string.invitation_about_step_link),
                     style = RarimeTheme.typography.buttonSmall,
                     color = RarimeTheme.colors.textSecondary
                 )
@@ -222,15 +230,13 @@ fun Invitation(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun InvitationPreview() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
-    ) {
-
-        Invitation()
-    }
+    InvitationContent(
+        invitationCodeState = rememberAppTextFieldState(initialText = ""),
+        isSubmitting = false,
+        verifyCode = {},
+        updateStep = {},
+    )
 }

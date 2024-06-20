@@ -36,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
 import com.distributedLab.rarime.api.points.models.PointsEventData
 import com.distributedLab.rarime.data.enums.PassportStatus
+import com.distributedLab.rarime.data.tokens.PointsToken
 import com.distributedLab.rarime.data.tokens.PreviewerToken
 import com.distributedLab.rarime.manager.WalletAsset
 import com.distributedLab.rarime.modules.home.components.passport.StatusCard
@@ -66,10 +67,21 @@ val localRewardsScreenViewModel =
 
 @Composable
 fun RewardsScreen(
-    navigate: (String) -> Unit,
-    rewardsViewModel: RewardsViewModel = hiltViewModel()
+    navigate: (String) -> Unit, rewardsViewModel: RewardsViewModel = hiltViewModel()
 ) {
     val isAuthorized = rewardsViewModel.isAuthorized.collectAsState()
+
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        scope.launch {
+            try {
+                rewardsViewModel.init()
+            } catch (e: Exception) {
+                Log.e("RewardsScreenContent", "init: ${e.message}")
+            }
+        }
+    }
 
     CompositionLocalProvider(localRewardsScreenViewModel provides rewardsViewModel) {
 
@@ -132,17 +144,7 @@ fun RewardsScreenContent(
 
     val leaderBoardList = rewardsViewModel.leaderBoardList.collectAsState()
 
-    val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        scope.launch {
-            try {
-                rewardsViewModel.init()
-            } catch (e: Exception) {
-                Log.e("RewardsScreenContent", "init: ${e.message}")
-            }
-        }
-    }
 
     pointsWalletAsset.value?.let { walletAsset ->
         Column(
@@ -213,6 +215,8 @@ fun RewardsScreenUserStatistic(
     levelProgress: Float,
 ) {
     val levelingSheetState = rememberAppSheetState()
+
+    val pointsBalanceData = pointsWalletAsset.token as PointsToken
 
     Column(
         verticalArrangement = Arrangement.spacedBy((-43).dp)
@@ -333,7 +337,7 @@ fun RewardsScreenUserStatistic(
     }
 
     AppBottomSheet(state = levelingSheetState, fullScreen = true) { hide ->
-        RewardsLeveling()
+        pointsBalanceData.balanceDetails?.let { RewardsLeveling(it) }
     }
 }
 
@@ -419,7 +423,8 @@ fun RewardsRatingBadge(
 ) {
     val leaderboardSheetState = rememberAppSheetState()
 
-    Row(horizontalArrangement = Arrangement.spacedBy(4.dp),
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .clip(RoundedCornerShape(100.dp))
@@ -443,6 +448,29 @@ fun RewardsRatingBadge(
             walletAsset.userAddress,
         )
     }
+}
+
+@Composable
+fun RewardsRatingBadgeSkeleton() {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .clip(RoundedCornerShape(100.dp))
+            .background(RarimeTheme.colors.warningLighter)
+            .padding(vertical = 4.dp, horizontal = 9.dp)
+    ) {
+        AppIcon(
+            id = R.drawable.ic_trophy,
+            tint = RarimeTheme.colors.warningDarker,
+        )
+
+        Text(
+            text = "---",
+            color = RarimeTheme.colors.warningDarker,
+        )
+    }
+
 }
 
 @Preview(showBackground = true)
