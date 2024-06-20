@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +42,7 @@ import com.rarilabs.rarime.ui.components.StepIndicator
 import com.rarilabs.rarime.ui.components.UiLinearProgressBar
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.NumberUtil
+import kotlinx.coroutines.launch
 
 @Composable
 private fun StageIndicator(
@@ -154,21 +156,12 @@ val LEVELING: List<RewardLevel> = listOf(
         minAmount = 0.0,
         maxAmount = 30.0,
         rewards = listOf(
-            LevelReward(
-                title = "X2 RMO Coins",
-                subtitle = "Invite friends in to app",
-                iconId = R.drawable.ic_users,
-            ),
-            LevelReward(
-                title = "X2 RMO Coins",
-                subtitle = "Invite friends in to app",
-                iconId = R.drawable.ic_users,
-            )
+
         ),
     ),
     RewardLevel(
         title = "Level 2",
-        subtitle = "3-50 RMO Coins",
+        subtitle = "30-50 RMO Coins",
         logo = R.drawable.reward_coin,
 
         amount = 0.0,
@@ -176,19 +169,14 @@ val LEVELING: List<RewardLevel> = listOf(
         maxAmount = 50.0,
         rewards = listOf(
             LevelReward(
-                title = "X2 RMO Coins",
-                subtitle = "Invite friends in to app",
+                title = "10 extra referrals",
+                subtitle = "Invite more people, earn more rewards",
                 iconId = R.drawable.ic_users,
             ),
             LevelReward(
-                title = "X2 RMO Coins",
-                subtitle = "Invite friends in to app",
-                iconId = R.drawable.ic_users,
-            ),
-            LevelReward(
-                title = "X2 RMO Coins",
-                subtitle = "Invite friends in to app",
-                iconId = R.drawable.ic_users,
+                title = "Exclusive campaigns",
+                subtitle = "Only level 2 specials",
+                iconId = R.drawable.ic_airdrop,
             )
         ),
     ),
@@ -202,9 +190,9 @@ val LEVELING: List<RewardLevel> = listOf(
         maxAmount = null,
         rewards = listOf(
             LevelReward(
-                title = "X2 RMO Coins",
-                subtitle = "Invite friends in to app",
-                iconId = R.drawable.ic_users,
+                title = "Staking",
+                subtitle = "Earn more rewards",
+                iconId = R.drawable.ic_rarimo,
             )
         ),
     ),
@@ -285,6 +273,8 @@ fun LevelingProgress(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RewardsLeveling(pointsBalance: PointsBalanceData) {
+    val scope = rememberCoroutineScope()
+
     val balance = pointsBalance.attributes.amount.toDouble()
 
     val leveling = getNormalizeLeveling(balance)
@@ -302,6 +292,13 @@ fun RewardsLeveling(pointsBalance: PointsBalanceData) {
     )
     LaunchedEffect(pagerState.currentPage) {
         selectedLevelingCardId = pagerState.currentPage
+    }
+
+    fun handleUpdateStepIndicator(idx: Int) {
+        scope.launch {
+            selectedLevelingCardId = idx
+            pagerState.animateScrollToPage(idx)
+        }
     }
 
     Column(
@@ -391,7 +388,7 @@ fun RewardsLeveling(pointsBalance: PointsBalanceData) {
         StepIndicator(
             itemsCount = leveling.size,
             selectedIndex = selectedLevelingCardId,
-            updateSelectedIndex = { selectedLevelingCardId = it },
+            updateSelectedIndex = { handleUpdateStepIndicator(it) },
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -411,12 +408,20 @@ fun RewardsLeveling(pointsBalance: PointsBalanceData) {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                leveling[selectedLevelingCardId].rewards.forEach {
-                    RewardsItem(it)
+            if (leveling[selectedLevelingCardId].rewards.isNotEmpty()) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    leveling[selectedLevelingCardId].rewards.forEach {
+                        RewardsItem(it)
+                    }
                 }
+            } else {
+                Text(
+                    text = "Start journey to unlock rewards",
+                    style = RarimeTheme.typography.body3,
+                    color = RarimeTheme.colors.textSecondary
+                )
             }
         }
 
