@@ -431,6 +431,7 @@ class RewardsViewModel @Inject constructor(
     private val passportManager: PassportManager,
     private val authManager: AuthManager,
     private val pointsManager: PointsManager,
+
 ) : ViewModel() {
     val passportStatus = passportManager.passportStatus
 
@@ -465,6 +466,10 @@ class RewardsViewModel @Inject constructor(
 
     val leaderBoardList: StateFlow<List<LeaderBoardItem>>
         get() = _leaderBoardList.asStateFlow()
+
+    fun getIssuerAuthority(): String? {
+        return passportManager.passport.value?.personDetails?.issuerAuthority
+    }
 
     suspend fun init() {
         delay(1000L * 3)

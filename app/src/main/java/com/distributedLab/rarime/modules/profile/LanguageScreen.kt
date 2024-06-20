@@ -35,7 +35,6 @@ fun LanguageScreen(
                     isSelected = lang == language,
                     onClick = {onLanguageChange.invoke(lang); viewModel.updateLanguage(lang)  })
             }
-
         }
     }
 }
