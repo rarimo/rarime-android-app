@@ -19,16 +19,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.text.isDigitsOnly
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 
-class AppTextFieldState(initialText: String, initialErrorMessage: String = "") {
+open class AppTextFieldState(initialText: String, initialErrorMessage: String = "") {
     var text by mutableStateOf(initialText)
         private set
 
     var errorMessage by mutableStateOf(initialErrorMessage)
         private set
 
-    fun updateText(newText: String) {
+    open fun updateText(newText: String) {
         text = newText
         errorMessage = ""
     }
@@ -50,6 +51,15 @@ class AppTextFieldState(initialText: String, initialErrorMessage: String = "") {
                 )
             }
         )
+    }
+}
+
+class AppTextFieldNumberState(initialText: String, initialErrorMessage: String = "") :
+    AppTextFieldState(initialText, initialErrorMessage) {
+    override fun updateText(newText: String) {
+        if (newText.isDigitsOnly()) {
+            super.updateText(newText)
+        }
     }
 }
 
