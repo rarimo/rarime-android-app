@@ -207,4 +207,15 @@
     <string name="checking_eligibility">Checking eligibility happens via a scan of your biometric passport.\n\nYour data never leaves the device or is shared with any third party. Proof of citizenship is generated locally using Zero-Knowledge technology.</string>
     <string name="reserve_tokens">Reserve tokens</string>
     <string name="you_re_entitled_of_x_rmo">You’re entitled of %1$s RMO</string>
+
+    <string name="rewards_event_item_invites_title">Invite Friends</string>
+    <string name="rewards_event_item_invites_subtitle">Invite friends and get rewards</string>
+    <string name="rewards_event_item_invites_status">Invited %1$s/%2$s</string>
+    <string name="rewards_event_item_invites_status_subtitle">Invite codes:</string>
+
+    <string name="invite_status_rewarded_card_desc">Rewarded</string>
+    <string name="invite_status_consumed_card_desc">used • friend need to scan passport</string>
+    <string name="invite_status_active_card_desc">Your friends country (known after scanning passport) is not allowed to participate in the referral program</string>
+    <string name="invite_status_banned_card_desc">The limit of reserved tokens in your friends country is reached</string>
+    <string name="invite_status_limited_card_desc">Friend has scanned passport • need your passport scan</string>
 </resources>
