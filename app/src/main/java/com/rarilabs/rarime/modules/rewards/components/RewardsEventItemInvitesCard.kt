@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -120,7 +121,7 @@ fun RewardsEventItemInvitesCard(
                 RewardsEventItemInvitesCardContainer(
                     title = code.id,
                     isCodeDisabled = true,
-                    description = "Rewarded",
+                    description = stringResource(id = R.string.invite_status_rewarded_card_desc),
                     actionContent = {
                         notActiveActionContent()
                     }
@@ -131,7 +132,7 @@ fun RewardsEventItemInvitesCard(
                 RewardsEventItemInvitesCardContainer(
                     title = code.id,
                     isCodeDisabled = true,
-                    description = "used • friend need to scan passport",
+                    description = stringResource(id = R.string.invite_status_consumed_card_desc),
                     actionContent = {
                         notActiveActionContent()
                     }
@@ -167,7 +168,7 @@ fun RewardsEventItemInvitesCard(
                 RewardsEventItemInvitesCardContainer(
                     title = code.id,
                     isCodeDisabled = true,
-                    description = "Your friends country (known after scanning passport) is not allowed to participate in the referral program",
+                    description = stringResource(id = R.string.invite_status_active_card_desc),
                     actionContent = {
                         notActiveActionContent()
                     }
@@ -178,7 +179,7 @@ fun RewardsEventItemInvitesCard(
                 RewardsEventItemInvitesCardContainer(
                     title = code.id,
                     isCodeDisabled = true,
-                    description = "The limit of reserved tokens in your friends country is reached",
+                    description = stringResource(id = R.string.invite_status_banned_card_desc),
                     actionContent = {
                         notActiveActionContent()
                     }
@@ -189,7 +190,7 @@ fun RewardsEventItemInvitesCard(
                 RewardsEventItemInvitesCardContainer(
                     title = code.id,
                     isCodeDisabled = true,
-                    description = "Friend has scanned passport • need your passport scan",
+                    description = stringResource(id = R.string.invite_status_limited_card_desc),
                     actionContent = {
                         notActiveActionContent()
                     }

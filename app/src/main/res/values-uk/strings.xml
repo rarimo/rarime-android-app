@@ -207,4 +207,15 @@
     <string name="checking_eligibility">Перевірка відповідності вимогам відбувається за допомогою сканування вашого біометричного паспорта.\n\nВаші дані ніколи не залишають пристрій і не передаються третім особам. Підтвердження громадянства створюється локально за допомогою технології Zero-Knowledge.</string>
     <string name="reserve_tokens">Резерв токенів</string>
     <string name="you_re_entitled_of_x_rmo">Ви маєте право на %1$s RMO</string>
+
+    <string name="rewards_event_item_invites_title">Запрошуйте друзів</string>
+    <string name="rewards_event_item_invites_subtitle">Запрошуйте друзів та отримуйте винагороди</string>
+    <string name="rewards_event_item_invites_status">Запрошено %1$s/%2$s</string>
+    <string name="rewards_event_item_invites_status_subtitle">Запрошення:</string>
+
+    <string name="invite_status_rewarded_card_desc">Винагороду отримано</string>
+    <string name="invite_status_consumed_card_desc">Використано • другу потрібно відсканувати паспорт</string>
+    <string name="invite_status_active_card_desc">Країна вашого друга не може брати участь у реферальній програмі</string>
+    <string name="invite_status_banned_card_desc">Вичерпано ліміт зарезервованих токенів у країні вашого друга;</string>
+    <string name="invite_status_limited_card_desc">Друг відсканував паспорт - потрібно відсканувати ваш паспорт;</string>
 </resources>
