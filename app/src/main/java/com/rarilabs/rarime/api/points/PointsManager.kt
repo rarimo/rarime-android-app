@@ -3,13 +3,16 @@ package com.rarilabs.rarime.api.points
 import android.content.Context
 import android.util.Log
 import coil.network.HttpException
-import com.rarilabs.rarime.BaseConfig
+import com.google.gson.Gson
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.auth.AuthManager
 import com.rarilabs.rarime.api.points.models.BaseEvents
 import com.rarilabs.rarime.api.points.models.CreateBalanceAttributes
 import com.rarilabs.rarime.api.points.models.CreateBalanceBody
 import com.rarilabs.rarime.api.points.models.CreateBalanceData
+import com.rarilabs.rarime.api.points.models.JoinRewardsProgramRequest
+import com.rarilabs.rarime.api.points.models.JoinRewardsProgramRequestAttributes
+import com.rarilabs.rarime.api.points.models.JoinRewardsProgramRequestData
 import com.rarilabs.rarime.api.points.models.PointsBalanceBody
 import com.rarilabs.rarime.api.points.models.PointsEventBody
 import com.rarilabs.rarime.api.points.models.PointsEventStatuses
@@ -22,6 +25,8 @@ import com.rarilabs.rarime.api.points.models.VerifyPassportData
 import com.rarilabs.rarime.api.points.models.WithdrawBody
 import com.rarilabs.rarime.api.points.models.WithdrawPayload
 import com.rarilabs.rarime.api.points.models.WithdrawPayloadAttributes
+import com.rarilabs.rarime.BaseConfig
+import com.rarilabs.rarime.config.Keys
 import com.rarilabs.rarime.data.ProofTxFull
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.RarimoContractManager
@@ -31,11 +36,13 @@ import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
 import com.rarilabs.rarime.util.data.ZkProof
 import com.rarilabs.rarime.util.decodeHexString
-import com.google.gson.Gson
+import com.rarilabs.rarime.util.hmacSha256
 import identity.Identity
 import identity.Profile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.web3j.utils.Numeric
+import java.math.BigInteger
 import javax.inject.Inject
 
 class PointsManager @Inject constructor(
@@ -63,10 +70,42 @@ class PointsManager @Inject constructor(
                             referredBy = referralCode
                         )
                     )
-                ),
-                "Bearer ${authManager.accessToken.value!!}"
+                ), "Bearer ${authManager.accessToken.value!!}"
             )
         }
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    suspend fun joinRewardProgram(eDocument: EDocument) {
+
+        val nullifier = identityManager.getUserPointsNullifierHex()
+
+
+        val countryName = eDocument.personDetails?.nationality!!
+        val countryCode = BigInteger(countryName.toByteArray())
+
+
+        val nBig = BigInteger(Numeric.hexStringToByteArray(nullifier))
+        val cBig = countryCode
+
+        val message = nBig.toByteArray() + cBig.toByteArray()
+
+        val hmacRes = hmacSha256(
+            Keys.joinProgram.decodeHexString(),
+            message
+        )
+
+        val requestPayload = JoinRewardsProgramRequest(
+            data = JoinRewardsProgramRequestData(
+                id = nullifier,
+                type = "join_program",
+                attributes = JoinRewardsProgramRequestAttributes(
+                    country = countryName
+                )
+            )
+        )
+
+        pointsAPIManager.joinRewordsProgram(nullifier, hmacRes.toHexString(), requestPayload, "Bearer ${authManager.accessToken.value!!}")
     }
 
     suspend fun getPointsBalance(): PointsBalanceBody? {
@@ -77,9 +116,7 @@ class PointsManager @Inject constructor(
         }
 
         val response = pointsAPIManager.getPointsBalance(
-            userNullifierHex,
-            "Bearer ${authManager.accessToken.value!!}",
-            mapOf(
+            userNullifierHex, "Bearer ${authManager.accessToken.value!!}", mapOf(
                 "rank" to "true",
                 "referral_codes" to "true",
             )
@@ -97,9 +134,9 @@ class PointsManager @Inject constructor(
         val zkp = ZKPUseCase(context, assetManager)
 
 
-        val registrationSmtContract = contractManager.getPoseidonSMT(BaseConfig.REGISTER_CONTRACT_ADDRESS)
+        val registrationSmtContract =
+            contractManager.getPoseidonSMT(BaseConfig.REGISTER_CONTRACT_ADDRESS)
         val stateKeeperContract = contractManager.getStateKeeper()
-
 
 
         val proofIndex = Identity.calculateProofIndex(
@@ -161,14 +198,11 @@ class PointsManager @Inject constructor(
 
         withContext(Dispatchers.Default) {
             val zkProof = generateVerifyPassportQueryProof(
-                registrationProof,
-                eDocument,
-                identityManager.privateKeyBytes!!
+                registrationProof, eDocument, identityManager.privateKeyBytes!!
             )
 
             pointsAPIManager.verifyPassport(
-                userNullifierHex,
-                VerifyPassportBody(
+                userNullifierHex, VerifyPassportBody(
                     data = VerifyPassportData(
                         id = userNullifierHex,
                         type = "verify_passport",
@@ -180,8 +214,7 @@ class PointsManager @Inject constructor(
                             proof = zkProof
                         )
                     )
-                ),
-                "Bearer ${authManager.accessToken.value!!}"
+                ), "Bearer ${authManager.accessToken.value!!}"
             )
         }
     }
@@ -194,8 +227,7 @@ class PointsManager @Inject constructor(
         }
 
         pointsAPIManager.withdrawPoints(
-            userNullifierHex,
-            WithdrawBody(
+            userNullifierHex, WithdrawBody(
                 data = WithdrawPayload(
                     id = userNullifierHex,
                     type = "withdraw",
@@ -236,11 +268,9 @@ class PointsManager @Inject constructor(
 
         return withContext(Dispatchers.IO) {
             try {
-                val response =
-                    pointsAPIManager.getEventsList(
-                        authorization = "Bearer ${authManager.accessToken.value!!}",
-                        params = params
-                    )
+                val response = pointsAPIManager.getEventsList(
+                    authorization = "Bearer ${authManager.accessToken.value!!}", params = params
+                )
 
                 response
             } catch (e: HttpException) {
@@ -281,8 +311,7 @@ class PointsManager @Inject constructor(
         return withContext(Dispatchers.IO) {
             try {
                 pointsAPIManager.getEvent(
-                    id = eventId,
-                    authorization = "Bearer ${authManager.accessToken.value!!}"
+                    id = eventId, authorization = "Bearer ${authManager.accessToken.value!!}"
                 )
             } catch (e: Exception) {
                 null

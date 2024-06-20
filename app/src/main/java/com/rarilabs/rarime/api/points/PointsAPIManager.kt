@@ -2,6 +2,7 @@ package com.rarilabs.rarime.api.points
 
 import com.rarilabs.rarime.api.points.models.ClaimEventBody
 import com.rarilabs.rarime.api.points.models.CreateBalanceBody
+import com.rarilabs.rarime.api.points.models.JoinRewardsProgramRequest
 import com.rarilabs.rarime.api.points.models.PointsBalanceBody
 import com.rarilabs.rarime.api.points.models.PointsEventBody
 import com.rarilabs.rarime.api.points.models.PointsEventsListBody
@@ -10,6 +11,7 @@ import com.rarilabs.rarime.api.points.models.PointsLeaderBoardBody
 import com.rarilabs.rarime.api.points.models.PointsPrice
 import com.rarilabs.rarime.api.points.models.PointsWithdrawalBody
 import com.rarilabs.rarime.api.points.models.VerifyPassportBody
+import com.rarilabs.rarime.api.points.models.VerifyPassportResponse
 import com.rarilabs.rarime.api.points.models.WithdrawBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -18,7 +20,9 @@ import javax.inject.Inject
 
 class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: PointsAPI) {
     /* BALANCE */
-    suspend fun createPointsBalance(body: CreateBalanceBody, authorization: String): PointsBalanceBody {
+    suspend fun createPointsBalance(
+        body: CreateBalanceBody, authorization: String
+    ): PointsBalanceBody {
         try {
             return jsonApiPointsSvcManager.createPointsBalance(body, authorization)
         } catch (e: HttpException) {
@@ -37,9 +41,7 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
     }
 
     suspend fun getPointsBalance(
-        userNullifierHex: String,
-        authorization: String,
-        queryParams: Map<String, String>
+        userNullifierHex: String, authorization: String, queryParams: Map<String, String>
     ): PointsBalanceBody? {
         try {
             val response = jsonApiPointsSvcManager.getPointsBalance(
@@ -68,6 +70,24 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
                 throw Exception(e.toString())
             }
         }
+    }
+
+    suspend fun joinRewordsProgram(
+        nullifier: String,
+        signature: String,
+        payload: JoinRewardsProgramRequest,
+        authorization: String
+    ): VerifyPassportResponse {
+        return withContext(Dispatchers.IO) {
+            try {
+                jsonApiPointsSvcManager.joinRewardsProgram(
+                    nullifier, signature, authorization, payload
+                )
+            } catch (e: HttpException) {
+                throw Exception(e.toString())
+            }
+        }
+
     }
 
     suspend fun getWithdrawalHistory(nullifier: String): List<PointsWithdrawalBody> {
@@ -116,8 +136,7 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
     }
 
     suspend fun getEventsList(
-        authorization: String,
-        params: Map<String, String>
+        authorization: String, params: Map<String, String>
     ): PointsEventsListBody {
         try {
             return jsonApiPointsSvcManager.getEventsList(

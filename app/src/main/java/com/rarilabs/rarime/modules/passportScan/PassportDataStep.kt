@@ -101,7 +101,7 @@ fun PassportDataStep(onNext: () -> Unit, onClose: () -> Unit, eDocument: EDocume
                                 )
                                 MustDataRow(
                                     stringResource(R.string.issuing_state_code),
-                                    eDocument.personDetails!!.issuerAuthority.toString()
+                                    eDocument.personDetails!!.nationality.toString()
                                 )
                                 MustDataRow(
                                     stringResource(R.string.document_number),
@@ -171,6 +171,7 @@ private fun SelectDataStepPreview() {
             birthDate = "01.01.1990",
             gender = "MALE",
             issuerAuthority = "USA",
+            nationality = "USA",
             serialNumber = "1234567890",
         ),
         additionalPersonDetails = AdditionalPersonDetails()
