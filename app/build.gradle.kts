@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.distributedLab.rarime"
+    namespace = "com.rarilabs.rarime"
     compileSdk = 34
 
     assetPacks += listOf(":zkp_assets")
