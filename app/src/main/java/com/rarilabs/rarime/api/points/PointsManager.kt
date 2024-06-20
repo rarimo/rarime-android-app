@@ -90,7 +90,6 @@ class PointsManager @Inject constructor(
 
         val message = nBig.toByteArray() + cBig.toByteArray()
 
-        //TODO: HIDE
         val hmacRes = hmacSha256(
             Keys.joinProgram.decodeHexString(),
             message
