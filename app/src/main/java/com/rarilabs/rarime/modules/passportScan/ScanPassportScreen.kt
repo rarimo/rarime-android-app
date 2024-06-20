@@ -59,7 +59,7 @@ fun ScanPassportScreen(
                 PassportDataStep(
                     onNext = {
                         state =
-                            if (Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument?.personDetails?.issuerAuthority)) {
+                            if (Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument?.personDetails?.nationality)) {
                                 ScanPassportState.NOT_ALLOWED_PASSPORT
                             } else {
                                 ScanPassportState.GENERATE_PROOF
@@ -72,7 +72,7 @@ fun ScanPassportScreen(
                 GenerateProofStep(onClose = {
                     registrationProof = it
                     // FIXME: remove hardcode
-                    if (eDocument?.personDetails?.issuerAuthority == "UKR") {
+                    if (eDocument?.personDetails?.nationality == "UKR") {
                         state = ScanPassportState.CLAIM_TOKENS
                     } else {
                         onClose.invoke()

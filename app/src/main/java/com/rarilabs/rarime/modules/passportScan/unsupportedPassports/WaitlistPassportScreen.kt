@@ -74,7 +74,7 @@ fun WaitlistPassportScreen(
                     .border(2.dp, RarimeTheme.colors.backgroundPrimary, CircleShape)
             ) {
                 Text(
-                    text = Country.fromISOCode(eDocument.personDetails!!.issuerAuthority)!!.flag,
+                    text = Country.fromISOCode(eDocument.personDetails!!.nationality)!!.flag,
                     style = RarimeTheme.typography.h5,
                     color = RarimeTheme.colors.textPrimary,
                 )
@@ -96,7 +96,7 @@ fun WaitlistPassportScreen(
                     color = RarimeTheme.colors.textPrimary,
                 )
                 Text(
-                    text = Country.fromISOCode(eDocument.personDetails!!.issuerAuthority)!!.localizedName,
+                    text = Country.fromISOCode(eDocument.personDetails!!.nationality)!!.localizedName,
                     style = RarimeTheme.typography.body3,
                     textAlign = TextAlign.Center,
                     color = RarimeTheme.colors.textSecondary,

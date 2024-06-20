@@ -35,7 +35,7 @@ fun UnSupportedPassport(
 
     val leaderBoardList by rewardsViewModel.leaderBoardList.collectAsState()
 
-    val pointWalletAsset = rewardsViewModel.pointsWalletAsset
+    val pointWalletAsset = rewardsViewModel.pointsWalletAsset.collectAsState()
 
     val isRewardsLoaded by remember(leaderBoardList) {
         derivedStateOf { leaderBoardList.isNotEmpty() }
