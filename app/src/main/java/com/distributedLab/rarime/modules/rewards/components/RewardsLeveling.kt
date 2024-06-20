@@ -48,7 +48,7 @@ private fun StageIndicator(
     number: Int,
     isActive: Boolean = false,
 ) {
-    Box (
+    Box(
         modifier = modifier
             .clip(RoundedCornerShape(100.dp))
             .width(32.dp)
@@ -59,7 +59,7 @@ private fun StageIndicator(
             ),
         contentAlignment = Alignment.Center
     ) {
-        Text (
+        Text(
             text = number.toString(),
             style = RarimeTheme.typography.body3,
             color = if (isActive) RarimeTheme.colors.textPrimary else RarimeTheme.colors.textSecondary,
@@ -93,8 +93,8 @@ data class LevelReward(
 )
 
 @Composable
-private fun RewardsItem (levelReward: LevelReward) {
-    Row (
+private fun RewardsItem(levelReward: LevelReward) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
@@ -103,7 +103,7 @@ private fun RewardsItem (levelReward: LevelReward) {
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box (
+        Box(
             Modifier
                 .clip(RoundedCornerShape(1000.dp))
                 .background(RarimeTheme.colors.componentPrimary)
@@ -114,14 +114,14 @@ private fun RewardsItem (levelReward: LevelReward) {
             AppIcon(id = levelReward.iconId, size = 20.dp)
         }
 
-        Column (
+        Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            Text (
+            Text(
                 text = levelReward.title,
                 style = RarimeTheme.typography.subtitle4,
             )
-            Text (
+            Text(
                 text = levelReward.subtitle,
                 style = RarimeTheme.typography.body4,
                 color = RarimeTheme.colors.textSecondary,
@@ -132,6 +132,8 @@ private fun RewardsItem (levelReward: LevelReward) {
 }
 
 data class RewardLevel(
+    val isCurrentLevel: Boolean = false,
+
     val title: String,
     val subtitle: String,
     val logo: Int,
@@ -210,28 +212,88 @@ val LEVELING: List<RewardLevel> = listOf(
 
 val INFINITY_STUB = 999999999999999.0
 
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun RewardsLeveling(pointsBalance: PointsBalanceData) {
-    val balance = pointsBalance.attributes.amount.toDouble()
-
-    val leveling = LEVELING.map {
+fun getNormalizeLeveling(balance: Double): List<RewardLevel> {
+    return LEVELING.map {
         // if user has pass current level
         if (it.maxAmount != null && balance >= it.maxAmount) {
             it.copy(
                 amount = it.maxAmount
             )
-        // if user is in current level
+            // if user is in current level
         } else if (balance > it.minAmount && (it.maxAmount == null || balance < it.maxAmount)) {
             it.copy(
-                amount = pointsBalance.attributes.amount.toDouble()
+                amount = balance,
+                isCurrentLevel = true,
             )
-        } else { it }
+        } else {
+            it
+        }
+    }
+}
+
+@Composable
+fun LevelingProgress(
+    level: RewardLevel,
+    leadingContent: @Composable (() -> Unit)? = null,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        if (leadingContent != null) {
+            leadingContent()
+        }
+
+        Row (
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = NumberUtil.formatAmount(level.amount),
+                style = RarimeTheme.typography.subtitle3,
+                color = RarimeTheme.colors.textPrimary,
+            )
+            Text(
+                text = " / " + (level.maxAmount?.let { maxAmount -> NumberUtil.formatAmount(maxAmount) }
+                    ?: "∞"),
+                color = RarimeTheme.colors.textSecondary,
+            )
+        }
     }
 
-    var selectedLevelingCardId by remember { mutableStateOf(leveling.indexOf(
-        leveling.find { it.amount == balance }
-    )) }
+    val percentage = try {
+        NumberUtil.formatAmount((level.amount / (level.maxAmount ?: INFINITY_STUB) * 100) / 100.0)
+            .toFloat()
+    } catch (e: Exception) {
+        0f
+    }
+
+    UiLinearProgressBar(
+        percentage = percentage,
+        trackColors = listOf(
+            RarimeTheme.colors.primaryMain,
+            RarimeTheme.colors.primaryDark,
+            RarimeTheme.colors.primaryDarker,
+        ),
+        backgroundModifier = Modifier
+            .fillMaxWidth()
+            .height(8.dp)
+            .clip(RoundedCornerShape(100.dp)),
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun RewardsLeveling(pointsBalance: PointsBalanceData) {
+    val balance = pointsBalance.attributes.amount.toDouble()
+
+    val leveling = getNormalizeLeveling(balance)
+
+    var selectedLevelingCardId by remember {
+        mutableStateOf(leveling.indexOf(
+            leveling.find { it.amount == balance }
+        ))
+    }
 
     val pagerState = rememberPagerState(
         initialPage = selectedLevelingCardId,
@@ -242,7 +304,7 @@ fun RewardsLeveling(pointsBalance: PointsBalanceData) {
         selectedLevelingCardId = pagerState.currentPage
     }
 
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary),
@@ -250,15 +312,17 @@ fun RewardsLeveling(pointsBalance: PointsBalanceData) {
     ) {
         Spacer(modifier = Modifier.height(22.dp))
         // FIXME: overlapped a close btn
-        Text (
-            text = "Leaderboard",
+        Text(
+            text = "Leveling",
             style = RarimeTheme.typography.subtitle4,
         )
 
         Spacer(modifier = Modifier.height(26.dp))
 
-        Row (
-            modifier = Modifier.fillMaxWidth(),
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -273,7 +337,7 @@ fun RewardsLeveling(pointsBalance: PointsBalanceData) {
 
         Spacer(modifier = Modifier.height(26.dp))
 
-        Column (
+        Column(
             modifier = Modifier.padding(horizontal = 12.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
@@ -284,23 +348,23 @@ fun RewardsLeveling(pointsBalance: PointsBalanceData) {
                 val level = leveling[idx]
 
                 CardContainer {
-                    Column (
+                    Column(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Row (
+                        Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
-                            Column (
+                            Column(
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Text (
+                                Text(
                                     text = level.title,
                                     style = RarimeTheme.typography.h5,
                                 )
-                                Text (
+                                Text(
                                     text = level.subtitle,
                                     style = RarimeTheme.typography.body3,
                                     color = RarimeTheme.colors.textSecondary,
@@ -316,33 +380,7 @@ fun RewardsLeveling(pointsBalance: PointsBalanceData) {
                             )
                         }
 
-                        Row (
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text (
-                                text = NumberUtil.formatAmount(level.amount),
-                                style = RarimeTheme.typography.subtitle3,
-                                color = RarimeTheme.colors.textPrimary,
-                            )
-                            Text(
-                                text = " / " + (level.maxAmount?.let { maxAmount -> NumberUtil.formatAmount(maxAmount) } ?: "∞"),
-                                color = RarimeTheme.colors.textSecondary,
-                            )
-                        }
-
-                        UiLinearProgressBar(
-                            percentage = NumberUtil.formatAmount((level.amount / (level.maxAmount ?: INFINITY_STUB) * 100) / 100.0).toFloat(),
-                            trackColors = listOf(
-                                RarimeTheme.colors.primaryMain,
-                                RarimeTheme.colors.primaryDark,
-                                RarimeTheme.colors.primaryDarker,
-                            ),
-                            backgroundModifier = Modifier
-                                .fillMaxWidth()
-                                .height(8.dp)
-                                .clip(RoundedCornerShape(100.dp)),
-                        )
+                        LevelingProgress(level)
                     }
                 }
             }
@@ -358,7 +396,7 @@ fun RewardsLeveling(pointsBalance: PointsBalanceData) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
@@ -373,7 +411,7 @@ fun RewardsLeveling(pointsBalance: PointsBalanceData) {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Column (
+            Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 leveling[selectedLevelingCardId].rewards.forEach {

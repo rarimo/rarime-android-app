@@ -31,7 +31,9 @@ class PointsToken @Inject constructor(
     }
 
     override suspend fun balanceOf(address: String): BigInteger {
-        return BigInteger.ZERO
+        balanceDetails = pointsManager.getPointsBalance()?.data
+
+        return balanceDetails?.attributes?.amount?.let { BigInteger.valueOf(it) } ?: BigInteger.ZERO
     }
 
     override suspend fun transfer(to: String, amount: BigInteger): Transaction {
