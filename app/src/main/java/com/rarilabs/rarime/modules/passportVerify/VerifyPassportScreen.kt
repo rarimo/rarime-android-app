@@ -113,7 +113,7 @@ fun VerifyPassportScreen(
             ) {
                 Text(
                     text = stringResource(
-                        R.string.reserve_tokens_title, Constants.AIRDROP_REWARD.toInt()
+                        R.string.reserve_tokens_title, Constants.SCAN_PASSPORT_REWARD.toInt()
                     ),
                     style = RarimeTheme.typography.h6,
                     color = RarimeTheme.colors.textPrimary,
