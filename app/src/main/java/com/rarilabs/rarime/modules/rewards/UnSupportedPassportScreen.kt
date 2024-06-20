@@ -28,7 +28,7 @@ import com.rarilabs.rarime.util.Country
 
 @Composable
 fun UnSupportedPassport(
-    issuerAuthority: String
+    nationality: String
 ) {
 
     val rewardsViewModel = localRewardsScreenViewModel.current
@@ -85,7 +85,7 @@ fun UnSupportedPassport(
                     .border(2.dp, RarimeTheme.colors.backgroundPrimary, CircleShape)
             ) {
                 Text(
-                    text = Country.fromISOCode(issuerAuthority)!!.flag,
+                    text = Country.fromISOCode(nationality)!!.flag,
                     style = RarimeTheme.typography.h5,
                     color = RarimeTheme.colors.textPrimary,
                 )
@@ -129,5 +129,5 @@ fun UnSupportedPassport(
 @Preview
 @Composable
 private fun UnsupportedPassportPreview() {
-    UnSupportedPassport(issuerAuthority = "GEO")
+    UnSupportedPassport(nationality = "GEO")
 }

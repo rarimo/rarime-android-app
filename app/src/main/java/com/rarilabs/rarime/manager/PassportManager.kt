@@ -39,7 +39,7 @@ class PassportManager @Inject constructor(
     }
 
     fun getIsoCode(): String? {
-        return passport.value?.personDetails?.issuerAuthority
+        return passport.value?.personDetails?.nationality
     }
 
     fun updatePassportStatus(status: PassportStatus) {

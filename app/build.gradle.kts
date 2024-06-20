@@ -49,6 +49,27 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
+
+        create("debug_mainnet") {
+            buildConfigField("Boolean", "isTestnet", "false")
+        }
+        create("release_mainnet") {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            )
+            buildConfigField("Boolean", "isTestnet", "false")
+        }
+        create("debug_testnet") {
+            buildConfigField("Boolean", "isTestnet", "true")
+        }
+        create("release_testnet") {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            )
+            buildConfigField("Boolean", "isTestnet", "true")
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -131,7 +152,6 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     implementation("net.sf.scuba:scuba-sc-android:0.0.20")
-
     implementation("com.google.code.gson:gson:2.10.1")
     implementation(files("libs/Identity.aar"))
 

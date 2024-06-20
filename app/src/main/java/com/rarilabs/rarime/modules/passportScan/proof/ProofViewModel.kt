@@ -6,9 +6,12 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import com.rarilabs.rarime.BaseConfig
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.rarilabs.rarime.api.auth.AuthManager
+import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.registration.RegistrationManager
+import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
 import com.rarilabs.rarime.data.ProofTx
 import com.rarilabs.rarime.data.enums.PassportStatus
@@ -29,8 +32,6 @@ import com.rarilabs.rarime.util.data.ZkProof
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.publicKeyToPem
 import com.rarilabs.rarime.util.toBase64
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import identity.CallDataBuilder
 import identity.Identity
@@ -58,6 +59,7 @@ class ProofViewModel @Inject constructor(
     private val rarimoContractManager: RarimoContractManager,
     private val authManager: AuthManager,
     identityManager: IdentityManager,
+    private val pointsManager: PointsManager
 ) : AndroidViewModel(application) {
     private val privateKeyBytes = identityManager.privateKeyBytes
 
@@ -74,6 +76,12 @@ class ProofViewModel @Inject constructor(
     fun getRegistrationProof(): ZkProof {
         return proof
     }
+
+    suspend fun joinRewardProgram(eDocument: EDocument) {
+        val res = pointsManager.joinRewardProgram(eDocument)
+        res
+    }
+
 
     private suspend fun registerCertificate(eDocument: EDocument): RegisteredCircuitData {
         val sodStream = eDocument.sod!!.decodeHexString().inputStream()
@@ -205,8 +213,7 @@ class ProofViewModel @Inject constructor(
 
             passportManager.setPassport(eDocument)
 
-
-            if (Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.issuerAuthority)) {
+            if (Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
                 passportManager.updatePassportStatus(PassportStatus.NOT_ALLOWED)
             }
 

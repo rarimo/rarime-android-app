@@ -89,9 +89,9 @@ fun RewardsScreen(
     CompositionLocalProvider(localRewardsScreenViewModel provides rewardsViewModel) {
 
         if (passportStatus.value == PassportStatus.NOT_ALLOWED) {
-            rewardsViewModel.getIssuerAuthority()?.let {
+            rewardsViewModel.getNationality()?.let {
                 UnSupportedPassport(
-                    issuerAuthority = it
+                    nationality = it
                 )
             }
         } else if (isAuthorized.value) {

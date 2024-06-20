@@ -33,6 +33,7 @@ import com.rarilabs.rarime.ui.components.CirclesLoader
 import com.rarilabs.rarime.ui.components.ProcessingChip
 import com.rarilabs.rarime.ui.components.ProcessingStatus
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.data.ZkProof
 
 enum class PassportProofState(val value: Int) {
@@ -56,6 +57,9 @@ fun GenerateProofStep(
             onClose(proofViewModel.getRegistrationProof())
         } catch (e: Exception) {
             e.printStackTrace()
+            if (!Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
+                proofViewModel.joinRewardProgram(eDocument)
+            }
             onError(e)
         }
     }

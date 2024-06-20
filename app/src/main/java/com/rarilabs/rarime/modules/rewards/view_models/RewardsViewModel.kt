@@ -463,8 +463,8 @@ class RewardsViewModel @Inject constructor(
     val leaderBoardList: StateFlow<List<LeaderBoardItem>>
         get() = _leaderBoardList.asStateFlow()
 
-    fun getIssuerAuthority(): String? {
-        return passportManager.passport.value?.personDetails?.issuerAuthority
+    fun getNationality(): String? {
+        return passportManager.passport.value?.personDetails?.nationality
     }
 
     suspend fun init() {
