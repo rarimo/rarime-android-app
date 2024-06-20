@@ -136,4 +136,8 @@ class MainViewModel @Inject constructor(
             dataStoreManager.saveIsIntroFinished(true)
         }
     }
+
+    fun joinWaitlist() {
+        dataStoreManager.saveIsInWaitlist(true)
+    }
 }

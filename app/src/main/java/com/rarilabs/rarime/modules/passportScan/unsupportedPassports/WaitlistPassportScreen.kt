@@ -37,12 +37,15 @@ import com.rarilabs.rarime.util.Country
 import com.rarilabs.rarime.util.SendErrorUtil.saveErrorDetailsToFile
 import com.rarilabs.rarime.util.SendErrorUtil.sendErrorEmail
 import com.google.gson.Gson
+import com.rarilabs.rarime.modules.home.components.JoinWaitlistCongratsModalContent
+import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import org.json.JSONObject
 
 @Composable
 fun WaitlistPassportScreen(
     modifier: Modifier = Modifier, eDocument: EDocument, onClose: () -> Unit
 ) {
+    val mainViewModel = LocalMainViewModel.current
 
     val context = LocalContext.current
 
@@ -50,6 +53,17 @@ fun WaitlistPassportScreen(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = {
             Log.i("result Code", it.resultCode.toString())
+
+            mainViewModel.joinWaitlist()
+            mainViewModel.setModalContent {
+                JoinWaitlistCongratsModalContent(
+                    onClose = {
+                        mainViewModel.setModalVisibility(false)
+                    }
+                )
+            }
+            mainViewModel.setModalVisibility(true)
+
             onClose.invoke()
         })
 

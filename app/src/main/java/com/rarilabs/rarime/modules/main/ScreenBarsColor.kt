@@ -17,6 +17,7 @@ private val navPureBgRoutes = listOf(
     Screen.Main.Wallet.route,
     Screen.Lock.route,
     Screen.Main.Rewards.RewardsClaim.route,
+    Screen.Main.Rewards.RewardsEventsItem.route,
 )
 
 // TODO: rollback once there will be any screen with pure bg
