@@ -435,8 +435,6 @@ class RewardsViewModel @Inject constructor(
 ) : ViewModel() {
     val passportStatus = passportManager.passportStatus
 
-    val levelProgress = 0.36f
-
     val isAuthorized = authManager.isAuthorized
 
     private fun getPointsWalletAsset (): WalletAsset? {

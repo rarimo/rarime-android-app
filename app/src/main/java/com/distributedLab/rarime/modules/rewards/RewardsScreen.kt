@@ -42,10 +42,12 @@ import com.distributedLab.rarime.manager.WalletAsset
 import com.distributedLab.rarime.modules.home.components.passport.StatusCard
 import com.distributedLab.rarime.modules.rewards.components.ActiveTasksList
 import com.distributedLab.rarime.modules.rewards.components.ActiveTasksListSkeleton
+import com.distributedLab.rarime.modules.rewards.components.LevelingProgress
+import com.distributedLab.rarime.modules.rewards.components.rewards_leaderboard.RewardsLeaderBoard
 import com.distributedLab.rarime.modules.rewards.components.RewardsLeveling
 import com.distributedLab.rarime.modules.rewards.components.TimeEventsList
 import com.distributedLab.rarime.modules.rewards.components.TimeEventsListSkeleton
-import com.distributedLab.rarime.modules.rewards.components.rewards_leaderboard.RewardsLeaderBoard
+import com.distributedLab.rarime.modules.rewards.components.getNormalizeLeveling
 import com.distributedLab.rarime.modules.rewards.view_models.CONST_MOCKED_EVENTS_LIST
 import com.distributedLab.rarime.modules.rewards.view_models.LeaderBoardItem
 import com.distributedLab.rarime.modules.rewards.view_models.RewardsViewModel
@@ -55,7 +57,6 @@ import com.distributedLab.rarime.ui.components.AppIcon
 import com.distributedLab.rarime.ui.components.CardContainer
 import com.distributedLab.rarime.ui.components.InfoAlert
 import com.distributedLab.rarime.ui.components.PrimaryButton
-import com.distributedLab.rarime.ui.components.UiLinearProgressBar
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
 import com.distributedLab.rarime.util.NumberUtil
@@ -71,6 +72,8 @@ fun RewardsScreen(
 ) {
     val isAuthorized = rewardsViewModel.isAuthorized.collectAsState()
 
+    val passportStatus = rewardsViewModel.passportStatus.collectAsState()
+
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
@@ -85,7 +88,7 @@ fun RewardsScreen(
 
     CompositionLocalProvider(localRewardsScreenViewModel provides rewardsViewModel) {
 
-        if (rewardsViewModel.passportStatus.value == PassportStatus.NOT_ALLOWED) {
+        if (passportStatus.value == PassportStatus.NOT_ALLOWED) {
             rewardsViewModel.getIssuerAuthority()?.let {
                 UnSupportedPassport(
                     issuerAuthority = it
@@ -134,8 +137,6 @@ fun RewardsScreenContent(
 
     val passportStatus = rewardsViewModel.passportStatus.collectAsState()
 
-    val levelProgress = rewardsViewModel.levelProgress
-
     val pointsWalletAsset = rewardsViewModel.pointsWalletAsset.collectAsState()
 
     val limitedTimeEvents = rewardsViewModel.limitedTimeEvents.collectAsState()
@@ -143,8 +144,6 @@ fun RewardsScreenContent(
     val activeTasksEvents = rewardsViewModel.activeTasksEvents.collectAsState()
 
     val leaderBoardList = rewardsViewModel.leaderBoardList.collectAsState()
-
-
 
     pointsWalletAsset.value?.let { walletAsset ->
         Column(
@@ -183,7 +182,6 @@ fun RewardsScreenContent(
                     navigate = navigate,
                     pointsWalletAsset = walletAsset,
                     passportStatus = passportStatus.value,
-                    levelProgress = levelProgress,
                 )
 
                 limitedTimeEvents.value?.let {
@@ -212,7 +210,6 @@ fun RewardsScreenUserStatistic(
     navigate: (String) -> Unit,
     pointsWalletAsset: WalletAsset,
     passportStatus: PassportStatus,
-    levelProgress: Float,
 ) {
     val levelingSheetState = rememberAppSheetState()
 
@@ -282,46 +279,34 @@ fun RewardsScreenUserStatistic(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .padding(0.dp)
-                                .clickable { levelingSheetState.show() },
-                        ) {
-                            Text(
-                                text = "Level 2",
-                                style = RarimeTheme.typography.subtitle5,
-                                color = RarimeTheme.colors.textPrimary,
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            AppIcon(
-                                id = R.drawable.ic_caret_right,
-                                size = 16.dp,
-                            )
+                    val level =
+                        getNormalizeLeveling(pointsWalletAsset.balance.value.toDouble()).find {
+                            it.isCurrentLevel
                         }
 
-                        Text(
-                            text = "110/300",
-                            color = RarimeTheme.colors.textSecondary,
+                    level?.let {
+                        LevelingProgress(
+                            level = it,
+                            leadingContent = {
+                                Row(
+                                    modifier = Modifier
+                                        .padding(0.dp)
+                                        .clickable { levelingSheetState.show() },
+                                ) {
+                                    Text(
+                                        text = "Level 2",
+                                        style = RarimeTheme.typography.subtitle5,
+                                        color = RarimeTheme.colors.textPrimary,
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    AppIcon(
+                                        id = R.drawable.ic_caret_right,
+                                        size = 16.dp,
+                                    )
+                                }
+                            }
                         )
                     }
-
-                    UiLinearProgressBar(
-                        percentage = levelProgress,
-                        trackColors = listOf(
-                            RarimeTheme.colors.primaryMain,
-                            RarimeTheme.colors.primaryDark,
-                            RarimeTheme.colors.primaryDarker,
-                        ),
-                        backgroundModifier = Modifier
-                            .fillMaxWidth()
-                            .height(8.dp)
-                            .clip(RoundedCornerShape(100.dp)),
-                    )
                 }
 
                 if (passportStatus == PassportStatus.UNSCANNED) {
@@ -491,25 +476,21 @@ private fun RewardsScreenUserStatisticPreview() {
             navigate = {},
             pointsWalletAsset = WalletAsset("", PreviewerToken("", "Reserved", "RRMO")),
             passportStatus = PassportStatus.NOT_ALLOWED,
-            levelProgress = 0f
         )
         RewardsScreenUserStatistic(
             navigate = {},
             pointsWalletAsset = WalletAsset("", PreviewerToken("", "Reserved", "RRMO")),
             passportStatus = PassportStatus.WAITLIST,
-            levelProgress = 0f
         )
         RewardsScreenUserStatistic(
             navigate = {},
             pointsWalletAsset = WalletAsset("", PreviewerToken("", "Reserved", "RRMO")),
             passportStatus = PassportStatus.ALLOWED,
-            levelProgress = 0.75f
         )
         RewardsScreenUserStatistic(
             navigate = {},
             pointsWalletAsset = WalletAsset("", PreviewerToken("", "Reserved", "RRMO")),
             passportStatus = PassportStatus.UNSCANNED,
-            levelProgress = 0f
         )
     }
 }
