@@ -34,27 +34,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.distributedLab.rarime.R
-import com.distributedLab.rarime.data.enums.PassportStatus
-import com.distributedLab.rarime.data.tokens.PreviewerToken
 import com.distributedLab.rarime.api.points.models.PointsEventData
+import com.distributedLab.rarime.data.enums.PassportStatus
 import com.distributedLab.rarime.data.tokens.PointsToken
+import com.distributedLab.rarime.data.tokens.PreviewerToken
 import com.distributedLab.rarime.manager.WalletAsset
 import com.distributedLab.rarime.modules.home.components.passport.StatusCard
 import com.distributedLab.rarime.modules.rewards.components.ActiveTasksList
 import com.distributedLab.rarime.modules.rewards.components.ActiveTasksListSkeleton
-import com.distributedLab.rarime.modules.rewards.components.rewards_leaderboard.RewardsLeaderBoard
 import com.distributedLab.rarime.modules.rewards.components.RewardsLeveling
 import com.distributedLab.rarime.modules.rewards.components.TimeEventsList
 import com.distributedLab.rarime.modules.rewards.components.TimeEventsListSkeleton
+import com.distributedLab.rarime.modules.rewards.components.rewards_leaderboard.RewardsLeaderBoard
 import com.distributedLab.rarime.modules.rewards.view_models.CONST_MOCKED_EVENTS_LIST
 import com.distributedLab.rarime.modules.rewards.view_models.LeaderBoardItem
 import com.distributedLab.rarime.modules.rewards.view_models.RewardsViewModel
-import com.distributedLab.rarime.ui.components.AppIcon
-import com.distributedLab.rarime.ui.components.CardContainer
-import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.base.BaseTooltip
 import com.distributedLab.rarime.ui.components.AppBottomSheet
+import com.distributedLab.rarime.ui.components.AppIcon
+import com.distributedLab.rarime.ui.components.CardContainer
 import com.distributedLab.rarime.ui.components.InfoAlert
+import com.distributedLab.rarime.ui.components.PrimaryButton
 import com.distributedLab.rarime.ui.components.UiLinearProgressBar
 import com.distributedLab.rarime.ui.components.rememberAppSheetState
 import com.distributedLab.rarime.ui.theme.RarimeTheme
@@ -71,9 +71,27 @@ fun RewardsScreen(
 ) {
     val isAuthorized = rewardsViewModel.isAuthorized.collectAsState()
 
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        scope.launch {
+            try {
+                rewardsViewModel.init()
+            } catch (e: Exception) {
+                Log.e("RewardsScreenContent", "init: ${e.message}")
+            }
+        }
+    }
+
     CompositionLocalProvider(localRewardsScreenViewModel provides rewardsViewModel) {
-        // TODO: move to global init
-        if (isAuthorized.value) {
+
+        if (rewardsViewModel.passportStatus.value == PassportStatus.NOT_ALLOWED) {
+            rewardsViewModel.getIssuerAuthority()?.let {
+                UnSupportedPassport(
+                    issuerAuthority = it
+                )
+            }
+        } else if (isAuthorized.value) {
             RewardsScreenContent(navigate)
         } else {
             RewardsUnauthorized()
@@ -104,10 +122,7 @@ fun RewardsUnauthorized() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // TODO: implement properly
-        PrimaryButton(
-            text = "Login",
-            onClick = { coroutineScope.launch { login() } }
-        )
+        PrimaryButton(text = "Login", onClick = { coroutineScope.launch { login() } })
     }
 }
 
@@ -129,17 +144,7 @@ fun RewardsScreenContent(
 
     val leaderBoardList = rewardsViewModel.leaderBoardList.collectAsState()
 
-    val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        scope.launch {
-            try {
-                rewardsViewModel.init()
-            } catch (e: Exception) {
-                Log.e("RewardsScreenContent", "init: ${e.message}")
-            }
-        }
-    }
 
     pointsWalletAsset.value?.let { walletAsset ->
         Column(
@@ -443,6 +448,29 @@ fun RewardsRatingBadge(
             walletAsset.userAddress,
         )
     }
+}
+
+@Composable
+fun RewardsRatingBadgeSkeleton() {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .clip(RoundedCornerShape(100.dp))
+            .background(RarimeTheme.colors.warningLighter)
+            .padding(vertical = 4.dp, horizontal = 9.dp)
+    ) {
+        AppIcon(
+            id = R.drawable.ic_trophy,
+            tint = RarimeTheme.colors.warningDarker,
+        )
+
+        Text(
+            text = "---",
+            color = RarimeTheme.colors.warningDarker,
+        )
+    }
+
 }
 
 @Preview(showBackground = true)
