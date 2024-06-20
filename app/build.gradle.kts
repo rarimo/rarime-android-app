@@ -6,14 +6,14 @@ plugins {
 }
 
 android {
-    namespace = "com.distributedLab.rarime"
+    namespace = "com.rarilabs.rarime"
     compileSdk = 34
 
     assetPacks += listOf(":zkp_assets")
 
     defaultConfig {
 
-        applicationId = "com.distributedLab.rarime"
+        applicationId = "com.rarilabs.rarime"
         minSdk = 27
         targetSdk = 34
         versionCode = 2
