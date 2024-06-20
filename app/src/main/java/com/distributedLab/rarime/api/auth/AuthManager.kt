@@ -95,7 +95,7 @@ class AuthManager @Inject constructor(
                     id = nullifierHex,
 
                     attributes = RequestAuthorizeDataAttributes(
-                        proof = queryProof.proof,
+                        proof = queryProof,
                     )
                 )
             )

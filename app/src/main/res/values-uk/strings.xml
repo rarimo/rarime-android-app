@@ -8,6 +8,9 @@
     <string name="intro_step_3_text">Підтверджуйте свою особу, внески та правомочність без розкриття ваших персональних даних.</string>
     <string name="intro_step_4_title">Нагороди</string>
     <string name="intro_step_4_text">Створіть свій анонімний профіль та отримайте винагороду як ранній учасник спільноти.</string>
+
+    <string name="invitation_about_step_link">Дізнатися більше</string>
+
     <string name="skip_btn">Пропустити</string>
     <string name="next_btn">Далі</string>
     <string name="continue_btn">Продовжити</string>
@@ -174,7 +177,7 @@
     <string name="cancel_btn">Скасувати</string>
     <string name="what_is_rarime_text_item_3_accent">Режим інкогніто</string>
     <string name="what_is_rarime_text_item_1">RariMe — це ідентифікаційний гаманець із самоохороною, у якому жодні особисті дані ніколи не залишають пристрій і все обробляється локально.</string>
-    <string name="what_is_rarime_text_item_2">Підтверджуйте свою особу, внески та правомочність без розкриття ваших персональних даних.</string>
+    <string name="what_is_rarime_text_item_2">З RariMe ідентичність стає приватною, але доступною для перевірки.</string>
     <string name="what_is_rarime_text_item_3">" гарантує, що ваша репутація та історія дій залишатимуться конфіденційними під вашим контролем."</string>
     <string name="icon_black_and_white">Чорно-біла</string>
     <string name="icon_black_and_green">Чорно-зелена</string>

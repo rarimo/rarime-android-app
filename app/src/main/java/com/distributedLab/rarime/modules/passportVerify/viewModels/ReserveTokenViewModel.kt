@@ -18,7 +18,6 @@ class ReserveTokenViewModel @Inject constructor(
 
     suspend fun reserve() {
         pointsManager.verifyPassport()
-        pointsManager.getPointsBalance()
         walletManager.loadBalances()
     }
 

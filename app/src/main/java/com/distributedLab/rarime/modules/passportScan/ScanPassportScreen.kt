@@ -71,6 +71,7 @@ fun ScanPassportScreen(
             ScanPassportState.GENERATE_PROOF -> {
                 GenerateProofStep(onClose = {
                     registrationProof = it
+                    // FIXME: remove hardcode
                     if (eDocument?.personDetails?.issuerAuthority == "UKR") {
                         state = ScanPassportState.CLAIM_TOKENS
                     } else {

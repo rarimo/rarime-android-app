@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.distributedLab.rarime.manager.IdentityManager
 import com.distributedLab.rarime.manager.SettingsManager
 import com.distributedLab.rarime.manager.WalletManager
+import com.distributedLab.rarime.store.SecureSharedPrefsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -13,6 +14,7 @@ class ProfileViewModel @Inject constructor(
     val settingsManager: SettingsManager,
     val walletManager: WalletManager,
     val identityManager: IdentityManager,
+    val dataStoreManager: SecureSharedPrefsManager,
 ) : ViewModel() {
     val rarimoAddress = identityManager.rarimoAddress()
 
@@ -20,5 +22,7 @@ class ProfileViewModel @Inject constructor(
     val language = settingsManager.language
     val colorScheme = settingsManager.colorScheme
 
-
+    fun clearAllData() {
+        dataStoreManager.clearAllData()
+    }
 }

@@ -30,9 +30,11 @@ fun AboutProgram(
         // TODO: implement real text
         Text(
             text = """
-                It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using
+                RMO tokens will be exclusively distributed via the RariMe app. To claim tokens, create an incognito profile using your biometric passport. Depending on which country issued the passport, you’ll either be able to claim a token right away or be put on a waitlist.
                 
-                'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
+                If you are added to the waitlist it means that you are eligible to claim tokens in the next wave of airdrops. The app will notify you when you are added.
+                
+                Certain jurisdictions are excluded from the reward program: {list of countries}
             """.trimIndent(),
             style = RarimeTheme.typography.body3,
             color = RarimeTheme.colors.textPrimary,
@@ -43,48 +45,13 @@ fun AboutProgram(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "HOW CAN I GET THIS CODE?",
+                text = "HOW CAN I GET THE INVITE CODE?",
                 style = RarimeTheme.typography.overline2,
                 color = RarimeTheme.colors.textSecondary,
             )
 
             Text(
-                text = "You must be invited by someone or receive a code that we post on our social channels",
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.textPrimary,
-            )
-        }
-
-        Column(
-            modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Text(
-                text = "QUESTION TITLE 2?",
-                style = RarimeTheme.typography.overline2,
-                color = RarimeTheme.colors.textSecondary,
-            )
-
-            Text(
-                text = "You must be invited by someone or receive a code that we post on our social channels",
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.textPrimary,
-            )
-
-        }
-
-        Column(
-            modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Text(
-                text = "QUESTION TITLE 3?",
-                style = RarimeTheme.typography.overline2,
-                color = RarimeTheme.colors.textSecondary,
-            )
-
-            Text(
-                text = "You must be invited by someone or receive a code that we post on our social channels",
+                text = "The app’s rewards program is invite-only. Get invited by an authorized user or ask a community member for an invite code.",
                 style = RarimeTheme.typography.body3,
                 color = RarimeTheme.colors.textPrimary,
             )
