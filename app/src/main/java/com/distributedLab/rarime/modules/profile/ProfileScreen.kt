@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -128,6 +129,14 @@ fun ProfileScreen(
                         iconId = R.drawable.ic_flag,
                         title = stringResource(R.string.terms_of_use),
                         onClick = { navigate(Screen.Main.Profile.Terms.route) }
+                    )
+                    ProfileRow(
+                        iconId = R.drawable.ic_trash_simple,
+                        title = "Delete profile",
+                        onClick = {
+                            viewModel.clearAllData()
+                            navigate(Screen.Intro.route)
+                        }
                     )
                 }
             }

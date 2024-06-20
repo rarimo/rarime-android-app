@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,8 +29,7 @@ fun RewardsEventItemScreen(
     onBack: () -> Unit,
     rewardsEventItemViewModel: RewardsEventItemViewModel = hiltViewModel(),
 ) {
-    val pointsToken = rewardsEventItemViewModel.pointsToken.collectAsState()
-    val pointsBalanceData = pointsToken.value?.balanceDetails
+    val pointsToken by rewardsEventItemViewModel.pointsToken.collectAsState()
 
     val _pointsEvent = rewardsEventItemViewModel.pointsEventData.collectAsState()
 
@@ -48,7 +48,7 @@ fun RewardsEventItemScreen(
     _pointsEvent.value?.let { pointsEvent ->
         when (pointsEvent.attributes.meta.static.name) {
             BaseEvents.REFERRAL_COMMON.value -> {
-                pointsBalanceData?.let {
+                pointsToken?.balanceDetails?.let {
                     RewardsEventItemInvites(
                         pointsEvent = pointsEvent,
                         onBack = onBack,

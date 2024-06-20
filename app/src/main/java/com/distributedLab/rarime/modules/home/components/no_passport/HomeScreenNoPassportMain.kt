@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -49,8 +50,7 @@ fun HomeScreenNoPassportMainContent(
 ) {
     val homeViewModel = LocalHomeViewModel.current
 
-    val pointsToken = homeViewModel.pointsToken.collectAsState()
-    val pointsBalanceData = pointsToken.value?.balanceDetails
+    val pointsToken by homeViewModel.pointsToken.collectAsState()
 
     val rarimoInfoSheetState = rememberAppSheetState()
 
@@ -117,7 +117,7 @@ fun HomeScreenNoPassportMainContent(
                     onFinish = { navigate(Screen.ScanPassport.ScanPassportPoints.route) },
                     sheetState = nonSpecificAppSheetState,
                     hide = hide,
-                    initialStep = pointsBalanceData?.let { UNSPECIFIED_PASSPORT_STEPS.POLICY_CONFIRMATION } ?: UNSPECIFIED_PASSPORT_STEPS.INVITATION
+                    initialStep = pointsToken?.balanceDetails?.let { UNSPECIFIED_PASSPORT_STEPS.POLICY_CONFIRMATION } ?: UNSPECIFIED_PASSPORT_STEPS.INVITATION
                 )
             }
 

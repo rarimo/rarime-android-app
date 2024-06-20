@@ -8,6 +8,9 @@
     <string name="intro_step_3_text">Prove your eligibility, belonging, identity, and contributions — all without revealing your personal details.</string>
     <string name="intro_step_4_title">Get Rewarded</string>
     <string name="intro_step_4_text">Start building your incognito profile and earn rewards as an early community member.</string>
+
+    <string name="invitation_about_step_link">Learn more about the program</string>
+
     <string name="skip_btn">Skip</string>
     <string name="next_btn">Next</string>
     <string name="continue_btn">Continue</string>
@@ -174,7 +177,7 @@
     <string name="cancel_btn">Cancel</string>
     <string name="what_is_rarime_text_item_3_accent">Incognito mode</string>
     <string name="what_is_rarime_text_item_1">RariMe is a self-custody identity wallet where no personal data ever leaves the device and everything is processed locally.</string>
-    <string name="what_is_rarime_text_item_2">Prove your eligibility, belonging, identity, and contributions — without ever revealing personal data.</string>
+    <string name="what_is_rarime_text_item_2">With RariMe, identity becomes private but verifiable.</string>
     <string name="what_is_rarime_text_item_3">" ensures your history, reputation and actions are not lost, but remain confidential and under your control."</string>
     <string name="icon_black_and_white">Black &amp; White</string>
     <string name="icon_black_and_green">Black &amp; Green</string>

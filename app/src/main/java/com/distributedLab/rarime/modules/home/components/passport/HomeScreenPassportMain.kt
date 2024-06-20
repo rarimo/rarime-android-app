@@ -6,9 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,8 +66,7 @@ fun HomeScreenPassportMainContent(
     val isIncognito by homeViewModel.isIncognito
     val passportStatus by homeViewModel.passportStatus.collectAsState()
 
-    val pointsToken = homeViewModel.pointsToken.collectAsState()
-    val pointsBalanceData = pointsToken.value?.balanceDetails
+    val pointsToken by homeViewModel.pointsToken.collectAsState()
 
     val isAirDropClaimed by homeViewModel.isAirDropClaimed.collectAsState()
 
@@ -88,9 +86,6 @@ fun HomeScreenPassportMainContent(
         modifier = Modifier.padding(12.dp)
     ) {
         Spacer(modifier = Modifier.size(32.dp))
-        Button(onClick = {homeViewModel.clearAllData()}) {
-            Text(text = "CLEAR ALL")
-        }
 
         HomeScreenHeader(walletAsset = rmoAsset) { navigate(Screen.Main.Wallet.route) }
 
@@ -110,8 +105,8 @@ fun HomeScreenPassportMainContent(
                 onIdentifiersChange = { homeViewModel.onPassportIdentifiersChange(it) }
             )
 
-            val isVerified = pointsBalanceData?.attributes?.is_verified ?: false
-            val isBalanceCreated = pointsBalanceData?.attributes?.created_at != null
+            val isVerified = pointsToken?.balanceDetails?.attributes?.is_verified ?: false
+            val isBalanceCreated = pointsToken?.balanceDetails?.attributes?.created_at != null
 
             if (!isVerified) {
                 when (passportStatus) {
@@ -140,7 +135,7 @@ fun HomeScreenPassportMainContent(
                     }
 
                     PassportStatus.WAITLIST -> {
-                        pointsBalanceData?.let {} ?: ActionCard(
+                        pointsToken?.balanceDetails?.let {} ?: ActionCard(
                             title = stringResource(id = R.string.join_waitlist_btn),
                             description = stringResource(id = R.string.joined_waitlist_description),
                             leadingContent = {

@@ -99,8 +99,11 @@ class WalletManager @Inject constructor(
     val selectedWalletAsset: StateFlow<WalletAsset>
         get() = _selectedWalletAsset.asStateFlow()
 
-    private var _pointsToken =
-        MutableStateFlow(_walletAssets.value.find { it.token is PointsToken }?.token as PointsToken?)
+    private fun getPointsToken (walletAssets: List<WalletAsset>): PointsToken? {
+        return walletAssets.find { it.token is PointsToken }?.token as PointsToken?
+    }
+
+    private var _pointsToken = MutableStateFlow(getPointsToken(_walletAssets.value))
 
     val pointsToken: StateFlow<PointsToken?>
         get() = _pointsToken.asStateFlow()
@@ -134,6 +137,10 @@ class WalletManager @Inject constructor(
             _walletAssets.value = balances.toList()
 
             dataStoreManager.saveWalletAssets(_walletAssets.value)
+
+            _pointsToken.value = getPointsToken(balances.toList())
+
+            Log.i("_pointsToken.value?.balanceDetails", Gson().toJson(_pointsToken.value?.balanceDetails))
         }
     }
 }
