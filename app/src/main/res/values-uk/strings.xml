@@ -68,7 +68,10 @@
     <string name="card_visual">ВИГЛЯД КАРТКИ</string>
     <string name="other_passport_title">Інші власники паспортів</string>
     <string name="other_passport_text">Майбутні Airdrop\'и включатимуть громадян з усього світу.\n\nСтворіть свій анонімний профіль, відсканувавши паспорт. Ми повідомимо вас, коли ви зможете доєднатися до програми.</string>
-    <string name="join_waitlist_btn">Доєднатися до очікування</string>
+
+    <string name="join_waitlist_card_title">Доєднатися до очікування</string>
+    <string name="join_waitlist_card_subtitle">Доєднатися до очікування</string>
+
     <string name="airdrop_intro_title">Програмований Airdrop</string>
     <string name="airdrop_intro_description">Мета бета-запуску – роздача токенів громадянам України</string>
     <string name="airdrop_intro_text_title">ЩО ЦЕ?</string>
@@ -78,10 +81,17 @@
     <string name="rarime_privacy_notice">політикою конфіденційності RariMe</string>
     <string name="rarimo_airdrop_program_terms_conditions"><![CDATA[правилами та умовами програми Rarimo Airdrop]]></string>
     <string name="and">" та "</string>
-    <string name="congrats_title">Вітання!</string>
-    <string name="joined_waitlist_title">Ви приєдналися до очікування</string>
-    <string name="congrats_description">Ви отримали %1$s токени RMO</string>
-    <string name="joined_waitlist_description">Ми повідомимо, коли ви зможете доєднатися</string>
+
+
+    <string name="congrats_reserved_title">Вітаємо!</string>
+    <string name="congrats_reserved_subtitle">Ви отримали %1$s %2$s токенів</string>
+
+    <string name="congrats_joined_waitlist_title">Ви приєдналися до очікування</string>
+    <string name="congrats_joined_waitlist_description">Ми повідомимо, коли ви зможете доєднатися</string>
+
+    <string name="congrats_claim_airdrop_title">Вітаємо!</string>
+    <string name="congrats_claim_airdrop_description">Ви отримали %1$s %2$s токенів</string>
+
     <string name="thanks_btn">Дякую!</string>
     <string name="okay_btn">Окей</string>
     <string name="passport_look_green">Зелена</string>

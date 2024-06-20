@@ -5,8 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -22,10 +24,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.passportScan.ScanPassportLayout
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
+import com.rarilabs.rarime.ui.components.AppAnimation
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import net.sf.scuba.data.Gender
 import org.jmrtd.lds.icao.MRZInfo
@@ -59,17 +63,16 @@ fun ReadNFCStep(
                 verticalArrangement = Arrangement.spacedBy(48.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                AppAnimation(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .zIndex(2f)
+                        .padding(horizontal = 50.dp),
+                    id = R.raw.anim_passport_nfc
+                )
 
                 when (state) {
                     ScanNFCPassportState.NOT_SCANNING -> {
-                        Image(
-                            painter = painterResource(id = R.drawable.passport_nfc),
-                            contentDescription = null,
-                            contentScale = ContentScale.FillWidth,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 50.dp)
-                        )
                         Text(
                             text = stringResource(R.string.nfc_reader_hint),
                             style = RarimeTheme.typography.body3,
@@ -80,14 +83,6 @@ fun ReadNFCStep(
                     }
 
                     ScanNFCPassportState.SCANNING -> {
-                        Image(
-                            painter = painterResource(id = R.drawable.passport_nfc),
-                            contentDescription = null,
-                            contentScale = ContentScale.FillWidth,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 50.dp)
-                        )
                         Text(
                             text = stringResource(R.string.nfc_reader_scanning),
                             style = RarimeTheme.typography.body3,

@@ -44,7 +44,8 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "TX" to "TX",
         "PASSPORT_STATUS" to "PASSPORT_STATUS",
         "ACCESS_TOKEN" to "ACCESS_TOKEN",
-        "REFRESH_TOKEN" to "REFRESH_TOKEN"
+        "REFRESH_TOKEN" to "REFRESH_TOKEN",
+        "IS_IN_WAITLIST" to "IS_IN_WAITLIST"
     )
 
     private val PREFS_FILE_NAME = "sharedPrefFile12"
@@ -361,6 +362,16 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
             editor.remove(entry.value)
         }
         editor.clear()
+        editor.apply()
+    }
+
+    override fun readIsInWaitlist(): Boolean {
+        return getSharedPreferences().getBoolean(accessTokens["IS_IN_WAITLIST"], false)
+    }
+
+    override fun saveIsInWaitlist(isInWaitlist: Boolean) {
+        val editor = getEditor()
+        editor.putBoolean(accessTokens["IS_IN_WAITLIST"], isInWaitlist)
         editor.apply()
     }
 }

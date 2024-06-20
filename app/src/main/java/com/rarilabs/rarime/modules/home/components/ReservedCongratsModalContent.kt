@@ -1,5 +1,7 @@
-package com.rarilabs.rarime.modules.home.components.no_passport.specific
+package com.rarilabs.rarime.modules.home.components
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -31,7 +34,9 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Constants
 
 @Composable
-fun SpecificCongratsModalContent(onClose: () -> Unit) {
+fun ReservedCongratsModalContent(onClose: () -> Unit) {
+    val context = LocalContext.current
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -62,12 +67,12 @@ fun SpecificCongratsModalContent(onClose: () -> Unit) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = stringResource(R.string.congrats_title),
+                    text = stringResource(R.string.congrats_reserved_title),
                     style = RarimeTheme.typography.h6,
                     color = RarimeTheme.colors.textPrimary
                 )
                 Text(
-                    text = stringResource(R.string.congrats_description, Constants.AIRDROP_REWARD.toInt()),
+                    text = stringResource(R.string.congrats_reserved_subtitle, Constants.SCAN_PASSPORT_REWARD.toInt(), "RMO"),
                     style = RarimeTheme.typography.body2,
                     color = RarimeTheme.colors.textSecondary,
                     textAlign = TextAlign.Center,
@@ -86,10 +91,23 @@ fun SpecificCongratsModalContent(onClose: () -> Unit) {
                 leftIcon = R.drawable.ic_share,
                 size = ButtonSize.Large,
                 modifier = Modifier.fillMaxWidth(),
-                onClick = onClose
+                onClick = {
+                    // TODO: implement more share ui
+                    shareAchievement(context, "Participate and get rewarded: https://rarime.com")
+                    onClose()
+                }
             )
         }
     }
+}
+
+private fun shareAchievement(context: Context, text: String) {
+    val shareIntent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, text)
+        type = "text/plain"
+    }
+    context.startActivity(Intent.createChooser(shareIntent, null))
 }
 
 @Preview(showBackground = true)
@@ -102,7 +120,7 @@ private fun SpecificCongratsModalContentPreview() {
             .padding(24.dp)
     ) {
         Dialog(onDismissRequest = { /*TODO*/ }) {
-            SpecificCongratsModalContent(onClose = {})
+            ReservedCongratsModalContent(onClose = {})
         }
     }
 }
