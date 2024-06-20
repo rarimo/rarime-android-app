@@ -135,8 +135,8 @@ fun HomeScreenPassportMainContent(
 
                     PassportStatus.WAITLIST -> {
                         pointsToken?.balanceDetails?.let {} ?: ActionCard(
-                            title = stringResource(id = R.string.join_waitlist_btn),
-                            description = stringResource(id = R.string.joined_waitlist_description),
+                            title = stringResource(id = R.string.join_waitlist_card_title),
+                            description = stringResource(id = R.string.join_waitlist_card_subtitle),
                             leadingContent = {
                                 Image(
                                     modifier = Modifier.size(42.dp),

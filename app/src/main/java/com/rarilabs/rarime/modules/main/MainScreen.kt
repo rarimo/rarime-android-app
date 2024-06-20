@@ -42,8 +42,8 @@ import androidx.navigation.navArgument
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.data.enums.SecurityCheckState
-import com.rarilabs.rarime.modules.passportVerify.VerifySpecificScreen
-import com.rarilabs.rarime.modules.passportVerify.VerifyPoitntsScreen
+import com.rarilabs.rarime.modules.passportVerify.ClaimAirdropScreen
+import com.rarilabs.rarime.modules.passportVerify.VerifyPassportScreen
 import com.rarilabs.rarime.modules.home.HomeScreen
 import com.rarilabs.rarime.modules.intro.IntroScreen
 import com.rarilabs.rarime.modules.passportScan.ScanPassportScreen
@@ -321,13 +321,13 @@ fun MainScreenContent(
                 }
 
                 composable(Screen.Claim.Specific.route) {
-                    VerifySpecificScreen {
+                    ClaimAirdropScreen {
                         navigateWithPopUp(Screen.Main.route)
                     }
                 }
 
                 composable(Screen.Claim.Reserve.route) {
-                    VerifyPoitntsScreen {
+                    VerifyPassportScreen {
                         navigateWithPopUp(Screen.Main.route)
                     }
                 }

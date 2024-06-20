@@ -68,7 +68,10 @@
     <string name="card_visual">CARD VISUAL</string>
     <string name="other_passport_title">Other passport holders</string>
     <string name="other_passport_text">Upcoming airdrops will include citizens from all over the world.\n\nCreate an incognito profile by scanning your passport, and we will notify you when you become eligible.</string>
-    <string name="join_waitlist_btn">Join the waitlist</string>
+
+    <string name="join_waitlist_card_title">Join the waitlist</string>
+    <string name="join_waitlist_card_subtitle">Join the waitlist description</string>
+
     <string name="airdrop_intro_title">Programmable Airdrop</string>
     <string name="airdrop_intro_description">The beta launch is focused on distributing tokens to Ukrainian citizens</string>
     <string name="airdrop_intro_text_title">WHAT’S THAT?</string>
@@ -78,10 +81,16 @@
     <string name="rarime_privacy_notice">RariMe Privacy Notice</string>
     <string name="rarimo_airdrop_program_terms_conditions"><![CDATA[Rarimo Airdrop Program Terms & Conditions]]></string>
     <string name="and">" and "</string>
-    <string name="congrats_title">Congrats!</string>
-    <string name="joined_waitlist_title">You’ve joined the waitlist</string>
-    <string name="congrats_description">You’ve received %1$s RMO tokens</string>
-    <string name="joined_waitlist_description">We will notify when you become eligible</string>
+
+    <string name="congrats_reserved_title">Congrats!</string>
+    <string name="congrats_reserved_subtitle">You’ve reserved %1$s %2$s tokens</string>
+
+    <string name="congrats_joined_waitlist_title">You’ve joined the waitlist</string>
+    <string name="congrats_joined_waitlist_description">We will notify when you become eligible</string>
+
+    <string name="congrats_claim_airdrop_title">Congrats!</string>
+    <string name="congrats_claim_airdrop_description">You’ve claimed %1$s tokens</string>
+
     <string name="thanks_btn">Thanks!</string>
     <string name="okay_btn">Okay</string>
     <string name="passport_look_green">Green</string>

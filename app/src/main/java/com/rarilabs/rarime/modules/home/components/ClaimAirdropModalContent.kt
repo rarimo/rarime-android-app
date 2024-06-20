@@ -1,4 +1,4 @@
-package com.rarilabs.rarime.ui.components.enter_program.components
+package com.rarilabs.rarime.modules.home.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,13 +24,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.ButtonSize
-import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
+import com.rarilabs.rarime.ui.components.SecondaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.Constants
 
 @Composable
-fun NonSpecificCongratsModalContent(onClose: () -> Unit) {
+fun ClaimAirdropCongratsModalContent(onClose: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -50,13 +51,10 @@ fun NonSpecificCongratsModalContent(onClose: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(20.dp)
         ) {
-            AppIcon(
-                id = R.drawable.ic_check,
-                size = 24.dp,
-                tint = RarimeTheme.colors.backgroundPure,
-                modifier = Modifier
-                    .background(RarimeTheme.colors.successMain, CircleShape)
-                    .padding(28.dp)
+            Image(
+                painter = painterResource(id = R.drawable.reward_coin),
+                contentDescription = null,
+                modifier = Modifier.size(110.dp)
             )
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -64,26 +62,37 @@ fun NonSpecificCongratsModalContent(onClose: () -> Unit) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = stringResource(R.string.joined_waitlist_title),
+                    text = stringResource(R.string.congrats_claim_airdrop_title),
                     style = RarimeTheme.typography.h6,
                     color = RarimeTheme.colors.textPrimary
                 )
                 Text(
-                    text = stringResource(R.string.joined_waitlist_description),
+                    text = stringResource(
+                        R.string.congrats_claim_airdrop_description,
+                        Constants.SCAN_PASSPORT_REWARD.toInt().toString() + " RMO"
+                    ),
                     style = RarimeTheme.typography.body2,
                     color = RarimeTheme.colors.textSecondary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.width(240.dp)
                 )
             }
-
             HorizontalDivider()
-
             PrimaryButton(
-                text = stringResource(R.string.okay_btn),
+                text = stringResource(R.string.thanks_btn),
                 size = ButtonSize.Large,
                 modifier = Modifier.fillMaxWidth(),
                 onClick = onClose
+            )
+            SecondaryButton(
+                text = "Share Achievement",
+                leftIcon = R.drawable.ic_share,
+                size = ButtonSize.Large,
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    // TODO: add share
+                    onClose()
+                }
             )
         }
     }
@@ -91,7 +100,7 @@ fun NonSpecificCongratsModalContent(onClose: () -> Unit) {
 
 @Preview(showBackground = true)
 @Composable
-private fun NonSpecificCongratsModalContentPreview() {
+private fun ClaimAirdropCongratsModalContentPreview() {
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -99,7 +108,7 @@ private fun NonSpecificCongratsModalContentPreview() {
             .padding(24.dp)
     ) {
         Dialog(onDismissRequest = { /*TODO*/ }) {
-            NonSpecificCongratsModalContent(onClose = {})
+            ClaimAirdropCongratsModalContent(onClose = {})
         }
     }
 }
