@@ -29,7 +29,7 @@ using namespace std;
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_distributedLab_rarime_util_ZkpUtil_groth16InternalStorage(JNIEnv *env, jobject thiz,
+Java_com_rarilabs_rarime_util_ZkpUtil_groth16InternalStorage(JNIEnv *env, jobject thiz,
                                                                    jstring filePath, jlong fileSizeJ,
                                                                    jbyteArray wtns_buffer,
                                                                    jlong wtns_size,
@@ -101,7 +101,7 @@ Java_com_distributedLab_rarime_util_ZkpUtil_groth16InternalStorage(JNIEnv *env, 
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_distributedLab_rarime_util_ZkpUtil_groth16ProverBig(JNIEnv *env, jobject thiz,
+Java_com_rarilabs_rarime_util_ZkpUtil_groth16ProverBig(JNIEnv *env, jobject thiz,
                                                              jstring filename,
                                                              jbyteArray wtns_buffer,
                                                              jlong wtns_size,
@@ -166,7 +166,7 @@ Java_com_distributedLab_rarime_util_ZkpUtil_groth16ProverBig(JNIEnv *env, jobjec
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_distributedLab_rarime_util_ZkpUtil_queryIdentity(JNIEnv *env, jobject thiz,
+Java_com_rarilabs_rarime_util_ZkpUtil_queryIdentity(JNIEnv *env, jobject thiz,
                                                           jbyteArray circuit_buffer,
                                                           jlong circuit_size,
                                                           jbyteArray json_buffer,
@@ -208,7 +208,7 @@ Java_com_distributedLab_rarime_util_ZkpUtil_queryIdentity(JNIEnv *env, jobject t
 }
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_distributedLab_rarime_util_ZkpUtil_auth(JNIEnv *env, jobject thiz,
+Java_com_rarilabs_rarime_util_ZkpUtil_auth(JNIEnv *env, jobject thiz,
                                                  jbyteArray circuit_buffer, jlong circuit_size,
                                                  jbyteArray json_buffer, jlong json_size,
                                                  jbyteArray wtns_buffer, jlongArray wtns_size,
@@ -245,7 +245,7 @@ Java_com_distributedLab_rarime_util_ZkpUtil_auth(JNIEnv *env, jobject thiz,
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_distributedLab_rarime_util_ZkpUtil_registerIdentityUniversalRSA2048(JNIEnv *env, jobject thiz,
+Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentityUniversalRSA2048(JNIEnv *env, jobject thiz,
                                                                              jstring filePath,jlong fileSizeJ,
                                                                              jbyteArray json_buffer, jlong json_size,
                                                                              jbyteArray wtns_buffer, jlongArray wtns_size,
@@ -299,7 +299,7 @@ Java_com_distributedLab_rarime_util_ZkpUtil_registerIdentityUniversalRSA2048(JNI
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_distributedLab_rarime_util_ZkpUtil_registerIdentityUniversalRSA4096(JNIEnv *env, jobject thiz,
+Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentityUniversalRSA4096(JNIEnv *env, jobject thiz,
                                                                              jstring filePath,jlong fileSizeJ,
                                                                              jbyteArray json_buffer, jlong json_size,
                                                                              jbyteArray wtns_buffer, jlongArray wtns_size,
