@@ -37,6 +37,7 @@ import com.rarilabs.rarime.ui.components.SecondaryTextButton
 import com.rarilabs.rarime.ui.components.TxConfirmBottomSheet
 import com.rarilabs.rarime.ui.components.VerticalDivider
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
+import com.rarilabs.rarime.ui.components.rememberAppTextFieldNumberState
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.NumberUtil
@@ -52,7 +53,7 @@ fun WalletSendScreen(
     var isQrCodeScannerOpen by remember { mutableStateOf(false) }
     var isSubmitting by remember { mutableStateOf(false) }
 
-    val humanAmountState = AppTextFieldNumberState("")
+    val humanAmountState = rememberAppTextFieldNumberState("")
     val addressState = rememberAppTextFieldState("")
 
     val selectedWalletAsset = walletSendViewModel.selectedWalletAsset.collectAsState()
@@ -255,7 +256,7 @@ private fun WalletSendScreenContentPreview() {
             "0xgqiuweyfgkafsdjnfksladnfajsdn",
             PreviewerToken("", "Preview", "PRW", 18)
         ),
-        humanAmountState = AppTextFieldNumberState(initialText = ""),
+        humanAmountState = rememberAppTextFieldNumberState(initialText = ""),
         addressState = rememberAppTextFieldState(initialText = ""),
         showQrCodeScanner = {  },
         submit = { submit() },

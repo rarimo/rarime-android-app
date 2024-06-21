@@ -25,6 +25,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +35,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.points.models.PointsBalanceData
+import com.rarilabs.rarime.api.points.models.PointsBalanceDataAttributes
 import com.rarilabs.rarime.api.points.models.PointsEventData
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.data.tokens.PointsToken
@@ -145,6 +148,8 @@ fun RewardsScreenContent(
 
     val leaderBoardList = rewardsViewModel.leaderBoardList.collectAsState()
 
+    val pointsToken by rewardsViewModel.pointsToken.collectAsState()
+
     pointsWalletAsset.value?.let { walletAsset ->
         Column(
             modifier = Modifier
@@ -178,11 +183,14 @@ fun RewardsScreenContent(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                RewardsScreenUserStatistic(
-                    navigate = navigate,
-                    pointsWalletAsset = walletAsset,
-                    passportStatus = passportStatus.value,
-                )
+                pointsToken?.balanceDetails?.let {
+                    RewardsScreenUserStatistic(
+                        navigate = navigate,
+                        pointsWalletAsset = walletAsset,
+                        passportStatus = passportStatus.value,
+                        pointsBalanceData = it,
+                    )
+                }
 
                 limitedTimeEvents.value?.let {
                     if (passportStatus.value == PassportStatus.ALLOWED && it.isNotEmpty()) {
@@ -204,16 +212,14 @@ fun RewardsScreenContent(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RewardsScreenUserStatistic(
     navigate: (String) -> Unit,
     pointsWalletAsset: WalletAsset,
     passportStatus: PassportStatus,
+    pointsBalanceData: PointsBalanceData,
 ) {
     val levelingSheetState = rememberAppSheetState()
-
-    val pointsBalanceData = pointsWalletAsset.token as PointsToken
 
     Column(
         verticalArrangement = Arrangement.spacedBy((-43).dp)
@@ -232,32 +238,37 @@ fun RewardsScreenUserStatistic(
                     Column(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        BaseTooltip(
-                            tooltipContent = {
-                                RichTooltip(
-                                    text = {
-                                        Text(
-                                            text = stringResource(id = R.string.rewards_amount_overline_tooltip),
-                                            style = RarimeTheme.typography.body3,
-                                            color = RarimeTheme.colors.textSecondary,
-                                        )
-                                    },
-                                    colors = RichTooltipColors(
-                                        containerColor = RarimeTheme.colors.baseWhite,
-                                        contentColor = RarimeTheme.colors.textPrimary,
-                                        titleContentColor = RarimeTheme.colors.textPrimary,
-                                        actionContentColor = RarimeTheme.colors.textPrimary,
-                                    ),
-                                )
-                            },
-                            iconColor = RarimeTheme.colors.textSecondary,
-                        ) {
-                            Text(
-                                text = pointsWalletAsset.token.name,
-                                color = RarimeTheme.colors.textSecondary,
-                                style = RarimeTheme.typography.body3,
-                            )
-                        }
+//                        BaseTooltip(
+//                            tooltipContent = {
+//                                RichTooltip(
+//                                    text = {
+//                                        Text(
+//                                            text = stringResource(id = R.string.rewards_amount_overline_tooltip),
+//                                            style = RarimeTheme.typography.body3,
+//                                            color = RarimeTheme.colors.textSecondary,
+//                                        )
+//                                    },
+//                                    colors = RichTooltipColors(
+//                                        containerColor = RarimeTheme.colors.baseWhite,
+//                                        contentColor = RarimeTheme.colors.textPrimary,
+//                                        titleContentColor = RarimeTheme.colors.textPrimary,
+//                                        actionContentColor = RarimeTheme.colors.textPrimary,
+//                                    ),
+//                                )
+//                            },
+//                            iconColor = RarimeTheme.colors.textSecondary,
+//                        ) {
+//                            Text(
+//                                text = pointsWalletAsset.token.name,
+//                                color = RarimeTheme.colors.textSecondary,
+//                                style = RarimeTheme.typography.body3,
+//                            )
+//                        }
+                        Text(
+                            text = pointsWalletAsset.token.name,
+                            color = RarimeTheme.colors.textSecondary,
+                            style = RarimeTheme.typography.body3,
+                        )
                         Text(
                             text = NumberUtil.formatBalance(pointsWalletAsset.humanBalance()),
                             color = RarimeTheme.colors.textPrimary,
@@ -294,7 +305,7 @@ fun RewardsScreenUserStatistic(
                                         .clickable { levelingSheetState.show() },
                                 ) {
                                     Text(
-                                        text = "Level 2",
+                                        text = level.title,
                                         style = RarimeTheme.typography.subtitle5,
                                         color = RarimeTheme.colors.textPrimary,
                                     )
@@ -309,20 +320,20 @@ fun RewardsScreenUserStatistic(
                     }
                 }
 
-                if (passportStatus == PassportStatus.UNSCANNED) {
-                    InfoAlert(
-                        text = stringResource(
-                            id = R.string.rewards_screen_statistics_unscanned,
-                            pointsWalletAsset.token.symbol
-                        )
-                    )
-                }
+//                if (passportStatus == PassportStatus.UNSCANNED) {
+//                    InfoAlert(
+//                        text = stringResource(
+//                            id = R.string.rewards_screen_statistics_unscanned,
+//                            pointsWalletAsset.token.symbol
+//                        )
+//                    )
+//                }
             }
         }
     }
 
     AppBottomSheet(state = levelingSheetState, fullScreen = true) { hide ->
-        pointsBalanceData.balanceDetails?.let { RewardsLeveling(it) }
+        RewardsLeveling(pointsBalanceData)
     }
 }
 
@@ -469,28 +480,47 @@ fun RewardsRatingBadgePreview() {
 @Preview(showBackground = true)
 @Composable
 private fun RewardsScreenUserStatisticPreview() {
+    val mockedPointsBalanceData = PointsBalanceData(
+        id = "",
+        type = "",
+        attributes = PointsBalanceDataAttributes(
+            amount = 10,
+            is_disabled = false,
+            is_verified = true,
+            created_at = 0,
+            updated_at = 0,
+            rank = 0,
+            referral_codes = listOf(),
+            level = 1,
+        )
+    )
+
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         RewardsScreenUserStatistic(
             navigate = {},
-            pointsWalletAsset = WalletAsset("", PreviewerToken("", "Reserved", "RRMO")),
+            pointsWalletAsset = WalletAsset("", PreviewerToken("", "Reserved RMO", "RRMO")),
             passportStatus = PassportStatus.NOT_ALLOWED,
+            pointsBalanceData = mockedPointsBalanceData,
         )
         RewardsScreenUserStatistic(
             navigate = {},
-            pointsWalletAsset = WalletAsset("", PreviewerToken("", "Reserved", "RRMO")),
+            pointsWalletAsset = WalletAsset("", PreviewerToken("", "Reserved RMO", "RRMO")),
             passportStatus = PassportStatus.WAITLIST,
+            pointsBalanceData = mockedPointsBalanceData,
         )
         RewardsScreenUserStatistic(
             navigate = {},
-            pointsWalletAsset = WalletAsset("", PreviewerToken("", "Reserved", "RRMO")),
+            pointsWalletAsset = WalletAsset("", PreviewerToken("", "Reserved RMO", "RRMO")),
             passportStatus = PassportStatus.ALLOWED,
+            pointsBalanceData = mockedPointsBalanceData,
         )
         RewardsScreenUserStatistic(
             navigate = {},
-            pointsWalletAsset = WalletAsset("", PreviewerToken("", "Reserved", "RRMO")),
+            pointsWalletAsset = WalletAsset("", PreviewerToken("", "Reserved RMO", "RRMO")),
             passportStatus = PassportStatus.UNSCANNED,
+            pointsBalanceData = mockedPointsBalanceData,
         )
     }
 }

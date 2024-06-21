@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.api.airdrop.AirDropManager
 import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
+import com.rarilabs.rarime.data.tokens.PointsToken
 import com.rarilabs.rarime.data.tokens.RarimoToken
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.WalletAsset
@@ -13,6 +14,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,11 +26,11 @@ class HomeViewModel @Inject constructor(
     ) : ViewModel() {
     val isAirDropClaimed = airDropManager.isAirDropClaimed
 
-    private val _rmoAsset =
-        MutableStateFlow(walletManager.walletAssets.value.find { it.token is RarimoToken })
+    private val _selectedWalletAsset =
+        MutableStateFlow(walletManager.walletAssets.value.find { it.token is PointsToken })
 
-    val rmoAsset: StateFlow<WalletAsset?>
-        get() = _rmoAsset
+    val selectedWalletAsset: StateFlow<WalletAsset?>
+        get() = _selectedWalletAsset.asStateFlow()
 
     val pointsToken = walletManager.pointsToken
 

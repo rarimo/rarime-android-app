@@ -156,7 +156,7 @@ fun RewardsEventItemInvitesCard(
                     },
                     columnContent = {
                         Text(
-                            text = "active",
+                            text = "Active",
                             style = RarimeTheme.typography.body4,
                             color = RarimeTheme.colors.successDark,
                         )

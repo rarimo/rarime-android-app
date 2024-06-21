@@ -191,12 +191,6 @@ fun ActiveTaskItemSkeleton() {
                         .width(50.dp)
                         .height(14.dp)
                 )
-
-                AppSkeleton(
-                    modifier = Modifier
-                        .width(12.dp)
-                        .height(28.dp)
-                )
             }
         }
     }

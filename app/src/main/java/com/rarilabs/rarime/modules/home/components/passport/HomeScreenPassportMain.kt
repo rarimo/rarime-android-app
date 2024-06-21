@@ -41,16 +41,16 @@ fun HomeScreenPassportMain(
 ) {
     val homeViewModel = LocalHomeViewModel.current
 
-    val rmoAsset = homeViewModel.rmoAsset.collectAsState()
+    val selectedWalletAsset = homeViewModel.selectedWalletAsset.collectAsState()
 
-    rmoAsset.value?.let {
+    selectedWalletAsset.value?.let {
         HomeScreenPassportMainContent(navigate, it)
     }
 }
 
 @Composable
 fun HomeScreenPassportMainContent(
-    navigate: (String) -> Unit, rmoAsset: WalletAsset
+    navigate: (String) -> Unit, selectedWalletAsset: WalletAsset
 ) {
     val scope = rememberCoroutineScope()
 
@@ -86,7 +86,7 @@ fun HomeScreenPassportMainContent(
     ) {
         Spacer(modifier = Modifier.size(32.dp))
 
-        HomeScreenHeader(walletAsset = rmoAsset) { navigate(Screen.Main.Wallet.route) }
+        HomeScreenHeader(walletAsset = selectedWalletAsset) { navigate(Screen.Main.Wallet.route) }
 
         Spacer(modifier = Modifier.size(32.dp))
 
@@ -114,7 +114,7 @@ fun HomeScreenPassportMainContent(
                             title = stringResource(R.string.reserve_tokens),
                             description = stringResource(
                                 R.string.you_re_entitled_of_x_rmo,
-                                Constants.AIRDROP_REWARD
+                                Constants.SCAN_PASSPORT_REWARD
                             ),
                             leadingContent = {
                                 Image(
@@ -217,7 +217,7 @@ fun HomeScreenPassportMainContent(
 fun HomeScreenPassportMainContentPreview() {
     Column {
         HomeScreenPassportMainContent(
-            navigate = {}, rmoAsset = WalletAsset(
+            navigate = {}, selectedWalletAsset = WalletAsset(
                 "", PreviewerToken(
                     "",
                     "Reserved RMO",
