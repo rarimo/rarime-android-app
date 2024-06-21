@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +37,7 @@ import com.rarilabs.rarime.ui.components.PassportImage
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Screen
 import com.rarilabs.rarime.util.WalletUtil
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileScreen(
@@ -43,6 +45,7 @@ fun ProfileScreen(
     navigate: (String) -> Unit,
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
+    val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
     val language by viewModel.language
@@ -146,7 +149,7 @@ fun ProfileScreen(
                         leadingIcon = RarimeTheme.colors.errorDarker,
                         title = RarimeTheme.colors.errorDarker,
                         value = RarimeTheme.colors.errorDarker,
-                        trailingIcon = RarimeTheme.colors.errorDarker,
+                        trailingIcon = Color.Transparent,
                     ),
                 )
 
@@ -155,9 +158,13 @@ fun ProfileScreen(
                         title = stringResource(R.string.delete_profile_title),
                         subtitle = stringResource(R.string.delete_profile_desc),
                         onConfirm = {
-                            viewModel.clearAllData(context)
+                            scope.launch {
+                                viewModel.clearAllData(context)
+                            }
                         },
-                        onCancel = { isDeleteAccountDialogShown = false }
+                        onCancel = { isDeleteAccountDialogShown = false },
+                        cancelButtonText = stringResource(id = R.string.delete_profile_cancel_btn),
+                        confirmButtonText = stringResource(id = R.string.delete_profile_confirm_btn),
                     )
                 }
             }

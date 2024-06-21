@@ -232,5 +232,7 @@
     <string name="invite_status_awaiting_card_desc">Used • Scan your passport</string>
 
     <string name="delete_profile_title">Are you sure?</string>
-    <string name="delete_profile_desc">All your data will be deleted and app closed</string>
+    <string name="delete_profile_desc">This action is irreversible and will delete all your data</string>
+    <string name="delete_profile_confirm_btn">Yes</string>
+    <string name="delete_profile_cancel_btn">No</string>
 </resources>

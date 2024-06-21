@@ -8,6 +8,7 @@ import com.rarilabs.rarime.manager.SettingsManager
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 
@@ -24,16 +25,15 @@ class ProfileViewModel @Inject constructor(
     val language = settingsManager.language
     val colorScheme = settingsManager.colorScheme
 
-    fun clearAllData(context: Context) {
+    suspend fun clearAllData(context: Context) {
         dataStoreManager.clearAllData()
 
-        val packageName = context.packageName
-        val runtime = Runtime.getRuntime()
-        runtime.exec("pm clear $packageName")
+        delay(1000)
 
         val packageManager = context.packageManager
         val intent = packageManager.getLaunchIntentForPackage(context.packageName)
         val componentName = intent?.component
+
         val mainIntent = Intent.makeRestartActivityTask(componentName)
         context.startActivity(mainIntent)
         Runtime.getRuntime().exit(0)
