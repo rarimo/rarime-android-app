@@ -69,7 +69,7 @@ fun ActionCardContent (
         AppIcon(
             id = R.drawable.ic_caret_right,
             size = 16.dp,
-            tint = RarimeTheme.colors.textPrimary,
+            tint = RarimeTheme.colors.baseBlack,
             modifier = Modifier
                 .background(RarimeTheme.colors.primaryMain, CircleShape)
                 .padding(4.dp)
