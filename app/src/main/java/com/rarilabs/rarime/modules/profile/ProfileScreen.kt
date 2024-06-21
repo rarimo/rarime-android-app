@@ -143,7 +143,7 @@ fun ProfileScreen(
 
                 ProfileRow(
                     iconId = R.drawable.ic_trash_simple,
-                    title = "Delete profile",
+                    title = "Delete account",
                     onClick = { isDeleteAccountDialogShown = true },
                     contentColors = getProfileRowContentColors(
                         leadingIcon = RarimeTheme.colors.errorDarker,
