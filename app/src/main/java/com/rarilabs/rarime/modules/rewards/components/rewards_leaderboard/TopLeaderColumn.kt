@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,9 +29,38 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.NumberUtil
 import com.rarilabs.rarime.util.WalletUtil
 
+data class ContentColors(
+    val container: Color,
+    val markerWrp: Color,
+    val marker: Color,
+    val address: Color,
+    val balance: Color,
+    val tokenIcon: Color,
+)
+
+@Composable
+fun topLeaderColumnDefaultContentColors(
+    container: Color = RarimeTheme.colors.componentPrimary,
+    markerWrp: Color = RarimeTheme.colors.componentPrimary,
+    marker: Color = RarimeTheme.colors.textSecondary,
+    address: Color = RarimeTheme.colors.textSecondary,
+    balance: Color = RarimeTheme.colors.textPrimary,
+    tokenIcon: Color = RarimeTheme.colors.textPrimary,
+): ContentColors {
+    return ContentColors(
+        container = container,
+        markerWrp = markerWrp,
+        marker = marker,
+        address = address,
+        balance = balance,
+        tokenIcon = tokenIcon,
+    )
+}
+
 @Composable
 fun TopLeaderColumn(
     modifier: Modifier = Modifier,
+    contentColors: ContentColors = topLeaderColumnDefaultContentColors(),
     number: Int = 1,
     address: String,
     balance: Double,
@@ -47,7 +77,7 @@ fun TopLeaderColumn(
         Box(
             modifier = modifier
                 .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                .background(RarimeTheme.colors.componentPrimary)
+                .background(contentColors.container)
                 .padding(top = 32.dp, bottom = 16.dp, start = 16.dp, end = 16.dp)
         ) {
             Column (
@@ -61,13 +91,13 @@ fun TopLeaderColumn(
                     Box (
                         modifier = Modifier
                             .clip(RoundedCornerShape(100.dp))
-                            .background(RarimeTheme.colors.componentPrimary)
+                            .background(contentColors.markerWrp)
                             .padding(vertical = 2.dp, horizontal = 10.dp)
                     ) {
                         Text (
-                            text = "You",
+                            text = "YOU",
                             style = RarimeTheme.typography.overline3,
-                            color = RarimeTheme.colors.textSecondary
+                            color = contentColors.marker
                         )
                     }
 
@@ -77,7 +107,7 @@ fun TopLeaderColumn(
                 Text (
                     text = WalletUtil.formatAddress(address, 4, 4),
                     style = RarimeTheme.typography.caption3,
-                    color = RarimeTheme.colors.textSecondary
+                    color = contentColors.address
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row (
@@ -87,10 +117,10 @@ fun TopLeaderColumn(
                     Text (
                         text = NumberUtil.formatBalance(balance),
                         style = RarimeTheme.typography.subtitle5,
-                        color = RarimeTheme.colors.textPrimary,
+                        color = contentColors.balance,
                         textAlign = TextAlign.Center
                     )
-                    AppIcon(id = tokenIcon, size = 14.dp, tint = RarimeTheme.colors.textPrimary)
+                    AppIcon(id = tokenIcon, size = 14.dp, tint = contentColors.tokenIcon)
                 }
             }
         }

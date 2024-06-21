@@ -478,6 +478,9 @@ class RewardsViewModel @Inject constructor(
                 _activeTasksEvents.value = pointsManager.getActiveEvents().data
             }
             launch {
+                walletManager.loadBalances()
+            }
+            launch {
                 _pointsWalletAsset.value = getPointsWalletAsset()
             }
             launch {

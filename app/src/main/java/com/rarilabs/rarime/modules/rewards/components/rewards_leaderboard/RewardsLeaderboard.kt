@@ -55,13 +55,23 @@ fun RewardsLeaderBoard (
         }
     }
 
-    val topLeaderBoardModifiersMap = mapOf(
+    val topThreeContainerStylesMap = mapOf(
         1 to Modifier
             .requiredHeight(146.dp)
-            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-            .background(RarimeTheme.colors.primaryMain),
+            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
         2 to Modifier.requiredHeight(120.dp),
         3 to Modifier.requiredHeight(104.dp),
+    )
+
+    val topThreeContentStylesMap = mapOf(
+        1 to topLeaderColumnDefaultContentColors(
+            container = RarimeTheme.colors.primaryMain,
+            address = RarimeTheme.colors.baseBlack.copy(alpha = 0.6f),
+            balance = RarimeTheme.colors.baseBlack,
+            tokenIcon = RarimeTheme.colors.baseBlack,
+        ),
+        2 to topLeaderColumnDefaultContentColors(),
+        3 to topLeaderColumnDefaultContentColors(),
     )
 
     Column (
@@ -89,7 +99,8 @@ fun RewardsLeaderBoard (
             ) {
                 topThree.forEachIndexed { idx, it ->
                     TopLeaderColumn(
-                        modifier = topLeaderBoardModifiersMap[it.number]!!,
+                        modifier = topThreeContainerStylesMap[it.number]!!,
+                        contentColors = topThreeContentStylesMap[it.number]!!,
                         number = it.number,
                         address = it.address,
                         balance = it.balance,
