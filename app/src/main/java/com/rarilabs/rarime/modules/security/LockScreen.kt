@@ -106,7 +106,12 @@ fun LockScreen(
     /* EFFECTS */
     LaunchedEffect(true) {
         if (lockViewModule.isBiometricEnabled && isBiometricsAvailable) {
-            authenticateWithBiometrics()
+            if (
+                lockTimestamp.value <= System.currentTimeMillis() &&
+                !isAttemptsDisabled
+            ) {
+                authenticateWithBiometrics()
+            }
         }
     }
 
@@ -133,27 +138,32 @@ fun LockScreen(
 
     if (lockViewModule.isPasscodeEnabled) {
         PasscodeScreenLayout(
-            title = if (isAttemptsDisabled) stringResource(R.string.account_locked_msg) else stringResource(R.string.enter_passcode_title),
+            title = if (isAttemptsDisabled) stringResource(R.string.account_locked_msg) else stringResource(
+                R.string.enter_passcode_title
+            ),
             subtitle = if (isAttemptsDisabled) appLockedSubtitle else "",
             iconId = if (isAttemptsDisabled) R.drawable.ic_lock else R.drawable.ic_user,
             iconColors = if (isAttemptsDisabled) RarimeTheme.colors.baseBlack to RarimeTheme.colors.baseWhite
-            else RarimeTheme.colors.primaryMain to RarimeTheme.colors.textPrimary,
+            else RarimeTheme.colors.primaryMain to RarimeTheme.colors.baseBlack,
             passcodeState = passcodeState,
             enabled = !isAttemptsDisabled,
             onPasscodeFilled = { verifyPasscode() }
         ) {
             if (lockViewModule.isBiometricEnabled && isBiometricsAvailable) {
-                Button(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp),
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(64.dp),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent,
                         contentColor = RarimeTheme.colors.textPrimary
                     ),
-                    onClick = { authenticateWithBiometrics() }) {
+                    onClick = { authenticateWithBiometrics() },
+                    enabled = !isAttemptsDisabled
+                ) {
                     AppIcon(
-                        id = R.drawable.ic_fingerprint, size = 24.dp
+                        id = R.drawable.ic_fingerprint, size = 24.dp, tint = RarimeTheme.colors.textPrimary
                     )
                 }
             }

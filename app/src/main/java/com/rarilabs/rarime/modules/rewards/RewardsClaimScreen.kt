@@ -76,7 +76,10 @@ fun RewardsClaimScreen(
 
     if (pointsWalletAsset == null || rarimoWalletAsset == null) {
         // TODO: implement loader and error view
-        Text(text = "Loading...")
+        Text(
+            text = "Loading...",
+            color = RarimeTheme.colors.textPrimary
+        )
     } else {
         RewardsClaimScreenContent(
             onBack = onBack,

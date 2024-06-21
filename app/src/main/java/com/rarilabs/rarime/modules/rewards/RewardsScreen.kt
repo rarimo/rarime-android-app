@@ -16,9 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.RichTooltip
-import androidx.compose.material3.RichTooltipColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -59,7 +56,6 @@ import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppSkeleton
 import com.rarilabs.rarime.ui.components.CardContainer
-import com.rarilabs.rarime.ui.components.InfoAlert
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -313,6 +309,7 @@ fun RewardsScreenUserStatistic(
                                     AppIcon(
                                         id = R.drawable.ic_caret_right,
                                         size = 16.dp,
+                                        tint = RarimeTheme.colors.textPrimary
                                     )
                                 }
                             }
@@ -355,11 +352,14 @@ fun LimitedEventsList(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "\uD83D\uDD25"
+                    text = "\uD83D\uDD25",
+                    color = RarimeTheme.colors.textPrimary
                 )
             }
             Text(
-                text = "Limited time events", style = RarimeTheme.typography.subtitle3
+                text = "Limited time events",
+                style = RarimeTheme.typography.subtitle3,
+                color = RarimeTheme.colors.textPrimary
             )
         }
 
@@ -421,6 +421,8 @@ fun RewardsRatingBadge(
 ) {
     val leaderboardSheetState = rememberAppSheetState()
 
+    val pointsToken = walletAsset.token as PointsToken
+
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -434,18 +436,17 @@ fun RewardsRatingBadge(
             tint = RarimeTheme.colors.warningDarker,
         )
 
-        if (leaderBoardList.isEmpty()) {
-            AppSkeleton(
-                modifier = Modifier
-                    .width(18.dp)
-                    .height(18.dp)
-            )
-        } else {
+        pointsToken.balanceDetails?.attributes?.rank?.let {
             Text(
-                text = leaderBoardList.size.toString(),
+                text = it.toString(),
+                style = RarimeTheme.typography.subtitle5,
                 color = RarimeTheme.colors.warningDarker,
             )
-        }
+        } ?: AppSkeleton(
+            modifier = Modifier
+                .width(18.dp)
+                .height(18.dp)
+        )
     }
 
     AppBottomSheet(state = leaderboardSheetState, fullScreen = true) {

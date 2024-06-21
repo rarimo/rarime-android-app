@@ -126,12 +126,12 @@ private fun WalletSendScreenContent(
                         state = addressState,
                         label = stringResource(R.string.address_lbl),
                         placeholder = selectedWalletAsset.userAddress.substring(0, 7) + "...",
-                        trailingItem = {
-                            SecondaryTextButton(
-                                leftIcon = R.drawable.ic_qr_code,
-                                onClick = { showQrCodeScanner() }
-                            )
-                        },
+//                        trailingItem = {
+//                            SecondaryTextButton(
+//                                leftIcon = R.drawable.ic_qr_code,
+//                                onClick = { showQrCodeScanner() }
+//                            )
+//                        },
                         enabled = !isSubmitting,
                     )
                     AppTextField(

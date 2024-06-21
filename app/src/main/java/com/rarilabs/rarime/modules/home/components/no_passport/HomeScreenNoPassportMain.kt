@@ -62,7 +62,11 @@ fun HomeScreenNoPassportMainContent(
         modifier = Modifier
             .padding(vertical = 20.dp, horizontal = 12.dp)
     ) {
-        HomeScreenHeader(walletAsset = selectedWalletAsset) { navigate(Screen.Main.Rewards.route) }
+        HomeScreenHeader(walletAsset = selectedWalletAsset) {
+            pointsToken?.balanceDetails?.let {
+                navigate(Screen.Main.Rewards.route)
+            }
+        }
 
         Spacer(modifier = Modifier.size(32.dp))
 
@@ -96,7 +100,7 @@ fun HomeScreenNoPassportMainContent(
             ActionCard(title = stringResource(id = R.string.app_name),
                 description = stringResource(R.string.learn_more_about_the_app),
                 leadingContent = {
-                    AppIcon(id = R.drawable.ic_info, size = 24.dp)
+                    AppIcon(id = R.drawable.ic_info, size = 24.dp, tint = RarimeTheme.colors.textPrimary)
                 },
                 variant = ActionCardVariants.Outlined,
                 onClick = {

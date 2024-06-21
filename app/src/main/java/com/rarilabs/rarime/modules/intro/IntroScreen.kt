@@ -3,11 +3,11 @@ package com.rarilabs.rarime.modules.intro
 import androidx.annotation.RawRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -166,18 +165,11 @@ private fun StepView(step: IntroStep) {
                     .size(step.animationWidth.dp)
             )
         }
+        Spacer(modifier = Modifier.height(40.dp))
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.padding(horizontal = 24.dp)
         ) {
-            Text(
-                text = stringResource(R.string.beta_launch),
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.warningDark,
-                modifier = Modifier
-                    .background(RarimeTheme.colors.warningLighter, CircleShape)
-                    .padding(vertical = 4.dp, horizontal = 12.dp)
-            )
             Text(
                 text = stringResource(step.title),
                 style = RarimeTheme.typography.h4,

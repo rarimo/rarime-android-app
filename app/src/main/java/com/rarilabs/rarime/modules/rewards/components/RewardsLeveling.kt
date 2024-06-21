@@ -64,7 +64,7 @@ private fun StageIndicator(
         Text(
             text = number.toString(),
             style = RarimeTheme.typography.body3,
-            color = if (isActive) RarimeTheme.colors.textPrimary else RarimeTheme.colors.textSecondary,
+            color = if (isActive) RarimeTheme.colors.baseBlack else RarimeTheme.colors.textSecondary,
         )
     }
 }
@@ -113,7 +113,7 @@ private fun RewardsItem(levelReward: LevelReward) {
                 .height(40.dp),
             contentAlignment = Alignment.Center
         ) {
-            AppIcon(id = levelReward.iconId, size = 20.dp)
+            AppIcon(id = levelReward.iconId, size = 20.dp, tint = RarimeTheme.colors.textPrimary)
         }
 
         Column(
@@ -122,6 +122,7 @@ private fun RewardsItem(levelReward: LevelReward) {
             Text(
                 text = levelReward.title,
                 style = RarimeTheme.typography.subtitle4,
+                color = RarimeTheme.colors.textPrimary,
             )
             Text(
                 text = levelReward.subtitle,
@@ -149,7 +150,7 @@ data class RewardLevel(
 val LEVELING: List<RewardLevel> = listOf(
     RewardLevel(
         title = "Level 1",
-        subtitle = "0-30 RMO Coins",
+        subtitle = "Reserve tokens to unlock new levels and rewards",
         logo = R.drawable.reward_coin,
 
         amount = 0.0,
@@ -161,7 +162,7 @@ val LEVELING: List<RewardLevel> = listOf(
     ),
     RewardLevel(
         title = "Level 2",
-        subtitle = "30-50 RMO Coins",
+        subtitle = "Reserve tokens to unlock new levels and rewards",
         logo = R.drawable.reward_coin,
 
         amount = 0.0,
@@ -182,7 +183,7 @@ val LEVELING: List<RewardLevel> = listOf(
     ),
     RewardLevel(
         title = "Level 3",
-        subtitle = "50-xxx RMO Coins",
+        subtitle = "Reserve tokens to unlock new levels and rewards",
         logo = R.drawable.reward_coin,
 
         amount = 0.0,
@@ -316,6 +317,7 @@ fun RewardsLeveling(pointsBalance: PointsBalanceData) {
         Text(
             text = "Leveling",
             style = RarimeTheme.typography.subtitle4,
+            color = RarimeTheme.colors.textPrimary,
         )
 
         Spacer(modifier = Modifier.height(26.dp))
@@ -364,6 +366,7 @@ fun RewardsLeveling(pointsBalance: PointsBalanceData) {
                                 Text(
                                     text = level.title,
                                     style = RarimeTheme.typography.h5,
+                                    color = RarimeTheme.colors.textPrimary,
                                 )
                                 Text(
                                     text = level.subtitle,
@@ -408,6 +411,7 @@ fun RewardsLeveling(pointsBalance: PointsBalanceData) {
             Text(
                 text = "Rewards",
                 style = RarimeTheme.typography.subtitle3,
+                color = RarimeTheme.colors.textPrimary,
             )
 
             Spacer(modifier = Modifier.height(20.dp))

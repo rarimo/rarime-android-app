@@ -48,7 +48,7 @@ fun RewardsEventItemCommon(
         onBack = onBack,
         action = {
             // TODO: implement
-            AppIcon(id = R.drawable.ic_share, size = 18.dp)
+            AppIcon(id = R.drawable.ic_share, size = 18.dp, tint = RarimeTheme.colors.textPrimary)
         }
     ) {
         Column (

@@ -470,14 +470,15 @@ class RewardsViewModel @Inject constructor(
     }
 
     suspend fun init() {
-        delay(1000L * 3)
-
         coroutineScope {
             launch {
                 _limitedTimeEvents.value = pointsManager.getTimeLimitedEvents().data
             }
             launch {
                 _activeTasksEvents.value = pointsManager.getActiveEvents().data
+            }
+            launch {
+                walletManager.loadBalances()
             }
             launch {
                 _pointsWalletAsset.value = getPointsWalletAsset()

@@ -192,7 +192,8 @@ private fun AppLoadingScreen() {
             modifier = Modifier
                 .scale(animatedScale),
             id = R.drawable.ic_rarime,
-            size = 140.dp
+            size = 140.dp,
+            tint = RarimeTheme.colors.textPrimary
         )
     }
 }
