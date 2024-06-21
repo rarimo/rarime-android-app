@@ -82,10 +82,9 @@ fun HomeScreenPassportMainContent(
     }
 
     Column(
-        modifier = Modifier.padding(12.dp)
+        modifier = Modifier
+            .padding(vertical = 20.dp, horizontal = 12.dp)
     ) {
-        Spacer(modifier = Modifier.size(32.dp))
-
         HomeScreenHeader(walletAsset = selectedWalletAsset) { navigate(Screen.Main.Wallet.route) }
 
         Spacer(modifier = Modifier.size(32.dp))

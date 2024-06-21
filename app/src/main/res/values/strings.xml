@@ -97,7 +97,7 @@
     <string name="passport_look_black">Black</string>
     <string name="passport_look_white">White</string>
     <string name="years_old">%1$s Years Old</string>
-    <string name="balance_rmo">Balance: %1$s</string>
+    <string name="balance_rmo">%1$s</string>
 
     <string name="other_passport_card_title">Join Rewards Program</string>
     <string name="other_passport_card_description">Check your eligibility</string>

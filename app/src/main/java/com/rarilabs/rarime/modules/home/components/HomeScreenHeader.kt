@@ -27,13 +27,14 @@ fun HomeScreenHeader(
     walletAsset: WalletAsset,
     onBalanceClick: () -> Unit = {}
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+        modifier = Modifier.padding(horizontal = 8.dp)
+    ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 SecondaryTextButton(onClick = onBalanceClick) {

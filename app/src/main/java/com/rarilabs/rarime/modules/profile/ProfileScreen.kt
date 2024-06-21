@@ -42,8 +42,6 @@ fun ProfileScreen(
     val language by viewModel.language
     val colorScheme by viewModel.colorScheme
 
-
-
     Column(
         verticalArrangement = Arrangement.spacedBy(20.dp),
         modifier = Modifier

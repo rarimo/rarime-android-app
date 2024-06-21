@@ -23,17 +23,17 @@ class PointsToken @Inject constructor(
         symbol = "RRMO"
         decimals = 0
 
-        try {
-            balanceDetails = pointsManager.getPointsBalance()?.data
-        } catch (e: Exception) {
-
-        }
+        try { balanceDetails = pointsManager.getPointsBalance().data } catch (e: Exception) { }
     }
 
     override suspend fun balanceOf(address: String): BigInteger {
-        balanceDetails = pointsManager.getPointsBalance()?.data
+        try {
+            balanceDetails = pointsManager.getPointsBalance().data
 
-        return balanceDetails?.attributes?.amount?.let { BigInteger.valueOf(it) } ?: BigInteger.ZERO
+            return balanceDetails?.attributes?.amount?.let { BigInteger.valueOf(it) } ?: BigInteger.ZERO
+        } catch (e: Exception) {
+            return BigInteger.ZERO
+        }
     }
 
     override suspend fun transfer(to: String, amount: BigInteger): Transaction {

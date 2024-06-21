@@ -57,6 +57,7 @@ import com.rarilabs.rarime.modules.rewards.view_models.RewardsViewModel
 import com.rarilabs.rarime.ui.base.BaseTooltip
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
+import com.rarilabs.rarime.ui.components.AppSkeleton
 import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.InfoAlert
 import com.rarilabs.rarime.ui.components.PrimaryButton
@@ -154,7 +155,7 @@ fun RewardsScreenContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp)
+                .padding(vertical = 20.dp, horizontal = 12.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -162,17 +163,16 @@ fun RewardsScreenContent(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
+                    modifier = Modifier.padding(horizontal = 8.dp),
                     text = stringResource(R.string.rewards_screen_title),
-                    style = RarimeTheme.typography.subtitle3,
+                    style = RarimeTheme.typography.subtitle2,
                     color = RarimeTheme.colors.textPrimary
                 )
 
-                if (leaderBoardList.value.isNotEmpty()) {
-                    RewardsRatingBadge(
-                        leaderBoardList = leaderBoardList.value,
-                        walletAsset = walletAsset,
-                    )
-                }
+                RewardsRatingBadge(
+                    leaderBoardList = leaderBoardList.value,
+                    walletAsset = walletAsset,
+                )
             }
 
             Spacer(modifier = Modifier.height(22.dp))
@@ -432,10 +432,18 @@ fun RewardsRatingBadge(
             tint = RarimeTheme.colors.warningDarker,
         )
 
-        Text(
-            text = leaderBoardList.size.toString(),
-            color = RarimeTheme.colors.warningDarker,
-        )
+        if (leaderBoardList.isEmpty()) {
+            AppSkeleton(
+                modifier = Modifier
+                    .width(18.dp)
+                    .height(18.dp)
+            )
+        } else {
+            Text(
+                text = leaderBoardList.size.toString(),
+                color = RarimeTheme.colors.warningDarker,
+            )
+        }
     }
 
     AppBottomSheet(state = leaderboardSheetState, fullScreen = true) {

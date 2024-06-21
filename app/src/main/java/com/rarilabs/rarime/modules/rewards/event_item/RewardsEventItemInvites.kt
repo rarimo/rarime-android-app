@@ -65,11 +65,11 @@ fun RewardsEventItemInvites(
                     style = RarimeTheme.typography.h4,
                 )
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = stringResource(id = R.string.rewards_event_item_invites_subtitle),
-                    style = RarimeTheme.typography.body2,
-                    color = RarimeTheme.colors.textSecondary
-                )
+//                Text(
+//                    text = stringResource(id = R.string.rewards_event_item_invites_subtitle),
+//                    style = RarimeTheme.typography.body2,
+//                    color = RarimeTheme.colors.textSecondary
+//                )
             }
 
             Spacer(modifier = Modifier.height(100.dp))
@@ -112,11 +112,11 @@ fun RewardsEventItemInvites(
                             ),
                             style = RarimeTheme.typography.subtitle3
                         )
-                        Text(
-                            text = stringResource(id = R.string.rewards_event_item_invites_status_subtitle),
-                            style = RarimeTheme.typography.body3,
-                            color = RarimeTheme.colors.textSecondary
-                        )
+//                        Text(
+//                            text = stringResource(id = R.string.rewards_event_item_invites_status_subtitle),
+//                            style = RarimeTheme.typography.body3,
+//                            color = RarimeTheme.colors.textSecondary
+//                        )
                         Spacer(modifier = Modifier.height(20.dp))
 
                         Column(
