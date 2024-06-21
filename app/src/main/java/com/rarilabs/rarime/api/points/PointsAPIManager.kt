@@ -52,7 +52,7 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
 
             return response
         } catch (e: HttpException) {
-            throw Exception(e.toString())
+            return null
         }
 
         return null

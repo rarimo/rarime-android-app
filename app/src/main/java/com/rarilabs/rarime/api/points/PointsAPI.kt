@@ -37,7 +37,7 @@ interface PointsAPI {/* BALANCE */
         @Path("nullifier") nullifier: String,
         @Header("Authorization") authorization: String,
         @QueryMap queryParams: Map<String, String>
-    ): PointsBalanceBody
+    ): PointsBalanceBody?
 
     @POST("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances/{nullifier}/verifypassport")
     suspend fun verifyPassport(
