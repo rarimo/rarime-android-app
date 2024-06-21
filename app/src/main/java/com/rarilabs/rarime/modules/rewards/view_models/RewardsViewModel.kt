@@ -41,7 +41,7 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
                     description = MARKDOWN_CONTENT,
                     shortDescription = "Lorem ipsum dolor sit amet!",
                     frequency = "",
-                    startsAt = "",
+                    startsAt = null,
                     expiresAt = null,
                     actionUrl = "",
                     logo = "https://images.unsplash.com/photo-1717263608216-51a63715d209?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -70,7 +70,7 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
                     description = MARKDOWN_CONTENT,
                     shortDescription = "Lorem ipsum dolor sit amet concestetur!",
                     frequency = "",
-                    startsAt = "",
+                    startsAt = null,
                     expiresAt = "",
                     actionUrl = "",
                     logo = "https://images.unsplash.com/photo-1717263608216-51a63715d209?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -99,7 +99,7 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
                     description = MARKDOWN_CONTENT,
                     shortDescription = "Lorem ipsum dolor sit amet concestetur! Lorem ipsum dolor sit amet concestetur!",
                     frequency = "",
-                    startsAt = "",
+                    startsAt = null,
                     expiresAt = "",
                     actionUrl = "",
                     logo = "https://images.unsplash.com/photo-1717263608216-51a63715d209?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -444,6 +444,8 @@ class RewardsViewModel @Inject constructor(
 
     val pointsWalletAsset: StateFlow<WalletAsset?>
         get() = _pointsWalletAsset.asStateFlow()
+
+    val pointsToken = walletManager.pointsToken
 
     var _limitedTimeEvents = MutableStateFlow<List<PointsEventData>?>(null)
         private set

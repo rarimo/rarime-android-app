@@ -202,8 +202,12 @@ val INFINITY_STUB = 999999999999999.0
 
 fun getNormalizeLeveling(balance: Double): List<RewardLevel> {
     return LEVELING.map {
-        // if user has pass current level
-        if (it.maxAmount != null && balance >= it.maxAmount) {
+        if (balance == 0.0) {
+            it.copy(
+                isCurrentLevel = true,
+            )
+            // if user has pass current level
+        } else if (it.maxAmount != null && balance >= it.maxAmount) {
             it.copy(
                 amount = it.maxAmount
             )

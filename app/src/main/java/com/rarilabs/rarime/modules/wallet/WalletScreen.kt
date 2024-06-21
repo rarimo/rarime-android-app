@@ -96,12 +96,14 @@ fun WalletScreen(
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(40.dp),
-                modifier = Modifier.padding(20.dp)
+                modifier = Modifier
+                    .padding(vertical = 20.dp, horizontal = 12.dp)
             ) {
                 Text(
                     text = stringResource(R.string.wallet_title),
                     style = RarimeTheme.typography.subtitle2,
-                    color = RarimeTheme.colors.textPrimary
+                    color = RarimeTheme.colors.textPrimary,
+                    modifier = Modifier.padding(horizontal = 8.dp)
                 )
 
                 Column(

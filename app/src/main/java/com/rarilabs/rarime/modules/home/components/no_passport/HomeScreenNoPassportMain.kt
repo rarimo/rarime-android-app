@@ -37,16 +37,16 @@ fun HomeScreenNoPassportMain(
 ) {
     val homeViewModel = LocalHomeViewModel.current
 
-    val rmoAsset = homeViewModel.rmoAsset.collectAsState()
+    val selectedWalletAsset = homeViewModel.selectedWalletAsset.collectAsState()
 
-    rmoAsset.value?.let {
+    selectedWalletAsset.value?.let {
         HomeScreenNoPassportMainContent(navigate, it)
     }
 }
 
 @Composable
 fun HomeScreenNoPassportMainContent(
-    navigate: (String) -> Unit, rmoAsset: WalletAsset
+    navigate: (String) -> Unit, selectedWalletAsset: WalletAsset
 ) {
     val homeViewModel = LocalHomeViewModel.current
 
@@ -59,11 +59,10 @@ fun HomeScreenNoPassportMainContent(
     val specificAppSheetState = rememberAppSheetState()
 
     Column(
-        modifier = Modifier.padding(12.dp)
+        modifier = Modifier
+            .padding(vertical = 20.dp, horizontal = 12.dp)
     ) {
-        Spacer(modifier = Modifier.size(32.dp))
-
-        HomeScreenHeader(walletAsset = rmoAsset) { navigate(Screen.Main.Wallet.route) }
+        HomeScreenHeader(walletAsset = selectedWalletAsset) { navigate(Screen.Main.Rewards.route) }
 
         Spacer(modifier = Modifier.size(32.dp))
 
@@ -137,7 +136,7 @@ fun HomeScreenNoPassportMainContentPreview() {
         modifier = Modifier.background(RarimeTheme.colors.backgroundPrimary)
     ) {
         HomeScreenNoPassportMainContent(
-            navigate = {}, rmoAsset = WalletAsset(
+            navigate = {}, selectedWalletAsset = WalletAsset(
                 "", PreviewerToken(
                     "",
                     "Reserved RMO",

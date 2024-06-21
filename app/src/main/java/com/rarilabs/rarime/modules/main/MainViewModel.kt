@@ -79,14 +79,12 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun tryLogin() {
-        withContext(Dispatchers.IO) {
-            try {
-                if (authManager.isAccessTokenExpired()) {
-                    authManager.refresh()
-                }
-            } catch (e: Exception) {
-                authManager.login()
+        try {
+            if (authManager.isAccessTokenExpired()) {
+                authManager.refresh()
             }
+        } catch (e: Exception) {
+            authManager.login()
         }
     }
 

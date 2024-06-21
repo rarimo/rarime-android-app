@@ -68,12 +68,16 @@ object DateUtil {
     }
 
     fun stringToTimeLeft(dateStr: String): String {
-        val targetDate = parseDateString(dateStr)
+        try {
+            val targetDate = parseDateString(dateStr)
 
-        if (targetDate != null) {
-            return getTimeLeft(targetDate)
-        } else {
-            throw Exception("Invalid date format")
+            if (targetDate != null) {
+                return getTimeLeft(targetDate)
+            } else {
+                throw Exception("Invalid date format")
+            }
+        } catch (e: Exception) {
+            return ""
         }
     }
 

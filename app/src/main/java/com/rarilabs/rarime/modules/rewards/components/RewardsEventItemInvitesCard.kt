@@ -144,7 +144,7 @@ fun RewardsEventItemInvitesCard(
 
                 RewardsEventItemInvitesCardContainer(
                     title = code.id,
-                    description = invitationUrl,
+                    description = invitationUrl.replace("https://", ""),
                     actionContent = {
                         IconButton(
                             onClick = {
@@ -156,7 +156,7 @@ fun RewardsEventItemInvitesCard(
                     },
                     columnContent = {
                         Text(
-                            text = "active",
+                            text = "Active",
                             style = RarimeTheme.typography.body4,
                             color = RarimeTheme.colors.successDark,
                         )

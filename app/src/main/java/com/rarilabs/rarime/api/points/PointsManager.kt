@@ -108,7 +108,7 @@ class PointsManager @Inject constructor(
         pointsAPIManager.joinRewordsProgram(nullifier, hmacRes.toHexString(), requestPayload, "Bearer ${authManager.accessToken.value!!}")
     }
 
-    suspend fun getPointsBalance(): PointsBalanceBody? {
+    suspend fun getPointsBalance(): PointsBalanceBody {
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
         if (userNullifierHex.isEmpty()) {
