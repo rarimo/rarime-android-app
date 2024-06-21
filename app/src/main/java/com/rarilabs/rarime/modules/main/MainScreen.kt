@@ -268,13 +268,17 @@ fun MainScreenContent(
 
                 //Scan Flow
                 composable(Screen.ScanPassport.ScanPassportSpecific.route) {
-                    ScanPassportScreen(onClose = { navController.popBackStack() },
-                        onClaim = { navigateWithPopUp(Screen.Claim.Specific.route) })
+                    ScanPassportScreen(
+                        onClose = { navController.popBackStack() },
+                        onClaim = { navigateWithPopUp(Screen.Claim.Specific.route) }
+                    )
                 }
 
                 composable(Screen.ScanPassport.ScanPassportPoints.route) {
-                    ScanPassportScreen(onClose = { navController.popBackStack() },
-                        onClaim = { navigateWithPopUp(Screen.Claim.Reserve.route) })
+                    ScanPassportScreen(
+                        onClose = { navController.popBackStack() },
+                        onClaim = { navigateWithPopUp(Screen.Claim.Reserve.route) }
+                    )
                 }
 
                 navigation(

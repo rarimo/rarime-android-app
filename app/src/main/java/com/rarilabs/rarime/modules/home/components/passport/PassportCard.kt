@@ -83,7 +83,13 @@ fun PassportCard(
 
 
     Column(verticalArrangement = Arrangement.spacedBy((-43).dp)) {
-        if (passportStatus == PassportStatus.WAITLIST || passportStatus == PassportStatus.NOT_ALLOWED) {
+        if (
+            listOf(
+                PassportStatus.WAITLIST_NOT_ALLOWED,
+                PassportStatus.WAITLIST,
+                PassportStatus.NOT_ALLOWED,
+            ).contains(passportStatus)
+        ) {
             StatusCard(modifier = Modifier.padding(top = 20.dp), passportStatus)
         }
         Column(verticalArrangement = Arrangement.spacedBy(32.dp),
@@ -390,6 +396,7 @@ fun StatusCard(modifier: Modifier = Modifier, passportStatus: PassportStatus) {
     }
 
     when (passportStatus) {
+        PassportStatus.WAITLIST_NOT_ALLOWED,
         PassportStatus.WAITLIST -> remember {
             statusIcon = R.drawable.ic_globe_simple_time
             statusTitle = R.string.waitlist_title
@@ -406,8 +413,6 @@ fun StatusCard(modifier: Modifier = Modifier, passportStatus: PassportStatus) {
         }
     }
 
-
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -417,7 +422,7 @@ fun StatusCard(modifier: Modifier = Modifier, passportStatus: PassportStatus) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             AppIcon(
                 id = statusIcon,
-                tint = if(passportStatus == PassportStatus.WAITLIST) RarimeTheme.colors.warningMain else RarimeTheme.colors.errorMain,
+                tint = if (passportStatus == PassportStatus.NOT_ALLOWED) RarimeTheme.colors.errorMain else RarimeTheme.colors.warningMain,
                 modifier = Modifier.padding(vertical = 4.dp),
                 size = 24.dp
             )
@@ -428,7 +433,10 @@ fun StatusCard(modifier: Modifier = Modifier, passportStatus: PassportStatus) {
                     style = RarimeTheme.typography.subtitle5,
                     color = RarimeTheme.colors.textPrimary
                 )
-                if (passportStatus == PassportStatus.WAITLIST) {
+                if (
+                    passportStatus == PassportStatus.WAITLIST ||
+                    passportStatus == PassportStatus.WAITLIST_NOT_ALLOWED
+                ) {
                     Text(
                         text = stringResource(id = statusDescription),
                         style = RarimeTheme.typography.body4,

@@ -88,7 +88,7 @@ fun RewardsScreen(
 
     CompositionLocalProvider(localRewardsScreenViewModel provides rewardsViewModel) {
 
-        if (passportStatus.value == PassportStatus.NOT_ALLOWED) {
+        if (passportStatus.value == PassportStatus.NOT_ALLOWED || passportStatus.value == PassportStatus.WAITLIST_NOT_ALLOWED) {
             rewardsViewModel.getNationality()?.let {
                 UnSupportedPassport(
                     nationality = it
@@ -220,7 +220,7 @@ fun RewardsScreenUserStatistic(
     Column(
         verticalArrangement = Arrangement.spacedBy((-43).dp)
     ) {
-        StatusCard(passportStatus = passportStatus)
+//        StatusCard(passportStatus = passportStatus)
         CardContainer {
             Column(
                 verticalArrangement = Arrangement.spacedBy(20.dp),

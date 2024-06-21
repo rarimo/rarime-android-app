@@ -12,10 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -30,18 +26,6 @@ import com.rarilabs.rarime.util.Country
 fun UnSupportedPassport(
     nationality: String
 ) {
-
-    val rewardsViewModel = localRewardsScreenViewModel.current
-
-    val leaderBoardList by rewardsViewModel.leaderBoardList.collectAsState()
-
-    val pointWalletAsset = rewardsViewModel.pointsWalletAsset.collectAsState()
-
-    val isRewardsLoaded by remember(leaderBoardList) {
-        derivedStateOf { leaderBoardList.isNotEmpty() }
-    }
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -59,15 +43,6 @@ fun UnSupportedPassport(
                 style = RarimeTheme.typography.subtitle2,
                 color = RarimeTheme.colors.textPrimary
             )
-            pointWalletAsset.value?.let {
-                if (isRewardsLoaded) {
-                    RewardsRatingBadge(
-                        leaderBoardList = leaderBoardList, walletAsset = it
-                    )
-                } else {
-                    RewardsRatingBadgeSkeleton()
-                }
-            }
         }
 
         Column(

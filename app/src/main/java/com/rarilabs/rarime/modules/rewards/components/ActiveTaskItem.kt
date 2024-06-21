@@ -136,9 +136,10 @@ fun ActiveTaskItem(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (pointsToken?.balanceDetails != null && pointsToken.balanceDetails!!.attributes.is_verified == true) {
-                    RewardAmountPreview(amount = pointEvent.attributes.meta.static.reward)
-                }
+//                if (pointsToken?.balanceDetails != null && pointsToken.balanceDetails!!.attributes.is_verified == true) {
+//                    RewardAmountPreview(amount = pointEvent.attributes.meta.static.reward)
+//                }
+                RewardAmountPreview(amount = pointEvent.attributes.meta.static.reward)
 
                 AppIcon(
                     id = R.drawable.ic_caret_right,

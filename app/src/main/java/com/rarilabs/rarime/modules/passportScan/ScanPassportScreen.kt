@@ -20,6 +20,7 @@ import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.nfc.ReadNFCStep
 import com.rarilabs.rarime.modules.passportScan.proof.GenerateProofStep
 import com.rarilabs.rarime.util.Constants
+import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
 import com.rarilabs.rarime.util.data.ZkProof
 import org.jmrtd.lds.icao.MRZInfo
 
@@ -72,14 +73,14 @@ fun ScanPassportScreen(
             }
 
             ScanPassportState.GENERATE_PROOF -> {
-                GenerateProofStep(onClose = {
-                    registrationProof = it
-                    // FIXME: remove hardcode
-                    if (eDocument?.personDetails?.nationality == "UKR") {
-                        state = ScanPassportState.CLAIM_TOKENS
-                    } else {
-                        onClose.invoke()
-                    }
+                GenerateProofStep(
+                    onClose = {
+                        registrationProof = it
+                        if (!NOT_ALLOWED_COUNTRIES.contains(eDocument?.personDetails?.nationality)) {
+                            state = ScanPassportState.CLAIM_TOKENS
+                        } else {
+                            onClose.invoke()
+                        }
 
                 }, eDocument = eDocument!!, onError = {
                     state = ScanPassportState.UNSUPPORTED_PASSPORT

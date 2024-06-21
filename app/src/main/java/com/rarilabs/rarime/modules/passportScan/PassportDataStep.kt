@@ -26,6 +26,7 @@ import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.RewardChip
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Constants
+import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
 import com.rarilabs.rarime.util.ImageUtil
 import java.time.LocalDate
 import java.time.Period
@@ -34,6 +35,8 @@ import java.time.Period
 fun PassportDataStep(onNext: () -> Unit, onClose: () -> Unit, eDocument: EDocument) {
     val faceImageInfo = eDocument.personDetails!!.faceImageInfo
     val image = ImageUtil.getImage(faceImageInfo!!).bitmapImage!!
+
+    val isUnsupported = NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails!!.nationality)
 
     ScanPassportLayout(
         step = 3,
@@ -88,11 +91,13 @@ fun PassportDataStep(onNext: () -> Unit, onClose: () -> Unit, eDocument: EDocume
                                     style = RarimeTheme.typography.subtitle3,
                                     color = RarimeTheme.colors.textPrimary
                                 )
-                                RewardChip(
-                                    // TODO: remove hardcoded const
-                                    reward = Constants.SCAN_PASSPORT_REWARD.toInt(),
-                                    isActive = true
-                                )
+                                if (!isUnsupported) {
+                                    RewardChip(
+                                        // TODO: remove hardcoded const
+                                        reward = Constants.SCAN_PASSPORT_REWARD.toInt(),
+                                        isActive = true
+                                    )
+                                }
                             }
 
                             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
