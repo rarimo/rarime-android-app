@@ -69,7 +69,12 @@ object NumberUtil {
     }
 
     fun formatAmount(amount: Double, pattern: String? = "#,###.####"): String {
-        return DecimalFormat(pattern).format(floor(amount * 10000) / 10000) // rounding
+        try {
+            return DecimalFormat(pattern)
+                .format(floor(amount * 10000) / 10000) // rounding
+        } catch (e: Exception) {
+            return ""
+        }
     }
 
     fun formatBalance(humanAmount: Double): String {
