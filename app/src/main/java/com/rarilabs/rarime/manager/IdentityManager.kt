@@ -35,7 +35,6 @@ class IdentityManager @Inject constructor(
     }
 
     fun rarimoAddress(): String {
-        Log.i("PrivateKey", privateKeyBytes!!.toHexString())
         return getProfiler().rarimoAddress
     }
 
