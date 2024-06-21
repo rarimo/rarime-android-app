@@ -239,7 +239,10 @@ class ProofViewModel @Inject constructor(
             val ZERO_BYTES32 = ByteArray(32) { 0 }
 
             if (passportInfo.activeIdentity.contentEquals(ZERO_BYTES32)) {
+
+
                 Log.i("User Revoked", "Passport is registered")
+                throw UserAlreadyRegistered()
             }
 
             val certificatePubKeySize = when (registeredCircuitData) {
@@ -389,3 +392,5 @@ class ProofViewModel @Inject constructor(
     }
 
 }
+
+class UserAlreadyRegistered() : Exception()

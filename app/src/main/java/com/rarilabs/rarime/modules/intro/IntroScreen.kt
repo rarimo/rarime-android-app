@@ -170,14 +170,7 @@ private fun StepView(step: IntroStep) {
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.padding(horizontal = 24.dp)
         ) {
-            Text(
-                text = stringResource(R.string.beta_launch),
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.warningDark,
-                modifier = Modifier
-                    .background(RarimeTheme.colors.warningLighter, CircleShape)
-                    .padding(vertical = 4.dp, horizontal = 12.dp)
-            )
+
             Text(
                 text = stringResource(step.title),
                 style = RarimeTheme.typography.h4,

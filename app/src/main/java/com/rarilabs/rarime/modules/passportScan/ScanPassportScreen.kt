@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.modules.passportScan
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -9,7 +10,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.NotAllowedPassportScreen
 import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.WaitlistPassportScreen
 import com.rarilabs.rarime.modules.passportScan.camera.ScanMRZStep
@@ -32,7 +35,7 @@ fun ScanPassportScreen(
     var mrzData: MRZInfo? by remember { mutableStateOf(null) }
     var eDocument: EDocument? by remember { mutableStateOf(null) }
     var registrationProof: ZkProof? by remember { mutableStateOf(null) }
-
+    val context = LocalContext.current
 
     Column(modifier = Modifier.fillMaxSize()) {
         when (state) {
@@ -80,6 +83,11 @@ fun ScanPassportScreen(
 
                 }, eDocument = eDocument!!, onError = {
                     state = ScanPassportState.UNSUPPORTED_PASSPORT
+                }, onAlreadyRegistered = {
+
+                    Toast.makeText(context, R.string.you_have_already_registered, Toast.LENGTH_SHORT)
+                        .show()
+                    onClose.invoke()
                 })
             }
 

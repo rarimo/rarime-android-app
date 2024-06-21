@@ -57,7 +57,7 @@ open class AppTextFieldState(initialText: String, initialErrorMessage: String = 
 class AppTextFieldNumberState(initialText: String, initialErrorMessage: String = "") :
     AppTextFieldState(initialText, initialErrorMessage) {
     override fun updateText(newText: String) {
-        if (newText.isDigitsOnly()) {
+        if (newText.isDigitsOnly() || newText.contains(".")) {
             super.updateText(newText)
         }
     }
