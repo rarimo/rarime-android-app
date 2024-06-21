@@ -436,9 +436,9 @@ fun RewardsRatingBadge(
             tint = RarimeTheme.colors.warningDarker,
         )
 
-        pointsToken?.balanceDetails?.attributes?.rank?.let {
+        pointsToken.balanceDetails?.attributes?.rank?.let {
             Text(
-                text = leaderBoardList.size.toString(),
+                text = it.toString(),
                 style = RarimeTheme.typography.subtitle5,
                 color = RarimeTheme.colors.warningDarker,
             )
