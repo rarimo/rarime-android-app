@@ -232,5 +232,5 @@
     <string name="invite_status_limited_card_desc">Вичерпано ліміт зарезервованих токенів у країні вашого друга;</string>
     <string name="invite_status_awaiting_card_desc">Друг відсканував паспорт - потрібно відсканувати ваш паспорт;</string>
     <string name="delete_profile_title">Ви впевнені?</string>
-    <string name="delete_profile_desc">Усі ващі дані будуть видалені</string>
+    <string name="delete_profile_desc">Усі ващі дані будуть видалені, а застосунок буде закрито</string>
 </resources>

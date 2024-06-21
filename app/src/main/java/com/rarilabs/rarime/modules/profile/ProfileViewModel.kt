@@ -1,5 +1,7 @@
 package com.rarilabs.rarime.modules.profile
 
+import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.SettingsManager
@@ -22,7 +24,18 @@ class ProfileViewModel @Inject constructor(
     val language = settingsManager.language
     val colorScheme = settingsManager.colorScheme
 
-    fun clearAllData() {
+    fun clearAllData(context: Context) {
         dataStoreManager.clearAllData()
+
+        val packageName = context.packageName
+        val runtime = Runtime.getRuntime()
+        runtime.exec("pm clear $packageName")
+
+        val packageManager = context.packageManager
+        val intent = packageManager.getLaunchIntentForPackage(context.packageName)
+        val componentName = intent?.component
+        val mainIntent = Intent.makeRestartActivityTask(componentName)
+        context.startActivity(mainIntent)
+        Runtime.getRuntime().exit(0)
     }
 }
