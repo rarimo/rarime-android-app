@@ -40,7 +40,7 @@ fun PasscodeScreenLayout(
     enabled: Boolean = true,
     onClose: (() -> Unit)? = null,
     iconId: Int = R.drawable.ic_user,
-    iconColors: Pair<Color, Color> = RarimeTheme.colors.primaryMain to RarimeTheme.colors.textPrimary,
+    iconColors: Pair<Color, Color> = RarimeTheme.colors.primaryMain to RarimeTheme.colors.baseBlack,
     action: @Composable () -> Unit = {}
 ) {
     Box(

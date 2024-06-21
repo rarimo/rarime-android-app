@@ -75,6 +75,7 @@ fun RewardsLeaderBoard (
         Text (
             text = stringResource(id = R.string.leaderboard_title),
             style = RarimeTheme.typography.subtitle4,
+            color = RarimeTheme.colors.textPrimary
         )
         Spacer(modifier = Modifier.height(40.dp))
 

@@ -150,6 +150,7 @@ fun WalletScreen(
                             Text(
                                 text = selectedUserAsset.token.symbol,
                                 style = RarimeTheme.typography.overline2,
+                                color = RarimeTheme.colors.textPrimary
                             )
                         }
                     }

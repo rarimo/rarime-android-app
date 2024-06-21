@@ -113,7 +113,7 @@ private fun RewardsItem(levelReward: LevelReward) {
                 .height(40.dp),
             contentAlignment = Alignment.Center
         ) {
-            AppIcon(id = levelReward.iconId, size = 20.dp)
+            AppIcon(id = levelReward.iconId, size = 20.dp, tint = RarimeTheme.colors.textPrimary)
         }
 
         Column(

@@ -313,6 +313,7 @@ fun RewardsScreenUserStatistic(
                                     AppIcon(
                                         id = R.drawable.ic_caret_right,
                                         size = 16.dp,
+                                        tint = RarimeTheme.colors.textPrimary
                                     )
                                 }
                             }
@@ -355,11 +356,14 @@ fun LimitedEventsList(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "\uD83D\uDD25"
+                    text = "\uD83D\uDD25",
+                    color = RarimeTheme.colors.textPrimary
                 )
             }
             Text(
-                text = "Limited time events", style = RarimeTheme.typography.subtitle3
+                text = "Limited time events",
+                style = RarimeTheme.typography.subtitle3,
+                color = RarimeTheme.colors.textPrimary
             )
         }
 

@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
+import com.rarilabs.rarime.util.Country
 
 @Composable
 fun AboutProgram(
@@ -27,6 +29,10 @@ fun AboutProgram(
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
+        val localizedBannedCountries = NOT_ALLOWED_COUNTRIES.map {
+            Country.fromISOCode(it)?.localizedName ?: it
+        }
+
         // TODO: implement real text
         Text(
             text = """
@@ -34,7 +40,7 @@ fun AboutProgram(
                 
                 If you are added to the waitlist it means that you are eligible to claim tokens in the next wave of airdrops. The app will notify you when you are added.
                 
-                Certain jurisdictions are excluded from the reward program: {list of countries}
+                Certain jurisdictions are excluded from the reward program: ${localizedBannedCountries.joinToString(", ")}
             """.trimIndent(),
             style = RarimeTheme.typography.body3,
             color = RarimeTheme.colors.textPrimary,

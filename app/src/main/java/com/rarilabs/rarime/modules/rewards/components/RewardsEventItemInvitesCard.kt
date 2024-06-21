@@ -151,7 +151,7 @@ fun RewardsEventItemInvitesCard(
                                 shareContent(context, invitationUrl)
                             }
                         ) {
-                            AppIcon(id = R.drawable.ic_share)
+                            AppIcon(id = R.drawable.ic_share, tint = RarimeTheme.colors.textPrimary)
                         }
                     },
                     columnContent = {

@@ -69,6 +69,7 @@ fun ActionCardContent (
         AppIcon(
             id = R.drawable.ic_caret_right,
             size = 16.dp,
+            tint = RarimeTheme.colors.textPrimary,
             modifier = Modifier
                 .background(RarimeTheme.colors.primaryMain, CircleShape)
                 .padding(4.dp)
@@ -152,7 +153,7 @@ private fun ActionCardPreview() {
                         .background(RarimeTheme.colors.componentPrimary, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    AppIcon(id = R.drawable.ic_share)
+                    AppIcon(id = R.drawable.ic_share, tint = RarimeTheme.colors.textPrimary)
                 }
             },
             onClick = {}
@@ -189,7 +190,7 @@ private fun ActionCardPreview() {
             title = "RARIME",
             description = "Learn more about the App",
             leadingContent = {
-                AppIcon(id = R.drawable.ic_info, size = 24.dp)
+                AppIcon(id = R.drawable.ic_info, size = 24.dp, tint = RarimeTheme.colors.textPrimary)
             },
             variant = ActionCardVariants.Outlined,
             onClick = {}

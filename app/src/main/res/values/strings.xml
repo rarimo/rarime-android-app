@@ -178,7 +178,7 @@
     <string name="biometric_lock_title">Biometric Auth</string>
     <string name="unlock_btn">Unlock</string>
     <string name="account_locked_title">Account Locked</string>
-    <string name="account_locked_time_msg">Your entered wrong passcode.\n loading time: %1$s.</string>
+    <string name="account_locked_time_msg">Your entered wrong passcode.\n Loading time: %1$s</string>
     <string name="account_locked_msg">Account Locked</string>
     <string name="attempts_left_msg">Failed, %1$s Attempts left</string>
     <string name="enable_biometrics_msg">Enable biometrics in settings to unlock with fingerprint</string>

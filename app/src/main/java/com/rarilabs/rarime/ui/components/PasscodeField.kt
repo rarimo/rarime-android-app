@@ -131,6 +131,7 @@ private fun PasscodeKeyboard(
                         Text(
                             text = number.toString(),
                             style = RarimeTheme.typography.subtitle2,
+                            color = RarimeTheme.colors.textPrimary
                         )
                     }
                 }
@@ -147,6 +148,7 @@ private fun PasscodeKeyboard(
                 Text(
                     text = "0",
                     style = RarimeTheme.typography.subtitle2,
+                    color = RarimeTheme.colors.textPrimary
                 )
             }
             PasscodeKey(
@@ -157,7 +159,7 @@ private fun PasscodeKeyboard(
                     }
                 }
             ) {
-                AppIcon(id = R.drawable.ic_backspace)
+                AppIcon(id = R.drawable.ic_backspace, tint = RarimeTheme.colors.textPrimary)
             }
         }
     }

@@ -69,11 +69,12 @@ private fun TxConfirmBottomSheetContent(
         ) {
             Text(
                 text = "Review Transaction",
-                style = RarimeTheme.typography.h6
+                style = RarimeTheme.typography.h6,
+                color = RarimeTheme.colors.textPrimary
             )
 
             IconButton(onClick = { hide() }) {
-                AppIcon(id = R.drawable.ic_close)
+                AppIcon(id = R.drawable.ic_close, tint = RarimeTheme.colors.textPrimary)
             }
         }
 
@@ -98,12 +99,14 @@ private fun TxConfirmBottomSheetContent(
                     ) {
                         Text(
                             text = key,
-                            style = RarimeTheme.typography.body3
+                            style = RarimeTheme.typography.body3,
+                            color = RarimeTheme.colors.textPrimary
                         )
 
                         Text(
                             text = value,
-                            style = RarimeTheme.typography.subtitle4
+                            style = RarimeTheme.typography.subtitle4,
+                            color = RarimeTheme.colors.textPrimary
                         )
                     }
                 }

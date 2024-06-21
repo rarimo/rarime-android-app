@@ -90,7 +90,7 @@ fun TopLeaderColumn(
                         color = RarimeTheme.colors.textPrimary,
                         textAlign = TextAlign.Center
                     )
-                    AppIcon(id = tokenIcon, size = 14.dp)
+                    AppIcon(id = tokenIcon, size = 14.dp, tint = RarimeTheme.colors.textPrimary)
                 }
             }
         }
