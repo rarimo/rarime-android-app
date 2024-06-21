@@ -85,6 +85,7 @@ private fun RewardsEventItemInvitesCardContainer(
                     textDecoration = if (isCodeDisabled) TextDecoration.LineThrough else null,
                     text = title,
                     style = RarimeTheme.typography.subtitle4,
+                    color = RarimeTheme.colors.textPrimary,
                 )
                 Text(
                     text = description,
@@ -156,7 +157,7 @@ fun RewardsEventItemInvitesCard(
                     },
                     columnContent = {
                         Text(
-                            text = "Active",
+                            text = stringResource(id = R.string.invite_status_active_card_desc),
                             style = RarimeTheme.typography.body4,
                             color = RarimeTheme.colors.successDark,
                         )
@@ -168,7 +169,7 @@ fun RewardsEventItemInvitesCard(
                 RewardsEventItemInvitesCardContainer(
                     title = code.id,
                     isCodeDisabled = true,
-                    description = stringResource(id = R.string.invite_status_active_card_desc),
+                    description = stringResource(id = R.string.invite_status_banned_card_desc),
                     actionContent = {
                         notActiveActionContent()
                     }
@@ -179,7 +180,7 @@ fun RewardsEventItemInvitesCard(
                 RewardsEventItemInvitesCardContainer(
                     title = code.id,
                     isCodeDisabled = true,
-                    description = stringResource(id = R.string.invite_status_banned_card_desc),
+                    description = stringResource(id = R.string.invite_status_limited_card_desc),
                     actionContent = {
                         notActiveActionContent()
                     }
@@ -190,7 +191,7 @@ fun RewardsEventItemInvitesCard(
                 RewardsEventItemInvitesCardContainer(
                     title = code.id,
                     isCodeDisabled = true,
-                    description = stringResource(id = R.string.invite_status_limited_card_desc),
+                    description = stringResource(id = R.string.invite_status_awaiting_card_desc),
                     actionContent = {
                         notActiveActionContent()
                     }

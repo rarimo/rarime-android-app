@@ -227,7 +227,8 @@
 
     <string name="invite_status_rewarded_card_desc">Винагороду отримано</string>
     <string name="invite_status_consumed_card_desc">Використано • другу потрібно відсканувати паспорт</string>
-    <string name="invite_status_active_card_desc">Країна вашого друга не може брати участь у реферальній програмі</string>
-    <string name="invite_status_banned_card_desc">Вичерпано ліміт зарезервованих токенів у країні вашого друга;</string>
-    <string name="invite_status_limited_card_desc">Друг відсканував паспорт - потрібно відсканувати ваш паспорт;</string>
+    <string name="invite_status_active_card_desc">Активний</string>
+    <string name="invite_status_banned_card_desc">Країна вашого друга не може брати участь у реферальній програмі</string>
+    <string name="invite_status_limited_card_desc">Вичерпано ліміт зарезервованих токенів у країні вашого друга;</string>
+    <string name="invite_status_awaiting_card_desc">Друг відсканував паспорт - потрібно відсканувати ваш паспорт;</string>
 </resources>

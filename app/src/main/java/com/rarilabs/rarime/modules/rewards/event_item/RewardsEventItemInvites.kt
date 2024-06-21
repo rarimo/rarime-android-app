@@ -64,6 +64,7 @@ fun RewardsEventItemInvites(
                 Text(
                     text = stringResource(id = R.string.rewards_event_item_invites_title),
                     style = RarimeTheme.typography.h4,
+                    color = RarimeTheme.colors.textPrimary
                 )
                 Spacer(modifier = Modifier.height(12.dp))
 //                Text(
@@ -114,7 +115,8 @@ fun RewardsEventItemInvites(
                                 pointsBalance.attributes.referral_codes?.filter { it.status != ReferralCodeStatuses.ACTIVE.value }?.size ?: 0,
                                 pointsBalance.attributes.referral_codes?.size ?: 0
                             ),
-                            style = RarimeTheme.typography.subtitle3
+                            style = RarimeTheme.typography.subtitle3,
+                            color = RarimeTheme.colors.textPrimary
                         )
 //                        Text(
 //                            text = stringResource(id = R.string.rewards_event_item_invites_status_subtitle),

@@ -17,15 +17,16 @@ class WalletSendViewModel @Inject constructor(
 
     suspend fun sendTokens(to: String, humanAmount: String) {
         withContext(Dispatchers.IO) {
-            selectedWalletAsset.value.let { it ->
+            selectedWalletAsset.value.let {
 //                val bigIntAmount: Double = if (it.token !is Erc20Token){
 //                    NumberUtil.toBigIntAmount(humanAmount.toDouble(), it.token.decimals)
 //                }else{
 //                    humanAmount.toDouble()
 //                }
                 it.token.transfer(to, BigInteger(humanAmount))
-                it.loadBalance()
 
+
+                walletManager.loadBalances()
             }
         }
 

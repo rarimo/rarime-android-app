@@ -132,7 +132,7 @@ private fun InvitationContent(
                             enabled = invitationCodeState.text.isNotEmpty() && !isSubmitting,
                             colors = ButtonColors(
                                 containerColor = RarimeTheme.colors.primaryMain,
-                                contentColor = RarimeTheme.colors.textPrimary,
+                                contentColor = RarimeTheme.colors.baseBlack,
                                 disabledContainerColor = RarimeTheme.colors.componentDisabled,
                                 disabledContentColor = RarimeTheme.colors.textPrimary.copy(alpha = 0.5f),
                             ),

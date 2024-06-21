@@ -226,7 +226,8 @@
 
     <string name="invite_status_rewarded_card_desc">Rewarded</string>
     <string name="invite_status_consumed_card_desc">used • friend need to scan passport</string>
-    <string name="invite_status_active_card_desc">Your friends country (known after scanning passport) is not allowed to participate in the referral program</string>
-    <string name="invite_status_banned_card_desc">The limit of reserved tokens in your friends country is reached</string>
-    <string name="invite_status_limited_card_desc">Friend has scanned passport • need your passport scan</string>
+    <string name="invite_status_active_card_desc">Active</string>
+    <string name="invite_status_banned_card_desc">Your friends country is not allowed to participate in the referral program</string>
+    <string name="invite_status_limited_card_desc">The limit of reserved tokens in your friends country is reached</string>
+    <string name="invite_status_awaiting_card_desc">Friend has scanned passport • need your passport scan</string>
 </resources>
