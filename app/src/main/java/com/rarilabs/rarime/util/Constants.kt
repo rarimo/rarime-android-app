@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.util
 
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 object Constants {
     const val TERMS_URL = "https://rarime.com/general-terms.html"
@@ -9,7 +8,7 @@ object Constants {
     const val AIRDROP_TERMS_URL = "https://rarime.com/airdrop-terms.html"
 
     const val MAX_PASSCODE_ATTEMPTS = 5
-    val PASSCODE_LOCK_PERIOD = 25.seconds
+    val PASSCODE_LOCK_PERIOD = 5.minutes
 
 
     const val SCAN_PASSPORT_REWARD = 10.0

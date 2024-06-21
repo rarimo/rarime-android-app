@@ -208,14 +208,12 @@ class ProofViewModel @Inject constructor(
     }
 
     suspend fun registerByDocument(eDocument: EDocument) {
+        val isUnsupported = Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)
+
         try {
             _state.value = PassportProofState.READING_DATA
 
             passportManager.setPassport(eDocument)
-
-            if (Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
-                passportManager.updatePassportStatus(PassportStatus.NOT_ALLOWED)
-            }
 
             if (authManager.isAccessTokenExpired()) {
                 authManager.refresh()
@@ -252,16 +250,22 @@ class ProofViewModel @Inject constructor(
             _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
             register(proof, eDocument, certificatePubKeySize, true)
 
-
             _state.value = PassportProofState.FINALIZING
 
-            passportManager.updatePassportStatus(PassportStatus.ALLOWED)
+            if (isUnsupported) {
+                passportManager.updatePassportStatus(PassportStatus.NOT_ALLOWED)
+            } else {
+                passportManager.updatePassportStatus(PassportStatus.ALLOWED)
+            }
 
             delay(second * 1)
         } catch (e: Exception) {
-            if (passportManager.passportStatus.value != PassportStatus.NOT_ALLOWED) {
+            if (isUnsupported) {
+                passportManager.updatePassportStatus(PassportStatus.WAITLIST_NOT_ALLOWED)
+            } else {
                 passportManager.updatePassportStatus(PassportStatus.WAITLIST)
             }
+
             throw e
         }
 
