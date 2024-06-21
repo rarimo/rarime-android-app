@@ -238,9 +238,7 @@ class ProofViewModel @Inject constructor(
 
             val ZERO_BYTES32 = ByteArray(32) { 0 }
 
-            if (passportInfo.activeIdentity.contentEquals(ZERO_BYTES32)) {
-
-
+            if (!passportInfo.activeIdentity.contentEquals(ZERO_BYTES32)) {
                 Log.i("User Revoked", "Passport is registered")
                 throw UserAlreadyRegistered()
             }
@@ -253,7 +251,7 @@ class ProofViewModel @Inject constructor(
             dataStoreManager.saveRegistrationProof(proof)
 
             _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
-            register(proof, eDocument, certificatePubKeySize, true)
+            register(proof, eDocument, certificatePubKeySize, false)
 
 
             _state.value = PassportProofState.FINALIZING

@@ -64,28 +64,27 @@ class WalletManager @Inject constructor(
     private val stableCoinContractManager: StableCoinContractManager,
     private val erc20Manager: Erc20Manager
 ) {
+
     private var _walletAssets = MutableStateFlow(
         dataStoreManager.readWalletAssets(
             listOf(
                 WalletAsset(
                     identityManager.rarimoAddress(), RarimoToken(
                         BaseConfig.RARIMO_CHAINS[RarimoChains.Mainnet.chainId]!!, // FIXME: !!
-                        identityManager,
-                        cosmosManager,
-                        dataStoreManager
+                        identityManager, cosmosManager, dataStoreManager
                     )
-                ),
-                /*WalletAsset(
+                ), WalletAsset(
+                    identityManager.getUserPointsNullifierHex(), PointsToken(
+                        pointsManager = pointsManager
+                    )
+                )/*WalletAsset(
                                    identityManager.evmAddress(), Erc20Token(
                                        BaseConfig.STABLE_COIN_ADDRESS,
                                        stableCoinContractManager,
                                        erc20Manager,
                                        identityManager
                                    )
-                               ), WalletAsset(
-                                   identityManager.getUserPointsNullifierHex(), PointsToken(
-                                       pointsManager = pointsManager
-                                   )
+                               ),
                                )*/
             )
         )

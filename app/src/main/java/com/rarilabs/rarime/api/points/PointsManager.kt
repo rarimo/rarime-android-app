@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import coil.network.HttpException
 import com.google.gson.Gson
+import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.auth.AuthManager
 import com.rarilabs.rarime.api.points.models.BaseEvents
@@ -25,7 +26,6 @@ import com.rarilabs.rarime.api.points.models.VerifyPassportData
 import com.rarilabs.rarime.api.points.models.WithdrawBody
 import com.rarilabs.rarime.api.points.models.WithdrawPayload
 import com.rarilabs.rarime.api.points.models.WithdrawPayloadAttributes
-import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.config.Keys
 import com.rarilabs.rarime.data.ProofTxFull
 import com.rarilabs.rarime.manager.IdentityManager
@@ -91,8 +91,7 @@ class PointsManager @Inject constructor(
         val message = nBig.toByteArray() + cBig.toByteArray()
 
         val hmacRes = hmacSha256(
-            Keys.joinProgram.decodeHexString(),
-            message
+            Keys.joinProgram.decodeHexString(), message
         )
 
         val requestPayload = JoinRewardsProgramRequest(
@@ -105,7 +104,12 @@ class PointsManager @Inject constructor(
             )
         )
 
-        pointsAPIManager.joinRewordsProgram(nullifier, hmacRes.toHexString(), requestPayload, "Bearer ${authManager.accessToken.value!!}")
+        pointsAPIManager.joinRewordsProgram(
+            nullifier,
+            hmacRes.toHexString(),
+            requestPayload,
+            "Bearer ${authManager.accessToken.value!!}"
+        )
     }
 
     suspend fun getPointsBalance(): PointsBalanceBody? {
@@ -113,6 +117,10 @@ class PointsManager @Inject constructor(
 
         if (userNullifierHex.isEmpty()) {
             throw Exception("user nullifier is null")
+        }
+
+        if (authManager.isAccessTokenExpired()) {
+            authManager.refresh()
         }
 
         val response = pointsAPIManager.getPointsBalance(
