@@ -14,6 +14,7 @@ import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
 import com.rarilabs.rarime.util.data.ZkProof
 import com.google.gson.Gson
+import com.rarilabs.rarime.api.auth.models.RequestAuthorizeResponseBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -87,27 +88,32 @@ class AuthManager @Inject constructor(
     suspend fun login() {
         val nullifierHex = identityManager.getUserPointsNullifierHex()
 
-        val queryProof = getAuthQueryProof(nullifierHex)
+        var queryProof: ZkProof
 
-        val response = authAPIManager.authorize(
-            RequestAuthorizeBody(
-                data = RequestAuthorizeData(
-                    id = nullifierHex,
+        withContext(Dispatchers.Default) {
+            queryProof = getAuthQueryProof(nullifierHex)
+        }
 
-                    attributes = RequestAuthorizeDataAttributes(
-                        proof = queryProof,
+        var response: RequestAuthorizeResponseBody
+
+        withContext(Dispatchers.IO) {
+            response = authAPIManager.authorize(
+                RequestAuthorizeBody(
+                    data = RequestAuthorizeData(
+                        id = nullifierHex,
+
+                        attributes = RequestAuthorizeDataAttributes(
+                            proof = queryProof,
+                        )
                     )
                 )
             )
-        )
+        }
 
         _accessToken.value = response.data.attributes.access_token.token
         _refreshToken.value = response.data.attributes.refresh_token.token
 
         _isAuthorized.value = getIsAuthorized()
-
-        Log.i("AuthManager", "login: Access token: ${_accessToken.value}")
-        Log.i("AuthManager", "login: Refresh token: ${_refreshToken.value}")
     }
 
     suspend fun refresh() {

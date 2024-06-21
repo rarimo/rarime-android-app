@@ -142,6 +142,8 @@
     <string name="rewards_amount_overline_tooltip">Lorem ipsum dolor sit amet concestetur</string>
     <string name="rewards_screen_statistics_unscanned">Будь ласка проскануйте паспорт щоб уникнути втрати %1$s</string>
 
+    <string name="leaderboard_title">Лідери</string>
+
     <string name="rewards_claim_screen_title">Claim %1$s</string>
     <string name="rewards_claim_screen_subtitle">Claim %1$s</string>
     <string name="rewards_claim_screen_from_lbl">From</string>
@@ -225,8 +227,13 @@
 
     <string name="invite_status_rewarded_card_desc">Винагороду отримано</string>
     <string name="invite_status_consumed_card_desc">Використано • другу потрібно відсканувати паспорт</string>
-    <string name="invite_status_active_card_desc">Країна вашого друга не може брати участь у реферальній програмі</string>
-    <string name="invite_status_banned_card_desc">Вичерпано ліміт зарезервованих токенів у країні вашого друга;</string>
-    <string name="invite_status_limited_card_desc">Друг відсканував паспорт - потрібно відсканувати ваш паспорт;</string>
+    <string name="invite_status_active_card_desc">Активний</string>
+    <string name="invite_status_banned_card_desc">Країна вашого друга не може брати участь у реферальній програмі</string>
+    <string name="invite_status_limited_card_desc">Вичерпано ліміт зарезервованих токенів у країні вашого друга;</string>
+    <string name="invite_status_awaiting_card_desc">Друг відсканував паспорт - потрібно відсканувати ваш паспорт;</string>
+    <string name="delete_profile_title">Видалити свій обліковий запис?</string>
+    <string name="delete_profile_desc">"Ця дія є незворотною і призведе до видалення всіх ваших даних. "</string>
+    <string name="delete_profile_confirm_btn">Так</string>
+    <string name="delete_profile_cancel_btn">Ні</string>
     <string name="you_have_already_registered">Вы уже зарегистрировались</string>
 </resources>

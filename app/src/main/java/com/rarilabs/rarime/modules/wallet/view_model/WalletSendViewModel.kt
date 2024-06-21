@@ -28,13 +28,14 @@ class WalletSendViewModel @Inject constructor(
                 it.token.transfer(to, bigIntAmount)
                 it.loadBalance()
 
+                walletManager.loadBalances()
             }
         }
 
     }
 
     suspend fun fetchBalance() {
-        selectedWalletAsset.value?.let {
+        selectedWalletAsset.value.let {
             withContext(Dispatchers.IO) {
                 it.loadBalance()
             }

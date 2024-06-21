@@ -76,27 +76,31 @@ fun ReservedCongratsModalContent(onClose: () -> Unit) {
                     style = RarimeTheme.typography.body2,
                     color = RarimeTheme.colors.textSecondary,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.width(240.dp)
+                    modifier = Modifier.width(280.dp)
                 )
             }
             HorizontalDivider()
-            PrimaryButton(
-                text = stringResource(R.string.thanks_btn),
-                size = ButtonSize.Large,
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onClose
-            )
-            SecondaryButton(
-                text = "Share Achievement",
-                leftIcon = R.drawable.ic_share,
-                size = ButtonSize.Large,
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    // TODO: implement more share ui
-                    shareAchievement(context, "Participate and get rewarded: https://rarime.com")
-                    onClose()
-                }
-            )
+            Column (
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                PrimaryButton(
+                    text = stringResource(R.string.thanks_btn),
+                    size = ButtonSize.Large,
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = onClose
+                )
+                SecondaryButton(
+                    text = "Share Achievement",
+                    leftIcon = R.drawable.ic_share,
+                    size = ButtonSize.Large,
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        // TODO: implement more share ui
+                        shareAchievement(context, "Participate and get rewarded: https://rarime.com")
+                        onClose()
+                    }
+                )
+            }
         }
     }
 }

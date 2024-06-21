@@ -59,6 +59,7 @@ fun GenerateProofStep(
         } catch (e: Exception) {
 
             if (e is UserAlreadyRegistered) {
+
                 onAlreadyRegistered.invoke()
                 return@LaunchedEffect
             }

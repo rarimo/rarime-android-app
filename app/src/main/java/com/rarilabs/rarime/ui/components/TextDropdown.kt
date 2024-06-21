@@ -102,7 +102,8 @@ fun TextDropdown(
                             trailingIcon = {
                                 if (option.value == value) AppIcon(
                                     id = R.drawable.ic_check,
-                                    size = 18.dp
+                                    size = 18.dp,
+                                    tint = RarimeTheme.colors.textPrimary
                                 ) else null
                             },
                             colors = MenuItemColors(
@@ -113,7 +114,12 @@ fun TextDropdown(
                                 disabledLeadingIconColor = MenuDefaults.itemColors().disabledLeadingIconColor,
                                 disabledTrailingIconColor = MenuDefaults.itemColors().disabledTrailingIconColor,
                             ),
-                            text = { Text(option.label) },
+                            text = {
+                                Text(
+                                    text = option.label,
+                                    color = RarimeTheme.colors.textPrimary
+                                )
+                            },
                             onClick = {
                                 onChange(option.value)
                                 closeDropdown()

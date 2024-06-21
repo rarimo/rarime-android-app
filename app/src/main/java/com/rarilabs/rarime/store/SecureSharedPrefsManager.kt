@@ -76,4 +76,5 @@ interface SecureSharedPrefsManager {
 
     fun readIsInWaitlist(): Boolean
     fun saveIsInWaitlist(isInWaitlist: Boolean)
+    fun deletePassport()
 }

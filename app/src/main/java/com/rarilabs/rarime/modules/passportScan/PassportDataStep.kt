@@ -89,7 +89,8 @@ fun PassportDataStep(onNext: () -> Unit, onClose: () -> Unit, eDocument: EDocume
                                     color = RarimeTheme.colors.textPrimary
                                 )
                                 RewardChip(
-                                    reward = Constants.AIRDROP_REWARD.toInt(),
+                                    // TODO: remove hardcoded const
+                                    reward = Constants.SCAN_PASSPORT_REWARD.toInt(),
                                     isActive = true
                                 )
                             }

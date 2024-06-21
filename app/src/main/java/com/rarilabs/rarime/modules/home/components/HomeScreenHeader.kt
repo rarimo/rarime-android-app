@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.tokens.Erc20Token
+import com.rarilabs.rarime.data.tokens.PreviewerToken
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.SecondaryTextButton
@@ -26,13 +27,14 @@ fun HomeScreenHeader(
     walletAsset: WalletAsset,
     onBalanceClick: () -> Unit = {}
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+        modifier = Modifier.padding(horizontal = 8.dp)
+    ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 SecondaryTextButton(onClick = onBalanceClick) {
@@ -41,7 +43,7 @@ fun HomeScreenHeader(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = stringResource(R.string.balance_rmo, walletAsset.token.symbol),
+                            text = stringResource(R.string.balance_rmo, walletAsset.token.name),
                             style = RarimeTheme.typography.body3,
                             color = RarimeTheme.colors.textSecondary
                         )
@@ -71,6 +73,6 @@ fun HeaderPreview() {
             .padding(16.dp)
             .background(RarimeTheme.colors.backgroundPrimary)
     ) {
-        HomeScreenHeader(walletAsset = WalletAsset("0x000000", Erc20Token("0x00000000")))
+        HomeScreenHeader(walletAsset = WalletAsset("0x000000", PreviewerToken("0x00000000", "Reserved RMO", "RRMO")))
     }
 }

@@ -43,7 +43,7 @@
     <string name="nfc_reader_hint">Place your passport cover to the back of your phone</string>
     <string name="passport_data_title">Document data</string>
     <string name="passport_data_text">Data generates an incognito profile</string>
-    <string name="must_data">Must Data</string>
+    <string name="must_data">Identifiers</string>
     <string name="document_class_mode">Document class mode</string>
     <string name="issuing_state_code">Issuing state code</string>
     <string name="document_number">Document ID</string>
@@ -97,7 +97,7 @@
     <string name="passport_look_black">Black</string>
     <string name="passport_look_white">White</string>
     <string name="years_old">%1$s Years Old</string>
-    <string name="balance_rmo">Balance: %1$s</string>
+    <string name="balance_rmo">%1$s</string>
 
     <string name="other_passport_card_title">Join Rewards Program</string>
     <string name="other_passport_card_description">Check your eligibility</string>
@@ -105,7 +105,7 @@
     <string name="rarime_card_title">RARIME</string>
     <string name="rarime_card_description">Learn more about RariMe App</string>
 
-    <string name="invalid_referal_code">Invalid referral code</string>
+    <string name="invalid_referal_code">Invalid invitation code</string>
 
     <string name="reading_data_step">Reading data</string>
     <string name="applying_zero_knowledge_step">Applying Zero Knowledge</string>
@@ -140,6 +140,8 @@
     <string name="rewards_claim_btn">Claim</string>
     <string name="rewards_amount_overline_tooltip">Lorem ipsum dolor sit amet concestetur</string>
     <string name="rewards_screen_statistics_unscanned">Please scan passport in the next 30 days to avoid losing %1$s</string>
+
+    <string name="leaderboard_title">Leaderboard</string>
 
     <string name="rewards_claim_screen_title">Claim %1$s</string>
     <string name="rewards_claim_screen_subtitle">Lorem ipsum dolor sit amet concestetur!</string>
@@ -176,7 +178,7 @@
     <string name="biometric_lock_title">Biometric Auth</string>
     <string name="unlock_btn">Unlock</string>
     <string name="account_locked_title">Account Locked</string>
-    <string name="account_locked_time_msg">Your entered wrong passcode.\n loading time: %1$s.</string>
+    <string name="account_locked_time_msg">Your entered wrong passcode.\n Loading time: %1$s</string>
     <string name="account_locked_msg">Account Locked</string>
     <string name="attempts_left_msg">Failed, %1$s Attempts left</string>
     <string name="enable_biometrics_msg">Enable biometrics in settings to unlock with fingerprint</string>
@@ -215,17 +217,23 @@
     <string name="about_the_program">About the program</string>
     <string name="checking_eligibility">Checking eligibility happens via a scan of your biometric passport.\n\nYour data never leaves the device or is shared with any third party. Proof of citizenship is generated locally using Zero-Knowledge technology.</string>
     <string name="reserve_tokens">Reserve tokens</string>
-    <string name="you_re_entitled_of_x_rmo">You’re entitled of %1$s RMO</string>
+    <string name="you_re_entitled_of_x_rmo">Entitled of %1$s RMO</string>
 
     <string name="rewards_event_item_invites_title">Invite Friends</string>
     <string name="rewards_event_item_invites_subtitle">Invite friends and get rewards</string>
     <string name="rewards_event_item_invites_status">Invited %1$s/%2$s</string>
     <string name="rewards_event_item_invites_status_subtitle">Invite codes:</string>
 
-    <string name="invite_status_rewarded_card_desc">Rewarded</string>
-    <string name="invite_status_consumed_card_desc">used • friend need to scan passport</string>
-    <string name="invite_status_active_card_desc">Your friends country (known after scanning passport) is not allowed to participate in the referral program</string>
-    <string name="invite_status_banned_card_desc">The limit of reserved tokens in your friends country is reached</string>
-    <string name="invite_status_limited_card_desc">Friend has scanned passport • need your passport scan</string>
+    <string name="invite_status_rewarded_card_desc">Used • Passport scanned</string>
+    <string name="invite_status_consumed_card_desc">Used • Need passport scan</string>
+    <string name="invite_status_active_card_desc">Active</string>
+    <string name="invite_status_banned_card_desc">Used • Unsupported country</string>
+    <string name="invite_status_limited_card_desc">Used • Rewards limit reached</string>
+    <string name="invite_status_awaiting_card_desc">Used • Scan your passport</string>
+
+    <string name="delete_profile_title">Are you sure?</string>
+    <string name="delete_profile_desc">This action is irreversible and will delete all your data</string>
+    <string name="delete_profile_confirm_btn">Yes</string>
+    <string name="delete_profile_cancel_btn">No</string>
     <string name="you_have_already_registered">You have already registered</string>
 </resources>

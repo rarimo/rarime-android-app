@@ -74,7 +74,7 @@ private fun HomeIntroLayoutPreview() {
                     .background(RarimeTheme.colors.componentPrimary, CircleShape)
             ) {
 
-                AppIcon(id = R.drawable.ic_house_simple_fill, size = 32.dp)
+                AppIcon(id = R.drawable.ic_house_simple_fill, size = 32.dp, tint = RarimeTheme.colors.textPrimary)
             }
         },
         title = "Home Intro Title",

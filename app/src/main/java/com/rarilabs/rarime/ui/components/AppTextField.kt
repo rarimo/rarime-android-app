@@ -61,12 +61,30 @@ class AppTextFieldNumberState(initialText: String, initialErrorMessage: String =
             super.updateText(newText)
         }
     }
+
+    companion object {
+        val Saver: Saver<AppTextFieldNumberState, *> = listSaver(
+            save = { listOf(it.text, it.errorMessage) },
+            restore = {
+                AppTextFieldNumberState(
+                    initialText = it[0],
+                    initialErrorMessage = it[1],
+                )
+            }
+        )
+    }
 }
 
 @Composable
 fun rememberAppTextFieldState(initialText: String, initialErrorMessage: String = "") =
     rememberSaveable(initialText, initialErrorMessage, saver = AppTextFieldState.Saver) {
         AppTextFieldState(initialText, initialErrorMessage)
+    }
+
+@Composable
+fun rememberAppTextFieldNumberState(initialText: String, initialErrorMessage: String = "") =
+    rememberSaveable(initialText, initialErrorMessage, saver = AppTextFieldNumberState.Saver) {
+        AppTextFieldNumberState(initialText, initialErrorMessage)
     }
 
 @Composable

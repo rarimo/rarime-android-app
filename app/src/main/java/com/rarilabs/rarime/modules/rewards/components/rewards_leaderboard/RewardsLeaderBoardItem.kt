@@ -100,7 +100,7 @@ fun RewardsLeaderBoardItem(
                         style = RarimeTheme.typography.subtitle5,
                         color = RarimeTheme.colors.textPrimary
                     )
-                    AppIcon(id = item.tokenIcon, size = 14.dp)
+                    AppIcon(id = item.tokenIcon, size = 14.dp, tint = RarimeTheme.colors.textPrimary)
                 }
 
             }

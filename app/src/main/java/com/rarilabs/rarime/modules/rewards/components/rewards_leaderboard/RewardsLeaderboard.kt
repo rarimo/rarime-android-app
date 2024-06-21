@@ -6,9 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
@@ -56,77 +55,93 @@ fun RewardsLeaderBoard (
         }
     }
 
-    val topLeaderBoardModifiersMap = mapOf(
+    val topThreeContainerStylesMap = mapOf(
         1 to Modifier
             .requiredHeight(146.dp)
-            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-            .background(RarimeTheme.colors.primaryMain),
+            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
         2 to Modifier.requiredHeight(120.dp),
         3 to Modifier.requiredHeight(104.dp),
+    )
+
+    val topThreeContentStylesMap = mapOf(
+        1 to topLeaderColumnDefaultContentColors(
+            container = RarimeTheme.colors.primaryMain,
+            address = RarimeTheme.colors.baseBlack.copy(alpha = 0.6f),
+            balance = RarimeTheme.colors.baseBlack,
+            tokenIcon = RarimeTheme.colors.baseBlack,
+        ),
+        2 to topLeaderColumnDefaultContentColors(),
+        3 to topLeaderColumnDefaultContentColors(),
     )
 
     Column (
         modifier = Modifier
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary),
-        verticalArrangement = Arrangement.Bottom,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(22.dp))
         // FIXME: overlapped a close btn
         Text (
-            text = "Leaderboard",
+            text = stringResource(id = R.string.leaderboard_title),
             style = RarimeTheme.typography.subtitle4,
+            color = RarimeTheme.colors.textPrimary
         )
-        Spacer(modifier = Modifier.weight(1f))
-        Row (
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.Bottom
-        ) {
-            topThree.forEachIndexed { idx, it ->
-                TopLeaderColumn(
-                    modifier = topLeaderBoardModifiersMap[it.number]!!,
-                    number = it.number,
-                    address = it.address,
-                    balance = it.balance,
-                    tokenIcon = R.drawable.ic_rarimo,
-                    isCurrentUser = it.address == userAddress,
-                )
-            }
-        }
+        Spacer(modifier = Modifier.height(40.dp))
+
         Column (
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.7f)
-                .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-                .background(RarimeTheme.colors.backgroundPure)
-                .absolutePadding(top = 0.dp, left = 20.dp, right = 20.dp, bottom = 0.dp),
+            modifier = Modifier.weight(1f),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column () {
-                RewardsLeaderBoardHead()
-                HorizontalDivider()
+            Row (
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.Bottom
+            ) {
+                topThree.forEachIndexed { idx, it ->
+                    TopLeaderColumn(
+                        modifier = topThreeContainerStylesMap[it.number]!!,
+                        contentColors = topThreeContentStylesMap[it.number]!!,
+                        number = it.number,
+                        address = it.address,
+                        balance = it.balance,
+                        tokenIcon = R.drawable.ic_rarimo,
+                        isCurrentUser = it.address == userAddress,
+                    )
+                }
             }
+            Column (
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+                    .background(RarimeTheme.colors.backgroundPure)
+                    .absolutePadding(top = 0.dp, left = 20.dp, right = 20.dp, bottom = 0.dp),
+            ) {
+                Column {
+                    RewardsLeaderBoardHead()
+                    HorizontalDivider()
+                }
 
-            if (rest.isNotEmpty()) {
-                LazyColumn (
-                    modifier = Modifier.weight(1f),
-                    state = scrollState,
-                ) {
-                    itemsIndexed(rest) { idx, it ->
-                        RewardsLeaderBoardItem(
-                            it,
-                            isCurrentUser = it.address == userAddress,
-                        )
+                if (rest.isNotEmpty()) {
+                    LazyColumn (
+                        modifier = Modifier.weight(1f),
+                        state = scrollState,
+                    ) {
+                        itemsIndexed(rest) { idx, it ->
+                            RewardsLeaderBoardItem(
+                                it,
+                                isCurrentUser = it.address == userAddress,
+                            )
 
-                        if (idx != rest.size - 1) {
-                            HorizontalDivider()
+                            if (idx != rest.size - 1) {
+                                HorizontalDivider()
+                            }
                         }
                     }
-                }
-                rest.find { it.address == userAddress }?.let {
-                    Column () {
-                        HorizontalDivider()
-                        RewardsLeaderBoardItem(it, true)
+                    rest.find { it.address == userAddress }?.let {
+                        Column () {
+                            HorizontalDivider()
+                            RewardsLeaderBoardItem(it, true)
+                        }
                     }
                 }
             }

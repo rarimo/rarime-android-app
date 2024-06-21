@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,13 +64,14 @@ fun RewardsEventItemInvites(
                 Text(
                     text = stringResource(id = R.string.rewards_event_item_invites_title),
                     style = RarimeTheme.typography.h4,
+                    color = RarimeTheme.colors.textPrimary
                 )
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = stringResource(id = R.string.rewards_event_item_invites_subtitle),
-                    style = RarimeTheme.typography.body2,
-                    color = RarimeTheme.colors.textSecondary
-                )
+//                Text(
+//                    text = stringResource(id = R.string.rewards_event_item_invites_subtitle),
+//                    style = RarimeTheme.typography.body2,
+//                    color = RarimeTheme.colors.textSecondary
+//                )
             }
 
             Spacer(modifier = Modifier.height(100.dp))
@@ -78,7 +80,9 @@ fun RewardsEventItemInvites(
                 modifier = Modifier
                     .weight(1f)
             ) {
-                Box {
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ) {
                     Image(
                         painter = painterResource(id = R.drawable.invite_screen_bg),
                         contentDescription = "decor",
@@ -93,10 +97,11 @@ fun RewardsEventItemInvites(
                     Column(
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                         modifier = Modifier
+                            .fillMaxSize()
+                            .background(RarimeTheme.colors.backgroundPure)
                             .verticalScroll(rememberScrollState())
                             .zIndex(1f)
                             .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-                            .background(RarimeTheme.colors.backgroundPure)
                             .absolutePadding(
                                 top = 24.dp,
                                 left = 24.dp,
@@ -110,13 +115,14 @@ fun RewardsEventItemInvites(
                                 pointsBalance.attributes.referral_codes?.filter { it.status != ReferralCodeStatuses.ACTIVE.value }?.size ?: 0,
                                 pointsBalance.attributes.referral_codes?.size ?: 0
                             ),
-                            style = RarimeTheme.typography.subtitle3
+                            style = RarimeTheme.typography.subtitle3,
+                            color = RarimeTheme.colors.textPrimary
                         )
-                        Text(
-                            text = stringResource(id = R.string.rewards_event_item_invites_status_subtitle),
-                            style = RarimeTheme.typography.body3,
-                            color = RarimeTheme.colors.textSecondary
-                        )
+//                        Text(
+//                            text = stringResource(id = R.string.rewards_event_item_invites_status_subtitle),
+//                            style = RarimeTheme.typography.body3,
+//                            color = RarimeTheme.colors.textSecondary
+//                        )
                         Spacer(modifier = Modifier.height(20.dp))
 
                         Column(
@@ -167,18 +173,18 @@ private fun RewardsEventItemInvitesPreview() {
                         id = "QrisPfszkps_3",
                         status = ReferralCodeStatuses.ACTIVE.value
                     ),
-                    ReferralCode(
-                        id = "QrisPfszkps_4",
-                        status = ReferralCodeStatuses.BANNED.value
-                    ),
-                    ReferralCode(
-                        id = "QrisPfszkps_5",
-                        status = ReferralCodeStatuses.LIMITED.value
-                    ),
-                    ReferralCode(
-                        id = "QrisPfszkps_6",
-                        status = ReferralCodeStatuses.AWAITING.value
-                    )
+//                    ReferralCode(
+//                        id = "QrisPfszkps_4",
+//                        status = ReferralCodeStatuses.BANNED.value
+//                    ),
+//                    ReferralCode(
+//                        id = "QrisPfszkps_5",
+//                        status = ReferralCodeStatuses.LIMITED.value
+//                    ),
+//                    ReferralCode(
+//                        id = "QrisPfszkps_6",
+//                        status = ReferralCodeStatuses.AWAITING.value
+//                    )
                 ),
                 level = 0,
             ),

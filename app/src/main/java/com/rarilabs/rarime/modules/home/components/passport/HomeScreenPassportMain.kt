@@ -31,6 +31,7 @@ import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.enter_program.EnterProgramFlow
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
+import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.launch
@@ -41,16 +42,16 @@ fun HomeScreenPassportMain(
 ) {
     val homeViewModel = LocalHomeViewModel.current
 
-    val rmoAsset = homeViewModel.rmoAsset.collectAsState()
+    val selectedWalletAsset = homeViewModel.selectedWalletAsset.collectAsState()
 
-    rmoAsset.value?.let {
+    selectedWalletAsset.value?.let {
         HomeScreenPassportMainContent(navigate, it)
     }
 }
 
 @Composable
 fun HomeScreenPassportMainContent(
-    navigate: (String) -> Unit, rmoAsset: WalletAsset
+    navigate: (String) -> Unit, selectedWalletAsset: WalletAsset
 ) {
     val scope = rememberCoroutineScope()
 
@@ -82,11 +83,14 @@ fun HomeScreenPassportMainContent(
     }
 
     Column(
-        modifier = Modifier.padding(12.dp)
+        modifier = Modifier
+            .padding(vertical = 20.dp, horizontal = 12.dp)
     ) {
-        Spacer(modifier = Modifier.size(32.dp))
-
-        HomeScreenHeader(walletAsset = rmoAsset) { navigate(Screen.Main.Wallet.route) }
+        HomeScreenHeader(walletAsset = selectedWalletAsset) {
+            pointsToken?.balanceDetails?.let {
+                navigate(Screen.Main.Rewards.route)
+            }
+        }
 
         Spacer(modifier = Modifier.size(32.dp))
 
@@ -114,7 +118,7 @@ fun HomeScreenPassportMainContent(
                             title = stringResource(R.string.reserve_tokens),
                             description = stringResource(
                                 R.string.you_re_entitled_of_x_rmo,
-                                Constants.AIRDROP_REWARD
+                                Constants.SCAN_PASSPORT_REWARD.toInt()
                             ),
                             leadingContent = {
                                 Image(
@@ -170,7 +174,7 @@ fun HomeScreenPassportMainContent(
                 title = stringResource(id = R.string.app_name),
                 description = stringResource(R.string.learn_more_about_the_app),
                 leadingContent = {
-                    AppIcon(id = R.drawable.ic_info, size = 24.dp)
+                    AppIcon(id = R.drawable.ic_info, size = 24.dp, tint = RarimeTheme.colors.textPrimary)
                 },
                 variant = ActionCardVariants.Outlined,
                 onClick = {
@@ -217,7 +221,7 @@ fun HomeScreenPassportMainContent(
 fun HomeScreenPassportMainContentPreview() {
     Column {
         HomeScreenPassportMainContent(
-            navigate = {}, rmoAsset = WalletAsset(
+            navigate = {}, selectedWalletAsset = WalletAsset(
                 "", PreviewerToken(
                     "",
                     "Reserved RMO",

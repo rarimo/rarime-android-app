@@ -48,8 +48,8 @@ enum class BottomTab(
     ),
     Rewards(
         Screen.Main.Rewards.RewardsMain.route,
-        R.drawable.ic_gift,
-        R.drawable.ic_gift_fill
+        R.drawable.ic_airdrop,
+        R.drawable.ic_airdrop
     ),
     Profile(
         Screen.Main.Profile.route,
