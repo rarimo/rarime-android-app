@@ -62,7 +62,7 @@ fun HomeScreenNoPassportMainContent(
         modifier = Modifier
             .padding(vertical = 20.dp, horizontal = 12.dp)
     ) {
-        HomeScreenHeader(walletAsset = selectedWalletAsset) { navigate(Screen.Main.Wallet.route) }
+        HomeScreenHeader(walletAsset = selectedWalletAsset) { navigate(Screen.Main.Rewards.route) }
 
         Spacer(modifier = Modifier.size(32.dp))
 

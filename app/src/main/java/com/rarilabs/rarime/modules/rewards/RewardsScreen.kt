@@ -391,7 +391,9 @@ fun ActiveTasksList(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "Active Tasks", style = RarimeTheme.typography.subtitle3
+                text = "Active Tasks",
+                style = RarimeTheme.typography.subtitle3,
+                color = RarimeTheme.colors.textPrimary
             )
         }
 

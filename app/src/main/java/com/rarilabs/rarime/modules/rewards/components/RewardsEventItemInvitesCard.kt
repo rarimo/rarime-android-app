@@ -144,7 +144,7 @@ fun RewardsEventItemInvitesCard(
 
                 RewardsEventItemInvitesCardContainer(
                     title = code.id,
-                    description = invitationUrl,
+                    description = invitationUrl.replace("https://", ""),
                     actionContent = {
                         IconButton(
                             onClick = {

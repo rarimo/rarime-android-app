@@ -85,7 +85,7 @@ fun HomeScreenPassportMainContent(
         modifier = Modifier
             .padding(vertical = 20.dp, horizontal = 12.dp)
     ) {
-        HomeScreenHeader(walletAsset = selectedWalletAsset) { navigate(Screen.Main.Wallet.route) }
+        HomeScreenHeader(walletAsset = selectedWalletAsset) { navigate(Screen.Main.Rewards.route) }
 
         Spacer(modifier = Modifier.size(32.dp))
 
@@ -113,7 +113,7 @@ fun HomeScreenPassportMainContent(
                             title = stringResource(R.string.reserve_tokens),
                             description = stringResource(
                                 R.string.you_re_entitled_of_x_rmo,
-                                Constants.SCAN_PASSPORT_REWARD
+                                Constants.SCAN_PASSPORT_REWARD.toInt()
                             ),
                             leadingContent = {
                                 Image(
