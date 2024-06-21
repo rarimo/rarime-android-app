@@ -221,8 +221,6 @@ class ProofViewModel @Inject constructor(
                 authManager.refresh()
             }
 
-            throw Exception("Passport")
-
             val registeredCircuitData = registerCertificate(eDocument)
 
             val filePaths = withContext(Dispatchers.Default) {
