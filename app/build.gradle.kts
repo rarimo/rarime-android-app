@@ -16,8 +16,8 @@ android {
         applicationId = "com.rarilabs.rarime"
         minSdk = 27
         targetSdk = 34
-        versionCode = 3
-        versionName = "1.0.1"
+        versionCode = 4
+        versionName = "1.0.2"
 
         externalNativeBuild {
             cmake {
@@ -172,7 +172,10 @@ dependencies {
     implementation("org.web3j:core:4.9.8")
     implementation("org.bouncycastle:bcpkix-jdk15on:1.70")
 
-    implementation(libs.play.core)
+    implementation("com.google.android.play:asset-delivery:2.2.2")
+    implementation("com.google.android.play:asset-delivery-ktx:2.2.2")
 
+    implementation("com.google.android.play:app-update:2.1.0")
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
 
 }
