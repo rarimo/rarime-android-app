@@ -40,7 +40,18 @@
             android:exported="true"
             android:localeConfig="@xml/locales_config"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Rarime"/>
+            android:theme="@style/Theme.Rarime">
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:host="e63d-178-133-229-125.ngrok-free.app" />
+            </intent-filter>
+        </activity>
 
         <activity-alias
             android:name=".MainActivityBW"
@@ -66,7 +77,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
-            <!--DEEP LINKS-->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -74,7 +84,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="https" />
-                <data android:host="staging.rarime.com/" />
+                <data android:host="e63d-178-133-229-125.ngrok-free.app" />
             </intent-filter>
         </activity-alias>
 
@@ -102,7 +112,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
-            <!--DEEP LINKS-->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -110,7 +119,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="https" />
-                <data android:host="staging.rarime.com/" />
+                <data android:host="e63d-178-133-229-125.ngrok-free.app" />
             </intent-filter>
         </activity-alias>
 
@@ -138,7 +147,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
-            <!--DEEP LINKS-->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -146,7 +154,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="https" />
-                <data android:host="staging.rarime.com/" />
+                <data android:host="e63d-178-133-229-125.ngrok-free.app" />
             </intent-filter>
         </activity-alias>
 

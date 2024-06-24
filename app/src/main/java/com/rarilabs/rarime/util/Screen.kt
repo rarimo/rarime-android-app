@@ -50,5 +50,5 @@ sealed class Screen(val route: String) {
         }
     }
 
-    data object Invitation : Screen("i")
+    data object Invitation : Screen("invitation/{code}")
 }

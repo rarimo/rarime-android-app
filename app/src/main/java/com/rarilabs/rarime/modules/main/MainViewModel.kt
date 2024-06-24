@@ -132,7 +132,7 @@ class MainViewModel @Inject constructor(
 
             loadUserDetails()
 
-            isIntroFinished.value = true
+//            isIntroFinished.value = true
             dataStoreManager.saveIsIntroFinished(true)
         }
     }

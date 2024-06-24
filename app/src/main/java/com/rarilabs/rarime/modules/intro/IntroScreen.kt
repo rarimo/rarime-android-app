@@ -78,7 +78,7 @@ private val introSteps = listOf(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun IntroScreen(navigateTo: (route: String) -> Unit) {
+fun IntroScreen(onFinishIntro: () -> Unit) {
     val stepState = rememberPagerState(pageCount = { introSteps.size })
     val coroutineScope = rememberCoroutineScope()
 
@@ -122,7 +122,7 @@ fun IntroScreen(navigateTo: (route: String) -> Unit) {
                     PrimaryButton(
                         text = stringResource(R.string.create_account_btn),
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = { navigateTo(Screen.Register.NewIdentity.route) }
+                        onClick = { onFinishIntro() }
                     )
                 } else {
                     Row(
@@ -187,5 +187,5 @@ private fun StepView(step: IntroStep) {
 @Preview
 @Composable
 private fun IntroScreenPreview() {
-    IntroScreen(navigateTo = {})
+    IntroScreen(onFinishIntro = {})
 }

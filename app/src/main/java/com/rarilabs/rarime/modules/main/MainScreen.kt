@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -49,6 +50,7 @@ import com.rarilabs.rarime.modules.passportVerify.ClaimAirdropScreen
 import com.rarilabs.rarime.modules.passportVerify.VerifyPassportScreen
 import com.rarilabs.rarime.modules.home.HomeScreen
 import com.rarilabs.rarime.modules.intro.IntroScreen
+import com.rarilabs.rarime.modules.main.guards.AuthGuard
 import com.rarilabs.rarime.modules.passportScan.ScanPassportScreen
 import com.rarilabs.rarime.modules.profile.AppIconScreen
 import com.rarilabs.rarime.modules.profile.AuthMethodScreen
@@ -95,7 +97,9 @@ val mainRoutes = listOf(
 val LocalMainViewModel = compositionLocalOf<MainViewModel> { error("No MainViewModel provided") }
 
 @Composable
-fun MainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
+fun MainScreen(
+    mainViewModel: MainViewModel = hiltViewModel(),
+) {
     val coroutineScope = rememberCoroutineScope()
 
     val appLoadingState = mainViewModel.appLoadingState
@@ -105,6 +109,7 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
 
     val currentRoute = navBackStackEntry?.destination?.route
     LaunchedEffect(currentRoute) {
+        Log.i("currentRoute", currentRoute ?: "none")
         mainViewModel.setBottomBarVisibility(currentRoute != null && currentRoute in mainRoutes)
     }
 
@@ -237,6 +242,20 @@ fun MainScreenContent(
 
     var appIcon by remember { mutableStateOf(AppIconUtil.getIcon(context)) }
 
+    var savedNextNavScreen by remember { mutableStateOf<String?>(null) }
+
+    fun navigateWithSavedNextNavScreen(route: String) {
+        Log.i("navigateWithSavedNextNavScreen", "route: $route")
+
+        savedNextNavScreen?.let {
+            Log.i("savedNextNavScreen", "route: $it")
+            navController.navigate(it)
+            savedNextNavScreen = null
+        } ?: run {
+            navigateWithPopUp(route)
+        }
+    }
+
     AppTheme(colorScheme = mainViewModel.colorScheme.value) {
         Scaffold(
             bottomBar = {
@@ -263,28 +282,7 @@ fun MainScreenContent(
                 exitTransition = { ExitTransition.None },
             ) {
                 composable(Screen.Intro.route) {
-                    IntroScreen { navController.navigate(it) }
-                }
-
-                composable(Screen.Lock.route) {
-                    LockScreen(onPass = {
-                        navController.navigate(Screen.Main.route)
-                    })
-                }
-
-                //Scan Flow
-                composable(Screen.ScanPassport.ScanPassportSpecific.route) {
-                    ScanPassportScreen(
-                        onClose = { navController.popBackStack() },
-                        onClaim = { navigateWithPopUp(Screen.Claim.Specific.route) }
-                    )
-                }
-
-                composable(Screen.ScanPassport.ScanPassportPoints.route) {
-                    ScanPassportScreen(
-                        onClose = { navController.popBackStack() },
-                        onClaim = { navigateWithPopUp(Screen.Claim.Reserve.route) }
-                    )
+                    IntroScreen { navController.navigate(Screen.Register.NewIdentity.route) }
                 }
 
                 navigation(
@@ -309,26 +307,55 @@ fun MainScreenContent(
                     route = Screen.Passcode.route
                 ) {
                     composable(Screen.Passcode.EnablePasscode.route) {
-                        EnablePasscodeScreen(onNext = { navController.navigate(Screen.Passcode.AddPasscode.route) },
-                            onSkip = { navigateWithPopUp(Screen.EnableBiometrics.route) })
+                        EnablePasscodeScreen(
+                            onNext = { navController.navigate(Screen.Passcode.AddPasscode.route) },
+                            onSkip = { navigateWithSavedNextNavScreen(Screen.Main.route) }
+                        )
                     }
                     composable(Screen.Passcode.AddPasscode.route) {
-                        SetupPasscode(onPasscodeChange = {
-                            navigateWithPopUp(Screen.EnableBiometrics.route)
-                        }, onClose = {
-                            navController.popBackStack(
-                                Screen.Passcode.EnablePasscode.route, false
-                            )
-                        })
+                        SetupPasscode(
+                            onPasscodeChange = {
+                                navigateWithPopUp(Screen.EnableBiometrics.route)
+                            },
+                            onClose = {
+                                navController.popBackStack(
+                                    Screen.Passcode.EnablePasscode.route, false
+                                )
+                            }
+                        )
                     }
                 }
 
                 composable(Screen.EnableBiometrics.route) {
-                    EnableBiometricsScreen(onNext = {
-                        navigateWithPopUp(Screen.Main.route)
-                    }, onSkip = {
-                        navigateWithPopUp(Screen.Main.route)
-                    })
+                    EnableBiometricsScreen(
+                        onNext = {
+                            navigateWithSavedNextNavScreen(Screen.Main.route)
+                        },
+                        onSkip = {
+                            navigateWithSavedNextNavScreen(Screen.Main.route)
+                        }
+                    )
+                }
+
+                composable(Screen.Lock.route) {
+                    LockScreen(
+                        onPass = { navigateWithSavedNextNavScreen(Screen.Main.route) }
+                    )
+                }
+
+                //Scan Flow
+                composable(Screen.ScanPassport.ScanPassportSpecific.route) {
+                    ScanPassportScreen(
+                        onClose = { navController.popBackStack() },
+                        onClaim = { navigateWithPopUp(Screen.Claim.Specific.route) }
+                    )
+                }
+
+                composable(Screen.ScanPassport.ScanPassportPoints.route) {
+                    ScanPassportScreen(
+                        onClose = { navController.popBackStack() },
+                        onClaim = { navigateWithPopUp(Screen.Claim.Reserve.route) }
+                    )
                 }
 
                 composable(Screen.Claim.Specific.route) {
@@ -419,56 +446,33 @@ fun MainScreenContent(
                     route = Screen.Invitation.route,
                     deepLinks = listOf(
                         navDeepLink {
-                            uriPattern = "https://staging.rarime.com/r/{code}"
-                            action = Intent.ACTION_RUN
+                            uriPattern = "https://e63d-178-133-229-125.ngrok-free.app/{code}"
+                            action = Intent.ACTION_VIEW
                         }
                     ),
                     arguments = listOf(
                         navArgument("code") {
                             type = NavType.StringType
-                            defaultValue = null
                         }
                     )
                 ) { entry ->
-                    val scope = rememberCoroutineScope()
                     val code = entry.arguments?.getString("code")
-
-                    suspend fun acceptInvitation() {
-                        withContext(Dispatchers.IO) {
-                            try {
-                                code?.let {
-                                    mainViewModel.acceptInvitation(code)
-
-                                    mainViewModel.loadUserDetails()
-
-                                    mainViewModel.setModalVisibility(true)
-                                    mainViewModel.setModalContent {
-                                        CongratsInvitationModalContent(
-                                            onClose = {
-                                                mainViewModel.setModalVisibility(false)
-                                            }
-                                        )
-                                    }
-
-                                    navController.navigate(Screen.Main.Home.route)
-                                } ?: run {
-                                    throw Exception("No code provided")
-                                }
-                            } catch (e: Exception) {
-                                Log.e("MainScreen", "acceptInvitation: $e")
+                    AuthGuard(
+                        currentRoute = Screen.Invitation.route,
+                        updateSavedNextNavScreen = {
+                            code?.let {
+                                savedNextNavScreen = currentRoute?.replace("{code}", code)
+                            } ?: run {
+                                savedNextNavScreen = Screen.Main.route // FIXME: mb add guard to main route
                             }
-                        }
+                       },
+                        navigate = navigateWithPopUp,
+                    ) {
+                        AcceptInvitation(
+                            navigate = navigateWithPopUp,
+                            code = code
+                        )
                     }
-
-                    LaunchedEffect(code) {
-                        // TODO: if user already has PK && password, show lockscreen and then return to this page
-                        // TODO: if user hasn't PK, show intro, and then navigate to this route
-                        scope.launch {
-                            acceptInvitation()
-                        }
-                    }
-
-                    AppLoadingScreen()
                 }
             }
 
@@ -508,6 +512,53 @@ fun MainScreenContent(
             }
         }
     }
+}
+
+@Composable
+private fun AcceptInvitation(
+    navigate: (String) -> Unit,
+    code: String?
+) {
+    val mainViewModel = LocalMainViewModel.current
+
+    val scope = rememberCoroutineScope()
+
+    suspend fun acceptInvitation() {
+        Log.i("MainScreen", "acceptInvitation: $code")
+        withContext(Dispatchers.IO) {
+            try {
+                code?.let {
+                    mainViewModel.acceptInvitation(code)
+
+                    mainViewModel.loadUserDetails()
+
+                    mainViewModel.setModalVisibility(true)
+                    mainViewModel.setModalContent {
+                        CongratsInvitationModalContent(
+                            onClose = {
+                                mainViewModel.setModalVisibility(false)
+                            }
+                        )
+                    }
+
+                    navigate(Screen.Main.Home.route)
+                } ?: run {
+                    throw Exception("No code provided")
+                }
+            } catch (e: Exception) {
+                Log.e("MainScreen", "acceptInvitation: $e")
+                navigate(Screen.Main.route)
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        scope.launch {
+            acceptInvitation()
+        }
+    }
+
+    AppLoadingScreen()
 }
 
 @Preview
