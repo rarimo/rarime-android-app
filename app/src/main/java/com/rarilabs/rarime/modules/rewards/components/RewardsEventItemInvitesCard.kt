@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.points.models.PointsBalanceData
 import com.rarilabs.rarime.api.points.models.PointsBalanceDataAttributes
@@ -130,7 +131,7 @@ fun RewardsEventItemInvitesCard(
             }
 
             ReferralCodeStatuses.ACTIVE.value -> {
-                val invitationUrl = "${InvitationUtil.INVITATION_BASE_URL}/r/${code.id}"
+                val invitationUrl = "${BaseConfig.INVITATION_BASE_URL}/r/${code.id}"
 
                 RewardsEventItemInvitesCardContainer(
                     title = code.id,

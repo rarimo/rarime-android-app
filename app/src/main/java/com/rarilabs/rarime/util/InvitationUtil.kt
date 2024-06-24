@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.Intent
 
 object InvitationUtil {
-    val INVITATION_BASE_URL = "https://staging.rarime.com"
-
     fun shareInvitation(context: Context, text: String) {
         val shareIntent = Intent().apply {
             action = Intent.ACTION_SEND

@@ -43,6 +43,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
+import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.data.enums.SecurityCheckState
@@ -446,7 +447,7 @@ fun MainScreenContent(
                     route = Screen.Invitation.route,
                     deepLinks = listOf(
                         navDeepLink {
-                            uriPattern = "https://e63d-178-133-229-125.ngrok-free.app/{code}"
+                            uriPattern = "${BaseConfig.INVITATION_BASE_URL}/r/{code}"
                             action = Intent.ACTION_VIEW
                         }
                     ),
