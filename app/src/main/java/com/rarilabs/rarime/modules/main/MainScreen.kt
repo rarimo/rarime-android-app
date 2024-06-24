@@ -469,8 +469,20 @@ fun MainScreenContent(
                         navigate = navigateWithPopUp,
                     ) {
                         AcceptInvitation(
-                            navigate = navigateWithPopUp,
-                            code = code
+                            code = code,
+                            onFinish = {
+                                mainViewModel.setModalVisibility(true)
+                                mainViewModel.setModalContent {
+                                    CongratsInvitationModalContent(
+                                        onClose = {
+                                            mainViewModel.setModalVisibility(false)
+                                        }
+                                    )
+                                }
+
+                                navigateWithPopUp(Screen.Main.Home.route)
+                           },
+                            onError = { navigateWithPopUp(Screen.Main.Home.route) }
                         )
                     }
                 }
@@ -516,7 +528,8 @@ fun MainScreenContent(
 
 @Composable
 private fun AcceptInvitation(
-    navigate: (String) -> Unit,
+    onFinish: () -> Unit,
+    onError: () -> Unit,
     code: String?
 ) {
     val mainViewModel = LocalMainViewModel.current
@@ -525,30 +538,19 @@ private fun AcceptInvitation(
 
     suspend fun acceptInvitation() {
         Log.i("MainScreen", "acceptInvitation: $code")
-        withContext(Dispatchers.IO) {
-            try {
-                code?.let {
-                    mainViewModel.acceptInvitation(code)
+        try {
+            code?.let {
+                mainViewModel.acceptInvitation(code)
 
-                    mainViewModel.loadUserDetails()
+                mainViewModel.loadUserDetails()
 
-                    mainViewModel.setModalVisibility(true)
-                    mainViewModel.setModalContent {
-                        CongratsInvitationModalContent(
-                            onClose = {
-                                mainViewModel.setModalVisibility(false)
-                            }
-                        )
-                    }
-
-                    navigate(Screen.Main.Home.route)
-                } ?: run {
-                    throw Exception("No code provided")
-                }
-            } catch (e: Exception) {
-                Log.e("MainScreen", "acceptInvitation: $e")
-                navigate(Screen.Main.route)
+                onFinish()
+            } ?: run {
+                throw Exception("No code provided")
             }
+        } catch (e: Exception) {
+            Log.e("MainScreen", "acceptInvitation: $e")
+            onError()
         }
     }
 
