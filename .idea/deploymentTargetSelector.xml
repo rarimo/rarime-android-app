@@ -13,7 +13,7 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="URL https://e63d-178-133-229-125.ngrok-free.app/r/aYKrV3uDf6v">
+      <SelectionState runConfigName="URL https://app.stage.rarime.com/r/aYKrV3uDf6v">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

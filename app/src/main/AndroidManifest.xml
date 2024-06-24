@@ -49,7 +49,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="https" />
-                <data android:host="staging.rarime.com" />
+                <data android:host="app.stage.rarime.com" />
                 <data android:pathPrefix="/r" />
             </intent-filter>
         </activity>
@@ -85,7 +85,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="https" />
-                <data android:host="staging.rarime.com" />
+                <data android:host="app.stage.rarime.com" />
                 <data android:pathPrefix="/r" />
             </intent-filter>
         </activity-alias>
@@ -121,7 +121,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="https" />
-                <data android:host="staging.rarime.com" />
+                <data android:host="app.stage.rarime.com" />
                 <data android:pathPrefix="/r" />
             </intent-filter>
         </activity-alias>
@@ -157,7 +157,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="https" />
-                <data android:host="staging.rarime.com" />
+                <data android:host="app.stage.rarime.com" />
                 <data android:pathPrefix="/r" />
             </intent-filter>
         </activity-alias>
