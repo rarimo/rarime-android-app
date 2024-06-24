@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.api.airdrop.AirDropManager
 import com.rarilabs.rarime.api.auth.AuthManager
+import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
@@ -38,7 +39,8 @@ class MainViewModel @Inject constructor(
     private val airDropManager: AirDropManager,
     private val authManager: AuthManager,
     private val identityManager: IdentityManager,
-    private val passportManager: PassportManager
+    private val passportManager: PassportManager,
+    private val pointsManager: PointsManager
 ) : ViewModel() {
     val passportStatus = passportManager.passportStatus
 
@@ -69,7 +71,7 @@ class MainViewModel @Inject constructor(
         appLoadingState.value = AppLoadingStates.LOADED
     }
 
-    private suspend fun loadUserDetails() = coroutineScope {
+    suspend fun loadUserDetails() = coroutineScope {
         val walletBalances = async { try { walletManager.loadBalances() } catch (e: Exception) { /* Handle exception */ } }
         val airDropDetails = async { try { airDropManager.getAirDropByNullifier() } catch (e: Exception) { /* Handle exception */ } }
 
@@ -137,5 +139,9 @@ class MainViewModel @Inject constructor(
 
     fun joinWaitlist() {
         dataStoreManager.saveIsInWaitlist(true)
+    }
+
+    suspend fun acceptInvitation(code: String) {
+        pointsManager.createPointsBalance(code)
     }
 }

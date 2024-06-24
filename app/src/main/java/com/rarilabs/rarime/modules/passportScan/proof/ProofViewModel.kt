@@ -215,6 +215,7 @@ class ProofViewModel @Inject constructor(
 
             passportManager.setPassport(eDocument)
 
+            // TODO: remove
             if (authManager.isAccessTokenExpired()) {
                 authManager.refresh()
             }

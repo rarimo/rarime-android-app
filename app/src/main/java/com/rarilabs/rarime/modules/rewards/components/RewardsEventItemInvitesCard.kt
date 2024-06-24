@@ -1,7 +1,5 @@
 package com.rarilabs.rarime.modules.rewards.components
 
-import android.content.Context
-import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,7 +23,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.points.models.PointsBalanceData
 import com.rarilabs.rarime.api.points.models.PointsBalanceDataAttributes
@@ -33,19 +30,11 @@ import com.rarilabs.rarime.api.points.models.ReferralCode
 import com.rarilabs.rarime.api.points.models.ReferralCodeStatuses
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.InvitationUtil
 
 enum class RewardsEventItemInvitesCardContainerVariants(val value: String) {
     FILLED("filled"),
     OUTLINED("outlined"),
-}
-
-fun shareContent(context: Context, text: String) {
-    val shareIntent = Intent().apply {
-        action = Intent.ACTION_SEND
-        putExtra(Intent.EXTRA_TEXT, text)
-        type = "text/plain"
-    }
-    context.startActivity(Intent.createChooser(shareIntent, null))
 }
 
 @Composable
@@ -141,7 +130,7 @@ fun RewardsEventItemInvitesCard(
             }
 
             ReferralCodeStatuses.ACTIVE.value -> {
-                val invitationUrl = "${BaseConfig.INVITATION_BASE_URL}/${code.id}"
+                val invitationUrl = "${InvitationUtil.INVITATION_BASE_URL}/r/${code.id}"
 
                 RewardsEventItemInvitesCardContainer(
                     title = code.id,
@@ -149,7 +138,7 @@ fun RewardsEventItemInvitesCard(
                     actionContent = {
                         IconButton(
                             onClick = {
-                                shareContent(context, invitationUrl)
+                                InvitationUtil.shareInvitation(context, invitationUrl)
                             }
                         ) {
                             AppIcon(id = R.drawable.ic_share, tint = RarimeTheme.colors.textPrimary)

@@ -92,6 +92,8 @@
     <string name="congrats_claim_airdrop_title">Вітаємо!</string>
     <string name="congrats_claim_airdrop_description">Ви отримали %1$s %2$s токенів</string>
 
+    <string name="congrats_accept_invite_title">Вітаємо!</string>
+    <string name="congrats_accept_invite_subtitle">Вас запрошено до програми винагород</string>
     <string name="thanks_btn">Дякую!</string>
     <string name="okay_btn">Окей</string>
     <string name="passport_look_green">Зелена</string>

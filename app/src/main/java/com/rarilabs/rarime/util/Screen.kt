@@ -49,4 +49,6 @@ sealed class Screen(val route: String) {
             data object Privacy : Screen("privacy")
         }
     }
+
+    data object Invitation : Screen("i")
 }

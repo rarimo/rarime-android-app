@@ -1,6 +1,8 @@
 package com.rarilabs.rarime.modules.main
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.util.Log
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloatAsState
@@ -39,6 +41,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.data.enums.SecurityCheckState
@@ -68,6 +71,7 @@ import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppSheetState
 import com.rarilabs.rarime.ui.components.AppWebView
+import com.rarilabs.rarime.ui.components.CongratsInvitationModalContent
 import com.rarilabs.rarime.ui.components.enter_program.EnterProgramFlow
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.AppTheme
@@ -76,8 +80,10 @@ import com.rarilabs.rarime.util.AppIconUtil
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.LocaleUtil
 import com.rarilabs.rarime.util.Screen
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 val mainRoutes = listOf(
     Screen.Main.Home.route,
@@ -407,6 +413,62 @@ fun MainScreenContent(
                             url = Constants.PRIVACY_URL,
                             onBack = { navController.popBackStack() })
                     }
+                }
+
+                composable(
+                    route = Screen.Invitation.route,
+                    deepLinks = listOf(
+                        navDeepLink {
+                            uriPattern = "https://staging.rarime.com/r/{code}"
+                            action = Intent.ACTION_RUN
+                        }
+                    ),
+                    arguments = listOf(
+                        navArgument("code") {
+                            type = NavType.StringType
+                            defaultValue = null
+                        }
+                    )
+                ) { entry ->
+                    val scope = rememberCoroutineScope()
+                    val code = entry.arguments?.getString("code")
+
+                    suspend fun acceptInvitation() {
+                        withContext(Dispatchers.IO) {
+                            try {
+                                code?.let {
+                                    mainViewModel.acceptInvitation(code)
+
+                                    mainViewModel.loadUserDetails()
+
+                                    mainViewModel.setModalVisibility(true)
+                                    mainViewModel.setModalContent {
+                                        CongratsInvitationModalContent(
+                                            onClose = {
+                                                mainViewModel.setModalVisibility(false)
+                                            }
+                                        )
+                                    }
+
+                                    navController.navigate(Screen.Main.Home.route)
+                                } ?: run {
+                                    throw Exception("No code provided")
+                                }
+                            } catch (e: Exception) {
+                                Log.e("MainScreen", "acceptInvitation: $e")
+                            }
+                        }
+                    }
+
+                    LaunchedEffect(code) {
+                        // TODO: if user already has PK && password, show lockscreen and then return to this page
+                        // TODO: if user hasn't PK, show intro, and then navigate to this route
+                        scope.launch {
+                            acceptInvitation()
+                        }
+                    }
+
+                    AppLoadingScreen()
                 }
             }
 
