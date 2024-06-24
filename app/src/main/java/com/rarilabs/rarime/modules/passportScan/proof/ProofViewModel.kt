@@ -339,11 +339,7 @@ class ProofViewModel @Inject constructor(
         val dg15PublicKey = dG15File.publicKey
         Log.i("DG15File", dg15PublicKey::class.java.name)
 
-
-        val isEcdsaActiveAuthentication = (dg15PublicKey is BCECPublicKey)
-
-
-        val gson = GsonBuilder().create()
+        val gson = GsonBuilder().setPrettyPrinting().create()
 
         Log.i("sign", proof.siblings.size.toString())
 
@@ -355,7 +351,7 @@ class ProofViewModel @Inject constructor(
 
         val proofJson = gson.toJson(proofTx)
 
-        Log.i("proof", proofJson)
+        Log.i("proofTX", proofJson)
 
         val inputs = profile.buildRegisterIdentityInputs(
             encapsulatedContent.decodeHexString(),
