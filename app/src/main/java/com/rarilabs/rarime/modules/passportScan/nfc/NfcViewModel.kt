@@ -27,6 +27,7 @@ class NfcViewModel @Inject constructor(
     private lateinit var bacKey: BACKey
     private lateinit var scanNfcUseCase: NfcUseCase
 
+    var revocationChallenge: ByteArray? = null
 
     lateinit var eDocument: EDocument
         private set
@@ -60,6 +61,14 @@ class NfcViewModel @Inject constructor(
 
     fun resetState() {
         _state.value = ScanNFCPassportState.NOT_SCANNING
+    }
+
+    fun revoke() {}
+
+    fun revokePassport(challenge: ByteArray) {
+        revocationChallenge = challenge
+
+        enableNFC.invoke(revoke)
     }
 
     suspend fun startScanning() {

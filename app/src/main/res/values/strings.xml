@@ -239,4 +239,7 @@
     <string name="delete_profile_confirm_btn">Yes</string>
     <string name="delete_profile_cancel_btn">No</string>
     <string name="you_have_already_registered">You have already registered</string>
+    <string name="you_have_already_registered_offer">Do you want to revocate your passport?</string>
+    <string name="you_have_already_registered_confirm">Yes</string>
+    <string name="you_have_already_registered_cancel">No</string>
 </resources>

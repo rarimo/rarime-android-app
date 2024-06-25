@@ -1,7 +1,7 @@
 package com.rarilabs.rarime.modules.passportScan
 
 import android.util.Log
-import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -11,32 +11,50 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.NotAllowedPassportScreen
-import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.WaitlistPassportScreen
+import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.passportScan.camera.ScanMRZStep
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
+import com.rarilabs.rarime.modules.passportScan.nfc.NfcViewModel
 import com.rarilabs.rarime.modules.passportScan.nfc.ReadNFCStep
 import com.rarilabs.rarime.modules.passportScan.proof.GenerateProofStep
+import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.NotAllowedPassportScreen
+import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.WaitlistPassportScreen
+import com.rarilabs.rarime.ui.components.ConfirmationDialog
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
 import com.rarilabs.rarime.util.data.ZkProof
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jmrtd.lds.icao.MRZInfo
 
 private enum class ScanPassportState {
-    SCAN_MRZ, READ_NFC, PASSPORT_DATA, GENERATE_PROOF, CLAIM_TOKENS, UNSUPPORTED_PASSPORT, NOT_ALLOWED_PASSPORT
+    SCAN_MRZ,
+    READ_NFC,
+    PASSPORT_DATA,
+    GENERATE_PROOF,
+    FINISH_PASSPORT_FLOW,
+    UNSUPPORTED_PASSPORT,
+    NOT_ALLOWED_PASSPORT,
+
+    REVOCATION_PROCESS,
 }
 
 @Composable
 fun ScanPassportScreen(
-    onClose: () -> Unit, onClaim: () -> Unit
+    onClose: () -> Unit,
+    onClaim: () -> Unit,
+    nfcViewModel: NfcViewModel = viewModel(LocalContext.current as ComponentActivity)
 ) {
+    val mainViewModel = LocalMainViewModel.current
+
     var state by remember { mutableStateOf(ScanPassportState.SCAN_MRZ) }
     var mrzData: MRZInfo? by remember { mutableStateOf(null) }
     var eDocument: EDocument? by remember { mutableStateOf(null) }
     var registrationProof: ZkProof? by remember { mutableStateOf(null) }
-    val context = LocalContext.current
 
     Column(modifier = Modifier.fillMaxSize()) {
         when (state) {
@@ -45,7 +63,8 @@ fun ScanPassportScreen(
                     onNext = {
                         mrzData = it
                         state = ScanPassportState.READ_NFC
-                    }, onClose = onClose
+                    },
+                    onClose = onClose
                 )
             }
 
@@ -55,7 +74,9 @@ fun ScanPassportScreen(
                     onNext = {
                         eDocument = it
                         state = ScanPassportState.PASSPORT_DATA
-                    }, onClose = onClose, mrzInfo = mrzData!!
+                    },
+                    onClose = onClose,
+                    mrzInfo = mrzData!!
                 )
             }
 
@@ -68,7 +89,9 @@ fun ScanPassportScreen(
                             } else {
                                 ScanPassportState.GENERATE_PROOF
                             }
-                    }, onClose = onClose, eDocument = eDocument!!
+                    },
+                    onClose = onClose,
+                    eDocument = eDocument!!
                 )
             }
 
@@ -77,19 +100,35 @@ fun ScanPassportScreen(
                     onClose = {
                         registrationProof = it
                         if (!NOT_ALLOWED_COUNTRIES.contains(eDocument?.personDetails?.nationality)) {
-                            state = ScanPassportState.CLAIM_TOKENS
+                            state = ScanPassportState.FINISH_PASSPORT_FLOW
                         } else {
                             onClose.invoke()
                         }
 
-                }, eDocument = eDocument!!, onError = {
-                    state = ScanPassportState.UNSUPPORTED_PASSPORT
-                }, onAlreadyRegistered = {
-
-                    Toast.makeText(context, R.string.you_have_already_registered, Toast.LENGTH_SHORT)
-                        .show()
-                    onClose.invoke()
-                })
+                    },
+                    eDocument = eDocument!!,
+                    onError = { state = ScanPassportState.UNSUPPORTED_PASSPORT },
+                    onAlreadyRegistered = {
+                        mainViewModel.setModalContent {
+                            ConfirmationDialog(
+                                title = stringResource(R.string.you_have_already_registered),
+                                subtitle = stringResource(R.string.you_have_already_registered_offer),
+                                cancelButtonText = stringResource(id = R.string.you_have_already_registered_confirm),
+                                confirmButtonText = stringResource(id = R.string.you_have_already_registered_cancel),
+                                onConfirm = {
+                                    state = ScanPassportState.REVOCATION_PROCESS
+                                    mainViewModel.setModalVisibility(false)
+                                },
+                                onCancel = {
+                                    eDocument = null // TODO: remove from data store
+                                    mainViewModel.setModalVisibility(false)
+                                    onClose.invoke()
+                                },
+                            )
+                        }
+                        mainViewModel.setModalVisibility(true)
+                    }
+                )
             }
 
             ScanPassportState.NOT_ALLOWED_PASSPORT -> {
@@ -99,13 +138,41 @@ fun ScanPassportScreen(
             }
 
             ScanPassportState.UNSUPPORTED_PASSPORT -> {
-                WaitlistPassportScreen(eDocument = eDocument!!) {
+                WaitlistPassportScreen(eDocument = eDocument!!, onClose = {
                     onClose.invoke()
-                }
+                })
             }
 
-            ScanPassportState.CLAIM_TOKENS -> {
+            ScanPassportState.FINISH_PASSPORT_FLOW -> {
                 onClaim.invoke()
+            }
+
+            ScanPassportState.REVOCATION_PROCESS -> {
+                var revocationStepIdx by remember { mutableStateOf(0) }
+
+                suspend fun getRevocationChallenge(): ByteArray? {
+                    return withContext(Dispatchers.IO) {
+                        proofViewModel.checkRevocation(registrationProof!!)
+                    }
+                }
+
+                nfcViewModel.revokePassport()
+
+                when (revocationStepIdx) {
+                    0 -> {
+                        ReadNFCStep(
+                            onNext = {
+                                eDocument = it
+                                revocationStepIdx = 1
+                            },
+                            onClose = onClose,
+                            mrzInfo = mrzData!!
+                        )
+                    }
+                    1 -> {
+
+                    }
+                }
             }
         }
     }

@@ -155,7 +155,7 @@ fun MainScreenRoutes(
 
         composable(Screen.ScanPassport.ScanPassportPoints.route) {
             ScanPassportScreen(
-                onClose = { navController.popBackStack() },
+                onClose = { navigateWithPopUp(Screen.Main.route) },
                 onClaim = { navigateWithPopUp(Screen.Claim.Reserve.route) }
             )
         }

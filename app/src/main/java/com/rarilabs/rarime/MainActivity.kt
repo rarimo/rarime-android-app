@@ -26,12 +26,9 @@ class MainActivity : AppCompatActivity() {
 
     private val nfcViewModel by viewModels<NfcViewModel>()
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
-
-
 
         nfcViewModel.enableNFC = ::enableForegroundDispatch
         nfcViewModel.disableNFC = ::disableNFCForegroundDispatch

@@ -42,7 +42,6 @@ fun ReadNFCStep(
     onClose: () -> Unit,
     nfcViewModel: NfcViewModel = viewModel(LocalContext.current as ComponentActivity)
 ) {
-
     val state by nfcViewModel.state.collectAsState()
 
     nfcViewModel.enableNFC()

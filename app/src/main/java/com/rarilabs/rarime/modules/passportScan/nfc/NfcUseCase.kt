@@ -10,6 +10,7 @@ import com.rarilabs.rarime.util.DateUtil
 import com.rarilabs.rarime.util.SecurityUtil
 import com.rarilabs.rarime.util.StringUtil
 import com.rarilabs.rarime.util.addCharAtIndex
+import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.publicKeyToPem
 import com.rarilabs.rarime.util.toBitArray
 import identity.Profile
@@ -280,6 +281,70 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
 
 
         return eDocument
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    fun revokePassport(challenge: ByteArray, eDocument: EDocument) {
+        val cardService = CardService.getInstance(isoDep)
+        cardService.open()
+        val service = PassportService(
+            cardService,
+            PassportService.NORMAL_MAX_TRANCEIVE_LENGTH,
+            PassportService.DEFAULT_MAX_BLOCKSIZE,
+            true,
+            false
+        )
+
+        service.open()
+        var paceSucceeded = false
+        try {
+            val cardSecurityFile =
+                CardSecurityFile(service.getInputStream(PassportService.EF_CARD_SECURITY))
+            val securityInfoCollection = cardSecurityFile.securityInfos
+            for (securityInfo in securityInfoCollection) {
+
+                if (securityInfo is PACEInfo) {
+                    val paceInfo = securityInfo
+                    service.doPACE(
+                        bacKey,
+                        paceInfo.objectIdentifier,
+                        PACEInfo.toParameterSpec(paceInfo.parameterId),
+                        null
+                    )
+                    paceSucceeded = true
+                }
+            }
+        } catch (e: Exception) {
+            Log.w("Error", e)
+        }
+
+        service.sendSelectApplet(paceSucceeded)
+        if (!paceSucceeded) {
+            try {
+                service.getInputStream(PassportService.EF_COM).read()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                service.doBAC(bacKey)
+            }
+        }
+
+        val sodFile = SODFileOwn(eDocument.sod!!.decodeHexString().inputStream())
+        val dg15 = DG15File(eDocument.dg15!!.decodeHexString().inputStream())
+
+        try {
+            val response = service.doAA(
+                dg15.publicKey,
+                sodFile.digestAlgorithm,
+                sodFile.signerInfoDigestAlgorithm,
+                challenge
+            )
+            eDocument.aaSignature = response.response.toHexString()
+            eDocument.aaResponse = response.toString()
+            eDocument.isActiveAuth = true
+        } catch (e: Exception) {
+            eDocument.isActiveAuth = false
+        }
+
     }
 }
 
