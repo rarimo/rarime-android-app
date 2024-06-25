@@ -44,15 +44,14 @@ class RarimoToken @Inject constructor(
 
     override suspend fun balanceOf(address: String): BigInteger {
         return withContext(Dispatchers.IO) {
-            val response = cosmosManager.getBalance(address)
+            try {
+                val response = cosmosManager.getBalance(address)
 
-            response?.let {
-                it.balances.ifEmpty {
-                    return@withContext BigInteger.ZERO
-                }
-
-                return@withContext BigInteger.valueOf(it.balances.first().amount.toLong())
-            } ?: BigInteger.ZERO
+                return@withContext BigInteger.valueOf(response.balances.first().amount.toLong())
+            } catch (e: Exception) {
+                Log.e("RarimoToken:balanceOf", e.message.toString())
+                return@withContext BigInteger.ZERO
+            }
         }
     }
 
