@@ -10,6 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.rarilabs.rarime.modules.appUpdate.InAppUpdate
 import com.rarilabs.rarime.modules.main.MainScreen
 import com.rarilabs.rarime.modules.passportScan.nfc.NfcViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,14 +26,18 @@ class MainActivity : AppCompatActivity() {
 
     private val nfcViewModel by viewModels<NfcViewModel>()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
+
+
 
         nfcViewModel.enableNFC = ::enableForegroundDispatch
         nfcViewModel.disableNFC = ::disableNFCForegroundDispatch
 
         setContent {
+            InAppUpdate(activity = this)
             MainScreen()
         }
     }
@@ -52,7 +57,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     override fun onNewIntent(intent: Intent?) {
 
         super.onNewIntent(intent)
@@ -68,6 +72,5 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 
 }

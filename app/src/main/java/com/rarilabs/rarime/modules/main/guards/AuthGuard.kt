@@ -16,8 +16,6 @@ fun AuthGuard(
     guardViewModel: GuardViewModel = hiltViewModel(),
     content: @Composable () -> Unit
 ) {
-//    val isAuthorized by guardViewModel.isAuthorized.collectAsState()
-
     val isScreenLocked by guardViewModel.isScreenLocked
 
     val privateKey by guardViewModel.privateKey.collectAsState()

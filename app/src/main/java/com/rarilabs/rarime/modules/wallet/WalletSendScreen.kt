@@ -153,7 +153,7 @@ private fun WalletSendScreenContent(
                                     color = RarimeTheme.colors.textSecondary
                                 )
                                 Text(
-                                    text = "${selectedWalletAsset.balance.value.toDouble()} ${selectedWalletAsset.token.symbol}",
+                                    text = "${selectedWalletAsset.humanBalance()} ${selectedWalletAsset.token.symbol}",
                                     style = RarimeTheme.typography.body4,
                                     color = RarimeTheme.colors.textPrimary
                                 )
@@ -226,7 +226,9 @@ private fun WalletSendScreenContent(
                     "Fee" to "0 ${selectedWalletAsset.token.symbol}"
                 ),
                 onConfirm = {
+
                     submit()
+
                 }
             )
         }
@@ -240,7 +242,7 @@ private fun WalletSendScreenContentPreview() {
 
     var isSubmitting by remember { mutableStateOf(false) }
 
-    fun submit () {
+    fun submit() {
         scope.launch {
             isSubmitting = true
 
@@ -258,7 +260,7 @@ private fun WalletSendScreenContentPreview() {
         ),
         humanAmountState = rememberAppTextFieldNumberState(initialText = ""),
         addressState = rememberAppTextFieldState(initialText = ""),
-        showQrCodeScanner = {  },
+        showQrCodeScanner = { },
         submit = { submit() },
         isSubmitting = isSubmitting,
     )

@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.manager
 
+import android.util.Log
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.decodeHexString
@@ -28,13 +29,13 @@ class IdentityManager @Inject constructor(
     val privateKeyBytes: ByteArray?
         get() = _privateKey.value?.decodeHexString()
 
-    val profiler: Profile
-        get() {
-            return Profile().newProfile(privateKeyBytes)
-        }
+
+    fun getProfiler(): Profile{
+        return Profile().newProfile(privateKeyBytes)
+    }
 
     fun rarimoAddress(): String {
-        return profiler.rarimoAddress
+        return getProfiler().rarimoAddress
     }
 
     fun evmAddress(): String {
@@ -50,7 +51,7 @@ class IdentityManager @Inject constructor(
     }
 
     fun getUserAirDropNullifier(): String {
-        return profiler.calculateEventNullifierInt(BaseConfig.AIRDROP_SVC_ID)
+        return getProfiler().calculateEventNullifierInt(BaseConfig.AIRDROP_SVC_ID)
     }
 
     fun getUserAirDropNullifierHex(): String {
@@ -60,7 +61,7 @@ class IdentityManager @Inject constructor(
     }
 
     fun getUserPointsNullifier(): String {
-        return profiler.calculateEventNullifierInt(BaseConfig.POINTS_SVC_ID)
+        return getProfiler().calculateEventNullifierInt(BaseConfig.POINTS_SVC_ID)
     }
 
     fun getUserPointsNullifierHex(): String {

@@ -110,7 +110,6 @@ fun MainScreen(
 
     val currentRoute = navBackStackEntry?.destination?.route
     LaunchedEffect(currentRoute) {
-        Log.i("currentRoute", currentRoute ?: "none")
         mainViewModel.setBottomBarVisibility(currentRoute != null && currentRoute in mainRoutes)
     }
 
@@ -246,10 +245,7 @@ fun MainScreenContent(
     var savedNextNavScreen by remember { mutableStateOf<String?>(null) }
 
     fun navigateWithSavedNextNavScreen(route: String) {
-        Log.i("navigateWithSavedNextNavScreen", "route: $route")
-
         savedNextNavScreen?.let {
-            Log.i("savedNextNavScreen", "route: $it")
             navController.navigate(it)
             savedNextNavScreen = null
         } ?: run {

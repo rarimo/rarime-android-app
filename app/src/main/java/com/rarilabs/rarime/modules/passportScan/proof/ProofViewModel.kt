@@ -8,10 +8,10 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.auth.AuthManager
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.registration.RegistrationManager
-import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
 import com.rarilabs.rarime.data.ProofTx
 import com.rarilabs.rarime.data.enums.PassportStatus
@@ -237,8 +237,11 @@ class ProofViewModel @Inject constructor(
 
             val ZERO_BYTES32 = ByteArray(32) { 0 }
 
-            if (passportInfo.activeIdentity.contentEquals(ZERO_BYTES32)) {
+            if (!passportInfo.activeIdentity.contentEquals(ZERO_BYTES32)) {
+                passportManager.updatePassportStatus(PassportStatus.UNSCANNED)
+                passportManager.deletePassport()
                 Log.i("User Revoked", "Passport is registered")
+                throw UserAlreadyRegistered()
             }
 
             val certificatePubKeySize = when (registeredCircuitData) {
@@ -249,7 +252,7 @@ class ProofViewModel @Inject constructor(
             dataStoreManager.saveRegistrationProof(proof)
 
             _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
-            register(proof, eDocument, certificatePubKeySize, true)
+            register(proof, eDocument, certificatePubKeySize, false)
 
             _state.value = PassportProofState.FINALIZING
 
@@ -337,11 +340,7 @@ class ProofViewModel @Inject constructor(
         val dg15PublicKey = dG15File.publicKey
         Log.i("DG15File", dg15PublicKey::class.java.name)
 
-
-        val isEcdsaActiveAuthentication = (dg15PublicKey is BCECPublicKey)
-
-
-        val gson = GsonBuilder().create()
+        val gson = GsonBuilder().setPrettyPrinting().create()
 
         Log.i("sign", proof.siblings.size.toString())
 
@@ -353,7 +352,7 @@ class ProofViewModel @Inject constructor(
 
         val proofJson = gson.toJson(proofTx)
 
-        Log.i("proof", proofJson)
+        Log.i("proofTX", proofJson)
 
         val inputs = profile.buildRegisterIdentityInputs(
             encapsulatedContent.decodeHexString(),
@@ -394,3 +393,5 @@ class ProofViewModel @Inject constructor(
     }
 
 }
+
+class UserAlreadyRegistered() : Exception()

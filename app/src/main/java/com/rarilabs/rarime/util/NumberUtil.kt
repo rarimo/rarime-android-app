@@ -1,8 +1,11 @@
 package com.rarilabs.rarime.util
 
+import java.math.BigDecimal
+import java.math.BigInteger
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import kotlin.math.floor
+import kotlin.math.pow
 
 object NumberUtil {
     /**
@@ -58,7 +61,9 @@ object NumberUtil {
             else -> 1
         }
 
-        val finalAmount = (value.div(divider.toDouble())).toBigDecimal().setScale(3, RoundingMode.HALF_EVEN).toPlainString()
+        val finalAmount =
+            (value.div(divider.toDouble())).toBigDecimal().setScale(3, RoundingMode.HALF_EVEN)
+                .toPlainString()
 
         return "${removeTrailingZeros(finalAmount)}$prefix"
     }
@@ -77,10 +82,10 @@ object NumberUtil {
     }
 
     fun toHumanAmount(amount: Double, decimals: Int): Double {
-        return amount.div(Math.pow(10.0, decimals.toDouble()))
+        return amount.div(10.0.pow(decimals.toDouble()))
     }
 
-    fun toBigIntAmount(amount: Double, decimals: Int): Double {
-        return amount * Math.pow(10.0, decimals.toDouble())
+    fun toBigIntAmount(amount: Double, decimals: Int): BigInteger {
+        return BigDecimal.valueOf(amount * 10.0.pow(decimals.toDouble())).toBigInteger()
     }
 }

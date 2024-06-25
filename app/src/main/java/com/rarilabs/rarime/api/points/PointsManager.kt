@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import coil.network.HttpException
 import com.google.gson.Gson
+import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.auth.AuthManager
 import com.rarilabs.rarime.api.points.models.BaseEvents
@@ -25,7 +26,6 @@ import com.rarilabs.rarime.api.points.models.VerifyPassportData
 import com.rarilabs.rarime.api.points.models.WithdrawBody
 import com.rarilabs.rarime.api.points.models.WithdrawPayload
 import com.rarilabs.rarime.api.points.models.WithdrawPayloadAttributes
-import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.config.Keys
 import com.rarilabs.rarime.data.ProofTxFull
 import com.rarilabs.rarime.manager.IdentityManager
@@ -41,8 +41,6 @@ import identity.Identity
 import identity.Profile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.web3j.utils.Numeric
-import java.math.BigInteger
 import javax.inject.Inject
 
 class PointsManager @Inject constructor(
@@ -78,41 +76,49 @@ class PointsManager @Inject constructor(
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun joinRewardProgram(eDocument: EDocument) {
 
-        val nullifier = identityManager.getUserPointsNullifierHex()
+        val accessJwt = identityManager.getUserPointsNullifierHex()
 
 
         val countryName = eDocument.personDetails?.nationality!!
-        val countryCode = BigInteger(countryName.toByteArray())
 
-
-        val nBig = BigInteger(Numeric.hexStringToByteArray(nullifier))
-        val cBig = countryCode
-
-        val message = nBig.toByteArray() + cBig.toByteArray()
-
-        val hmacRes = hmacSha256(
-            Keys.joinProgram.decodeHexString(),
-            message
+        val anonymousId = Identity.calculateAnonymousID(
+            eDocument.dg1!!.decodeHexString(), BaseConfig.POINTS_SVC_ID
         )
+
+
+        val hmacMessage =
+            Identity.calculateHmacMessage(accessJwt, countryName, anonymousId)
+
+
+        val hmacSignature = hmacSha256(key = Keys.joinProgram.decodeHexString(), hmacMessage)
 
         val requestPayload = JoinRewardsProgramRequest(
             data = JoinRewardsProgramRequestData(
-                id = nullifier,
-                type = "join_program",
+                id = accessJwt,
+                type = "verify_passport",
                 attributes = JoinRewardsProgramRequestAttributes(
-                    country = countryName
+                    anonymous_id = anonymousId.toHexString(), country = countryName
                 )
             )
         )
 
-        pointsAPIManager.joinRewordsProgram(nullifier, hmacRes.toHexString(), requestPayload, "Bearer ${authManager.accessToken.value!!}")
+        pointsAPIManager.joinRewordsProgram(
+            accessJwt,
+            hmacSignature.toHexString(),
+            requestPayload,
+            "Bearer ${authManager.accessToken.value!!}"
+        )
     }
 
-    suspend fun getPointsBalance(): PointsBalanceBody {
+    suspend fun getPointsBalance(): PointsBalanceBody? {
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
         if (userNullifierHex.isEmpty()) {
             throw Exception("user nullifier is null")
+        }
+
+        if (authManager.isAccessTokenExpired()) {
+            authManager.refresh()
         }
 
         val response = pointsAPIManager.getPointsBalance(
@@ -186,6 +192,7 @@ class PointsManager @Inject constructor(
         return queryProof
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     suspend fun verifyPassport() {
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
@@ -195,11 +202,20 @@ class PointsManager @Inject constructor(
 
         val eDocument = dataStoreManager.readEDocument()!!
         val registrationProof = dataStoreManager.readRegistrationProof()!!
+        val anonymousId = Identity.calculateAnonymousID(
+            userNullifierHex.decodeHexString(), BaseConfig.POINTS_SVC_ID
+        )
+        val hmacMessage = Identity.calculateHmacMessage(
+            userNullifierHex, eDocument.personDetails!!.nationality, anonymousId
+        )
+
+        val hmacSignature = hmacSha256(Keys.joinProgram.decodeHexString(), hmacMessage)
 
         withContext(Dispatchers.Default) {
             val zkProof = generateVerifyPassportQueryProof(
                 registrationProof, eDocument, identityManager.privateKeyBytes!!
             )
+
 
             pointsAPIManager.verifyPassport(
                 userNullifierHex, VerifyPassportBody(
@@ -211,10 +227,12 @@ class PointsManager @Inject constructor(
 //                            proof = queryProof.proof,
 //                            pub_signals = pubSignals,
 //                        )
-                            proof = zkProof
+                            proof = zkProof,
+                            country = eDocument!!.personDetails!!.nationality!!,
+                            anonymous_id = anonymousId.toHexString()
                         )
                     )
-                ), "Bearer ${authManager.accessToken.value!!}"
+                ), "Bearer ${authManager.accessToken.value!!}", signature = hmacSignature.toHexString()
             )
         }
     }
