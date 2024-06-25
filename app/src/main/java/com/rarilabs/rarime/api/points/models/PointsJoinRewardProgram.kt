@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.api.points.models
 
 import com.squareup.moshi.JsonClass
-import java.io.Serializable
 
 @JsonClass(generateAdapter = true)
 data class JoinRewardsProgramRequest(
@@ -17,6 +16,7 @@ data class JoinRewardsProgramRequestData(
 
 @JsonClass(generateAdapter = true)
 data class JoinRewardsProgramRequestAttributes(
+    val anonymous_id: String,
     val country: String
 )
 

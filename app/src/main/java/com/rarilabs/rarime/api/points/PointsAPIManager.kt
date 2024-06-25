@@ -42,7 +42,7 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
 
     suspend fun getPointsBalance(
         userNullifierHex: String, authorization: String, queryParams: Map<String, String>
-    ): PointsBalanceBody {
+    ): PointsBalanceBody? {
         try {
             val response = jsonApiPointsSvcManager.getPointsBalance(
                 userNullifierHex,
@@ -52,7 +52,7 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
 
             return response
         } catch (e: HttpException) {
-            throw Exception(e.toString())
+            return null
         }
     }
 
@@ -60,10 +60,11 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
         userNullifierHex: String,
         body: VerifyPassportBody,
         authorization: String,
+        signature: String
     ) {
         withContext(Dispatchers.IO) {
             try {
-                jsonApiPointsSvcManager.verifyPassport(userNullifierHex, body, authorization)
+                jsonApiPointsSvcManager.verifyPassport(userNullifierHex, body, authorization, signature)
             } catch (e: HttpException) {
                 throw Exception(e.toString())
             }
@@ -71,15 +72,15 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
     }
 
     suspend fun joinRewordsProgram(
-        nullifier: String,
+        jwt: String,
         signature: String,
         payload: JoinRewardsProgramRequest,
-        authorization: String
+        authorization: String,
     ): VerifyPassportResponse {
         return withContext(Dispatchers.IO) {
             try {
                 jsonApiPointsSvcManager.joinRewardsProgram(
-                    nullifier, signature, authorization, payload
+                    jwt, signature, authorization, payload
                 )
             } catch (e: HttpException) {
                 throw Exception(e.toString())

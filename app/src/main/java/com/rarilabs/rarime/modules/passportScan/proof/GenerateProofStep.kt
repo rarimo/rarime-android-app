@@ -45,7 +45,8 @@ fun GenerateProofStep(
     eDocument: EDocument,
     onClose: (zkp: ZkProof) -> Unit,
     proofViewModel: ProofViewModel = hiltViewModel(),
-    onError: (e: Exception) -> Unit
+    onError: (e: Exception) -> Unit,
+    onAlreadyRegistered: () -> Unit,
 ) {
 
     val currentState by proofViewModel.state.collectAsState()
@@ -56,6 +57,12 @@ fun GenerateProofStep(
             proofViewModel.registerByDocument(eDocument)
             onClose(proofViewModel.getRegistrationProof())
         } catch (e: Exception) {
+
+            if (e is UserAlreadyRegistered) {
+
+                onAlreadyRegistered.invoke()
+                return@LaunchedEffect
+            }
             e.printStackTrace()
             if (!Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
                 proofViewModel.joinRewardProgram(eDocument)
@@ -196,5 +203,5 @@ private fun ProcessingItem(item: PassportProofState, status: ProcessingStatus) {
 @Composable
 private fun GenerateProofStepPreview() {
     val eDocument = EDocument()
-    GenerateProofStep(onClose = {}, eDocument = eDocument, onError = {})
+    GenerateProofStep(onClose = {}, eDocument = eDocument, onError = {}, onAlreadyRegistered = {})
 }

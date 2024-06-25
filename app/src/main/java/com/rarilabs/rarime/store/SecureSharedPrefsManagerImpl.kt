@@ -374,4 +374,10 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         editor.putBoolean(accessTokens["IS_IN_WAITLIST"], isInWaitlist)
         editor.apply()
     }
+
+    override fun deletePassport() {
+        val editor = getEditor()
+        editor.remove(accessTokens["E_DOCUMENT"])
+        editor.apply()
+    }
 }

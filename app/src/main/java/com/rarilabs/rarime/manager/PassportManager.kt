@@ -57,6 +57,11 @@ class PassportManager @Inject constructor(
         secureSharedPrefsManager.savePassportIdentifiers(identifiers)
     }
 
+    fun deletePassport() {
+        secureSharedPrefsManager.deletePassport()
+        this.passport.value = null
+    }
+
     fun setPassport(passport: EDocument?) {
         if (passport != null) {
             secureSharedPrefsManager.saveEDocument(passport)

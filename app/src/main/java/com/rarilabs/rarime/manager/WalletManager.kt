@@ -2,18 +2,17 @@ package com.rarilabs.rarime.manager
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.cosmos.CosmosManager
 import com.rarilabs.rarime.api.erc20.Erc20Manager
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.data.RarimoChains
-import com.rarilabs.rarime.data.tokens.Erc20Token
 import com.rarilabs.rarime.data.tokens.PointsToken
 import com.rarilabs.rarime.data.tokens.RarimoToken
 import com.rarilabs.rarime.data.tokens.Token
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +22,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.math.BigInteger
 import javax.inject.Inject
+import kotlin.math.pow
 
 data class WalletAssetJSON(
     val tokenSymbol: String, val balance: String, val transactions: List<Transaction>
@@ -52,9 +52,7 @@ class WalletAsset(val userAddress: String, val token: Token) {
     }
 
     fun humanBalance(): Double {
-        return balance.value.divide(
-            BigInteger.TEN.pow(token.decimals)
-        ).toDouble()
+        return balance.value.toDouble() / 10.0.pow(token.decimals.toDouble())
     }
 }
 
@@ -66,27 +64,28 @@ class WalletManager @Inject constructor(
     private val stableCoinContractManager: StableCoinContractManager,
     private val erc20Manager: Erc20Manager
 ) {
+
     private var _walletAssets = MutableStateFlow(
         dataStoreManager.readWalletAssets(
             listOf(
                 WalletAsset(
                     identityManager.rarimoAddress(), RarimoToken(
-                        BaseConfig.RARIMO_CHAINS[RarimoChains.MainnetBeta.chainId]!!, // FIXME: !!
-                        identityManager,
-                        cosmosManager,
-                    )
-                ), WalletAsset(
-                    identityManager.evmAddress(), Erc20Token(
-                        BaseConfig.STABLE_COIN_ADDRESS,
-                        stableCoinContractManager,
-                        erc20Manager,
-                        identityManager
+                        BaseConfig.RARIMO_CHAINS[RarimoChains.Mainnet.chainId]!!, // FIXME: !!
+                        identityManager, cosmosManager, dataStoreManager
                     )
                 ), WalletAsset(
                     identityManager.getUserPointsNullifierHex(), PointsToken(
                         pointsManager = pointsManager
                     )
-                )
+                )/*WalletAsset(
+                                   identityManager.evmAddress(), Erc20Token(
+                                       BaseConfig.STABLE_COIN_ADDRESS,
+                                       stableCoinContractManager,
+                                       erc20Manager,
+                                       identityManager
+                                   )
+                               ),
+                               )*/
             )
         )
     )
@@ -99,7 +98,7 @@ class WalletManager @Inject constructor(
     val selectedWalletAsset: StateFlow<WalletAsset>
         get() = _selectedWalletAsset.asStateFlow()
 
-    private fun getPointsToken (walletAssets: List<WalletAsset>): PointsToken? {
+    private fun getPointsToken(walletAssets: List<WalletAsset>): PointsToken? {
         return walletAssets.find { it.token is PointsToken }?.token as PointsToken?
     }
 
@@ -140,7 +139,10 @@ class WalletManager @Inject constructor(
 
             _pointsToken.value = getPointsToken(balances.toList())
 
-            Log.i("_pointsToken.value?.balanceDetails", Gson().toJson(_pointsToken.value?.balanceDetails))
+            Log.i(
+                "_pointsToken.value?.balanceDetails",
+                Gson().toJson(_pointsToken.value?.balanceDetails)
+            )
         }
     }
 }

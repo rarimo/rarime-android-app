@@ -67,7 +67,7 @@ fun ReadNFCStep(
                     modifier = Modifier
                         .fillMaxWidth()
                         .zIndex(2f)
-                        .padding(horizontal = 50.dp),
+                        .padding(horizontal = 10.dp),
                     id = R.raw.anim_passport_nfc
                 )
 
