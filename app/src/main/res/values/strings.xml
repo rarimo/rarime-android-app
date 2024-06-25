@@ -91,6 +91,9 @@
     <string name="congrats_claim_airdrop_title">Congrats!</string>
     <string name="congrats_claim_airdrop_description">You’ve claimed %1$s tokens</string>
 
+    <string name="congrats_accept_invite_title">Congrats</string>
+    <string name="congrats_accept_invite_subtitle">You have been invited to rewards program</string>
+
     <string name="thanks_btn">Thanks!</string>
     <string name="okay_btn">Okay</string>
     <string name="passport_look_green">Green</string>

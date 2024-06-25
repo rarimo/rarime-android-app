@@ -40,7 +40,19 @@
             android:exported="true"
             android:localeConfig="@xml/locales_config"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Rarime"/>
+            android:theme="@style/Theme.Rarime">
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:host="app.stage.rarime.com" />
+                <data android:pathPattern="/r/.*" />
+            </intent-filter>
+        </activity>
 
         <activity-alias
             android:name=".MainActivityBW"
@@ -64,6 +76,17 @@
             <intent-filter>
                 <action android:name="android.nfc.action.TECH_DISCOVERED" />
                 <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:host="app.stage.rarime.com" />
+                <data android:pathPattern="/r/.*" />
             </intent-filter>
         </activity-alias>
 
@@ -90,6 +113,17 @@
                 <action android:name="android.nfc.action.TECH_DISCOVERED" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:host="app.stage.rarime.com" />
+                <data android:pathPattern="/r/.*" />
+            </intent-filter>
         </activity-alias>
 
         <activity-alias
@@ -114,6 +148,17 @@
             <intent-filter>
                 <action android:name="android.nfc.action.TECH_DISCOVERED" />
                 <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:host="app.stage.rarime.com" />
+                <data android:pathPattern="/r/.*" />
             </intent-filter>
         </activity-alias>
 

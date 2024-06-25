@@ -80,13 +80,13 @@ fun LockScreen(
             } else {
                 context.getString(R.string.cancel_btn)
             },
-            onSuccess = onPass,
+            onSuccess = { onPassHandler() },
             onError = {})
     }
 
     fun verifyPasscode() {
         if (passcodeState.text == lockViewModule.passcode.value) {
-            onPass()
+            onPassHandler()
         } else {
             attemptsLeft--
 
