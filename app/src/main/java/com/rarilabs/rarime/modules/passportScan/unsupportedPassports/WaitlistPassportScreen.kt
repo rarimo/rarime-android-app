@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.PersonDetails
@@ -39,11 +40,14 @@ import com.rarilabs.rarime.util.SendErrorUtil.sendErrorEmail
 import com.google.gson.Gson
 import com.rarilabs.rarime.modules.home.components.JoinWaitlistCongratsModalContent
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
+import com.rarilabs.rarime.modules.passportScan.models.WaitlistPassportScreenViewModel
 import org.json.JSONObject
 
 @Composable
 fun WaitlistPassportScreen(
-    modifier: Modifier = Modifier, eDocument: EDocument, onClose: () -> Unit
+    eDocument: EDocument,
+    onClose: () -> Unit,
+    viewModel: WaitlistPassportScreenViewModel = hiltViewModel(),
 ) {
     val mainViewModel = LocalMainViewModel.current
 
@@ -52,9 +56,7 @@ fun WaitlistPassportScreen(
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = {
-            Log.i("result Code", it.resultCode.toString())
-
-            mainViewModel.joinWaitlist()
+            viewModel.joinWaitlist()
             mainViewModel.setModalContent {
                 JoinWaitlistCongratsModalContent(
                     onClose = {

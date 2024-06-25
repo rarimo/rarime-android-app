@@ -17,9 +17,6 @@ interface SecureSharedPrefsManager {
 
     fun readPrivateKey(): String?
 
-    fun readIsIntroFinished(): Boolean
-    fun saveIsIntroFinished(isFinished: Boolean)
-
     fun readPasscodeState(): SecurityCheckState
     fun savePasscodeState(state: SecurityCheckState)
 

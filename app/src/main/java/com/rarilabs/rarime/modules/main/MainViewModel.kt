@@ -7,9 +7,9 @@ import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.api.airdrop.AirDropManager
 import com.rarilabs.rarime.api.auth.AuthManager
 import com.rarilabs.rarime.api.points.PointsManager
+import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
-import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.manager.SecurityManager
 import com.rarilabs.rarime.manager.SettingsManager
 import com.rarilabs.rarime.manager.WalletManager
@@ -32,9 +32,8 @@ enum class AppLoadingStates {
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val dataStoreManager: SecureSharedPrefsManager,
-    securityManager: SecurityManager,
-    settingsManager: SettingsManager,
+    private val securityManager: SecurityManager,
+    private val settingsManager: SettingsManager,
     private val walletManager: WalletManager,
     private val airDropManager: AirDropManager,
     private val authManager: AuthManager,
@@ -48,6 +47,20 @@ class MainViewModel @Inject constructor(
         private set
 
     val pointsToken = walletManager.pointsToken
+
+    var _isModalShown = MutableStateFlow(false)
+        private set
+    val isModalShown: StateFlow<Boolean>
+        get() = _isModalShown.asStateFlow()
+
+    var _modalContent = MutableStateFlow<@Composable () -> Unit?>({})
+        private set
+    val modalContent: StateFlow<@Composable () -> Unit?>
+        get() = _modalContent.asStateFlow()
+
+    var colorScheme = settingsManager.colorScheme
+    var isBottomBarShown = mutableStateOf(false)
+        private set
 
     suspend fun initApp() {
         if (identityManager.privateKey.value == null) {
@@ -90,37 +103,13 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    var _isModalShown = MutableStateFlow(false)
-        private set
-
-    val isModalShown: StateFlow<Boolean>
-        get() = _isModalShown.asStateFlow()
-
-    fun setModalVisibility(isVisible: Boolean) {
-        _isModalShown.value = isVisible
-    }
-
-    var _modalContent = MutableStateFlow<@Composable () -> Unit?>({})
-        private set
-
-    val modalContent: StateFlow<@Composable () -> Unit?>
-        get() = _modalContent.asStateFlow()
-
     fun setModalContent(content: @Composable () -> Unit?) {
         _modalContent.value = content
     }
 
-    var isIntroFinished = mutableStateOf(dataStoreManager.readIsIntroFinished())
-        private set
-
-    var isScreenLocked = securityManager.isScreenLocked
-    var biometricsState = securityManager.biometricsState
-    var passcodeState = securityManager.passcodeState
-
-    var colorScheme = settingsManager.colorScheme
-
-    var isBottomBarShown = mutableStateOf(false)
-        private set
+    fun setModalVisibility(isVisible: Boolean) {
+        _isModalShown.value = isVisible
+    }
 
     fun setBottomBarVisibility(isVisible: Boolean) {
         isBottomBarShown.value = isVisible
@@ -131,17 +120,14 @@ class MainViewModel @Inject constructor(
             tryLogin()
 
             loadUserDetails()
-
-//            isIntroFinished.value = true
-            dataStoreManager.saveIsIntroFinished(true)
         }
-    }
-
-    fun joinWaitlist() {
-        dataStoreManager.saveIsInWaitlist(true)
     }
 
     suspend fun acceptInvitation(code: String) {
         pointsManager.createPointsBalance(code)
+    }
+
+    fun updatePasscodeState(state: SecurityCheckState) {
+        securityManager.updatePasscodeState(state)
     }
 }

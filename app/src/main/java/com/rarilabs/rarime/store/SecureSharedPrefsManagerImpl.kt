@@ -26,7 +26,6 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
 ) : SecureSharedPrefsManager {
 
     private val accessTokens = mapOf(
-        "IS_INTRO_FINISHED" to "IS_INTRO_FINISHED",
         "PASSCODE_STATE" to "PASSCODE_STATE",
         "BIOMETRICS_STATE" to "BIOMETRICS_STATE",
         "PASSPORT_CARD_LOOK" to "PASSPORT_CARD_LOOK",
@@ -82,16 +81,6 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
 
     override fun readPrivateKey(): String? {
         return getSharedPreferences().getString(accessTokens["PRIVATE_KEY"], null)
-    }
-
-    override fun readIsIntroFinished(): Boolean {
-        return getSharedPreferences().getBoolean(accessTokens["IS_INTRO_FINISHED"], false)
-    }
-
-    override fun saveIsIntroFinished(isFinished: Boolean) {
-        val editor = getEditor()
-        editor.putBoolean(accessTokens["IS_INTRO_FINISHED"], isFinished)
-        editor.apply()
     }
 
     override fun readPasscodeState(): SecurityCheckState {
