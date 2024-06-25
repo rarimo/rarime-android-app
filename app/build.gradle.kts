@@ -16,8 +16,8 @@ android {
         applicationId = "com.rarilabs.rarime"
         minSdk = 27
         targetSdk = 34
-        versionCode = 4
-        versionName = "1.0.2"
+        versionCode = 11
+        versionName = "1.0.8-internal"
 
         externalNativeBuild {
             cmake {
@@ -45,6 +45,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
