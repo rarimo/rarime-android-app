@@ -25,6 +25,7 @@ import com.rarilabs.rarime.ui.components.ActionCard
 import com.rarilabs.rarime.ui.components.ActionCardVariants
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
+import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.enter_program.EnterProgramFlow
 import com.rarilabs.rarime.ui.components.enter_program.UNSPECIFIED_PASSPORT_STEPS
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
@@ -67,6 +68,8 @@ fun HomeScreenNoPassportMainContent(
                 navigate(Screen.Main.Rewards.route)
             }
         }
+
+        PrimaryButton(onClick = { homeViewModel.reloadPassport() }, text = "Reload passport")
 
         Spacer(modifier = Modifier.size(32.dp))
 

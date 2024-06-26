@@ -13,10 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -33,10 +30,7 @@ import com.rarilabs.rarime.modules.passportScan.models.RevocationStepViewModel
 import com.rarilabs.rarime.ui.components.AppAnimation
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.data.ZkProof
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.jmrtd.lds.icao.MRZInfo
 
 @Composable
@@ -63,6 +57,7 @@ fun RevocationStep(
             )
         } catch (e: Exception) {
             Log.e("RevocationStep", "Error startScanning", e)
+            onClose()
         }
     }
 

@@ -139,7 +139,7 @@ class RevocationStepViewModel @Inject constructor(
             val response = registrationManager.register(revocationCallData.value!!)
 
             if (response == null) {
-                // FIXME: rewrite register function tho throw exception
+                // FIXME: rewrite register function to throw exception
                 throw IllegalStateException("Passport is not registered")
             }
 

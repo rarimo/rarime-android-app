@@ -2,6 +2,7 @@ package com.rarilabs.rarime.store
 
 import android.app.Application
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.rarilabs.rarime.data.enums.AppColorScheme
@@ -280,14 +281,25 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     override fun saveEDocument(eDocument: EDocument) {
         val jsonEDocument = Gson().toJson(eDocument)
         val editor = getEditor()
-        editor.putString(accessTokens["EDocument"], jsonEDocument)
+        editor.putString(accessTokens["E_DOCUMENT"], jsonEDocument)
         editor.apply()
     }
 
     override fun readEDocument(): EDocument? {
-        val jsonEDocument =
-            getSharedPreferences().getString(accessTokens["EDocument"], null) ?: return null
-        return Gson().fromJson(jsonEDocument, EDocument::class.java)
+        try {
+            val jsonEDocument =
+                getSharedPreferences().getString(accessTokens["E_DOCUMENT"], null) ?: return null
+
+            Log.i("readEDocument", "jsonEDocument $jsonEDocument")
+
+            val resp = Gson().fromJson(jsonEDocument, EDocument::class.java)
+
+            Log.i("resp", "resp $resp")
+
+            return resp
+        } catch (e: Exception) {
+            return null
+        }
     }
 
     override fun saveRegistrationProof(proof: ZkProof) {

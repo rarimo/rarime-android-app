@@ -136,6 +136,10 @@ class APIModule {
 
     @Provides
     @Singleton
+    fun providePassportManager(dataStoreManager: SecureSharedPrefsManager): PassportManager = PassportManager(dataStoreManager)
+
+    @Provides
+    @Singleton
     fun providePointsManager(
         @ApplicationContext context: Context,
         contractManager: RarimoContractManager,

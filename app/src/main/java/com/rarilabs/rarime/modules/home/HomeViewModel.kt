@@ -22,7 +22,6 @@ class HomeViewModel @Inject constructor(
     private val passportManager: PassportManager,
     private val airDropManager: AirDropManager,
     private val walletManager: WalletManager,
-
     ) : ViewModel() {
     val isAirDropClaimed = airDropManager.isAirDropClaimed
 
@@ -70,5 +69,9 @@ class HomeViewModel @Inject constructor(
         // Await for all the async operations to complete
         walletBalances.await()
         airDropDetails.await()
+    }
+
+    fun reloadPassport() {
+        passportManager.reloadPassport()
     }
 }

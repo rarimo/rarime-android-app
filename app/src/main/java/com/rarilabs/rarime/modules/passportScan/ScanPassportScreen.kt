@@ -70,6 +70,9 @@ fun ScanPassportScreen(
                 ReadEDocStep(
                     onNext = {
                         eDocument = it
+
+                        scanPassportScreenViewModel.savePassport(it)
+
                         state = ScanPassportState.PASSPORT_DATA
                     },
                     onClose = onClose,
@@ -97,7 +100,6 @@ fun ScanPassportScreen(
                     onClose = {
                         registrationProof = it
 
-                        scanPassportScreenViewModel.savePassport(eDocument!!)
                         scanPassportScreenViewModel.saveRegistrationProof(registrationProof!!)
 
                         if (!NOT_ALLOWED_COUNTRIES.contains(eDocument?.personDetails?.nationality)) {
@@ -105,7 +107,6 @@ fun ScanPassportScreen(
                         } else {
                             onClose.invoke()
                         }
-
                     },
                     eDocument = eDocument!!,
                     onError = { state = ScanPassportState.UNSUPPORTED_PASSPORT },
@@ -125,7 +126,6 @@ fun ScanPassportScreen(
                                     mainViewModel.setModalVisibility(false)
                                 },
                                 onCancel = {
-                                    scanPassportScreenViewModel.rejectRevocation()
                                     mainViewModel.setModalVisibility(false)
                                     onClose.invoke()
                                 },
@@ -137,7 +137,10 @@ fun ScanPassportScreen(
             }
 
             ScanPassportState.NOT_ALLOWED_PASSPORT -> {
-                NotAllowedPassportScreen(eDocument = eDocument!!, onClose = onClose) {
+                NotAllowedPassportScreen(
+                    eDocument = eDocument!!,
+                    onClose = onClose
+                ) {
                     state = ScanPassportState.GENERATE_PROOF
                 }
             }
