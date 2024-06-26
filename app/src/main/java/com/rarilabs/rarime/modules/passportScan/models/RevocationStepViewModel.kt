@@ -39,12 +39,12 @@ class RevocationStepViewModel @Inject constructor(
 
     suspend fun getRevocationChallenge(): ByteArray? {
         return withContext(Dispatchers.IO) {
-            val registerContract = rarimoContractManager.getRegistration()
+            val stateKeeperContract = rarimoContractManager.getStateKeeper()
 
             Log.i("pub_signals[0]", registrationProof.pub_signals[0].toByteArray().size.toString())
 
             val passportInfo = withContext(Dispatchers.IO) {
-                registerContract.getPassportInfo(Identity.bigIntToBytes(registrationProof.pub_signals[0]))
+                stateKeeperContract.getPassportInfo(Identity.bigIntToBytes(registrationProof.pub_signals[0]))
                     .send()
             }
 
