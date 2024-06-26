@@ -70,8 +70,4 @@ class HomeViewModel @Inject constructor(
         walletBalances.await()
         airDropDetails.await()
     }
-
-    fun reloadPassport() {
-        passportManager.reloadPassport()
-    }
 }

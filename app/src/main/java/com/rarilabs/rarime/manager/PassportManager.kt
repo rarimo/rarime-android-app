@@ -34,11 +34,6 @@ class PassportManager @Inject constructor(
     val passportStatus: StateFlow<PassportStatus>
         get() = _passportStatus.asStateFlow()
 
-    fun reloadPassport() {
-        Log.i("PassportManager", "Reloading passport")
-        _passport.value = dataStoreManager.readEDocument()
-    }
-
     fun updatePassportCardLook(look: PassportCardLook) {
         passportCardLook.value = look
         dataStoreManager.savePassportCardLook(look)
