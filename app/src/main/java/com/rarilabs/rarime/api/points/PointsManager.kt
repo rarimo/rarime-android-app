@@ -140,13 +140,21 @@ class PointsManager @Inject constructor(
 
         val zkp = ZKPUseCase(context, assetManager)
 
-        val registrationSmtContract = contractManager.getPoseidonSMT(
-            BaseConfig.CERTIFICATES_SMT_CONTRACT_ADDRESS
-        )
         val stateKeeperContract = contractManager.getStateKeeper()
 
+        val registrationSmtContract = contractManager.getPoseidonSMT(
+            BaseConfig.REGISTRATION_SMT_CONTRACT_ADDRESS
+        )
+
+        val passportInfoKey: String =
+            if (eDocument.dg15?.isEmpty() ?: false) {
+                registrationProof.pub_signals[1]
+            } else {
+                registrationProof.pub_signals[0]
+            }
+
         val proofIndex = Identity.calculateProofIndex(
-            registrationProof.pub_signals[0], registrationProof.pub_signals[3]
+            passportInfoKey, registrationProof.pub_signals[3]
         )
 
         val smtProofRaw = withContext(Dispatchers.IO) {
@@ -156,8 +164,6 @@ class PointsManager @Inject constructor(
         val smtProofJson = Gson().toJson(smtProof)
 
         val profiler = Profile().newProfile(privateKey)
-
-        Log.i("pubSignal", Identity.bigIntToBytes(registrationProof.pub_signals[0]).size.toString())
 
         val passportInfoRaw = withContext(Dispatchers.IO) {
             stateKeeperContract.getPassportInfo(
@@ -172,7 +178,7 @@ class PointsManager @Inject constructor(
             eDocument.dg1!!.decodeHexString(),
             smtProofJson.toByteArray(Charsets.UTF_8),
             "23073",
-            registrationProof.pub_signals[0],
+            passportInfoKey,
             identityInfo.issueTimestamp.toString(),
             passportInfo.identityReissueCounter.toString(),
             BaseConfig.POINTS_SVC_ID,
@@ -218,21 +224,20 @@ class PointsManager @Inject constructor(
 
 
             pointsAPIManager.verifyPassport(
-                userNullifierHex, VerifyPassportBody(
+                userNullifierHex,
+                VerifyPassportBody(
                     data = VerifyPassportData(
                         id = userNullifierHex,
                         type = "verify_passport",
                         attributes = VerifyPassportAttributes(
-//                        proof = ZkProof(
-//                            proof = queryProof.proof,
-//                            pub_signals = pubSignals,
-//                        )
                             proof = zkProof,
                             country = eDocument!!.personDetails!!.nationality!!,
                             anonymous_id = anonymousId.toHexString()
                         )
                     )
-                ), "Bearer ${authManager.accessToken.value!!}", signature = hmacSignature.toHexString()
+                ),
+                "Bearer ${authManager.accessToken.value!!}",
+                signature = hmacSignature.toHexString()
             )
         }
     }
