@@ -29,9 +29,9 @@ import com.rarilabs.rarime.api.points.models.WithdrawPayloadAttributes
 import com.rarilabs.rarime.config.Keys
 import com.rarilabs.rarime.data.ProofTxFull
 import com.rarilabs.rarime.manager.IdentityManager
+import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
-import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
 import com.rarilabs.rarime.util.data.ZkProof
@@ -41,6 +41,7 @@ import identity.Identity
 import identity.Profile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.web3j.utils.Numeric
 import javax.inject.Inject
 
 class PointsManager @Inject constructor(
@@ -49,7 +50,7 @@ class PointsManager @Inject constructor(
     private val pointsAPIManager: PointsAPIManager,
     private val identityManager: IdentityManager,
     private val authManager: AuthManager,
-    private val dataStoreManager: SecureSharedPrefsManager,
+    private val passportManager: PassportManager,
 ) {
     suspend fun createPointsBalance(referralCode: String) {
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
@@ -200,10 +201,11 @@ class PointsManager @Inject constructor(
             throw Exception("user nullifier is null")
         }
 
-        val eDocument = dataStoreManager.readEDocument()!!
-        val registrationProof = dataStoreManager.readRegistrationProof()!!
+        val eDocument = passportManager.passport.value!!
+        val registrationProof = identityManager.registrationProof.value!!
+
         val anonymousId = Identity.calculateAnonymousID(
-            userNullifierHex.decodeHexString(), BaseConfig.POINTS_SVC_ID
+            Numeric.hexStringToByteArray(userNullifierHex), BaseConfig.POINTS_SVC_ID
         )
         val hmacMessage = Identity.calculateHmacMessage(
             userNullifierHex, eDocument.personDetails!!.nationality, anonymousId

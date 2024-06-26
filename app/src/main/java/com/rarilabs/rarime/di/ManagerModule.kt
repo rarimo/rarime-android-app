@@ -23,6 +23,7 @@ import com.rarilabs.rarime.api.registration.RegistrationAPIManager
 import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
+import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.manager.SecurityManager
 import com.rarilabs.rarime.manager.SettingsManager
@@ -141,14 +142,14 @@ class APIModule {
         pointsAPIManager: PointsAPIManager,
         identityManager: IdentityManager,
         authManager: AuthManager,
-        dataStoreManager: SecureSharedPrefsManager
+        passportManager: PassportManager
     ): PointsManager = PointsManager(
         context,
         contractManager,
         pointsAPIManager,
         identityManager,
         authManager,
-        dataStoreManager
+        passportManager,
     )
 
     @Provides

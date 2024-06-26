@@ -1,8 +1,8 @@
 package com.rarilabs.rarime.manager
 
-import android.util.Log
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
+import com.rarilabs.rarime.util.data.ZkProof
 import com.rarilabs.rarime.util.decodeHexString
 import identity.Identity
 import identity.Profile
@@ -21,7 +21,10 @@ class IdentityManager @Inject constructor(
 ) {
     private val _privateKey = MutableStateFlow(dataStoreManager.readPrivateKey())
 
-    val registrationProof = MutableStateFlow(dataStoreManager.readRegistrationProof())
+    var _registrationProof = MutableStateFlow(dataStoreManager.readRegistrationProof())
+        private set
+    val registrationProof: StateFlow<ZkProof?>
+        get() = _registrationProof.asStateFlow()
 
     val privateKey: StateFlow<String?>
         get() = _privateKey.asStateFlow()
@@ -29,6 +32,13 @@ class IdentityManager @Inject constructor(
     val privateKeyBytes: ByteArray?
         get() = _privateKey.value?.decodeHexString()
 
+    fun setRegistrationProof(proof: ZkProof?) {
+        _registrationProof.value = proof
+
+        proof?.let {
+            dataStoreManager.saveRegistrationProof(proof)
+        }
+    }
 
     fun getProfiler(): Profile{
         return Profile().newProfile(privateKeyBytes)

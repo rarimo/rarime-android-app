@@ -16,10 +16,11 @@ import javax.inject.Singleton
 class PassportManager @Inject constructor(
     private val secureSharedPrefsManager: SecureSharedPrefsManager
 ) {
-    var passport = mutableStateOf<EDocument?>(
-        secureSharedPrefsManager.readEDocument()
-    )
+    var _passport = MutableStateFlow(secureSharedPrefsManager.readEDocument())
         private set
+    val passport: StateFlow<EDocument?>
+        get() = _passport.asStateFlow()
+
     var passportCardLook = mutableStateOf(secureSharedPrefsManager.readPassportCardLook())
         private set
     var isIncognitoMode = mutableStateOf(secureSharedPrefsManager.readIsPassportIncognitoMode())
@@ -58,13 +59,13 @@ class PassportManager @Inject constructor(
 
     fun deletePassport() {
         secureSharedPrefsManager.deletePassport()
-        this.passport.value = null
+        _passport.value = null
     }
 
     fun setPassport(passport: EDocument?) {
         if (passport != null) {
             secureSharedPrefsManager.saveEDocument(passport)
         }
-        this.passport.value = passport
+        _passport.value = passport
     }
 }

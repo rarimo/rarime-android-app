@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.passportScan.nfc
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +33,9 @@ import com.rarilabs.rarime.modules.passportScan.models.RevocationStepViewModel
 import com.rarilabs.rarime.ui.components.AppAnimation
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.data.ZkProof
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jmrtd.lds.icao.MRZInfo
 
@@ -45,22 +49,38 @@ fun RevocationStep(
     onError: () -> Unit,
     revocationStepViewModel: RevocationStepViewModel = hiltViewModel()
 ) {
-    LaunchedEffect(Unit) {
-        revocationStepViewModel.startScanning(
-            mrzData = mrzData,
-            eDocument = eDocument,
-            registrationProof = registrationProof,
-        )
-    }
-
+    val scope = rememberCoroutineScope()
     val state by revocationStepViewModel.state.collectAsState()
 
+    val revocationCallData by revocationStepViewModel.revocationCallData.collectAsState()
+
     LaunchedEffect(Unit) {
-        revocationStepViewModel.startScanning(
-            mrzData = mrzData,
-            eDocument = eDocument,
-            registrationProof = registrationProof,
-        )
+        try {
+            revocationStepViewModel.startScanning(
+                mrzData = mrzData,
+                eDocument = eDocument,
+                registrationProof = registrationProof,
+            )
+        } catch (e: Exception) {
+            Log.e("RevocationStep", "Error startScanning", e)
+        }
+    }
+
+    LaunchedEffect(revocationCallData) {
+        if (revocationCallData != null) {
+            scope.launch {
+                try {
+                    revocationStepViewModel.invokeRevocation()
+
+                    revocationStepViewModel.resetState()
+
+                    onNext(revocationStepViewModel.eDocument)
+                } catch (e: Exception) {
+                    Log.e("RevocationStep", "Error revocation invoke", e)
+                    onError()
+                }
+            }
+        }
     }
 
     ScanPassportLayout(step = 2,
@@ -108,8 +128,13 @@ fun RevocationStep(
                     }
 
                     ScanNFCState.SCANNED -> {
-                        revocationStepViewModel.resetState()
-                        onNext(revocationStepViewModel.eDocument)
+                        Text(
+                            text = stringResource(R.string.nfc_reader_revoke),
+                            style = RarimeTheme.typography.body3,
+                            color = RarimeTheme.colors.textSecondary,
+                            modifier = Modifier.width(250.dp),
+                            textAlign = TextAlign.Center
+                        )
                     }
 
                     ScanNFCState.ERROR -> {

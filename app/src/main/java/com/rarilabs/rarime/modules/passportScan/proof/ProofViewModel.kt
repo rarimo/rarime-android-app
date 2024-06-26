@@ -22,7 +22,6 @@ import com.rarilabs.rarime.modules.passportScan.DownloadRequest
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.RegisteredCircuitData
 import com.rarilabs.rarime.modules.passportScan.nfc.SODFileOwn
-import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.SecurityUtil
 import com.rarilabs.rarime.util.ZKPUseCase
@@ -51,11 +50,10 @@ import javax.inject.Inject
 @HiltViewModel
 class ProofViewModel @Inject constructor(
     private val application: Application,
-    private val dataStoreManager: SecureSharedPrefsManager,
+    private val identityManager: IdentityManager,
     private val passportManager: PassportManager,
     private val registrationManager: RegistrationManager,
     private val rarimoContractManager: RarimoContractManager,
-    identityManager: IdentityManager,
     private val pointsManager: PointsManager
 ) : AndroidViewModel(application) {
     private val privateKeyBytes = identityManager.privateKeyBytes
@@ -210,8 +208,6 @@ class ProofViewModel @Inject constructor(
         try {
             _state.value = PassportProofState.READING_DATA
 
-            passportManager.setPassport(eDocument)
-
             val registeredCircuitData = registerCertificate(eDocument)
 
             val filePaths = withContext(Dispatchers.Default) {
@@ -230,8 +226,6 @@ class ProofViewModel @Inject constructor(
             val ZERO_BYTES32 = ByteArray(32) { 0 }
 
             if (!passportInfo.activeIdentity.contentEquals(ZERO_BYTES32)) {
-                passportManager.updatePassportStatus(PassportStatus.UNSCANNED)
-                passportManager.deletePassport()
                 Log.i("User Revoked", "Passport is registered")
                 throw UserAlreadyRegistered()
             }
@@ -240,9 +234,6 @@ class ProofViewModel @Inject constructor(
                 RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA2048 -> 2048L
                 RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA4096 -> 4096L
             }
-
-            // TODO: move outside function
-            dataStoreManager.saveRegistrationProof(proof)
 
             _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
             register(proof, eDocument, certificatePubKeySize, false)

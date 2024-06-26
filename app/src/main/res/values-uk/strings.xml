@@ -241,4 +241,5 @@
     <string name="you_have_already_registered_offer">Ви хочете відкликати свій паспорт?</string>
     <string name="you_have_already_registered_confirm">Так</string>
     <string name="you_have_already_registered_cancel">Ні</string>
+    <string name="nfc_reader_revoke">Revoke</string>
 </resources>

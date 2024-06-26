@@ -11,10 +11,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.passportScan.camera.ScanMRZStep
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
+import com.rarilabs.rarime.modules.passportScan.models.ScanPassportScreenViewModel
 import com.rarilabs.rarime.modules.passportScan.nfc.ReadEDocStep
 import com.rarilabs.rarime.modules.passportScan.nfc.RevocationStep
 import com.rarilabs.rarime.modules.passportScan.proof.GenerateProofStep
@@ -42,6 +44,7 @@ private enum class ScanPassportState {
 fun ScanPassportScreen(
     onClose: () -> Unit,
     onClaim: () -> Unit,
+    scanPassportScreenViewModel: ScanPassportScreenViewModel = hiltViewModel(),
 ) {
     val mainViewModel = LocalMainViewModel.current
 
@@ -93,6 +96,10 @@ fun ScanPassportScreen(
                 GenerateProofStep(
                     onClose = {
                         registrationProof = it
+
+                        scanPassportScreenViewModel.savePassport(eDocument!!)
+                        scanPassportScreenViewModel.saveRegistrationProof(registrationProof!!)
+
                         if (!NOT_ALLOWED_COUNTRIES.contains(eDocument?.personDetails?.nationality)) {
                             state = ScanPassportState.FINISH_PASSPORT_FLOW
                         } else {
@@ -105,6 +112,8 @@ fun ScanPassportScreen(
                     onAlreadyRegistered = {
                         registrationProof = it
 
+                        scanPassportScreenViewModel.resetPassportState()
+
                         mainViewModel.setModalContent {
                             ConfirmationDialog(
                                 title = stringResource(R.string.you_have_already_registered),
@@ -116,7 +125,7 @@ fun ScanPassportScreen(
                                     mainViewModel.setModalVisibility(false)
                                 },
                                 onCancel = {
-                                    eDocument = null // TODO: remove from data store
+                                    scanPassportScreenViewModel.rejectRevocation()
                                     mainViewModel.setModalVisibility(false)
                                     onClose.invoke()
                                 },
@@ -148,9 +157,29 @@ fun ScanPassportScreen(
                     mrzData = mrzData!!,
                     eDocument = eDocument!!,
                     registrationProof = registrationProof!!,
-                    onClose = {},
-                    onNext = {},
-                    onError = {}
+                    onClose = {
+                        scanPassportScreenViewModel.rejectRevocation()
+                        onClose.invoke()
+                    },
+                    onNext = {
+                        scanPassportScreenViewModel.finishRevocation(
+                            eDocument = it,
+                            registrationProof = registrationProof!!,
+                        )
+
+                        if (!NOT_ALLOWED_COUNTRIES.contains(eDocument?.personDetails?.nationality)) {
+                            state = ScanPassportState.FINISH_PASSPORT_FLOW
+                        } else {
+                            onClose.invoke()
+                        }
+                    },
+                    onError = {
+                        scanPassportScreenViewModel.finishRevocation(
+                            eDocument = eDocument!!,
+                            registrationProof = registrationProof!!,
+                        )
+                        state = ScanPassportState.UNSUPPORTED_PASSPORT
+                    }
                 )
             }
         }

@@ -2,6 +2,7 @@ package com.rarilabs.rarime.modules.home
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -16,7 +17,7 @@ fun HomeScreen(
     navigate: (String) -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
-    val passport by homeViewModel.passport
+    val passport by homeViewModel.passport.collectAsState()
 
     CompositionLocalProvider(LocalHomeViewModel provides homeViewModel) {
         if (passport == null) {

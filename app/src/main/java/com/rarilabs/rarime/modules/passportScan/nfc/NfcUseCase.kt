@@ -286,6 +286,7 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
     fun revokePassport(challenge: ByteArray, eDocument: EDocument) {
         val cardService = CardService.getInstance(isoDep)
         cardService.open()
+
         val service = PassportService(
             cardService,
             PassportService.NORMAL_MAX_TRANCEIVE_LENGTH,
@@ -293,8 +294,8 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
             true,
             false
         )
-
         service.open()
+
         var paceSucceeded = false
         try {
             val cardSecurityFile =
