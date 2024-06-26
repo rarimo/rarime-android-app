@@ -2,6 +2,7 @@ package com.rarilabs.rarime.modules.passportScan.models
 
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
@@ -50,13 +51,16 @@ class ReadNFCStepViewModel @Inject constructor(
         scanNfcUseCase = NfcUseCase(isoDep, bacKey, privateKeyBytes!!)
 
         eDocument = scanNfcUseCase.scanPassport()
+        Log.i("ReadNFCStepViewModel", "eDocument: $eDocument")
     }
 
-    suspend fun startScanning(mrzInfo: MRZInfo) {
+    fun onError(e: Exception) {
+        Log.e("ReadNFCStepViewModel", "Error: $e")
+    }
+
+    fun startScanning(mrzInfo: MRZInfo) {
         this.mrzInfo = mrzInfo
 
-        val disableScan = nfcManager.startScanning(::handleScan)
-
-        disableScan?.invoke()
+        nfcManager.startScanning(::handleScan, onError = { onError(it) })
     }
 }

@@ -9,7 +9,6 @@ import androidx.lifecycle.AndroidViewModel
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.rarilabs.rarime.BaseConfig
-import com.rarilabs.rarime.api.auth.AuthManager
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
@@ -43,7 +42,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
-import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey
 import org.jmrtd.lds.icao.DG15File
 import java.io.IOException
 import javax.inject.Inject
@@ -57,7 +55,6 @@ class ProofViewModel @Inject constructor(
     private val passportManager: PassportManager,
     private val registrationManager: RegistrationManager,
     private val rarimoContractManager: RarimoContractManager,
-    private val authManager: AuthManager,
     identityManager: IdentityManager,
     private val pointsManager: PointsManager
 ) : AndroidViewModel(application) {
@@ -215,11 +212,6 @@ class ProofViewModel @Inject constructor(
 
             passportManager.setPassport(eDocument)
 
-            // TODO: remove
-            if (authManager.isAccessTokenExpired()) {
-                authManager.refresh()
-            }
-
             val registeredCircuitData = registerCertificate(eDocument)
 
             val filePaths = withContext(Dispatchers.Default) {
@@ -273,8 +265,6 @@ class ProofViewModel @Inject constructor(
 
             throw e
         }
-
-
     }
 
     private suspend fun register(

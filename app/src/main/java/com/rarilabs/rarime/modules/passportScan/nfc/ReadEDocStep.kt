@@ -45,13 +45,15 @@ fun ReadEDocStep(
         readNfcStepViewModel.startScanning(mrzInfo)
     }
 
-    ScanPassportLayout(step = 2,
+    ScanPassportLayout(
+        step = 2,
         title = stringResource(R.string.nfc_reader_title),
         text = stringResource(R.string.nfc_reader_text),
         onClose = {
             readNfcStepViewModel.resetState()
             onClose()
-        }) {
+        }
+    ) {
         Column(
             verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxSize()
         ) {
@@ -102,7 +104,6 @@ fun ReadEDocStep(
                         onClose()
                     }
                 }
-
             }
         }
     }

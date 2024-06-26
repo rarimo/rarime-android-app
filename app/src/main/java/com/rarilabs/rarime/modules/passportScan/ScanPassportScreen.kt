@@ -103,12 +103,14 @@ fun ScanPassportScreen(
                     eDocument = eDocument!!,
                     onError = { state = ScanPassportState.UNSUPPORTED_PASSPORT },
                     onAlreadyRegistered = {
+                        registrationProof = it
+
                         mainViewModel.setModalContent {
                             ConfirmationDialog(
                                 title = stringResource(R.string.you_have_already_registered),
                                 subtitle = stringResource(R.string.you_have_already_registered_offer),
-                                cancelButtonText = stringResource(id = R.string.you_have_already_registered_confirm),
-                                confirmButtonText = stringResource(id = R.string.you_have_already_registered_cancel),
+                                cancelButtonText = stringResource(id = R.string.you_have_already_registered_cancel),
+                                confirmButtonText = stringResource(id = R.string.you_have_already_registered_confirm),
                                 onConfirm = {
                                     state = ScanPassportState.REVOCATION_PROCESS
                                     mainViewModel.setModalVisibility(false)

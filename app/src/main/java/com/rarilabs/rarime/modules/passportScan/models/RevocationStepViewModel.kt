@@ -4,20 +4,18 @@ import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.rarilabs.rarime.contracts.rarimo.Registration
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.modules.passportScan.nfc.NfcUseCase
 import com.rarilabs.rarime.util.data.ZkProof
 import dagger.hilt.android.lifecycle.HiltViewModel
+import identity.Identity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jmrtd.BACKey
 import org.jmrtd.lds.icao.MRZInfo
 import javax.inject.Inject
-import identity.Identity
-import okhttp3.Challenge
 
 @HiltViewModel
 class RevocationStepViewModel @Inject constructor(
@@ -46,11 +44,13 @@ class RevocationStepViewModel @Inject constructor(
             Log.i("pub_signals[0]", registrationProof.pub_signals[0].toByteArray().size.toString())
 
             val passportInfo = withContext(Dispatchers.IO) {
-                registerContract.getPassportInfo(Identity.bigIntToBytes(registrationProof.pub_signals[0])).send()
+                registerContract.getPassportInfo(Identity.bigIntToBytes(registrationProof.pub_signals[0]))
+                    .send()
             }
 
             val ZERO_BYTES32 = ByteArray(32) { 0 }
-            val isUserRevoking = !passportInfo.component1().activeIdentity.contentEquals(ZERO_BYTES32)
+            val isUserRevoking =
+                !passportInfo.component1().activeIdentity.contentEquals(ZERO_BYTES32)
 
             if (isUserRevoking) {
                 Log.i("Revoke", "Passport is registered, revoking")
@@ -59,7 +59,8 @@ class RevocationStepViewModel @Inject constructor(
             }
 
             if (isUserRevoking) {
-                val revokationChallenge = passportInfo.component1().activeIdentity.copyOfRange(24, 32)
+                val revokationChallenge =
+                    passportInfo.component1().activeIdentity.copyOfRange(24, 32)
 
                 return@withContext revokationChallenge
             }
@@ -94,6 +95,10 @@ class RevocationStepViewModel @Inject constructor(
         scanNfcUseCase.revokePassport(this.revocationChallenge, eDocument!!)
     }
 
+    fun onError(e: Exception) {
+        Log.e("ReadNFCStepViewModel", "Error: $e")
+    }
+
     suspend fun startScanning(
         mrzData: MRZInfo,
         eDocument: EDocument,
@@ -109,8 +114,6 @@ class RevocationStepViewModel @Inject constructor(
             this.revocationChallenge = it
         }
 
-        val disableScan = nfcManager.startScanning(::handleScan)
-
-        disableScan?.invoke()
+        nfcManager.startScanning(::handleScan, onError = { onError(it) })
     }
 }

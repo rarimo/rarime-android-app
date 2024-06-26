@@ -46,9 +46,8 @@ fun GenerateProofStep(
     onClose: (zkp: ZkProof) -> Unit,
     proofViewModel: ProofViewModel = hiltViewModel(),
     onError: (e: Exception) -> Unit,
-    onAlreadyRegistered: () -> Unit,
+    onAlreadyRegistered: (zkp: ZkProof) -> Unit,
 ) {
-
     val currentState by proofViewModel.state.collectAsState()
     val processingStatus by remember { mutableStateOf(ProcessingStatus.PROCESSING) }
 
@@ -60,7 +59,7 @@ fun GenerateProofStep(
 
             if (e is UserAlreadyRegistered) {
 
-                onAlreadyRegistered.invoke()
+                onAlreadyRegistered.invoke(proofViewModel.getRegistrationProof())
                 return@LaunchedEffect
             }
             e.printStackTrace()
