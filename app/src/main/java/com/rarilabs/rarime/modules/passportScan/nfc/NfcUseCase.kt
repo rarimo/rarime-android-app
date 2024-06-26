@@ -283,7 +283,6 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
         return eDocument
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
     fun revokePassport(challenge: ByteArray, eDocument: EDocument) {
         val cardService = CardService.getInstance(isoDep)
         cardService.open()
@@ -338,7 +337,7 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
                 sodFile.signerInfoDigestAlgorithm,
                 challenge
             )
-            eDocument.aaSignature = response.response.toHexString()
+            eDocument.aaSignature = response.response
             eDocument.aaResponse = response.toString()
             eDocument.isActiveAuth = true
         } catch (e: Exception) {

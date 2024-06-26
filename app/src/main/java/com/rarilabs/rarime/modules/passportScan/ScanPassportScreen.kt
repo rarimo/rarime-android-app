@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.modules.passportScan
 
 import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -10,16 +9,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.passportScan.camera.ScanMRZStep
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
-import com.rarilabs.rarime.modules.passportScan.nfc.NfcViewModel
-import com.rarilabs.rarime.modules.passportScan.nfc.ReadNFCStep
+import com.rarilabs.rarime.modules.passportScan.nfc.ReadEDocStep
+import com.rarilabs.rarime.modules.passportScan.nfc.RevocationStep
 import com.rarilabs.rarime.modules.passportScan.proof.GenerateProofStep
 import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.NotAllowedPassportScreen
 import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.WaitlistPassportScreen
@@ -27,8 +24,6 @@ import com.rarilabs.rarime.ui.components.ConfirmationDialog
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
 import com.rarilabs.rarime.util.data.ZkProof
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.jmrtd.lds.icao.MRZInfo
 
 private enum class ScanPassportState {
@@ -47,7 +42,6 @@ private enum class ScanPassportState {
 fun ScanPassportScreen(
     onClose: () -> Unit,
     onClaim: () -> Unit,
-    nfcViewModel: NfcViewModel = viewModel(LocalContext.current as ComponentActivity)
 ) {
     val mainViewModel = LocalMainViewModel.current
 
@@ -70,7 +64,7 @@ fun ScanPassportScreen(
 
             ScanPassportState.READ_NFC -> {
                 Log.e("TAG", mrzData!!.dateOfBirth)
-                ReadNFCStep(
+                ReadEDocStep(
                     onNext = {
                         eDocument = it
                         state = ScanPassportState.PASSPORT_DATA
@@ -148,31 +142,14 @@ fun ScanPassportScreen(
             }
 
             ScanPassportState.REVOCATION_PROCESS -> {
-                var revocationStepIdx by remember { mutableStateOf(0) }
-
-                suspend fun getRevocationChallenge(): ByteArray? {
-                    return withContext(Dispatchers.IO) {
-                        proofViewModel.checkRevocation(registrationProof!!)
-                    }
-                }
-
-                nfcViewModel.revokePassport()
-
-                when (revocationStepIdx) {
-                    0 -> {
-                        ReadNFCStep(
-                            onNext = {
-                                eDocument = it
-                                revocationStepIdx = 1
-                            },
-                            onClose = onClose,
-                            mrzInfo = mrzData!!
-                        )
-                    }
-                    1 -> {
-
-                    }
-                }
+                RevocationStep(
+                    mrzData = mrzData!!,
+                    eDocument = eDocument!!,
+                    registrationProof = registrationProof!!,
+                    onClose = {},
+                    onNext = {},
+                    onError = {}
+                )
             }
         }
     }

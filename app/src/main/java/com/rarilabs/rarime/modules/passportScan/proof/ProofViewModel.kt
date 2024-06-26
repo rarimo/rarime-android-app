@@ -249,6 +249,7 @@ class ProofViewModel @Inject constructor(
                 RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA4096 -> 4096L
             }
 
+            // TODO: move outside function
             dataStoreManager.saveRegistrationProof(proof)
 
             _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE

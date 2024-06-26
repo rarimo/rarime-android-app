@@ -16,7 +16,6 @@ import javax.inject.Singleton
 class PassportManager @Inject constructor(
     private val secureSharedPrefsManager: SecureSharedPrefsManager
 ) {
-
     var passport = mutableStateOf<EDocument?>(
         secureSharedPrefsManager.readEDocument()
     )

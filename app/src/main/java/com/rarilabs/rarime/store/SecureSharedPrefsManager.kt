@@ -46,10 +46,9 @@ interface SecureSharedPrefsManager {
     fun saveSelectedWalletAsset(walletAsset: WalletAsset)
 
     fun saveEDocument(eDocument: EDocument)
-
     fun readEDocument(): EDocument?
-    fun saveRegistrationProof(proof: ZkProof)
 
+    fun saveRegistrationProof(proof: ZkProof)
     fun readRegistrationProof(): ZkProof?
 
     fun readTransactions(): List<Transaction>

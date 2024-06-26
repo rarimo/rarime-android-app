@@ -22,6 +22,7 @@ import com.rarilabs.rarime.api.registration.RegistrationAPI
 import com.rarilabs.rarime.api.registration.RegistrationAPIManager
 import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.manager.IdentityManager
+import com.rarilabs.rarime.manager.NfcManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.manager.SecurityManager
 import com.rarilabs.rarime.manager.SettingsManager
@@ -56,6 +57,12 @@ abstract class ManagerModule {
 @Module
 @InstallIn(SingletonComponent::class)
 class APIModule {
+    @Provides
+    @Singleton
+    fun provideNfcManager(@ApplicationContext context: Context): NfcManager {
+        return NfcManager(context)
+    }
+
     @Provides
     @Singleton
     @Named("jsonApiRetrofit")
