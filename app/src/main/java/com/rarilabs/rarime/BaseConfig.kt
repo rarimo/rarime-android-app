@@ -4,7 +4,7 @@ package com.rarilabs.rarime
 object BaseConfig {
     const val RELAYER_URL = "https://api.orgs.app.stage.rarime.com"
     const val EVM_RPC_URL = "https://rpc.evm.node1.mainnet-beta.rarimo.com"
-    const val REGISTER_CONTRACT_ADDRESS = "0x6FD2568A0a3692E2B0d6d4258845E57bcAc53Db2"
+//    const val REGISTER_CONTRACT_ADDRESS = "0x6FD2568A0a3692E2B0d6d4258845E57bcAc53Db2"
     const val COSMOS_RPC_URL = "https://rpc-api.node1.mainnet-beta.rarimo.com"
     const val EVM_SERVICE_URL = "https://api.orgs.app.stage.rarime.com/integrations/evm-airdrop-svc-glo"
     const val DISCORD_URL = "https://discord.gg/Bzjm5MDXrU"

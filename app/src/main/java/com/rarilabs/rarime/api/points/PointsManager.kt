@@ -140,11 +140,10 @@ class PointsManager @Inject constructor(
 
         val zkp = ZKPUseCase(context, assetManager)
 
-
-        val registrationSmtContract =
-            contractManager.getPoseidonSMT(BaseConfig.REGISTER_CONTRACT_ADDRESS)
+        val registrationSmtContract = contractManager.getPoseidonSMT(
+            BaseConfig.CERTIFICATES_SMT_CONTRACT_ADDRESS
+        )
         val stateKeeperContract = contractManager.getStateKeeper()
-
 
         val proofIndex = Identity.calculateProofIndex(
             registrationProof.pub_signals[0], registrationProof.pub_signals[3]
@@ -155,7 +154,6 @@ class PointsManager @Inject constructor(
         }
         val smtProof = ProofTxFull.fromContractProof(smtProofRaw)
         val smtProofJson = Gson().toJson(smtProof)
-
 
         val profiler = Profile().newProfile(privateKey)
 
