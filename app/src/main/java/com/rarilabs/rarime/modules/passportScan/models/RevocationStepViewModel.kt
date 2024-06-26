@@ -4,7 +4,6 @@ import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import coil.network.HttpException
 import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.manager.IdentityManager
@@ -17,8 +16,8 @@ import com.rarilabs.rarime.util.data.ZkProof
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.publicKeyToPem
 import dagger.hilt.android.lifecycle.HiltViewModel
-import identity.Identity
 import identity.CallDataBuilder
+import identity.Identity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -140,7 +139,7 @@ class RevocationStepViewModel @Inject constructor(
 
             if (response == null) {
                 // FIXME: rewrite register function to throw exception
-                throw IllegalStateException("Passport is not registered")
+                throw Exception("Passport is not registered")
             }
 
             if (isUnsupported) {
@@ -148,7 +147,7 @@ class RevocationStepViewModel @Inject constructor(
             } else {
                 passportManager.updatePassportStatus(PassportStatus.ALLOWED)
             }
-        } catch (e: HttpException) {
+        } catch (e: Exception) {
             // TODO: check if user already revoked
             if (isUnsupported) {
                 passportManager.updatePassportStatus(PassportStatus.WAITLIST_NOT_ALLOWED)

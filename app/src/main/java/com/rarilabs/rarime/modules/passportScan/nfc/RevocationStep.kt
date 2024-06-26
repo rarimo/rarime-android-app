@@ -71,7 +71,9 @@ fun RevocationStep(
 
                     onNext(revocationStepViewModel.eDocument)
                 } catch (e: Exception) {
+                    revocationStepViewModel.resetState()
                     Log.e("RevocationStep", "Error revocation invoke", e)
+
                     onError()
                 }
             }
