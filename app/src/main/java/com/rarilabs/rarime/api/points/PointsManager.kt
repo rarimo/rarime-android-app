@@ -167,7 +167,7 @@ class PointsManager @Inject constructor(
 
         val passportInfoRaw = withContext(Dispatchers.IO) {
             stateKeeperContract.getPassportInfo(
-                Identity.bigIntToBytes(registrationProof.pub_signals[0])
+                Identity.bigIntToBytes(passportInfoKey)
             ).send()
         }
 
