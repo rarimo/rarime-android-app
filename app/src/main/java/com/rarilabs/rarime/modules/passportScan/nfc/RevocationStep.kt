@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
 import com.rarilabs.rarime.manager.ScanNFCState
 import com.rarilabs.rarime.modules.passportScan.ScanPassportLayout
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
@@ -38,6 +39,9 @@ fun RevocationStep(
     mrzData: MRZInfo,
     eDocument: EDocument,
     registrationProof: ZkProof,
+    masterCertProof: Proof,
+    certificateSize: Long,
+
     onNext: (EDocument) -> Unit,
     onClose: () -> Unit,
     onError: () -> Unit,
@@ -54,6 +58,8 @@ fun RevocationStep(
                 mrzData = mrzData,
                 eDocument = eDocument,
                 registrationProof = registrationProof,
+                masterCertProof = masterCertProof,
+                certificateSize = certificateSize,
             )
         } catch (e: Exception) {
             Log.e("RevocationStep", "Error startScanning", e)

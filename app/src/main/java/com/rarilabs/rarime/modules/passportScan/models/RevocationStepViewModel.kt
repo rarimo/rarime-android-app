@@ -3,8 +3,11 @@ package com.rarilabs.rarime.modules.passportScan.models
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.google.gson.Gson
 import com.rarilabs.rarime.api.registration.RegistrationManager
+import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
@@ -45,6 +48,9 @@ class RevocationStepViewModel @Inject constructor(
         private set
     lateinit var revocationChallenge: ByteArray
         private set
+    lateinit var masterCertProof: Proof
+        private set
+    var certificateSize = mutableStateOf(0L)
 
     val state = nfcManager.state
 
@@ -131,6 +137,35 @@ class RevocationStepViewModel @Inject constructor(
         _revocationCallData.value = callData
     }
 
+    private suspend fun register(
+        zkProof: ZkProof,
+        eDocument: EDocument,
+        masterCertProof: Proof,
+        certificateSize: Long,
+        isUserRevoking: Boolean,
+    ) {
+        val jsonProof = Gson().toJson(zkProof)
+
+        val dG15File = DG15File(eDocument.dg15!!.decodeHexString().inputStream())
+
+        val pubKeyPem = dG15File.publicKey.publicKeyToPem()
+
+        val callDataBuilder = CallDataBuilder()
+        val callData = callDataBuilder.buildRegisterCalldata(
+            jsonProof.toByteArray(),
+            eDocument.aaSignature,
+            pubKeyPem.toByteArray(),
+            masterCertProof.root,
+            certificateSize,
+            isUserRevoking
+        )
+
+        withContext(Dispatchers.IO) {
+            val response = registrationManager.register(callData)
+            rarimoContractManager.checkIsTransactionSuccessful(response!!.data.attributes.tx_hash)
+        }
+    }
+
     suspend fun invokeRevocation() {
         val isUnsupported = Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)
 
@@ -141,6 +176,14 @@ class RevocationStepViewModel @Inject constructor(
                 // FIXME: rewrite register function to throw exception
                 throw Exception("Passport is not registered")
             }
+
+            register(
+                registrationProof,
+                eDocument,
+                masterCertProof,
+                certificateSize.value,
+                isUnsupported
+            )
 
             if (isUnsupported) {
                 passportManager.updatePassportStatus(PassportStatus.NOT_ALLOWED)
@@ -168,10 +211,14 @@ class RevocationStepViewModel @Inject constructor(
         mrzData: MRZInfo,
         eDocument: EDocument,
         registrationProof: ZkProof,
+        masterCertProof: Proof,
+        certificateSize: Long,
     ) {
         this.mrzInfo = mrzData
         this.eDocument = eDocument
         this.registrationProof = registrationProof
+        this.masterCertProof = masterCertProof
+        this.certificateSize.value = certificateSize
 
         val revChallenge = getRevocationChallenge()
 

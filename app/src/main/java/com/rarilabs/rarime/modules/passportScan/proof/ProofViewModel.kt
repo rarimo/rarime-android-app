@@ -62,7 +62,15 @@ class ProofViewModel @Inject constructor(
 
     private lateinit var proof: ZkProof
     private var _state = MutableStateFlow(PassportProofState.READING_DATA)
-    private lateinit var masterCertProof: Proof
+
+    private var _masterCertProof = MutableStateFlow<Proof?>(null)
+        private set
+    val masterCertProof: StateFlow<Proof?>
+        get() = _masterCertProof.asStateFlow()
+    private var _certificatePubKeySize = MutableStateFlow(0L)
+        private set
+    val certificatePubKeySize: StateFlow<Long>
+        get() = _certificatePubKeySize.asStateFlow()
 
     private val second = 1000L
     val state: StateFlow<PassportProofState>
@@ -76,7 +84,6 @@ class ProofViewModel @Inject constructor(
         val res = pointsManager.joinRewardProgram(eDocument)
         res
     }
-
 
     private suspend fun registerCertificate(eDocument: EDocument): RegisteredCircuitData {
         val sodStream = eDocument.sod!!.decodeHexString().inputStream()
@@ -230,13 +237,20 @@ class ProofViewModel @Inject constructor(
                 throw UserAlreadyRegistered()
             }
 
-            val certificatePubKeySize = when (registeredCircuitData) {
+            _certificatePubKeySize.value = when (registeredCircuitData) {
                 RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA2048 -> 2048L
                 RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA4096 -> 4096L
             }
 
             _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
-            register(proof, eDocument, certificatePubKeySize, false)
+
+            register(
+                proof,
+                eDocument,
+                _masterCertProof.value!!,
+                _certificatePubKeySize.value,
+                false
+            )
 
             _state.value = PassportProofState.FINALIZING
 
@@ -259,7 +273,11 @@ class ProofViewModel @Inject constructor(
     }
 
     private suspend fun register(
-        zkProof: ZkProof, eDocument: EDocument, certificateSize: Long, isUserRevoking: Boolean
+        zkProof: ZkProof,
+        eDocument: EDocument,
+        masterCertProof: Proof,
+        certificateSize: Long,
+        isUserRevoking: Boolean
     ) {
         val jsonProof = Gson().toJson(zkProof)
 
@@ -347,7 +365,7 @@ class ProofViewModel @Inject constructor(
         )
 
 
-        this.masterCertProof = proof!!
+        masterCertProof.value = proof!!
 
         return inputs
     }

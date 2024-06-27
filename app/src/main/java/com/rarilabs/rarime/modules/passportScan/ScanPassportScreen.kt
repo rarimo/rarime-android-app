@@ -25,6 +25,7 @@ import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.WaitlistPas
 import com.rarilabs.rarime.ui.components.ConfirmationDialog
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
+import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
 import com.rarilabs.rarime.util.data.ZkProof
 import org.jmrtd.lds.icao.MRZInfo
 
@@ -52,6 +53,9 @@ fun ScanPassportScreen(
     var mrzData: MRZInfo? by remember { mutableStateOf(null) }
     var eDocument: EDocument? by remember { mutableStateOf(null) }
     var registrationProof: ZkProof? by remember { mutableStateOf(null) }
+
+    var masterCertP by remember { mutableStateOf(null as Proof?) }
+    var certSize by remember { mutableStateOf(0L) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         when (state) {
@@ -110,8 +114,10 @@ fun ScanPassportScreen(
                     },
                     eDocument = eDocument!!,
                     onError = { state = ScanPassportState.UNSUPPORTED_PASSPORT },
-                    onAlreadyRegistered = {
-                        registrationProof = it
+                    onAlreadyRegistered = { zkp, masterCertProof, certificateSize ->
+                        registrationProof = zkp
+                        masterCertP = masterCertProof
+                        certSize = certificateSize
 
                         scanPassportScreenViewModel.resetPassportState()
 
@@ -160,6 +166,8 @@ fun ScanPassportScreen(
                     mrzData = mrzData!!,
                     eDocument = eDocument!!,
                     registrationProof = registrationProof!!,
+                    masterCertProof = masterCertP!!,
+                    certificateSize = certSize,
                     onClose = {
                         scanPassportScreenViewModel.rejectRevocation()
                         onClose.invoke()
