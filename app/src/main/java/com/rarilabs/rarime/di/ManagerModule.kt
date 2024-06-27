@@ -103,8 +103,14 @@ class APIModule {
     @Provides
     @Singleton
     fun provideRegistrationManager(
-        registrationAPIManager: RegistrationAPIManager
-    ): RegistrationManager = RegistrationManager(registrationAPIManager)
+        registrationAPIManager: RegistrationAPIManager,
+        rarimoContractManager: RarimoContractManager,
+        passportManager: PassportManager,
+    ): RegistrationManager = RegistrationManager(
+        registrationAPIManager,
+        rarimoContractManager,
+        passportManager
+    )
 
     @Provides
     @Singleton

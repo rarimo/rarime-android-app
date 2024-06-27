@@ -27,7 +27,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.CirclesLoader
@@ -47,17 +46,10 @@ fun GenerateProofStep(
     onClose: (zkp: ZkProof) -> Unit,
     proofViewModel: ProofViewModel = hiltViewModel(),
     onError: (e: Exception) -> Unit,
-    onAlreadyRegistered: (
-        zkp: ZkProof,
-        masterCertProof: Proof,
-        certificateSize: Long,
-    ) -> Unit,
+    onAlreadyRegistered: (zkp: ZkProof) -> Unit,
 ) {
     val currentState by proofViewModel.state.collectAsState()
     val processingStatus by remember { mutableStateOf(ProcessingStatus.PROCESSING) }
-
-    val masterCertProof by proofViewModel.masterCertProof.collectAsState()
-    val certificatePubKeySize by proofViewModel.certificatePubKeySize.collectAsState()
 
     LaunchedEffect(true) {
         try {
@@ -67,11 +59,7 @@ fun GenerateProofStep(
 
             if (e is UserAlreadyRegistered) {
 
-                onAlreadyRegistered.invoke(
-                    proofViewModel.getRegistrationProof(),
-                    masterCertProof!!,
-                    certificatePubKeySize,
-                )
+                onAlreadyRegistered.invoke(proofViewModel.getRegistrationProof())
                 return@LaunchedEffect
             }
             e.printStackTrace()
@@ -218,6 +206,6 @@ private fun GenerateProofStepPreview() {
         onClose = {},
         eDocument = eDocument,
         onError = {},
-        onAlreadyRegistered = {zkp, masterCertProof, certificateSize -> }
+        onAlreadyRegistered = {}
     )
 }

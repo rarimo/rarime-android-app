@@ -6,12 +6,10 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.registration.RegistrationManager
-import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
 import com.rarilabs.rarime.data.ProofTx
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.manager.IdentityManager
@@ -62,15 +60,6 @@ class ProofViewModel @Inject constructor(
 
     private lateinit var proof: ZkProof
     private var _state = MutableStateFlow(PassportProofState.READING_DATA)
-
-    private var _masterCertProof = MutableStateFlow<Proof?>(null)
-        private set
-    val masterCertProof: StateFlow<Proof?>
-        get() = _masterCertProof.asStateFlow()
-    private var _certificatePubKeySize = MutableStateFlow(0L)
-        private set
-    val certificatePubKeySize: StateFlow<Long>
-        get() = _certificatePubKeySize.asStateFlow()
 
     private val second = 1000L
     val state: StateFlow<PassportProofState>
@@ -145,11 +134,11 @@ class ProofViewModel @Inject constructor(
 
 
         val response = withContext(Dispatchers.IO) {
-            registrationManager.register(callData)
-        }
-
-        if (response == null) {
-            throw IllegalStateException("Registration error")
+            try {
+                registrationManager.relayerRegister(callData)
+            } catch (e: Exception) {
+                throw e
+            }
         }
 
         Log.i(TAG, "Passport certificate EVM Tx Hash " + response.data.attributes.tx_hash)
@@ -237,18 +226,20 @@ class ProofViewModel @Inject constructor(
                 throw UserAlreadyRegistered()
             }
 
-            _certificatePubKeySize.value = when (registeredCircuitData) {
-                RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA2048 -> 2048L
-                RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA4096 -> 4096L
-            }
+            registrationManager.setCertSize(
+                when (registeredCircuitData) {
+                    RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA2048 -> 2048L
+                    RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA4096 -> 4096L
+                }
+            )
 
             _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
 
-            register(
+            registrationManager.register(
                 proof,
                 eDocument,
-                _masterCertProof.value!!,
-                _certificatePubKeySize.value,
+                registrationManager.masterCertProof.value!!,
+                registrationManager.certificatePubKeySize.value,
                 false
             )
 
@@ -269,35 +260,6 @@ class ProofViewModel @Inject constructor(
             }
 
             throw e
-        }
-    }
-
-    private suspend fun register(
-        zkProof: ZkProof,
-        eDocument: EDocument,
-        masterCertProof: Proof,
-        certificateSize: Long,
-        isUserRevoking: Boolean
-    ) {
-        val jsonProof = Gson().toJson(zkProof)
-
-        val dG15File = DG15File(eDocument.dg15!!.decodeHexString().inputStream())
-
-        val pubKeyPem = dG15File.publicKey.publicKeyToPem()
-
-        val callDataBuilder = CallDataBuilder()
-        val callData = callDataBuilder.buildRegisterCalldata(
-            jsonProof.toByteArray(),
-            eDocument.aaSignature,
-            pubKeyPem.toByteArray(),
-            masterCertProof.root,
-            certificateSize,
-            isUserRevoking
-        )
-
-        withContext(Dispatchers.IO) {
-            val response = registrationManager.register(callData)
-            rarimoContractManager.checkIsTransactionSuccessful(response!!.data.attributes.tx_hash)
         }
     }
 
@@ -364,8 +326,7 @@ class ProofViewModel @Inject constructor(
             proofJson.toByteArray(Charsets.UTF_8)
         )
 
-
-        _masterCertProof.value = proof!!
+        registrationManager.setMasterCertProof(proof)
 
         return inputs
     }

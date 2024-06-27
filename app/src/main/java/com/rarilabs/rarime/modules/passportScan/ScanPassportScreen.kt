@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,11 +52,8 @@ fun ScanPassportScreen(
 
     var state by remember { mutableStateOf(ScanPassportState.SCAN_MRZ) }
     var mrzData: MRZInfo? by remember { mutableStateOf(null) }
-    var eDocument: EDocument? by remember { mutableStateOf(null) }
-    var registrationProof: ZkProof? by remember { mutableStateOf(null) }
 
-    var masterCertP by remember { mutableStateOf(null as Proof?) }
-    var certSize by remember { mutableStateOf(0L) }
+    val eDoc = scanPassportScreenViewModel.eDocument.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
         when (state) {
@@ -73,8 +71,6 @@ fun ScanPassportScreen(
                 Log.e("TAG", mrzData!!.dateOfBirth)
                 ReadEDocStep(
                     onNext = {
-                        eDocument = it
-
                         scanPassportScreenViewModel.savePassport(it)
 
                         state = ScanPassportState.PASSPORT_DATA
@@ -88,37 +84,31 @@ fun ScanPassportScreen(
                 PassportDataStep(
                     onNext = {
                         state =
-                            if (Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument?.personDetails?.nationality)) {
+                            if (Constants.NOT_ALLOWED_COUNTRIES.contains(eDoc.value?.personDetails?.nationality)) {
                                 ScanPassportState.NOT_ALLOWED_PASSPORT
                             } else {
                                 ScanPassportState.GENERATE_PROOF
                             }
                     },
                     onClose = onClose,
-                    eDocument = eDocument!!
+                    eDocument = eDoc.value!!
                 )
             }
 
             ScanPassportState.GENERATE_PROOF -> {
                 GenerateProofStep(
                     onClose = {
-                        registrationProof = it
+                        scanPassportScreenViewModel.saveRegistrationProof(it)
 
-                        scanPassportScreenViewModel.saveRegistrationProof(registrationProof!!)
-
-                        if (!NOT_ALLOWED_COUNTRIES.contains(eDocument?.personDetails?.nationality)) {
+                        if (!NOT_ALLOWED_COUNTRIES.contains(eDoc.value?.personDetails?.nationality)) {
                             state = ScanPassportState.FINISH_PASSPORT_FLOW
                         } else {
                             onClose.invoke()
                         }
                     },
-                    eDocument = eDocument!!,
+                    eDocument = eDoc.value!!,
                     onError = { state = ScanPassportState.UNSUPPORTED_PASSPORT },
-                    onAlreadyRegistered = { zkp, masterCertProof, certificateSize ->
-                        registrationProof = zkp
-                        masterCertP = masterCertProof
-                        certSize = certificateSize
-
+                    onAlreadyRegistered = { zkp ->
                         scanPassportScreenViewModel.resetPassportState()
 
                         mainViewModel.setModalContent {
@@ -144,7 +134,7 @@ fun ScanPassportScreen(
 
             ScanPassportState.NOT_ALLOWED_PASSPORT -> {
                 NotAllowedPassportScreen(
-                    eDocument = eDocument!!,
+                    eDocument = eDoc.value!!,
                     onClose = onClose
                 ) {
                     state = ScanPassportState.GENERATE_PROOF
@@ -152,7 +142,7 @@ fun ScanPassportScreen(
             }
 
             ScanPassportState.UNSUPPORTED_PASSPORT -> {
-                WaitlistPassportScreen(eDocument = eDocument!!, onClose = {
+                WaitlistPassportScreen(eDocument = eDoc.value!!, onClose = {
                     onClose.invoke()
                 })
             }
@@ -164,31 +154,21 @@ fun ScanPassportScreen(
             ScanPassportState.REVOCATION_PROCESS -> {
                 RevocationStep(
                     mrzData = mrzData!!,
-                    eDocument = eDocument!!,
-                    registrationProof = registrationProof!!,
-                    masterCertProof = masterCertP!!,
-                    certificateSize = certSize,
                     onClose = {
                         scanPassportScreenViewModel.rejectRevocation()
                         onClose.invoke()
                     },
                     onNext = {
-                        scanPassportScreenViewModel.finishRevocation(
-                            eDocument = it,
-                            registrationProof = registrationProof!!,
-                        )
+                        scanPassportScreenViewModel.finishRevocation()
 
-                        if (!NOT_ALLOWED_COUNTRIES.contains(eDocument?.personDetails?.nationality)) {
+                        if (!NOT_ALLOWED_COUNTRIES.contains(eDoc.value?.personDetails?.nationality)) {
                             state = ScanPassportState.FINISH_PASSPORT_FLOW
                         } else {
                             onClose.invoke()
                         }
                     },
                     onError = {
-                        scanPassportScreenViewModel.finishRevocation(
-                            eDocument = eDocument!!,
-                            registrationProof = registrationProof!!,
-                        )
+                        scanPassportScreenViewModel.finishRevocation()
                         state = ScanPassportState.UNSUPPORTED_PASSPORT
                     }
                 )

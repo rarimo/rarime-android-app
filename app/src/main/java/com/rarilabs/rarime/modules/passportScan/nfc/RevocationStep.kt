@@ -23,26 +23,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
 import com.rarilabs.rarime.manager.ScanNFCState
 import com.rarilabs.rarime.modules.passportScan.ScanPassportLayout
-import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.RevocationStepViewModel
 import com.rarilabs.rarime.ui.components.AppAnimation
 import com.rarilabs.rarime.ui.theme.RarimeTheme
-import com.rarilabs.rarime.util.data.ZkProof
 import kotlinx.coroutines.launch
 import org.jmrtd.lds.icao.MRZInfo
 
 @Composable
 fun RevocationStep(
     mrzData: MRZInfo,
-    eDocument: EDocument,
-    registrationProof: ZkProof,
-    masterCertProof: Proof,
-    certificateSize: Long,
 
-    onNext: (EDocument) -> Unit,
+    onNext: () -> Unit,
     onClose: () -> Unit,
     onError: () -> Unit,
     revocationStepViewModel: RevocationStepViewModel = hiltViewModel()
@@ -54,13 +47,7 @@ fun RevocationStep(
 
     LaunchedEffect(Unit) {
         try {
-            revocationStepViewModel.startScanning(
-                mrzData = mrzData,
-                eDocument = eDocument,
-                registrationProof = registrationProof,
-                masterCertProof = masterCertProof,
-                certificateSize = certificateSize,
-            )
+            revocationStepViewModel.startScanning(mrzData = mrzData)
         } catch (e: Exception) {
             Log.e("RevocationStep", "Error startScanning", e)
             onClose()
@@ -75,7 +62,7 @@ fun RevocationStep(
 
                     revocationStepViewModel.resetState()
 
-                    onNext(revocationStepViewModel.eDocument)
+                    onNext()
                 } catch (e: Exception) {
                     revocationStepViewModel.resetState()
                     Log.e("RevocationStep", "Error revocation invoke", e)
