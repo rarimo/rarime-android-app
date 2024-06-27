@@ -283,7 +283,7 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
         return eDocument
     }
 
-    fun revokePassport(challenge: ByteArray, eDocument: EDocument) {
+    fun signRevocationWithPassport(challenge: ByteArray, eDocument: EDocument): EDocument {
         val cardService = CardService.getInstance(isoDep)
         cardService.open()
 
@@ -338,11 +338,14 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
                 sodFile.signerInfoDigestAlgorithm,
                 challenge
             )
-            eDocument.aaSignature = response.response
-            eDocument.aaResponse = response.toString()
-            eDocument.isActiveAuth = true
+
+            return eDocument.copy(
+                aaSignature = response.response,
+                aaResponse = response.toString(),
+                isActiveAuth = true
+            )
         } catch (e: Exception) {
-            eDocument.isActiveAuth = false
+            return eDocument.copy(isActiveAuth = false)
         }
 
     }

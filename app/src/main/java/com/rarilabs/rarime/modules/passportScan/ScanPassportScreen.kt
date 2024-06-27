@@ -16,7 +16,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.passportScan.camera.ScanMRZStep
-import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.ScanPassportScreenViewModel
 import com.rarilabs.rarime.modules.passportScan.nfc.ReadEDocStep
 import com.rarilabs.rarime.modules.passportScan.nfc.RevocationStep
@@ -26,8 +25,6 @@ import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.WaitlistPas
 import com.rarilabs.rarime.ui.components.ConfirmationDialog
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
-import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
-import com.rarilabs.rarime.util.data.ZkProof
 import org.jmrtd.lds.icao.MRZInfo
 
 private enum class ScanPassportState {
@@ -108,7 +105,7 @@ fun ScanPassportScreen(
                     },
                     eDocument = eDoc.value!!,
                     onError = { state = ScanPassportState.UNSUPPORTED_PASSPORT },
-                    onAlreadyRegistered = { zkp ->
+                    onAlreadyRegistered = {
                         scanPassportScreenViewModel.resetPassportState()
 
                         mainViewModel.setModalContent {
@@ -118,6 +115,7 @@ fun ScanPassportScreen(
                                 cancelButtonText = stringResource(id = R.string.you_have_already_registered_cancel),
                                 confirmButtonText = stringResource(id = R.string.you_have_already_registered_confirm),
                                 onConfirm = {
+                                    scanPassportScreenViewModel.saveRegistrationProof(it)
                                     state = ScanPassportState.REVOCATION_PROCESS
                                     mainViewModel.setModalVisibility(false)
                                 },

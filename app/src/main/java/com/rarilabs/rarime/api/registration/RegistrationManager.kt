@@ -160,7 +160,7 @@ class RegistrationManager @Inject constructor(
             pubKeyPem.toByteArray(),
         )
 
-        _revocationChallenge.value = callData
+        _revocationCallData.value = callData
     }
 
     suspend fun revoke() {
@@ -170,12 +170,14 @@ class RegistrationManager @Inject constructor(
             try {
                 registrationAPIManager.register(revocationCallData.value!!)
             } catch (e: Exception) {
-                Log.e("RevocationStepViewModel", "Error: $e")
+                Log.e("RegistrationManager:revoke:", "Error: $e")
 
-                if (e.message?.contains("User already revoked") == false) {
-                    throw e
-                }
+//                if (e.message?.contains("identity already revoked") == false) {
+//                    throw e
+//                }
             }
+
+            Log.i("Revoke", Gson().toJson(registrationProof.value))
 
             register(
                 registrationProof.value!!,

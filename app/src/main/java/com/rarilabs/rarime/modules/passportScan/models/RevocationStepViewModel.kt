@@ -8,7 +8,6 @@ import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
 import com.rarilabs.rarime.modules.passportScan.nfc.NfcUseCase
-import com.rarilabs.rarime.util.data.ZkProof
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.jmrtd.BACKey
 import org.jmrtd.lds.icao.MRZInfo
@@ -53,11 +52,13 @@ class RevocationStepViewModel @Inject constructor(
         scanNfcUseCase = NfcUseCase(isoDep, bacKey, privateKeyBytes!!)
 
         /* sign with passport */
-        scanNfcUseCase.revokePassport(
+        val updatedEDoc = scanNfcUseCase.signRevocationWithPassport(
             registrationManager.revocationChallenge.value!!,
             // TODO: is it modify eDocument through reference?
             registrationManager.eDocument.value!!
         )
+
+        registrationManager.setEDocument(updatedEDoc)
 
         registrationManager.buildRevocationCallData()
     }
