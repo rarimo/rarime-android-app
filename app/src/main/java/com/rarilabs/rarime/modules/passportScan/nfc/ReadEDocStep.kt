@@ -25,7 +25,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.manager.ScanNFCState
 import com.rarilabs.rarime.modules.passportScan.ScanPassportLayout
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
-import com.rarilabs.rarime.modules.passportScan.models.ReadNFCStepViewModel
+import com.rarilabs.rarime.modules.passportScan.models.ReadEDocStepViewModel
 import com.rarilabs.rarime.ui.components.AppAnimation
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import net.sf.scuba.data.Gender
@@ -37,12 +37,12 @@ fun ReadEDocStep(
     mrzInfo: MRZInfo,
     onNext: (eDocument: EDocument) -> Unit,
     onClose: () -> Unit,
-    readNfcStepViewModel: ReadNFCStepViewModel = hiltViewModel(),
+    readEDocStepViewModel: ReadEDocStepViewModel = hiltViewModel(),
 ) {
-    val state by readNfcStepViewModel.state.collectAsState()
+    val state by readEDocStepViewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        readNfcStepViewModel.startScanning(mrzInfo)
+        readEDocStepViewModel.startScanning(mrzInfo)
     }
 
     ScanPassportLayout(
@@ -50,7 +50,7 @@ fun ReadEDocStep(
         title = stringResource(R.string.nfc_reader_title),
         text = stringResource(R.string.nfc_reader_text),
         onClose = {
-            readNfcStepViewModel.resetState()
+            readEDocStepViewModel.resetState()
             onClose()
         }
     ) {
@@ -92,12 +92,12 @@ fun ReadEDocStep(
                     }
 
                     ScanNFCState.SCANNED -> {
-                        readNfcStepViewModel.resetState()
-                        onNext(readNfcStepViewModel.eDocument)
+                        readEDocStepViewModel.resetState()
+                        onNext(readEDocStepViewModel.eDocument)
                     }
 
                     ScanNFCState.ERROR -> {
-                        readNfcStepViewModel.resetState()
+                        readEDocStepViewModel.resetState()
                         val context = LocalContext.current
                         Toast.makeText(context, R.string.nfc_reader_error, Toast.LENGTH_SHORT)
                             .show()

@@ -13,7 +13,7 @@ import org.jmrtd.lds.icao.MRZInfo
 import javax.inject.Inject
 
 @HiltViewModel
-class ReadNFCStepViewModel @Inject constructor(
+class ReadEDocStepViewModel @Inject constructor(
     private val nfcManager: NfcManager,
     private val identityManager: IdentityManager
 ) : ViewModel() {
