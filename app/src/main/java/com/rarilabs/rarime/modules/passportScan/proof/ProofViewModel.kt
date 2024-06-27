@@ -365,7 +365,7 @@ class ProofViewModel @Inject constructor(
         )
 
 
-        masterCertProof.value = proof!!
+        _masterCertProof.value = proof!!
 
         return inputs
     }
