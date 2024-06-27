@@ -177,8 +177,6 @@ class RegistrationManager @Inject constructor(
 //                }
             }
 
-            Log.i("Revoke", Gson().toJson(registrationProof.value))
-
             register(
                 registrationProof.value!!,
                 eDocument.value!!,
