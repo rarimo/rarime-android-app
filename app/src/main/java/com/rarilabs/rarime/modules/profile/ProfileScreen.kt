@@ -108,12 +108,12 @@ fun ProfileScreen(
             }
             CardContainer {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                    ProfileRow(
-                        iconId = R.drawable.ic_globe_simple,
-                        title = stringResource(R.string.language),
-                        value = language.toLocalizedString(),
-                        onClick = { navigate(Screen.Main.Profile.Language.route) }
-                    )
+//                    ProfileRow(
+//                        iconId = R.drawable.ic_globe_simple,
+//                        title = stringResource(R.string.language),
+//                        value = language.toLocalizedString(),
+//                        onClick = { navigate(Screen.Main.Profile.Language.route) }
+//                    )
                     ProfileRow(
                         iconId = R.drawable.ic_sun,
                         title = stringResource(R.string.theme),

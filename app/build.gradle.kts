@@ -36,7 +36,12 @@ android {
             }
         }
 
-        resourceConfigurations.plus(listOf("en", "uk"))
+        resourceConfigurations.plus(
+            listOf(
+                "en",
+//                "uk"
+            )
+        )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
