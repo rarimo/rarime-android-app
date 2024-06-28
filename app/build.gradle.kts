@@ -9,6 +9,12 @@ android {
     namespace = "com.rarilabs.rarime"
     compileSdk = 34
 
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+
     assetPacks += listOf(":zkp_assets")
 
     defaultConfig {

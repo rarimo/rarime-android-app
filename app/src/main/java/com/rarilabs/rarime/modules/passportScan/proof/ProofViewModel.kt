@@ -6,7 +6,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import coil.network.HttpException
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.rarilabs.rarime.BaseConfig
@@ -41,7 +40,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
-import org.jmrtd.lds.icao.DG15File
 import java.io.IOException
 import javax.inject.Inject
 
@@ -229,12 +227,11 @@ class ProofViewModel @Inject constructor(
 
 //            val stateKeeperContract = rarimoContractManager.getStateKeeper()
 
-            val passportInfoKey: String =
-                if (eDocument.dg15?.isEmpty() ?: false) {
-                    proof.pub_signals[1]
-                } else {
-                    proof.pub_signals[0]
-                }
+            val passportInfoKey: String = if (eDocument.dg15?.isEmpty() ?: false) {
+                proof.pub_signals[1]
+            } else {
+                proof.pub_signals[0]
+            }
 
             var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
 
@@ -277,8 +274,7 @@ class ProofViewModel @Inject constructor(
     private suspend fun buildRegistrationCircuits(eDocument: EDocument): ByteArray {
         val sodStream = eDocument.sod!!.decodeHexString().inputStream()
         val sodFile = SODFileOwn(sodStream)
-        val dg15 = eDocument.dg15!!.decodeHexString()
-        val dG15File = DG15File(dg15.inputStream())
+        //val dG15File = DG15File(dg15.inputStream())
 
         val cert = sodFile.docSigningCertificate
         val certPem = SecurityUtil.convertToPEM(cert)
@@ -309,8 +305,8 @@ class ProofViewModel @Inject constructor(
         val identityProfile = Profile()
         val profile = identityProfile.newProfile(privateKeyBytes)
 
-        val dg15PublicKey = dG15File.publicKey
-        Log.i("DG15File", dg15PublicKey::class.java.name)
+        //val dg15PublicKey = dG15File.publicKey
+        //Log.i("DG15File", dg15PublicKey::class.java.name)
 
         val gson = GsonBuilder().setPrettyPrinting().create()
 
@@ -330,7 +326,11 @@ class ProofViewModel @Inject constructor(
             encapsulatedContent.decodeHexString(),
             signedAttributes,
             eDocument.dg1!!.decodeHexString(),
-            eDocument.dg15!!.decodeHexString(),
+            if (eDocument.dg15 == null) {
+                ByteArray(0)
+            } else {
+                eDocument.dg15!!.decodeHexString()
+            },
             publicKeyPem.toByteArray(Charsets.UTF_8),
             signature,
             proofJson.toByteArray(Charsets.UTF_8)

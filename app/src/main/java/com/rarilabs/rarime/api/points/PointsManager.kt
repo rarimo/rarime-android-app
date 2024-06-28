@@ -203,6 +203,11 @@ class PointsManager @Inject constructor(
 
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun verifyPassport() {
+
+        // TODO : Remove this
+        if (authManager.isAccessTokenExpired())
+            authManager.refresh()
+
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
         if (userNullifierHex.isEmpty()) {
