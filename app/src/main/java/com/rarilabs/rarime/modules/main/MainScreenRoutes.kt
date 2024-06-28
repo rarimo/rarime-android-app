@@ -57,6 +57,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreenRoutes(
     navController: NavHostController,
+    simpleNavigate: (String) -> Unit,
     navigateWithPopUp: (String) -> Unit,
 ) {
     val mainViewModel = LocalMainViewModel.current
@@ -81,7 +82,7 @@ fun MainScreenRoutes(
         exitTransition = { ExitTransition.None },
     ) {
         composable(Screen.Intro.route) {
-            IntroScreen { navigateWithPopUp(Screen.Register.NewIdentity.route) }
+            IntroScreen { simpleNavigate(Screen.Register.NewIdentity.route) }
         }
 
         navigation(
@@ -107,7 +108,7 @@ fun MainScreenRoutes(
         ) {
             composable(Screen.Passcode.EnablePasscode.route) {
                 EnablePasscodeScreen(
-                    onNext = { navigateWithPopUp(Screen.Passcode.AddPasscode.route) },
+                    onNext = { simpleNavigate(Screen.Passcode.AddPasscode.route) },
                     onSkip = {
                         mainViewModel.updatePasscodeState(SecurityCheckState.DISABLED)
                         navigateWithSavedNextNavScreen(Screen.Main.route)
@@ -148,15 +149,39 @@ fun MainScreenRoutes(
         //Scan Flow
         composable(Screen.ScanPassport.ScanPassportSpecific.route) {
             ScanPassportScreen(
-                onClose = { navController.popBackStack() },
-                onClaim = { navigateWithPopUp(Screen.Claim.Specific.route) }
+                onClose = {
+                    coroutineScope.launch {
+                        mainViewModel.loadUserDetails()
+
+                        navController.popBackStack()
+                    }
+                },
+                onClaim = {
+                    coroutineScope.launch {
+                        mainViewModel.loadUserDetails()
+
+                        navigateWithPopUp(Screen.Claim.Specific.route)
+                    }
+                }
             )
         }
 
         composable(Screen.ScanPassport.ScanPassportPoints.route) {
             ScanPassportScreen(
-                onClose = { navigateWithPopUp(Screen.Main.route) },
-                onClaim = { navigateWithPopUp(Screen.Claim.Reserve.route) }
+                onClose = {
+                    coroutineScope.launch {
+                        mainViewModel.loadUserDetails()
+
+                        navigateWithPopUp(Screen.Main.route)
+                    }
+                },
+                onClaim = {
+                    coroutineScope.launch {
+                        mainViewModel.loadUserDetails()
+
+                        navigateWithPopUp(Screen.Claim.Reserve.route)
+                    }
+                }
             )
         }
 
@@ -176,31 +201,23 @@ fun MainScreenRoutes(
             startDestination = Screen.Main.Home.route, route = Screen.Main.route
         ) {
             composable(Screen.Main.Home.route) {
-                AuthGuard(
-                    navigate = navigateWithPopUp,
-                ) {
-                    HomeScreen(navigate = { navigateWithPopUp(it) })
+                AuthGuard(navigate = simpleNavigate) {
+                    HomeScreen(navigate = { simpleNavigate(it) })
                 }
             }
 
             composable(Screen.Main.Wallet.route) {
-                AuthGuard(
-                    navigate = navigateWithPopUp,
-                ) {
-                    WalletScreen(navigate = { navigateWithPopUp(it) })
+                AuthGuard(navigate = navigateWithPopUp) {
+                    WalletScreen(navigate = { simpleNavigate(it) })
                 }
             }
             composable(Screen.Main.Wallet.Receive.route) {
-                AuthGuard(
-                    navigate = navigateWithPopUp,
-                ) {
+                AuthGuard(navigate = navigateWithPopUp) {
                     WalletReceiveScreen(onBack = { navController.popBackStack() })
                 }
             }
             composable(Screen.Main.Wallet.Send.route) {
-                AuthGuard(
-                    navigate = navigateWithPopUp,
-                ) {
+                AuthGuard(navigate = navigateWithPopUp) {
                     WalletSendScreen(onBack = { navController.popBackStack() })
                 }
             }
@@ -210,16 +227,12 @@ fun MainScreenRoutes(
                 route = Screen.Main.Rewards.route,
             ) {
                 composable(Screen.Main.Rewards.RewardsMain.route) {
-                    AuthGuard(
-                        navigate = navigateWithPopUp,
-                    ) {
-                        RewardsScreen(navigate = { navigateWithPopUp(it) })
+                    AuthGuard(navigate = navigateWithPopUp) {
+                        RewardsScreen(navigate = { simpleNavigate(it) })
                     }
                 }
                 composable(Screen.Main.Rewards.RewardsClaim.route) {
-                    AuthGuard(
-                        navigate = navigateWithPopUp,
-                    ) {
+                    AuthGuard(navigate = navigateWithPopUp) {
                         RewardsClaimScreen(onBack = { navController.popBackStack() })
                     }
                 }
@@ -227,57 +240,43 @@ fun MainScreenRoutes(
                     Screen.Main.Rewards.RewardsEventsItem.route,
                     arguments = listOf(navArgument("item_id") { type = NavType.StringType })
                 ) {
-                    AuthGuard(
-                        navigate = navigateWithPopUp,
-                    ) {
+                    AuthGuard(navigate = navigateWithPopUp) {
                         RewardsEventItemScreen(onBack = { navController.popBackStack() })
                     }
                 }
             }
 
             composable(Screen.Main.Profile.route) {
-                AuthGuard(
-                    navigate = navigateWithPopUp,
-                ) {
+                AuthGuard(navigate = navigateWithPopUp) {
                     ProfileScreen(
                         appIcon = appIcon,
-                        navigate = { navigateWithPopUp(it) })
+                        navigate = { simpleNavigate(it) })
                 }
             }
             composable(Screen.Main.Profile.AuthMethod.route) {
-                AuthGuard(
-                    navigate = navigateWithPopUp,
-                ) {
+                AuthGuard(navigate = navigateWithPopUp) {
                     AuthMethodScreen(onBack = { navController.popBackStack() })
                 }
             }
             composable(Screen.Main.Profile.ExportKeys.route) {
-                AuthGuard(
-                    navigate = navigateWithPopUp,
-                ) {
+                AuthGuard(navigate = navigateWithPopUp) {
                     ExportKeysScreen({ navController.popBackStack() })
                 }
             }
             composable(Screen.Main.Profile.Language.route) {
-                AuthGuard(
-                    navigate = navigateWithPopUp,
-                ) {
+                AuthGuard(navigate = navigateWithPopUp) {
                     LanguageScreen(onLanguageChange = {
                         LocaleUtil.updateLocale(context, it.localeTag)
                     }, onBack = { navController.popBackStack() })
                 }
             }
             composable(Screen.Main.Profile.Theme.route) {
-                AuthGuard(
-                    navigate = navigateWithPopUp,
-                ) {
+                AuthGuard(navigate = navigateWithPopUp) {
                     ThemeScreen(onBack = { navController.popBackStack() })
                 }
             }
             composable(Screen.Main.Profile.AppIcon.route) {
-                AuthGuard(
-                    navigate = navigateWithPopUp,
-                ) {
+                AuthGuard(navigate = navigateWithPopUp) {
                     AppIconScreen(appIcon = appIcon, onAppIconChange = {
                         appIcon = it
                         AppIconUtil.setIcon(context, it)
@@ -285,18 +284,14 @@ fun MainScreenRoutes(
                 }
             }
             composable(Screen.Main.Profile.Terms.route) {
-                AuthGuard(
-                    navigate = navigateWithPopUp,
-                ) {
+                AuthGuard(navigate = navigateWithPopUp) {
                     AppWebView(title = stringResource(R.string.terms_of_use),
                         url = Constants.TERMS_URL,
                         onBack = { navController.popBackStack() })
                 }
             }
             composable(Screen.Main.Profile.Privacy.route) {
-                AuthGuard(
-                    navigate = navigateWithPopUp,
-                ) {
+                AuthGuard(navigate = navigateWithPopUp) {
                     AppWebView(title = stringResource(R.string.privacy_policy),
                         url = Constants.PRIVACY_URL,
                         onBack = { navController.popBackStack() })

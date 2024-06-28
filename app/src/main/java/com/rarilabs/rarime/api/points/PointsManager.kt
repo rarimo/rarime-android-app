@@ -55,6 +55,8 @@ class PointsManager @Inject constructor(
     suspend fun createPointsBalance(referralCode: String) {
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
+        //TODO: Remove it
+        if (authManager.isAccessTokenExpired()) authManager.refresh()
         if (userNullifierHex.isEmpty()) {
             throw Exception("user nullifier is null")
         }
@@ -87,8 +89,7 @@ class PointsManager @Inject constructor(
         )
 
 
-        val hmacMessage =
-            Identity.calculateHmacMessage(accessJwt, countryName, anonymousId)
+        val hmacMessage = Identity.calculateHmacMessage(accessJwt, countryName, anonymousId)
 
 
         val hmacSignature = hmacSha256(key = Keys.joinProgram.decodeHexString(), hmacMessage)
@@ -146,12 +147,11 @@ class PointsManager @Inject constructor(
             BaseConfig.REGISTRATION_SMT_CONTRACT_ADDRESS
         )
 
-        val passportInfoKey: String =
-            if (eDocument.dg15?.isEmpty() ?: false) {
-                registrationProof.pub_signals[1]
-            } else {
-                registrationProof.pub_signals[0]
-            }
+        val passportInfoKey: String = if (eDocument.dg15?.isEmpty() ?: false) {
+            registrationProof.pub_signals[1]
+        } else {
+            registrationProof.pub_signals[0]
+        }
 
         val proofIndex = Identity.calculateProofIndex(
             passportInfoKey, registrationProof.pub_signals[3]
@@ -203,6 +203,10 @@ class PointsManager @Inject constructor(
 
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun verifyPassport() {
+
+        // TODO : Remove this
+        if (authManager.isAccessTokenExpired()) authManager.refresh()
+
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
         if (userNullifierHex.isEmpty()) {

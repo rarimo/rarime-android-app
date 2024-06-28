@@ -33,7 +33,9 @@ import java.security.MessageDigest
 import java.security.Security
 import java.util.Arrays
 
-class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,private val privateKey: ByteArray) {
+class NfcUseCase(
+    private val isoDep: IsoDep, private val bacKey: BACKeySpec, private val privateKey: ByteArray
+) {
     private var eDocument: EDocument = EDocument()
     private var docType: DocType = DocType.OTHER
     private var personDetails: PersonDetails = PersonDetails()
@@ -204,7 +206,6 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
         }
         if (!allFaceImageInfos.isEmpty()) {
             val faceImageInfo = allFaceImageInfos.iterator().next()
-
             personDetails!!.faceImageInfo = faceImageInfo
         }
 
@@ -216,24 +217,29 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
         eDocument.isPassiveAuth = hashesMatched
 
 
-        val dg15 = DG15File(dG15File)
+        val dg15 = try {
+            DG15File(dG15File)
+        } catch (
+            e: Exception
+        ) {
+            null
+        }
 
         //Arrays.copyOfRange(poseidonHash, poseidonHash.size - 8, poseidonHash.size).reversed().toByteArray()
 
 
-        Log.e("PUB KEy", dg15.publicKey.encoded.toHexString())
+        Log.e("PUB KEy", dg15?.publicKey?.encoded?.toHexString().toString())
 
 
         Log.e("Digest Algorithm", sodFile.digestAlgorithm)
         Log.e("signerInfoDigestAlgorithm", sodFile.signerInfoDigestAlgorithm)
 
 
-
         val profiler = Profile().newProfile(privateKey).registrationChallenge
         var response: AAResult? = null
         try {
             response = service.doAA(
-                dg15.publicKey, sodFile.digestAlgorithm, sodFile.signerInfoDigestAlgorithm, profiler
+                dg15?.publicKey, sodFile.digestAlgorithm, sodFile.signerInfoDigestAlgorithm, profiler
             )
             eDocument.aaSignature = response.response
             eDocument.aaResponse = response.toString()
@@ -257,27 +263,26 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
         val dg1B =
             String(dg1File.encoded).toBitArray().toCharArray().map { it1 -> it1.digitToInt() }
         val signedAtributes = sodFile.eContent
-        val pubKey = dg15.publicKey.encoded
+        val pubKey = dg15?.publicKey?.encoded
 
         Log.e("PUB key cert", sodFile.docSigningCertificate.publicKey.encoded.toHexString())
 
         val signature = sodFile.encryptedDigest
 
-        eDocument.dg15Pem = dg15.publicKey.publicKeyToPem()
+        eDocument.dg15Pem = dg15?.publicKey?.publicKeyToPem()
 
 
         Log.e("pemFile", "pemFile: $pemFileEnded")
         Log.e("encapsulated_content", "encapsulated_content: $encapsulaged_content")
         Log.e("dg1b", "dg1b: $dg1B")
         Log.e("signedAtributes", "signedAtributes: " + signedAtributes.toHexString())
-        Log.e("pubKey", "pubKey: " + pubKey.toHexString())
+        Log.e("pubKey", "pubKey: " + pubKey?.toHexString())
         Log.e("signature", "signature: " + signature.toHexString())
 
 
         Log.e("PUBLIC KEY", sodFile.docSigningCertificate.publicKey.toString())
 
-        eDocument.dg15 = dg15.encoded.toHexString()
-        Log.e("DG15", dg15.encoded.toHexString())
+        eDocument.dg15 = dg15?.encoded?.toHexString()
 
 
 
@@ -343,7 +348,8 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
             try {
                 Log.i("eDocument", Gson().toJson(eDocument))
                 Log.i("response", Gson().toJson(response))
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+            }
 
             return eDocument.copy(
                 aaSignature = response.response,
@@ -367,7 +373,8 @@ class SODFileOwn(inputStream: InputStream?) : SODFile(inputStream) {
 
         val v: SignedData = a.get(this) as SignedData
 
-        val encapsulatedContent =  v.encapContentInfo.content.toASN1Primitive().encoded!!.toHexString()
+        val encapsulatedContent =
+            v.encapContentInfo.content.toASN1Primitive().encoded!!.toHexString()
 
         val target = "30"
         val startIndex = encapsulatedContent.indexOf(target)

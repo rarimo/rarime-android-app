@@ -9,6 +9,12 @@ android {
     namespace = "com.rarilabs.rarime"
     compileSdk = 34
 
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+
     assetPacks += listOf(":zkp_assets")
 
     defaultConfig {
@@ -30,7 +36,12 @@ android {
             }
         }
 
-        resourceConfigurations.plus(listOf("en", "uk"))
+        resourceConfigurations.plus(
+            listOf(
+                "en",
+//                "uk"
+            )
+        )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

@@ -25,7 +25,6 @@ class ScanPassportScreenViewModel @Inject constructor(
 
     fun resetPassportState() {
         Log.i("ScanPassportScreenViewModel", "resetPassportState")
-        passportManager.updatePassportStatus(PassportStatus.UNSCANNED)
         passportManager.deletePassport()
     }
 

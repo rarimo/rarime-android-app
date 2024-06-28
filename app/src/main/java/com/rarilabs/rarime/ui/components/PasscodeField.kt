@@ -64,7 +64,6 @@ fun PasscodeField(
                 isError = state.isError
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
             Text(
                 text = state.errorMessage,
                 style = RarimeTheme.typography.caption2,
@@ -76,7 +75,7 @@ fun PasscodeField(
                     .background(RarimeTheme.colors.errorLight)
                     .padding(vertical = 12.dp, horizontal = 60.dp)
             )
-            Spacer(modifier = Modifier.height(64.dp))
+            Spacer(modifier = Modifier.height(32.dp))
         }
         PasscodeKeyboard(
             value = state.text,

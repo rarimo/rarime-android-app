@@ -1,5 +1,7 @@
 package com.rarilabs.rarime.modules.profile
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,7 +12,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,31 +36,38 @@ import com.rarilabs.rarime.BuildConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppIcon
 import com.rarilabs.rarime.data.enums.toLocalizedString
-import com.rarilabs.rarime.ui.components.ConfirmationDialog
+import com.rarilabs.rarime.modules.home.components.JoinWaitlistCongratsModalContent
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.CardContainer
+import com.rarilabs.rarime.ui.components.ConfirmationDialog
 import com.rarilabs.rarime.ui.components.PassportImage
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Screen
+import com.rarilabs.rarime.util.SendErrorUtil
 import com.rarilabs.rarime.util.WalletUtil
 import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileScreen(
-    appIcon: AppIcon,
-    navigate: (String) -> Unit,
-    viewModel: ProfileViewModel = hiltViewModel()
+    appIcon: AppIcon, navigate: (String) -> Unit, viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = {
+
+        })
 
     val language by viewModel.language
     val colorScheme by viewModel.colorScheme
 
     Column(
+
         verticalArrangement = Arrangement.spacedBy(20.dp),
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .background(RarimeTheme.colors.backgroundPrimary)
             .padding(vertical = 20.dp, horizontal = 12.dp)
     ) {
@@ -94,50 +107,75 @@ fun ProfileScreen(
             }
             CardContainer {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                    ProfileRow(
-                        iconId = R.drawable.ic_user_focus,
+                    ProfileRow(iconId = R.drawable.ic_user_focus,
                         title = stringResource(R.string.auth_method),
-                        onClick = { navigate(Screen.Main.Profile.AuthMethod.route) }
-                    )
-                    ProfileRow(
-                        iconId = R.drawable.ic_key,
+                        onClick = { navigate(Screen.Main.Profile.AuthMethod.route) })
+                    ProfileRow(iconId = R.drawable.ic_key,
                         title = stringResource(R.string.export_keys),
-                        onClick = { navigate(Screen.Main.Profile.ExportKeys.route) }
-                    )
+                        onClick = { navigate(Screen.Main.Profile.ExportKeys.route) })
                 }
             }
             CardContainer {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                    ProfileRow(
-                        iconId = R.drawable.ic_globe_simple,
-                        title = stringResource(R.string.language),
-                        value = language.toLocalizedString(),
-                        onClick = { navigate(Screen.Main.Profile.Language.route) }
-                    )
-                    ProfileRow(
-                        iconId = R.drawable.ic_sun,
+//                    ProfileRow(
+//                        iconId = R.drawable.ic_globe_simple,
+//                        title = stringResource(R.string.language),
+//                        value = language.toLocalizedString(),
+//                        onClick = { navigate(Screen.Main.Profile.Language.route) }
+//                    )
+                    ProfileRow(iconId = R.drawable.ic_sun,
                         title = stringResource(R.string.theme),
                         value = colorScheme.toLocalizedString(),
-                        onClick = { navigate(Screen.Main.Profile.Theme.route) }
-                    )
-                    ProfileRow(
-                        iconId = R.drawable.ic_rarime,
+                        onClick = { navigate(Screen.Main.Profile.Theme.route) })
+                    ProfileRow(iconId = R.drawable.ic_rarime,
                         title = stringResource(R.string.app_icon),
                         value = appIcon.toLocalizedString(),
-                        onClick = { navigate(Screen.Main.Profile.AppIcon.route) }
-                    )
-                    ProfileRow(
-                        iconId = R.drawable.ic_question,
+                        onClick = { navigate(Screen.Main.Profile.AppIcon.route) })
+                    ProfileRow(iconId = R.drawable.ic_question,
                         title = stringResource(R.string.privacy_policy),
-                        onClick = { navigate(Screen.Main.Profile.Privacy.route) }
-                    )
-                    ProfileRow(
-                        iconId = R.drawable.ic_flag,
+                        onClick = { navigate(Screen.Main.Profile.Privacy.route) })
+                    ProfileRow(iconId = R.drawable.ic_flag,
                         title = stringResource(R.string.terms_of_use),
-                        onClick = { navigate(Screen.Main.Profile.Terms.route) }
+                        onClick = { navigate(Screen.Main.Profile.Terms.route) })
+                }
+            }
+            CardContainer {
+                var isFeedbackDialogShown by remember { mutableStateOf(false) }
+
+                ProfileRow(
+                    iconId = R.drawable.ic_warning,
+                    title = "Send us feedback",
+                    onClick = { isFeedbackDialogShown = true },
+                    contentColors = getProfileRowContentColors(
+                        leadingIcon = RarimeTheme.colors.warningMain,
+                        title = RarimeTheme.colors.warningMain,
+                        value = RarimeTheme.colors.warningMain,
+                        trailingIcon = Color.Transparent,
+                    ),
+                )
+
+                if (isFeedbackDialogShown) {
+                    ConfirmationDialog(
+                        iconId = R.drawable.ic_warning,
+                        iconContainerColor = RarimeTheme.colors.warningLight,
+                        confirmButtonColors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = RarimeTheme.colors.textPrimary
+                        ),
+                        title = stringResource(R.string.send_us_feedback),
+                        subtitle = stringResource(R.string.send_us_feedback_body),
+                        onConfirm = {
+                            scope.launch {
+                                val file = viewModel.sendFeedback(context)
+                                launcher.launch(SendErrorUtil.sendErrorEmail(file, context))
+                            }
+                        },
+                        onCancel = { isFeedbackDialogShown = false },
+                        cancelButtonText = stringResource(id = R.string.delete_profile_cancel_btn),
+                        confirmButtonText = stringResource(id = R.string.delete_profile_confirm_btn),
                     )
                 }
             }
+
             CardContainer {
                 var isDeleteAccountDialogShown by remember { mutableStateOf(false) }
 
@@ -232,9 +270,7 @@ private fun ProfileRow(
                     .padding(6.dp)
             )
             Text(
-                text = title,
-                style = RarimeTheme.typography.subtitle4,
-                color = contentColors.title
+                text = title, style = RarimeTheme.typography.subtitle4, color = contentColors.title
             )
         }
         Row(
@@ -258,8 +294,5 @@ private fun ProfileRow(
 @Preview
 @Composable
 private fun ProfileScreenPreview() {
-    ProfileScreen(
-        appIcon = AppIcon.BLACK_AND_WHITE,
-        navigate = {}
-    )
+    ProfileScreen(appIcon = AppIcon.BLACK_AND_WHITE, navigate = {})
 }

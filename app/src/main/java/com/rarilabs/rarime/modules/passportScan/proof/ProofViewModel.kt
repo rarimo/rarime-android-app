@@ -6,23 +6,19 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import coil.network.HttpException
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.data.ProofTx
-import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.manager.IdentityManager
-import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.modules.passportScan.CircuitUseCase
 import com.rarilabs.rarime.modules.passportScan.DownloadRequest
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.RegisteredCircuitData
 import com.rarilabs.rarime.modules.passportScan.nfc.SODFileOwn
-import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.SecurityUtil
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
@@ -41,17 +37,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
-import org.jmrtd.lds.icao.DG15File
 import java.io.IOException
 import javax.inject.Inject
-
 
 @OptIn(ExperimentalStdlibApi::class)
 @HiltViewModel
 class ProofViewModel @Inject constructor(
     private val application: Application,
     private val identityManager: IdentityManager,
-    private val passportManager: PassportManager,
     private val registrationManager: RegistrationManager,
     private val rarimoContractManager: RarimoContractManager,
     private val pointsManager: PointsManager
@@ -206,79 +199,56 @@ class ProofViewModel @Inject constructor(
     }
 
     suspend fun registerByDocument(eDocument: EDocument) {
-        val isUnsupported =
-            Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)
+        _state.value = PassportProofState.READING_DATA
 
-        try {
-            _state.value = PassportProofState.READING_DATA
+        val registeredCircuitData = registerCertificate(eDocument)
 
-            val registeredCircuitData = registerCertificate(eDocument)
-
-            val filePaths = withContext(Dispatchers.Default) {
-                CircuitUseCase(application as Context).download(registeredCircuitData)
-            }
-            _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
-            val proof = generateRegisterIdentityProof(eDocument, registeredCircuitData, filePaths)
-
-            registrationManager.setCertSize(
-                when (registeredCircuitData) {
-                    RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA2048 -> 2048L
-                    RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA4096 -> 4096L
-                }
-            )
-
-//            val stateKeeperContract = rarimoContractManager.getStateKeeper()
-
-            val passportInfoKey: String =
-                if (eDocument.dg15?.isEmpty() ?: false) {
-                    proof.pub_signals[1]
-                } else {
-                    proof.pub_signals[0]
-                }
-
-            var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
-
-            if (passportInfoKeyBytes.size != 32) {
-                passportInfoKeyBytes = passportInfoKeyBytes.copyOf(32)
-            }
-
-            Log.i("passportInfoKeyBytes", passportInfoKeyBytes.size.toString())
-
-            _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
-
-            registrationManager.register(
-                proof,
-                eDocument,
-                registrationManager.masterCertProof.value!!,
-                registrationManager.certificatePubKeySize.value,
-                false
-            )
-
-            _state.value = PassportProofState.FINALIZING
-
-            if (isUnsupported) {
-                passportManager.updatePassportStatus(PassportStatus.NOT_ALLOWED)
-            } else {
-                passportManager.updatePassportStatus(PassportStatus.ALLOWED)
-            }
-
-            delay(second * 1)
-        } catch (e: Exception) {
-            if (isUnsupported) {
-                passportManager.updatePassportStatus(PassportStatus.WAITLIST_NOT_ALLOWED)
-            } else {
-                passportManager.updatePassportStatus(PassportStatus.WAITLIST)
-            }
-
-            throw e
+        val filePaths = withContext(Dispatchers.Default) {
+            CircuitUseCase(application as Context).download(registeredCircuitData)
         }
+        _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
+        val proof = generateRegisterIdentityProof(eDocument, registeredCircuitData, filePaths)
+
+        registrationManager.setCertSize(
+            when (registeredCircuitData) {
+                RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA2048 -> 2048L
+                RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA4096 -> 4096L
+            }
+        )
+
+        val passportInfoKey: String = if (eDocument.dg15?.isEmpty() ?: false) {
+            proof.pub_signals[1]
+        } else {
+            proof.pub_signals[0]
+        }
+
+        var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
+
+        if (passportInfoKeyBytes.size != 32) {
+            passportInfoKeyBytes = passportInfoKeyBytes.copyOf(32)
+        }
+
+        Log.i("passportInfoKeyBytes", passportInfoKeyBytes.size.toString())
+
+        _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
+
+        registrationManager.register(
+            proof,
+            eDocument,
+            registrationManager.masterCertProof.value!!,
+            registrationManager.certificatePubKeySize.value,
+            false
+        )
+
+        _state.value = PassportProofState.FINALIZING
+
+        delay(second * 1)
     }
 
     private suspend fun buildRegistrationCircuits(eDocument: EDocument): ByteArray {
         val sodStream = eDocument.sod!!.decodeHexString().inputStream()
         val sodFile = SODFileOwn(sodStream)
-        val dg15 = eDocument.dg15!!.decodeHexString()
-        val dG15File = DG15File(dg15.inputStream())
+        //val dG15File = DG15File(dg15.inputStream())
 
         val cert = sodFile.docSigningCertificate
         val certPem = SecurityUtil.convertToPEM(cert)
@@ -309,8 +279,8 @@ class ProofViewModel @Inject constructor(
         val identityProfile = Profile()
         val profile = identityProfile.newProfile(privateKeyBytes)
 
-        val dg15PublicKey = dG15File.publicKey
-        Log.i("DG15File", dg15PublicKey::class.java.name)
+        //val dg15PublicKey = dG15File.publicKey
+        //Log.i("DG15File", dg15PublicKey::class.java.name)
 
         val gson = GsonBuilder().setPrettyPrinting().create()
 
@@ -330,7 +300,11 @@ class ProofViewModel @Inject constructor(
             encapsulatedContent.decodeHexString(),
             signedAttributes,
             eDocument.dg1!!.decodeHexString(),
-            eDocument.dg15!!.decodeHexString(),
+            if (eDocument.dg15 == null) {
+                ByteArray(0)
+            } else {
+                eDocument.dg15!!.decodeHexString()
+            },
             publicKeyPem.toByteArray(Charsets.UTF_8),
             signature,
             proofJson.toByteArray(Charsets.UTF_8)

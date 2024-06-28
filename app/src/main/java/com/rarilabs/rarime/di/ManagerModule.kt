@@ -47,6 +47,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Named
 import javax.inject.Singleton
+
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class ManagerModule {
@@ -67,25 +68,15 @@ class APIModule {
     @Provides
     @Singleton
     @Named("jsonApiRetrofit")
-    fun provideJsonApiRetrofit(): Retrofit =
-        Retrofit
-            .Builder()
-            .addConverterFactory(
-                MoshiConverterFactory.create(
-                    Moshi.Builder()
-                        .add(KotlinJsonAdapterFactory())
-                        .build()
-                )
-            )
-            .baseUrl("http://NONE")
-            .client(OkHttpClient
-                .Builder()
-                .addInterceptor(
-                    HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-                )
-                .build()
-            )
-            .build()
+    fun provideJsonApiRetrofit(): Retrofit = Retrofit.Builder().addConverterFactory(
+        MoshiConverterFactory.create(
+            Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+        )
+    ).baseUrl("http://NONE").client(
+        OkHttpClient.Builder().addInterceptor(
+            HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+        ).build()
+    ).build()
 
     @Provides
     @Singleton
@@ -106,10 +97,9 @@ class APIModule {
         registrationAPIManager: RegistrationAPIManager,
         rarimoContractManager: RarimoContractManager,
         passportManager: PassportManager,
+        authManager: AuthManager,
     ): RegistrationManager = RegistrationManager(
-        registrationAPIManager,
-        rarimoContractManager,
-        passportManager
+        registrationAPIManager, rarimoContractManager, passportManager, authManager
     )
 
     @Provides
@@ -142,7 +132,11 @@ class APIModule {
 
     @Provides
     @Singleton
-    fun providePassportManager(dataStoreManager: SecureSharedPrefsManager): PassportManager = PassportManager(dataStoreManager)
+    fun providePassportManager(
+        dataStoreManager: SecureSharedPrefsManager,
+        rarimoContractManager: RarimoContractManager,
+        identityManager: IdentityManager
+    ): PassportManager = PassportManager(dataStoreManager, rarimoContractManager, identityManager)
 
     @Provides
     @Singleton
@@ -177,10 +171,7 @@ class APIModule {
         dataStoreManager: SecureSharedPrefsManager
     ): AuthManager {
         return AuthManager(
-            context,
-            authAPIManager,
-            identityManager,
-            dataStoreManager
+            context, authAPIManager, identityManager, dataStoreManager
         )
     }
 

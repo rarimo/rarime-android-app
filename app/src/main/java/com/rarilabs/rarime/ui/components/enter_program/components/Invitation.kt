@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.points.InvitationNotExistException
+import com.rarilabs.rarime.api.points.InvitationUsedException
 import com.rarilabs.rarime.modules.home.components.HomeIntroLayout
 import com.rarilabs.rarime.ui.base.BaseIconButton
 import com.rarilabs.rarime.ui.components.AppTextField
@@ -75,9 +79,22 @@ fun Invitation(
                 onNext()
             } catch (e: Exception) {
                 Log.e("verifyCode", e.toString())
-                invitationCodeState.updateErrorMessage(
-                    context.getString(R.string.invalid_referal_code)
-                )
+
+                e.printStackTrace()
+
+                if (e is InvitationNotExistException) {
+                    invitationCodeState.updateErrorMessage(
+                        context.getString(R.string.referal_code_not_exist_msg)
+                    )
+                } else if (e is InvitationUsedException) {
+                    invitationCodeState.updateErrorMessage(
+                        context.getString(R.string.referal_code_exist_msg)
+                    )
+                } else {
+                    invitationCodeState.updateErrorMessage(
+                        context.getString(R.string.referal_code_invalid_msg)
+                    )
+                }
             }
 
             isSubmitting = false
@@ -113,6 +130,7 @@ private fun InvitationContent(
         }
     ) {
         Column(
+            modifier = Modifier.verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(32.dp),
         ) {
             AppTextField(

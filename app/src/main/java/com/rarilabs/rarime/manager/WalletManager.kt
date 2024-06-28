@@ -64,9 +64,8 @@ class WalletManager @Inject constructor(
     private val stableCoinContractManager: StableCoinContractManager,
     private val erc20Manager: Erc20Manager
 ) {
-
-    private var _walletAssets = MutableStateFlow(
-        dataStoreManager.readWalletAssets(
+    private fun getWalletAssets(): List<WalletAsset> {
+        return dataStoreManager.readWalletAssets(
             listOf(
                 WalletAsset(
                     identityManager.rarimoAddress(), RarimoToken(
@@ -90,13 +89,14 @@ class WalletManager @Inject constructor(
 //                ),
             )
         )
-    )
+    }
+
+    private var _walletAssets = MutableStateFlow(getWalletAssets())
     val walletAssets: StateFlow<List<WalletAsset>>
         get() = _walletAssets.asStateFlow()
 
     private val _selectedWalletAsset =
         MutableStateFlow(dataStoreManager.readSelectedWalletAsset(walletAssets.value))
-
     val selectedWalletAsset: StateFlow<WalletAsset>
         get() = _selectedWalletAsset.asStateFlow()
 
@@ -117,7 +117,7 @@ class WalletManager @Inject constructor(
 
     suspend fun loadBalances() {
         withContext(Dispatchers.IO) {
-            val balances = _walletAssets.value
+            val balances = getWalletAssets()
 
             coroutineScope {
                 balances.forEach { balance ->
@@ -140,6 +140,8 @@ class WalletManager @Inject constructor(
             dataStoreManager.saveWalletAssets(_walletAssets.value)
 
             _pointsToken.value = getPointsToken(balances.toList())
+
+            _selectedWalletAsset.value = dataStoreManager.readSelectedWalletAsset(balances.toList())
 
             Log.i(
                 "_pointsToken.value?.balanceDetails",
