@@ -2,6 +2,7 @@ package com.rarilabs.rarime.modules.passportScan.nfc
 
 import android.nfc.tech.IsoDep
 import android.util.Log
+import com.google.gson.Gson
 import com.rarilabs.rarime.modules.passportScan.models.AdditionalPersonDetails
 import com.rarilabs.rarime.modules.passportScan.models.DocType
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
@@ -339,12 +340,19 @@ class NfcUseCase(private val isoDep: IsoDep, private val bacKey: BACKeySpec,priv
                 challenge
             )
 
+            try {
+                Log.i("eDocument", Gson().toJson(eDocument))
+                Log.i("response", Gson().toJson(response))
+            } catch (e: Exception) {}
+
             return eDocument.copy(
                 aaSignature = response.response,
                 aaResponse = response.toString(),
                 isActiveAuth = true
             )
         } catch (e: Exception) {
+            Log.e("SignRevocationWithPassport", e.toString())
+
             return eDocument.copy(isActiveAuth = false)
         }
 

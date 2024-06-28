@@ -58,7 +58,7 @@ class RevocationStepViewModel @Inject constructor(
             registrationManager.eDocument.value!!
         )
 
-        registrationManager.setEDocument(updatedEDoc)
+        registrationManager.setRevEDocument(updatedEDoc)
 
         registrationManager.buildRevocationCallData()
     }

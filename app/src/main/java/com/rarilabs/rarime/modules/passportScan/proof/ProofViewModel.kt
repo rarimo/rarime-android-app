@@ -287,7 +287,6 @@ class ProofViewModel @Inject constructor(
 
         val x509Utils = X509Util()
 
-
         val proof = withContext(Dispatchers.IO) {
             val icao = readICAO(context = application.applicationContext)
 

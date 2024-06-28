@@ -59,6 +59,13 @@ class RegistrationManager @Inject constructor(
     val eDocument: StateFlow<EDocument?>
         get() = _eDocument.asStateFlow()
 
+    private var _revEDocument = MutableStateFlow(null as EDocument?)
+    val revEDocument: StateFlow<EDocument?>
+        get() = _revEDocument.asStateFlow()
+
+    fun setRevEDocument(eDocument: EDocument) {
+        _revEDocument.value = eDocument
+    }
     fun setRegistrationProof(proof: ZkProof) {
         _registrationProof.value = proof
     }
@@ -159,19 +166,19 @@ class RegistrationManager @Inject constructor(
     }
 
     fun buildRevocationCallData() {
-        val dG15File = DG15File(eDocument.value!!.dg15!!.decodeHexString().inputStream())
+        val dG15File = DG15File(revEDocument.value!!.dg15!!.decodeHexString().inputStream())
 
         val pubKeyPem = dG15File.publicKey.publicKeyToPem()
 
         val callDataBuilder = CallDataBuilder()
 
-        Log.i("buildRevocationCallData", eDocument.value!!.aaSignature.toString())
+        Log.i("buildRevocationCallData", revEDocument.value!!.aaSignature.toString())
 
         Log.i("buildRevocationCallData", pubKeyPem)
 
         val callData = callDataBuilder.buildRevoceCalldata(
             activeIdentity.value,
-            eDocument.value!!.aaSignature,
+            revEDocument.value!!.aaSignature,
             pubKeyPem.toByteArray(),
         )
 
@@ -192,7 +199,6 @@ class RegistrationManager @Inject constructor(
                     throw e
                 }
             }
-
 
             Log.i("registrationProof.value!!", registrationProof.value!!.toString())
             Log.i("eDocument.value!!", eDocument.value!!.toString())
