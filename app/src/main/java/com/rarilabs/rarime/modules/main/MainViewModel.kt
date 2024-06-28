@@ -100,6 +100,7 @@ class MainViewModel @Inject constructor(
             }
         } catch (e: Exception) {
             authManager.login()
+            e.printStackTrace()
         }
     }
 

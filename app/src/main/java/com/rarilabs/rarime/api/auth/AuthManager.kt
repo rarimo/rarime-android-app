@@ -138,6 +138,6 @@ class AuthManager @Inject constructor(
             LocalDate.now().isAfter(
                 it.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
             )
-        } ?: false
+        } ?: true
     }
 }
