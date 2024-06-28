@@ -116,15 +116,26 @@ class RegistrationManager @Inject constructor(
         return withContext(Dispatchers.IO) {
             val stateKeeperContract = rarimoContractManager.getStateKeeper()
 
-            Log.i("pub_signals[0]", registrationProof.value!!.pub_signals[0].toByteArray().size.toString())
+            val passportInfoKey: String =
+                if (eDocument.value!!.dg15?.isEmpty() ?: false) {
+                    registrationProof.value!!.pub_signals[1]
+                } else {
+                    registrationProof.value!!.pub_signals[0]
+                }
+
+            var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
+
+            if (passportInfoKeyBytes.size != 32) {
+                passportInfoKeyBytes = passportInfoKeyBytes.copyOf(32)
+            }
 
             val passportInfo = withContext(Dispatchers.IO) {
-                stateKeeperContract.getPassportInfo(
-                    Identity.bigIntToBytes(registrationProof.value!!.pub_signals[0])
-                ).send()
+                stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()
             }
 
             _activeIdentity.value = passportInfo.component1().activeIdentity
+
+            Log.i("ActiveIdentity", _activeIdentity.value.toString())
 
             val ZERO_BYTES32 = ByteArray(32) { 0 }
             val isUserRevoking =
@@ -154,12 +165,17 @@ class RegistrationManager @Inject constructor(
 
         val callDataBuilder = CallDataBuilder()
 
+        Log.i("buildRevocationCallData", eDocument.value!!.aaSignature.toString())
+
+        Log.i("buildRevocationCallData", pubKeyPem)
+
         val callData = callDataBuilder.buildRevoceCalldata(
             activeIdentity.value,
             eDocument.value!!.aaSignature,
             pubKeyPem.toByteArray(),
         )
 
+        Log.i("callData", callData.toString())
         _revocationCallData.value = callData
     }
 
@@ -176,6 +192,12 @@ class RegistrationManager @Inject constructor(
 //                    throw e
 //                }
             }
+
+
+            Log.i("registrationProof.value!!", registrationProof.value!!.toString())
+            Log.i("eDocument.value!!", eDocument.value!!.toString())
+            Log.i("masterCertProof.value!!", masterCertProof.value!!.toString())
+            Log.i("certificatePubKeySize.value", certificatePubKeySize.value.toString())
 
             register(
                 registrationProof.value!!,

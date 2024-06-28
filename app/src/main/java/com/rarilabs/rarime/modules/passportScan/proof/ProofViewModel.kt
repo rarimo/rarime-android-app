@@ -6,6 +6,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.points.PointsManager
@@ -161,7 +162,20 @@ class ProofViewModel @Inject constructor(
         registeredCircuitData: RegisteredCircuitData,
         filePaths: DownloadRequest?
     ): ZkProof {
+        Log.i("ProofViewModel", "Generating proof")
+        try {
+            Log.i("eDocument", Gson().toJson(eDocument))
+        } catch (e: Exception) {
+            Log.e("Err log eDocument", "Error: $e")
+        }
+
         val inputs = buildRegistrationCircuits(eDocument)
+
+        try {
+            Log.i("inputs", Gson().toJson(inputs))
+        } catch (e: Exception) {
+            Log.e("Err log inputs", "Error: $e")
+        }
 
         //copyToClipboard(application as Context, inputs.decodeToString())
         val assetContext: Context =
@@ -169,7 +183,6 @@ class ProofViewModel @Inject constructor(
         val assetManager = assetContext.assets
 
         val zkp = ZKPUseCase(application as Context, assetManager)
-
 
         val proof = withContext(Dispatchers.Default) {
             when (registeredCircuitData) {
@@ -193,6 +206,12 @@ class ProofViewModel @Inject constructor(
             }
         }
 
+        try {
+            Log.i("proof", Gson().toJson(proof))
+        } catch (e: Exception) {
+            Log.e("Err log proof", "Error: $e")
+        }
+
         this.proof = proof
 
         return proof
@@ -214,14 +233,29 @@ class ProofViewModel @Inject constructor(
 
             val stateKeeperContract = rarimoContractManager.getStateKeeper()
 
+            val passportInfoKey: String =
+                if (eDocument.dg15?.isEmpty() ?: false) {
+                    proof.pub_signals[1]
+                } else {
+                    proof.pub_signals[0]
+                }
+
+            var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
+
+            if (passportInfoKeyBytes.size != 32) {
+                passportInfoKeyBytes = passportInfoKeyBytes.copyOf(32)
+            }
+
+            Log.i("passportInfoKeyBytes", passportInfoKeyBytes.size.toString())
+
             val passportInfo = withContext(Dispatchers.IO) {
-                stateKeeperContract.getPassportInfo(Identity.bigIntToBytes(proof.pub_signals[0]))
-                    .send().component1()
+                stateKeeperContract.getPassportInfo(passportInfoKeyBytes)
+                    .send()
             }
 
             val ZERO_BYTES32 = ByteArray(32) { 0 }
 
-            if (!passportInfo.activeIdentity.contentEquals(ZERO_BYTES32)) {
+            if (!passportInfo.component1().activeIdentity.contentEquals(ZERO_BYTES32)) {
                 Log.i("User Revoked", "Passport is registered")
                 throw UserAlreadyRegistered()
             }

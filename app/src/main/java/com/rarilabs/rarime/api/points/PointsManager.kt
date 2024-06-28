@@ -157,6 +157,12 @@ class PointsManager @Inject constructor(
             passportInfoKey, registrationProof.pub_signals[3]
         )
 
+        var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
+
+        if (passportInfoKeyBytes.size != 32) {
+            passportInfoKeyBytes = passportInfoKeyBytes.copyOf(32)
+        }
+
         val smtProofRaw = withContext(Dispatchers.IO) {
             registrationSmtContract.getProof(proofIndex).send()
         }
@@ -166,9 +172,7 @@ class PointsManager @Inject constructor(
         val profiler = Profile().newProfile(privateKey)
 
         val passportInfoRaw = withContext(Dispatchers.IO) {
-            stateKeeperContract.getPassportInfo(
-                Identity.bigIntToBytes(passportInfoKey)
-            ).send()
+            stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()
         }
 
         val passportInfo = passportInfoRaw.component1()
