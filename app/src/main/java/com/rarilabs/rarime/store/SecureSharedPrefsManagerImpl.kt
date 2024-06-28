@@ -42,7 +42,6 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "PRIVATE_KEY" to "PRIVATE_KEY",
         "REGISTRATION_PROOF" to "REGISTRATION_PROOF",
         "TX" to "TX",
-        "PASSPORT_STATUS" to "PASSPORT_STATUS",
         "ACCESS_TOKEN" to "ACCESS_TOKEN",
         "REFRESH_TOKEN" to "REFRESH_TOKEN",
         "IS_IN_WAITLIST" to "IS_IN_WAITLIST"

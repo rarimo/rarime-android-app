@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
+import okio.ByteString.Companion.decodeHex
 import javax.inject.Inject
 
 enum class AppLoadingStates {
@@ -63,6 +64,8 @@ class MainViewModel @Inject constructor(
         private set
 
     suspend fun initApp() {
+        Log.i("initApp", identityManager.privateKey.value.toString())
+
         if (identityManager.privateKey.value == null) {
             appLoadingState.value = AppLoadingStates.LOADED
             return
@@ -85,12 +88,35 @@ class MainViewModel @Inject constructor(
     }
 
     suspend fun loadUserDetails() = coroutineScope {
-        val walletBalances = async { try { walletManager.loadBalances() } catch (e: Exception) { /* Handle exception */ } }
-        val airDropDetails = async { try { airDropManager.getAirDropByNullifier() } catch (e: Exception) { /* Handle exception */ } }
+        val walletBalances = async {
+            try {
+                walletManager.loadBalances()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                /* Handle exception */
+            }
+        }
+        val airDropDetails = async {
+            try {
+                airDropManager.getAirDropByNullifier()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                /* Handle exception */
+            }
+        }
+        val passportStatus = async {
+            try {
+                passportManager.loadPassportStatus()
+            } catch (e: Exception) {
+                /* Handle exception */
+                e.printStackTrace()
+            }
+        }
 
         // Await for all the async operations to complete
         walletBalances.await()
         airDropDetails.await()
+        passportStatus.await()
     }
 
     private suspend fun tryLogin() {

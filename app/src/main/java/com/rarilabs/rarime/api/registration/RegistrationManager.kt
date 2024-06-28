@@ -2,6 +2,7 @@ package com.rarilabs.rarime.api.registration
 
 import android.util.Log
 import com.google.gson.Gson
+import com.rarilabs.rarime.api.auth.AuthManager
 import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.manager.PassportManager
@@ -25,6 +26,7 @@ class RegistrationManager @Inject constructor(
     private val registrationAPIManager: RegistrationAPIManager,
     private val rarimoContractManager: RarimoContractManager,
     private val passportManager: PassportManager,
+    private val authManager: AuthManager,
 ) {
     private var _masterCertProof = MutableStateFlow<Proof?>(null)
         private set
@@ -92,6 +94,10 @@ class RegistrationManager @Inject constructor(
         certificateSize: Long,
         isUserRevoking: Boolean
     ) {
+        if (authManager.isAccessTokenExpired()) {
+            authManager.refresh()
+        }
+
         _eDocument.value = eDocument
 
         val jsonProof = Gson().toJson(zkProof)
@@ -121,6 +127,10 @@ class RegistrationManager @Inject constructor(
 
     suspend fun getRevocationChallenge(): ByteArray? {
         return withContext(Dispatchers.IO) {
+            if (authManager.isAccessTokenExpired()) {
+                authManager.refresh()
+            }
+
             val stateKeeperContract = rarimoContractManager.getStateKeeper()
 
             val passportInfoKey: String =
@@ -187,9 +197,11 @@ class RegistrationManager @Inject constructor(
     }
 
     suspend fun revoke() {
-        val isUnsupported = Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.value!!.personDetails?.nationality)
-
         try {
+            if (authManager.isAccessTokenExpired()) {
+                authManager.refresh()
+            }
+
             try {
                 val txResponse = registrationAPIManager.register(revocationCallData.value!!)
 
@@ -216,20 +228,7 @@ class RegistrationManager @Inject constructor(
                 certificatePubKeySize.value,
                 true
             )
-
-            if (isUnsupported) {
-                passportManager.updatePassportStatus(PassportStatus.NOT_ALLOWED)
-            } else {
-                passportManager.updatePassportStatus(PassportStatus.ALLOWED)
-            }
         } catch (e: Exception) {
-            // TODO: check if user already revoked
-            if (isUnsupported) {
-                passportManager.updatePassportStatus(PassportStatus.WAITLIST_NOT_ALLOWED)
-            } else {
-                passportManager.updatePassportStatus(PassportStatus.WAITLIST)
-            }
-
             Log.e("RevocationStepViewModel", "Error: $e")
             throw e
         }

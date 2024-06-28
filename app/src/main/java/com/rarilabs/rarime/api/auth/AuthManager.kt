@@ -132,12 +132,14 @@ class AuthManager @Inject constructor(
     }
 
     fun isAccessTokenExpired(): Boolean {
-        val accessJWT = JWT(_accessToken.value!!)
+        return _accessToken.value?.let {
+            val accessJWT = JWT(it)
 
-        return accessJWT.expiresAt?.let {
-            LocalDate.now().isAfter(
-                it.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-            )
-        } ?: false
+            return accessJWT.expiresAt?.let {
+                LocalDate.now().isAfter(
+                    it.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                )
+            } ?: false
+        } ?: true
     }
 }
