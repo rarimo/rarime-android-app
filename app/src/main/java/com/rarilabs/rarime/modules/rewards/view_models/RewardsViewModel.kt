@@ -466,7 +466,7 @@ class RewardsViewModel @Inject constructor(
         get() = _leaderBoardList.asStateFlow()
 
     fun getNationality(): String? {
-        return passportManager.passport.value?.personDetails?.nationality
+        return passportManager.getIsoCode()
     }
 
     suspend fun init() {

@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.passportScan.proof
 
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.registration.UserAlreadyRegistered
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.CirclesLoader
@@ -46,27 +48,36 @@ fun GenerateProofStep(
     onClose: (zkp: ZkProof) -> Unit,
     proofViewModel: ProofViewModel = hiltViewModel(),
     onError: (e: Exception) -> Unit,
-    onAlreadyRegistered: () -> Unit,
+    onAlreadyRegistered: (zkp: ZkProof) -> Unit,
 ) {
-
     val currentState by proofViewModel.state.collectAsState()
     val processingStatus by remember { mutableStateOf(ProcessingStatus.PROCESSING) }
+
+    suspend fun joinRewardsProgram() {
+        try {
+            proofViewModel.joinRewardProgram(eDocument)
+        } catch (e: Exception) {
+            Log.e("joinRewardsProgram", e.toString())
+            onError(e)
+        }
+    }
 
     LaunchedEffect(true) {
         try {
             proofViewModel.registerByDocument(eDocument)
             onClose(proofViewModel.getRegistrationProof())
         } catch (e: Exception) {
-
             if (e is UserAlreadyRegistered) {
-
-                onAlreadyRegistered.invoke()
+                onAlreadyRegistered.invoke(proofViewModel.getRegistrationProof())
                 return@LaunchedEffect
             }
+
             e.printStackTrace()
+
             if (!Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
-                proofViewModel.joinRewardProgram(eDocument)
+                joinRewardsProgram()
             }
+
             onError(e)
         }
     }
@@ -203,5 +214,10 @@ private fun ProcessingItem(item: PassportProofState, status: ProcessingStatus) {
 @Composable
 private fun GenerateProofStepPreview() {
     val eDocument = EDocument()
-    GenerateProofStep(onClose = {}, eDocument = eDocument, onError = {}, onAlreadyRegistered = {})
+    GenerateProofStep(
+        onClose = {},
+        eDocument = eDocument,
+        onError = {},
+        onAlreadyRegistered = {}
+    )
 }

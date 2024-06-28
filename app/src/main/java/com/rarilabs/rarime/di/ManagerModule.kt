@@ -22,6 +22,8 @@ import com.rarilabs.rarime.api.registration.RegistrationAPI
 import com.rarilabs.rarime.api.registration.RegistrationAPIManager
 import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.manager.IdentityManager
+import com.rarilabs.rarime.manager.NfcManager
+import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.manager.SecurityManager
 import com.rarilabs.rarime.manager.SettingsManager
@@ -56,6 +58,12 @@ abstract class ManagerModule {
 @Module
 @InstallIn(SingletonComponent::class)
 class APIModule {
+    @Provides
+    @Singleton
+    fun provideNfcManager(@ApplicationContext context: Context): NfcManager {
+        return NfcManager(context)
+    }
+
     @Provides
     @Singleton
     @Named("jsonApiRetrofit")
@@ -95,8 +103,14 @@ class APIModule {
     @Provides
     @Singleton
     fun provideRegistrationManager(
-        registrationAPIManager: RegistrationAPIManager
-    ): RegistrationManager = RegistrationManager(registrationAPIManager)
+        registrationAPIManager: RegistrationAPIManager,
+        rarimoContractManager: RarimoContractManager,
+        passportManager: PassportManager,
+    ): RegistrationManager = RegistrationManager(
+        registrationAPIManager,
+        rarimoContractManager,
+        passportManager
+    )
 
     @Provides
     @Singleton
@@ -128,20 +142,24 @@ class APIModule {
 
     @Provides
     @Singleton
+    fun providePassportManager(dataStoreManager: SecureSharedPrefsManager): PassportManager = PassportManager(dataStoreManager)
+
+    @Provides
+    @Singleton
     fun providePointsManager(
         @ApplicationContext context: Context,
         contractManager: RarimoContractManager,
         pointsAPIManager: PointsAPIManager,
         identityManager: IdentityManager,
         authManager: AuthManager,
-        dataStoreManager: SecureSharedPrefsManager
+        passportManager: PassportManager
     ): PointsManager = PointsManager(
         context,
         contractManager,
         pointsAPIManager,
         identityManager,
         authManager,
-        dataStoreManager
+        passportManager,
     )
 
     @Provides

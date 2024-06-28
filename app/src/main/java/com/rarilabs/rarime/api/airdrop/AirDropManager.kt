@@ -53,7 +53,7 @@ class AirDropManager @Inject constructor(
         val zkp = ZKPUseCase(context, assetManager)
         val stateKeeperContract = rarimoContractManager.getStateKeeper()
 
-        val registrationSmtContract = rarimoContractManager.getPoseidonSMT(BaseConfig.REGISTER_CONTRACT_ADDRESS)
+        val registrationSmtContract = rarimoContractManager.getPoseidonSMT(BaseConfig.REGISTRATION_SMT_CONTRACT_ADDRESS)
 
         val proofIndex = Identity.calculateProofIndex(
             registrationProof.pub_signals[0], registrationProof.pub_signals[3]

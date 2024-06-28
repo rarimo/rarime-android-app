@@ -11,7 +11,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ReserveTokenViewModel @Inject constructor(
-    val walletManager: WalletManager, private val passportManager: PassportManager,
+    val walletManager: WalletManager,
+    private val passportManager: PassportManager,
     val pointsManager: PointsManager,
     val authManager: AuthManager,
 ) : ViewModel() {

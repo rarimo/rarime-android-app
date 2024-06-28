@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.manager
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
@@ -14,58 +15,58 @@ import javax.inject.Singleton
 
 @Singleton
 class PassportManager @Inject constructor(
-    private val secureSharedPrefsManager: SecureSharedPrefsManager
+    private val dataStoreManager: SecureSharedPrefsManager
 ) {
+    var _passport = MutableStateFlow(dataStoreManager.readEDocument())
+        private set
+    val passport: StateFlow<EDocument?>
+        get() = _passport.asStateFlow()
 
-    var passport = mutableStateOf<EDocument?>(
-        secureSharedPrefsManager.readEDocument()
-    )
+    var passportCardLook = mutableStateOf(dataStoreManager.readPassportCardLook())
         private set
-    var passportCardLook = mutableStateOf(secureSharedPrefsManager.readPassportCardLook())
+    var isIncognitoMode = mutableStateOf(dataStoreManager.readIsPassportIncognitoMode())
         private set
-    var isIncognitoMode = mutableStateOf(secureSharedPrefsManager.readIsPassportIncognitoMode())
-        private set
-    var passportIdentifiers = mutableStateOf(secureSharedPrefsManager.readPassportIdentifiers())
+    var passportIdentifiers = mutableStateOf(dataStoreManager.readPassportIdentifiers())
         private set
 
-    private var _passportStatus = MutableStateFlow(secureSharedPrefsManager.readPassportStatus())
+    private var _passportStatus = MutableStateFlow(dataStoreManager.readPassportStatus())
 
     val passportStatus: StateFlow<PassportStatus>
         get() = _passportStatus.asStateFlow()
 
     fun updatePassportCardLook(look: PassportCardLook) {
         passportCardLook.value = look
-        secureSharedPrefsManager.savePassportCardLook(look)
+        dataStoreManager.savePassportCardLook(look)
     }
 
     fun getIsoCode(): String? {
-        return passport.value?.personDetails?.nationality
+        return _passport.value?.personDetails?.nationality
     }
 
     fun updatePassportStatus(status: PassportStatus) {
         _passportStatus.value = status
-        secureSharedPrefsManager.savePassportStatus(status)
+        dataStoreManager.savePassportStatus(status)
     }
 
     fun updateIsIncognitoMode(isIncognitoMode: Boolean) {
         this.isIncognitoMode.value = isIncognitoMode
-        secureSharedPrefsManager.saveIsPassportIncognitoMode(isIncognitoMode)
+        dataStoreManager.saveIsPassportIncognitoMode(isIncognitoMode)
     }
 
     fun updatePassportIdentifiers(identifiers: List<PassportIdentifier>) {
         passportIdentifiers.value = identifiers
-        secureSharedPrefsManager.savePassportIdentifiers(identifiers)
+        dataStoreManager.savePassportIdentifiers(identifiers)
     }
 
     fun deletePassport() {
-        secureSharedPrefsManager.deletePassport()
-        this.passport.value = null
+        dataStoreManager.deletePassport()
+        _passport.value = null
     }
 
     fun setPassport(passport: EDocument?) {
         if (passport != null) {
-            secureSharedPrefsManager.saveEDocument(passport)
+            dataStoreManager.saveEDocument(passport)
         }
-        this.passport.value = passport
+        _passport.value = passport
     }
 }

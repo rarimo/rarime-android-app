@@ -29,9 +29,9 @@ import com.rarilabs.rarime.api.points.models.WithdrawPayloadAttributes
 import com.rarilabs.rarime.config.Keys
 import com.rarilabs.rarime.data.ProofTxFull
 import com.rarilabs.rarime.manager.IdentityManager
+import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
-import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
 import com.rarilabs.rarime.util.data.ZkProof
@@ -41,6 +41,7 @@ import identity.Identity
 import identity.Profile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.web3j.utils.Numeric
 import javax.inject.Inject
 
 class PointsManager @Inject constructor(
@@ -49,7 +50,7 @@ class PointsManager @Inject constructor(
     private val pointsAPIManager: PointsAPIManager,
     private val identityManager: IdentityManager,
     private val authManager: AuthManager,
-    private val dataStoreManager: SecureSharedPrefsManager,
+    private val passportManager: PassportManager,
 ) {
     suspend fun createPointsBalance(referralCode: String) {
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
@@ -139,15 +140,28 @@ class PointsManager @Inject constructor(
 
         val zkp = ZKPUseCase(context, assetManager)
 
-
-        val registrationSmtContract =
-            contractManager.getPoseidonSMT(BaseConfig.REGISTER_CONTRACT_ADDRESS)
         val stateKeeperContract = contractManager.getStateKeeper()
 
+        val registrationSmtContract = contractManager.getPoseidonSMT(
+            BaseConfig.REGISTRATION_SMT_CONTRACT_ADDRESS
+        )
+
+        val passportInfoKey: String =
+            if (eDocument.dg15?.isEmpty() ?: false) {
+                registrationProof.pub_signals[1]
+            } else {
+                registrationProof.pub_signals[0]
+            }
 
         val proofIndex = Identity.calculateProofIndex(
-            registrationProof.pub_signals[0], registrationProof.pub_signals[3]
+            passportInfoKey, registrationProof.pub_signals[3]
         )
+
+        var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
+
+        if (passportInfoKeyBytes.size != 32) {
+            passportInfoKeyBytes = passportInfoKeyBytes.copyOf(32)
+        }
 
         val smtProofRaw = withContext(Dispatchers.IO) {
             registrationSmtContract.getProof(proofIndex).send()
@@ -155,15 +169,10 @@ class PointsManager @Inject constructor(
         val smtProof = ProofTxFull.fromContractProof(smtProofRaw)
         val smtProofJson = Gson().toJson(smtProof)
 
-
         val profiler = Profile().newProfile(privateKey)
 
-        Log.i("pubSignal", Identity.bigIntToBytes(registrationProof.pub_signals[0]).size.toString())
-
         val passportInfoRaw = withContext(Dispatchers.IO) {
-            stateKeeperContract.getPassportInfo(
-                Identity.bigIntToBytes(registrationProof.pub_signals[0])
-            ).send()
+            stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()
         }
 
         val passportInfo = passportInfoRaw.component1()
@@ -173,7 +182,7 @@ class PointsManager @Inject constructor(
             eDocument.dg1!!.decodeHexString(),
             smtProofJson.toByteArray(Charsets.UTF_8),
             "23073",
-            registrationProof.pub_signals[0],
+            passportInfoKey,
             identityInfo.issueTimestamp.toString(),
             passportInfo.identityReissueCounter.toString(),
             BaseConfig.POINTS_SVC_ID,
@@ -200,10 +209,11 @@ class PointsManager @Inject constructor(
             throw Exception("user nullifier is null")
         }
 
-        val eDocument = dataStoreManager.readEDocument()!!
-        val registrationProof = dataStoreManager.readRegistrationProof()!!
+        val eDocument = passportManager.passport.value!!
+        val registrationProof = identityManager.registrationProof.value!!
+
         val anonymousId = Identity.calculateAnonymousID(
-            userNullifierHex.decodeHexString(), BaseConfig.POINTS_SVC_ID
+            Numeric.hexStringToByteArray(userNullifierHex), BaseConfig.POINTS_SVC_ID
         )
         val hmacMessage = Identity.calculateHmacMessage(
             userNullifierHex, eDocument.personDetails!!.nationality, anonymousId
@@ -218,21 +228,20 @@ class PointsManager @Inject constructor(
 
 
             pointsAPIManager.verifyPassport(
-                userNullifierHex, VerifyPassportBody(
+                userNullifierHex,
+                VerifyPassportBody(
                     data = VerifyPassportData(
                         id = userNullifierHex,
                         type = "verify_passport",
                         attributes = VerifyPassportAttributes(
-//                        proof = ZkProof(
-//                            proof = queryProof.proof,
-//                            pub_signals = pubSignals,
-//                        )
                             proof = zkProof,
                             country = eDocument!!.personDetails!!.nationality!!,
                             anonymous_id = anonymousId.toHexString()
                         )
                     )
-                ), "Bearer ${authManager.accessToken.value!!}", signature = hmacSignature.toHexString()
+                ),
+                "Bearer ${authManager.accessToken.value!!}",
+                signature = hmacSignature.toHexString()
             )
         }
     }

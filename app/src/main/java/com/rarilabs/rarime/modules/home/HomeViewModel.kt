@@ -22,7 +22,6 @@ class HomeViewModel @Inject constructor(
     private val passportManager: PassportManager,
     private val airDropManager: AirDropManager,
     private val walletManager: WalletManager,
-
     ) : ViewModel() {
     val isAirDropClaimed = airDropManager.isAirDropClaimed
 

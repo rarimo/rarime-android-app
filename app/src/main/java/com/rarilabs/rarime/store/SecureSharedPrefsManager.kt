@@ -17,9 +17,6 @@ interface SecureSharedPrefsManager {
 
     fun readPrivateKey(): String?
 
-    fun readIsIntroFinished(): Boolean
-    fun saveIsIntroFinished(isFinished: Boolean)
-
     fun readPasscodeState(): SecurityCheckState
     fun savePasscodeState(state: SecurityCheckState)
 
@@ -49,10 +46,9 @@ interface SecureSharedPrefsManager {
     fun saveSelectedWalletAsset(walletAsset: WalletAsset)
 
     fun saveEDocument(eDocument: EDocument)
-
     fun readEDocument(): EDocument?
-    fun saveRegistrationProof(proof: ZkProof)
 
+    fun saveRegistrationProof(proof: ZkProof)
     fun readRegistrationProof(): ZkProof?
 
     fun readTransactions(): List<Transaction>

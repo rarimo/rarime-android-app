@@ -1,34 +1,41 @@
 package com.rarilabs.rarime.modules.main.guards
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.util.Screen
 
 @Composable
 fun AuthGuard(
     navigate: (String) -> Unit,
-    currentRoute: String,
-    updateSavedNextNavScreen: (String) -> Unit,
+    init: () -> Unit = {},
     guardViewModel: GuardViewModel = hiltViewModel(),
     content: @Composable () -> Unit
 ) {
     val isScreenLocked by guardViewModel.isScreenLocked
+    val biometricsState by guardViewModel.biometricsState
+    val passcodeState by guardViewModel.passcodeState
 
     val privateKey by guardViewModel.privateKey.collectAsState()
 
     LaunchedEffect(Unit) {
-        updateSavedNextNavScreen(currentRoute)
+        init()
     }
 
     if (privateKey != null) {
         if (isScreenLocked) {
             navigate(Screen.Lock.route)
         } else {
-            content()
+            if (passcodeState.value == SecurityCheckState.UNSET.value) {
+                navigate(Screen.Passcode.route)
+            } else if (biometricsState.value == SecurityCheckState.UNSET.value) {
+                navigate(Screen.EnableBiometrics.route)
+            } else {
+                content()
+            }
         }
     } else {
         navigate(Screen.Intro.route)

@@ -60,6 +60,7 @@
     <string name="confirm">Confirm</string>
     <string name="dismiss">Dismiss</string>
     <string name="nfc_reader_scanning">Scanning…</string>
+    <string name="nfc_reader_revoke">Revoke</string>
     <string name="nfc_reader_error">Scan again</string>
     <string name="beta_launch">Beta launch</string>
     <string name="create_account_btn">Create account</string>
@@ -239,4 +240,7 @@
     <string name="delete_profile_confirm_btn">Yes</string>
     <string name="delete_profile_cancel_btn">No</string>
     <string name="you_have_already_registered">You have already registered</string>
+    <string name="you_have_already_registered_offer">Do you want to revocate your passport?</string>
+    <string name="you_have_already_registered_confirm">Yes</string>
+    <string name="you_have_already_registered_cancel">No</string>
 </resources>

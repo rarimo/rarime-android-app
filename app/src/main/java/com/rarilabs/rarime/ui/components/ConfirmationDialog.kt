@@ -24,7 +24,7 @@ import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun AlertDialogPreview(
+fun ConfirmationDialog(
     onCancel: () -> Unit = {},
     onConfirm: () -> Unit = {},
 
@@ -98,8 +98,8 @@ fun AlertDialogPreview(
 
 @Preview(showBackground = true)
 @Composable
-private fun AlertDialogPreviewPreview() {
-    AlertDialogPreview(
+private fun ConfirmationDialogPreview() {
+    ConfirmationDialog(
         title = stringResource(R.string.delete_profile_title),
         subtitle = stringResource(R.string.delete_profile_desc),
     )

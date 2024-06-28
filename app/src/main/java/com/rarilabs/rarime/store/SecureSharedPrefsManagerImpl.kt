@@ -2,6 +2,7 @@ package com.rarilabs.rarime.store
 
 import android.app.Application
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.rarilabs.rarime.data.enums.AppColorScheme
@@ -26,7 +27,6 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
 ) : SecureSharedPrefsManager {
 
     private val accessTokens = mapOf(
-        "IS_INTRO_FINISHED" to "IS_INTRO_FINISHED",
         "PASSCODE_STATE" to "PASSCODE_STATE",
         "BIOMETRICS_STATE" to "BIOMETRICS_STATE",
         "PASSPORT_CARD_LOOK" to "PASSPORT_CARD_LOOK",
@@ -82,16 +82,6 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
 
     override fun readPrivateKey(): String? {
         return getSharedPreferences().getString(accessTokens["PRIVATE_KEY"], null)
-    }
-
-    override fun readIsIntroFinished(): Boolean {
-        return getSharedPreferences().getBoolean(accessTokens["IS_INTRO_FINISHED"], false)
-    }
-
-    override fun saveIsIntroFinished(isFinished: Boolean) {
-        val editor = getEditor()
-        editor.putBoolean(accessTokens["IS_INTRO_FINISHED"], isFinished)
-        editor.apply()
     }
 
     override fun readPasscodeState(): SecurityCheckState {
@@ -291,14 +281,25 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     override fun saveEDocument(eDocument: EDocument) {
         val jsonEDocument = Gson().toJson(eDocument)
         val editor = getEditor()
-        editor.putString(accessTokens["EDocument"], jsonEDocument)
+        editor.putString(accessTokens["E_DOCUMENT"], jsonEDocument)
         editor.apply()
     }
 
     override fun readEDocument(): EDocument? {
-        val jsonEDocument =
-            getSharedPreferences().getString(accessTokens["EDocument"], null) ?: return null
-        return Gson().fromJson(jsonEDocument, EDocument::class.java)
+        try {
+            val jsonEDocument =
+                getSharedPreferences().getString(accessTokens["E_DOCUMENT"], null) ?: return null
+
+            Log.i("readEDocument", "jsonEDocument $jsonEDocument")
+
+            val resp = Gson().fromJson(jsonEDocument, EDocument::class.java)
+
+            Log.i("resp", "resp $resp")
+
+            return resp
+        } catch (e: Exception) {
+            return null
+        }
     }
 
     override fun saveRegistrationProof(proof: ZkProof) {

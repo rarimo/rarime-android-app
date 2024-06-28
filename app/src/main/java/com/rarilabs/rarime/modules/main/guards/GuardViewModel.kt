@@ -13,7 +13,9 @@ class GuardViewModel @Inject constructor(
     private val securityManager: SecurityManager,
     private val identityManager: IdentityManager,
 ): ViewModel() {
-    val isAuthorized = authManager.isAuthorized
-    val isScreenLocked = securityManager.isScreenLocked
     val privateKey = identityManager.privateKey
+
+    val isScreenLocked = securityManager.isScreenLocked
+    val biometricsState = securityManager.biometricsState
+    var passcodeState = securityManager.passcodeState
 }

@@ -6,13 +6,12 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import coil.network.HttpException
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.rarilabs.rarime.BaseConfig
-import com.rarilabs.rarime.api.auth.AuthManager
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.registration.RegistrationManager
-import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
 import com.rarilabs.rarime.data.ProofTx
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.manager.IdentityManager
@@ -23,7 +22,6 @@ import com.rarilabs.rarime.modules.passportScan.DownloadRequest
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.RegisteredCircuitData
 import com.rarilabs.rarime.modules.passportScan.nfc.SODFileOwn
-import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.SecurityUtil
 import com.rarilabs.rarime.util.ZKPUseCase
@@ -43,7 +41,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
-import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey
 import org.jmrtd.lds.icao.DG15File
 import java.io.IOException
 import javax.inject.Inject
@@ -53,35 +50,31 @@ import javax.inject.Inject
 @HiltViewModel
 class ProofViewModel @Inject constructor(
     private val application: Application,
-    private val dataStoreManager: SecureSharedPrefsManager,
+    private val identityManager: IdentityManager,
     private val passportManager: PassportManager,
     private val registrationManager: RegistrationManager,
     private val rarimoContractManager: RarimoContractManager,
-    private val authManager: AuthManager,
-    identityManager: IdentityManager,
     private val pointsManager: PointsManager
 ) : AndroidViewModel(application) {
     private val privateKeyBytes = identityManager.privateKeyBytes
 
     private val TAG = ProofViewModel::class.java.simpleName
 
-    private lateinit var proof: ZkProof
+    private lateinit var registerIdentityProof: ZkProof
     private var _state = MutableStateFlow(PassportProofState.READING_DATA)
-    private lateinit var masterCertProof: Proof
 
     private val second = 1000L
     val state: StateFlow<PassportProofState>
         get() = _state.asStateFlow()
 
     fun getRegistrationProof(): ZkProof {
-        return proof
+        return registerIdentityProof
     }
 
     suspend fun joinRewardProgram(eDocument: EDocument) {
         val res = pointsManager.joinRewardProgram(eDocument)
         res
     }
-
 
     private suspend fun registerCertificate(eDocument: EDocument): RegisteredCircuitData {
         val sodStream = eDocument.sod!!.decodeHexString().inputStream()
@@ -95,14 +88,11 @@ class ProofViewModel @Inject constructor(
 
         val pubKeySize = x509Util.getRSASize(publicKeyBytes)
 
-
         val certificate = SecurityUtil.convertToPEM(sodFile.docSigningCertificate)
-
 
         val certificatesSMTAddress = BaseConfig.CERTIFICATES_SMT_CONTRACT_ADDRESS
 
         val certificatesSMTContract = rarimoContractManager.getPoseidonSMT(certificatesSMTAddress)
-
 
         val icao = readICAO(context = application.applicationContext)
         val slaveCertificateIndex =
@@ -111,9 +101,6 @@ class ProofViewModel @Inject constructor(
         val proof = withContext(Dispatchers.IO) {
             certificatesSMTContract.getProof(slaveCertificateIndex).send()
         }
-
-
-
 
         if (proof?.existence == true) {
             Log.i("ProofViewModel", "Passport certificate is already registered")
@@ -131,7 +118,6 @@ class ProofViewModel @Inject constructor(
             BaseConfig.MASTER_CERTIFICATES_FILENAME //TODO: CHECK VAL
         )
 
-
 //        val proof = withContext(Dispatchers.IO) {
 //            val icao = readICAO(context = application.applicationContext)
 //            val slaveCertificateIndex =
@@ -141,17 +127,11 @@ class ProofViewModel @Inject constructor(
 //            poseidonSMT.getProof(indexHex.decodeHexString()).send()
 //        }
 
-
         val response = withContext(Dispatchers.IO) {
-            registrationManager.register(callData)
-        }
-
-        if (response == null) {
-            throw IllegalStateException("Registration error")
+            registrationManager.relayerRegister(callData)
         }
 
         Log.i(TAG, "Passport certificate EVM Tx Hash " + response.data.attributes.tx_hash)
-
 
         val res =
             rarimoContractManager.checkIsTransactionSuccessful(response.data.attributes.tx_hash)
@@ -170,7 +150,20 @@ class ProofViewModel @Inject constructor(
         registeredCircuitData: RegisteredCircuitData,
         filePaths: DownloadRequest?
     ): ZkProof {
+        Log.i("ProofViewModel", "Generating proof")
+        try {
+            Log.i("eDocument", Gson().toJson(eDocument))
+        } catch (e: Exception) {
+            Log.e("Err log eDocument", "Error: $e")
+        }
+
         val inputs = buildRegistrationCircuits(eDocument)
+
+        try {
+            Log.i("inputs", Gson().toJson(inputs))
+        } catch (e: Exception) {
+            Log.e("Err log inputs", "Error: $e")
+        }
 
         //copyToClipboard(application as Context, inputs.decodeToString())
         val assetContext: Context =
@@ -178,7 +171,6 @@ class ProofViewModel @Inject constructor(
         val assetManager = assetContext.assets
 
         val zkp = ZKPUseCase(application as Context, assetManager)
-
 
         val proof = withContext(Dispatchers.Default) {
             when (registeredCircuitData) {
@@ -202,23 +194,23 @@ class ProofViewModel @Inject constructor(
             }
         }
 
-        this.proof = proof
+        try {
+            Log.i("proof", Gson().toJson(proof))
+        } catch (e: Exception) {
+            Log.e("Err log proof", "Error: $e")
+        }
+
+        this.registerIdentityProof = proof
 
         return proof
     }
 
     suspend fun registerByDocument(eDocument: EDocument) {
-        val isUnsupported = Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)
+        val isUnsupported =
+            Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)
 
         try {
             _state.value = PassportProofState.READING_DATA
-
-            passportManager.setPassport(eDocument)
-
-            // TODO: remove
-            if (authManager.isAccessTokenExpired()) {
-                authManager.refresh()
-            }
 
             val registeredCircuitData = registerCertificate(eDocument)
 
@@ -228,31 +220,39 @@ class ProofViewModel @Inject constructor(
             _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
             val proof = generateRegisterIdentityProof(eDocument, registeredCircuitData, filePaths)
 
-            val stateKeeperContract = rarimoContractManager.getStateKeeper()
+            registrationManager.setCertSize(
+                when (registeredCircuitData) {
+                    RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA2048 -> 2048L
+                    RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA4096 -> 4096L
+                }
+            )
 
-            val passportInfo = withContext(Dispatchers.IO) {
-                stateKeeperContract.getPassportInfo(Identity.bigIntToBytes(proof.pub_signals[0]))
-                    .send().component1()
+//            val stateKeeperContract = rarimoContractManager.getStateKeeper()
+
+            val passportInfoKey: String =
+                if (eDocument.dg15?.isEmpty() ?: false) {
+                    proof.pub_signals[1]
+                } else {
+                    proof.pub_signals[0]
+                }
+
+            var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
+
+            if (passportInfoKeyBytes.size != 32) {
+                passportInfoKeyBytes = passportInfoKeyBytes.copyOf(32)
             }
 
-            val ZERO_BYTES32 = ByteArray(32) { 0 }
-
-            if (!passportInfo.activeIdentity.contentEquals(ZERO_BYTES32)) {
-                passportManager.updatePassportStatus(PassportStatus.UNSCANNED)
-                passportManager.deletePassport()
-                Log.i("User Revoked", "Passport is registered")
-                throw UserAlreadyRegistered()
-            }
-
-            val certificatePubKeySize = when (registeredCircuitData) {
-                RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA2048 -> 2048L
-                RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA4096 -> 4096L
-            }
-
-            dataStoreManager.saveRegistrationProof(proof)
+            Log.i("passportInfoKeyBytes", passportInfoKeyBytes.size.toString())
 
             _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
-            register(proof, eDocument, certificatePubKeySize, false)
+
+            registrationManager.register(
+                proof,
+                eDocument,
+                registrationManager.masterCertProof.value!!,
+                registrationManager.certificatePubKeySize.value,
+                false
+            )
 
             _state.value = PassportProofState.FINALIZING
 
@@ -272,33 +272,6 @@ class ProofViewModel @Inject constructor(
 
             throw e
         }
-
-
-    }
-
-    private suspend fun register(
-        zkProof: ZkProof, eDocument: EDocument, certificateSize: Long, isUserRevoking: Boolean
-    ) {
-        val jsonProof = Gson().toJson(zkProof)
-
-        val dG15File = DG15File(eDocument.dg15!!.decodeHexString().inputStream())
-
-        val pubKeyPem = dG15File.publicKey.publicKeyToPem()
-
-        val callDataBuilder = CallDataBuilder()
-        val callData = callDataBuilder.buildRegisterCalldata(
-            jsonProof.toByteArray(),
-            eDocument.aaSignature,
-            pubKeyPem.toByteArray(),
-            masterCertProof.root,
-            certificateSize,
-            isUserRevoking
-        )
-
-        withContext(Dispatchers.IO) {
-            val response = registrationManager.register(callData)
-            rarimoContractManager.checkIsTransactionSuccessful(response!!.data.attributes.tx_hash)
-        }
     }
 
     private suspend fun buildRegistrationCircuits(eDocument: EDocument): ByteArray {
@@ -313,7 +286,6 @@ class ProofViewModel @Inject constructor(
         val certificatesSMTAddress = BaseConfig.CERTIFICATES_SMT_CONTRACT_ADDRESS
 
         val x509Utils = X509Util()
-
 
         val proof = withContext(Dispatchers.IO) {
             val icao = readICAO(context = application.applicationContext)
@@ -364,8 +336,7 @@ class ProofViewModel @Inject constructor(
             proofJson.toByteArray(Charsets.UTF_8)
         )
 
-
-        this.masterCertProof = proof!!
+        registrationManager.setMasterCertProof(proof)
 
         return inputs
     }
@@ -393,5 +364,3 @@ class ProofViewModel @Inject constructor(
     }
 
 }
-
-class UserAlreadyRegistered() : Exception()
