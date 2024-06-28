@@ -1,21 +1,25 @@
 package com.rarilabs.rarime.manager
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.enums.PassportStatus
-import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
+import com.rarilabs.rarime.store.SecureSharedPrefsManager
+import identity.Identity
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class PassportManager @Inject constructor(
-    private val dataStoreManager: SecureSharedPrefsManager
+    private val dataStoreManager: SecureSharedPrefsManager,
+    private val rarimoContractManager: RarimoContractManager,
+    private val identityManager: IdentityManager,
 ) {
     var _passport = MutableStateFlow(dataStoreManager.readEDocument())
         private set
@@ -68,5 +72,35 @@ class PassportManager @Inject constructor(
             dataStoreManager.saveEDocument(passport)
         }
         _passport.value = passport
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    suspend fun getPassportActiveIdentity(): String? {
+
+        try {
+            val passportInfoKey: String? = if (passport.value?.dg15?.isEmpty() ?: false) {
+                identityManager.registrationProof.value?.pub_signals?.get(1)
+            } else {
+                identityManager.registrationProof.value?.pub_signals?.get(0)
+            }
+
+            var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
+
+            if (passportInfoKeyBytes.size != 32) {
+                passportInfoKeyBytes = passportInfoKeyBytes.copyOf(32)
+            }
+
+
+            val stateKeeperContract = rarimoContractManager.getStateKeeper()
+
+            val passportInfoRaw = withContext(Dispatchers.IO) {
+                stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()
+            }
+
+            return passportInfoRaw.component1().activeIdentity.toHexString()
+        } catch (e: Exception) {
+            return null
+        }
+
     }
 }

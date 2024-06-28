@@ -245,4 +245,6 @@
     <string name="you_have_already_registered_offer">Do you want to revocate your passport?</string>
     <string name="you_have_already_registered_confirm">Yes</string>
     <string name="you_have_already_registered_cancel">No</string>
+    <string name="send_us_feedback">Send feedback\n</string>
+    <string name="send_us_feedback_body">help us make the app better\n</string>
 </resources>

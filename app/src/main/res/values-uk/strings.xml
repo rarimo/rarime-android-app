@@ -244,4 +244,6 @@
     <string name="you_have_already_registered_confirm">Так</string>
     <string name="you_have_already_registered_cancel">Ні</string>
     <string name="nfc_reader_revoke">Revoke</string>
+    <string name="send_us_feedback">Send feedback\n</string>
+    <string name="send_us_feedback_body">help us make the app better\n</string>
 </resources>
