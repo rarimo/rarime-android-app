@@ -97,7 +97,6 @@ class WalletManager @Inject constructor(
 
     private val _selectedWalletAsset =
         MutableStateFlow(dataStoreManager.readSelectedWalletAsset(walletAssets.value))
-
     val selectedWalletAsset: StateFlow<WalletAsset>
         get() = _selectedWalletAsset.asStateFlow()
 
@@ -141,6 +140,8 @@ class WalletManager @Inject constructor(
             dataStoreManager.saveWalletAssets(_walletAssets.value)
 
             _pointsToken.value = getPointsToken(balances.toList())
+
+            _selectedWalletAsset.value = dataStoreManager.readSelectedWalletAsset(balances.toList())
 
             Log.i(
                 "_pointsToken.value?.balanceDetails",

@@ -45,9 +45,7 @@ fun WalletReceiveScreen(
     val clipboardManager = LocalClipboardManager.current
     var isCopied by remember { mutableStateOf(false) }
 
-    val address = walletViewModel.userAddress
-
-    val selectedWalletAsset = walletViewModel.selectedWalletAsset.collectAsState()
+    val selectedWalletAsset by walletViewModel.selectedWalletAsset.collectAsState()
 
     LaunchedEffect(isCopied) {
         if (isCopied) {
@@ -58,8 +56,8 @@ fun WalletReceiveScreen(
 
     WalletRouteLayout(
         headerModifier = Modifier.padding(horizontal = 20.dp),
-        title = stringResource(R.string.wallet_receive_title, selectedWalletAsset.value.token.symbol),
-        description = stringResource(R.string.wallet_receive_description, selectedWalletAsset.value.token.symbol),
+        title = stringResource(R.string.wallet_receive_title, selectedWalletAsset.token.symbol),
+        description = stringResource(R.string.wallet_receive_description, selectedWalletAsset.token.symbol),
         onBack = onBack
     ) {
         CardContainer(
@@ -73,7 +71,7 @@ fun WalletReceiveScreen(
             ) {
                 Box {
                     QrCodeView(
-                        data = address,
+                        data = selectedWalletAsset.userAddress,
                         colors = QrCodeColors(
                             background = RarimeTheme.colors.backgroundPure,
                             foreground = RarimeTheme.colors.textPrimary
@@ -114,7 +112,7 @@ fun WalletReceiveScreen(
                             .padding(vertical = 14.dp, horizontal = 16.dp)
                     ) {
                         Text(
-                            text = address,
+                            text = selectedWalletAsset.userAddress,
                             style = RarimeTheme.typography.body3,
                             color = RarimeTheme.colors.textPrimary,
                             modifier = Modifier.weight(1f),
@@ -122,7 +120,7 @@ fun WalletReceiveScreen(
                         SecondaryTextButton(
                             leftIcon = if (isCopied) R.drawable.ic_check else R.drawable.ic_copy_simple,
                             onClick = {
-                                clipboardManager.setText(AnnotatedString(address))
+                                clipboardManager.setText(AnnotatedString(selectedWalletAsset.userAddress))
                                 isCopied = true
                             }
                         )

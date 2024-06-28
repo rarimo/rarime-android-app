@@ -55,7 +55,11 @@ fun WalletTokensList(walletViewModel: WalletViewModel) {
     }
 
     LaunchedEffect(selectedUserAsset) {
-        scrollToTokenByIndex(userAssets.indexOf(selectedUserAsset))
+        val tokenIndex = userAssets.indexOf(selectedUserAsset)
+
+        if (tokenIndex != -1) {
+            scrollToTokenByIndex(userAssets.indexOf(selectedUserAsset))
+        }
     }
 
     val halfScreenWidth = configuration.screenWidthDp / 2
