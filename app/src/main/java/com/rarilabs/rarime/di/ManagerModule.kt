@@ -97,8 +97,9 @@ class APIModule {
         registrationAPIManager: RegistrationAPIManager,
         rarimoContractManager: RarimoContractManager,
         passportManager: PassportManager,
+        authManager: AuthManager,
     ): RegistrationManager = RegistrationManager(
-        registrationAPIManager, rarimoContractManager, passportManager
+        registrationAPIManager, rarimoContractManager, passportManager, authManager
     )
 
     @Provides

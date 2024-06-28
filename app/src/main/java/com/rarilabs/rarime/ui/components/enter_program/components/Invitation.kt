@@ -80,6 +80,8 @@ fun Invitation(
             } catch (e: Exception) {
                 Log.e("verifyCode", e.toString())
 
+                e.printStackTrace()
+
                 if (e is InvitationNotExistException) {
                     invitationCodeState.updateErrorMessage(
                         context.getString(R.string.referal_code_not_exist_msg)

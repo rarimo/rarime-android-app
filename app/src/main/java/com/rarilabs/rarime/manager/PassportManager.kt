@@ -6,6 +6,7 @@ import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
+import com.rarilabs.rarime.util.Constants
 import identity.Identity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,8 +34,7 @@ class PassportManager @Inject constructor(
     var passportIdentifiers = mutableStateOf(dataStoreManager.readPassportIdentifiers())
         private set
 
-    private var _passportStatus = MutableStateFlow(dataStoreManager.readPassportStatus())
-
+    private var _passportStatus = MutableStateFlow(PassportStatus.UNSCANNED)
     val passportStatus: StateFlow<PassportStatus>
         get() = _passportStatus.asStateFlow()
 
@@ -47,7 +47,7 @@ class PassportManager @Inject constructor(
         return _passport.value?.personDetails?.nationality
     }
 
-    fun updatePassportStatus(status: PassportStatus) {
+    private fun updatePassportStatus(status: PassportStatus) {
         _passportStatus.value = status
         dataStoreManager.savePassportStatus(status)
     }
@@ -102,5 +102,36 @@ class PassportManager @Inject constructor(
             return null
         }
 
+    }
+
+    suspend fun loadPassportStatus() {
+        if (passport.value == null) {
+            return
+        }
+
+        val isInWaitlist = dataStoreManager.readIsInWaitlist()
+
+        val isUnsupported = Constants.NOT_ALLOWED_COUNTRIES.contains(passport.value!!.personDetails?.nationality)
+        var isIdentityCreated = false
+
+        try {
+            val activeIdentity = getPassportActiveIdentity()
+
+            isIdentityCreated = activeIdentity != null && activeIdentity.isNotEmpty()
+        } catch (e: Exception) {}
+
+        if (isInWaitlist) {
+            updatePassportStatus(PassportStatus.WAITLIST)
+
+            return
+        }
+
+        if (isIdentityCreated) {
+            updatePassportStatus(if (isUnsupported) PassportStatus.NOT_ALLOWED else PassportStatus.ALLOWED)
+
+            return
+        }
+
+        updatePassportStatus(if (isUnsupported) PassportStatus.WAITLIST_NOT_ALLOWED else PassportStatus.WAITLIST)
     }
 }
