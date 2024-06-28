@@ -14,6 +14,7 @@ import com.rarilabs.rarime.api.points.models.VerifyPassportBody
 import com.rarilabs.rarime.api.points.models.VerifyPassportResponse
 import com.rarilabs.rarime.api.points.models.WithdrawBody
 import com.rarilabs.rarime.BaseConfig
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -27,7 +28,7 @@ interface PointsAPI {/* BALANCE */
     @POST("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances")
     suspend fun createPointsBalance(
         @Body payload: CreateBalanceBody, @Header("Authorization") authorization: String
-    ): PointsBalanceBody
+    ): Response<PointsBalanceBody>
 
     @GET("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances")
     suspend fun getLeaderboard(): PointsLeaderBoardBody

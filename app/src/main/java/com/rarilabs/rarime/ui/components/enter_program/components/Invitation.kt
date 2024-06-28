@@ -36,6 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.points.InvitationNotExistException
+import com.rarilabs.rarime.api.points.InvitationUsedException
 import com.rarilabs.rarime.modules.home.components.HomeIntroLayout
 import com.rarilabs.rarime.ui.base.BaseIconButton
 import com.rarilabs.rarime.ui.components.AppTextField
@@ -75,9 +77,20 @@ fun Invitation(
                 onNext()
             } catch (e: Exception) {
                 Log.e("verifyCode", e.toString())
-                invitationCodeState.updateErrorMessage(
-                    context.getString(R.string.invalid_referal_code)
-                )
+
+                if (e is InvitationNotExistException) {
+                    invitationCodeState.updateErrorMessage(
+                        context.getString(R.string.referal_code_not_exist_msg)
+                    )
+                } else if (e is InvitationUsedException) {
+                    invitationCodeState.updateErrorMessage(
+                        context.getString(R.string.referal_code_exist_msg)
+                    )
+                } else {
+                    invitationCodeState.updateErrorMessage(
+                        context.getString(R.string.referal_code_invalid_msg)
+                    )
+                }
             }
 
             isSubmitting = false

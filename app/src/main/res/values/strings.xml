@@ -109,7 +109,9 @@
     <string name="rarime_card_title">RARIME</string>
     <string name="rarime_card_description">Learn more about RariMe App</string>
 
-    <string name="invalid_referal_code">Invalid invitation code</string>
+    <string name="referal_code_exist_msg">Failed to verify code</string>
+    <string name="referal_code_not_exist_msg">Invalid invitation code</string>
+    <string name="referal_code_invalid_msg">Failed to verify code</string>
 
     <string name="reading_data_step">Reading data</string>
     <string name="applying_zero_knowledge_step">Applying Zero Knowledge</string>

@@ -9,6 +9,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+class UnauthorizedException : Exception()
+
 class AuthAPIManager @Inject constructor(
     private val authAPI: AuthAPI
 ) {

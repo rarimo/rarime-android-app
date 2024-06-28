@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.api.points
 
+import com.rarilabs.rarime.api.auth.UnauthorizedException
 import com.rarilabs.rarime.api.points.models.ClaimEventBody
 import com.rarilabs.rarime.api.points.models.CreateBalanceBody
 import com.rarilabs.rarime.api.points.models.JoinRewardsProgramRequest
@@ -18,15 +19,29 @@ import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import javax.inject.Inject
 
+class InvitationUsedException : Exception()
+class InvitationNotExistException : Exception()
+
 class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: PointsAPI) {
     /* BALANCE */
     suspend fun createPointsBalance(
         body: CreateBalanceBody, authorization: String
     ): PointsBalanceBody {
-        try {
-            return jsonApiPointsSvcManager.createPointsBalance(body, authorization)
-        } catch (e: HttpException) {
-            throw Exception(e.toString())
+        val response = jsonApiPointsSvcManager.createPointsBalance(body, authorization)
+
+        if (response.isSuccessful) {
+            return response.body()!!
+        }
+
+        val errorCode = response.code()
+        val errorBody = response.errorBody()?.string()
+
+        throw when (errorCode) {
+            401 -> UnauthorizedException()
+            404 -> InvitationNotExistException()
+            409 -> InvitationUsedException()
+
+            else -> Exception(errorBody)
         }
     }
 
