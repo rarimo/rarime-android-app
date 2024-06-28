@@ -108,7 +108,6 @@ fun AppBottomSheet(
                     modifier = (if (fullScreen) Modifier.height(configuration.screenHeightDp.dp) else Modifier)
                         .fillMaxWidth()
                         .padding(bottom = 32.dp)
-                        .verticalScroll(rememberScrollState())
                 ) {
                     content { cb -> hide(cb) }
                 }

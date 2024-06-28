@@ -55,6 +55,9 @@ class PointsManager @Inject constructor(
     suspend fun createPointsBalance(referralCode: String) {
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
+        //TODO: Remove it
+        authManager.isAccessTokenExpired()
+            authManager.refresh()
         if (userNullifierHex.isEmpty()) {
             throw Exception("user nullifier is null")
         }
