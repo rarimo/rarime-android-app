@@ -20,14 +20,13 @@ class IdentityManager @Inject constructor(
     private val dataStoreManager: SecureSharedPrefsManager
 ) {
     private val _privateKey = MutableStateFlow(dataStoreManager.readPrivateKey())
+    val privateKey: StateFlow<String?>
+        get() = _privateKey.asStateFlow()
 
     var _registrationProof = MutableStateFlow(dataStoreManager.readRegistrationProof())
         private set
     val registrationProof: StateFlow<ZkProof?>
         get() = _registrationProof.asStateFlow()
-
-    val privateKey: StateFlow<String?>
-        get() = _privateKey.asStateFlow()
 
     val privateKeyBytes: ByteArray?
         get() = _privateKey.value?.decodeHexString()
