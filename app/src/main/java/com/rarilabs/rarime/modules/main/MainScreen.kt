@@ -152,6 +152,10 @@ fun MainScreenContent(
         mainViewModel.setBottomBarVisibility(currentRoute != null && currentRoute in mainRoutes)
     }
 
+    fun simpleNavigate(route: String) {
+        navController.navigate(route)
+    }
+
     fun navigateWithPopUp(route: String) {
         if (route == Screen.Main.Rewards.RewardsMain.route) {
             pointsToken?.balanceDetails?.attributes?.let {} ?: run {
@@ -190,6 +194,7 @@ fun MainScreenContent(
 
             MainScreenRoutes(
                 navController = navController,
+                simpleNavigate = { simpleNavigate(it) },
                 navigateWithPopUp = { navigateWithPopUp(it) }
             )
 

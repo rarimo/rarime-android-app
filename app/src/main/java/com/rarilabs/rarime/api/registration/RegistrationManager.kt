@@ -191,7 +191,11 @@ class RegistrationManager @Inject constructor(
 
         try {
             try {
-                registrationAPIManager.register(revocationCallData.value!!)
+                val txResponse = registrationAPIManager.register(revocationCallData.value!!)
+
+                txResponse.data.attributes.tx_hash.let {
+                    rarimoContractManager.checkIsTransactionSuccessful(it)
+                }
             } catch (e: Exception) {
                 Log.e("RegistrationManager:revoke:", "Error: $e")
 
