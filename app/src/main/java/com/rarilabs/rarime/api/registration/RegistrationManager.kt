@@ -1,14 +1,12 @@
 package com.rarilabs.rarime.api.registration
 
-import android.util.Log
 import com.google.gson.Gson
 import com.rarilabs.rarime.api.auth.AuthManager
 import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
-import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
-import com.rarilabs.rarime.util.Constants
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.data.ZkProof
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.publicKeyToPem
@@ -152,16 +150,16 @@ class RegistrationManager @Inject constructor(
 
             _activeIdentity.value = passportInfo.component1().activeIdentity
 
-            Log.i("ActiveIdentity", _activeIdentity.value.toString())
+            ErrorHandler.logDebug("ActiveIdentity", _activeIdentity.value.toString())
 
             val ZERO_BYTES32 = ByteArray(32) { 0 }
             val isUserRevoking =
                 !passportInfo.component1().activeIdentity.contentEquals(ZERO_BYTES32)
 
             if (isUserRevoking) {
-                Log.i("Revoke", "Passport is registered, revoking")
+                ErrorHandler.logDebug("Revoke", "Passport is registered, revoking")
             } else {
-                Log.i("Revoke", "Passport is not registered")
+                ErrorHandler.logDebug("Revoke", "Passport is not registered")
             }
 
             if (isUserRevoking) {
@@ -182,9 +180,9 @@ class RegistrationManager @Inject constructor(
 
         val callDataBuilder = CallDataBuilder()
 
-        Log.i("buildRevocationCallData", revEDocument.value!!.aaSignature.toString())
+        ErrorHandler.logDebug("buildRevocationCallData", revEDocument.value!!.aaSignature.toString())
 
-        Log.i("buildRevocationCallData", pubKeyPem)
+        ErrorHandler.logDebug("buildRevocationCallData", pubKeyPem)
 
         val callData = callDataBuilder.buildRevoceCalldata(
             activeIdentity.value,
@@ -192,7 +190,7 @@ class RegistrationManager @Inject constructor(
             pubKeyPem.toByteArray(),
         )
 
-        Log.i("callData", callData.toString())
+        ErrorHandler.logDebug("callData", callData.toString())
         _revocationCallData.value = callData
     }
 
@@ -209,17 +207,17 @@ class RegistrationManager @Inject constructor(
                     rarimoContractManager.checkIsTransactionSuccessful(it)
                 }
             } catch (e: Exception) {
-                Log.e("RegistrationManager:revoke:", "Error: $e")
+                ErrorHandler.logError("RegistrationManager:revoke:", "Error: $e", e)
 
                 if (!(e is UserAlreadyRevoked)) {
                     throw e
                 }
             }
 
-            Log.i("registrationProof.value!!", registrationProof.value!!.toString())
-            Log.i("eDocument.value!!", eDocument.value!!.toString())
-            Log.i("masterCertProof.value!!", masterCertProof.value!!.toString())
-            Log.i("certificatePubKeySize.value", certificatePubKeySize.value.toString())
+            ErrorHandler.logDebug("registrationProof.value!!", registrationProof.value!!.toString())
+            ErrorHandler.logDebug("eDocument.value!!", eDocument.value!!.toString())
+            ErrorHandler.logDebug("masterCertProof.value!!", masterCertProof.value!!.toString())
+            ErrorHandler.logDebug("certificatePubKeySize.value", certificatePubKeySize.value.toString())
 
             register(
                 registrationProof.value!!,
@@ -229,7 +227,7 @@ class RegistrationManager @Inject constructor(
                 true
             )
         } catch (e: Exception) {
-            Log.e("RevocationStepViewModel", "Error: $e")
+            ErrorHandler.logError("RevocationStepViewModel", "Error: $e", e)
             throw e
         }
     }

@@ -17,13 +17,13 @@ fun HomeScreen(
     navigate: (String) -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
-    val passport by homeViewModel.passport.collectAsState()
+    val isShowPassport by homeViewModel.isShowPassport.collectAsState()
 
     CompositionLocalProvider(LocalHomeViewModel provides homeViewModel) {
-        if (passport == null) {
-            HomeScreenNoPassportMain(navigate)
-        } else {
+        if (isShowPassport) {
             HomeScreenPassportMain(navigate)
+        } else {
+            HomeScreenNoPassportMain(navigate)
         }
     }
 }

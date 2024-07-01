@@ -40,6 +40,7 @@ fun ReadEDocStep(
     readEDocStepViewModel: ReadEDocStepViewModel = hiltViewModel(),
 ) {
     val state by readEDocStepViewModel.state.collectAsState()
+    val errorMessageId by readEDocStepViewModel.errorMessageId.collectAsState()
 
     LaunchedEffect(Unit) {
         readEDocStepViewModel.startScanning(mrzInfo)
@@ -98,9 +99,14 @@ fun ReadEDocStep(
 
                     ScanNFCState.ERROR -> {
                         readEDocStepViewModel.resetState()
+
                         val context = LocalContext.current
-                        Toast.makeText(context, R.string.nfc_reader_error, Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(
+                            context,
+                            stringResource(id = errorMessageId),
+                            Toast.LENGTH_SHORT
+                        ).show()
+
                         onClose()
                     }
                 }

@@ -27,6 +27,11 @@ class PassportManager @Inject constructor(
     val passport: StateFlow<EDocument?>
         get() = _passport.asStateFlow()
 
+    private var _isShowPassport = MutableStateFlow(false)
+    val isShowPassport: StateFlow<Boolean>
+        get() = _isShowPassport.asStateFlow()
+
+
     var passportCardLook = mutableStateOf(dataStoreManager.readPassportCardLook())
         private set
     var isIncognitoMode = mutableStateOf(dataStoreManager.readIsPassportIncognitoMode())
@@ -133,5 +138,15 @@ class PassportManager @Inject constructor(
         }
 
         updatePassportStatus(if (isUnsupported) PassportStatus.WAITLIST_NOT_ALLOWED else PassportStatus.WAITLIST)
+
+
+        when (passportStatus.value) {
+            PassportStatus.UNSCANNED -> {
+                _isShowPassport.value = false
+            }
+            else -> {
+                _isShowPassport.value = true
+            }
+        }
     }
 }

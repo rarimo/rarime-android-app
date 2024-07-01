@@ -246,4 +246,6 @@
     <string name="nfc_reader_revoke">Revoke</string>
     <string name="send_us_feedback">Send feedback\n</string>
     <string name="send_us_feedback_body">help us make the app better\n</string>
+    <string name="nfc_error_interrupt">Скан перервано, спробуйте ще раз</string>
+    <string name="nfc_error_unknown">спробуйте ще раз</string>
 </resources>

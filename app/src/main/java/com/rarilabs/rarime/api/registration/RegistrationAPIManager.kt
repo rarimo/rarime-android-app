@@ -1,9 +1,9 @@
 package com.rarilabs.rarime.api.registration
 
-import android.util.Log
 import com.rarilabs.rarime.api.registration.models.RegisterBody
 import com.rarilabs.rarime.api.registration.models.RegisterData
 import com.rarilabs.rarime.api.registration.models.RegisterResponseBody
+import com.rarilabs.rarime.util.ErrorHandler
 import javax.inject.Inject
 
 class UserAlreadyRegistered() : Exception()
@@ -29,7 +29,7 @@ class RegistrationAPIManager @Inject constructor(
         val errorBody = response.errorBody()?.string()
         val errorCode = response.code()
 
-        Log.e("RegistrationAPIManager", errorBody.toString())
+        ErrorHandler.logError("RegistrationAPIManager", errorBody.toString())
 
         if (errorCode == 400 && errorBody?.contains("already registered") == true) {
             throw UserAlreadyRegistered()

@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.modules.appUpdate
 
 import android.app.Activity
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,6 +12,7 @@ import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
+import com.rarilabs.rarime.util.ErrorHandler
 
 @Composable
 fun InAppUpdate(activity: ComponentActivity) {
@@ -24,7 +24,7 @@ fun InAppUpdate(activity: ComponentActivity) {
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             Activity.RESULT_CANCELED
-            Log.i("Update", "Ok")
+            ErrorHandler.logDebug("Update", "Ok")
         } else if (result.resultCode == Activity.RESULT_CANCELED) {
             activity.finish()
         }

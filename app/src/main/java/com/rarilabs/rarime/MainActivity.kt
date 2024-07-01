@@ -9,6 +9,7 @@ import com.rarilabs.rarime.manager.NfcManager
 import com.rarilabs.rarime.manager.ScanNFCState
 import com.rarilabs.rarime.modules.appUpdate.InAppUpdate
 import com.rarilabs.rarime.modules.main.MainScreen
+import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -20,6 +21,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
+
+        ErrorHandler.initialize(this)
 
         nfcManager.activity = this
 
