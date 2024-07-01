@@ -52,4 +52,7 @@ object BaseConfig {
     const val STATE_KEEPER_CONTRACT_ADDRESS = "0x7d4E8Da1d10f8Db46C52414175d4003ab0Aef506"
     const val REGISTER_IDENTITY_CIRCUIT_DATA_RSA2048 = "https://storage.googleapis.com/rarimo-store/rdi2/registerIdentityUniversalRSA2048-download.zip"
     const val REGISTER_IDENTITY_CIRCUIT_DATA_RSA4096 = "https://storage.googleapis.com/rarimo-store/rdi2/registerIdentityUniversalRSA4096-download.zip"
+    const val POINTS_SVC_SELECTOR = "23073"
+    const val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP =
+                                                      1715688000L
 }
