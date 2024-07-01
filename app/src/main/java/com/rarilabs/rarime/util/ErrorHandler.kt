@@ -77,24 +77,27 @@ object ErrorHandler {
                 appendLine("=================================")
             }
 
-            writeEncrypted(logEntry)
+            val decryptedLogs = readDecryptedLog()
+            val combinedLogs = decryptedLogs + logEntry
+
+            writeEncrypted(combinedLogs.toByteArray())
         } catch (e: Exception) {
             Log.e(TAG, "Error writing log to file", e)
         }
     }
 
-    private fun writeEncrypted(data: String) {
+    private fun writeEncrypted(data: ByteArray) {
         try {
             val key = getSecretKey()
             val cipher = Cipher.getInstance(TRANSFORMATION)
             cipher.init(Cipher.ENCRYPT_MODE, key)
             val iv = cipher.iv
 
-            FileOutputStream(logFile, true).use { fos ->
+            FileOutputStream(logFile, false).use { fos ->
                 fos.write(iv.size)
                 fos.write(iv)
                 CipherOutputStream(fos, cipher).use { cos ->
-                    cos.write(data.toByteArray())
+                    cos.write(data)
                 }
             }
         } catch (e: Exception) {
@@ -142,9 +145,7 @@ object ErrorHandler {
                 cipher.init(Cipher.DECRYPT_MODE, key, IvParameterSpec(iv))
 
                 CipherInputStream(fis, cipher).use { cis ->
-                    BufferedReader(InputStreamReader(cis)).use { reader ->
-                        reader.readText()
-                    }
+                    cis.readBytes().toString(Charsets.UTF_8)
                 }
             }
         } catch (e: Exception) {
@@ -167,13 +168,7 @@ object ErrorHandler {
                 cipher.init(Cipher.DECRYPT_MODE, key, IvParameterSpec(iv))
 
                 CipherInputStream(fis, cipher).use { cis ->
-                    FileWriter(tempFile).use { writer ->
-                        BufferedReader(InputStreamReader(cis)).use { reader ->
-                            reader.forEachLine { line ->
-                                writer.appendLine(line)
-                            }
-                        }
-                    }
+                    tempFile.writeBytes(cis.readBytes())
                 }
             }
             tempFile
@@ -182,9 +177,5 @@ object ErrorHandler {
             tempFile.delete()
             null
         }
-    }
-
-    fun getLogFile(): File {
-        return logFile
     }
 }
