@@ -82,7 +82,8 @@ class NfcUseCase(
                 }
             }
         } catch (e: Exception) {
-            Log.w("Error", e)
+            Log.w("scanPassport error:", e)
+            e.printStackTrace()
         }
 
         service.sendSelectApplet(paceSucceeded)
@@ -122,9 +123,7 @@ class NfcUseCase(
 
 
         var digestAlgorithm = sodFile.digestAlgorithm
-        Log.d(
-            "", "Digest Algorithm: $digestAlgorithm"
-        )
+        Log.d("", "Digest Algorithm: $digestAlgorithm")
         val docSigningCert = sodFile.docSigningCertificate
         val docSigningCerts = sodFile.docSigningCertificates
         val pemFile: String = SecurityUtil.convertToPEM(docSigningCert)

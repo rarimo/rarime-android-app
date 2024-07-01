@@ -73,6 +73,8 @@ class NfcManager @Inject constructor(
                         _state.value = ScanNFCState.SCANNED
                     } catch (e: Exception) {
                         Log.e("NfcManager", "Error handling tag", e)
+                        e.printStackTrace()
+
                         _state.value = ScanNFCState.ERROR
 
                         disableForegroundDispatch()
