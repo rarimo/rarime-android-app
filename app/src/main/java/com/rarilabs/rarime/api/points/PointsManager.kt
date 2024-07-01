@@ -41,7 +41,6 @@ import identity.Identity
 import identity.Profile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.web3j.utils.Numeric
 import javax.inject.Inject
 
 class PointsManager @Inject constructor(
@@ -181,13 +180,15 @@ class PointsManager @Inject constructor(
         val queryProofInputs = profiler.buildAirdropQueryIdentityInputs(
             eDocument.dg1!!.decodeHexString(),
             smtProofJson.toByteArray(Charsets.UTF_8),
-            "23073",
+            BaseConfig.POINTS_SVC_SELECTOR,
             passportInfoKey,
             identityInfo.issueTimestamp.toString(),
             passportInfo.identityReissueCounter.toString(),
             BaseConfig.POINTS_SVC_ID,
-            1715688000,
+            BaseConfig.POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP,
         )
+
+        Log.i("Inputs", queryProofInputs.decodeToString())
 
         val queryProof = withContext(Dispatchers.Default) {
             zkp.generateZKP(
@@ -217,8 +218,9 @@ class PointsManager @Inject constructor(
         val registrationProof = identityManager.registrationProof.value!!
 
         val anonymousId = Identity.calculateAnonymousID(
-            Numeric.hexStringToByteArray(userNullifierHex), BaseConfig.POINTS_SVC_ID
+            passportManager.passport.value!!.dg1!!.toByteArray(), BaseConfig.POINTS_SVC_ID
         )
+
         val hmacMessage = Identity.calculateHmacMessage(
             userNullifierHex, eDocument.personDetails!!.nationality, anonymousId
         )
