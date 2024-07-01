@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.profile
 
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
@@ -163,8 +164,17 @@ fun ProfileScreen(
                         subtitle = stringResource(R.string.send_us_feedback_body),
                         onConfirm = {
                             scope.launch {
-                                val file = viewModel.sendFeedback()
-                                launcher.launch(SendErrorUtil.sendErrorEmail(file, context))
+                                val decryptedFile = viewModel.getDecryptedFeedbackFile(context)
+
+                                decryptedFile?.let {
+                                    launcher.launch(SendErrorUtil.sendErrorEmail(it, context))
+                                } ?: run {
+                                    Toast.makeText(
+                                        context,
+                                        "No logs to send",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
                         },
                         onCancel = { isFeedbackDialogShown = false },

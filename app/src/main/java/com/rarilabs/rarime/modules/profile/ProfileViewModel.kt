@@ -27,7 +27,6 @@ class ProfileViewModel @Inject constructor(
 ) : ViewModel() {
     val rarimoAddress = identityManager.rarimoAddress()
 
-
     val language = settingsManager.language
     val colorScheme = settingsManager.colorScheme
 
@@ -45,7 +44,7 @@ class ProfileViewModel @Inject constructor(
         Runtime.getRuntime().exit(0)
     }
 
-    suspend fun sendFeedback(): File {
+    suspend fun getDecryptedFeedbackFile(context: Context): File? {
         val pointsNullifier = identityManager.getUserPointsNullifier()
 
         ErrorHandler.logDebug("sendFeedback", "pointsNullifier: $pointsNullifier")
@@ -56,7 +55,7 @@ class ProfileViewModel @Inject constructor(
 
         ErrorHandler.logDebug("sendFeedback", "activeIdentity: $activeIdentity")
 
-        val logFile = ErrorHandler.getLogFile()
+        val logFile = ErrorHandler.getDecryptedLogFile(context)
 
         return logFile
     }

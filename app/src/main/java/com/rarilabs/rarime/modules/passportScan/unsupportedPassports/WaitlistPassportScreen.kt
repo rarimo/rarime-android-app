@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.modules.passportScan.unsupportedPassports
 
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -154,7 +155,17 @@ fun WaitlistPassportScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
                 onClick = {
-                    launcher.launch(sendErrorEmail(ErrorHandler.getLogFile(), context))
+                    val decryptedFile = ErrorHandler.getDecryptedLogFile(context)
+
+                    decryptedFile?.let {
+                        launcher.launch(sendErrorEmail(it, context))
+                    } ?: run {
+                        Toast.makeText(
+                            context,
+                            "No logs to send",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 },
             )
             TertiaryButton(

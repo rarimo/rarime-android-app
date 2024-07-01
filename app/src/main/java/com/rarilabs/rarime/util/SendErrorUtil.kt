@@ -4,13 +4,30 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileWriter
 
 object SendErrorUtil {
     fun sendErrorEmail(file: File, context: Context): Intent {
-        val recipient = "info@rarilabs.com"
+        try {
+            // TODO: remove
+            if (file.exists()) {
+                file.bufferedReader().useLines { lines ->
+                    lines.forEach { line ->
+                        println(line)
+                    }
+                }
+            } else {
+                println("Decrypted log file does not exist.")
+            }
+        } catch (e: Exception) {
+            Log.e("sendErrorEmail", e.toString(), e)
+        }
+
+//        val recipient = "info@rarilabs.com"
+        val recipient = "apereliez1@gmail.com"
 
         // Get the content URI for the file
         val fileUri: Uri = FileProvider.getUriForFile(

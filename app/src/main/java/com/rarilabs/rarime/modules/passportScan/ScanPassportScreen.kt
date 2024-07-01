@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.passportScan
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -9,8 +10,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.passportScan.camera.ScanMRZStep
 import com.rarilabs.rarime.modules.passportScan.models.ScanPassportScreenViewModel
@@ -21,7 +24,6 @@ import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.NotAllowedP
 import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.WaitlistPassportScreen
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
-import com.rarilabs.rarime.util.ErrorHandler
 import org.jmrtd.lds.icao.MRZInfo
 
 private enum class ScanPassportState {
@@ -42,6 +44,7 @@ fun ScanPassportScreen(
     onClaim: () -> Unit,
     scanPassportScreenViewModel: ScanPassportScreenViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
     val mainViewModel = LocalMainViewModel.current
 
     var state by remember { mutableStateOf(ScanPassportState.SCAN_MRZ) }
@@ -124,6 +127,9 @@ fun ScanPassportScreen(
 //                            )
 //                        }
 //                        mainViewModel.setModalVisibility(true)
+
+                        Toast.makeText(context, R.string.you_have_already_registered, Toast.LENGTH_SHORT)
+                            .show()
                         onClose.invoke()
                     }
                 )

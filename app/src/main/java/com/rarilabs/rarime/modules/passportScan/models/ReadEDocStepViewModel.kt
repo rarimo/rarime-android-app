@@ -60,16 +60,14 @@ class ReadEDocStepViewModel @Inject constructor(
         scanNfcUseCase = NfcUseCase(isoDep, bacKey, privateKeyBytes!!)
 
         try {
-
-        } catch (e: Exception) {
             eDocument = scanNfcUseCase.scanPassport()
+        } catch (e: Exception) {
+            ErrorHandler.logError("ReadNFCStepViewModel", "handleScan:Error: $e", e)
         }
     }
 
     fun onError(e: Exception) {
         ErrorHandler.logError("ReadNFCStepViewModel", "Error: $e", e)
-
-        e.printStackTrace()
 
         if (e is IOException) {
             _errorMessageId.value = R.string.nfc_error_interrupt
