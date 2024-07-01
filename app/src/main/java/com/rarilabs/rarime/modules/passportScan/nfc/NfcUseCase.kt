@@ -44,247 +44,164 @@ class NfcUseCase(
     private fun cropByteArray(inputByteArray: ByteArray, endNumber: Int): ByteArray {
         // Make sure endNumber is within bounds
         val endIndex = if (endNumber > inputByteArray.size) inputByteArray.size else endNumber
-
         // Use copyOfRange to crop the ByteArray
         return inputByteArray.copyOfRange(0, endIndex)
     }
 
     @OptIn(ExperimentalStdlibApi::class)
     fun scanPassport(): EDocument {
-        val cardService = CardService.getInstance(isoDep)
-        cardService.open()
-        val service = PassportService(
-            cardService,
-            PassportService.NORMAL_MAX_TRANCEIVE_LENGTH,
-            PassportService.DEFAULT_MAX_BLOCKSIZE,
-            true,
-            false
-        )
-
-
-        service.open()
-        var paceSucceeded = false
         try {
-            val cardSecurityFile =
-                CardSecurityFile(service.getInputStream(PassportService.EF_CARD_SECURITY))
-            val securityInfoCollection = cardSecurityFile.securityInfos
-            for (securityInfo in securityInfoCollection) {
+            val cardService = CardService.getInstance(isoDep)
+            cardService.open()
+            val service = PassportService(
+                cardService,
+                PassportService.NORMAL_MAX_TRANCEIVE_LENGTH,
+                PassportService.DEFAULT_MAX_BLOCKSIZE,
+                true,
+                false
+            )
 
-                if (securityInfo is PACEInfo) {
-                    val paceInfo = securityInfo
-                    service.doPACE(
-                        bacKey,
-                        paceInfo.objectIdentifier,
-                        PACEInfo.toParameterSpec(paceInfo.parameterId),
-                        null
-                    )
-                    paceSucceeded = true
+            service.open()
+            var paceSucceeded = false
+            try {
+                val cardSecurityFile = CardSecurityFile(service.getInputStream(PassportService.EF_CARD_SECURITY))
+                val securityInfoCollection = cardSecurityFile.securityInfos
+                for (securityInfo in securityInfoCollection) {
+                    if (securityInfo is PACEInfo) {
+                        val paceInfo = securityInfo
+                        service.doPACE(
+                            bacKey,
+                            paceInfo.objectIdentifier,
+                            PACEInfo.toParameterSpec(paceInfo.parameterId),
+                            null
+                        )
+                        paceSucceeded = true
+                    }
+                }
+            } catch (e: Exception) {
+                Log.w("Error", e)
+            }
+
+            service.sendSelectApplet(paceSucceeded)
+            if (!paceSucceeded) {
+                try {
+                    service.getInputStream(PassportService.EF_COM).read()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    service.doBAC(bacKey)
                 }
             }
-        } catch (e: Exception) {
-            Log.w("Error", e)
-        }
 
-        service.sendSelectApplet(paceSucceeded)
-        if (!paceSucceeded) {
-            try {
-                service.getInputStream(PassportService.EF_COM).read()
-            } catch (e: Exception) {
-                e.printStackTrace()
-                service.doBAC(bacKey)
+            var hashesMatched = true
+
+            val sodIn1 = service.getInputStream(PassportService.EF_SOD)
+            val byteArray = ByteArray(1024 * 1024)
+            val byteLen = sodIn1.read(byteArray)
+            val sod = cropByteArray(byteArray, byteLen).toHexString()
+            eDocument.sod = sod
+
+            val sodIn = service.getInputStream(PassportService.EF_SOD)
+            val sodFile = SODFileOwn(sodIn)
+
+            sodFile.dataGroupHashes.entries.forEach { (key, value) ->
+                Log.d("", "Data group: $key hash value: ${StringUtil.byteArrayToHex(value)}")
             }
-        }
+
+            val dg15 = try {
+                val dG15File = service.getInputStream(PassportService.EF_DG15)
+                DG15File(dG15File)
+            } catch (e: Exception) {
+                Log.i("NFC Scan", "No Dg15")
+                null
+            }
+
+            val digestAlgorithm = sodFile.digestAlgorithm
+            Log.d("", "Digest Algorithm: $digestAlgorithm")
+            val digest: MessageDigest = if (Security.getAlgorithms("MessageDigest").contains(digestAlgorithm)) {
+                MessageDigest.getInstance(digestAlgorithm)
+            } else {
+                MessageDigest.getInstance(digestAlgorithm, BouncyCastleProvider())
+            }
+
+            val dg1In = service.getInputStream(PassportService.EF_DG1)
+            val dg1File = DG1File(dg1In)
+            var encodedDg1File = dg1File.encoded.toHexString()
+            val mrzInfo = dg1File.mrzInfo
+            personDetails.name = mrzInfo.secondaryIdentifier.replace("<", " ").trim { it <= ' ' }
+            personDetails.surname = mrzInfo.primaryIdentifier.replace("<", " ").trim { it <= ' ' }
+            personDetails.personalNumber = mrzInfo.personalNumber
+            personDetails.gender = mrzInfo.gender.toString()
+            personDetails.birthDate = DateUtil.convertFromMrzDate(mrzInfo.dateOfBirth)
+            personDetails.expiryDate = DateUtil.convertFromMrzDate(mrzInfo.dateOfExpiry)
+            personDetails.serialNumber = mrzInfo.documentNumber
+            personDetails.nationality = mrzInfo.nationality
+            personDetails.issuerAuthority = mrzInfo.issuingState
+            eDocument.dg1 = encodedDg1File
+
+            if ("I" == mrzInfo.documentCode) {
+                docType = DocType.ID_CARD
+                encodedDg1File = StringUtil.fixPersonalNumberMrzData(encodedDg1File, mrzInfo.personalNumber)
+            } else if ("P" == mrzInfo.documentCode) {
+                docType = DocType.PASSPORT
+            }
+            val dg1StoredHash = sodFile.dataGroupHashes[1]
+            val dg1ComputedHash = digest.digest(encodedDg1File.toByteArray())
+
+            if (Arrays.equals(dg1StoredHash, dg1ComputedHash)) {
+                Log.d("", "DG1 Hashes are matched")
+            } else {
+                hashesMatched = false
+            }
+
+            val dg2In = service.getInputStream(PassportService.EF_DG2)
+            val dg2File = DG2File(dg2In)
+            val dg2StoredHash = sodFile.dataGroupHashes[2]
+            val dg2ComputedHash = digest.digest(dg2File.encoded)
+
+            if (dg2StoredHash.contentEquals(dg2ComputedHash)) {
+                Log.d("", "DG2 Hashes are matched")
+            } else {
+                hashesMatched = false
+            }
+            val faceInfos = dg2File.faceInfos
+            val allFaceImageInfos: MutableList<FaceImageInfo> = ArrayList()
+            for (faceInfo in faceInfos) {
+                allFaceImageInfos.addAll(faceInfo.faceImageInfos)
+            }
+            if (!allFaceImageInfos.isEmpty()) {
+                val faceImageInfo = allFaceImageInfos.iterator().next()
+                personDetails.faceImageInfo = faceImageInfo
+            }
+
+            eDocument.docType = docType
+            eDocument.personDetails = personDetails
+            eDocument.additionalPersonDetails = additionalPersonDetails
+            eDocument.isPassiveAuth = hashesMatched
 
 
-        var hashesMatched = true
-        ////publishProgress("Reading sod file")
-        val sodIn1 = service.getInputStream(PassportService.EF_SOD)
+            val profiler = Profile().newProfile(privateKey).registrationChallenge
+            var response: AAResult? = null
+            try {
+                if (dg15 == null) {
+                    throw IllegalStateException("No Dg15 for sign")
+                }
+                response = service.doAA(
+                    dg15.publicKey, sodFile.digestAlgorithm, sodFile.signerInfoDigestAlgorithm, profiler
+                )
+                eDocument.aaSignature = response?.response
+                eDocument.aaResponse = response?.toString()
+                eDocument.isActiveAuth = true
+            } catch (e: Exception) {
+                eDocument.isActiveAuth = false
+            }
 
-        val byteArray = ByteArray(1024 * 1024)
+            eDocument.aaSignature = response?.response
+            eDocument.dg15Pem = dg15?.publicKey?.publicKeyToPem()
+            eDocument.dg15 = dg15?.encoded?.toHexString()
 
-        val byteLen = sodIn1.read(byteArray)
-
-
-        val sod = cropByteArray(byteArray, byteLen).toHexString()
-        eDocument.sod = sod
-
-
-        val sodIn = service.getInputStream(PassportService.EF_SOD)
-
-        val sodFile = SODFileOwn(sodIn)
-
-        sodFile.dataGroupHashes.entries.forEach { (key, value) ->
-            Log.d("", "Data group: $key hash value: ${StringUtil.byteArrayToHex(value)}")
-        }
-
-
-        val dG15File = service.getInputStream(PassportService.EF_DG15)
-
-
-        var digestAlgorithm = sodFile.digestAlgorithm
-        Log.d(
-            "", "Digest Algorithm: $digestAlgorithm"
-        )
-        val docSigningCert = sodFile.docSigningCertificate
-        val docSigningCerts = sodFile.docSigningCertificates
-        val pemFile: String = SecurityUtil.convertToPEM(docSigningCert)
-        Log.d(
-            "", "Document Signer Certificate: $docSigningCert"
-        )
-        Log.d(
-            "", "Document Signer Certificate Pem : $pemFile"
-        )
-        val digestEncryptionAlgorithm = sodFile.digestEncryptionAlgorithm
-        val digest: MessageDigest
-        //publishProgress("Loading digest algorithm")
-        digest = if (Security.getAlgorithms("MessageDigest").contains(digestAlgorithm)) {
-            MessageDigest.getInstance(digestAlgorithm)
-        } else {
-            MessageDigest.getInstance(digestAlgorithm, BouncyCastleProvider())
-        }
-        //publishProgress("Reading Personal Details")
-
-        // -- Personal Details -- //
-        val dg1In = service.getInputStream(PassportService.EF_DG1)
-        val dg1File = DG1File(dg1In)
-        var encodedDg1File = dg1File.encoded.toHexString()
-        val mrzInfo = dg1File.mrzInfo
-        personDetails.name = mrzInfo.secondaryIdentifier.replace("<", " ").trim { it <= ' ' }
-        personDetails.surname = mrzInfo.primaryIdentifier.replace("<", " ").trim { it <= ' ' }
-        personDetails.personalNumber = mrzInfo.personalNumber
-        personDetails.gender = mrzInfo.gender.toString()
-        personDetails.birthDate = DateUtil.convertFromMrzDate(mrzInfo.dateOfBirth)
-        personDetails.expiryDate = DateUtil.convertFromMrzDate(mrzInfo.dateOfExpiry)
-        personDetails.serialNumber = mrzInfo.documentNumber
-        personDetails.nationality = mrzInfo.nationality
-        personDetails.issuerAuthority = mrzInfo.issuingState
-        eDocument.dg1 = encodedDg1File
-
-        if ("I" == mrzInfo.documentCode) {
-            docType = DocType.ID_CARD
-            encodedDg1File =
-                StringUtil.fixPersonalNumberMrzData(encodedDg1File, mrzInfo.personalNumber)
-        } else if ("P" == mrzInfo.documentCode) {
-            docType = DocType.PASSPORT
-        }
-        val dg1StoredHash = sodFile.dataGroupHashes[1]
-        val dg1ComputedHash = digest.digest(encodedDg1File.toByteArray())
-        Log.d(
-            "", "DG1 Stored Hash: " + StringUtil.byteArrayToHex(dg1StoredHash!!)
-        )
-        Log.d(
-            "", "DG1 Computed Hash: " + StringUtil.byteArrayToHex(dg1ComputedHash)
-        )
-        if (Arrays.equals(dg1StoredHash, dg1ComputedHash)) {
-            Log.d("", "DG1 Hashes are matched")
-        } else {
-            hashesMatched = false
-        }
-        //publishProgress("Reading Face Image")
-
-        // -- Face Image -- //
-        val dg2In = service.getInputStream(PassportService.EF_DG2)
-        val dg2File = DG2File(dg2In)
-        //publishProgress("Decoding Face Image")
-        val dg2StoredHash = sodFile.dataGroupHashes[2]
-        val dg2ComputedHash = digest.digest(dg2File.encoded)
-        Log.d(
-            "", "DG2 Stored Hash: " + StringUtil.byteArrayToHex(dg2StoredHash!!)
-        )
-        Log.d(
-            "", "DG2 Computed Hash: " + StringUtil.byteArrayToHex(dg2ComputedHash)
-        )
-        if (Arrays.equals(dg2StoredHash, dg2ComputedHash)) {
-            Log.d("", "DG2 Hashes are matched")
-        } else {
-            hashesMatched = false
-        }
-        val faceInfos = dg2File.faceInfos
-        val allFaceImageInfos: MutableList<FaceImageInfo> = ArrayList()
-        for (faceInfo in faceInfos) {
-            allFaceImageInfos.addAll(faceInfo.faceImageInfos)
-        }
-        if (!allFaceImageInfos.isEmpty()) {
-            val faceImageInfo = allFaceImageInfos.iterator().next()
-            personDetails!!.faceImageInfo = faceImageInfo
-        }
-
-
-
-        eDocument.docType = docType
-        eDocument.personDetails = personDetails
-        eDocument.additionalPersonDetails = additionalPersonDetails
-        eDocument.isPassiveAuth = hashesMatched
-
-
-        val dg15 = try {
-            DG15File(dG15File)
-        } catch (
-            e: Exception
-        ) {
-            null
-        }
-
-        //Arrays.copyOfRange(poseidonHash, poseidonHash.size - 8, poseidonHash.size).reversed().toByteArray()
-
-
-        Log.e("PUB KEy", dg15?.publicKey?.encoded?.toHexString().toString())
-
-
-        Log.e("Digest Algorithm", sodFile.digestAlgorithm)
-        Log.e("signerInfoDigestAlgorithm", sodFile.signerInfoDigestAlgorithm)
-
-
-        val profiler = Profile().newProfile(privateKey).registrationChallenge
-        var response: AAResult? = null
-        try {
-            response = service.doAA(
-                dg15?.publicKey, sodFile.digestAlgorithm, sodFile.signerInfoDigestAlgorithm, profiler
-            )
-            eDocument.aaSignature = response.response
-            eDocument.aaResponse = response.toString()
-            eDocument.isActiveAuth = true
         } catch (e: Exception) {
-            eDocument.isActiveAuth = false
+            Log.e("NfcUseCase", "Error in scanPassport: ${e.message}", e)
         }
-
-
-        eDocument.aaSignature = response?.response
-
-        // sign -> contract
-
-        val index = pemFile.indexOf("-----END CERTIFICATE-----")
-        val pemFileEnded = pemFile.addCharAtIndex('\n', index)
-
-
-        val encapsulaged_content = sodFile.readASN1Data()
-
-        Log.d("Encapsulated Content", encapsulaged_content)
-        val dg1B =
-            String(dg1File.encoded).toBitArray().toCharArray().map { it1 -> it1.digitToInt() }
-        val signedAtributes = sodFile.eContent
-        val pubKey = dg15?.publicKey?.encoded
-
-        Log.e("PUB key cert", sodFile.docSigningCertificate.publicKey.encoded.toHexString())
-
-        val signature = sodFile.encryptedDigest
-
-        eDocument.dg15Pem = dg15?.publicKey?.publicKeyToPem()
-
-
-        Log.e("pemFile", "pemFile: $pemFileEnded")
-        Log.e("encapsulated_content", "encapsulated_content: $encapsulaged_content")
-        Log.e("dg1b", "dg1b: $dg1B")
-        Log.e("signedAtributes", "signedAtributes: " + signedAtributes.toHexString())
-        Log.e("pubKey", "pubKey: " + pubKey?.toHexString())
-        Log.e("signature", "signature: " + signature.toHexString())
-
-
-        Log.e("PUBLIC KEY", sodFile.docSigningCertificate.publicKey.toString())
-
-        eDocument.dg15 = dg15?.encoded?.toHexString()
-
-
 
         return eDocument
     }
@@ -334,8 +251,8 @@ class NfcUseCase(
             }
         }
 
-        val sodFile = SODFileOwn(eDocument.sod!!.decodeHexString().inputStream())
-        val dg15 = DG15File(eDocument.dg15!!.decodeHexString().inputStream())
+        val sodFile = SODFileOwn(eDocument.sod?.decodeHexString()?.inputStream())
+        val dg15 = DG15File(eDocument.dg15?.decodeHexString()?.inputStream())
 
         try {
             val response = service.doAA(
