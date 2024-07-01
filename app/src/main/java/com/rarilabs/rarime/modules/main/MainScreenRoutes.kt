@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.modules.main
 
 import android.content.Intent
-import android.util.Log
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
@@ -50,6 +49,7 @@ import com.rarilabs.rarime.ui.components.AppWebView
 import com.rarilabs.rarime.ui.components.CongratsInvitationModalContent
 import com.rarilabs.rarime.util.AppIconUtil
 import com.rarilabs.rarime.util.Constants
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.LocaleUtil
 import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.launch
@@ -356,7 +356,7 @@ fun AcceptInvitation(
     val scope = rememberCoroutineScope()
 
     suspend fun acceptInvitation() {
-        Log.i("MainScreen", "acceptInvitation: $code")
+        ErrorHandler.logDebug("MainScreen", "acceptInvitation: $code")
         try {
             code?.let {
                 mainViewModel.acceptInvitation(code)
@@ -368,7 +368,7 @@ fun AcceptInvitation(
                 throw Exception("No code provided")
             }
         } catch (e: Exception) {
-            Log.e("MainScreen", "acceptInvitation: $e")
+            ErrorHandler.logError("MainScreen", "acceptInvitation: $e", e)
             onError()
         }
     }

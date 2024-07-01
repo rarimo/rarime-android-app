@@ -12,8 +12,6 @@ object SendErrorUtil {
     fun sendErrorEmail(file: File, context: Context): Intent {
         val recipient = "info@rarilabs.com"
 
-
-
         // Get the content URI for the file
         val fileUri: Uri = FileProvider.getUriForFile(
             context, context.applicationContext.packageName + ".provider", file

@@ -2,12 +2,12 @@ package com.rarilabs.rarime.modules.passportScan.models
 
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
 import com.rarilabs.rarime.modules.passportScan.nfc.NfcUseCase
+import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -67,7 +67,8 @@ class ReadEDocStepViewModel @Inject constructor(
     }
 
     fun onError(e: Exception) {
-        Log.e("ReadNFCStepViewModel", "Error: $e")
+        ErrorHandler.logError("ReadNFCStepViewModel", "Error: $e", e)
+
         e.printStackTrace()
 
         if (e is IOException) {

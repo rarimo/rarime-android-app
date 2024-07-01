@@ -163,7 +163,7 @@ fun ProfileScreen(
                         subtitle = stringResource(R.string.send_us_feedback_body),
                         onConfirm = {
                             scope.launch {
-                                val file = viewModel.sendFeedback(context)
+                                val file = viewModel.sendFeedback()
                                 launcher.launch(SendErrorUtil.sendErrorEmail(file, context))
                             }
                         },

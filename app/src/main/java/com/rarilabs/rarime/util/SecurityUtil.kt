@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.util
 
-import android.util.Log
 import org.bouncycastle.asn1.ASN1Encodable
 import org.bouncycastle.asn1.ASN1Integer
 import org.bouncycastle.asn1.DERSequence
@@ -45,7 +44,7 @@ object SecurityUtil {
         var result = false
         val publicKeyAlgorithm = publicKey.algorithm
         if ("RSA" == publicKeyAlgorithm) {
-            Log.d(
+            ErrorHandler.logDebug(
                 TAG,
                 "Unexpected algorithms for RSA AA: digest algorithm = $digestAlgorithm, signature algorithm = $signatureAlgorithm"
             )
@@ -78,21 +77,21 @@ object SecurityUtil {
                 ecdsaAASignature = Signature.getInstance("SHA256withECDSA", BC_PROVIDER)
                 ecdsaPublicKey = publicKey as ECPublicKey
                 if (ecdsaAASignature == null || signatureAlgorithm != null && signatureAlgorithm != ecdsaAASignature.algorithm) {
-                    Log.d(
+                    ErrorHandler.logDebug(
                         TAG,
                         "Re-initializing ecdsaAASignature with signature algorithm $signatureAlgorithm"
                     )
                     ecdsaAASignature = Signature.getInstance(signatureAlgorithm)
                 }
                 if (ecdsaAADigest == null || digestAlgorithm != null && digestAlgorithm != ecdsaAADigest.algorithm) {
-                    Log.d(
+                    ErrorHandler.logDebug(
                         TAG, "Re-initializing ecdsaAADigest with digest algorithm $digestAlgorithm"
                     )
                     ecdsaAADigest = MessageDigest.getInstance(digestAlgorithm)
                 }
                 ecdsaAASignature.initVerify(ecdsaPublicKey)
                 if (response.size % 2 != 0) {
-                    Log.d(TAG, "Active Authentication response is not of even length")
+                    ErrorHandler.logDebug(TAG, "Active Authentication response is not of even length")
                 }
                 val length = response.size / 2
                 val r = Util.os2i(response, 0, length)
@@ -105,7 +104,7 @@ object SecurityUtil {
                     val asn1Sequence = DERSequence(asn1Encodables)
                     result = ecdsaAASignature.verify(asn1Sequence.encoded)
                 } catch (exp: IOException) {
-                    Log.e(TAG, "Unexpected exception during AA signature verification with ECDSA")
+                    ErrorHandler.logError(TAG, "Unexpected exception during AA signature verification with ECDSA")
                     exp.printStackTrace()
                 }
             } catch (e: Exception) {

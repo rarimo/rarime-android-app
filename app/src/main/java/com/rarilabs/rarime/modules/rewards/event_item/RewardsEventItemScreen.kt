@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.modules.rewards.event_item
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +20,7 @@ import com.rarilabs.rarime.modules.rewards.view_models.RewardsEventItemViewModel
 import com.rarilabs.rarime.modules.wallet.WalletRouteLayout
 import com.rarilabs.rarime.ui.components.AppSkeleton
 import com.rarilabs.rarime.ui.components.HorizontalDivider
+import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -40,7 +40,7 @@ fun RewardsEventItemScreen(
             try {
                 rewardsEventItemViewModel.loadPointsEvent()
             } catch (e: Exception) {
-                Log.e("RewardsEventItemScreen", "Error loading points event", e)
+                ErrorHandler.logError("RewardsEventItemScreen", "Error loading points event", e)
             }
         }
     }

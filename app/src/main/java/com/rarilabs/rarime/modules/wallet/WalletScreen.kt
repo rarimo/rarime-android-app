@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.modules.wallet
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,6 +40,7 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.SecondaryIconButton
 import com.rarilabs.rarime.ui.components.TextDropdown
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.NumberUtil
 import com.rarilabs.rarime.util.Screen
 
@@ -139,8 +139,8 @@ fun WalletScreen(
                                 onChange = { symb ->
                                     run {
                                         val asset = userAssets.find { it.token.symbol == symb }
-                                        Log.i("onChange: walletViewModel:", symb)
-                                        Log.i("onChange: asset:", asset?.token?.symbol ?: "nope")
+                                        ErrorHandler.logDebug("onChange: walletViewModel:", symb)
+                                        ErrorHandler.logDebug("onChange: asset:", asset?.token?.symbol ?: "nope")
 
                                         asset?.let { newAsset -> walletViewModel.updateSelectedWalletAsset(newAsset) }
                                     }

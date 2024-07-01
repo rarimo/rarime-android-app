@@ -2,7 +2,6 @@ package com.rarilabs.rarime.util
 
 import android.content.Context
 import android.content.res.AssetManager
-import android.util.Log
 import com.rarilabs.rarime.util.ZkpUtil.groth16InternalStorage
 import com.rarilabs.rarime.util.ZkpUtil.groth16ProverBig
 import com.rarilabs.rarime.util.data.Proof
@@ -139,8 +138,8 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
 
         val witnessData = byteArr.copyOfRange(0, witnessLen[0].toInt())
 
-        Log.i("witnessDataLen", witnessData.size.toString())
-        Log.i("proofDataLen", witnessLen[0].toInt().toString())
+        ErrorHandler.logDebug("witnessDataLen", witnessData.size.toString())
+        ErrorHandler.logDebug("proofDataLen", witnessLen[0].toInt().toString())
 
         val verification = groth16InternalStorage(
             zkeyFilePath, zkeyFileLen,witnessData, witnessLen[0], proofData, proofLen, pubData, pubLen, msg, 256

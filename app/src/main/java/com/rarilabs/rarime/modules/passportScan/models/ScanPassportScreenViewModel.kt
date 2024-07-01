@@ -1,11 +1,10 @@
 package com.rarilabs.rarime.modules.passportScan.models
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.api.registration.RegistrationManager
-import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.data.ZkProof
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -19,23 +18,23 @@ class ScanPassportScreenViewModel @Inject constructor(
     val eDocument = registrationManager.eDocument
 
     fun rejectRevocation() {
-        Log.i("ScanPassportScreenViewModel", "rejectRevocation")
+        ErrorHandler.logDebug("ScanPassportScreenViewModel", "rejectRevocation")
         resetPassportState()
     }
 
     fun resetPassportState() {
-        Log.i("ScanPassportScreenViewModel", "resetPassportState")
+        ErrorHandler.logDebug("ScanPassportScreenViewModel", "resetPassportState")
         passportManager.deletePassport()
     }
 
     fun finishRevocation() {
-        Log.i("ScanPassportScreenViewModel", "finishRevocation")
+        ErrorHandler.logDebug("ScanPassportScreenViewModel", "finishRevocation")
         savePassport(registrationManager.eDocument.value!!)
         saveRegistrationProof(registrationManager.registrationProof.value!!)
     }
 
     fun savePassport(eDocument: EDocument) {
-        Log.i("ScanPassportScreenViewModel", "savePassport")
+        ErrorHandler.logDebug("ScanPassportScreenViewModel", "savePassport")
         registrationManager.setEDocument(eDocument)
 
         // for interrupt cases
@@ -43,7 +42,7 @@ class ScanPassportScreenViewModel @Inject constructor(
     }
 
     fun saveRegistrationProof(registrationProof: ZkProof) {
-        Log.i("ScanPassportScreenViewModel", "saveRegistrationProof")
+        ErrorHandler.logDebug("ScanPassportScreenViewModel", "saveRegistrationProof")
         registrationManager.setRegistrationProof(registrationProof)
 
         // for interrupt cases

@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
-import android.util.Log
+import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,7 +41,7 @@ class NfcManager @Inject constructor(
 
     /* ENABLE SCANNING */
     fun enableForegroundDispatch() {
-        Log.i("NfcManager", "Enabling NFC foreground dispatch")
+        ErrorHandler.logDebug("NfcManager", "Enabling NFC foreground dispatch")
         adapter = NfcAdapter.getDefaultAdapter(activity)
         val intent = Intent(context, activity.javaClass)
         intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -52,13 +52,13 @@ class NfcManager @Inject constructor(
 
     /* DISABLE SCANNING */
     fun disableForegroundDispatch() {
-        Log.i("NfcManager", "Disabling NFC foreground dispatch")
+        ErrorHandler.logDebug("NfcManager", "Disabling NFC foreground dispatch")
         adapter.disableForegroundDispatch(activity)
     }
 
     /* SCAN HANDLING */
     fun handleNewIntent(intent: Intent) {
-        Log.i("NfcManager", "Handling new NFC intent")
+        ErrorHandler.logDebug("NfcManager", "Handling new NFC intent")
         if (NfcAdapter.ACTION_TAG_DISCOVERED == intent.action || NfcAdapter.ACTION_TECH_DISCOVERED == intent.action) {
             val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
             tag?.let {
@@ -67,12 +67,12 @@ class NfcManager @Inject constructor(
                     try {
                         _state.value = ScanNFCState.SCANNING
 
-                        Log.i("NfcManager", "Handling tag: $it")
+                        ErrorHandler.logDebug("NfcManager", "Handling tag: $it")
                         handleTags?.invoke(it)
 
                         _state.value = ScanNFCState.SCANNED
                     } catch (e: Exception) {
-                        Log.e("NfcManager", "Error handling tag", e)
+                        ErrorHandler.logError("NfcManager", "Error handling tag", e)
                         e.printStackTrace()
 
                         _state.value = ScanNFCState.ERROR
@@ -93,7 +93,7 @@ class NfcManager @Inject constructor(
 
             enableForegroundDispatch()
         } catch (e: Exception) {
-            Log.e("NfcManager", "Error starting NFC scanning", e)
+            ErrorHandler.logError("NfcManager", "Error starting NFC scanning", e)
             _state.value = ScanNFCState.ERROR
             disableForegroundDispatch()
         }
