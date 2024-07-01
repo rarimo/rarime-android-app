@@ -108,25 +108,25 @@ fun ScanPassportScreen(
                     onAlreadyRegistered = {
                         scanPassportScreenViewModel.resetPassportState()
 
-//                        mainViewModel.setModalContent {
-//                            ConfirmationDialog(
-//                                title = stringResource(R.string.you_have_already_registered),
-//                                subtitle = stringResource(R.string.you_have_already_registered_offer),
-//                                cancelButtonText = stringResource(id = R.string.you_have_already_registered_cancel),
-//                                confirmButtonText = stringResource(id = R.string.you_have_already_registered_confirm),
-//                                onConfirm = {
-//                                    scanPassportScreenViewModel.saveRegistrationProof(it)
-//                                    state = ScanPassportState.REVOCATION_PROCESS
-//                                    mainViewModel.setModalVisibility(false)
-//                                },
-//                                onCancel = {
-//                                    mainViewModel.setModalVisibility(false)
-//                                    onClose.invoke()
-//                                },
-//                            )
-//                        }
-//                        mainViewModel.setModalVisibility(true)
-                        onClose.invoke()
+                        mainViewModel.setModalContent {
+                            ConfirmationDialog(
+                                title = stringResource(R.string.you_have_already_registered),
+                                subtitle = stringResource(R.string.you_have_already_registered_offer),
+                                cancelButtonText = stringResource(id = R.string.you_have_already_registered_cancel),
+                                confirmButtonText = stringResource(id = R.string.you_have_already_registered_confirm),
+                                onConfirm = {
+                                    scanPassportScreenViewModel.saveRegistrationProof(it)
+                                    state = ScanPassportState.REVOCATION_PROCESS
+                                    mainViewModel.setModalVisibility(false)
+                                },
+                                onCancel = {
+                                    mainViewModel.setModalVisibility(false)
+                                    onClose.invoke()
+                                },
+                            )
+                        }
+                        mainViewModel.setModalVisibility(true)
+
                     }
                 )
             }
