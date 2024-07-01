@@ -9,28 +9,29 @@ import java.io.File
 import java.io.FileWriter
 
 object SendErrorUtil {
-    fun sendErrorEmail(file: File, context: Context): Intent {
+    fun sendErrorEmail(
+        file: File, context: Context, body: String = "", subject: String = ""
+    ): Intent {
         val recipient = "info@rarilabs.com"
+        val selectorIntent = Intent(Intent.ACTION_SENDTO)
+        selectorIntent.setData(Uri.parse("mailto:"))
 
+        val emailIntent = Intent(Intent.ACTION_SEND)
 
-
-        // Get the content URI for the file
         val fileUri: Uri = FileProvider.getUriForFile(
             context, context.applicationContext.packageName + ".provider", file
         )
 
-        val emailIntent = Intent(Intent.ACTION_SEND).apply {
-            putExtra(Intent.EXTRA_EMAIL, arrayOf(recipient))
-            putExtra(Intent.EXTRA_STREAM, fileUri)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            data = Uri.parse("mailto:")
-        }
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(recipient))
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject)
+        emailIntent.putExtra(Intent.EXTRA_STREAM, fileUri)
+        emailIntent.putExtra(Intent.EXTRA_TEXT, body)
+        emailIntent.selector = selectorIntent
 
         return Intent.createChooser(emailIntent, "Send email...")
     }
 
-    fun saveErrorDetailsToFile(fileName: String,errorDetails: String, context: Context): File {
+    fun saveErrorDetailsToFile(fileName: String, errorDetails: String, context: Context): File {
         // Create a file in the external storage directory
 
         val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
