@@ -5,14 +5,7 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Log
 import com.squareup.moshi.JsonClass
-import java.io.BufferedReader
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.FileWriter
-import java.io.InputStreamReader
-import java.io.PrintWriter
-import java.io.StringWriter
+import java.io.*
 import java.security.KeyStore
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -20,8 +13,8 @@ import java.util.Locale
 import javax.crypto.Cipher
 import javax.crypto.CipherInputStream
 import javax.crypto.CipherOutputStream
-import javax.crypto.SecretKey
 import javax.crypto.KeyGenerator
+import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
 
 @JsonClass(generateAdapter = true)
@@ -32,7 +25,6 @@ object ErrorHandler {
     private const val KEY_ALIAS = "LogFileKey"
     private const val TRANSFORMATION = "AES/CBC/PKCS7Padding"
     private const val KEYSTORE_PROVIDER = "AndroidKeyStore"
-    private const val IV_SEPARATOR = "]"
 
     private lateinit var logFile: File
 
@@ -93,15 +85,13 @@ object ErrorHandler {
 
     private fun writeEncrypted(data: String) {
         try {
-            val keyStore = KeyStore.getInstance(KEYSTORE_PROVIDER)
-            keyStore.load(null)
-            val secretKey = keyStore.getKey(KEY_ALIAS, null) as SecretKey
-
+            val key = getSecretKey()
             val cipher = Cipher.getInstance(TRANSFORMATION)
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey)
+            cipher.init(Cipher.ENCRYPT_MODE, key)
             val iv = cipher.iv
 
             FileOutputStream(logFile, true).use { fos ->
+                fos.write(iv.size)
                 fos.write(iv)
                 CipherOutputStream(fos, cipher).use { cos ->
                     cos.write(data.toByteArray())
@@ -163,7 +153,6 @@ object ErrorHandler {
         }
     }
 
-    // TODO: not works
     fun getDecryptedLogFile(context: Context): File? {
         val tempFile = createTempFile("decrypted_log", ".tmp", context.cacheDir)
 
@@ -199,4 +188,3 @@ object ErrorHandler {
         return logFile
     }
 }
-
