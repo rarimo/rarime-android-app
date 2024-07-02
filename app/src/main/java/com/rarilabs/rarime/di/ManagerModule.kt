@@ -68,8 +68,8 @@ class APIModule {
 
     @Provides
     @Singleton
-    @Named("refreshRetrofit")
-    fun provideRefreshRetrofit(): Retrofit {
+    @Named("authRetrofit")
+    fun provideAuthRetrofit(): Retrofit {
         return Retrofit.Builder().addConverterFactory(
             MoshiConverterFactory.create(
                 Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
@@ -85,29 +85,54 @@ class APIModule {
     @Singleton
     @Named("jsonApiRetrofit")
     fun provideJsonApiRetrofit(
-        authManager: AuthManager, @Named("refreshRetrofit") refreshRetrofit: Retrofit
-    ): Retrofit = Retrofit.Builder().addConverterFactory(
-        MoshiConverterFactory.create(
-            Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-        )
-    ).baseUrl("http://NONE").client(
-        OkHttpClient.Builder()
+        authManager: dagger.Lazy<AuthManager>, // Use Lazy injection to break the cycle
+        @Named("authRetrofit") authRetrofit: Retrofit
+    ): Retrofit {
+        val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(
                 RefreshTokenInterceptor(
                     authManager,
-                    AuthAPIManager(refreshRetrofit.create(AuthAPI::class.java))
+                    authRetrofit
                 )
             )
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .build()
-    ).build()
+
+        return Retrofit.Builder()
+            .addConverterFactory(
+                MoshiConverterFactory.create(
+                    Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+                )
+            )
+            .baseUrl("http://NONE")
+            .client(okHttpClient)
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthAPIManager(
+        @Named("authRetrofit") retrofit: Retrofit
+    ): AuthAPIManager = AuthAPIManager(retrofit.create(AuthAPI::class.java))
+
+    @Provides
+    @Singleton
+    fun provideAuthManager(
+        @ApplicationContext context: Context,
+        authAPIManager: AuthAPIManager,
+        identityManager: IdentityManager,
+        dataStoreManager: SecureSharedPrefsManager
+    ): AuthManager {
+        return AuthManager(
+            context, authAPIManager, identityManager, dataStoreManager
+        )
+    }
 
     @Provides
     @Singleton
     fun providerRegistrationAPIManager(
         @Named("jsonApiRetrofit") retrofit: Retrofit
     ): RegistrationAPIManager = RegistrationAPIManager(retrofit.create(RegistrationAPI::class.java))
-
 
     @Provides
     @Singleton
@@ -177,25 +202,6 @@ class APIModule {
         authManager,
         passportManager,
     )
-
-    @Provides
-    @Singleton
-    fun provideAuthAPIManager(
-        @Named("jsonApiRetrofit") retrofit: Retrofit
-    ): AuthAPIManager = AuthAPIManager(retrofit.create(AuthAPI::class.java))
-
-    @Provides
-    @Singleton
-    fun provideAuthManager(
-        @ApplicationContext context: Context,
-        authAPIManager: AuthAPIManager,
-        identityManager: IdentityManager,
-        dataStoreManager: SecureSharedPrefsManager
-    ): AuthManager {
-        return AuthManager(
-            context, authAPIManager, identityManager, dataStoreManager
-        )
-    }
 
     @Provides
     @Singleton
@@ -279,11 +285,9 @@ class APIModule {
         return Web3j.build(HttpService(BaseConfig.EVM_STABLE_COIN_RPC))
     }
 
-
     @Provides
     @Singleton
     fun provideStableCoinContractManager(@Named("STABLE_COIN") web3j: Web3j): StableCoinContractManager {
         return StableCoinContractManager(web3j)
     }
-
 }
