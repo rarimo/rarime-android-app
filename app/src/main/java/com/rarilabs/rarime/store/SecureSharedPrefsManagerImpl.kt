@@ -44,7 +44,8 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "TX" to "TX",
         "ACCESS_TOKEN" to "ACCESS_TOKEN",
         "REFRESH_TOKEN" to "REFRESH_TOKEN",
-        "IS_IN_WAITLIST" to "IS_IN_WAITLIST"
+        "IS_IN_WAITLIST" to "IS_IN_WAITLIST",
+        "PASSCODE" to "PASSCODE",
     )
 
     private val PREFS_FILE_NAME = "sharedPrefFile12"
@@ -86,14 +87,14 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     override fun readPasscodeState(): SecurityCheckState {
         return SecurityCheckState.fromInt(
             getSharedPreferences().getInt(
-                accessTokens["IS_INTRO_FINISHED"], SecurityCheckState.UNSET.value
+                accessTokens["PASSCODE"], SecurityCheckState.UNSET.value
             )
         )
     }
 
     override fun savePasscodeState(state: SecurityCheckState) {
         val editor = getEditor()
-        editor.putInt(accessTokens["IS_INTRO_FINISHED"], state.value)
+        editor.putInt(accessTokens["PASSCODE"], state.value)
         editor.apply()
     }
 
