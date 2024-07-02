@@ -72,6 +72,9 @@ fun ScanPassportScreen(
                         state = ScanPassportState.PASSPORT_DATA
                     },
                     onClose = {
+                        onClose.invoke()
+                    },
+                    onError = {
                         state = ScanPassportState.SCAN_MRZ
                     },
                     mrzInfo = mrzData!!

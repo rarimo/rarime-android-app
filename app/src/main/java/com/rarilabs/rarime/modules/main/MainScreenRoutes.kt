@@ -170,15 +170,15 @@ fun MainScreenRoutes(
             ScanPassportScreen(
                 onClose = {
                     coroutineScope.launch {
-                        mainViewModel.loadUserDetails()
-
+                        val a = mainViewModel.loadUserDetails()
+                        a
                         navigateWithPopUp(Screen.Main.route)
                     }
                 },
                 onClaim = {
                     coroutineScope.launch {
-                        mainViewModel.loadUserDetails()
-
+                        val a = mainViewModel.loadUserDetails()
+                        a
                         navigateWithPopUp(Screen.Claim.Reserve.route)
                     }
                 }
