@@ -9,6 +9,7 @@ import com.rarilabs.rarime.api.airdrop.AirDropManager
 import com.rarilabs.rarime.api.auth.AuthAPI
 import com.rarilabs.rarime.api.auth.AuthAPIManager
 import com.rarilabs.rarime.api.auth.AuthManager
+import com.rarilabs.rarime.api.auth.RefreshTokenInterceptor
 import com.rarilabs.rarime.api.cosmos.CosmosAPI
 import com.rarilabs.rarime.api.cosmos.CosmosAPIManager
 import com.rarilabs.rarime.api.cosmos.CosmosManager
@@ -67,23 +68,71 @@ class APIModule {
 
     @Provides
     @Singleton
-    @Named("jsonApiRetrofit")
-    fun provideJsonApiRetrofit(): Retrofit = Retrofit.Builder().addConverterFactory(
-        MoshiConverterFactory.create(
-            Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-        )
-    ).baseUrl("http://NONE").client(
-        OkHttpClient.Builder().addInterceptor(
-            HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+    @Named("authRetrofit")
+    fun provideAuthRetrofit(): Retrofit {
+        return Retrofit.Builder().addConverterFactory(
+            MoshiConverterFactory.create(
+                Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+            )
+        ).baseUrl("http://NONE").client(
+            OkHttpClient.Builder()
+                .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                .build()
         ).build()
-    ).build()
+    }
+
+    @Provides
+    @Singleton
+    @Named("jsonApiRetrofit")
+    fun provideJsonApiRetrofit(
+        authManager: dagger.Lazy<AuthManager>, // Use Lazy injection to break the cycle
+        @Named("authRetrofit") authRetrofit: Retrofit
+    ): Retrofit {
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(
+                RefreshTokenInterceptor(
+                    authManager,
+                    authRetrofit
+                )
+            )
+            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+            .build()
+
+        return Retrofit.Builder()
+            .addConverterFactory(
+                MoshiConverterFactory.create(
+                    Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+                )
+            )
+            .baseUrl("http://NONE")
+            .client(okHttpClient)
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthAPIManager(
+        @Named("authRetrofit") retrofit: Retrofit
+    ): AuthAPIManager = AuthAPIManager(retrofit.create(AuthAPI::class.java))
+
+    @Provides
+    @Singleton
+    fun provideAuthManager(
+        @ApplicationContext context: Context,
+        authAPIManager: AuthAPIManager,
+        identityManager: IdentityManager,
+        dataStoreManager: SecureSharedPrefsManager
+    ): AuthManager {
+        return AuthManager(
+            context, authAPIManager, identityManager, dataStoreManager
+        )
+    }
 
     @Provides
     @Singleton
     fun providerRegistrationAPIManager(
         @Named("jsonApiRetrofit") retrofit: Retrofit
     ): RegistrationAPIManager = RegistrationAPIManager(retrofit.create(RegistrationAPI::class.java))
-
 
     @Provides
     @Singleton
@@ -96,10 +145,8 @@ class APIModule {
     fun provideRegistrationManager(
         registrationAPIManager: RegistrationAPIManager,
         rarimoContractManager: RarimoContractManager,
-        passportManager: PassportManager,
-        authManager: AuthManager,
     ): RegistrationManager = RegistrationManager(
-        registrationAPIManager, rarimoContractManager, passportManager, authManager
+        registrationAPIManager, rarimoContractManager
     )
 
     @Provides
@@ -155,25 +202,6 @@ class APIModule {
         authManager,
         passportManager,
     )
-
-    @Provides
-    @Singleton
-    fun provideAuthAPIManager(
-        @Named("jsonApiRetrofit") retrofit: Retrofit
-    ): AuthAPIManager = AuthAPIManager(retrofit.create(AuthAPI::class.java))
-
-    @Provides
-    @Singleton
-    fun provideAuthManager(
-        @ApplicationContext context: Context,
-        authAPIManager: AuthAPIManager,
-        identityManager: IdentityManager,
-        dataStoreManager: SecureSharedPrefsManager
-    ): AuthManager {
-        return AuthManager(
-            context, authAPIManager, identityManager, dataStoreManager
-        )
-    }
 
     @Provides
     @Singleton
@@ -257,11 +285,9 @@ class APIModule {
         return Web3j.build(HttpService(BaseConfig.EVM_STABLE_COIN_RPC))
     }
 
-
     @Provides
     @Singleton
     fun provideStableCoinContractManager(@Named("STABLE_COIN") web3j: Web3j): StableCoinContractManager {
         return StableCoinContractManager(web3j)
     }
-
 }

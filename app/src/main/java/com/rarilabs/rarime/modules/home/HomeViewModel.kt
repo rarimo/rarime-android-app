@@ -5,7 +5,6 @@ import com.rarilabs.rarime.api.airdrop.AirDropManager
 import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.tokens.PointsToken
-import com.rarilabs.rarime.data.tokens.RarimoToken
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.manager.WalletManager
