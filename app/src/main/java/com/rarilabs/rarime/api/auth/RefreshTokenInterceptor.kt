@@ -5,18 +5,21 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
 import retrofit2.Retrofit
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 class RefreshTokenInterceptor @Inject constructor(
     private val authManager: dagger.Lazy<AuthManager>,
     private val refreshRetrofit: Retrofit
 ) : Interceptor {
+    private var isRefreshing = AtomicBoolean(false)
+
     private suspend fun refresh() {
-        authManager.get().accessToken.value?.let {
+        authManager.get().refreshToken.value?.let {
             val refreshAuthAPIManager = AuthAPIManager(refreshRetrofit.create(AuthAPI::class.java))
 
             val response = refreshAuthAPIManager.refresh(
-                authorization = it
+                authorization = "Bearer $it"
             )
 
             authManager.get().updateTokens(
@@ -35,7 +38,18 @@ class RefreshTokenInterceptor @Inject constructor(
                 try {
                     // Check if the token was already refreshed to avoid multiple refreshes
                     runBlocking {
-                        refresh()
+                        if (!isRefreshing.get()) {
+                            isRefreshing.set(true)
+                            try {
+                                runBlocking {
+                                    refresh()
+                                }
+                            } catch (e: Exception) {
+                                ErrorHandler.logError("RefreshTokenInterceptor", "Error refreshing token", e)
+                            } finally {
+                                isRefreshing.set(false)
+                            }
+                        }
                     }
 
                     val newAccessToken = authManager.get().accessToken.value
