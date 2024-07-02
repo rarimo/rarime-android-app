@@ -155,17 +155,9 @@ fun WaitlistPassportScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
                 onClick = {
-                    val decryptedFile = ErrorHandler.getDecryptedLogFile(context)
+                    val decryptedFile = ErrorHandler.getLogFile()
 
-                    decryptedFile?.let {
-                        launcher.launch(sendErrorEmail(it, context))
-                    } ?: run {
-                        Toast.makeText(
-                            context,
-                            "No logs to send",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    launcher.launch(sendErrorEmail(decryptedFile, context))
                 },
             )
             TertiaryButton(
