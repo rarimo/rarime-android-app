@@ -54,8 +54,6 @@ class PointsManager @Inject constructor(
     suspend fun createPointsBalance(referralCode: String) {
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
-        //TODO: Remove it
-        if (authManager.isAccessTokenExpired()) authManager.refresh()
         if (userNullifierHex.isEmpty()) {
             throw Exception("user nullifier is null")
         }
@@ -116,10 +114,6 @@ class PointsManager @Inject constructor(
 
         if (userNullifierHex.isEmpty()) {
             throw Exception("user nullifier is null")
-        }
-
-        if (authManager.isAccessTokenExpired()) {
-            authManager.refresh()
         }
 
         val response = pointsAPIManager.getPointsBalance(
@@ -204,10 +198,6 @@ class PointsManager @Inject constructor(
 
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun verifyPassport() {
-
-        // TODO : Remove this
-        if (authManager.isAccessTokenExpired()) authManager.refresh()
-
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
         if (userNullifierHex.isEmpty()) {

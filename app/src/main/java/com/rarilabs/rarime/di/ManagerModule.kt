@@ -68,40 +68,39 @@ class APIModule {
 
     @Provides
     @Singleton
-    fun provideRefreshTokenInterceptor(authManager: AuthManager): RefreshTokenInterceptor =
-        RefreshTokenInterceptor(authManager)
-
-    @Provides
-    @Singleton
-    fun provideOkHttpClient(refreshTokenInterceptor: RefreshTokenInterceptor): OkHttpClient =
-        OkHttpClient.Builder()
-            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-            .addInterceptor(refreshTokenInterceptor)
-            .build()
-
-    @Provides
-    @Singleton
     @Named("refreshRetrofit")
     fun provideRefreshRetrofit(): Retrofit {
-        return Retrofit.Builder()
-            .addConverterFactory(MoshiConverterFactory.create())
-            .baseUrl("http://NONE")  // Make sure to replace with your actual base URL
-            .client(OkHttpClient.Builder().build())
-            .build()
+        return Retrofit.Builder().addConverterFactory(
+            MoshiConverterFactory.create(
+                Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+            )
+        ).baseUrl("http://NONE").client(
+            OkHttpClient.Builder()
+                .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                .build()
+        ).build()
     }
 
     @Provides
     @Singleton
     @Named("jsonApiRetrofit")
-    fun provideJsonApiRetrofit(okHttpClient: OkHttpClient): Retrofit {
-        return Retrofit.Builder()
-            .addConverterFactory(MoshiConverterFactory.create(
-                Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-            ))
-            .baseUrl("http://NONE")  // Make sure to replace with your actual base URL
-            .client(okHttpClient)
+    fun provideJsonApiRetrofit(
+        authManager: AuthManager, @Named("refreshRetrofit") refreshRetrofit: Retrofit
+    ): Retrofit = Retrofit.Builder().addConverterFactory(
+        MoshiConverterFactory.create(
+            Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+        )
+    ).baseUrl("http://NONE").client(
+        OkHttpClient.Builder()
+            .addInterceptor(
+                RefreshTokenInterceptor(
+                    authManager,
+                    AuthAPIManager(refreshRetrofit.create(AuthAPI::class.java))
+                )
+            )
+            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .build()
-    }
+    ).build()
 
     @Provides
     @Singleton
@@ -121,10 +120,8 @@ class APIModule {
     fun provideRegistrationManager(
         registrationAPIManager: RegistrationAPIManager,
         rarimoContractManager: RarimoContractManager,
-        passportManager: PassportManager,
-        authManager: AuthManager,
     ): RegistrationManager = RegistrationManager(
-        registrationAPIManager, rarimoContractManager, passportManager, authManager
+        registrationAPIManager, rarimoContractManager
     )
 
     @Provides
