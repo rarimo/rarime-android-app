@@ -37,6 +37,7 @@ fun ReadEDocStep(
     mrzInfo: MRZInfo,
     onNext: (eDocument: EDocument) -> Unit,
     onClose: () -> Unit,
+    onError: () -> Unit,
     readEDocStepViewModel: ReadEDocStepViewModel = hiltViewModel(),
 ) {
     val state by readEDocStepViewModel.state.collectAsState()
@@ -107,7 +108,7 @@ fun ReadEDocStep(
                             Toast.LENGTH_SHORT
                         ).show()
 
-                        onClose()
+                        onError()
                     }
                 }
             }
@@ -121,5 +122,5 @@ private fun ReadNFCStepPreview() {
     val mrzInfo = MRZInfo(
         "P", "NNN", "", "", "", "NNN", "", Gender.UNSPECIFIED, "", ""
     )
-    ReadEDocStep(mrzInfo, onNext = {}, onClose = {})
+    ReadEDocStep(mrzInfo, onNext = {}, onClose = {}, onError = {})
 }

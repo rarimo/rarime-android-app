@@ -105,7 +105,6 @@ class WalletManager @Inject constructor(
     }
 
     private var _pointsToken = MutableStateFlow(getPointsToken(_walletAssets.value))
-
     val pointsToken: StateFlow<PointsToken?>
         get() = _pointsToken.asStateFlow()
 
@@ -119,7 +118,7 @@ class WalletManager @Inject constructor(
         withContext(Dispatchers.IO) {
             val balances = getWalletAssets()
 
-            coroutineScope {
+            val cs = coroutineScope {
                 balances.forEach { balance ->
                     launch {
                         balance.token.loadDetails()
@@ -135,6 +134,7 @@ class WalletManager @Inject constructor(
                     }
                 }
             }
+            cs.toString()
             _walletAssets.value = balances.toList()
 
             dataStoreManager.saveWalletAssets(_walletAssets.value)

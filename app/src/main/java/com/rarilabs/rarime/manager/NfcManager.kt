@@ -34,8 +34,6 @@ class NfcManager @Inject constructor(
         get() = _state.asStateFlow()
 
     fun resetState() {
-        _state.value = ScanNFCState.NOT_SCANNING
-
         disableForegroundDispatch()
     }
 
@@ -55,7 +53,7 @@ class NfcManager @Inject constructor(
         ErrorHandler.logDebug("NfcManager", "Disabling NFC foreground dispatch")
         adapter.disableForegroundDispatch(activity)
 
-        _state.value = ScanNFCState.ERROR
+        _state.value = ScanNFCState.NOT_SCANNING
     }
 
     /* SCAN HANDLING */

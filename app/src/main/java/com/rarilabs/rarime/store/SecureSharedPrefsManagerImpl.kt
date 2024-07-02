@@ -86,14 +86,14 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     override fun readPasscodeState(): SecurityCheckState {
         return SecurityCheckState.fromInt(
             getSharedPreferences().getInt(
-                accessTokens["IS_INTRO_FINISHED"], SecurityCheckState.UNSET.value
+                accessTokens["PASSCODE_STATE"], SecurityCheckState.UNSET.value
             )
         )
     }
 
     override fun savePasscodeState(state: SecurityCheckState) {
         val editor = getEditor()
-        editor.putInt(accessTokens["IS_INTRO_FINISHED"], state.value)
+        editor.putInt(accessTokens["PASSCODE_STATE"], state.value)
         editor.apply()
     }
 

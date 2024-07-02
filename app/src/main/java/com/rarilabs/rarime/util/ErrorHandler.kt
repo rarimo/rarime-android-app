@@ -3,6 +3,7 @@ package com.rarilabs.rarime.util
 import android.content.Context
 import android.util.Log
 import com.squareup.moshi.JsonClass
+import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
 import java.io.PrintWriter
@@ -14,6 +15,8 @@ data class ErrorLog(val message: String, val stackTrace: String)
 
 object ErrorHandler {
     private const val TAG = "ErrorHandler"
+    private const val LOG_FILE_NAME = "app.log"
+    private const val MAX_LOG_SIZE = 10 * 1024 * 1024 // 10 MB in bytes
 
     private lateinit var logFile: File
 
@@ -23,7 +26,7 @@ object ErrorHandler {
     }
 
     private fun setupLogFile(context: Context) {
-        logFile = File(context.filesDir, "app.log")
+        logFile = File(context.filesDir, LOG_FILE_NAME)
     }
 
     private fun setupUncaughtExceptionHandler() {
@@ -55,20 +58,38 @@ object ErrorHandler {
 
             val unixTimestamp = Instant.now().epochSecond
 
-            FileWriter(logFile, true).use { writer ->
-                val logEntry = buildString {
-                    appendLine("=========== $unixTimestamp ===========")
-                    appendLine("$level/$TAG: ${errorLog.message}")
-                    if (errorLog.stackTrace.isNotEmpty()) {
-                        appendLine(errorLog.stackTrace)
-                    }
-                    appendLine("=================================")
+            val logEntry = buildString {
+                appendLine("=========== $unixTimestamp ===========")
+                appendLine("$level/$TAG: ${errorLog.message}")
+                if (errorLog.stackTrace.isNotEmpty()) {
+                    appendLine(errorLog.stackTrace)
                 }
-
-                writer.append(logEntry)
+                appendLine("=================================")
             }
+
+            if (logFile.length() + logEntry.toByteArray().size > MAX_LOG_SIZE) {
+                trimLogFile()
+            }
+
+            logFile.appendText(logEntry)
         } catch (e: Exception) {
             Log.e(TAG, "Error writing log to file", e)
+        }
+    }
+
+    private fun trimLogFile() {
+        try {
+            val lines = logFile.readLines()
+            val trimmedLines = lines.drop(lines.size / 4) // Keep the last 3/4 of the log
+
+            BufferedWriter(FileWriter(logFile)).use { writer ->
+                trimmedLines.forEach { line ->
+                    writer.write(line)
+                    writer.newLine()
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error trimming log file", e)
         }
     }
 
