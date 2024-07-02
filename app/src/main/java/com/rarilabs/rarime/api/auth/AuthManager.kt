@@ -2,18 +2,18 @@ package com.rarilabs.rarime.api.auth
 
 import android.content.Context
 import com.auth0.android.jwt.JWT
+import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.auth.models.RequestAuthorizeBody
 import com.rarilabs.rarime.api.auth.models.RequestAuthorizeData
 import com.rarilabs.rarime.api.auth.models.RequestAuthorizeDataAttributes
+import com.rarilabs.rarime.api.auth.models.RequestAuthorizeResponseBody
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
 import com.rarilabs.rarime.util.data.ZkProof
-import com.google.gson.Gson
-import com.rarilabs.rarime.api.auth.models.RequestAuthorizeResponseBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -115,30 +115,25 @@ class AuthManager @Inject constructor(
         _isAuthorized.value = getIsAuthorized()
     }
 
-    suspend fun refresh() {
-        if (_accessToken.value == null) {
-            throw IllegalStateException("Access token is not set")
-        }
-
-        val response = authAPIManager.refresh(
-            authorization = _accessToken.value!!
-        )
-
-        _accessToken.value = response.data.attributes.access_token.token
-        _refreshToken.value = response.data.attributes.refresh_token.token
-
+    fun updateTokens(accessToken: String, refreshToken: String) {
+        _accessToken.value = accessToken
+        _refreshToken.value = refreshToken
         _isAuthorized.value = getIsAuthorized()
     }
 
     fun isAccessTokenExpired(): Boolean {
         return _accessToken.value?.let {
-            val accessJWT = JWT(it)
+            try {
+                val accessJWT = JWT(it)
 
-            return accessJWT.expiresAt?.let {
-                LocalDate.now().isAfter(
-                    it.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-                )
-            } ?: false
+                return accessJWT.expiresAt?.let {
+                    LocalDate.now().isAfter(
+                        it.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                    )
+                } ?: false
+            } catch (e: Exception) {
+                return true
+            }
         } ?: true
     }
 }

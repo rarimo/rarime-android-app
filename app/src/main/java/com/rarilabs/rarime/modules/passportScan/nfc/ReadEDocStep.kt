@@ -44,6 +44,7 @@ fun ReadEDocStep(
     val errorMessageId by readEDocStepViewModel.errorMessageId.collectAsState()
 
     LaunchedEffect(Unit) {
+
         readEDocStepViewModel.startScanning(mrzInfo)
     }
 

@@ -115,7 +115,9 @@ class NfcUseCase(
         val sodFile = SODFileOwn(sodIn)
 
         sodFile.dataGroupHashes.entries.forEach { (key, value) ->
-            ErrorHandler.logDebug("", "Data group: $key hash value: ${StringUtil.byteArrayToHex(value)}")
+            ErrorHandler.logDebug(
+                "Nfc scan", "Data group: $key hash value: ${StringUtil.byteArrayToHex(value)}"
+            )
         }
 
 
@@ -123,20 +125,21 @@ class NfcUseCase(
 
 
         var digestAlgorithm = sodFile.digestAlgorithm
-        ErrorHandler.logDebug("", "Digest Algorithm: $digestAlgorithm")
+        ErrorHandler.logDebug("Nfc scan", "Digest Algorithm: $digestAlgorithm")
         val docSigningCert = sodFile.docSigningCertificate
-        val docSigningCerts = sodFile.docSigningCertificates
         val pemFile: String = SecurityUtil.convertToPEM(docSigningCert)
         ErrorHandler.logDebug(
-            "", "Document Signer Certificate: $docSigningCert"
+            "Nfc scan", "Document Signer Certificate: $docSigningCert"
         )
         ErrorHandler.logDebug(
-            "", "Document Signer Certificate Pem : $pemFile"
+            "Nfc scan", "Document Signer Certificate Pem : $pemFile"
         )
+
         val digestEncryptionAlgorithm = sodFile.digestEncryptionAlgorithm
-        val digest: MessageDigest
+
+        ErrorHandler.logDebug("Nfc scan", "Digest Encryption Algorithm: $digestEncryptionAlgorithm")
         //publishProgress("Loading digest algorithm")
-        digest = if (Security.getAlgorithms("MessageDigest").contains(digestAlgorithm)) {
+        val digest: MessageDigest = if (Security.getAlgorithms("MessageDigest").contains(digestAlgorithm)) {
             MessageDigest.getInstance(digestAlgorithm)
         } else {
             MessageDigest.getInstance(digestAlgorithm, BouncyCastleProvider())
@@ -169,13 +172,13 @@ class NfcUseCase(
         val dg1StoredHash = sodFile.dataGroupHashes[1]
         val dg1ComputedHash = digest.digest(encodedDg1File.toByteArray())
         ErrorHandler.logDebug(
-            "", "DG1 Stored Hash: " + StringUtil.byteArrayToHex(dg1StoredHash!!)
+            "Nfc scan", "DG1 Stored Hash: " + StringUtil.byteArrayToHex(dg1StoredHash!!)
         )
         ErrorHandler.logDebug(
-            "", "DG1 Computed Hash: " + StringUtil.byteArrayToHex(dg1ComputedHash)
+            "Nfc scan", "DG1 Computed Hash: " + StringUtil.byteArrayToHex(dg1ComputedHash)
         )
         if (Arrays.equals(dg1StoredHash, dg1ComputedHash)) {
-            ErrorHandler.logDebug("", "DG1 Hashes are matched")
+            ErrorHandler.logDebug("Nfc scan", "DG1 Hashes are matched")
         } else {
             hashesMatched = false
         }
@@ -188,13 +191,13 @@ class NfcUseCase(
         val dg2StoredHash = sodFile.dataGroupHashes[2]
         val dg2ComputedHash = digest.digest(dg2File.encoded)
         ErrorHandler.logDebug(
-            "", "DG2 Stored Hash: " + StringUtil.byteArrayToHex(dg2StoredHash!!)
+            "Nfc scan", "DG2 Stored Hash: " + StringUtil.byteArrayToHex(dg2StoredHash!!)
         )
         ErrorHandler.logDebug(
-            "", "DG2 Computed Hash: " + StringUtil.byteArrayToHex(dg2ComputedHash)
+            "Nfc scan", "DG2 Computed Hash: " + StringUtil.byteArrayToHex(dg2ComputedHash)
         )
         if (Arrays.equals(dg2StoredHash, dg2ComputedHash)) {
-            ErrorHandler.logDebug("", "DG2 Hashes are matched")
+            ErrorHandler.logDebug("Nfc scan", "DG2 Hashes are matched")
         } else {
             hashesMatched = false
         }
@@ -221,30 +224,36 @@ class NfcUseCase(
         } catch (
             e: Exception
         ) {
+            ErrorHandler.logError("Nfc scan", "No DG15 file", e)
             null
         }
 
         //Arrays.copyOfRange(poseidonHash, poseidonHash.size - 8, poseidonHash.size).reversed().toByteArray()
 
 
-        ErrorHandler.logError("PUB KEy", dg15?.publicKey?.encoded?.toHexString().toString())
+        ErrorHandler.logDebug("PUB KEy", dg15?.publicKey?.encoded?.toHexString().toString())
 
 
-        ErrorHandler.logError("Digest Algorithm", sodFile.digestAlgorithm)
-        ErrorHandler.logError("signerInfoDigestAlgorithm", sodFile.signerInfoDigestAlgorithm)
+        ErrorHandler.logDebug("Digest Algorithm", sodFile.digestAlgorithm)
+        ErrorHandler.logDebug("signerInfoDigestAlgorithm", sodFile.signerInfoDigestAlgorithm)
 
 
         val profiler = Profile().newProfile(privateKey).registrationChallenge
         var response: AAResult? = null
         try {
             response = service.doAA(
-                dg15?.publicKey, sodFile.digestAlgorithm, sodFile.signerInfoDigestAlgorithm, profiler
+                dg15?.publicKey,
+                sodFile.digestAlgorithm,
+                sodFile.signerInfoDigestAlgorithm,
+                profiler
             )
             eDocument.aaSignature = response.response
             eDocument.aaResponse = response.toString()
             eDocument.isActiveAuth = true
+            ErrorHandler.logDebug("Nfc scan", "AA is available")
         } catch (e: Exception) {
             eDocument.isActiveAuth = false
+            ErrorHandler.logError("Nfc scan", "AA is NOT available")
         }
 
 
@@ -259,31 +268,34 @@ class NfcUseCase(
         val encapsulaged_content = sodFile.readASN1Data()
 
         ErrorHandler.logDebug("Encapsulated Content", encapsulaged_content)
-        val dg1B =
-            String(dg1File.encoded).toBitArray().toCharArray().map { it1 -> it1.digitToInt() }
+
         val signedAtributes = sodFile.eContent
         val pubKey = dg15?.publicKey?.encoded
 
-        ErrorHandler.logError("PUB key cert", sodFile.docSigningCertificate.publicKey.encoded.toHexString())
+        ErrorHandler.logError(
+            "PUB key cert", sodFile.docSigningCertificate.publicKey.encoded.toHexString()
+        )
 
         val signature = sodFile.encryptedDigest
 
         eDocument.dg15Pem = dg15?.publicKey?.publicKeyToPem()
 
 
-        ErrorHandler.logError("pemFile", "pemFile: $pemFileEnded")
-        ErrorHandler.logError("encapsulated_content", "encapsulated_content: $encapsulaged_content")
-        ErrorHandler.logError("dg1b", "dg1b: $dg1B")
-        ErrorHandler.logError("signedAtributes", "signedAtributes: " + signedAtributes.toHexString())
-        ErrorHandler.logError("pubKey", "pubKey: " + pubKey?.toHexString())
-        ErrorHandler.logError("signature", "signature: " + signature.toHexString())
+        try {
+            ErrorHandler.logError("pemFile", "pemFile: $pemFileEnded")
+            ErrorHandler.logError("encapsulated_content", "encapsulated_content: $encapsulaged_content")
+            ErrorHandler.logError(
+                "signedAtributes", "signedAtributes: " + signedAtributes.toHexString()
+            )
+            ErrorHandler.logError("pubKey", "pubKey: " + pubKey?.toHexString())
+            ErrorHandler.logError("signature", "signature: " + signature.toHexString())
 
 
-        ErrorHandler.logError("PUBLIC KEY", sodFile.docSigningCertificate.publicKey.toString())
-
-        eDocument.dg15 = dg15?.encoded?.toHexString()
-
-
+            ErrorHandler.logError("PUBLIC KEY", sodFile.docSigningCertificate.publicKey.toString())
+            eDocument.dg15 = dg15?.encoded?.toHexString()
+        } catch (e: Exception) {
+            ErrorHandler.logError("NFC SCAN", "Smt wrong with Log data while scanning", e)
+        }
 
         return eDocument
     }

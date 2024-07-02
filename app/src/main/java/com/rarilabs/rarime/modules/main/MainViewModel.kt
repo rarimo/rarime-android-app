@@ -121,12 +121,9 @@ class MainViewModel @Inject constructor(
 
     private suspend fun tryLogin() {
         try {
-            if (authManager.isAccessTokenExpired()) {
-                authManager.refresh()
-            }
-        } catch (e: Exception) {
             authManager.login()
-            e.printStackTrace()
+        } catch (e: Exception) {
+            ErrorHandler.logError("MainViewModel", "Failed to login", e)
         }
     }
 
