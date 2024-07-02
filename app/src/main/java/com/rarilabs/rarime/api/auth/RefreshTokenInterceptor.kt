@@ -46,26 +46,30 @@ class RefreshTokenInterceptor @Inject constructor(
                                 }
                             } catch (e: Exception) {
                                 ErrorHandler.logError("RefreshTokenInterceptor", "Error refreshing token", e)
+
+                                authManager.get().updateTokens("", "")
                             } finally {
                                 isRefreshing.set(false)
                             }
                         }
                     }
 
-                    val newAccessToken = authManager.get().accessToken.value
+                    var newAccessToken = authManager.get().accessToken.value
 
-                    if (newAccessToken?.isNotEmpty() == true) {
-                        // Retry the request with the new token
-                        val newRequest = originalRequest.newBuilder()
-                            .header("Authorization", "Bearer $newAccessToken")
-                            .build()
-                        return chain.proceed(newRequest)
-                    } else {
-                        // Handle the case where the token refresh failed (e.g., logout user)
+                    if (newAccessToken?.isEmpty() == true) {
                         runBlocking {
-                            // authManager.get().logout() // Implement logout if needed
+                            authManager.get().login()
                         }
+
+                        newAccessToken = authManager.get().accessToken.value
                     }
+
+
+                    // Retry the request with the new token
+                    val newRequest = originalRequest.newBuilder()
+                        .header("Authorization", "Bearer $newAccessToken")
+                        .build()
+                    return chain.proceed(newRequest)
                 } catch (e: Exception) {
                     ErrorHandler.logError("interceptor", "Error refreshing token", e)
                 }
