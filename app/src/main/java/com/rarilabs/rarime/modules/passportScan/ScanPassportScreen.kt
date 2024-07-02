@@ -24,6 +24,7 @@ import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.NotAllowedP
 import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.WaitlistPassportScreen
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
+import com.rarilabs.rarime.util.data.ZkProof
 import org.jmrtd.lds.icao.MRZInfo
 
 private enum class ScanPassportState {
@@ -51,6 +52,34 @@ fun ScanPassportScreen(
     var mrzData: MRZInfo? by remember { mutableStateOf(null) }
 
     val eDoc = scanPassportScreenViewModel.eDocument.collectAsState()
+
+    fun handleRegisteredPassportException(zkProof: ZkProof) {
+        scanPassportScreenViewModel.resetPassportState()
+
+        Toast.makeText(context, R.string.you_have_already_registered, Toast.LENGTH_SHORT)
+            .show()
+        onClose.invoke()
+
+
+//                        mainViewModel.setModalContent {
+//                            ConfirmationDialog(
+//                                title = stringResource(R.string.you_have_already_registered),
+//                                subtitle = stringResource(R.string.you_have_already_registered_offer),
+//                                cancelButtonText = stringResource(id = R.string.you_have_already_registered_cancel),
+//                                confirmButtonText = stringResource(id = R.string.you_have_already_registered_confirm),
+//                                onConfirm = {
+//                                    scanPassportScreenViewModel.saveRegistrationProof(it)
+//                                    state = ScanPassportState.REVOCATION_PROCESS
+//                                    mainViewModel.setModalVisibility(false)
+//                                },
+//                                onCancel = {
+//                                    mainViewModel.setModalVisibility(false)
+//                                    onClose.invoke()
+//                                },
+//                            )
+//                        }
+//                        mainViewModel.setModalVisibility(true)
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         when (state) {
@@ -109,32 +138,7 @@ fun ScanPassportScreen(
                     },
                     eDocument = eDoc.value!!,
                     onError = { state = ScanPassportState.UNSUPPORTED_PASSPORT },
-                    onAlreadyRegistered = {
-                        scanPassportScreenViewModel.resetPassportState()
-
-//                        mainViewModel.setModalContent {
-//                            ConfirmationDialog(
-//                                title = stringResource(R.string.you_have_already_registered),
-//                                subtitle = stringResource(R.string.you_have_already_registered_offer),
-//                                cancelButtonText = stringResource(id = R.string.you_have_already_registered_cancel),
-//                                confirmButtonText = stringResource(id = R.string.you_have_already_registered_confirm),
-//                                onConfirm = {
-//                                    scanPassportScreenViewModel.saveRegistrationProof(it)
-//                                    state = ScanPassportState.REVOCATION_PROCESS
-//                                    mainViewModel.setModalVisibility(false)
-//                                },
-//                                onCancel = {
-//                                    mainViewModel.setModalVisibility(false)
-//                                    onClose.invoke()
-//                                },
-//                            )
-//                        }
-//                        mainViewModel.setModalVisibility(true)
-
-                        Toast.makeText(context, R.string.you_have_already_registered, Toast.LENGTH_SHORT)
-                            .show()
-                        onClose.invoke()
-                    }
+                    onAlreadyRegistered = { handleRegisteredPassportException(it) },
                 )
             }
 

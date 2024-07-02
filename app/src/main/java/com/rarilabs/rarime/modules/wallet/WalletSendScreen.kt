@@ -40,6 +40,7 @@ import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldNumberState
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.NumberUtil
 import com.rarilabs.rarime.util.WalletUtil
 import kotlinx.coroutines.delay
@@ -63,22 +64,23 @@ fun WalletSendScreen(
     fun submit() {
         coroutineScope.launch {
             isSubmitting = true
+            try {
+                val a = walletSendViewModel.sendTokens(addressState.text, humanAmountState.text)
 
-            walletSendViewModel.sendTokens(addressState.text, humanAmountState.text)
-            walletSendViewModel.fetchBalance()
+                walletSendViewModel.fetchBalance()
+            } catch (e: Exception) {
+                ErrorHandler.logError("Error sending", "Cant send token ${walletSendViewModel.selectedWalletAsset.value.token}", e)
+            }
 
             isSubmitting = false
         }
     }
 
     if (isQrCodeScannerOpen) {
-        ScanQrScreen(
-            onBack = { isQrCodeScannerOpen = false },
-            onScan = {
-                addressState.updateText(it)
-                isQrCodeScannerOpen = false
-            }
-        )
+        ScanQrScreen(onBack = { isQrCodeScannerOpen = false }, onScan = {
+            addressState.updateText(it)
+            isQrCodeScannerOpen = false
+        })
     } else {
         WalletSendScreenContent(
             onBack = onBack,
@@ -111,14 +113,12 @@ private fun WalletSendScreenContent(
         headerModifier = Modifier.padding(horizontal = 20.dp),
         title = stringResource(R.string.wallet_send_title, selectedWalletAsset.token.symbol),
         description = stringResource(
-            R.string.wallet_send_description,
-            selectedWalletAsset.token.symbol
+            R.string.wallet_send_description, selectedWalletAsset.token.symbol
         ),
         onBack = onBack
     ) {
         Column(
-            verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxSize()
+            verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxSize()
         ) {
             CardContainer(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
@@ -134,13 +134,11 @@ private fun WalletSendScreenContent(
 //                        },
                         enabled = !isSubmitting,
                     )
-                    AppTextField(
-                        state = humanAmountState,
+                    AppTextField(state = humanAmountState,
                         label = stringResource(R.string.amount_lbl),
                         enabled = !isSubmitting,
                         placeholder = stringResource(
-                            R.string.amount_placeholder,
-                            selectedWalletAsset.token.symbol
+                            R.string.amount_placeholder, selectedWalletAsset.token.symbol
                         ),
                         hint = {
                             Row(
@@ -167,18 +165,15 @@ private fun WalletSendScreenContent(
                                     .height(20.dp)
                             ) {
                                 VerticalDivider()
-                                SecondaryTextButton(
-                                    text = stringResource(R.string.max_btn),
+                                SecondaryTextButton(text = stringResource(R.string.max_btn),
                                     // TODO: mb to human string?
                                     onClick = {
                                         humanAmountState.updateText(
                                             selectedWalletAsset.humanBalance().toString()
                                         )
-                                    }
-                                )
+                                    })
                             }
-                        }
-                    )
+                        })
                 }
             }
             Row(
@@ -208,29 +203,21 @@ private fun WalletSendScreenContent(
                     onClick = {
                         confirmationSheetState.show()
                     },
-                    enabled = addressState.text.isNotEmpty() &&
-                            humanAmountState.text.isNotEmpty() && !isSubmitting
+                    enabled = addressState.text.isNotEmpty() && humanAmountState.text.isNotEmpty() && !isSubmitting
                 )
             }
         }
 
-        if (
-            addressState.text.isNotEmpty() &&
-            humanAmountState.text.isNotEmpty()
-        ) {
-            TxConfirmBottomSheet(
-                sheetState = confirmationSheetState,
-                totalDetails = mapOf(
-                    "Address" to WalletUtil.formatAddress(addressState.text, 4, 4),
-                    "Send amount" to "${NumberUtil.formatAmount(humanAmountState.text.toDouble())} ${selectedWalletAsset.token.symbol}",
-                    "Fee" to "0 ${selectedWalletAsset.token.symbol}"
-                ),
-                onConfirm = {
+        if (addressState.text.isNotEmpty() && humanAmountState.text.isNotEmpty()) {
+            TxConfirmBottomSheet(sheetState = confirmationSheetState, totalDetails = mapOf(
+                "Address" to WalletUtil.formatAddress(addressState.text, 4, 4),
+                "Send amount" to "${NumberUtil.formatAmount(humanAmountState.text.toDouble())} ${selectedWalletAsset.token.symbol}",
+                "Fee" to "0 ${selectedWalletAsset.token.symbol}"
+            ), onConfirm = {
 
-                    submit()
+                submit()
 
-                }
-            )
+            })
         }
     }
 }
@@ -255,8 +242,7 @@ private fun WalletSendScreenContentPreview() {
     WalletSendScreenContent(
         onBack = {},
         selectedWalletAsset = WalletAsset(
-            "0xgqiuweyfgkafsdjnfksladnfajsdn",
-            PreviewerToken("", "Preview", "PRW", 18)
+            "0xgqiuweyfgkafsdjnfksladnfajsdn", PreviewerToken("", "Preview", "PRW", 18)
         ),
         humanAmountState = rememberAppTextFieldNumberState(initialText = ""),
         addressState = rememberAppTextFieldState(initialText = ""),
