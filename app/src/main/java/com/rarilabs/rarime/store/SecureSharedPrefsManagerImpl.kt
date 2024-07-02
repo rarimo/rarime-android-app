@@ -19,6 +19,7 @@ import com.rarilabs.rarime.util.LocaleUtil
 import com.rarilabs.rarime.util.data.ZkProof
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.rarilabs.rarime.util.ErrorHandler
 import javax.inject.Inject
 
 
@@ -44,8 +45,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "TX" to "TX",
         "ACCESS_TOKEN" to "ACCESS_TOKEN",
         "REFRESH_TOKEN" to "REFRESH_TOKEN",
-        "IS_IN_WAITLIST" to "IS_IN_WAITLIST",
-        "PASSCODE" to "PASSCODE",
+        "IS_IN_WAITLIST" to "IS_IN_WAITLIST"
     )
 
     private val PREFS_FILE_NAME = "sharedPrefFile12"
@@ -87,14 +87,14 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     override fun readPasscodeState(): SecurityCheckState {
         return SecurityCheckState.fromInt(
             getSharedPreferences().getInt(
-                accessTokens["PASSCODE"], SecurityCheckState.UNSET.value
+                accessTokens["PASSCODE_STATE"], SecurityCheckState.UNSET.value
             )
         )
     }
 
     override fun savePasscodeState(state: SecurityCheckState) {
         val editor = getEditor()
-        editor.putInt(accessTokens["PASSCODE"], state.value)
+        editor.putInt(accessTokens["PASSCODE_STATE"], state.value)
         editor.apply()
     }
 

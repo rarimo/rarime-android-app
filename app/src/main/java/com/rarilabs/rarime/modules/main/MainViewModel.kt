@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.modules.main
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -13,6 +12,7 @@ import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.SecurityManager
 import com.rarilabs.rarime.manager.SettingsManager
 import com.rarilabs.rarime.manager.WalletManager
+import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -64,7 +64,7 @@ class MainViewModel @Inject constructor(
         private set
 
     suspend fun initApp() {
-        Log.i("initApp", identityManager.privateKey.value.toString())
+        ErrorHandler.logDebug("initApp", identityManager.privateKey.value.toString())
 
         if (identityManager.privateKey.value == null) {
             appLoadingState.value = AppLoadingStates.LOADED
@@ -81,7 +81,7 @@ class MainViewModel @Inject constructor(
             loadUserDetails()
         } catch (e: Exception) {
             appLoadingState.value = AppLoadingStates.LOAD_FAILED
-            Log.e("MainScreen", "Failed to init app", e)
+            ErrorHandler.logError("MainScreen", "Failed to init app", e)
         }
 
         appLoadingState.value = AppLoadingStates.LOADED

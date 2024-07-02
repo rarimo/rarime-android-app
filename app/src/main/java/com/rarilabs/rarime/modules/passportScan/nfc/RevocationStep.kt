@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.modules.passportScan.nfc
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,6 +27,7 @@ import com.rarilabs.rarime.modules.passportScan.ScanPassportLayout
 import com.rarilabs.rarime.modules.passportScan.models.RevocationStepViewModel
 import com.rarilabs.rarime.ui.components.AppAnimation
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.launch
 import org.jmrtd.lds.icao.MRZInfo
 
@@ -49,7 +49,7 @@ fun RevocationStep(
         try {
             revocationStepViewModel.startScanning(mrzData = mrzData)
         } catch (e: Exception) {
-            Log.e("RevocationStep", "Error startScanning", e)
+            ErrorHandler.logError("RevocationStep", "Error startScanning", e)
             onClose()
         }
     }
@@ -65,7 +65,7 @@ fun RevocationStep(
                     onNext()
                 } catch (e: Exception) {
                     revocationStepViewModel.resetState()
-                    Log.e("RevocationStep", "Error revocation invoke", e)
+                    ErrorHandler.logError("RevocationStep", "Error revocation invoke", e)
 
                     onError()
                 }

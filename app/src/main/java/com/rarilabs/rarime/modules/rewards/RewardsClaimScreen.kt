@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.modules.rewards
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,6 +39,7 @@ import com.rarilabs.rarime.ui.components.SecondaryTextButton
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldNumberState
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.NumberUtil
 import kotlinx.coroutines.launch
 
@@ -65,7 +65,7 @@ fun RewardsClaimScreen(
                 rewardsClaimViewModel.reloadWalletAssets()
                 onBack()
             } catch (e: Exception) {
-                Log.e(e.message, e.stackTraceToString())
+                ErrorHandler.logError("RewardsClaimScreen", e.toString(), e)
             }
         }
     }

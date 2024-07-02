@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.api.auth
 
 import android.content.Context
-import android.util.Log
 import com.auth0.android.jwt.JWT
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R

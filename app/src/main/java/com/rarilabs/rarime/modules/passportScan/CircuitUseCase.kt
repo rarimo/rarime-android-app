@@ -1,9 +1,9 @@
 package com.rarilabs.rarime.modules.passportScan
 
 import android.content.Context
-import android.util.Log
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.modules.passportScan.models.RegisteredCircuitData
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.FileDownloaderInternal
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -26,7 +26,7 @@ class CircuitUseCase(val context: Context) {
 
             continuation.invokeOnCancellation {
                 // Handle coroutine cancellation if needed
-                Log.e("Download", "Download coroutine cancelled")
+                ErrorHandler.logError("Download", "Download coroutine cancelled")
             }
 
             if (fileExists(context, CIRCUIT_NAME_ARCHIVE)) {
@@ -38,7 +38,7 @@ class CircuitUseCase(val context: Context) {
                     dat = getDatFilePath(circuitData),
                     datLen
                 )
-                Log.i("Download", "Already downloaded")
+                ErrorHandler.logDebug("Download", "Already downloaded")
                 continuation.resume(downloadRequest) {}
                 return@suspendCancellableCoroutine
             }
@@ -61,11 +61,11 @@ class CircuitUseCase(val context: Context) {
                         )
                         continuation.resume(downloadRequest) {}
                     } else {
-                        Log.e("Download", "Unzip failed")
+                        ErrorHandler.logError("Download", "Unzip failed")
                         continuation.resume(null) {}
                     }
                 } else {
-                    Log.e("Download", "Download failed")
+                    ErrorHandler.logError("Download", "Download failed")
                     continuation.resume(null) {}
                 }
             }

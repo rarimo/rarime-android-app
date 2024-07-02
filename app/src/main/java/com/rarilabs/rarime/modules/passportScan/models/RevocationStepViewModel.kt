@@ -2,12 +2,12 @@ package com.rarilabs.rarime.modules.passportScan.models
 
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
 import com.rarilabs.rarime.modules.passportScan.nfc.NfcUseCase
+import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.jmrtd.BACKey
 import org.jmrtd.lds.icao.MRZInfo
@@ -67,14 +67,16 @@ class RevocationStepViewModel @Inject constructor(
         try {
             registrationManager.revoke()
         } catch (e: Exception) {
-            Log.e("RevocationStepViewModel", "Error: $e")
+            ErrorHandler.logError("RevocationStepViewModel", "Error: $e", e)
 
             throw e
         }
     }
 
     fun onError(e: Exception) {
-        Log.e("ReadNFCStepViewModel", "Error: $e")
+        ErrorHandler.logError("RevocationStepViewModel", "Error: $e", e)
+
+        throw e
     }
 
     suspend fun startScanning(mrzData: MRZInfo) {

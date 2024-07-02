@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -19,6 +18,7 @@ import com.rarilabs.rarime.modules.passportScan.DownloadRequest
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.RegisteredCircuitData
 import com.rarilabs.rarime.modules.passportScan.nfc.SODFileOwn
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.SecurityUtil
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
@@ -96,7 +96,7 @@ class ProofViewModel @Inject constructor(
         }
 
         if (proof?.existence == true) {
-            Log.i("ProofViewModel", "Passport certificate is already registered")
+            ErrorHandler.logDebug("ProofViewModel", "Passport certificate is already registered")
             return if (pubKeySize == 4096L) {
                 RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA4096
             } else {
@@ -124,12 +124,12 @@ class ProofViewModel @Inject constructor(
             registrationManager.relayerRegister(callData)
         }
 
-        Log.i(TAG, "Passport certificate EVM Tx Hash " + response.data.attributes.tx_hash)
+        ErrorHandler.logDebug(TAG, "Passport certificate EVM Tx Hash " + response.data.attributes.tx_hash)
 
         val res =
             rarimoContractManager.checkIsTransactionSuccessful(response.data.attributes.tx_hash)
         if (!res) {
-            Log.e(TAG, "Transaction failed" + response.data.attributes.tx_hash)
+            ErrorHandler.logError(TAG, "Transaction failed" + response.data.attributes.tx_hash)
         }
         return if (pubKeySize == 4096L) {
             RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA4096
@@ -143,19 +143,14 @@ class ProofViewModel @Inject constructor(
         registeredCircuitData: RegisteredCircuitData,
         filePaths: DownloadRequest?
     ): ZkProof {
-        Log.i("ProofViewModel", "Generating proof")
-        try {
-            Log.i("eDocument", Gson().toJson(eDocument))
-        } catch (e: Exception) {
-            Log.e("Err log eDocument", "Error: $e")
-        }
+        ErrorHandler.logDebug("ProofViewModel", "Generating proof")
 
         val inputs = buildRegistrationCircuits(eDocument)
 
         try {
-            Log.i("inputs", Gson().toJson(inputs))
+            ErrorHandler.logDebug("inputs", Gson().toJson(inputs))
         } catch (e: Exception) {
-            Log.e("Err log inputs", "Error: $e")
+            ErrorHandler.logError("Err log inputs", "Error: $e", e)
         }
 
         //copyToClipboard(application as Context, inputs.decodeToString())
@@ -188,9 +183,9 @@ class ProofViewModel @Inject constructor(
         }
 
         try {
-            Log.i("proof", Gson().toJson(proof))
+            ErrorHandler.logDebug("proof", Gson().toJson(proof))
         } catch (e: Exception) {
-            Log.e("Err log proof", "Error: $e")
+            ErrorHandler.logError("Err log proof", "Error: $e", e)
         }
 
         this.registerIdentityProof = proof
@@ -228,7 +223,7 @@ class ProofViewModel @Inject constructor(
             passportInfoKeyBytes = passportInfoKeyBytes.copyOf(32)
         }
 
-        Log.i("passportInfoKeyBytes", passportInfoKeyBytes.size.toString())
+        ErrorHandler.logDebug("passportInfoKeyBytes", passportInfoKeyBytes.size.toString())
 
         _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
 
@@ -280,11 +275,11 @@ class ProofViewModel @Inject constructor(
         val profile = identityProfile.newProfile(privateKeyBytes)
 
         //val dg15PublicKey = dG15File.publicKey
-        //Log.i("DG15File", dg15PublicKey::class.java.name)
+        //ErrorHandler.logDebug("DG15File", dg15PublicKey::class.java.name)
 
         val gson = GsonBuilder().setPrettyPrinting().create()
 
-        Log.i("sign", proof.siblings.size.toString())
+        ErrorHandler.logDebug("sign", proof.siblings.size.toString())
 
         val proofTx = ProofTx(
             proof.root.toBase64(),
@@ -294,7 +289,7 @@ class ProofViewModel @Inject constructor(
 
         val proofJson = gson.toJson(proofTx)
 
-        Log.i("proofTX", proofJson)
+        ErrorHandler.logDebug("proofTX", proofJson)
 
         val inputs = profile.buildRegisterIdentityInputs(
             encapsulatedContent.decodeHexString(),

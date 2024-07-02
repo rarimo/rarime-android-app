@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.manager
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.Gson
 import com.rarilabs.rarime.api.cosmos.CosmosManager
@@ -13,6 +12,7 @@ import com.rarilabs.rarime.data.tokens.Token
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.Constants
+import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -105,13 +105,12 @@ class WalletManager @Inject constructor(
     }
 
     private var _pointsToken = MutableStateFlow(getPointsToken(_walletAssets.value))
-
     val pointsToken: StateFlow<PointsToken?>
         get() = _pointsToken.asStateFlow()
 
     fun setSelectedWalletAsset(walletAsset: WalletAsset) {
         _selectedWalletAsset.value = walletAsset
-        Log.i("setSelectedWalletAsset", _selectedWalletAsset.value.toJSON())
+        ErrorHandler.logDebug("setSelectedWalletAsset", walletAsset.token.symbol)
         dataStoreManager.saveSelectedWalletAsset(walletAsset)
     }
 
@@ -119,22 +118,23 @@ class WalletManager @Inject constructor(
         withContext(Dispatchers.IO) {
             val balances = getWalletAssets()
 
-            coroutineScope {
+            val cs = coroutineScope {
                 balances.forEach { balance ->
                     launch {
                         balance.token.loadDetails()
-                        Log.i("loadDetails", balance.token.symbol)
+                        ErrorHandler.logDebug("loadDetails", balance.token.symbol)
                     }
                     launch {
                         balance.loadBalance()
-                        Log.i("loadBalances", balance.balance.value.toString())
+                        ErrorHandler.logDebug("loadBalances", balance.balance.value.toString())
                     }
                     launch {
                         balance.loadTransactions()
-                        Log.i("loadTransactions", balance.token.toString())
+                        ErrorHandler.logDebug("loadTransactions", balance.token.toString())
                     }
                 }
             }
+            cs.toString()
             _walletAssets.value = balances.toList()
 
             dataStoreManager.saveWalletAssets(_walletAssets.value)
@@ -142,11 +142,6 @@ class WalletManager @Inject constructor(
             _pointsToken.value = getPointsToken(balances.toList())
 
             _selectedWalletAsset.value = dataStoreManager.readSelectedWalletAsset(balances.toList())
-
-            Log.i(
-                "_pointsToken.value?.balanceDetails",
-                Gson().toJson(_pointsToken.value?.balanceDetails)
-            )
         }
     }
 }

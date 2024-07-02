@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.modules.passportScan.unsupportedPassports
 
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -38,9 +40,8 @@ import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.TertiaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Country
-import com.rarilabs.rarime.util.SendErrorUtil.saveErrorDetailsToFile
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.SendErrorUtil.sendErrorEmail
-import org.json.JSONObject
 
 @Composable
 fun WaitlistPassportScreen(
@@ -51,6 +52,10 @@ fun WaitlistPassportScreen(
     val mainViewModel = LocalMainViewModel.current
 
     val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        ErrorHandler.logDebug("WaitlistPassportScreen", Gson().toJson(eDocument))
+    }
 
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult(),
@@ -150,14 +155,9 @@ fun WaitlistPassportScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
                 onClick = {
-                    val gson = Gson()
-                    val eDoc = gson.toJson(eDocument)
-                    val errorDetails = JSONObject()
-                    errorDetails.put("eDoucument", eDoc)
-                    val file = saveErrorDetailsToFile(
-                        "error_details.json", errorDetails.toString(), context
-                    )
-                    launcher.launch(sendErrorEmail(file, context))
+                    val decryptedFile = ErrorHandler.getLogFile()
+
+                    launcher.launch(sendErrorEmail(decryptedFile, context))
                 },
             )
             TertiaryButton(

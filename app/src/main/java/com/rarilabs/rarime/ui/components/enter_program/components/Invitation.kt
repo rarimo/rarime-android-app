@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.ui.components.enter_program.components
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -48,6 +47,7 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.enter_program.UNSPECIFIED_PASSPORT_STEPS
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.launch
 
 data class SocialItem(
@@ -78,9 +78,7 @@ fun Invitation(
                 invitationViewModel.createBalance(invitationCodeState.text)
                 onNext()
             } catch (e: Exception) {
-                Log.e("verifyCode", e.toString())
-
-                e.printStackTrace()
+                ErrorHandler.logError("verifyCode", e.toString(), e)
 
                 if (e is InvitationNotExistException) {
                     invitationCodeState.updateErrorMessage(

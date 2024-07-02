@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.modules.passportScan.proof
 
-import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +36,7 @@ import com.rarilabs.rarime.ui.components.ProcessingChip
 import com.rarilabs.rarime.ui.components.ProcessingStatus
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Constants
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.data.ZkProof
 
 enum class PassportProofState(val value: Int) {
@@ -64,7 +64,7 @@ fun GenerateProofStep(
         try {
             proofViewModel.joinRewardProgram(eDocument)
         } catch (e: Exception) {
-            Log.e("joinRewardsProgram", e.toString())
+            ErrorHandler.logError("joinRewardsProgram", e.toString(), e)
             onError(e)
         }
     }
