@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.modules.passportScan.unsupportedPassports
 
 import android.content.res.Configuration
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -26,7 +25,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.gson.Gson
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.components.JoinWaitlistCongratsModalContent
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
@@ -54,7 +52,7 @@ fun WaitlistPassportScreen(
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        ErrorHandler.logDebug("WaitlistPassportScreen", Gson().toJson(eDocument))
+        ErrorHandler.logDebug("WaitlistPassportScreen", eDocument.aaResponse.toString())
     }
 
     val launcher =
