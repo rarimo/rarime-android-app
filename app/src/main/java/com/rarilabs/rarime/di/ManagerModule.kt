@@ -9,6 +9,7 @@ import com.rarilabs.rarime.api.airdrop.AirDropManager
 import com.rarilabs.rarime.api.auth.AuthAPI
 import com.rarilabs.rarime.api.auth.AuthAPIManager
 import com.rarilabs.rarime.api.auth.AuthManager
+import com.rarilabs.rarime.api.auth.RefreshTokenInterceptor
 import com.rarilabs.rarime.api.cosmos.CosmosAPI
 import com.rarilabs.rarime.api.cosmos.CosmosAPIManager
 import com.rarilabs.rarime.api.cosmos.CosmosManager
@@ -67,16 +68,40 @@ class APIModule {
 
     @Provides
     @Singleton
+    fun provideRefreshTokenInterceptor(authManager: AuthManager): RefreshTokenInterceptor =
+        RefreshTokenInterceptor(authManager)
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(refreshTokenInterceptor: RefreshTokenInterceptor): OkHttpClient =
+        OkHttpClient.Builder()
+            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+            .addInterceptor(refreshTokenInterceptor)
+            .build()
+
+    @Provides
+    @Singleton
+    @Named("refreshRetrofit")
+    fun provideRefreshRetrofit(): Retrofit {
+        return Retrofit.Builder()
+            .addConverterFactory(MoshiConverterFactory.create())
+            .baseUrl("http://NONE")  // Make sure to replace with your actual base URL
+            .client(OkHttpClient.Builder().build())
+            .build()
+    }
+
+    @Provides
+    @Singleton
     @Named("jsonApiRetrofit")
-    fun provideJsonApiRetrofit(): Retrofit = Retrofit.Builder().addConverterFactory(
-        MoshiConverterFactory.create(
-            Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-        )
-    ).baseUrl("http://NONE").client(
-        OkHttpClient.Builder().addInterceptor(
-            HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-        ).build()
-    ).build()
+    fun provideJsonApiRetrofit(okHttpClient: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
+            .addConverterFactory(MoshiConverterFactory.create(
+                Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+            ))
+            .baseUrl("http://NONE")  // Make sure to replace with your actual base URL
+            .client(okHttpClient)
+            .build()
+    }
 
     @Provides
     @Singleton

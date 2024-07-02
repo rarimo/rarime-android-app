@@ -18,7 +18,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import okhttp3.Interceptor
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Base64
@@ -140,5 +142,40 @@ class AuthManager @Inject constructor(
                 )
             } ?: false
         } ?: true
+    }
+}
+
+class RefreshTokenInterceptor(
+    private val authManager: AuthManager
+) : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
+        val originalRequest = chain.request()
+        val response = chain.proceed(originalRequest)
+
+        if (response.code == 401) {
+            synchronized(this) {
+                // Check if the token was already refreshed to avoid multiple refreshes
+                runBlocking {
+                    authManager.refresh()
+                }
+
+                val newAccessToken = authManager.accessToken.value
+
+                if (newAccessToken?.isNotEmpty() == true) {
+                    // Retry the request with the new token
+                    val newRequest = originalRequest.newBuilder()
+                        .header("Authorization", "Bearer $newAccessToken")
+                        .build()
+                    return chain.proceed(newRequest)
+                } else {
+                    // Handle the case where the token refresh failed (e.g., logout user)
+                    runBlocking {
+//                        authManager.login()
+                    }
+                }
+            }
+        }
+
+        return response
     }
 }
