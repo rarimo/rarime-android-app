@@ -44,7 +44,7 @@ class ProfileViewModel @Inject constructor(
         Runtime.getRuntime().exit(0)
     }
 
-    suspend fun getDecryptedFeedbackFile(context: Context): File? {
+    suspend fun getDecryptedFeedbackFile(): File {
         val pointsNullifier = identityManager.getUserPointsNullifier()
 
         ErrorHandler.logDebug("sendFeedback", "pointsNullifier: $pointsNullifier")
@@ -55,7 +55,7 @@ class ProfileViewModel @Inject constructor(
 
         ErrorHandler.logDebug("sendFeedback", "activeIdentity: $activeIdentity")
 
-        val logFile = ErrorHandler.getDecryptedLogFile(context)
+        val logFile = ErrorHandler.getLogFile()
 
         return logFile
     }

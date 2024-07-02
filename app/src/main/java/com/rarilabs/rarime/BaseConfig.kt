@@ -27,6 +27,8 @@ object BaseConfig {
     const val REGISTER_IDENTITY_CIRCUIT_DATA_RSA4096 = "https://storage.googleapis.com/rarimo-store/rdi2/registerIdentityUniversalRSA4096-download.zip"
     const val POINTS_SVC_SELECTOR = "23073"
     const val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP = 1715688000L
+
+    const val FEEDBACK_EMAIL = "info@rarilabs.com"
 }
 
 /* MAINNET */

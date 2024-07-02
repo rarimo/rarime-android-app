@@ -52,10 +52,13 @@ fun ProfileScreen(
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    var isFeedbackDialogShown by remember { mutableStateOf(false) }
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = {
-
+            isFeedbackDialogShown = false
         })
 
     val language by viewModel.language
@@ -139,8 +142,6 @@ fun ProfileScreen(
                 }
             }
             CardContainer {
-                var isFeedbackDialogShown by remember { mutableStateOf(false) }
-
                 ProfileRow(
                     iconId = R.drawable.ic_warning,
                     title = "Send us feedback",
@@ -164,17 +165,9 @@ fun ProfileScreen(
                         subtitle = stringResource(R.string.send_us_feedback_body),
                         onConfirm = {
                             scope.launch {
-                                val decryptedFile = viewModel.getDecryptedFeedbackFile(context)
+                                val decryptedFile = viewModel.getDecryptedFeedbackFile()
 
-                                decryptedFile?.let {
-                                    launcher.launch(SendErrorUtil.sendErrorEmail(it, context))
-                                } ?: run {
-                                    Toast.makeText(
-                                        context,
-                                        "No logs to send",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
+                                launcher.launch(SendErrorUtil.sendErrorEmail(decryptedFile, context))
                             }
                         },
                         onCancel = { isFeedbackDialogShown = false },
