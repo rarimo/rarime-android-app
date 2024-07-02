@@ -346,9 +346,6 @@ class PointsManager @Inject constructor(
         return withContext(Dispatchers.IO) {
             try {
                 val response = pointsAPIManager.getLeaderboard()
-
-                ErrorHandler.logDebug("PointsManager:getLeaderBoard", response.toString())
-
                 response
             } catch (e: Exception) {
                 ErrorHandler.logError("PointsManager:getLeaderBoard", e.toString(), e)

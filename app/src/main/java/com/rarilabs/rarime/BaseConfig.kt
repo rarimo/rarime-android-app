@@ -1,5 +1,8 @@
 package com.rarilabs.rarime
 
+import com.rarilabs.rarime.data.RarimoChains
+
+
 /* TESTNET */
 object BaseConfig {
     const val RELAYER_URL = "https://api.orgs.app.stage.rarime.com"
@@ -32,6 +35,7 @@ object BaseConfig {
     const val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP = 1715688000L
 
     const val FEEDBACK_EMAIL = "info@rarilabs.com"
+    val CHAIN = RarimoChains.MainnetBeta
 }
 
 /* MAINNET */
@@ -63,5 +67,5 @@ object BaseConfig {
 //    const val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP =
 //                                                      1715688000L
 // const val FEEDBACK_EMAIL = "info@rarilabs.com"
-//
+// val CHAIN = RarimoChains.Mainnet
 //}

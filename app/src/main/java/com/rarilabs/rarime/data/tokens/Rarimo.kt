@@ -1,5 +1,7 @@
 package com.rarilabs.rarime.data.tokens
 
+import android.util.Log
+import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.cosmos.CosmosManager
 import com.rarilabs.rarime.data.ChainInfo
@@ -7,6 +9,7 @@ import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.modules.wallet.models.TransactionState
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
+import com.rarilabs.rarime.util.Constants.RARIMO_CHAINS
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.decodeHexString
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +20,7 @@ import java.util.Date
 import javax.inject.Inject
 
 class RarimoToken @Inject constructor(
-    val chainInfo: ChainInfo,
+    val chainInfo: ChainInfo, // todo: fix null
     private val identityManager: IdentityManager,
     private val cosmosManager: CosmosManager,
     private val dataStoreManager: SecureSharedPrefsManager,
@@ -41,6 +44,10 @@ class RarimoToken @Inject constructor(
             try {
                 val response = cosmosManager.getBalance(address)
 
+                if (response.balances.isNullOrEmpty()) {
+                    return@withContext BigInteger.ZERO
+                }
+
                 return@withContext BigInteger.valueOf(response.balances.first().amount.toLong())
             } catch (e: Exception) {
                 ErrorHandler.logError("RarimoToken:balanceOf", e.message.toString(), e)
@@ -49,20 +56,24 @@ class RarimoToken @Inject constructor(
         }
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
     override suspend fun transfer(to: String, amount: BigInteger): Transaction {
 
-        val profiler = identityManager.getProfiler().newProfile(dataStoreManager.readPrivateKey()!!.decodeHexString())
-        ErrorHandler.logDebug("address", profiler.rarimoAddress)
-        ErrorHandler.logDebug("Priv key", identityManager.privateKeyBytes!!.toHexString())
+        val profiler = identityManager.getProfiler()
+            .newProfile(dataStoreManager.readPrivateKey()!!.decodeHexString())
+
+        val rarimoChain = RARIMO_CHAINS[BaseConfig.CHAIN.chainId]
+
+        Log.i("ChainId",rarimoChain?.chainId.toString())
+        Log.i("coinMinimalDenom",rarimoChain?.stakeCurrency?.coinMinimalDenom.toString())
+        Log.i("rpc",rarimoChain?.rpc.toString())
 
         withContext(Dispatchers.IO) {
             profiler.walletSend(
                 to,
                 amount.toString(),
-                "rarimo_201411-1",
-                "urmo",
-                "core-api.mainnet.rarimo.com:443",
+                rarimoChain?.chainId,
+                rarimoChain?.stakeCurrency?.coinDenom,
+                rarimoChain?.rpc,
             ).decodeToString()
         }
 

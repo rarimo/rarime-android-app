@@ -49,7 +49,7 @@ object Constants {
             chainId = "rarimo_42-1",
             chainName = "Rarimo Testnet",
             chainSymbolImageUrl = "https://raw.githubusercontent.com/rarimo/js-sdk/2.0.0-rc.14/assets/logos/ra-dark-logo.png",
-            rpc = "104.196.227.66:9090", // "https://rpc.node1.mainnet-beta.rarimo.com",
+            rpc = "core-api.node1.mainnet-beta.rarimo.com:443", // "https://rpc.node1.mainnet-beta.rarimo.com",
             rest = "https://rpc-api.node1.mainnet-beta.rarimo.com",
             stakeCurrency = AppCurrency(
                 coinDenom = "STAKE",

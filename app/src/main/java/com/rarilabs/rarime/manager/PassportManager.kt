@@ -7,6 +7,7 @@ import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.Constants
+import com.rarilabs.rarime.util.ErrorHandler
 import identity.Identity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -113,6 +114,7 @@ class PassportManager @Inject constructor(
         if (passport.value == null) {
             return
         }
+        _isShowPassport.value = true
 
         val isInWaitlist = dataStoreManager.readIsInWaitlist()
 
@@ -138,15 +140,5 @@ class PassportManager @Inject constructor(
         }
 
         updatePassportStatus(if (isUnsupported) PassportStatus.WAITLIST_NOT_ALLOWED else PassportStatus.WAITLIST)
-
-
-        when (passportStatus.value) {
-            PassportStatus.UNSCANNED -> {
-                _isShowPassport.value = false
-            }
-            else -> {
-                _isShowPassport.value = true
-            }
-        }
     }
 }

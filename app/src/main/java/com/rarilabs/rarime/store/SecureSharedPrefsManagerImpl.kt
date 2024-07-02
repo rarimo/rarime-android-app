@@ -290,14 +290,14 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
             val jsonEDocument =
                 getSharedPreferences().getString(accessTokens["E_DOCUMENT"], null) ?: return null
 
-            Log.i("readEDocument", "jsonEDocument $jsonEDocument")
-
             val resp = Gson().fromJson(jsonEDocument, EDocument::class.java)
 
-            Log.i("resp", "resp $resp")
+            ErrorHandler.logDebug("Read EDoc", "EDocument is available")
+
 
             return resp
         } catch (e: Exception) {
+            ErrorHandler.logDebug("Read EDoc", "EDocument is null or not available")
             return null
         }
     }
