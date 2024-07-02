@@ -33,6 +33,7 @@ class HomeViewModel @Inject constructor(
 
     val pointsToken = walletManager.pointsToken
 
+    val isShowPassport = passportManager.isShowPassport
     var passport = passportManager.passport
     var passportCardLook = passportManager.passportCardLook
     var passportIdentifiers = passportManager.passportIdentifiers

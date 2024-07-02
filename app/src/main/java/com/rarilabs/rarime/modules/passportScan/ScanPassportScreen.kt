@@ -1,6 +1,6 @@
 package com.rarilabs.rarime.modules.passportScan
 
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -10,7 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
@@ -22,7 +22,6 @@ import com.rarilabs.rarime.modules.passportScan.nfc.RevocationStep
 import com.rarilabs.rarime.modules.passportScan.proof.GenerateProofStep
 import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.NotAllowedPassportScreen
 import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.WaitlistPassportScreen
-import com.rarilabs.rarime.ui.components.ConfirmationDialog
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
 import org.jmrtd.lds.icao.MRZInfo
@@ -45,6 +44,7 @@ fun ScanPassportScreen(
     onClaim: () -> Unit,
     scanPassportScreenViewModel: ScanPassportScreenViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
     val mainViewModel = LocalMainViewModel.current
 
     var state by remember { mutableStateOf(ScanPassportState.SCAN_MRZ) }
@@ -65,14 +65,18 @@ fun ScanPassportScreen(
             }
 
             ScanPassportState.READ_NFC -> {
-                Log.e("TAG", mrzData!!.dateOfBirth)
                 ReadEDocStep(
                     onNext = {
                         scanPassportScreenViewModel.savePassport(it)
 
                         state = ScanPassportState.PASSPORT_DATA
                     },
-                    onClose = onClose,
+                    onClose = {
+                        onClose.invoke()
+                    },
+                    onError = {
+                        state = ScanPassportState.SCAN_MRZ
+                    },
                     mrzInfo = mrzData!!
                 )
             }
@@ -126,6 +130,9 @@ fun ScanPassportScreen(
 //                            )
 //                        }
 //                        mainViewModel.setModalVisibility(true)
+
+                        Toast.makeText(context, R.string.you_have_already_registered, Toast.LENGTH_SHORT)
+                            .show()
                         onClose.invoke()
                     }
                 )

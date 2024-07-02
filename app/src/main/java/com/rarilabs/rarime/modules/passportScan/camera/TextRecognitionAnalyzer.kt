@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.modules.passportScan.camera
 
 import android.media.Image
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
@@ -11,6 +10,7 @@ import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.TextRecognizer
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -67,7 +67,7 @@ class TextRecognitionAnalyzer(
             documentNumber = documentNumber.replace("O", "0")
             val dateOfBirthDay = line2.substring(13, 19)
             val expiryDate = line2.substring(21, 27)
-            Log.d(
+            ErrorHandler.logDebug(
                 "Tag",
                 "Scanned Text Buffer Passport ->>>> Doc Number: $documentNumber DateOfBirth: $dateOfBirthDay ExpiryDate: $expiryDate"
             )
@@ -99,7 +99,7 @@ class TextRecognitionAnalyzer(
                 null
             }
         } catch (e: Exception) {
-            Log.d(
+            ErrorHandler.logDebug(
                 "MRZ ERROR", "MRZInfo error : " + e.localizedMessage
             )
         }

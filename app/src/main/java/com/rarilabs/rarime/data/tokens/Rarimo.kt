@@ -1,25 +1,19 @@
 package com.rarilabs.rarime.data.tokens
 
-import android.util.Log
-import com.google.gson.Gson
-import com.google.mlkit.common.sdkinternal.SharedPrefManager
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.cosmos.CosmosManager
-import com.rarilabs.rarime.api.cosmos.models.CosmosTransferResponse
 import com.rarilabs.rarime.data.ChainInfo
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.modules.wallet.models.TransactionState
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
-import com.rarilabs.rarime.util.DateFormatType
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.decodeHexString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.math.BigInteger
-import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 
 class RarimoToken @Inject constructor(
@@ -49,7 +43,7 @@ class RarimoToken @Inject constructor(
 
                 return@withContext BigInteger.valueOf(response.balances.first().amount.toLong())
             } catch (e: Exception) {
-                Log.e("RarimoToken:balanceOf", e.message.toString())
+                ErrorHandler.logError("RarimoToken:balanceOf", e.message.toString(), e)
                 return@withContext BigInteger.ZERO
             }
         }
@@ -59,9 +53,10 @@ class RarimoToken @Inject constructor(
     override suspend fun transfer(to: String, amount: BigInteger): Transaction {
 
         val profiler = identityManager.getProfiler().newProfile(dataStoreManager.readPrivateKey()!!.decodeHexString())
-        Log.i("address", profiler.rarimoAddress)
-        Log.i("Priv key", identityManager.privateKeyBytes!!.toHexString())
-        val response = withContext(Dispatchers.IO) {
+        ErrorHandler.logDebug("address", profiler.rarimoAddress)
+        ErrorHandler.logDebug("Priv key", identityManager.privateKeyBytes!!.toHexString())
+
+        withContext(Dispatchers.IO) {
             profiler.walletSend(
                 to,
                 amount.toString(),
@@ -70,9 +65,6 @@ class RarimoToken @Inject constructor(
                 "core-api.mainnet.rarimo.com:443",
             ).decodeToString()
         }
-
-        Log.e("asdawd", response)
-
 
         return Transaction(
             id = 12,

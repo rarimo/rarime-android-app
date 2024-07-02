@@ -59,7 +59,7 @@ fun HomeScreenPassportMainContent(
 
     var isLoading by remember { mutableStateOf(false) }
 
-    val passport = homeViewModel.passport
+    val passport = homeViewModel.passport.collectAsState()
 
     val passportCardLook by homeViewModel.passportCardLook
     val passportIdentifiers by homeViewModel.passportIdentifiers
@@ -97,21 +97,20 @@ fun HomeScreenPassportMainContent(
         Column(
             modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            PassportCard(
-                passport = passport.value!!,
-                isIncognito = isIncognito,
-                look = passportCardLook,
-                identifiers = passportIdentifiers,
-                onLookChange = { homeViewModel.onPassportCardLookChange(it) },
-                onIncognitoChange = { homeViewModel.onIncognitoChange(it) },
-                passportStatus = passportStatus,
-                onIdentifiersChange = { homeViewModel.onPassportIdentifiersChange(it) }
-            )
+            passport.value?.let {
+                PassportCard(
+                    passport = it,
+                    isIncognito = isIncognito,
+                    look = passportCardLook,
+                    identifiers = passportIdentifiers,
+                    onLookChange = { homeViewModel.onPassportCardLookChange(it) },
+                    onIncognitoChange = { homeViewModel.onIncognitoChange(it) },
+                    passportStatus = passportStatus,
+                    onIdentifiersChange = { homeViewModel.onPassportIdentifiersChange(it) }
+                )
+            }
 
-            val isVerified = pointsToken?.balanceDetails?.attributes?.is_verified ?: false
-            val isBalanceCreated = pointsToken?.balanceDetails?.attributes?.created_at != null
-
-            if (!isVerified) {
+            if (pointsToken?.balanceDetails?.attributes?.is_verified == false) {
                 when (passportStatus) {
                     PassportStatus.ALLOWED -> {
                         ActionCard(
@@ -128,7 +127,7 @@ fun HomeScreenPassportMainContent(
                                 )
                             },
                             onClick = {
-                                if (isBalanceCreated) {
+                                if (pointsToken?.balanceDetails?.attributes?.created_at != null) {
                                     navigate(Screen.Claim.Reserve.route)
                                 } else {
                                     verifyPassportSheetState.show()

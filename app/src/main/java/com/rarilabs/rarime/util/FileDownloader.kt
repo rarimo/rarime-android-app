@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.util
 
 import android.content.Context
-import android.util.Log
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.ResponseBody
@@ -22,13 +21,13 @@ class FileDownloaderInternal(private val context: Context) {
 
         client.newCall(request).enqueue(object : okhttp3.Callback {
             override fun onFailure(call: okhttp3.Call, e: IOException) {
-                Log.e("FileDownloader", "Download failed", e)
+                ErrorHandler.logError("FileDownloader", "Download failed", e)
                 callback(false)
             }
 
             override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
                 if (!response.isSuccessful) {
-                    Log.e("FileDownloader", "Download failed: ${response.message}")
+                    ErrorHandler.logError("FileDownloader", "Download failed: ${response.message}")
                     callback(false)
                     return
                 }
@@ -40,7 +39,7 @@ class FileDownloaderInternal(private val context: Context) {
                         callback(true)
                     } ?: callback(false)
                 } catch (e: Exception) {
-                    Log.e("FileDownloader", "Saving file failed", e)
+                    ErrorHandler.logError("FileDownloader", "Saving file failed", e)
                     callback(false)
                 }
             }
@@ -60,7 +59,7 @@ class FileDownloaderInternal(private val context: Context) {
                 outputStream.write(data, 0, count)
             }
         } catch (e: IOException) {
-            Log.e("FileDownloader", "Error saving file", e)
+            ErrorHandler.logError("FileDownloader", "Error saving file", e)
         } finally {
             inputStream?.close()
             outputStream?.close()
@@ -96,7 +95,7 @@ class FileDownloaderInternal(private val context: Context) {
             inputStream.closeEntry()
             true
         } catch (e: IOException) {
-            Log.e("FileDownloader", "Error unzipping file", e)
+            ErrorHandler.logError("FileDownloader", "Error unzipping file", e)
             false
         } finally {
             inputStream?.close()

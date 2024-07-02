@@ -2,7 +2,6 @@ package com.rarilabs.rarime.store
 
 import android.app.Application
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.rarilabs.rarime.data.enums.AppColorScheme
@@ -19,6 +18,7 @@ import com.rarilabs.rarime.util.LocaleUtil
 import com.rarilabs.rarime.util.data.ZkProof
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.rarilabs.rarime.util.ErrorHandler
 import javax.inject.Inject
 
 
@@ -86,14 +86,14 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     override fun readPasscodeState(): SecurityCheckState {
         return SecurityCheckState.fromInt(
             getSharedPreferences().getInt(
-                accessTokens["IS_INTRO_FINISHED"], SecurityCheckState.UNSET.value
+                accessTokens["PASSCODE_STATE"], SecurityCheckState.UNSET.value
             )
         )
     }
 
     override fun savePasscodeState(state: SecurityCheckState) {
         val editor = getEditor()
-        editor.putInt(accessTokens["IS_INTRO_FINISHED"], state.value)
+        editor.putInt(accessTokens["PASSCODE_STATE"], state.value)
         editor.apply()
     }
 
@@ -289,11 +289,11 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
             val jsonEDocument =
                 getSharedPreferences().getString(accessTokens["E_DOCUMENT"], null) ?: return null
 
-            Log.i("readEDocument", "jsonEDocument $jsonEDocument")
+            ErrorHandler.logDebug("readEDocument", "jsonEDocument $jsonEDocument")
 
             val resp = Gson().fromJson(jsonEDocument, EDocument::class.java)
 
-            Log.i("resp", "resp $resp")
+            ErrorHandler.logDebug("resp", "resp $resp")
 
             return resp
         } catch (e: Exception) {

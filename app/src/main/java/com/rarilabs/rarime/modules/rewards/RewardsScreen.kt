@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.modules.rewards
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,19 +38,17 @@ import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.data.tokens.PointsToken
 import com.rarilabs.rarime.data.tokens.PreviewerToken
 import com.rarilabs.rarime.manager.WalletAsset
-import com.rarilabs.rarime.modules.home.components.passport.StatusCard
 import com.rarilabs.rarime.modules.rewards.components.ActiveTasksList
 import com.rarilabs.rarime.modules.rewards.components.ActiveTasksListSkeleton
 import com.rarilabs.rarime.modules.rewards.components.LevelingProgress
-import com.rarilabs.rarime.modules.rewards.components.rewards_leaderboard.RewardsLeaderBoard
 import com.rarilabs.rarime.modules.rewards.components.RewardsLeveling
 import com.rarilabs.rarime.modules.rewards.components.TimeEventsList
 import com.rarilabs.rarime.modules.rewards.components.TimeEventsListSkeleton
 import com.rarilabs.rarime.modules.rewards.components.getNormalizeLeveling
+import com.rarilabs.rarime.modules.rewards.components.rewards_leaderboard.RewardsLeaderBoard
 import com.rarilabs.rarime.modules.rewards.view_models.CONST_MOCKED_EVENTS_LIST
 import com.rarilabs.rarime.modules.rewards.view_models.LeaderBoardItem
 import com.rarilabs.rarime.modules.rewards.view_models.RewardsViewModel
-import com.rarilabs.rarime.ui.base.BaseTooltip
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppSkeleton
@@ -59,6 +56,7 @@ import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.NumberUtil
 import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.launch
@@ -81,7 +79,7 @@ fun RewardsScreen(
             try {
                 rewardsViewModel.init()
             } catch (e: Exception) {
-                Log.e("RewardsScreenContent", "init: ${e.message}")
+                ErrorHandler.logError("RewardsScreenContent", "init: ${e.message}", e)
             }
         }
     }
@@ -112,7 +110,7 @@ fun RewardsUnauthorized() {
         try {
             rewardsViewModel.login()
         } catch (e: Exception) {
-            Log.e("HomeViewModel", "login: ${e.message}")
+            ErrorHandler.logError("HomeViewModel", "login: ${e.message}", e)
         }
     }
 

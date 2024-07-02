@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.modules.passportVerify
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +36,7 @@ import com.rarilabs.rarime.ui.components.UiPrivacyCheckbox
 import com.rarilabs.rarime.ui.components.rememberAppCheckboxState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Constants
+import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.launch
 
 @Composable
@@ -63,7 +63,7 @@ fun ClaimAirdropScreen(
                 )
             }
         } catch (e: Exception) {
-            Log.e("ClaimSpecificToken", e.toString())
+            ErrorHandler.logError("ClaimSpecificToken", e.toString(), e)
         }
         isClaiming = false
         onFinish()

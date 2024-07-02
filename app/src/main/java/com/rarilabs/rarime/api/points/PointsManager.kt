@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.api.points
 
 import android.content.Context
-import android.util.Log
 import coil.network.HttpException
 import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
@@ -32,6 +31,7 @@ import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
 import com.rarilabs.rarime.util.data.ZkProof
@@ -188,7 +188,7 @@ class PointsManager @Inject constructor(
             BaseConfig.POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP,
         )
 
-        Log.i("Inputs", queryProofInputs.decodeToString())
+        ErrorHandler.logDebug("Inputs", queryProofInputs.toString())
 
         val queryProof = withContext(Dispatchers.Default) {
             zkp.generateZKP(
@@ -357,11 +357,11 @@ class PointsManager @Inject constructor(
             try {
                 val response = pointsAPIManager.getLeaderboard()
 
-                Log.i("PointsManager:getLeaderBoard", response.toString())
+                ErrorHandler.logDebug("PointsManager:getLeaderBoard", response.toString())
 
                 response
             } catch (e: Exception) {
-                Log.e("getLeaderBoard", e.toString())
+                ErrorHandler.logError("PointsManager:getLeaderBoard", e.toString(), e)
                 PointsLeaderBoardBody(data = emptyList())
             }
         }
