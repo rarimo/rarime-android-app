@@ -19,8 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ReadEDocStepViewModel @Inject constructor(
-    private val nfcManager: NfcManager,
-    private val identityManager: IdentityManager
+    private val nfcManager: NfcManager, private val identityManager: IdentityManager
 ) : ViewModel() {
     private lateinit var mrzInfo: MRZInfo
     private lateinit var bacKey: BACKey
@@ -32,7 +31,7 @@ class ReadEDocStepViewModel @Inject constructor(
 
     val resetState = nfcManager::resetState
 
-    var _errorMessageId = MutableStateFlow(R.string.nfc_error_unknown)
+    private var _errorMessageId = MutableStateFlow(R.string.nfc_error_unknown)
     val errorMessageId: StateFlow<Int>
         get() = _errorMessageId.asStateFlow()
 
@@ -40,14 +39,7 @@ class ReadEDocStepViewModel @Inject constructor(
         val birthDate = mrzInfo.dateOfBirth
         val expirationDate = mrzInfo.dateOfExpiry
         val passportNumber = mrzInfo.documentNumber
-        if (
-            passportNumber == null ||
-            passportNumber.isEmpty() ||
-            expirationDate == null ||
-            expirationDate.isEmpty() ||
-            birthDate == null ||
-            birthDate.isEmpty()
-        ) {
+        if (passportNumber == null || passportNumber.isEmpty() || expirationDate == null || expirationDate.isEmpty() || birthDate == null || birthDate.isEmpty()) {
             throw Exception("ReadNFCStepViewModel: Invalid Passport mrzInfo: $passportNumber $expirationDate $birthDate")
         }
 
@@ -59,19 +51,20 @@ class ReadEDocStepViewModel @Inject constructor(
         bacKey = BACKey(passportNumber, birthDate, expirationDate)
         scanNfcUseCase = NfcUseCase(isoDep, bacKey, privateKeyBytes!!)
 
-        try {
-            eDocument = scanNfcUseCase.scanPassport()
-        } catch (e: Exception) {
-            ErrorHandler.logError("ReadNFCStepViewModel", "handleScan:Error: $e", e)
+        eDocument = scanNfcUseCase.scanPassport()
+
+        if (eDocument == null) {
+            throw Exception("ReadNFCStepViewModel:edoc == null")
         }
+
     }
 
     fun onError(e: Exception) {
         ErrorHandler.logError("ReadNFCStepViewModel", "Error: $e", e)
-
         if (e is IOException) {
             _errorMessageId.value = R.string.nfc_error_interrupt
         }
+//        throw e
     }
 
     fun startScanning(mrzInfo: MRZInfo) {

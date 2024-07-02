@@ -42,7 +42,9 @@ fun PassportDataStep(onNext: () -> Unit, onClose: () -> Unit, eDocument: EDocume
         step = 3,
         title = stringResource(R.string.passport_data_title),
         text = stringResource(R.string.passport_data_text),
-        onClose = onClose
+        onClose = {
+            onClose.invoke()
+        }
     ) {
         Column {
             LazyColumn(

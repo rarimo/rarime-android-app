@@ -144,11 +144,6 @@ class ProofViewModel @Inject constructor(
         filePaths: DownloadRequest?
     ): ZkProof {
         ErrorHandler.logDebug("ProofViewModel", "Generating proof")
-        try {
-            ErrorHandler.logDebug("eDocument", Gson().toJson(eDocument))
-        } catch (e: Exception) {
-            ErrorHandler.logError("Err log eDocument", "Error: $e", e)
-        }
 
         val inputs = buildRegistrationCircuits(eDocument)
 

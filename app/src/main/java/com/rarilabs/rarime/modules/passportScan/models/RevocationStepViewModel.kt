@@ -74,7 +74,9 @@ class RevocationStepViewModel @Inject constructor(
     }
 
     fun onError(e: Exception) {
-        ErrorHandler.logError("ReadNFCStepViewModel", "Error: $e", e)
+        ErrorHandler.logError("RevocationStepViewModel", "Error: $e", e)
+
+        throw e
     }
 
     suspend fun startScanning(mrzData: MRZInfo) {

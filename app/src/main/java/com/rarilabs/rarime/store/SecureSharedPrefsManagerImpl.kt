@@ -2,6 +2,7 @@ package com.rarilabs.rarime.store
 
 import android.app.Application
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.rarilabs.rarime.data.enums.AppColorScheme
@@ -289,11 +290,11 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
             val jsonEDocument =
                 getSharedPreferences().getString(accessTokens["E_DOCUMENT"], null) ?: return null
 
-            ErrorHandler.logDebug("readEDocument", "jsonEDocument $jsonEDocument")
+            Log.i("readEDocument", "jsonEDocument $jsonEDocument")
 
             val resp = Gson().fromJson(jsonEDocument, EDocument::class.java)
 
-            ErrorHandler.logDebug("resp", "resp $resp")
+            Log.i("resp", "resp $resp")
 
             return resp
         } catch (e: Exception) {
