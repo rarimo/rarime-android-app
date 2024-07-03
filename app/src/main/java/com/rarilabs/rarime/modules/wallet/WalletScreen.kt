@@ -93,6 +93,7 @@ fun WalletScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(RarimeTheme.colors.backgroundPrimary)
+                .verticalScroll(rememberScrollState())
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(40.dp),
@@ -213,6 +214,8 @@ fun WalletScreen(
             ) {
                 WalletTokensList(walletViewModel)
             }
+
+            Spacer(modifier = Modifier.height(275.dp))
         }
     }
 }

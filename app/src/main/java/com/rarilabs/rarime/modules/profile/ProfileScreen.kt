@@ -9,8 +9,10 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -138,42 +140,35 @@ fun ProfileScreen(
                     ProfileRow(iconId = R.drawable.ic_flag,
                         title = stringResource(R.string.terms_of_use),
                         onClick = { navigate(Screen.Main.Profile.Terms.route) })
-                }
-            }
-            CardContainer {
-                ProfileRow(
-                    iconId = R.drawable.ic_warning,
-                    title = "Send us feedback",
-                    onClick = { isFeedbackDialogShown = true },
-                    contentColors = getProfileRowContentColors(
-                        leadingIcon = RarimeTheme.colors.warningMain,
-                        title = RarimeTheme.colors.warningMain,
-                        value = RarimeTheme.colors.warningMain,
-                        trailingIcon = Color.Transparent,
-                    ),
-                )
-
-                if (isFeedbackDialogShown) {
-                    ConfirmationDialog(
+                    ProfileRow(
                         iconId = R.drawable.ic_warning,
-                        iconContainerColor = RarimeTheme.colors.warningLight,
-                        confirmButtonColors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = RarimeTheme.colors.textPrimary
-                        ),
-                        title = stringResource(R.string.send_us_feedback),
-                        subtitle = stringResource(R.string.send_us_feedback_body),
-                        onConfirm = {
-                            scope.launch {
-                                val decryptedFile = viewModel.getDecryptedFeedbackFile()
-
-                                launcher.launch(SendEmailUtil.sendEmail(decryptedFile, context))
-                            }
-                        },
-                        onCancel = { isFeedbackDialogShown = false },
-                        cancelButtonText = stringResource(id = R.string.delete_profile_cancel_btn),
-                        confirmButtonText = stringResource(id = R.string.delete_profile_confirm_btn),
+                        title = "Send us feedback",
+                        onClick = { isFeedbackDialogShown = true },
+                        contentColors = getProfileRowContentColors(trailingIcon = Color.Transparent),
                     )
                 }
+            }
+
+            if (isFeedbackDialogShown) {
+                ConfirmationDialog(
+                    iconId = R.drawable.ic_warning,
+                    iconContainerColor = RarimeTheme.colors.warningLight,
+                    confirmButtonColors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = RarimeTheme.colors.textPrimary
+                    ),
+                    title = stringResource(R.string.send_us_feedback),
+                    subtitle = stringResource(R.string.send_us_feedback_body),
+                    onConfirm = {
+                        scope.launch {
+                            val decryptedFile = viewModel.getDecryptedFeedbackFile()
+
+                            launcher.launch(SendEmailUtil.sendEmail(decryptedFile, context))
+                        }
+                    },
+                    onCancel = { isFeedbackDialogShown = false },
+                    cancelButtonText = stringResource(id = R.string.delete_profile_cancel_btn),
+                    confirmButtonText = stringResource(id = R.string.delete_profile_confirm_btn),
+                )
             }
 
             CardContainer {
@@ -212,6 +207,8 @@ fun ProfileScreen(
                 color = RarimeTheme.colors.textDisabled
             )
         }
+
+        Spacer(modifier = Modifier.height(60.dp))
     }
 }
 
