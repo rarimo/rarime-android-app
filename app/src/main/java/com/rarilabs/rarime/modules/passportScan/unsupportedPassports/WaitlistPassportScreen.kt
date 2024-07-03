@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.gson.Gson
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.components.JoinWaitlistCongratsModalContent
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
@@ -65,6 +66,8 @@ fun WaitlistPassportScreen(
                     })
                 }
                 mainViewModel.setModalVisibility(true)
+
+                ErrorHandler.clearLogFile()
 
                 onClose.invoke()
             })
@@ -154,6 +157,8 @@ fun WaitlistPassportScreen(
                     .padding(horizontal = 20.dp),
                 onClick = {
                     val decryptedFile = ErrorHandler.getLogFile()
+
+                    ErrorHandler.logDebug("EDocument", Gson().toJson(eDocument))
 
                     launcher.launch(sendErrorEmail(decryptedFile, context))
                 },

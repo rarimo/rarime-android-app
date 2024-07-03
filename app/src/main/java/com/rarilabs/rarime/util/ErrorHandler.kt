@@ -77,6 +77,14 @@ object ErrorHandler {
         }
     }
 
+    fun clearLogFile() {
+        try {
+            logFile.writeText("")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error clearing log file", e)
+        }
+    }
+
     private fun trimLogFile() {
         try {
             val lines = logFile.readLines()
