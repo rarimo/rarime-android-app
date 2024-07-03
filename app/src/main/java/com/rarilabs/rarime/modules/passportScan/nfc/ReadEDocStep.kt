@@ -45,7 +45,6 @@ fun ReadEDocStep(
     val scanExceptionInstance = readEDocStepViewModel.scanExceptionInstance.collectAsState()
 
     LaunchedEffect(Unit) {
-
         readEDocStepViewModel.startScanning(mrzInfo)
     }
 
@@ -101,21 +100,23 @@ fun ReadEDocStep(
                     }
 
                     ScanNFCState.ERROR -> {
-                        readEDocStepViewModel.resetState()
+                        scanExceptionInstance.value?.let {
+                            readEDocStepViewModel.resetState()
 
-                        val errorMessage = when(scanExceptionInstance.value) {
-                            is IOException -> stringResource(id = R.string.nfc_error_interrupt)
-                            else -> stringResource(id = R.string.nfc_error_unknown)
+                            val errorMessage = when(scanExceptionInstance.value) {
+                                is IOException -> stringResource(id = R.string.nfc_error_interrupt)
+                                else -> stringResource(id = R.string.nfc_error_unknown)
+                            }
+
+                            val context = LocalContext.current
+                            Toast.makeText(
+                                context,
+                                errorMessage,
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            onError(scanExceptionInstance.value!!)
                         }
-
-                        val context = LocalContext.current
-                        Toast.makeText(
-                            context,
-                            errorMessage,
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        onError(scanExceptionInstance.value!!)
                     }
                 }
             }

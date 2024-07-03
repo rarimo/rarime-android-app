@@ -64,7 +64,7 @@
     <string name="nfc_reader_revoke">Revoke</string>
     <string name="nfc_reader_error">Scan again</string>
 
-    <string name="nfc_error_interrupt">Scan interrupted, adjust your device closer to nfc chip and try again</string>
+    <string name="nfc_error_interrupt">Scan interrupted, try again</string>
     <string name="nfc_error_unknown">try again</string>
 
     <string name="beta_launch">Beta launch</string>

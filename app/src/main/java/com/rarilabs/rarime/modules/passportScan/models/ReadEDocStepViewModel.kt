@@ -3,7 +3,6 @@ package com.rarilabs.rarime.modules.passportScan.models
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import androidx.lifecycle.ViewModel
-import com.rarilabs.rarime.R
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
 import com.rarilabs.rarime.modules.passportScan.nfc.NfcUseCase
@@ -12,7 +11,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import okio.IOException
 import org.jmrtd.BACKey
 import org.jmrtd.lds.icao.MRZInfo
 import javax.inject.Inject
