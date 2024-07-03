@@ -252,4 +252,9 @@
     <string name="you_have_already_registered_cancel">No</string>
     <string name="send_us_feedback">Send feedback\n</string>
     <string name="send_us_feedback_body">help us make the app better\n</string>
+
+    <string name="get_in_touch_title">We’re working on a fix</string>
+    <string name="get_in_touch_subtitle">Some passports have a problem \n with chip scans</string>
+    <string name="get_in_touch_confirm">Get in touch</string>
+    <string name="get_in_touch_cancel">Cancel</string>
 </resources>

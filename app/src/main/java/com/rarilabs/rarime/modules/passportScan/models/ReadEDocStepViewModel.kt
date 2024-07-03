@@ -31,9 +31,9 @@ class ReadEDocStepViewModel @Inject constructor(
 
     val resetState = nfcManager::resetState
 
-    private var _errorMessageId = MutableStateFlow(R.string.nfc_error_unknown)
-    val errorMessageId: StateFlow<Int>
-        get() = _errorMessageId.asStateFlow()
+    private var _scanExceptionInstance = MutableStateFlow<Exception?>(null)
+    val scanExceptionInstance: StateFlow<Exception?>
+        get() = _scanExceptionInstance.asStateFlow()
 
     private fun handleScan(tag: Tag) {
         val birthDate = mrzInfo.dateOfBirth
@@ -61,10 +61,7 @@ class ReadEDocStepViewModel @Inject constructor(
 
     fun onError(e: Exception) {
         ErrorHandler.logError("ReadNFCStepViewModel", "Error: $e", e)
-        if (e is IOException) {
-            _errorMessageId.value = R.string.nfc_error_interrupt
-        }
-//        throw e
+        _scanExceptionInstance.value = e
     }
 
     fun startScanning(mrzInfo: MRZInfo) {
