@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -69,8 +70,9 @@ fun GetInTouchScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Image(
+                modifier = Modifier.size(120.dp),
                 painter = painterResource(id = R.drawable.isometric_two_gears),
-                contentDescription = "decor"
+                contentDescription = "decor",
             )
             Spacer(modifier = Modifier.height(32.dp))
             Text(
