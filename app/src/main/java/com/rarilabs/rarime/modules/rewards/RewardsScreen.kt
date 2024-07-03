@@ -48,6 +48,7 @@ import com.rarilabs.rarime.modules.rewards.components.getNormalizeLeveling
 import com.rarilabs.rarime.modules.rewards.components.rewards_leaderboard.RewardsLeaderBoard
 import com.rarilabs.rarime.modules.rewards.view_models.CONST_MOCKED_EVENTS_LIST
 import com.rarilabs.rarime.modules.rewards.view_models.LeaderBoardItem
+import com.rarilabs.rarime.modules.rewards.view_models.MOCKED_LEADER_BOARD_LIST
 import com.rarilabs.rarime.modules.rewards.view_models.RewardsViewModel
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
@@ -145,6 +146,8 @@ fun RewardsScreenContent(
 
     val pointsToken by rewardsViewModel.pointsToken.collectAsState()
 
+    val userLeaderBoardItem by rewardsViewModel.userLeaderBoardItem.collectAsState()
+
     pointsWalletAsset.value?.let { walletAsset ->
         Column(
             modifier = Modifier
@@ -166,6 +169,7 @@ fun RewardsScreenContent(
                 RewardsRatingBadge(
                     leaderBoardList = leaderBoardList.value,
                     walletAsset = walletAsset,
+                    userLeaderBoardItem = userLeaderBoardItem,
                 )
             }
 
@@ -415,7 +419,7 @@ fun ActiveTasksList(
 
 @Composable
 fun RewardsRatingBadge(
-    leaderBoardList: List<LeaderBoardItem>, walletAsset: WalletAsset
+    leaderBoardList: List<LeaderBoardItem>, walletAsset: WalletAsset, userLeaderBoardItem: LeaderBoardItem
 ) {
     val leaderboardSheetState = rememberAppSheetState()
 
@@ -450,7 +454,7 @@ fun RewardsRatingBadge(
     AppBottomSheet(state = leaderboardSheetState, fullScreen = true) {
         RewardsLeaderBoard(
             leaderBoardList,
-            walletAsset.userAddress,
+            userLeaderBoardItem,
         )
     }
 }
@@ -482,7 +486,7 @@ fun RewardsRatingBadgeSkeleton() {
 @Composable
 fun RewardsRatingBadgePreview() {
     RewardsRatingBadge(
-        leaderBoardList = listOf(), walletAsset = WalletAsset("", PreviewerToken(""))
+        leaderBoardList = listOf(), walletAsset = WalletAsset("", PreviewerToken("")), MOCKED_LEADER_BOARD_LIST[0]
     )
 }
 

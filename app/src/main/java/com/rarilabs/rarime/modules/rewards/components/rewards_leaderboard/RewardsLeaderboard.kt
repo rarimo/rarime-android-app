@@ -35,7 +35,7 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 @Composable
 fun RewardsLeaderBoard (
     leaderboardList: List<LeaderBoardItem>,
-    userAddress: String,
+    userLeaderBoardItem: LeaderBoardItem,
 ) {
     val scrollState = rememberLazyListState()
 
@@ -105,7 +105,7 @@ fun RewardsLeaderBoard (
                         address = it.address,
                         balance = it.balance,
                         tokenIcon = R.drawable.ic_rarimo,
-                        isCurrentUser = it.address == userAddress,
+                        isCurrentUser = it.address == userLeaderBoardItem.address,
                     )
                 }
             }
@@ -129,7 +129,7 @@ fun RewardsLeaderBoard (
                         itemsIndexed(rest) { idx, it ->
                             RewardsLeaderBoardItem(
                                 it,
-                                isCurrentUser = it.address == userAddress,
+                                isCurrentUser = it.address == userLeaderBoardItem.address,
                             )
 
                             if (idx != rest.size - 1) {
@@ -137,12 +137,11 @@ fun RewardsLeaderBoard (
                             }
                         }
                     }
-                    rest.find { it.address == userAddress }?.let {
-                        Column () {
-                            HorizontalDivider()
-                            RewardsLeaderBoardItem(it, true)
-                        }
-                    }
+                }
+
+                Column () {
+                    HorizontalDivider()
+                    RewardsLeaderBoardItem(userLeaderBoardItem, true)
                 }
             }
         }
@@ -152,5 +151,5 @@ fun RewardsLeaderBoard (
 @Preview
 @Composable
 fun RewardsLeaderBoardPreview() {
-    RewardsLeaderBoard(MOCKED_LEADER_BOARD_LIST.take(4), MOCKED_LEADER_BOARD_LIST[0].address)
+    RewardsLeaderBoard(MOCKED_LEADER_BOARD_LIST.take(4), MOCKED_LEADER_BOARD_LIST[6])
 }

@@ -465,6 +465,19 @@ class RewardsViewModel @Inject constructor(
     val leaderBoardList: StateFlow<List<LeaderBoardItem>>
         get() = _leaderBoardList.asStateFlow()
 
+    fun getUserLeaderBoardItem(): LeaderBoardItem {
+        return LeaderBoardItem(
+            number = pointsToken.value?.balanceDetails?.attributes?.rank?.toInt() ?: 0,
+            address = pointsToken.value?.balanceDetails?.id ?: "",
+            balance = pointsToken.value?.balanceDetails?.attributes?.amount?.toDouble() ?: 0.0,
+            tokenIcon = R.drawable.ic_rarimo
+        )
+    }
+
+    var _userLeaderBoardItem = MutableStateFlow(getUserLeaderBoardItem())
+    val userLeaderBoardItem: StateFlow<LeaderBoardItem>
+        get() = _userLeaderBoardItem.asStateFlow()
+
     fun getNationality(): String? {
         return passportManager.getIsoCode()
     }
@@ -488,7 +501,7 @@ class RewardsViewModel @Inject constructor(
 
                 val mappedLeaderBoard = response.data.mapIndexed { idx, it ->
                     LeaderBoardItem(
-                        number = idx + 1,
+                        number = it.attributes.rank?.toInt() ?: (idx + 1),
                         address = it.id,
                         balance = it.attributes.amount.toDouble(),
                         tokenIcon = R.drawable.ic_rarimo
@@ -496,6 +509,9 @@ class RewardsViewModel @Inject constructor(
                 }
 
                 _leaderBoardList.value = mappedLeaderBoard.toList()
+            }
+            launch {
+                _userLeaderBoardItem.value = getUserLeaderBoardItem()
             }
         }
     }
