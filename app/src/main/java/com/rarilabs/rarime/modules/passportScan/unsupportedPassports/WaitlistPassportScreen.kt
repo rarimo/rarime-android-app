@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.modules.passportScan.unsupportedPassports
 
 import android.content.res.Configuration
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -26,7 +25,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.gson.Gson
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.components.JoinWaitlistCongratsModalContent
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
@@ -41,7 +39,8 @@ import com.rarilabs.rarime.ui.components.TertiaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Country
 import com.rarilabs.rarime.util.ErrorHandler
-import com.rarilabs.rarime.util.SendErrorUtil.sendErrorEmail
+import com.rarilabs.rarime.util.SendEmailUtil
+import com.rarilabs.rarime.util.SendEmailUtil.sendEmail
 
 @Composable
 fun WaitlistPassportScreen(
@@ -54,22 +53,24 @@ fun WaitlistPassportScreen(
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        ErrorHandler.logDebug("WaitlistPassportScreen", Gson().toJson(eDocument))
+        ErrorHandler.logDebug("WaitlistPassportScreen", eDocument.aaResponse.toString())
     }
 
-    val launcher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult(),
-            onResult = {
-                viewModel.joinWaitlist()
-                mainViewModel.setModalContent {
-                    JoinWaitlistCongratsModalContent(onClose = {
-                        mainViewModel.setModalVisibility(false)
-                    })
-                }
-                mainViewModel.setModalVisibility(true)
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = {
+            viewModel.joinWaitlist()
+            mainViewModel.setModalContent {
+                JoinWaitlistCongratsModalContent(onClose = {
+                    mainViewModel.setModalVisibility(false)
+                })
+            }
+            mainViewModel.setModalVisibility(true)
 
-                onClose.invoke()
-            })
+            SendEmailUtil.deleteEdocumentFile(context)
+
+            onClose.invoke()
+        })
 
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -155,9 +156,18 @@ fun WaitlistPassportScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
                 onClick = {
-                    val decryptedFile = ErrorHandler.getLogFile()
 
-                    launcher.launch(sendErrorEmail(decryptedFile, context))
+                    try {
+                        val file = SendEmailUtil.generateEdocumentFile(eDocument, context)
+                        launcher.launch(
+                            sendEmail(
+                                file!!, context, header = "Edocument", ""
+                            )
+                        )
+                    } catch (e: Exception) {
+                        ErrorHandler.logError("Waitlist", "Cant send eDocument", e)
+                    }
+
                 },
             )
             TertiaryButton(
