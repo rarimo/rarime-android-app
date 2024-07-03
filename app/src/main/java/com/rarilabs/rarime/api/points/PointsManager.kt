@@ -208,7 +208,7 @@ class PointsManager @Inject constructor(
         val registrationProof = identityManager.registrationProof.value!!
 
         val anonymousId = Identity.calculateAnonymousID(
-            passportManager.passport.value!!.dg1!!.toByteArray(), BaseConfig.POINTS_SVC_ID
+            eDocument.dg1!!.decodeHexString(), BaseConfig.POINTS_SVC_ID
         )
 
         val hmacMessage = Identity.calculateHmacMessage(
@@ -231,7 +231,7 @@ class PointsManager @Inject constructor(
                         type = "verify_passport",
                         attributes = VerifyPassportAttributes(
                             proof = zkProof,
-                            country = eDocument!!.personDetails!!.nationality!!,
+                            country = eDocument.personDetails!!.nationality!!,
                             anonymous_id = anonymousId.toHexString()
                         )
                     )
