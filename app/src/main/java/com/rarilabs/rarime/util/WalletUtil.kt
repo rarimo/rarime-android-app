@@ -6,6 +6,11 @@ object WalletUtil {
         charsStartAmount: Int = 12,
         charsEndAmount: Int = 8
     ): String {
-        return address.substring(0, charsStartAmount) + "..." + address.substring(address.length - charsEndAmount)
+        try {
+            return address.substring(0, charsStartAmount) + "..." + address.substring(address.length - charsEndAmount)
+        } catch (e: Exception) {
+            ErrorHandler.logError("WalletUtil.formatAddress", e.toString(), e)
+            return address
+        }
     }
 }
