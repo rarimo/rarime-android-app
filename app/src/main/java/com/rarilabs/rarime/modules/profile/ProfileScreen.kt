@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.modules.profile
 
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
@@ -42,7 +41,7 @@ import com.rarilabs.rarime.ui.components.ConfirmationDialog
 import com.rarilabs.rarime.ui.components.PassportImage
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Screen
-import com.rarilabs.rarime.util.SendErrorUtil
+import com.rarilabs.rarime.util.SendEmailUtil
 import com.rarilabs.rarime.util.WalletUtil
 import kotlinx.coroutines.launch
 
@@ -167,7 +166,7 @@ fun ProfileScreen(
                             scope.launch {
                                 val decryptedFile = viewModel.getDecryptedFeedbackFile()
 
-                                launcher.launch(SendErrorUtil.sendErrorEmail(decryptedFile, context))
+                                launcher.launch(SendEmailUtil.sendEmail(decryptedFile, context))
                             }
                         },
                         onCancel = { isFeedbackDialogShown = false },
