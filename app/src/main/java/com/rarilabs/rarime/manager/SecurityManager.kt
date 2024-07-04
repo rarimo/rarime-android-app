@@ -28,12 +28,13 @@ class SecurityManager @Inject constructor(
     val lockTimestamp: StateFlow<Long>
         get() = _lockTimestamp.asStateFlow()
 
-    var isScreenLocked =
-        mutableStateOf(
+    private var _isScreenLocked =
+        MutableStateFlow(
             passcodeState.value == SecurityCheckState.ENABLED
                     || biometricsState.value == SecurityCheckState.ENABLED
         )
-        private set
+    val isScreenLocked: StateFlow<Boolean>
+        get() = _isScreenLocked.asStateFlow()
 
 
     fun updatePasscodeState(state: SecurityCheckState) {
@@ -47,6 +48,7 @@ class SecurityManager @Inject constructor(
 
     fun setPasscode(newPasscode: String) {
         passcode.value = newPasscode
+        _isScreenLocked.value = false
         dataStoreManager.savePasscode(newPasscode)
     }
 
@@ -63,6 +65,6 @@ class SecurityManager @Inject constructor(
     }
 
     fun unlockScreen() {
-        isScreenLocked.value = false
+        _isScreenLocked.value = false
     }
 }
