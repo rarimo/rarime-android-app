@@ -201,7 +201,7 @@ fun MainScreenRoutes(
             startDestination = Screen.Main.Home.route, route = Screen.Main.route
         ) {
             composable(Screen.Main.Home.route) {
-                AuthGuard(navigate = simpleNavigate) {
+                AuthGuard(navigate = navigateWithPopUp) {
                     HomeScreen(navigate = { simpleNavigate(it) })
                 }
             }
