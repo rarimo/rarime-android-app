@@ -38,7 +38,7 @@ import com.rarilabs.rarime.data.RarimoChains
 //    val CHAIN = RarimoChains.MainnetBeta
 //}
 
-/* MAINNET */
+///* MAINNET */
 object BaseConfig {
     const val RELAYER_URL = "https://api.app.rarime.com"
     const val EVM_RPC_URL = "https://rpc.evm.mainnet.rarimo.com"
