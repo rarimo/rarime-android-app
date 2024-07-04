@@ -64,8 +64,6 @@ class MainViewModel @Inject constructor(
         private set
 
     suspend fun initApp() {
-        ErrorHandler.logDebug("initApp", identityManager.privateKey.value.toString())
-
         if (identityManager.privateKey.value == null) {
             appLoadingState.value = AppLoadingStates.LOADED
             return
