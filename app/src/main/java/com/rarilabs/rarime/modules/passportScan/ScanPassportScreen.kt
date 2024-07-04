@@ -24,12 +24,15 @@ import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.NotAllowedP
 import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.WaitlistPassportScreen
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
 import com.rarilabs.rarime.util.data.ZkProof
+import okio.IOException
 import org.jmrtd.lds.icao.MRZInfo
 
 private enum class ScanPassportState {
     SCAN_MRZ, READ_NFC, PASSPORT_DATA, GENERATE_PROOF, FINISH_PASSPORT_FLOW, UNSUPPORTED_PASSPORT, NOT_ALLOWED_PASSPORT,
 
     REVOCATION_PROCESS,
+
+    GET_IN_TOUCH,
 }
 
 @Composable
@@ -87,12 +90,18 @@ fun ScanPassportScreen(
             ScanPassportState.READ_NFC -> {
                 ReadEDocStep(onNext = {
                     scanPassportScreenViewModel.savePassport(it)
-
                     state = ScanPassportState.PASSPORT_DATA
                 }, onClose = {
                     onClose.invoke()
                 }, onError = {
-                    state = ScanPassportState.SCAN_MRZ
+                    state = when (it) {
+                        is IOException -> {
+                            ScanPassportState.SCAN_MRZ
+                        }
+                        else -> {
+                            ScanPassportState.GET_IN_TOUCH
+                        }
+                    }
                 }, mrzInfo = mrzData!!
                 )
             }
@@ -163,6 +172,20 @@ fun ScanPassportScreen(
                     scanPassportScreenViewModel.finishRevocation()
                     state = ScanPassportState.UNSUPPORTED_PASSPORT
                 })
+            }
+
+            ScanPassportState.GET_IN_TOUCH -> {
+                GetInTouchScreen(
+                    eDoc = eDoc.value,
+                    onClose = {
+                        scanPassportScreenViewModel.resetPassportState()
+                        onClose.invoke()
+                    },
+                    onSent = {
+                        scanPassportScreenViewModel.resetPassportState()
+                        onClose.invoke()
+                    }
+                )
             }
         }
     }

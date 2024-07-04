@@ -199,7 +199,6 @@ class RegistrationManager @Inject constructor(
             }
 
             ErrorHandler.logDebug("registrationProof.value!!", registrationProof.value!!.toString())
-            ErrorHandler.logDebug("eDocument.value!!", eDocument.value!!.toString())
             ErrorHandler.logDebug("masterCertProof.value!!", masterCertProof.value!!.toString())
             ErrorHandler.logDebug("certificatePubKeySize.value", certificatePubKeySize.value.toString())
 

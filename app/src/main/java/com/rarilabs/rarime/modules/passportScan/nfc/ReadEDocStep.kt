@@ -29,6 +29,7 @@ import com.rarilabs.rarime.modules.passportScan.models.ReadEDocStepViewModel
 import com.rarilabs.rarime.ui.components.AppAnimation
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import net.sf.scuba.data.Gender
+import okio.IOException
 import org.jmrtd.lds.icao.MRZInfo
 
 
@@ -37,14 +38,13 @@ fun ReadEDocStep(
     mrzInfo: MRZInfo,
     onNext: (eDocument: EDocument) -> Unit,
     onClose: () -> Unit,
-    onError: () -> Unit,
+    onError: (e: Exception) -> Unit,
     readEDocStepViewModel: ReadEDocStepViewModel = hiltViewModel(),
 ) {
     val state by readEDocStepViewModel.state.collectAsState()
-    val errorMessageId by readEDocStepViewModel.errorMessageId.collectAsState()
+    val scanExceptionInstance = readEDocStepViewModel.scanExceptionInstance.collectAsState()
 
     LaunchedEffect(Unit) {
-
         readEDocStepViewModel.startScanning(mrzInfo)
     }
 
@@ -100,16 +100,23 @@ fun ReadEDocStep(
                     }
 
                     ScanNFCState.ERROR -> {
-                        readEDocStepViewModel.resetState()
+                        scanExceptionInstance.value?.let {
+                            readEDocStepViewModel.resetState()
 
-                        val context = LocalContext.current
-                        Toast.makeText(
-                            context,
-                            stringResource(id = errorMessageId),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                            val errorMessage = when(scanExceptionInstance.value) {
+                                is IOException -> stringResource(id = R.string.nfc_error_interrupt)
+                                else -> stringResource(id = R.string.nfc_error_unknown)
+                            }
 
-                        onError()
+                            val context = LocalContext.current
+                            Toast.makeText(
+                                context,
+                                errorMessage,
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            onError(scanExceptionInstance.value!!)
+                        }
                     }
                 }
             }

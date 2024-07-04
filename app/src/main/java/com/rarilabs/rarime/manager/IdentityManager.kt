@@ -31,6 +31,15 @@ class IdentityManager @Inject constructor(
     val privateKeyBytes: ByteArray?
         get() = _privateKey.value?.decodeHexString()
 
+    private var _isLogsDeleted = MutableStateFlow(dataStoreManager.readIsLogsDeleted())
+    val isLogsDeleted: StateFlow<Boolean>
+        get() = _isLogsDeleted.asStateFlow()
+
+    fun updateIsLogsDeleted(isLogsDeleted: Boolean) {
+        _isLogsDeleted.value = isLogsDeleted
+        dataStoreManager.saveIsLogsDeleted(isLogsDeleted)
+    }
+
     fun setRegistrationProof(proof: ZkProof?) {
         _registrationProof.value = proof
 

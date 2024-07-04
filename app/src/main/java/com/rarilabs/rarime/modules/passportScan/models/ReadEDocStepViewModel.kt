@@ -3,7 +3,6 @@ package com.rarilabs.rarime.modules.passportScan.models
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import androidx.lifecycle.ViewModel
-import com.rarilabs.rarime.R
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
 import com.rarilabs.rarime.modules.passportScan.nfc.NfcUseCase
@@ -12,7 +11,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import okio.IOException
 import org.jmrtd.BACKey
 import org.jmrtd.lds.icao.MRZInfo
 import javax.inject.Inject
@@ -31,9 +29,9 @@ class ReadEDocStepViewModel @Inject constructor(
 
     val resetState = nfcManager::resetState
 
-    private var _errorMessageId = MutableStateFlow(R.string.nfc_error_unknown)
-    val errorMessageId: StateFlow<Int>
-        get() = _errorMessageId.asStateFlow()
+    private var _scanExceptionInstance = MutableStateFlow<Exception?>(null)
+    val scanExceptionInstance: StateFlow<Exception?>
+        get() = _scanExceptionInstance.asStateFlow()
 
     private fun handleScan(tag: Tag) {
         val birthDate = mrzInfo.dateOfBirth
@@ -61,10 +59,7 @@ class ReadEDocStepViewModel @Inject constructor(
 
     fun onError(e: Exception) {
         ErrorHandler.logError("ReadNFCStepViewModel", "Error: $e", e)
-        if (e is IOException) {
-            _errorMessageId.value = R.string.nfc_error_interrupt
-        }
-//        throw e
+        _scanExceptionInstance.value = e
     }
 
     fun startScanning(mrzInfo: MRZInfo) {
