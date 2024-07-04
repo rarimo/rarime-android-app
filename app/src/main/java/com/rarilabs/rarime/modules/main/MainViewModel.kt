@@ -42,6 +42,8 @@ class MainViewModel @Inject constructor(
     private val passportManager: PassportManager,
     private val pointsManager: PointsManager
 ) : ViewModel() {
+    val isLogsDeleted = identityManager.isLogsDeleted
+
     val passportStatus = passportManager.passportStatus
 
     var appLoadingState = mutableStateOf(AppLoadingStates.LOADING)
@@ -70,6 +72,15 @@ class MainViewModel @Inject constructor(
         }
 
         appLoadingState.value = AppLoadingStates.LOADING
+
+        try {
+            if (!isLogsDeleted.value) {
+                ErrorHandler.clearLogFile()
+                identityManager.updateIsLogsDeleted(true)
+            }
+        } catch (e: Exception) {
+            ErrorHandler.logError("MainViewModel", "Failed to clear logs", e)
+        }
 
         try {
             tryLogin()

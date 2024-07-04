@@ -45,7 +45,8 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "TX" to "TX",
         "ACCESS_TOKEN" to "ACCESS_TOKEN",
         "REFRESH_TOKEN" to "REFRESH_TOKEN",
-        "IS_IN_WAITLIST" to "IS_IN_WAITLIST"
+        "IS_IN_WAITLIST" to "IS_IN_WAITLIST",
+        "IS_LOGS_DELETED" to "IS_LOGS_DELETED",
     )
 
     private val PREFS_FILE_NAME = "sharedPrefFile12"
@@ -379,6 +380,15 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     override fun deletePassport() {
         val editor = getEditor()
         editor.remove(accessTokens["E_DOCUMENT"])
+        editor.apply()
+    }
+
+    override fun readIsLogsDeleted(): Boolean {
+        return getSharedPreferences().getBoolean(accessTokens["IS_LOGS_DELETED"], false)
+    }
+    override fun saveIsLogsDeleted(isLogsDeleted: Boolean) {
+        val editor = getEditor()
+        editor.putBoolean(accessTokens["IS_LOGS_DELETED"], isLogsDeleted)
         editor.apply()
     }
 }
