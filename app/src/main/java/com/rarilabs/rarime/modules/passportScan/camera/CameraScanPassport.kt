@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.camera.core.AspectRatio
+import androidx.camera.core.CameraSelector
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView

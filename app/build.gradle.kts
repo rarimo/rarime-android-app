@@ -145,7 +145,7 @@ dependencies {
     implementation(libs.androidx.camera.extensions)
 
     //// ML-KIT ////
-    implementation("com.google.mlkit:text-recognition:16.0.0")
+    implementation(libs.text.recognition)
 
     //// ACCOMPANIST ////
     implementation("com.google.accompanist:accompanist-permissions:0.31.6-rc")
