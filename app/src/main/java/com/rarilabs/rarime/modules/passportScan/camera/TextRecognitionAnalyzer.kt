@@ -67,11 +67,26 @@ class TextRecognitionAnalyzer(
         }
     }
 
-    fun cropBottomThird(bitmap: Bitmap): Bitmap {
+    fun getFourthOfSixParts(bitmap: Bitmap): Bitmap {
         val width = bitmap.width
         val height = bitmap.height
-        val cropWidth = width / 3
-        return Bitmap.createBitmap(bitmap, width - cropWidth, 0, cropWidth, height)
+        val partHeight = height / 6
+
+        val x = 0
+        val y = partHeight * 3
+
+        return Bitmap.createBitmap(bitmap, x, y, width, partHeight)
+    }
+
+    fun getFourthOfSixPartsByWidth(bitmap: Bitmap): Bitmap {
+        val width = bitmap.width
+        val height = bitmap.height
+        val partWidth = width / 6
+
+        val x = partWidth * 3
+        val y = 0
+
+        return Bitmap.createBitmap(bitmap, x, y, partWidth, height)
     }
 
     private fun filterScannedText(text: Text.Element) {
@@ -136,7 +151,7 @@ class TextRecognitionAnalyzer(
             val mediaImage: Image = imageProxy.image ?: run { imageProxy.close(); return@launch }
 
             val bitmap = mediaImage.toBitmap()
-            val croppedBitmap = cropBottomThird(bitmap!!)
+            val croppedBitmap = getFourthOfSixPartsByWidth(bitmap!!)
             val grayscaleBitmap = croppedBitmap!!.toGrayscaleHighContrast()
 
             val inputImage =
