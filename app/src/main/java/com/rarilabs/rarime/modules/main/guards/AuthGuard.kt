@@ -31,8 +31,6 @@ fun AuthGuard(
         } else {
             if (passcodeState.value == SecurityCheckState.UNSET.value) {
                 navigate(Screen.Passcode.route)
-            } else if (biometricsState.value == SecurityCheckState.UNSET.value) {
-                navigate(Screen.EnableBiometrics.route)
             } else {
                 content()
             }
