@@ -90,7 +90,6 @@ fun ScanPassportScreen(
             ScanPassportState.READ_NFC -> {
                 ReadEDocStep(onNext = {
                     scanPassportScreenViewModel.savePassport(it)
-
                     state = ScanPassportState.PASSPORT_DATA
                 }, onClose = {
                     onClose.invoke()

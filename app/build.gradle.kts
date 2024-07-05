@@ -22,10 +22,8 @@ android {
         applicationId = "com.rarilabs.rarime"
         minSdk = 27
         targetSdk = 34
-
         versionCode = 17
         versionName = "1.0.17"
-
 
         externalNativeBuild {
             cmake {
@@ -147,7 +145,7 @@ dependencies {
     implementation(libs.androidx.camera.extensions)
 
     //// ML-KIT ////
-    implementation("com.google.mlkit:text-recognition:16.0.0")
+    implementation(libs.text.recognition)
 
     //// ACCOMPANIST ////
     implementation("com.google.accompanist:accompanist-permissions:0.31.6-rc")
