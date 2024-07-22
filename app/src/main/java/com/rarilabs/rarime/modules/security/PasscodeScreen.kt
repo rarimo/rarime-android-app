@@ -19,7 +19,7 @@ fun SetupPasscode(
 ) {
     PasscodeScreen(
         passcodeState = SecurityCheckState.UNSET,
-        onPasscodeStateChange = viewModel::updatePasscodeState,
+        onPasscodeStateChange = { viewModel.updatePasscodeState(it) },
         onPasscodeChange = {viewModel.onPasscodeChange(it); onPasscodeChange.invoke() },
         onClose = onClose
     )

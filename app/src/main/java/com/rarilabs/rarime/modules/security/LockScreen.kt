@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,14 +39,20 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.BiometricUtil
 import com.rarilabs.rarime.util.Constants
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun LockScreen(
     lockViewModule: LockViewModule = hiltViewModel(), onPass: () -> Unit
 ) {
+    val scope = rememberCoroutineScope()
+
     fun onPassHandler() {
-        lockViewModule.unlockScreen()
-        onPass.invoke()
+        scope.launch {
+            lockViewModule.unlockScreen()
+            delay(300)
+            onPass.invoke()
+        }
     }
 
     /* STATE */
