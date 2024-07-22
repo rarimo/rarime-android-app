@@ -29,7 +29,6 @@ import kotlinx.coroutines.launch
 import net.sf.scuba.data.Gender
 import org.jmrtd.lds.icao.MRZInfo
 import java.io.ByteArrayOutputStream
-import java.util.regex.Pattern
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -46,25 +45,14 @@ class TextRecognitionAnalyzer(
 
     private val PASSPORT_TD_3_LINE_1_REGEX = "(P[A-Z0-9<]{1})([A-Z]{3})([A-Z0-9<]{39})"
 
-    private val PASSPORT_TD_3_LINE_2_REGEX =
-        "([A-Z0-9<]{9})([0-9]{1})([A-Z]{3})([0-9]{6})([0-9]{1})([M|F|X|<]{1})([0-9]{6})([0-9]{1})([A-Z0-9<]{14})([0-9<]{1})([0-9]{1})"
-
+    private val PASSPORT_TD_3_LINE_2_REGEX = Regex(
+        "[0-9A-Z<]{10}[A-Z]{3}[0-9]{7}[MFX][0-9]{7}"
+    )
 
     private fun onProcess(
         results: Text,
     ) {
-        Log.i("Text", results.text)
-        scannedTextBuffer = ""
-        val blocks = results.textBlocks
-        for (i in blocks.indices) {
-            val lines = blocks[i].lines
-            for (j in lines.indices) {
-                val elements = lines[j].elements
-                for (k in elements.indices) {
-                    filterScannedText(elements[k])
-                }
-            }
-        }
+        filterScannedText(results.text.replace(" ", ""))
     }
 
     fun getFourthOfSixParts(bitmap: Bitmap): Bitmap {
@@ -78,36 +66,91 @@ class TextRecognitionAnalyzer(
         return Bitmap.createBitmap(bitmap, x, y, width, partHeight)
     }
 
+    private fun verifyChecksum(input: String): Boolean {
+
+        // Ensure the input length is either 7 or 10
+        if (input.length != 7 && input.length != 10) {
+            throw IllegalArgumentException("Input must be either 7 or 10 characters long")
+        }
+
+        fun charToNumber(char: Char): Int {
+            return when (char) {
+                in '0'..'9' -> char.toString().toInt()
+                in 'A'..'Z' -> (char - 'A' + 10) % 10
+                in '<'..'<' -> 0
+                else -> throw IllegalArgumentException("Invalid character in input")
+            }
+        }
+
+        // Extract the digits and checksum from the input
+        val digits = input.substring(0, input.length - 1).map { charToNumber(it) }
+        val checksum = charToNumber(input.last())
+
+        // Define the multipliers for length 7 and 10
+        val multipliers =
+            if (input.length == 7) listOf(7, 3, 1, 7, 3, 1) else listOf(7, 3, 1, 7, 3, 1, 7, 3, 1)
+
+        // Multiply the digits by the multipliers and sum the results
+        val sum = digits.zip(multipliers).sumOf { (digit, multiplier) -> digit * multiplier }
+
+
+        // Calculate the checksum from the sum
+        val calculatedChecksum = sum % 10
+
+        println("Calculated :$calculatedChecksum, waited for: " + input.last())
+
+        // Return whether the calculated checksum matches the provided checksum
+        return calculatedChecksum == checksum
+    }
+
     fun getFourthOfSixPartsByWidth(bitmap: Bitmap): Bitmap {
         val width = bitmap.width
         val height = bitmap.height
         val partWidth = width / 6
-
         val x = partWidth * 3
         val y = 0
-
         return Bitmap.createBitmap(bitmap, x, y, partWidth, height)
     }
 
-    private fun filterScannedText(text: Text.Element) {
-        scannedTextBuffer += text.text.replace("«", "<<")
-        val patternPassportTD3Line1 = Pattern.compile(PASSPORT_TD_3_LINE_1_REGEX)
-        val matcherPassportTD3Line1 = patternPassportTD3Line1.matcher(scannedTextBuffer)
-        val patternPassportTD3Line2 = Pattern.compile(PASSPORT_TD_3_LINE_2_REGEX)
-        val matcherPassportTD3Line2 = patternPassportTD3Line2.matcher(scannedTextBuffer)
-        if (matcherPassportTD3Line1.find() && matcherPassportTD3Line2.find()) {
-            val line2 = matcherPassportTD3Line2.group(0)
-            var documentNumber = line2.substring(0, 9)
-            documentNumber = documentNumber.replace("O", "0")
-            val dateOfBirthDay = line2.substring(13, 19)
-            val expiryDate = line2.substring(21, 27)
-            ErrorHandler.logDebug(
-                "Tag",
-                "Scanned Text Buffer Passport ->>>> Doc Number: $documentNumber DateOfBirth: $dateOfBirthDay ExpiryDate: $expiryDate"
-            )
-            val mrz = buildTempMrz(documentNumber, dateOfBirthDay, expiryDate) ?: return
-            onDetectedTextUpdated(mrz)
+    private fun filterScannedText(text: String) {
+        val updatedText = text.replace("«", "<<")
+
+        val match = PASSPORT_TD_3_LINE_2_REGEX.find(updatedText)
+
+        try {
+            match?.let {
+
+                Log.i("PASSPORT_TD_3_LINE_2_REG", it.value)
+                var documentNumberWithCheckSum = it.value.substring(0, 10)
+                documentNumberWithCheckSum = documentNumberWithCheckSum.replace("O", "0")
+                val dateOfBirthWithCheckSum = it.value.substring(13, 20)
+                val expiryDateWithCheckSum = it.value.substring(21, 28)
+
+                val check1 = verifyChecksum(dateOfBirthWithCheckSum)
+                val check2 = verifyChecksum(
+                    documentNumberWithCheckSum
+                )
+                val check3 = verifyChecksum(expiryDateWithCheckSum)
+
+                if (!check1 || !check2 || !check3) {
+                    Log.i("Check", "$check1 $check2 $check3")
+                    return
+                }
+
+                val documentNumber = match.value.substring(0, 9)
+                val dateOfBirth = match.value.substring(13, 19)
+                val expiryDate = match.value.substring(21, 27)
+
+                val mrz = buildTempMrz(documentNumber, dateOfBirth, expiryDate) ?: return
+                onDetectedTextUpdated(mrz)
+
+            }
+        }catch (e: Exception) {
+            e.printStackTrace()
         }
+
+
+
     }
 
     private fun buildTempMrz(
@@ -151,8 +194,8 @@ class TextRecognitionAnalyzer(
             val mediaImage: Image = imageProxy.image ?: run { imageProxy.close(); return@launch }
 
             val bitmap = mediaImage.toBitmap()
-            val croppedBitmap = getFourthOfSixPartsByWidth(bitmap!!)
-            val grayscaleBitmap = croppedBitmap!!.toGrayscaleHighContrast()
+
+            val grayscaleBitmap = bitmap!!.toGrayscaleHighContrast()
 
             val inputImage =
                 InputImage.fromBitmap(grayscaleBitmap, imageProxy.imageInfo.rotationDegrees)
