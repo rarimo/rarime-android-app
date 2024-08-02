@@ -257,4 +257,15 @@
     <string name="get_in_touch_subtitle">Some passports have a problem \n with chip scans</string>
     <string name="get_in_touch_confirm">Get in touch</string>
     <string name="get_in_touch_cancel">Cancel</string>
+
+    <string name="scan_mrzstep_manual_input_show_btn">Fill Manually</string>
+    <string name="scan_mrzstep_manual_input_title">Fill Manually</string>
+    <string name="scan_mrzstep_manual_input_subtitle">Please fill this fields</string>
+    <string name="scan_mrzstep_manual_input_confirm_btn">Enter</string>
+    <string name="scan_mrzstep_manual_input_doc_id_placeholder">Document ID (AB123456)</string>
+    <string name="scan_mrzstep_manual_input_birth_placeholder">Date of birth (dd/mm/yy)</string>
+    <string name="scan_mrzstep_manual_input_expiry_placeholder">Date of expiry (dd/mm/yy)</string>
+    <string name="scan_mrzstep_permission_denied">Camera permission denied, try fill manually</string>
+
+    <string name="field_type_date_picker_placeholder">Select date</string>
 </resources>

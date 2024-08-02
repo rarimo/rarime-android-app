@@ -32,6 +32,39 @@ import java.io.ByteArrayOutputStream
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+fun buildTempMrz(
+    documentNumber: String, dateOfBirth: String, expiryDate: String
+): MRZInfo? {
+    var mrzInfo: MRZInfo? = null
+    try {
+        mrzInfo = MRZInfo(
+            "P",
+            "NNN",
+            "",
+            "",
+            documentNumber,
+            "NNN",
+            dateOfBirth,
+            Gender.UNSPECIFIED,
+            expiryDate,
+            ""
+        )
+        return if (isMrzValid(mrzInfo)) {
+            mrzInfo
+        } else {
+            null
+        }
+    } catch (e: Exception) {
+        ErrorHandler.logDebug(
+            "MRZ ERROR", "MRZInfo error : " + e.localizedMessage
+        )
+    }
+    return mrzInfo
+}
+
+fun isMrzValid(mrzInfo: MRZInfo): Boolean {
+    return mrzInfo.documentNumber != null && mrzInfo.documentNumber.length >= 8 && mrzInfo.dateOfBirth != null && mrzInfo.dateOfBirth.length == 6 && mrzInfo.dateOfExpiry != null && mrzInfo.dateOfExpiry.length == 6
+}
 
 class TextRecognitionAnalyzer(
     private val onDetectedTextUpdated: (MRZInfo) -> Unit
@@ -151,40 +184,6 @@ class TextRecognitionAnalyzer(
 
 
 
-    }
-
-    private fun buildTempMrz(
-        documentNumber: String, dateOfBirth: String, expiryDate: String
-    ): MRZInfo? {
-        var mrzInfo: MRZInfo? = null
-        try {
-            mrzInfo = MRZInfo(
-                "P",
-                "NNN",
-                "",
-                "",
-                documentNumber,
-                "NNN",
-                dateOfBirth,
-                Gender.UNSPECIFIED,
-                expiryDate,
-                ""
-            )
-            return if (isMrzValid(mrzInfo)) {
-                mrzInfo
-            } else {
-                null
-            }
-        } catch (e: Exception) {
-            ErrorHandler.logDebug(
-                "MRZ ERROR", "MRZInfo error : " + e.localizedMessage
-            )
-        }
-        return mrzInfo
-    }
-
-    private fun isMrzValid(mrzInfo: MRZInfo): Boolean {
-        return mrzInfo.documentNumber != null && mrzInfo.documentNumber.length >= 8 && mrzInfo.dateOfBirth != null && mrzInfo.dateOfBirth.length == 6 && mrzInfo.dateOfExpiry != null && mrzInfo.dateOfExpiry.length == 6
     }
 
     @OptIn(ExperimentalGetImage::class)
