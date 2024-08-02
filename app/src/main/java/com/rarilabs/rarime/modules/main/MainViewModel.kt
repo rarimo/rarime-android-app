@@ -163,4 +163,8 @@ class MainViewModel @Inject constructor(
     fun updatePasscodeState(state: SecurityCheckState) {
         securityManager.updatePasscodeState(state)
     }
+
+    fun updateBiometricsState(state: SecurityCheckState) {
+        securityManager.updateBiometricsState(state)
+    }
 }

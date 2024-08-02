@@ -48,6 +48,7 @@ import com.rarilabs.rarime.modules.wallet.WalletSendScreen
 import com.rarilabs.rarime.ui.components.AppWebView
 import com.rarilabs.rarime.ui.components.CongratsInvitationModalContent
 import com.rarilabs.rarime.util.AppIconUtil
+import com.rarilabs.rarime.util.BiometricUtil
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.LocaleUtil
@@ -118,7 +119,12 @@ fun MainScreenRoutes(
             composable(Screen.Passcode.AddPasscode.route) {
                 SetupPasscode(
                     onPasscodeChange = {
-                        navigateWithPopUp(Screen.EnableBiometrics.route)
+                        if (BiometricUtil.isSupported(context)) {
+                            navigateWithPopUp(Screen.EnableBiometrics.route)
+                        } else {
+                            mainViewModel.updateBiometricsState(SecurityCheckState.DISABLED)
+                            navigateWithPopUp(Screen.Main.route)
+                        }
                     },
                     onClose = {
                         navController.popBackStack(
