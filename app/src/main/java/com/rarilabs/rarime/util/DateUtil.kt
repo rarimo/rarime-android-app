@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 enum class DateFormatType(val pattern: String) {
     DEFAULT("dd MMM, YYYY"),
@@ -99,5 +100,16 @@ object DateUtil {
         val date = stringToDate(dateStr, SimpleDateFormat(inputFormat.pattern, Locale.US))
             ?: return ""
         return formatDate(date, outputFormat)
+    }
+
+    fun convertToDate(value: Long?, pattern: String = "d/M/yyyy"): String {
+        return if (value != null) {
+            val date = Date(value)
+            val format = SimpleDateFormat(pattern, Locale.getDefault())
+            format.timeZone = TimeZone.getTimeZone("UTC")
+            format.format(date)
+        } else {
+            ""
+        }
     }
 }
