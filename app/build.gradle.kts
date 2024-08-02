@@ -25,6 +25,9 @@ android {
         versionCode = 17
         versionName = "1.0.17"
 
+        versionCode = 20
+        versionName = "1.0.20"
+
         externalNativeBuild {
             cmake {
                 cppFlags += "-fexceptions -frtti -std=c++11"

@@ -14,7 +14,4 @@ data class EDocument(
     var dg15Pem: String? = null,
     var aaSignature: ByteArray? = null,
     var aaResponse: String? = null,
-) {
-
-
-}
+)

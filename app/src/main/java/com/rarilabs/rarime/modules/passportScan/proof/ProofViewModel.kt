@@ -124,7 +124,9 @@ class ProofViewModel @Inject constructor(
             registrationManager.relayerRegister(callData)
         }
 
-        ErrorHandler.logDebug(TAG, "Passport certificate EVM Tx Hash " + response.data.attributes.tx_hash)
+        ErrorHandler.logDebug(
+            TAG, "Passport certificate EVM Tx Hash " + response.data.attributes.tx_hash
+        )
 
         val res =
             rarimoContractManager.checkIsTransactionSuccessful(response.data.attributes.tx_hash)
