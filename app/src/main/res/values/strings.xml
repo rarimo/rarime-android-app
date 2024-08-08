@@ -268,4 +268,18 @@
     <string name="scan_mrzstep_permission_denied">Camera permission denied, try fill manually</string>
 
     <string name="field_type_date_picker_placeholder">Select date</string>
+
+    <string name="create_identity_selector_title">Authorisation</string>
+    <string name="create_identity_selector_subtitle">Choose a preferred method</string>
+    <string name="create_identity_selector_option_1">Create a new profile</string>
+    <string name="create_identity_selector_option_2">Re-activate old profile</string>
+
+    <string name="create_identity_continue_btn">Start</string>
+    <string name="create_identity_import_title">Import keys</string>
+    <string name="create_identity_import_placeholder">Your private key</string>
+    <string name="create_identity_import_btn">Continue</string>
+    <string name="create_identity_title">Your keys</string>
+    <string name="create_identity_copy_btn">Copy to clipboard</string>
+    <string name="create_identity_copied_msg">Copied</string>
+    <string name="create_identity_warning">Please store the private key safely and do not share it with anyone. If you lose this key, you will not be able to recover the account and will lose access forever.</string>
 </resources>

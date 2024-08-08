@@ -65,7 +65,10 @@ android {
             )
         }
 
+        debug {  }
+
         create("debug_mainnet") {
+            initWith(getByName("debug"))
             buildConfigField("Boolean", "isTestnet", "false")
         }
         create("release_mainnet") {
@@ -76,6 +79,7 @@ android {
             buildConfigField("Boolean", "isTestnet", "false")
         }
         create("debug_testnet") {
+            initWith(getByName("debug"))
             buildConfigField("Boolean", "isTestnet", "true")
         }
         create("release_testnet") {
