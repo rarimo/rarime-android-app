@@ -83,7 +83,7 @@ fun MainScreenRoutes(
         exitTransition = { ExitTransition.None },
     ) {
         composable(Screen.Intro.route) {
-            IntroScreen { simpleNavigate(Screen.Register.NewIdentity.route) }
+            IntroScreen { simpleNavigate(it) }
         }
 
         navigation(
@@ -99,6 +99,18 @@ fun MainScreenRoutes(
                         }
                     },
                     onBack = { navController.popBackStack() }
+                )
+            }
+            composable(Screen.Register.ImportIdentity.route) {
+                NewIdentityScreen(
+                    isImporting = true,
+                    onBack = { navController.popBackStack() },
+                    onNext = {
+                        coroutineScope.launch {
+                            mainViewModel.finishIntro()
+                            navigateWithPopUp(Screen.Passcode.route)
+                        }
+                    },
                 )
             }
         }

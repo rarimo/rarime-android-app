@@ -11,6 +11,7 @@ sealed class Screen(val route: String) {
 
     data object Register : Screen("register") {
         data object NewIdentity : Screen("new_identity")
+        data object ImportIdentity : Screen("import_identity")
     }
 
     data object Claim : Screen("claim") {

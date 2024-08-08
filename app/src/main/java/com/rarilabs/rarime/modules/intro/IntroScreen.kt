@@ -29,10 +29,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.AppAnimation
+import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.SecondaryTextButton
 import com.rarilabs.rarime.ui.components.StepIndicator
+import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.launch
@@ -78,9 +80,13 @@ private val introSteps = listOf(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun IntroScreen(onFinishIntro: () -> Unit) {
+fun IntroScreen(
+    navigate: (String) -> Unit
+) {
     val stepState = rememberPagerState(pageCount = { introSteps.size })
     val coroutineScope = rememberCoroutineScope()
+
+    val sheetState = rememberAppSheetState()
 
     val isLastStep = stepState.currentPage == introSteps.size - 1
 
@@ -118,11 +124,12 @@ fun IntroScreen(onFinishIntro: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 HorizontalDivider()
+
                 if (isLastStep) {
                     PrimaryButton(
                         text = stringResource(R.string.create_account_btn),
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = { onFinishIntro() }
+                        onClick = { sheetState.show() }
                     )
                 } else {
                     Row(
@@ -147,6 +154,25 @@ fun IntroScreen(onFinishIntro: () -> Unit) {
                 }
             }
         }
+    }
+
+    AppBottomSheet(state = sheetState) {
+        CreateIdentityVariantsSelector(listOf(
+            IdentityVariant(
+                title = stringResource(id = R.string.create_identity_selector_option_1),
+                icon = R.drawable.ic_user_plus,
+                onSelect = {
+                    navigate(Screen.Register.NewIdentity.route)
+                }
+            ),
+            IdentityVariant(
+                title = stringResource(id = R.string.create_identity_selector_option_2),
+                icon = R.drawable.ic_share_1,
+                onSelect = {
+                    navigate(Screen.Register.ImportIdentity.route)
+                }
+            ),
+        ))
     }
 }
 
@@ -188,5 +214,5 @@ private fun StepView(step: IntroStep) {
 @Preview
 @Composable
 private fun IntroScreenPreview() {
-    IntroScreen(onFinishIntro = {})
+    IntroScreen(navigate = {})
 }
