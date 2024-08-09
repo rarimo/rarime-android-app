@@ -56,27 +56,27 @@ fun ScanPassportScreen(
     fun handleRegisteredPassportException(zkProof: ZkProof) {
         scanPassportScreenViewModel.resetPassportState()
 
-//        Toast.makeText(context, R.string.you_have_already_registered, Toast.LENGTH_SHORT).show()
-//        onClose.invoke()
+        Toast.makeText(context, R.string.you_have_already_registered, Toast.LENGTH_SHORT).show()
+        onClose.invoke()
 
-        mainViewModel.setModalContent {
-            ConfirmationDialog(
-                title = stringResource(R.string.you_have_already_registered),
-                subtitle = stringResource(R.string.you_have_already_registered_offer),
-                cancelButtonText = stringResource(id = R.string.you_have_already_registered_cancel),
-                confirmButtonText = stringResource(id = R.string.you_have_already_registered_confirm),
-                onConfirm = {
-                    scanPassportScreenViewModel.saveRegistrationProof(zkProof)
-                    state = ScanPassportState.REVOCATION_PROCESS
-                    mainViewModel.setModalVisibility(false)
-                },
-                onCancel = {
-                    mainViewModel.setModalVisibility(false)
-                    onClose.invoke()
-                },
-            )
-        }
-        mainViewModel.setModalVisibility(true)
+//        mainViewModel.setModalContent {
+//            ConfirmationDialog(
+//                title = stringResource(R.string.you_have_already_registered),
+//                subtitle = stringResource(R.string.you_have_already_registered_offer),
+//                cancelButtonText = stringResource(id = R.string.you_have_already_registered_cancel),
+//                confirmButtonText = stringResource(id = R.string.you_have_already_registered_confirm),
+//                onConfirm = {
+//                    scanPassportScreenViewModel.saveRegistrationProof(zkProof)
+//                    state = ScanPassportState.REVOCATION_PROCESS
+//                    mainViewModel.setModalVisibility(false)
+//                },
+//                onCancel = {
+//                    mainViewModel.setModalVisibility(false)
+//                    onClose.invoke()
+//                },
+//            )
+//        }
+//        mainViewModel.setModalVisibility(true)
     }
 
     fun handleNFCError(e: Exception) {
