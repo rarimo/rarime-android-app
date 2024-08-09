@@ -85,7 +85,6 @@ class PointsManager @Inject constructor(
             eDocument.dg1!!.decodeHexString(), BaseConfig.POINTS_SVC_ID
         )
 
-
         val hmacMessage = Identity.calculateHmacMessage(accessJwt, countryName, anonymousId)
 
 
@@ -140,7 +139,7 @@ class PointsManager @Inject constructor(
             BaseConfig.REGISTRATION_SMT_CONTRACT_ADDRESS
         )
 
-        val passportInfoKey: String = if (eDocument.dg15?.isEmpty() ?: false) {
+        val passportInfoKey: String = if (eDocument.dg15.isNullOrEmpty()) {
             registrationProof.pub_signals[1]
         } else {
             registrationProof.pub_signals[0]
@@ -152,8 +151,13 @@ class PointsManager @Inject constructor(
 
         var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
 
-        if (passportInfoKeyBytes.size != 32) {
-            passportInfoKeyBytes = passportInfoKeyBytes.copyOf(32)
+        if (passportInfoKeyBytes.size > 32) {
+            passportInfoKeyBytes = ByteArray(32 - passportInfoKeyBytes.size) + passportInfoKeyBytes
+        } else if (passportInfoKeyBytes.size < 32) {
+            val len = 32 - passportInfoKeyBytes.size
+            var tempByteArray = ByteArray(len) { 0 }
+            tempByteArray += passportInfoKeyBytes
+            passportInfoKeyBytes = tempByteArray
         }
 
         val smtProofRaw = withContext(Dispatchers.IO) {
