@@ -119,7 +119,7 @@ private fun ScanMRZStepContent(
     val manualInputSheetState = rememberAppSheetState(false)
 
     ScanPassportLayout(
-        step = 2,
+        step = 1,
         title = stringResource(R.string.scan_your_passport_title),
         text = stringResource(R.string.scan_your_passport_text),
         onClose = onClose

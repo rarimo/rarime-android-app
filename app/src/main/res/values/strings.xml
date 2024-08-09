@@ -38,8 +38,6 @@
     <string name="scan_your_passport_title">Scan your Passport</string>
     <string name="scan_your_passport_text">Data never leaves this device</string>
     <string name="scan_your_passport_hint">Move your passport page inside the border</string>
-    <string name="nfc_reader_title">NFC Reader</string>
-    <string name="nfc_reader_text">Reading Passport data</string>
     <string name="nfc_reader_hint">Place your passport cover to the back of your phone</string>
     <string name="passport_data_title">Document data</string>
     <string name="passport_data_text">Data generates an incognito profile</string>
@@ -60,12 +58,17 @@
     <string name="confirm">Confirm</string>
     <string name="dismiss">Dismiss</string>
 
+    <!--SCAN PASSPORT : NFC-->
+    <string name="nfc_reader_title">NFC Reader</string>
+    <string name="nfc_reader_text">Reading personal data</string>
+    <string name="nfc_reader_hint_1">1. Make sure you remove the case from the device</string>
+    <string name="nfc_reader_hint_2">2. Place your Passport\/ID to the back of your phone</string>
     <string name="nfc_reader_scanning">Scanning…</string>
+    <string name="nfc_error_interrupt">Scan interrupted, try again</string>
+    <string name="nfc_error_unknown">Try again</string>
+
     <string name="nfc_reader_revoke">Revoke</string>
     <string name="nfc_reader_error">Scan again</string>
-
-    <string name="nfc_error_interrupt">Scan interrupted, try again</string>
-    <string name="nfc_error_unknown">try again</string>
 
     <string name="beta_launch">Beta launch</string>
     <string name="create_account_btn">Create account</string>
@@ -282,4 +285,6 @@
     <string name="create_identity_copy_btn">Copy to clipboard</string>
     <string name="create_identity_copied_msg">Copied</string>
     <string name="create_identity_warning">Please store the private key safely and do not share it with anyone. If you lose this key, you will not be able to recover the account and will lose access forever.</string>
+
+    <string name="downloading_status">Downloading: %1$s\%%</string>
 </resources>

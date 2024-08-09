@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
@@ -22,9 +23,10 @@ import com.rarilabs.rarime.modules.passportScan.nfc.RevocationStep
 import com.rarilabs.rarime.modules.passportScan.proof.GenerateProofStep
 import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.NotAllowedPassportScreen
 import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.WaitlistPassportScreen
+import com.rarilabs.rarime.ui.components.ConfirmationDialog
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.data.ZkProof
-import okio.IOException
 import org.jmrtd.lds.icao.MRZInfo
 
 private enum class ScanPassportState {
@@ -47,6 +49,8 @@ fun ScanPassportScreen(
     var state by remember { mutableStateOf(ScanPassportState.SCAN_MRZ) }
     var mrzData: MRZInfo? by remember { mutableStateOf(null) }
 
+    var nfcAttempts by remember { mutableStateOf(0) }
+
     val eDoc = scanPassportScreenViewModel.eDocument.collectAsState()
 
     fun handleRegisteredPassportException(zkProof: ZkProof) {
@@ -55,25 +59,36 @@ fun ScanPassportScreen(
         Toast.makeText(context, R.string.you_have_already_registered, Toast.LENGTH_SHORT).show()
         onClose.invoke()
 
+        mainViewModel.setModalContent {
+            ConfirmationDialog(
+                title = stringResource(R.string.you_have_already_registered),
+                subtitle = stringResource(R.string.you_have_already_registered_offer),
+                cancelButtonText = stringResource(id = R.string.you_have_already_registered_cancel),
+                confirmButtonText = stringResource(id = R.string.you_have_already_registered_confirm),
+                onConfirm = {
+                    scanPassportScreenViewModel.saveRegistrationProof(zkProof)
+                    state = ScanPassportState.REVOCATION_PROCESS
+                    mainViewModel.setModalVisibility(false)
+                },
+                onCancel = {
+                    mainViewModel.setModalVisibility(false)
+                    onClose.invoke()
+                },
+            )
+        }
+        mainViewModel.setModalVisibility(true)
+    }
 
-//                        mainViewModel.setModalContent {
-//                            ConfirmationDialog(
-//                                title = stringResource(R.string.you_have_already_registered),
-//                                subtitle = stringResource(R.string.you_have_already_registered_offer),
-//                                cancelButtonText = stringResource(id = R.string.you_have_already_registered_cancel),
-//                                confirmButtonText = stringResource(id = R.string.you_have_already_registered_confirm),
-//                                onConfirm = {
-//                                    scanPassportScreenViewModel.saveRegistrationProof(it)
-//                                    state = ScanPassportState.REVOCATION_PROCESS
-//                                    mainViewModel.setModalVisibility(false)
-//                                },
-//                                onCancel = {
-//                                    mainViewModel.setModalVisibility(false)
-//                                    onClose.invoke()
-//                                },
-//                            )
-//                        }
-//                        mainViewModel.setModalVisibility(true)
+    fun handleNFCError(e: Exception) {
+        ErrorHandler.logError("NFC error", e.toString(), e)
+
+        nfcAttempts++
+
+        if (nfcAttempts >= 3) {
+            state = ScanPassportState.GET_IN_TOUCH
+        } else {
+            state = ScanPassportState.SCAN_MRZ
+        }
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -83,41 +98,42 @@ fun ScanPassportScreen(
                     onNext = {
                         mrzData = it
                         state = ScanPassportState.READ_NFC
-                    }, onClose = onClose
+                    },
+                    onClose = onClose
                 )
             }
 
             ScanPassportState.READ_NFC -> {
-                ReadEDocStep(onNext = {
-                    scanPassportScreenViewModel.savePassport(it)
-                    state = ScanPassportState.PASSPORT_DATA
-                }, onClose = {
-                    onClose.invoke()
-                }, onError = {
-                    state = when (it) {
-                        is IOException -> {
-                            ScanPassportState.SCAN_MRZ
-                        }
-                        else -> {
-                            ScanPassportState.GET_IN_TOUCH
-                        }
-                    }
-                }, mrzInfo = mrzData!!
+                ReadEDocStep(
+                    onNext = {
+                        scanPassportScreenViewModel.setPassportTEMP(it)
+                        state = ScanPassportState.PASSPORT_DATA
+                    },
+                    onClose = {
+                        onClose.invoke()
+                    },
+                    onError = {
+                        handleNFCError(it)
+                    },
+                    mrzInfo = mrzData!!
                 )
             }
 
             ScanPassportState.PASSPORT_DATA -> {
-                PassportDataStep(onNext = {
-                    state =
-                        if (NOT_ALLOWED_COUNTRIES.contains(eDoc.value?.personDetails?.nationality)) {
-                            ScanPassportState.NOT_ALLOWED_PASSPORT
-                        } else {
-                            ScanPassportState.GENERATE_PROOF
-                        }
-                }, onClose = {
-                    scanPassportScreenViewModel.resetPassportState()
-                    onClose()
-                }, eDocument = eDoc.value!!
+                PassportDataStep(
+                    onNext = {
+                        state =
+                            if (NOT_ALLOWED_COUNTRIES.contains(eDoc.value?.personDetails?.nationality)) {
+                                ScanPassportState.NOT_ALLOWED_PASSPORT
+                            } else {
+                                ScanPassportState.GENERATE_PROOF
+                            }
+                    },
+                    onClose = {
+                        scanPassportScreenViewModel.resetPassportState()
+                        onClose()
+                    },
+                    eDocument = eDoc.value!!
                 )
             }
 
@@ -125,7 +141,10 @@ fun ScanPassportScreen(
                 GenerateProofStep(
                     onClose = {
                         scanPassportScreenViewModel.saveRegistrationProof(it)
+                        scanPassportScreenViewModel.savePassport()
 
+                        // we allow to "not_allowed" country citizens generate an incognito ID,
+                        // so we need to double check here, cuz we use same component.
                         if (!NOT_ALLOWED_COUNTRIES.contains(eDoc.value?.personDetails?.nationality)) {
                             state = ScanPassportState.FINISH_PASSPORT_FLOW
                         } else {
@@ -140,16 +159,20 @@ fun ScanPassportScreen(
 
             ScanPassportState.NOT_ALLOWED_PASSPORT -> {
                 NotAllowedPassportScreen(
-                    eDocument = eDoc.value!!, onClose = onClose
+                    eDocument = eDoc.value!!,
+                    onClose = onClose
                 ) {
                     state = ScanPassportState.GENERATE_PROOF
                 }
             }
 
             ScanPassportState.UNSUPPORTED_PASSPORT -> {
-                WaitlistPassportScreen(eDocument = eDoc.value!!, onClose = {
-                    onClose.invoke()
-                })
+                WaitlistPassportScreen(
+                    eDocument = eDoc.value!!,
+                    onClose = {
+                        onClose.invoke()
+                    }
+                )
             }
 
             ScanPassportState.FINISH_PASSPORT_FLOW -> {
