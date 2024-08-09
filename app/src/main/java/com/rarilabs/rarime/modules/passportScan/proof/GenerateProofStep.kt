@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.registration.PassportAlreadyRegisteredByOtherPK
 import com.rarilabs.rarime.api.registration.UserAlreadyRegistered
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.ui.components.AppIcon
@@ -80,12 +81,12 @@ fun GenerateProofStep(
             proofViewModel.registerByDocument()
             onClose(registrationProof.value!!)
         } catch (e: Exception) {
-            if (e is UserAlreadyRegistered) {
+            e.printStackTrace()
+
+            if (e is PassportAlreadyRegisteredByOtherPK) {
                 onAlreadyRegistered.invoke(registrationProof.value!!)
                 return@LaunchedEffect
             }
-
-            e.printStackTrace()
 
             if (!Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
                 joinRewardsProgram()

@@ -141,26 +141,11 @@ class RegistrationManager @Inject constructor(
 
     suspend fun getRevocationChallenge(): ByteArray? {
         return withContext(Dispatchers.IO) {
-            val stateKeeperContract = rarimoContractManager.getStateKeeper()
-
-            val passportInfoKey: String =
-                if (eDocument.value!!.dg15?.isEmpty() ?: false) {
-                    registrationProof.value!!.pub_signals[1]
-                } else {
-                    registrationProof.value!!.pub_signals[0]
-                }
-
-            var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
-
-            if (passportInfoKeyBytes.size != 32) {
-                passportInfoKeyBytes = passportInfoKeyBytes.copyOf(32)
-            }
-
             val passportInfo = withContext(Dispatchers.IO) {
-                stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()
+                getPassportInfo(eDocument.value!!)
             }
 
-            _activeIdentity.value = passportInfo.component1().activeIdentity
+            _activeIdentity.value = passportInfo!!.component1()!!.activeIdentity
 
             ErrorHandler.logDebug("ActiveIdentity", _activeIdentity.value.toString())
 

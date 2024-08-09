@@ -330,7 +330,7 @@ class ProofViewModel @Inject constructor(
 
     private fun readICAO(context: Context): ByteArray? {
         return try {
-            val assetContext: Context = context.createPackageContext("org.freedomtool.unitedgsh", 0)
+            val assetContext: Context = context.createPackageContext("com.rarilabs.rarime", 0)
             val assetManager = assetContext.assets
             assetManager.open("masters_asset.pem").use { inputStream ->
                 val res = inputStream.readBytes()

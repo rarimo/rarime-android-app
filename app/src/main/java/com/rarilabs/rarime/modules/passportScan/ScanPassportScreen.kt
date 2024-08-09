@@ -56,8 +56,8 @@ fun ScanPassportScreen(
     fun handleRegisteredPassportException(zkProof: ZkProof) {
         scanPassportScreenViewModel.resetPassportState()
 
-        Toast.makeText(context, R.string.you_have_already_registered, Toast.LENGTH_SHORT).show()
-        onClose.invoke()
+//        Toast.makeText(context, R.string.you_have_already_registered, Toast.LENGTH_SHORT).show()
+//        onClose.invoke()
 
         mainViewModel.setModalContent {
             ConfirmationDialog(
