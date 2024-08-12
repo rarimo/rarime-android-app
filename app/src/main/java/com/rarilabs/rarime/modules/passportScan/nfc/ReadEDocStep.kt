@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,74 +49,123 @@ fun ReadEDocStep(
         readEDocStepViewModel.startScanning(mrzInfo)
     }
 
+    fun handleScanPassportLayoutClose() {
+        readEDocStepViewModel.resetState()
+        onClose()
+    }
+
+    fun handleScanPassportLayoutScanned() {
+        readEDocStepViewModel.resetState()
+        onNext(readEDocStepViewModel.eDocument)
+    }
+
+    @Composable
+    fun handleScanPassportLayoutError() {
+        scanExceptionInstance.value?.let {
+            readEDocStepViewModel.resetState()
+
+            val errorMessage = when(scanExceptionInstance.value) {
+                is IOException -> stringResource(id = R.string.nfc_error_interrupt)
+                else -> stringResource(id = R.string.nfc_error_unknown)
+            }
+
+            val context = LocalContext.current
+            Toast.makeText(
+                context,
+                errorMessage,
+                Toast.LENGTH_SHORT
+            ).show()
+
+            onError(scanExceptionInstance.value!!)
+        }
+    }
+
+    ReadEDocStepContent(
+        handleScanPassportLayoutClose = { handleScanPassportLayoutClose() },
+        handleScanPassportLayoutScanned = { handleScanPassportLayoutScanned() },
+        handleScanPassportLayoutError = { handleScanPassportLayoutError() },
+        state = state,
+    )
+}
+
+@Composable
+private fun ReadEDocStepContent(
+    handleScanPassportLayoutClose: () -> Unit,
+    handleScanPassportLayoutScanned: () -> Unit,
+    handleScanPassportLayoutError: @Composable () -> Unit,
+    state: ScanNFCState,
+) {
+    fun getNfcAnimation(): Int {
+        return R.raw.anim_passport_nfc
+    }
+
     ScanPassportLayout(
         step = 2,
         title = stringResource(R.string.nfc_reader_title),
         text = stringResource(R.string.nfc_reader_text),
-        onClose = {
-            readEDocStepViewModel.resetState()
-            onClose()
-        }
+        onClose = { handleScanPassportLayoutClose() }
     ) {
         Column(
-            verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxSize()
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxSize()
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(48.dp),
+                modifier = Modifier.fillMaxSize().padding(top = 100.dp),
+                verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                AppAnimation(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .zIndex(2f)
-                        .padding(horizontal = 10.dp),
-                    id = R.raw.anim_passport_nfc
-                )
-
-                when (state) {
-                    ScanNFCState.NOT_SCANNING -> {
-                        Text(
-                            text = stringResource(R.string.nfc_reader_hint),
-                            style = RarimeTheme.typography.body3,
-                            color = RarimeTheme.colors.textSecondary,
-                            modifier = Modifier.width(250.dp),
-                            textAlign = TextAlign.Center
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(64.dp),
+                ) {
+                    getNfcAnimation()?.let {
+                        AppAnimation(
+                            modifier = Modifier
+                                .size(240.dp)
+                                .zIndex(2f),
+                            id = it,
                         )
                     }
 
-                    ScanNFCState.SCANNING -> {
-                        Text(
-                            text = stringResource(R.string.nfc_reader_scanning),
-                            style = RarimeTheme.typography.body3,
-                            color = RarimeTheme.colors.textSecondary,
-                            modifier = Modifier.width(250.dp),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-
-                    ScanNFCState.SCANNED -> {
-                        readEDocStepViewModel.resetState()
-                        onNext(readEDocStepViewModel.eDocument)
-                    }
-
-                    ScanNFCState.ERROR -> {
-                        scanExceptionInstance.value?.let {
-                            readEDocStepViewModel.resetState()
-
-                            val errorMessage = when(scanExceptionInstance.value) {
-                                is IOException -> stringResource(id = R.string.nfc_error_interrupt)
-                                else -> stringResource(id = R.string.nfc_error_unknown)
+                    when (state) {
+                        ScanNFCState.NOT_SCANNING -> {
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.nfc_reader_hint_1),
+                                    style = RarimeTheme.typography.body3,
+                                    color = RarimeTheme.colors.textSecondary,
+                                    modifier = Modifier.width(250.dp),
+                                    textAlign = TextAlign.Left
+                                )
+                                Text(
+                                    text = stringResource(R.string.nfc_reader_hint_2),
+                                    style = RarimeTheme.typography.body3,
+                                    color = RarimeTheme.colors.textSecondary,
+                                    modifier = Modifier.width(250.dp),
+                                    textAlign = TextAlign.Left
+                                )
                             }
+                        }
 
-                            val context = LocalContext.current
-                            Toast.makeText(
-                                context,
-                                errorMessage,
-                                Toast.LENGTH_SHORT
-                            ).show()
+                        ScanNFCState.SCANNING -> {
+                            Text(
+                                text = stringResource(R.string.nfc_reader_scanning),
+                                style = RarimeTheme.typography.body3,
+                                color = RarimeTheme.colors.textSecondary,
+                                modifier = Modifier.width(250.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
 
-                            onError(scanExceptionInstance.value!!)
+                        ScanNFCState.SCANNED -> {
+                            handleScanPassportLayoutScanned()
+                        }
+
+                        ScanNFCState.ERROR -> {
+                            handleScanPassportLayoutError()
                         }
                     }
                 }
@@ -126,9 +176,14 @@ fun ReadEDocStep(
 
 @Preview
 @Composable
-private fun ReadNFCStepPreview() {
-    val mrzInfo = MRZInfo(
-        "P", "NNN", "", "", "", "NNN", "", Gender.UNSPECIFIED, "", ""
+private fun ReadEDocStepContentPreview() {
+//    val mrzInfo = MRZInfo(
+//        "P", "NNN", "", "", "", "NNN", "", Gender.UNSPECIFIED, "", ""
+//    )
+    ReadEDocStepContent(
+        handleScanPassportLayoutClose = {},
+        handleScanPassportLayoutScanned = {},
+        handleScanPassportLayoutError = {},
+        state = ScanNFCState.NOT_SCANNING,
     )
-    ReadEDocStep(mrzInfo, onNext = {}, onClose = {}, onError = {})
 }

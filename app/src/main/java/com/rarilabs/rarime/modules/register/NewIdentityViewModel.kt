@@ -9,7 +9,9 @@ import javax.inject.Inject
 class NewIdentityViewModel @Inject constructor(
     val identityManager: IdentityManager
 ) : ViewModel() {
-    fun getPrivateKey(): String {
-        return identityManager.newPrivateKey()
+    val savedPrivateKey = identityManager.privateKey
+
+    fun genPrivateKey(): String {
+        return identityManager.genPrivateKey()
     }
 }

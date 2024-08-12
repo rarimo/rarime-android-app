@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,6 +18,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
@@ -28,9 +28,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.registration.PassportAlreadyRegisteredByOtherPK
 import com.rarilabs.rarime.api.registration.UserAlreadyRegistered
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.ui.components.AppIcon
+import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.CirclesLoader
 import com.rarilabs.rarime.ui.components.ProcessingChip
 import com.rarilabs.rarime.ui.components.ProcessingStatus
@@ -52,13 +54,14 @@ fun GenerateProofStep(
     onAlreadyRegistered: (zkp: ZkProof) -> Unit,
 ) {
     val currentState by proofViewModel.state.collectAsState()
-    val processingStatus by remember { mutableStateOf(ProcessingStatus.PROCESSING) }
+    val registrationProof = proofViewModel.regProof.collectAsState()
+
+    var processingStatus by remember { mutableStateOf(ProcessingStatus.PROCESSING) }
+
+    val downloadProgress by proofViewModel.progress.collectAsState()
+    val downloadProgressVisibility by proofViewModel.progressVisibility.collectAsState()
 
     val view = LocalView.current
-
-    LaunchedEffect(view) {
-        view.keepScreenOn = true
-    }
 
     suspend fun joinRewardsProgram() {
         try {
@@ -69,17 +72,21 @@ fun GenerateProofStep(
         }
     }
 
+    LaunchedEffect(view) {
+        view.keepScreenOn = true
+    }
+
     LaunchedEffect(true) {
         try {
-            proofViewModel.registerByDocument(eDocument)
-            onClose(proofViewModel.getRegistrationProof())
+            proofViewModel.registerByDocument()
+            onClose(registrationProof.value!!)
         } catch (e: Exception) {
-            if (e is UserAlreadyRegistered) {
-                onAlreadyRegistered.invoke(proofViewModel.getRegistrationProof())
+            e.printStackTrace()
+
+            if (e is PassportAlreadyRegisteredByOtherPK) {
+                onAlreadyRegistered.invoke(registrationProof.value!!)
                 return@LaunchedEffect
             }
-
-            e.printStackTrace()
 
             if (!Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
                 joinRewardsProgram()
@@ -91,12 +98,27 @@ fun GenerateProofStep(
 
     fun getItemStatus(item: PassportProofState): ProcessingStatus {
         val isSuccess =
-            processingStatus == ProcessingStatus.SUCCESS || currentState.value > item.value
+            processingStatus == ProcessingStatus.SUCCESS || currentState.value + 1 > item.value
         if (isSuccess) return ProcessingStatus.SUCCESS
         if (processingStatus == ProcessingStatus.FAILURE) return ProcessingStatus.FAILURE
         return ProcessingStatus.PROCESSING
     }
 
+    GenerateProofStepContent(
+        processingStatus = processingStatus,
+        getItemStatus = ::getItemStatus,
+        downloadProgress = downloadProgress,
+        downloadProgressVisibility = downloadProgressVisibility
+    )
+}
+
+@Composable
+private fun GenerateProofStepContent(
+    processingStatus: ProcessingStatus,
+    getItemStatus: (item: PassportProofState) -> ProcessingStatus,
+    downloadProgress: Int,
+    downloadProgressVisibility: Boolean
+) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
@@ -112,18 +134,27 @@ fun GenerateProofStep(
                 .padding(horizontal = 12.dp)
         ) {
             GeneralProcessingStatus(processingStatus)
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(RarimeTheme.colors.backgroundOpacity, RoundedCornerShape(24.dp))
-                    .padding(20.dp)
-            ) {
-                PassportProofState.entries.forEach { item ->
-                    ProcessingItem(
-                        item = item, status = getItemStatus(item)
-                    )
+
+            CardContainer() {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    PassportProofState.entries.forEach { item ->
+                        ProcessingItem(
+                            item = item, status = getItemStatus(item)
+                        )
+                    }
+
                 }
+            }
+
+            if (downloadProgressVisibility) {
+                Text(
+                    text = stringResource(R.string.downloading_status, downloadProgress.toString()),
+                    color = RarimeTheme.colors.textSecondary,
+                    style = RarimeTheme.typography.body3
+                )
             }
         }
     }
@@ -220,11 +251,10 @@ private fun ProcessingItem(item: PassportProofState, status: ProcessingStatus) {
 @Preview
 @Composable
 private fun GenerateProofStepPreview() {
-    val eDocument = EDocument()
-    GenerateProofStep(
-        onClose = {},
-        eDocument = eDocument,
-        onError = {},
-        onAlreadyRegistered = {}
+    GenerateProofStepContent(
+        processingStatus = ProcessingStatus.PROCESSING,
+        getItemStatus = { ProcessingStatus.PROCESSING },
+        downloadProgress = 0,
+        downloadProgressVisibility = true
     )
 }

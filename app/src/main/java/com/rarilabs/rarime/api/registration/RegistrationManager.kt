@@ -2,6 +2,7 @@ package com.rarilabs.rarime.api.registration
 
 import com.google.gson.Gson
 import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
+import com.rarilabs.rarime.contracts.rarimo.StateKeeper
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.util.ErrorHandler
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
+import org.web3j.tuples.generated.Tuple2
 import org.jmrtd.lds.icao.DG15File
 import javax.inject.Inject
 
@@ -107,7 +109,7 @@ class RegistrationManager @Inject constructor(
         )
 
         withContext(Dispatchers.IO) {
-            val response = registrationAPIManager.register(callData)
+            val response = relayerRegister(callData)
 
             response.data.attributes.tx_hash.let {
                 rarimoContractManager.checkIsTransactionSuccessful(it)
@@ -115,28 +117,35 @@ class RegistrationManager @Inject constructor(
         }
     }
 
+    suspend fun getPassportInfo(eDocument: EDocument): Tuple2<StateKeeper.PassportInfo, StateKeeper.IdentityInfo>? {
+        val stateKeeperContract = rarimoContractManager.getStateKeeper()
+
+        val passportInfoKey: String = if (eDocument.dg15.isNullOrEmpty()) {
+            registrationProof.value!!.pub_signals[1]
+        } else {
+            registrationProof.value!!.pub_signals[0]
+        }
+
+        var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
+
+        if (passportInfoKeyBytes.size != 32) {
+            passportInfoKeyBytes = ByteArray(32 - passportInfoKeyBytes.size) + passportInfoKeyBytes
+        }
+
+        val passportInfo = withContext(Dispatchers.IO) {
+            stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()
+        }
+
+        return passportInfo
+    }
+
     suspend fun getRevocationChallenge(): ByteArray? {
         return withContext(Dispatchers.IO) {
-            val stateKeeperContract = rarimoContractManager.getStateKeeper()
-
-            val passportInfoKey: String =
-                if (eDocument.value!!.dg15?.isEmpty() ?: false) {
-                    registrationProof.value!!.pub_signals[1]
-                } else {
-                    registrationProof.value!!.pub_signals[0]
-                }
-
-            var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
-
-            if (passportInfoKeyBytes.size != 32) {
-                passportInfoKeyBytes = passportInfoKeyBytes.copyOf(32)
-            }
-
             val passportInfo = withContext(Dispatchers.IO) {
-                stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()
+                getPassportInfo(eDocument.value!!)
             }
 
-            _activeIdentity.value = passportInfo.component1().activeIdentity
+            _activeIdentity.value = passportInfo!!.component1()!!.activeIdentity
 
             ErrorHandler.logDebug("ActiveIdentity", _activeIdentity.value.toString())
 
