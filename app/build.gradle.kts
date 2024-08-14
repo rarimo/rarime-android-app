@@ -175,6 +175,7 @@ dependencies {
     implementation(files("libs/Identity.aar"))
 
     // QR Code
+    implementation("network.chaintech:qr-kit:1.0.6")
     implementation("com.lightspark:compose-qr-code:1.0.1")
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
     implementation("androidx.core:core-splashscreen:1.0.1")
