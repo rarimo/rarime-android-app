@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.passportScan
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,10 +35,27 @@ import java.time.Period
 @Composable
 fun PassportDataStep(onNext: () -> Unit, onClose: () -> Unit, eDocument: EDocument) {
     val faceImageInfo = eDocument.personDetails!!.faceImageInfo
-    val image = ImageUtil.getImage(faceImageInfo!!).bitmapImage!!
+    val image = faceImageInfo?.let { ImageUtil.getImage(it).bitmapImage }
 
     val isUnsupported = NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails!!.nationality)
 
+    PassportDataStepContent(
+        onNext = onNext,
+        onClose = onClose,
+        eDocument = eDocument,
+        image = image,
+        isUnsupported = isUnsupported,
+    )
+}
+
+@Composable
+private fun PassportDataStepContent(
+    onNext: () -> Unit,
+    onClose: () -> Unit,
+    eDocument: EDocument,
+    image: Bitmap? = null,
+    isUnsupported: Boolean,
+) {
     ScanPassportLayout(
         step = 3,
         title = stringResource(R.string.passport_data_title),
@@ -184,5 +202,11 @@ private fun SelectDataStepPreview() {
         ),
         additionalPersonDetails = AdditionalPersonDetails()
     )
-    PassportDataStep(onNext = {}, onClose = {}, eDocument = eDocument)
+    PassportDataStepContent(
+        onNext = {},
+        onClose = {},
+        eDocument = eDocument,
+        image = null,
+        isUnsupported = false,
+    )
 }

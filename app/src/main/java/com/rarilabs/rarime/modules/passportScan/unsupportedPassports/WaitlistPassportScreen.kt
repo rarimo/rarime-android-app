@@ -70,8 +70,33 @@ fun WaitlistPassportScreen(
             SendEmailUtil.deleteEdocumentFile(context)
 
             onClose.invoke()
-        })
+        }
+    )
 
+    WaitlistPassportScreenContent(
+        eDocument = eDocument,
+        onClose = onClose,
+        onJoin = {
+            try {
+                val file = SendEmailUtil.generateEdocumentFile(eDocument, context)
+                launcher.launch(
+                    sendEmail(
+                        file!!, context, header = "Edocument", ""
+                    )
+                )
+            } catch (e: Exception) {
+                ErrorHandler.logError("Waitlist", "Cant send eDocument", e)
+            }
+        }
+    )
+}
+
+@Composable
+private fun WaitlistPassportScreenContent(
+    eDocument: EDocument,
+    onClose: () -> Unit,
+    onJoin: () -> Unit,
+) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
@@ -155,20 +180,7 @@ fun WaitlistPassportScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
-                onClick = {
-
-                    try {
-                        val file = SendEmailUtil.generateEdocumentFile(eDocument, context)
-                        launcher.launch(
-                            sendEmail(
-                                file!!, context, header = "Edocument", ""
-                            )
-                        )
-                    } catch (e: Exception) {
-                        ErrorHandler.logError("Waitlist", "Cant send eDocument", e)
-                    }
-
-                },
+                onClick = { onJoin.invoke() },
             )
             TertiaryButton(
                 onClick = {
@@ -181,10 +193,10 @@ fun WaitlistPassportScreen(
     }
 }
 
-
 @Composable
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 fun WaitlistPassportScreenPreview() {
     val eDocument: EDocument = EDocument(personDetails = PersonDetails(issuerAuthority = "GEO"))
-    WaitlistPassportScreen(eDocument = eDocument, onClose = {})
+
+    WaitlistPassportScreenContent(eDocument = eDocument, onClose = {}, onJoin = {})
 }

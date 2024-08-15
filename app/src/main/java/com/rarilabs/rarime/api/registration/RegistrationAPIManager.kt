@@ -9,6 +9,7 @@ import javax.inject.Inject
 
 class UserAlreadyRegistered() : Exception()
 class UserAlreadyRevoked() : Exception()
+class PassportAlreadyRegisteredByOtherPK() : Exception()
 
 class RegistrationAPIManager @Inject constructor(
     private val registrationAPI: RegistrationAPI
@@ -34,7 +35,7 @@ class RegistrationAPIManager @Inject constructor(
         ErrorHandler.logError("RegistrationAPIManager", errorBody.toString())
 
         if (errorCode == 400 && errorBody?.contains("already registered") == true) {
-            throw UserAlreadyRegistered()
+            throw PassportAlreadyRegisteredByOtherPK()
         } else if (errorBody?.contains("already revoked") == true) {
             throw UserAlreadyRevoked()
         } else {

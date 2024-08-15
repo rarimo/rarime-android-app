@@ -128,7 +128,7 @@ class MainViewModel @Inject constructor(
         passportStatus.await()
     }
 
-    private suspend fun tryLogin() {
+    suspend fun tryLogin() {
         try {
             authManager.login()
         } catch (e: Exception) {

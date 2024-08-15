@@ -89,12 +89,12 @@ class IdentityManager @Inject constructor(
     }
 
     @OptIn(ExperimentalStdlibApi::class)
-    fun newPrivateKey(): String {
-        _privateKey.value = Identity.newBJJSecretKey().toHexString()
-        return privateKey.value!!
+    fun genPrivateKey(): String {
+        return Identity.newBJJSecretKey().toHexString()
     }
 
-    fun savePrivateKey() {
-        privateKey.value?.let { dataStoreManager.savePrivateKey(it) }
+    fun savePrivateKey(pk: String) {
+        _privateKey.value = pk
+        dataStoreManager.savePrivateKey(pk)
     }
 }

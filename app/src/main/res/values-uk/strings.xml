@@ -38,8 +38,6 @@
     <string name="scan_your_passport_title">Відскануйте ваш паспорт</string>
     <string name="scan_your_passport_text">Дані ніколи не залишають цей телефон</string>
     <string name="scan_your_passport_hint">Наведіть рамку на сторінку вашого парпорта</string>
-    <string name="nfc_reader_title">Зчитування NFC</string>
-    <string name="nfc_reader_text">Зчитування даних паспорта</string>
     <string name="nfc_reader_hint">Помістіть обкладинку паспорта на задню панель телефону</string>
     <string name="passport_data_title">Дані документа</string>
     <string name="passport_data_text">Необхідні для створення анонімного профілю</string>
@@ -59,7 +57,6 @@
     <string name="camera_permission_description">Дати доступ на використання камери</string>
     <string name="confirm">Підтвердити</string>
     <string name="dismiss">Скасувати</string>
-    <string name="nfc_reader_scanning">Сканування…</string>
     <string name="nfc_reader_error">Сканувати знову</string>
     <string name="beta_launch">Бета-запуск</string>
     <string name="create_account_btn">Створити акаунт</string>
@@ -243,11 +240,20 @@
     <string name="you_have_already_registered_offer">Ви хочете відкликати свій паспорт?</string>
     <string name="you_have_already_registered_confirm">Так</string>
     <string name="you_have_already_registered_cancel">Ні</string>
-    <string name="nfc_reader_revoke">Revoke</string>
     <string name="send_us_feedback">Send feedback\n</string>
     <string name="send_us_feedback_body">help us make the app better\n</string>
+
+
+    <!--SCAN PASSPORT : NFC-->
+    <string name="nfc_reader_title">Зчитування NFC</string>
+    <string name="nfc_reader_text">Зчитування даних паспорта</string>
+    <string name="nfc_reader_hint_1">1. Make sure you remove the case from the device</string>
+    <string name="nfc_reader_hint_2">2. Place your Passport\/ID to the back of your phone</string>
+    <string name="nfc_reader_scanning">Сканування…</string>
     <string name="nfc_error_interrupt">Скан перервано, спробуйте ще раз</string>
     <string name="nfc_error_unknown">спробуйте ще раз</string>
+    <string name="nfc_reader_revoke">Revoke</string>
+
     <string name="get_in_touch_title">We’re working on a fix</string>
     <string name="get_in_touch_subtitle">"Some passports have a problem "</string>
     <string name="get_in_touch_confirm">Get in touch</string>
@@ -263,4 +269,20 @@
     <string name="scan_mrzstep_permission_denied">Camera permission denied, try fill manually</string>
 
     <string name="field_type_date_picker_placeholder">Select date</string>
+
+    <string name="create_identity_selector_title">Authorisation</string>
+    <string name="create_identity_selector_subtitle">Choose a preferred method</string>
+    <string name="create_identity_selector_option_1">Create a new profile</string>
+    <string name="create_identity_selector_option_2">Re-activate old profile</string>
+
+    <string name="create_identity_continue_btn">Start</string>
+    <string name="create_identity_import_title">Import keys</string>
+    <string name="create_identity_import_placeholder">Your private key</string>
+    <string name="create_identity_import_btn">Continue</string>
+    <string name="create_identity_title">Your keys</string>
+    <string name="create_identity_copy_btn">Copy to clipboard</string>
+    <string name="create_identity_copied_msg">Copied</string>
+    <string name="create_identity_warning">Please store the private key safely and do not share it with anyone. If you lose this key, you will not be able to recover the account and will lose access forever.</string>
+
+    <string name="downloading_status">Downloading: %1$s\%%</string>
 </resources>
