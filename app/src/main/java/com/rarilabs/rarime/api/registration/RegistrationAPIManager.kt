@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.api.registration
 
+import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.registration.models.RegisterBody
 import com.rarilabs.rarime.api.registration.models.RegisterData
 import com.rarilabs.rarime.api.registration.models.RegisterResponseBody
@@ -14,11 +15,12 @@ class RegistrationAPIManager @Inject constructor(
     private val registrationAPI: RegistrationAPI
 ) {
     @OptIn(ExperimentalStdlibApi::class)
-    suspend fun register(callData: ByteArray): RegisterResponseBody {
+    suspend fun register(callData: ByteArray, destination: String): RegisterResponseBody {
         val response = registrationAPI.register(
             RegisterBody(
                 data = RegisterData(
-                    tx_data = "0x" + callData.toHexString()
+                    tx_data = "0x" + callData.toHexString(),
+                    destination = destination
                 )
             )
         )

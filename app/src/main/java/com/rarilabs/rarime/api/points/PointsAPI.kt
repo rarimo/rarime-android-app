@@ -25,38 +25,38 @@ import retrofit2.http.QueryMap
 
 interface PointsAPI {/* BALANCE */
 
-    @POST("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances")
+    @POST("/integrations/rarime-points-svc/v1/public/balances")
     suspend fun createPointsBalance(
         @Body payload: CreateBalanceBody, @Header("Authorization") authorization: String
     ): Response<PointsBalanceBody>
 
-    @GET("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances")
+    @GET("/integrations/rarime-points-svc/v1/public/balances")
     suspend fun getLeaderboard(): PointsLeaderBoardBody
 
-    @GET("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances/{nullifier}")
+    @GET("/integrations/rarime-points-svc/v1/public/balances/{nullifier}")
     suspend fun getPointsBalance(
         @Path("nullifier") nullifier: String,
         @Header("Authorization") authorization: String,
         @QueryMap queryParams: Map<String, String>
     ): PointsBalanceBody?
 
-    @POST("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances/{nullifier}/verifypassport")
+    @POST("/integrations/rarime-points-svc/v1/public/balances/{nullifier}/verifypassport")
     suspend fun verifyPassport(
         @Path("nullifier") nullifier: String,
         @Body payload: VerifyPassportBody,
         @Header("Authorization") authorization: String,
         @Header("Signature") contentType: String
-    ): Unit
+    ): Response<Unit>
 
-    @GET("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances/{nullifier}/withdrawals")
+    @GET("/integrations/rarime-points-svc/v1/public/balances/{nullifier}/withdrawals")
     suspend fun getWithdrawalHistory(@Path("nullifier") nullifier: String): List<PointsWithdrawalBody>
 
-    @POST("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances/{nullifier}/withdrawals")
+    @POST("/integrations/rarime-points-svc/v1/public/balances/{nullifier}/withdrawals")
     suspend fun withdrawPoints(
         @Path("nullifier") nullifier: String, @Body payload: WithdrawBody
     ): PointsWithdrawalBody
 
-    @GET("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/point_price")
+    @GET("/integrations/rarime-points-svc/v1/public/point_price")
     suspend fun getPointPrice(): PointsPrice
 
     // TODO: implement
@@ -65,15 +65,15 @@ interface PointsAPI {/* BALANCE */
 
     /* EVENTS */
 
-    @GET("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/event_types")
+    @GET("/integrations/rarime-points-svc/v1/public/event_types")
     suspend fun getEventTypes(@QueryMap params: Map<String, String>): PointsEventsTypesBody
 
-    @GET("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/events")
+    @GET("/integrations/rarime-points-svc/v1/public/events")
     suspend fun getEventsList(
         @Header("Authorization") authorization: String, @QueryMap params: Map<String, String>
     ): PointsEventsListBody
 
-    @POST("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/balances/{nullifier}/join_program")
+    @POST("/integrations/rarime-points-svc/v1/public/balances/{nullifier}/join_program")
     suspend fun joinRewardsProgram(
         @Path("nullifier") nullifier: String,
         @Header("Signature") signature: String,
@@ -81,14 +81,14 @@ interface PointsAPI {/* BALANCE */
         @Body payload: JoinRewardsProgramRequest
     ): VerifyPassportResponse
 
-    @GET("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/events/{id}")
+    @GET("/integrations/rarime-points-svc/v1/public/events/{id}")
     suspend fun getEvent(
         @Path("id") id: String,
         @Header("Authorization") authorization: String,
 
     ): PointsEventBody
 
-    @PATCH("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/events/{id}")
+    @PATCH("/integrations/rarime-points-svc/v1/public/events/{id}")
     suspend fun claimPointsByEvent(
         @Path("id") id: String, @Body payload: ClaimEventBody
     ): PointsEventBody

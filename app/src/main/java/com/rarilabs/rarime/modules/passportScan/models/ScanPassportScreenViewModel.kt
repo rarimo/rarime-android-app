@@ -29,6 +29,10 @@ class ScanPassportScreenViewModel @Inject constructor(
         resetPassportState()
     }
 
+    suspend fun isVerified(): Boolean {
+        return pointsManager.getPointsBalance()?.data?.attributes?.is_verified ?: false
+    }
+
     fun resetPassportState() {
         ErrorHandler.logDebug("ScanPassportScreenViewModel", "resetPassportState")
         passportManager.deletePassport()

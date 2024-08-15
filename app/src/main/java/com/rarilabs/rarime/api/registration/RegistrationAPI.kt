@@ -8,6 +8,6 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface RegistrationAPI {
-    @POST("${BaseConfig.RELAYER_URL}/integrations/registration-relayer/v1/register")
+    @POST("/integrations/registration-relayer/v1/register")
     suspend fun register(@Body body: RegisterBody): Response<RegisterResponseBody>
 }

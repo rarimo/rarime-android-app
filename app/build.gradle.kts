@@ -25,8 +25,8 @@ android {
         versionCode = 17
         versionName = "1.0.17"
 
-        versionCode = 20
-        versionName = "1.0.20"
+        versionCode = 21
+        versionName = "1.0.21"
 
         externalNativeBuild {
             cmake {
@@ -65,13 +65,16 @@ android {
             )
         }
 
-        debug {  }
+        debug { }
 
         create("debug_mainnet") {
             initWith(getByName("debug"))
             buildConfigField("Boolean", "isTestnet", "false")
         }
+
+
         create("release_mainnet") {
+            initWith(getByName("release"))
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
@@ -83,6 +86,7 @@ android {
             buildConfigField("Boolean", "isTestnet", "true")
         }
         create("release_testnet") {
+            initWith(getByName("release"))
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
