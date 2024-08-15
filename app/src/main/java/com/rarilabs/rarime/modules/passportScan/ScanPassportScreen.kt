@@ -4,6 +4,8 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.rarilabs.rarime.BuildConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.passportScan.camera.ScanMRZStep
@@ -27,6 +30,7 @@ import com.rarilabs.rarime.ui.components.ConfirmationDialog
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.data.ZkProof
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.jmrtd.lds.icao.MRZInfo
 
 private enum class ScanPassportState {
@@ -53,30 +57,41 @@ fun ScanPassportScreen(
 
     val eDoc = scanPassportScreenViewModel.eDocument.collectAsState()
 
+    var isAlreadyVerified by remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(Unit) {
+        isAlreadyVerified = scanPassportScreenViewModel.isVerified()
+    }
+
+
     fun handleRegisteredPassportException(zkProof: ZkProof) {
-        scanPassportScreenViewModel.resetPassportState()
+        if (!BuildConfig.isTestnet) {
+            scanPassportScreenViewModel.resetPassportState()
 
-        Toast.makeText(context, R.string.you_have_already_registered, Toast.LENGTH_SHORT).show()
-        onClose.invoke()
-
-//        mainViewModel.setModalContent {
-//            ConfirmationDialog(
-//                title = stringResource(R.string.you_have_already_registered),
-//                subtitle = stringResource(R.string.you_have_already_registered_offer),
-//                cancelButtonText = stringResource(id = R.string.you_have_already_registered_cancel),
-//                confirmButtonText = stringResource(id = R.string.you_have_already_registered_confirm),
-//                onConfirm = {
-//                    scanPassportScreenViewModel.saveRegistrationProof(zkProof)
-//                    state = ScanPassportState.REVOCATION_PROCESS
-//                    mainViewModel.setModalVisibility(false)
-//                },
-//                onCancel = {
-//                    mainViewModel.setModalVisibility(false)
-//                    onClose.invoke()
-//                },
-//            )
-//        }
-//        mainViewModel.setModalVisibility(true)
+            Toast.makeText(context, R.string.you_have_already_registered, Toast.LENGTH_SHORT).show()
+            onClose.invoke()
+        }else {
+            mainViewModel.setModalContent {
+                ConfirmationDialog(
+                        title = stringResource(R.string.you_have_already_registered),
+                        subtitle = stringResource(R.string.you_have_already_registered_offer),
+                        cancelButtonText = stringResource(id = R.string.you_have_already_registered_cancel),
+                        confirmButtonText = stringResource(id = R.string.you_have_already_registered_confirm),
+                        onConfirm = {
+                            scanPassportScreenViewModel.saveRegistrationProof(zkProof)
+                            state = ScanPassportState.REVOCATION_PROCESS
+                            mainViewModel.setModalVisibility(false)
+                        },
+                        onCancel = {
+                            mainViewModel.setModalVisibility(false)
+                            onClose.invoke()
+                        },
+                )
+            }
+            mainViewModel.setModalVisibility(true)
+        }
     }
 
     fun handleNFCError(e: Exception) {
@@ -146,7 +161,11 @@ fun ScanPassportScreen(
                         // we allow to "not_allowed" country citizens generate an incognito ID,
                         // so we need to double check here, cuz we use same component.
                         if (!NOT_ALLOWED_COUNTRIES.contains(eDoc.value?.personDetails?.nationality)) {
-                            state = ScanPassportState.FINISH_PASSPORT_FLOW
+                            if (isAlreadyVerified){
+                                onClose.invoke()
+                            }else {
+                                state = ScanPassportState.FINISH_PASSPORT_FLOW
+                            }
                         } else {
                             onClose.invoke()
                         }

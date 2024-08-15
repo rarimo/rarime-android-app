@@ -163,7 +163,6 @@ class RegistrationManager @Inject constructor(
             if (isUserRevoking) {
                 _revocationChallenge.value =
                     passportInfo.component1().activeIdentity.copyOfRange(24, 32)
-
                 return@withContext _revocationChallenge.value
             }
 

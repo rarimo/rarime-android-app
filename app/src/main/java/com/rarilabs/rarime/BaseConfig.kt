@@ -53,10 +53,10 @@ object TestNetConfig: IConfig {
     override val EVM_STABLE_COIN_RPC = "https://ethereum-sepolia-rpc.publicnode.com"
     override val STABLE_COIN_ADDRESS = "0xbd03f0fC994fd1015eAdc37c943055330e238Ad9"
 
-    override val REGISTER_CONTRACT_ADDRESS = "0x31223f7317f0b3E05DC56e9E3DcD75959995acfb"
-    override val CERTIFICATES_SMT_CONTRACT_ADDRESS = "0x4EECcb639990917fA43f7cbf23b5350e419DC129"
-    override val REGISTRATION_SMT_CONTRACT_ADDRESS = "0x6FD2568A0a3692E2B0d6d4258845E57bcAc53Db2"
-    override val STATE_KEEPER_CONTRACT_ADDRESS = "0x3CfB92B692045C73888904e6e81F9B78fcFC6FE4"
+    override val REGISTER_CONTRACT_ADDRESS = "0x1b0F076c8800c457CE734BA85aC8569284DD640A"
+    override val CERTIFICATES_SMT_CONTRACT_ADDRESS = "0xb393B0F444fC849bC61E3285C6c38b1052520007"
+    override val REGISTRATION_SMT_CONTRACT_ADDRESS = "0xc1534912902BBe8C54626e2D69288C76a843bc0E"
+    override val STATE_KEEPER_CONTRACT_ADDRESS = "0x0Ca8340633e0D728db012D59bD543fD80dDabFC9"
     override val REGISTER_IDENTITY_CIRCUIT_DATA_RSA2048 =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.1.0-alpha/registerIdentityUniversalRSA2048-download.zip"
     override val REGISTER_IDENTITY_CIRCUIT_DATA_RSA4096 =
@@ -73,7 +73,7 @@ object MainnetConfig: IConfig {
     override val RELAYER_URL = "https://api.app.rarime.com"
     override val EVM_RPC_URL = "https://rpc.evm.mainnet.rarimo.com"
     override val COSMOS_RPC_URL = "https://rpc-api.mainnet.rarimo.com"
-    override val EVM_SERVICE_URL = "https://api.orgs.app.rarime.com/integrations/evm-airdrop-svc-glo"
+    override val EVM_SERVICE_URL = "https://api.orgs.app.rarime.com/integrations/evm-airdrop-svc-glo/"
     override val DISCORD_URL = "https://discord.gg/Bzjm5MDXrU"
     override val TWITTER_URL = "https://x.com/Rarimo_protocol"
 

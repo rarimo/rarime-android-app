@@ -85,7 +85,7 @@ class TextRecognitionAnalyzer(
     private fun onProcess(
         results: Text,
     ) {
-        filterScannedText(results.text.replace(" ", ""))
+        filterScannedTextPassport(results.text.replace(" ", ""))
     }
 
     fun getFourthOfSixParts(bitmap: Bitmap): Bitmap {
@@ -145,8 +145,8 @@ class TextRecognitionAnalyzer(
         return Bitmap.createBitmap(bitmap, x, y, partWidth, height)
     }
 
-    private fun filterScannedText(text: String) {
-        val updatedText = text.replace("«", "<<")
+    private fun filterScannedTextPassport(text: String) {
+        val updatedText = text.replace("«", "<<").uppercase()
 
         val match = PASSPORT_TD_3_LINE_2_REGEX.find(updatedText)
 
@@ -174,16 +174,17 @@ class TextRecognitionAnalyzer(
                 val dateOfBirth = match.value.substring(13, 19)
                 val expiryDate = match.value.substring(21, 27)
 
-                val mrz = buildTempMrz(documentNumber, dateOfBirth, expiryDate) ?: return
+                val mrz = buildTempMrz(
+                    documentNumber,
+                    dateOfBirth,
+                    expiryDate,
+                ) ?: return
                 onDetectedTextUpdated(mrz)
 
             }
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
-
-
-
     }
 
     @OptIn(ExperimentalGetImage::class)
@@ -193,11 +194,11 @@ class TextRecognitionAnalyzer(
             val mediaImage: Image = imageProxy.image ?: run { imageProxy.close(); return@launch }
 
             val bitmap = mediaImage.toBitmap()
-
             val grayscaleBitmap = bitmap!!.toGrayscaleHighContrast()
 
             val inputImage =
                 InputImage.fromBitmap(grayscaleBitmap, imageProxy.imageInfo.rotationDegrees)
+
 
             suspendCoroutine { continuation ->
                 textRecognizer.process(inputImage).addOnSuccessListener { visionText: Text ->
@@ -284,6 +285,7 @@ class TextRecognitionAnalyzer(
         canvas.drawBitmap(this, 0f, 0f, paint)
         return bmpGrayscale
     }
+
 
 
 }
