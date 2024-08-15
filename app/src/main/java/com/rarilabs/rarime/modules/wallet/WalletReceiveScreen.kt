@@ -34,6 +34,8 @@ import com.rarilabs.rarime.ui.components.SecondaryTextButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.lightspark.composeqr.QrCodeColors
 import com.lightspark.composeqr.QrCodeView
+import com.rarilabs.rarime.data.tokens.PreviewerToken
+import com.rarilabs.rarime.manager.WalletAsset
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
@@ -42,10 +44,21 @@ fun WalletReceiveScreen(
     onBack: () -> Unit = {},
     walletViewModel: WalletReceiveViewModel = hiltViewModel()
 ) {
+    val selectedWalletAsset by walletViewModel.selectedWalletAsset.collectAsState()
+
+    WalletReceiveScreenContent(
+        onBack = onBack,
+        selectedWalletAsset = selectedWalletAsset
+    )
+}
+
+@Composable
+fun WalletReceiveScreenContent(
+    onBack: () -> Unit,
+    selectedWalletAsset: WalletAsset,
+) {
     val clipboardManager = LocalClipboardManager.current
     var isCopied by remember { mutableStateOf(false) }
-
-    val selectedWalletAsset by walletViewModel.selectedWalletAsset.collectAsState()
 
     LaunchedEffect(isCopied) {
         if (isCopied) {
@@ -134,5 +147,11 @@ fun WalletReceiveScreen(
 @Preview
 @Composable
 private fun WalletReceiveScreenPreview() {
-    WalletReceiveScreen()
+    WalletReceiveScreenContent(
+        onBack = {},
+        selectedWalletAsset = WalletAsset(
+            userAddress = "",
+            token = PreviewerToken("RAR", "RARARARA", "RAR", 18, )
+        )
+    )
 }

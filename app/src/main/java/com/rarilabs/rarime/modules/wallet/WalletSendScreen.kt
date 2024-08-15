@@ -66,10 +66,14 @@ fun WalletSendScreen(
             isSubmitting = true
             try {
                 val a = walletSendViewModel.sendTokens(addressState.text, humanAmountState.text)
-
+                a
                 walletSendViewModel.fetchBalance()
             } catch (e: Exception) {
-                ErrorHandler.logError("Error sending", "Cant send token ${walletSendViewModel.selectedWalletAsset.value.token}", e)
+                ErrorHandler.logError(
+                    "Error sending",
+                    "Cant send token ${walletSendViewModel.selectedWalletAsset.value.token}",
+                    e
+                )
             }
 
             isSubmitting = false
@@ -77,10 +81,13 @@ fun WalletSendScreen(
     }
 
     if (isQrCodeScannerOpen) {
-        ScanQrScreen(onBack = { isQrCodeScannerOpen = false }, onScan = {
-            addressState.updateText(it)
-            isQrCodeScannerOpen = false
-        })
+        ScanQrScreen(
+            onBack = { isQrCodeScannerOpen = false },
+            onScan = {
+                addressState.updateText(it)
+                isQrCodeScannerOpen = false
+            }
+        )
     } else {
         WalletSendScreenContent(
             onBack = onBack,
@@ -126,12 +133,12 @@ private fun WalletSendScreenContent(
                         state = addressState,
                         label = stringResource(R.string.address_lbl),
                         placeholder = selectedWalletAsset.userAddress.substring(0, 7) + "...",
-//                        trailingItem = {
-//                            SecondaryTextButton(
-//                                leftIcon = R.drawable.ic_qr_code,
-//                                onClick = { showQrCodeScanner() }
-//                            )
-//                        },
+                        trailingItem = {
+                            SecondaryTextButton(
+                                leftIcon = R.drawable.ic_qr_code,
+                                onClick = { showQrCodeScanner() }
+                            )
+                        },
                         enabled = !isSubmitting,
                     )
                     AppTextField(state = humanAmountState,

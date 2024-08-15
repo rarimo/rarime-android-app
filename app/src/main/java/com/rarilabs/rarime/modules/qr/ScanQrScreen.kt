@@ -2,11 +2,13 @@ package com.rarilabs.rarime.modules.qr
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -27,50 +29,62 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
 fun ScanQrScreen(onBack: () -> Unit, onScan: (String) -> Unit) {
-    // TODO: Implement QR code scanning
+    // TODO add fullscreen layout
+    ScanQrScreenContent(onBack, onScan)
+}
+
+@Composable
+fun ScanQrScreenContent(onBack: () -> Unit, onScan: (String) -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
-        CameraMask()
-        AppIcon(
-            id = R.drawable.ic_caret_left,
-            size = 20.dp,
-            tint = RarimeTheme.colors.baseWhite,
-            modifier = Modifier
-                .padding(20.dp)
-                .clickable { onBack() }
+        ScanQrProcessor(
+            modifier = Modifier.zIndex(1f),
+            onCompletion = onScan
         )
-        Text(
-            text = stringResource(R.string.scan_qr_title),
-            style = RarimeTheme.typography.subtitle4,
-            color = RarimeTheme.colors.baseWhite,
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(21.dp)
-        )
-        Column(
-            verticalArrangement = Arrangement.spacedBy(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = 200.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.qr_frame),
-                contentDescription = null,
-                modifier = Modifier.size(222.dp)
+        Box(modifier = Modifier.fillMaxSize().zIndex(2f)) {
+            CameraMask()
+            AppIcon(
+                id = R.drawable.ic_caret_left,
+                size = 20.dp,
+                tint = RarimeTheme.colors.baseWhite,
+                modifier = Modifier
+                    .padding(20.dp)
+                    .clickable { onBack() }
             )
             Text(
-                text = stringResource(R.string.scan_qr_description),
-                style = RarimeTheme.typography.body3,
+                text = stringResource(R.string.scan_qr_title),
+                style = RarimeTheme.typography.subtitle4,
                 color = RarimeTheme.colors.baseWhite,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.width(200.dp)
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(21.dp)
             )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 200.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.qr_frame),
+                    contentDescription = null,
+                    modifier = Modifier.size(222.dp)
+                )
+                Text(
+                    text = stringResource(R.string.scan_qr_description),
+                    style = RarimeTheme.typography.body3,
+                    color = RarimeTheme.colors.baseWhite,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.width(200.dp)
+                )
+            }
         }
     }
 }
@@ -98,8 +112,8 @@ private fun CameraMask() {
         ) {
             drawRect(
                 color = Color.Black.copy(alpha = 0.7f),
-                topLeft = Offset(0f, 0f),
-                size = Size(size.width, size.height),
+                topLeft = Offset(-size.width / 2, 0f),
+                size = Size(size.width * 2, size.height * 2),
             )
         }
     }
@@ -108,5 +122,7 @@ private fun CameraMask() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewScanQrScreen() {
-    ScanQrScreen({}, {})
+    Column(modifier = Modifier.fillMaxWidth().background(Color.White)) {
+
+    }
 }
