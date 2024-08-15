@@ -2,71 +2,103 @@ package com.rarilabs.rarime
 
 import com.rarilabs.rarime.data.RarimoChains
 
+val BaseConfig: IConfig = if (BuildConfig.isTestnet) TestNetConfig else MainnetConfig
 
-/* TESTNET */
-object BaseConfig {
-    const val RELAYER_URL = "https://api.orgs.app.stage.rarime.com"
-    const val EVM_RPC_URL = "https://rpc.evm.node1.mainnet-beta.rarimo.com"
-    const val COSMOS_RPC_URL = "https://rpc-api.node1.mainnet-beta.rarimo.com"
-    const val EVM_SERVICE_URL =
-        "https://api.orgs.app.stage.rarime.com/integrations/evm-airdrop-svc-glo"
-    const val DISCORD_URL = "https://discord.gg/Bzjm5MDXrU"
-    const val TWITTER_URL = "https://x.com/Rarimo_protocol"
 
-    const val INVITATION_BASE_URL = "https://app.stage.rarime.com"
-
-    const val POINTS_SVC_ID = "0x77fabbc6cb41a11d4fb6918696b3550d5d602f252436dd587f9065b7c4e62b"
-    const val AIRDROP_SVC_ID = "0xac42d1a986804618c7a793fbe814d9b31e47be51e082806363dca6958f3062"
-
-    const val ICAO_COSMOS_RPC = "core-api.node1.mainnet-beta.rarimo.com:443"
-    const val MASTER_CERTIFICATES_FILENAME = "icaopkd-list.ldif"
-    const val MASTER_CERTIFICATES_BUCKETNAME = "rarimo-temp"
-    const val EVM_STABLE_COIN_RPC = "https://ethereum-sepolia-rpc.publicnode.com"
-    const val STABLE_COIN_ADDRESS = "0xbd03f0fC994fd1015eAdc37c943055330e238Ad9"
-
-    const val CERTIFICATES_SMT_CONTRACT_ADDRESS = "0x4EECcb639990917fA43f7cbf23b5350e419DC129"
-    const val REGISTRATION_SMT_CONTRACT_ADDRESS = "0x6FD2568A0a3692E2B0d6d4258845E57bcAc53Db2"
-    const val STATE_KEEPER_CONTRACT_ADDRESS = "0x3CfB92B692045C73888904e6e81F9B78fcFC6FE4"
-    const val REGISTER_IDENTITY_CIRCUIT_DATA_RSA2048 =
-        "https://storage.googleapis.com/rarimo-store/rdi2/registerIdentityUniversalRSA2048-download.zip"
-    const val REGISTER_IDENTITY_CIRCUIT_DATA_RSA4096 =
-        "https://storage.googleapis.com/rarimo-store/rdi2/registerIdentityUniversalRSA4096-download.zip"
-    const val POINTS_SVC_SELECTOR = "23073"
-    const val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP = 1715688000L
-
-    const val FEEDBACK_EMAIL = "apereliez1@gmail.com"
-    val CHAIN = RarimoChains.MainnetBeta
+interface IConfig {
+    val RELAYER_URL: String
+    val EVM_RPC_URL: String
+    val COSMOS_RPC_URL: String
+    val EVM_SERVICE_URL: String
+    val DISCORD_URL: String
+    val TWITTER_URL: String
+    val INVITATION_BASE_URL: String
+    val POINTS_SVC_ID: String
+    val AIRDROP_SVC_ID: String
+    val ICAO_COSMOS_RPC: String
+    val MASTER_CERTIFICATES_FILENAME: String
+    val MASTER_CERTIFICATES_BUCKETNAME: String
+    val EVM_STABLE_COIN_RPC: String
+    val STABLE_COIN_ADDRESS: String
+    val REGISTER_CONTRACT_ADDRESS: String
+    val CERTIFICATES_SMT_CONTRACT_ADDRESS: String
+    val REGISTRATION_SMT_CONTRACT_ADDRESS: String
+    val STATE_KEEPER_CONTRACT_ADDRESS: String
+    val REGISTER_IDENTITY_CIRCUIT_DATA_RSA2048: String
+    val REGISTER_IDENTITY_CIRCUIT_DATA_RSA4096: String
+    val POINTS_SVC_SELECTOR: String
+    val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP: Long
+    val FEEDBACK_EMAIL: String
+    val CHAIN: RarimoChains
 }
 
-/* MAINNET */
-//object BaseConfig {
-//    const val RELAYER_URL = "https://api.app.rarime.com"
-//    const val EVM_RPC_URL = "https://rpc.evm.mainnet.rarimo.com"
-//    const val COSMOS_RPC_URL = "https://rpc-api.mainnet.rarimo.com"
-//    const val EVM_SERVICE_URL = "https://api.orgs.app.rarime.com/integrations/evm-airdrop-svc-glo"
-//    const val DISCORD_URL = "https://discord.gg/Bzjm5MDXrU"
-//    const val TWITTER_URL = "https://x.com/Rarimo_protocol"
-//
-//    const val INVITATION_BASE_URL = "https://app.rarime.com"
-//
-//    const val POINTS_SVC_ID = "0x77fabbc6cb41a11d4fb6918696b3550d5d602f252436dd587f9065b7c4e62b"
-//    const val AIRDROP_SVC_ID = "0xac42d1a986804618c7a793fbe814d9b31e47be51e082806363dca6958f3062"
-//
-//    const val ICAO_COSMOS_RPC = "core-api.mainnet.rarimo.com:443"
-//    const val MASTER_CERTIFICATES_FILENAME = "icaopkd-list.ldif"
-//    const val MASTER_CERTIFICATES_BUCKETNAME = "rarimo-temp"
-//    const val EVM_STABLE_COIN_RPC = "https://ethereum-sepolia-rpc.publicnode.com"
-//    const val STABLE_COIN_ADDRESS = "0xbd03f0fC994fd1015eAdc37c943055330e238Ad9"
-//    const val CERTIFICATES_SMT_CONTRACT_ADDRESS = "0xcc54b12a18f2C575CA97991046090f43C3070aA0"
-//    const val REGISTRATION_SMT_CONTRACT_ADDRESS = "0xA25a197d26Cad659A8fFf7F268cA4F9e0283de03"
-//
-//    const val STATE_KEEPER_CONTRACT_ADDRESS = "0x7d4E8Da1d10f8Db46C52414175d4003ab0Aef506"
-//    const val REGISTER_IDENTITY_CIRCUIT_DATA_RSA2048 =
-//        "https://storage.googleapis.com/rarimo-store/rdi2/registerIdentityUniversalRSA2048-download.zip"
-//    const val REGISTER_IDENTITY_CIRCUIT_DATA_RSA4096 =
-//        "https://storage.googleapis.com/rarimo-store/rdi2/registerIdentityUniversalRSA4096-download.zip"
-//    const val POINTS_SVC_SELECTOR = "23073"
-//    const val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP = 1715688000L
-//    const val FEEDBACK_EMAIL = "info@rarilabs.com"
-//    val CHAIN = RarimoChains.Mainnet
-//}
+/* TESTNET */
+object TestNetConfig: IConfig {
+    override val RELAYER_URL = "https://api.orgs.app.stage.rarime.com"
+    override val EVM_RPC_URL = "https://rpc.evm.node1.mainnet-beta.rarimo.com"
+    override val COSMOS_RPC_URL = "https://rpc-api.node1.mainnet-beta.rarimo.com"
+    override val EVM_SERVICE_URL =
+        "https://api.orgs.app.stage.rarime.com/integrations/evm-airdrop-svc-glo/"
+    override val DISCORD_URL = "https://discord.gg/Bzjm5MDXrU"
+    override val TWITTER_URL = "https://x.com/Rarimo_protocol"
+
+    override val INVITATION_BASE_URL = "https://app.stage.rarime.com"
+
+    override val POINTS_SVC_ID = "0x77fabbc6cb41a11d4fb6918696b3550d5d602f252436dd587f9065b7c4e62b"
+    override val AIRDROP_SVC_ID = "0xac42d1a986804618c7a793fbe814d9b31e47be51e082806363dca6958f3062"
+
+    override val ICAO_COSMOS_RPC = "core-api.node1.mainnet-beta.rarimo.com:443"
+    override val MASTER_CERTIFICATES_FILENAME = "icaopkd-list.ldif"
+    override val MASTER_CERTIFICATES_BUCKETNAME = "rarimo-temp"
+    override val EVM_STABLE_COIN_RPC = "https://ethereum-sepolia-rpc.publicnode.com"
+    override val STABLE_COIN_ADDRESS = "0xbd03f0fC994fd1015eAdc37c943055330e238Ad9"
+
+    override val REGISTER_CONTRACT_ADDRESS = "0x31223f7317f0b3E05DC56e9E3DcD75959995acfb"
+    override val CERTIFICATES_SMT_CONTRACT_ADDRESS = "0x4EECcb639990917fA43f7cbf23b5350e419DC129"
+    override val REGISTRATION_SMT_CONTRACT_ADDRESS = "0x6FD2568A0a3692E2B0d6d4258845E57bcAc53Db2"
+    override val STATE_KEEPER_CONTRACT_ADDRESS = "0x3CfB92B692045C73888904e6e81F9B78fcFC6FE4"
+    override val REGISTER_IDENTITY_CIRCUIT_DATA_RSA2048 =
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.1.0-alpha/registerIdentityUniversalRSA2048-download.zip"
+    override val REGISTER_IDENTITY_CIRCUIT_DATA_RSA4096 =
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.1.0-alpha/registerIdentityUniversalRSA4096-download.zip"
+    override val POINTS_SVC_SELECTOR = "23073"
+    override val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP = 1715688000L
+
+    override val FEEDBACK_EMAIL = "apereliez1@gmail.com"
+    override val CHAIN = RarimoChains.MainnetBeta
+}
+
+// Mainnet
+object MainnetConfig: IConfig {
+    override val RELAYER_URL = "https://api.app.rarime.com"
+    override val EVM_RPC_URL = "https://rpc.evm.mainnet.rarimo.com"
+    override val COSMOS_RPC_URL = "https://rpc-api.mainnet.rarimo.com"
+    override val EVM_SERVICE_URL = "https://api.orgs.app.rarime.com/integrations/evm-airdrop-svc-glo"
+    override val DISCORD_URL = "https://discord.gg/Bzjm5MDXrU"
+    override val TWITTER_URL = "https://x.com/Rarimo_protocol"
+
+    override val INVITATION_BASE_URL = "https://app.rarime.com"
+
+    override val POINTS_SVC_ID = "0x77fabbc6cb41a11d4fb6918696b3550d5d602f252436dd587f9065b7c4e62b"
+    override val AIRDROP_SVC_ID = "0xac42d1a986804618c7a793fbe814d9b31e47be51e082806363dca6958f3062"
+
+    override val ICAO_COSMOS_RPC = "core-api.mainnet.rarimo.com:443"
+    override val MASTER_CERTIFICATES_FILENAME = "icaopkd-list.ldif"
+    override val MASTER_CERTIFICATES_BUCKETNAME = "rarimo-temp"
+    override val EVM_STABLE_COIN_RPC = "https://ethereum-sepolia-rpc.publicnode.com"
+
+    override val REGISTER_CONTRACT_ADDRESS = "0xC0B09085Fa2ad3A8BbF96494B8d5cd10702FE20d"
+    override val STABLE_COIN_ADDRESS = "0xbd03f0fC994fd1015eAdc37c943055330e238Ad9"
+    override val CERTIFICATES_SMT_CONTRACT_ADDRESS = "0xcc54b12a18f2C575CA97991046090f43C3070aA0"
+    override val REGISTRATION_SMT_CONTRACT_ADDRESS = "0xA25a197d26Cad659A8fFf7F268cA4F9e0283de03"
+    override val STATE_KEEPER_CONTRACT_ADDRESS = "0x7d4E8Da1d10f8Db46C52414175d4003ab0Aef506"
+
+    override val REGISTER_IDENTITY_CIRCUIT_DATA_RSA2048 =
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.1.0-alpha/registerIdentityUniversalRSA2048-download.zip"
+    override val REGISTER_IDENTITY_CIRCUIT_DATA_RSA4096 =
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.1.0-alpha/registerIdentityUniversalRSA4096-download.zip"
+    override val POINTS_SVC_SELECTOR = "23073"
+    override val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP = 1715688000L
+    override val FEEDBACK_EMAIL = "info@rarilabs.com"
+    override val CHAIN = RarimoChains.Mainnet
+}

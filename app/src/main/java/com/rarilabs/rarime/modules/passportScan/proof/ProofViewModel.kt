@@ -121,7 +121,7 @@ class ProofViewModel @Inject constructor(
 //        }
 
         val response = withContext(Dispatchers.IO) {
-            registrationManager.relayerRegister(callData)
+            registrationManager.relayerRegister(callData, BaseConfig.REGISTER_CONTRACT_ADDRESS)
         }
 
         ErrorHandler.logDebug(

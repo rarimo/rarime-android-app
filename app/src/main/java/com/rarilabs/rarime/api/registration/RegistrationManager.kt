@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.api.registration
 
 import com.google.gson.Gson
+import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
@@ -75,7 +76,7 @@ class RegistrationManager @Inject constructor(
         _certificatePubKeySize.value = size
     }
 
-    suspend fun relayerRegister(callData: ByteArray) = registrationAPIManager.register(callData)
+    suspend fun relayerRegister(callData: ByteArray, destination: String) = registrationAPIManager.register(callData, destination)
 
     /**
      * if isUserRevoking is true, then this method is re-issuance for revoked passport
@@ -107,7 +108,7 @@ class RegistrationManager @Inject constructor(
         )
 
         withContext(Dispatchers.IO) {
-            val response = registrationAPIManager.register(callData)
+            val response = registrationAPIManager.register(callData, BaseConfig.REGISTER_CONTRACT_ADDRESS)
 
             response.data.attributes.tx_hash.let {
                 rarimoContractManager.checkIsTransactionSuccessful(it)
@@ -185,7 +186,7 @@ class RegistrationManager @Inject constructor(
     suspend fun revoke() {
         try {
             try {
-                val txResponse = registrationAPIManager.register(revocationCallData.value!!)
+                val txResponse = registrationAPIManager.register(revocationCallData.value!!, BaseConfig.REGISTER_CONTRACT_ADDRESS)
 
                 txResponse.data.attributes.tx_hash.let {
                     rarimoContractManager.checkIsTransactionSuccessful(it)

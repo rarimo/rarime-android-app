@@ -74,12 +74,29 @@ class APIModule {
             MoshiConverterFactory.create(
                 Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
             )
-        ).baseUrl("http://NONE").client(
+        ).baseUrl(BaseConfig.RELAYER_URL).client(
             OkHttpClient.Builder()
                 .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build()
         ).build()
     }
+
+    @Provides
+    @Singleton
+    @Named("erc20Retrofit")
+    fun provideErc20Retrofit(): Retrofit {
+        return Retrofit.Builder().addConverterFactory(
+            MoshiConverterFactory.create(
+                Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+            )
+        ).baseUrl(BaseConfig.EVM_SERVICE_URL).client(
+            OkHttpClient.Builder()
+                .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                .build()
+        ).build()
+    }
+
+
 
     @Provides
     @Singleton
@@ -104,7 +121,7 @@ class APIModule {
                     Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
                 )
             )
-            .baseUrl("http://NONE")
+            .baseUrl(BaseConfig.RELAYER_URL)
             .client(okHttpClient)
             .build()
     }
@@ -137,7 +154,7 @@ class APIModule {
     @Provides
     @Singleton
     fun provideErc20ApiManager(
-        @Named("jsonApiRetrofit") retrofit: Retrofit
+        @Named("erc20Retrofit") retrofit: Retrofit
     ): Erc20ApiManager = Erc20ApiManager(retrofit.create(Erc20API::class.java))
 
     @Provides
@@ -205,8 +222,36 @@ class APIModule {
 
     @Provides
     @Singleton
+    @Named("jsonApiCosmosRetrofit")
+    fun provideCosmosRetrofit(
+        authManager: dagger.Lazy<AuthManager>, // Use Lazy injection to break the cycle
+        @Named("authRetrofit") authRetrofit: Retrofit
+    ): Retrofit {
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(
+                RefreshTokenInterceptor(
+                    authManager,
+                    authRetrofit
+                )
+            )
+            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+            .build()
+
+        return Retrofit.Builder()
+            .addConverterFactory(
+                MoshiConverterFactory.create(
+                    Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+                )
+            )
+            .baseUrl(BaseConfig.COSMOS_RPC_URL)
+            .client(okHttpClient)
+            .build()
+    }
+
+    @Provides
+    @Singleton
     fun provideCosmosAPIManager(
-        @Named("jsonApiRetrofit") retrofit: Retrofit
+        @Named("jsonApiCosmosRetrofit") retrofit: Retrofit
     ): CosmosAPIManager = CosmosAPIManager(retrofit.create(CosmosAPI::class.java))
 
     @Provides

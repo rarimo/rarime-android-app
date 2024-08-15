@@ -10,12 +10,12 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface AirDropAPI {
-    @POST("${BaseConfig.RELAYER_URL}/integrations/airdrop-svc/airdrops")
+    @POST("/integrations/airdrop-svc/airdrops")
     suspend fun createAirDrop(@Body body: CreateAirDropBody): AirDropResponseBody
 
-    @GET("${BaseConfig.RELAYER_URL}/integrations/airdrop-svc/airdrops/{nullifier}")
+    @GET("/integrations/airdrop-svc/airdrops/{nullifier}")
     suspend fun getAirDropByNullifier(@Path("nullifier") nullifier: String): AirDropResponseBody
 
-    @GET("${BaseConfig.RELAYER_URL}/integrations/airdrop-svc/airdrops/params")
+    @GET("/integrations/airdrop-svc/airdrops/params")
     suspend fun getAirDropParams(): AirdropEventParamsBody
 }

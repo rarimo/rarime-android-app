@@ -14,16 +14,16 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface Erc20API {
-    @GET("${BaseConfig.EVM_SERVICE_URL}/token/balance")
+    @GET("/token/balance")
     suspend fun getBalance(@Query("address") address: String): Response<TokenResponse>
 
-    @POST("${BaseConfig.EVM_SERVICE_URL}/transfer")
+    @POST("/transfer")
     suspend fun transfer(@Body body: TransferErc20Request): Response<TransferErc20Response>
 
-    @POST("${BaseConfig.EVM_SERVICE_URL}/transfer/permit-hash")
+    @POST("/transfer/permit-hash")
     suspend fun permitHash(@Body body: PermitHashRequest): Response<PermitHashResponse>
 
-    @GET("${BaseConfig.EVM_SERVICE_URL}/transfer")
+    @GET("/transfer")
     suspend fun getFee(@Body body: TransferErc20Request): Response<FeeResponse>
 
 }
