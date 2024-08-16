@@ -263,8 +263,8 @@ enum class Country(val flag: String, val localizedName: String) {
         }
 
         fun fromISOCode(code: String?): Country? {
-            val codeNorilized = code?.replace("<", "")
-            return when (codeNorilized?.uppercase()) {
+            val codeNormalized = code?.replace("<", "")
+            return when (codeNormalized?.uppercase()) {
                 "AFG" -> Country.AFGHANISTAN
                 "ALB" -> Country.ALBANIA
                 "DZA" -> Country.ALGERIA
