@@ -1,5 +1,7 @@
 package com.rarilabs.rarime.util
 
+
+
 enum class Country(val flag: String, val localizedName: String) {
     AFGHANISTAN("🇦🇫", "Afghanistan"),
     ALBANIA("🇦🇱", "Albania"),
@@ -261,7 +263,8 @@ enum class Country(val flag: String, val localizedName: String) {
         }
 
         fun fromISOCode(code: String?): Country? {
-            return when (code?.uppercase()) {
+            val codeNorilized = code?.replace("<", "")
+            return when (codeNorilized?.uppercase()) {
                 "AFG" -> Country.AFGHANISTAN
                 "ALB" -> Country.ALBANIA
                 "DZA" -> Country.ALGERIA
@@ -343,6 +346,7 @@ enum class Country(val flag: String, val localizedName: String) {
                 "GMB" -> Country.GAMBIA
                 "GEO" -> Country.GEORGIA
                 "DEU" -> Country.GERMANY
+                "D" -> Country.GERMANY
                 "GHA" -> Country.GHANA
                 "GIB" -> Country.GIBRALTAR
                 "GRC" -> Country.GREECE
