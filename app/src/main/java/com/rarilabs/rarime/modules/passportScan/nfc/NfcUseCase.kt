@@ -158,8 +158,8 @@ class NfcUseCase(
         personDetails.birthDate = DateUtil.convertFromMrzDate(mrzInfo.dateOfBirth)
         personDetails.expiryDate = DateUtil.convertFromMrzDate(mrzInfo.dateOfExpiry)
         personDetails.serialNumber = mrzInfo.documentNumber
-        personDetails.nationality = mrzInfo.nationality
-        personDetails.issuerAuthority = mrzInfo.issuingState
+        personDetails.nationality = mrzInfo.nationality.replace("<", "")
+        personDetails.issuerAuthority = mrzInfo.issuingState.replace("<", "")
         eDocument.dg1 = encodedDg1File
 
         if ("I" == mrzInfo.documentCode) {
