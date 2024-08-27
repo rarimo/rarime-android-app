@@ -177,7 +177,6 @@ fun MainScreenRoutes(
                 onClaim = {
                     coroutineScope.launch {
                         mainViewModel.loadUserDetails()
-
                         navigateWithPopUp(Screen.Claim.Specific.route)
                     }
                 }

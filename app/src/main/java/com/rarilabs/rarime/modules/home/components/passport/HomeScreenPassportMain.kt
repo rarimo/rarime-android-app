@@ -110,7 +110,7 @@ fun HomeScreenPassportMainContent(
                 )
             }
 
-            if (pointsToken?.balanceDetails?.attributes?.is_verified == false) {
+            if (pointsToken?.balanceDetails?.attributes?.is_verified == null || pointsToken?.balanceDetails?.attributes?.is_verified == false ) {
                 when (passportStatus) {
                     PassportStatus.ALLOWED -> {
                         ActionCard(

@@ -81,7 +81,7 @@ fun GenerateProofStep(
             proofViewModel.registerByDocument()
             onClose(registrationProof.value!!)
         } catch (e: Exception) {
-            e.printStackTrace()
+            ErrorHandler.logError("registerByDocument", "Error during registerByDocument", e)
 
             if (e is PassportAlreadyRegisteredByOtherPK) {
                 onAlreadyRegistered.invoke(registrationProof.value!!)

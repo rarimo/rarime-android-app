@@ -37,8 +37,8 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 enum class UNSPECIFIED_PASSPORT_STEPS(val value: Int) {
     INVITATION(1),
+    ONLY_INVITATION(2),
     POLICY_CONFIRMATION(3),
-
     ABOUT_PROGRAM(5),
 }
 
@@ -86,9 +86,44 @@ fun EnterProgramFlow(
                                 onFinish()
                             }
                             else -> {
-                                currStep = UNSPECIFIED_PASSPORT_STEPS.POLICY_CONFIRMATION
+                                onFinish()
                             }
                         }
+                    },
+                    updateStep = { currStep = it }
+                )
+            }
+        }
+    }
+
+    AnimatedVisibility(
+        visible = currStep.equals(UNSPECIFIED_PASSPORT_STEPS.ONLY_INVITATION),
+        enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
+        exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .absolutePadding(top = 12.dp, left = 24.dp, right = 24.dp),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                PrimaryTextButton(
+                    leftIcon = R.drawable.ic_close,
+                    onClick = { sheetState.hide() }
+                )
+            }
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Invitation(
+                    onNext = {
+                        onFinish()
                     },
                     updateStep = { currStep = it }
                 )
@@ -118,9 +153,9 @@ fun EnterProgramFlow(
             }
             PolicyConfirmation(
                 onNext = {
-                    hide({
+                    hide {
                         onFinish()
-                    })
+                    }
                 }
             )
         }

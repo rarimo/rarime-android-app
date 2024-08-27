@@ -352,7 +352,7 @@ class ProofViewModel @Inject constructor(
                 res
             }
         } catch (e: IOException) {
-            e.printStackTrace()
+            ErrorHandler.logError("registerByDocument", "Error during readICAO", e)
             null
         }
     }
