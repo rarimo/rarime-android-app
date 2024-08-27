@@ -35,9 +35,7 @@ import org.jmrtd.lds.icao.MRZInfo
 
 private enum class ScanPassportState {
     SCAN_MRZ, READ_NFC, PASSPORT_DATA, GENERATE_PROOF, FINISH_PASSPORT_FLOW, UNSUPPORTED_PASSPORT, NOT_ALLOWED_PASSPORT,
-
     REVOCATION_PROCESS,
-
     GET_IN_TOUCH,
 }
 
@@ -55,6 +53,7 @@ fun ScanPassportScreen(
 
     var nfcAttempts by remember { mutableStateOf(0) }
 
+    val balance by scanPassportScreenViewModel.pointsToken.collectAsState()
     val eDoc = scanPassportScreenViewModel.eDocument.collectAsState()
 
     var isAlreadyVerified by remember {
@@ -195,7 +194,12 @@ fun ScanPassportScreen(
             }
 
             ScanPassportState.FINISH_PASSPORT_FLOW -> {
-                onClaim.invoke()
+                if (balance?.balanceDetails == null) {
+                    onClose.invoke()
+
+                }else {
+                    onClaim.invoke()
+                }
             }
 
             ScanPassportState.REVOCATION_PROCESS -> {

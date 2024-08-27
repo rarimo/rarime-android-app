@@ -33,6 +33,7 @@ import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppSheetState
 import com.rarilabs.rarime.ui.components.enter_program.EnterProgramFlow
+import com.rarilabs.rarime.ui.components.enter_program.UNSPECIFIED_PASSPORT_STEPS
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.AppTheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -160,7 +161,6 @@ fun MainScreenContent(
         if (route == Screen.Main.Rewards.RewardsMain.route) {
             pointsToken?.balanceDetails?.attributes?.let {} ?: run {
                 enterProgramSheetState.show()
-
                 return
             }
         }
@@ -210,21 +210,10 @@ fun MainScreenContent(
                 isHeaderEnabled = false,
             ) { hide ->
                 EnterProgramFlow(
+                    initialStep = UNSPECIFIED_PASSPORT_STEPS.ONLY_INVITATION,
                     onFinish = {
                         hide {
-                            when (passportStatus.value) {
-                                PassportStatus.UNSCANNED -> {
-                                    navController.navigate(Screen.ScanPassport.ScanPassportPoints.route)
-                                }
-
-                                PassportStatus.WAITLIST -> {
-                                    navController.navigate(Screen.Main.Rewards.RewardsMain.route)
-                                }
-
-                                else -> {
-                                    navController.navigate(Screen.Claim.Reserve.route)
-                                }
-                            }
+                            navController.navigate(Screen.Main.Rewards.RewardsMain.route)
                         }
                     },
                     sheetState = enterProgramSheetState,

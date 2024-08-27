@@ -56,7 +56,7 @@ fun HomeScreenNoPassportMainContent(
 
     val nonSpecificAppSheetState = rememberAppSheetState()
 
-    val specificAppSheetState = rememberAppSheetState()
+//    val specificAppSheetState = rememberAppSheetState()
 
     Column(
         modifier = Modifier
@@ -120,7 +120,7 @@ fun HomeScreenNoPassportMainContent(
                     onFinish = { navigate(Screen.ScanPassport.ScanPassportPoints.route) },
                     sheetState = nonSpecificAppSheetState,
                     hide = hide,
-                    initialStep = pointsToken?.balanceDetails?.let { UNSPECIFIED_PASSPORT_STEPS.POLICY_CONFIRMATION } ?: UNSPECIFIED_PASSPORT_STEPS.INVITATION
+                    initialStep = UNSPECIFIED_PASSPORT_STEPS.POLICY_CONFIRMATION
                 )
             }
 

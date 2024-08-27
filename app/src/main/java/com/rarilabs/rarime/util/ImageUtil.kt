@@ -42,7 +42,7 @@ object ImageUtil {
             val base64Image = Base64.encodeToString(buffer, Base64.DEFAULT)
             image.base64Image = base64Image
         } catch (e: IOException) {
-            e.printStackTrace()
+            ErrorHandler.logError("registerByDocument", "Error during ImageUtil", e)
         }
         return image
     }
