@@ -16,6 +16,9 @@ import com.rarilabs.rarime.api.cosmos.CosmosManager
 import com.rarilabs.rarime.api.erc20.Erc20API
 import com.rarilabs.rarime.api.erc20.Erc20ApiManager
 import com.rarilabs.rarime.api.erc20.Erc20Manager
+import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorAPI
+import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorApiManager
+import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorManager
 import com.rarilabs.rarime.api.points.PointsAPI
 import com.rarilabs.rarime.api.points.PointsAPIManager
 import com.rarilabs.rarime.api.points.PointsManager
@@ -156,6 +159,36 @@ class APIModule {
     fun provideErc20ApiManager(
         @Named("erc20Retrofit") retrofit: Retrofit
     ): Erc20ApiManager = Erc20ApiManager(retrofit.create(Erc20API::class.java))
+
+    @Provides
+    @Singleton
+    @Named("EXT_INTEGRATOR")
+    fun provideExtIntegratorRetrofit(): Retrofit {
+        return Retrofit.Builder().addConverterFactory(
+            MoshiConverterFactory.create(
+                Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+            )
+        ).baseUrl("http://NONE").client(
+            OkHttpClient.Builder()
+                .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                .build()
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideExtIntegratorAPIManager(@Named("EXT_INTEGRATOR") retrofit: Retrofit): ExtIntegratorApiManager = ExtIntegratorApiManager(retrofit.create(
+        ExtIntegratorAPI::class.java))
+
+    @Provides
+    @Singleton
+    fun provideExtIntegratorManager(
+        context: Context,
+        extIntegratorApiManager: ExtIntegratorApiManager,
+        identityManager: IdentityManager,
+        contractManager: RarimoContractManager,
+        passportManager: PassportManager
+    ): ExtIntegratorManager = ExtIntegratorManager(context, extIntegratorApiManager, identityManager, contractManager, passportManager)
 
     @Provides
     @Singleton

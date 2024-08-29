@@ -121,9 +121,6 @@ class NfcUseCase(
         }
 
 
-        val dG15File = service.getInputStream(PassportService.EF_DG15)
-
-
         var digestAlgorithm = sodFile.digestAlgorithm
         ErrorHandler.logDebug("Nfc scan", "Digest Algorithm: $digestAlgorithm")
         val docSigningCert = sodFile.docSigningCertificate
@@ -220,6 +217,7 @@ class NfcUseCase(
 
 
         val dg15 = try {
+            val dG15File = service.getInputStream(PassportService.EF_DG15)
             DG15File(dG15File)
         } catch (
             e: Exception

@@ -2,9 +2,11 @@ package com.rarilabs.rarime.modules.home
 
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.api.airdrop.AirDropManager
+import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorManager
 import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.tokens.PointsToken
+import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.manager.WalletManager
@@ -21,6 +23,7 @@ class HomeViewModel @Inject constructor(
     private val passportManager: PassportManager,
     private val airDropManager: AirDropManager,
     private val walletManager: WalletManager,
+    private val extIntegratorManager: ExtIntegratorManager,
     ) : ViewModel() {
     val isAirDropClaimed = airDropManager.isAirDropClaimed
 
@@ -39,6 +42,10 @@ class HomeViewModel @Inject constructor(
     var isIncognito = passportManager.isIncognitoMode
 
     val passportStatus = passportManager.passportStatus
+
+    suspend fun sendExtIntegratorCallback(payload: String) {
+        extIntegratorManager.handleAction(payload)
+    }
 
     fun onPassportCardLookChange(passportCardLook: PassportCardLook) {
         passportManager.updatePassportCardLook(passportCardLook)
