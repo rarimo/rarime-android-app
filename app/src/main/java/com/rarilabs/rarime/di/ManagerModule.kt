@@ -177,18 +177,24 @@ class APIModule {
 
     @Provides
     @Singleton
-    fun provideExtIntegratorAPIManager(@Named("EXT_INTEGRATOR") retrofit: Retrofit): ExtIntegratorApiManager = ExtIntegratorApiManager(retrofit.create(
-        ExtIntegratorAPI::class.java))
+    fun provideExtIntegratorAPIManager(@Named("EXT_INTEGRATOR") retrofit: Retrofit): ExtIntegratorApiManager =
+        ExtIntegratorApiManager(retrofit.create(ExtIntegratorAPI::class.java))
 
     @Provides
     @Singleton
     fun provideExtIntegratorManager(
-        context: Context,
+        @ApplicationContext context: Context,
         extIntegratorApiManager: ExtIntegratorApiManager,
         identityManager: IdentityManager,
         contractManager: RarimoContractManager,
         passportManager: PassportManager
-    ): ExtIntegratorManager = ExtIntegratorManager(context, extIntegratorApiManager, identityManager, contractManager, passportManager)
+    ): ExtIntegratorManager = ExtIntegratorManager(
+        context,
+        extIntegratorApiManager,
+        identityManager,
+        contractManager,
+        passportManager
+    )
 
     @Provides
     @Singleton

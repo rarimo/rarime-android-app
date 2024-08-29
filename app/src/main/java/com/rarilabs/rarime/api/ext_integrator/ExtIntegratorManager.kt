@@ -17,7 +17,6 @@ import com.rarilabs.rarime.util.EIP712Utility
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
-import com.rarilabs.rarime.util.data.ZkProof
 import com.rarilabs.rarime.util.decodeHexString
 import identity.Identity
 import kotlinx.coroutines.Dispatchers
@@ -31,14 +30,16 @@ class ExtIntegratorManager @Inject constructor(
     private val contractManager: RarimoContractManager,
     private val passportManager: PassportManager,
 ) {
-    suspend fun handleAction(payload: String) {
-        val qrAction = Gson().fromJson(payload, QrAction::class.java)
+    suspend fun handleAction(requestJson: String) {
+        val qrAction = Gson().fromJson(requestJson, QrAction::class.java)
 
-        val requestData = extIntegratorApiManager.getRequestData(qrAction.dataUrl)
+        val payload: String = qrAction.dataUrl?.let {
+            extIntegratorApiManager.getRequestData(qrAction.dataUrl).data.attributes.requestData
+        } ?: qrAction.payload!!
 
         when (qrAction.type) {
             ExtIntegratorActions.SignTypedData.value -> {
-                val signedMessage = signTypedData(requestData.data.attributes.requestData)
+                val signedMessage = signTypedData(payload)
 
                 extIntegratorApiManager.callback(qrAction.callbackUrl, signedMessage)
             }
@@ -49,7 +50,6 @@ class ExtIntegratorManager @Inject constructor(
             }
 
             ExtIntegratorActions.QueryProofGen.value -> {
-                // TODO: parse payload to authorize appropriate types
                 generateQueryProof(payload)
             }
         }

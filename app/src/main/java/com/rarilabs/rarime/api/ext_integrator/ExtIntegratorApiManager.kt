@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.api.ext_integrator
 
-import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorAPI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.rarilabs.rarime.api.ext_integrator.models.RequestDataResponse
