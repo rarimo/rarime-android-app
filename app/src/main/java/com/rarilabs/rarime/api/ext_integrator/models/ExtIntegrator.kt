@@ -6,6 +6,7 @@ import com.squareup.moshi.JsonClass
 enum class ExtIntegratorActions(val value: String) {
     SignTypedData("signTypedData"),
     Authorize("authorize"),
+    QueryProofGen("QueryProofGen"),
 }
 
 @JsonClass(generateAdapter = true)

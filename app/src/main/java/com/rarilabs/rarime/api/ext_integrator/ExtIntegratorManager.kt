@@ -47,6 +47,11 @@ class ExtIntegratorManager @Inject constructor(
                 // TODO: parse payload to authorize appropriate types
                 authorize(payload)
             }
+
+            ExtIntegratorActions.QueryProofGen.value -> {
+                // TODO: parse payload to authorize appropriate types
+                generateQueryProof(payload)
+            }
         }
     }
 
@@ -62,7 +67,7 @@ class ExtIntegratorManager @Inject constructor(
         // TODO: Implement authorization logic
     }
 
-    private suspend fun generateQueryProof(queryProofParametersJson: String): ZkProof {
+    private suspend fun generateQueryProof(queryProofParametersJson: String) {
         val queryProofParametersRequest = Gson().fromJson(queryProofParametersJson, ProofParametersRequest::class.java)
 
         val assetContext: Context = context.createPackageContext("com.rarilabs.rarime", 0)
@@ -112,7 +117,7 @@ class ExtIntegratorManager @Inject constructor(
         val passportInfo = passportInfoRaw.component1()
         val identityInfo = passportInfoRaw.component2()
 
-        val queryProofInputs = profiler.buildAirdropQueryIdentityInputs(
+        val queryProofInputs = profiler.buildQueryIdentityInputs(
             passportManager.passport.value!!.dg1!!.decodeHexString(),
             smtProofJson.toByteArray(Charsets.UTF_8),
             BaseConfig.POINTS_SVC_SELECTOR,
@@ -121,6 +126,16 @@ class ExtIntegratorManager @Inject constructor(
             passportInfo.identityReissueCounter.toString(),
             BaseConfig.POINTS_SVC_ID,
             BaseConfig.POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP,
+
+            queryProofParametersRequest.timestampLowerBound,
+            queryProofParametersRequest.timestampUpperBound,
+            queryProofParametersRequest.identityCounterLowerBound.toString(),
+            queryProofParametersRequest.identityCounterUpperBound.toString(),
+            queryProofParametersRequest.expirationDateLowerBound,
+            queryProofParametersRequest.expirationDateUpperBound,
+            queryProofParametersRequest.birthDateLowerBound,
+            queryProofParametersRequest.birthDateUpperBound,
+            queryProofParametersRequest.citizenshipMask,
         )
 
         ErrorHandler.logDebug("Inputs", queryProofInputs.toString())
@@ -134,6 +149,9 @@ class ExtIntegratorManager @Inject constructor(
             )
         }
 
-        return queryProof
+        extIntegratorApiManager.callback(
+            queryProofParametersRequest.callbackUrl,
+            Gson().toJson(queryProof)
+        )
     }
 }
