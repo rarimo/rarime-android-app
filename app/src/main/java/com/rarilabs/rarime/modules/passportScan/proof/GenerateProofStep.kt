@@ -18,6 +18,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +41,7 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.data.ZkProof
+import kotlinx.coroutines.launch
 
 enum class PassportProofState(val value: Int) {
     READING_DATA(0), APPLYING_ZERO_KNOWLEDGE(1), CREATING_CONFIDENTIAL_PROFILE(2), FINALIZING(3);
@@ -50,7 +52,7 @@ fun GenerateProofStep(
     eDocument: EDocument,
     onClose: (zkp: ZkProof) -> Unit,
     proofViewModel: ProofViewModel = hiltViewModel(),
-    onError: (e: Exception) -> Unit,
+    onError: (e: Exception, regProof: ZkProof?) -> Unit,
     onAlreadyRegistered: (zkp: ZkProof) -> Unit,
 ) {
     val currentState by proofViewModel.state.collectAsState()
@@ -63,12 +65,14 @@ fun GenerateProofStep(
 
     val view = LocalView.current
 
+    val scope = rememberCoroutineScope()
+
     suspend fun joinRewardsProgram() {
         try {
             proofViewModel.joinRewardProgram(eDocument)
         } catch (e: Exception) {
             ErrorHandler.logError("joinRewardsProgram", e.toString(), e)
-            onError(e)
+            onError(e, registrationProof.value)
         }
     }
 
@@ -77,22 +81,24 @@ fun GenerateProofStep(
     }
 
     LaunchedEffect(true) {
-        try {
-            proofViewModel.registerByDocument()
-            onClose(registrationProof.value!!)
-        } catch (e: Exception) {
-            ErrorHandler.logError("registerByDocument", "Error during registerByDocument", e)
+        scope.launch {
+            try {
+                proofViewModel.registerByDocument()
+                onClose(registrationProof.value!!)
+            } catch (e: Exception) {
+                ErrorHandler.logError("registerByDocument", "Error during registerByDocument", e)
 
-            if (e is PassportAlreadyRegisteredByOtherPK) {
-                onAlreadyRegistered.invoke(registrationProof.value!!)
-                return@LaunchedEffect
+                if (e is PassportAlreadyRegisteredByOtherPK) {
+                    onAlreadyRegistered.invoke(registrationProof.value!!)
+                    return@launch
+                }
+
+                if (!Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
+                    joinRewardsProgram()
+                }
+
+                onError(e, registrationProof.value)
             }
-
-            if (!Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
-                joinRewardsProgram()
-            }
-
-            onError(e)
         }
     }
 
