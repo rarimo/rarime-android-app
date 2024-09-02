@@ -2,6 +2,7 @@ package com.rarilabs.rarime.modules.passportScan.proof
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -144,12 +145,6 @@ class ProofViewModel @Inject constructor(
         ErrorHandler.logDebug("ProofViewModel", "Generating proof")
 
         val inputs = buildRegistrationCircuits(eDocument)
-
-        try {
-            ErrorHandler.logDebug("inputs", Gson().toJson(inputs))
-        } catch (e: Exception) {
-            ErrorHandler.logError("Err log inputs", "Error: $e", e)
-        }
 
         //copyToClipboard(application as Context, inputs.decodeToString())
         val assetContext: Context =
