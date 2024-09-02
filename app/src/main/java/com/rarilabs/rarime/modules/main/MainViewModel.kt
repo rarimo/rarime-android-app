@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.api.airdrop.AirDropManager
 import com.rarilabs.rarime.api.auth.AuthManager
+import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorManager
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.manager.IdentityManager
@@ -40,7 +41,8 @@ class MainViewModel @Inject constructor(
     private val authManager: AuthManager,
     private val identityManager: IdentityManager,
     private val passportManager: PassportManager,
-    private val pointsManager: PointsManager
+    private val pointsManager: PointsManager,
+    private val extIntegratorManager: ExtIntegratorManager
 ) : ViewModel() {
     val isLogsDeleted = identityManager.isLogsDeleted
 
@@ -166,5 +168,9 @@ class MainViewModel @Inject constructor(
 
     fun updateBiometricsState(state: SecurityCheckState) {
         securityManager.updateBiometricsState(state)
+    }
+
+    suspend fun sendExtIntegratorCallback(payload: String) {
+        extIntegratorManager.handleAction(payload)
     }
 }
