@@ -136,20 +136,7 @@ fun HomeScreenPassportMainContent(
                         )
                     }
 
-                    PassportStatus.WAITLIST -> {
-                        pointsToken?.balanceDetails?.let {} ?: ActionCard(
-                            title = stringResource(id = R.string.join_waitlist_card_title),
-                            description = stringResource(id = R.string.join_waitlist_card_subtitle),
-                            leadingContent = {
-                                Image(
-                                    modifier = Modifier.size(42.dp),
-                                    painter = painterResource(id = R.drawable.reward_coin),
-                                    contentDescription = "decor",
-                                )
-                            },
-                            onClick = { verifyPassportSheetState.show() }
-                        )
-                    }
+                    PassportStatus.WAITLIST -> {}
 
                     else -> {}
                 }

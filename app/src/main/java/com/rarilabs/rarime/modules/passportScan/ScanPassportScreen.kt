@@ -160,9 +160,9 @@ fun ScanPassportScreen(
                         // we allow to "not_allowed" country citizens generate an incognito ID,
                         // so we need to double check here, cuz we use same component.
                         if (!NOT_ALLOWED_COUNTRIES.contains(eDoc.value?.personDetails?.nationality)) {
-                            if (isAlreadyVerified){
+                            if (isAlreadyVerified) {
                                 onClose.invoke()
-                            }else {
+                            } else {
                                 state = ScanPassportState.FINISH_PASSPORT_FLOW
                             }
                         } else {
@@ -170,7 +170,13 @@ fun ScanPassportScreen(
                         }
                     },
                     eDocument = eDoc.value!!,
-                    onError = { state = ScanPassportState.UNSUPPORTED_PASSPORT },
+                    onError = { e, regProof ->
+                        regProof?.let {
+                            scanPassportScreenViewModel.saveRegistrationProof(it)
+                        }
+
+                        state = ScanPassportState.UNSUPPORTED_PASSPORT
+                    },
                     onAlreadyRegistered = { handleRegisteredPassportException(it) },
                 )
             }
@@ -188,6 +194,7 @@ fun ScanPassportScreen(
                 WaitlistPassportScreen(
                     eDocument = eDoc.value!!,
                     onClose = {
+                        scanPassportScreenViewModel.savePassport()
                         onClose.invoke()
                     }
                 )
