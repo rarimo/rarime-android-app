@@ -28,6 +28,7 @@ import com.rarilabs.rarime.modules.qr.ScanQrScreen
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.SecondaryTextButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.NumberUtil
 import kotlinx.coroutines.launch
 
@@ -53,15 +54,15 @@ fun HomeScreenHeader(
     }
 
     fun onCompletion(text: String) {
-        try {
-            scope.launch {
+        scope.launch {
+            try {
                 hideQrScanner()
 
                 homeViewModel.sendExtIntegratorCallback(text)
+            } catch (e: Exception) {
+                ErrorHandler.logError("HomeScreenHeader", "HomeScreenHeaderError", e)
             }
-
-            return
-        } catch (e: Exception) { }
+        }
     }
 
     if (isQrCodeScannerOpen) {

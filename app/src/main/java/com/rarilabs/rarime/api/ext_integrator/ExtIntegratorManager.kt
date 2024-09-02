@@ -6,7 +6,6 @@ import com.google.gson.reflect.TypeToken
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.ext_integrator.models.ExtIntegratorActions
-import com.rarilabs.rarime.api.ext_integrator.models.ProofParametersRequest
 import com.rarilabs.rarime.api.ext_integrator.models.QrAction
 import com.rarilabs.rarime.data.ProofTxFull
 import com.rarilabs.rarime.manager.IdentityManager
@@ -33,42 +32,42 @@ class ExtIntegratorManager @Inject constructor(
     suspend fun handleAction(requestJson: String) {
         val qrAction = Gson().fromJson(requestJson, QrAction::class.java)
 
-        val payload: String = qrAction.dataUrl?.let {
-            extIntegratorApiManager.getRequestData(qrAction.dataUrl).data.attributes.requestData
-        } ?: qrAction.payload!!
-
         when (qrAction.type) {
             ExtIntegratorActions.SignTypedData.value -> {
-                val signedMessage = signTypedData(payload)
+                val signedMessage = signTypedData(qrAction)
 
-                extIntegratorApiManager.callback(qrAction.callbackUrl, signedMessage)
+//                extIntegratorApiManager.callback(qrAction.callbackUrl, signedMessage)
             }
 
             ExtIntegratorActions.Authorize.value -> {
                 // TODO: parse payload to authorize appropriate types
-                authorize(payload)
+                authorize(qrAction)
             }
 
             ExtIntegratorActions.QueryProofGen.value -> {
-                generateQueryProof(payload)
+                generateQueryProof(qrAction)
             }
         }
     }
 
-    private fun signTypedData(body: String): String {
+    private suspend fun signTypedData(qrAction: QrAction): String {
+        if (qrAction.payload.isNullOrEmpty()) {
+            throw Exception("Payload is empty")
+        }
+
         val type = object : TypeToken<EIP712TypedData>() {}.type
-        val typedData: EIP712TypedData = Gson().fromJson(body, type)
+        val typedData: EIP712TypedData = Gson().fromJson(qrAction.payload, type)
         val signedMessage = EIP712Utility.signMessage(typedData, identityManager.privateKey.value!!)
 
         return signedMessage
     }
 
-    private fun authorize(body: String) {
+    private fun authorize(qrAction: QrAction) {
         // TODO: Implement authorization logic
     }
 
-    private suspend fun generateQueryProof(queryProofParametersJson: String) {
-        val queryProofParametersRequest = Gson().fromJson(queryProofParametersJson, ProofParametersRequest::class.java)
+    private suspend fun generateQueryProof(qrAction: QrAction) {
+        val queryProofParametersRequest = extIntegratorApiManager.queryProofData(qrAction.dataUrl!!)
 
         val assetContext: Context = context.createPackageContext("com.rarilabs.rarime", 0)
         val assetManager = assetContext.assets
@@ -125,17 +124,16 @@ class ExtIntegratorManager @Inject constructor(
             identityInfo.issueTimestamp.toString(),
             passportInfo.identityReissueCounter.toString(),
             BaseConfig.POINTS_SVC_ID,
-            BaseConfig.POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP,
 
-            queryProofParametersRequest.timestampLowerBound,
-            queryProofParametersRequest.timestampUpperBound,
-            queryProofParametersRequest.identityCounterLowerBound.toString(),
-            queryProofParametersRequest.identityCounterUpperBound.toString(),
-            queryProofParametersRequest.expirationDateLowerBound,
-            queryProofParametersRequest.expirationDateUpperBound,
-            queryProofParametersRequest.birthDateLowerBound,
-            queryProofParametersRequest.birthDateUpperBound,
-            queryProofParametersRequest.citizenshipMask,
+            queryProofParametersRequest.data.attributes.timestampLowerBound,
+            queryProofParametersRequest.data.attributes.timestampUpperBound,
+            queryProofParametersRequest.data.attributes.identityCounterLowerBound.toString(),
+            queryProofParametersRequest.data.attributes.identityCounterUpperBound.toString(),
+            queryProofParametersRequest.data.attributes.expirationDateLowerBound,
+            queryProofParametersRequest.data.attributes.expirationDateUpperBound,
+            queryProofParametersRequest.data.attributes.birthDateLowerBound,
+            queryProofParametersRequest.data.attributes.birthDateUpperBound,
+            queryProofParametersRequest.data.attributes.citizenshipMask,
         )
 
         ErrorHandler.logDebug("Inputs", queryProofInputs.toString())
@@ -149,9 +147,10 @@ class ExtIntegratorManager @Inject constructor(
             )
         }
 
-        extIntegratorApiManager.callback(
-            queryProofParametersRequest.callbackUrl,
-            Gson().toJson(queryProof)
+        extIntegratorApiManager.queryProofCallback(
+            qrAction.callbackUrl,
+            queryProof,
+            userIdHash = qrAction.callbackUrl.split("/").last()
         )
     }
 }

@@ -1,5 +1,7 @@
 package com.rarilabs.rarime.api.ext_integrator
 
+import com.rarilabs.rarime.api.ext_integrator.models.QueryProofGenCallbackRequest
+import com.rarilabs.rarime.api.ext_integrator.models.QueryProofGenResponse
 import com.rarilabs.rarime.api.ext_integrator.models.RequestDataResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -12,4 +14,10 @@ interface ExtIntegratorAPI {
 
     @GET
     suspend fun getRequestData(@Url url: String): RequestDataResponse
+
+    @POST
+    suspend fun queryProofCallback(@Url url: String, @Body payload: QueryProofGenCallbackRequest)
+
+    @GET
+    suspend fun queryProofData(@Url url: String): QueryProofGenResponse
 }
