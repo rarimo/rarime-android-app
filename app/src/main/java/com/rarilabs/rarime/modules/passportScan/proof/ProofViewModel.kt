@@ -299,8 +299,6 @@ class ProofViewModel @Inject constructor(
         val publicKey = sodFile.docSigningCertificate.publicKey
         val publicKeyPem = publicKey.publicKeyToPem()
 
-        Log.i("publicKeyPem", publicKeyPem)
-
         val signature = sodFile.encryptedDigest
 
         val identityProfile = Profile()
