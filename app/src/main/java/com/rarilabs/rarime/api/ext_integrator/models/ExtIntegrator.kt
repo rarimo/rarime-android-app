@@ -42,26 +42,27 @@ data class QueryProofGenResponse(
 @JsonClass(generateAdapter = true)
 data class QueryProofGenResponseData(
     val id: String,
-    val type: String = "proof_parameters",
+    val type: String = "get_proof_params",
     val attributes: QueryProofGenResponseAttributes,
 )
 
 @JsonClass(generateAdapter = true)
 data class QueryProofGenResponseAttributes(
-    val birthDateLowerBound: String,
-    val birthDateUpperBound: String,
-    val callbackUrl: String,
-    val citizenshipMask: String,
-    val eventData: String,
-    val eventId: String,
-    val expirationDateLowerBound: String,
-    val expirationDateUpperBound: String,
-    val identityCounter: Int,
-    val identityCounterLowerBound: Int,
-    val identityCounterUpperBound: Int,
+    val birth_date_lower_bound: String,
+    val birth_date_upper_bound: String,
+    val citizenship_mask: String,
+    val event_data: String,
+    val event_id: String,
+    val expiration_date_lower_bound: String,
+    val expiration_date_upper_bound: String,
+    val identity_counter: Int,
+    val identity_counter_lower_bound: Int,
+    val identity_counter_upper_bound: Int,
     val selector: String,
-    val timestampLowerBound: String,
-    val timestampUpperBound: String
+    val timestamp_lower_bound: String,
+    val timestamp_upper_bound: String,
+
+
 )
 
 @JsonClass(generateAdapter = true)

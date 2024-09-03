@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.api.ext_integrator
 
 import android.content.Context
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rarilabs.rarime.BaseConfig
@@ -116,24 +117,66 @@ class ExtIntegratorManager @Inject constructor(
         val passportInfo = passportInfoRaw.component1()
         val identityInfo = passportInfoRaw.component2()
 
-        val queryProofInputs = profiler.buildQueryIdentityInputs(
-            passportManager.passport.value!!.dg1!!.decodeHexString(),
-            smtProofJson.toByteArray(Charsets.UTF_8),
-            BaseConfig.POINTS_SVC_SELECTOR,
-            passportInfoKey,
-            identityInfo.issueTimestamp.toString(),
-            passportInfo.identityReissueCounter.toString(),
-            BaseConfig.POINTS_SVC_ID,
+        val largets_identity_counter_upper_bound = if (passportInfo.identityReissueCounter.toLong() > queryProofParametersRequest.data.attributes.identity_counter_upper_bound)
+            passportInfo.identityReissueCounter.toString()
+        else queryProofParametersRequest.data.attributes.identity_counter_upper_bound.toString()
 
-            queryProofParametersRequest.data.attributes.timestampLowerBound,
-            queryProofParametersRequest.data.attributes.timestampUpperBound,
-            queryProofParametersRequest.data.attributes.identityCounterLowerBound.toString(),
-            queryProofParametersRequest.data.attributes.identityCounterUpperBound.toString(),
-            queryProofParametersRequest.data.attributes.expirationDateLowerBound,
-            queryProofParametersRequest.data.attributes.expirationDateUpperBound,
-            queryProofParametersRequest.data.attributes.birthDateLowerBound,
-            queryProofParametersRequest.data.attributes.birthDateUpperBound,
-            queryProofParametersRequest.data.attributes.citizenshipMask,
+        val dg1 =  passportManager.passport.value!!.dg1!!.decodeHexString()
+        val smtProofJSON = smtProofJson.toByteArray(Charsets.UTF_8)
+        val selector = queryProofParametersRequest.data.attributes.selector
+        val pkPassportHash = passportInfoKey
+        val issueTimestamp = identityInfo.issueTimestamp.toString()
+        val identityCounter = passportInfo.identityReissueCounter.toString()
+        val eventID = queryProofParametersRequest.data.attributes.event_id
+        val eventData = queryProofParametersRequest.data.attributes.event_data
+        val TimestampLowerbound = queryProofParametersRequest.data.attributes.timestamp_lower_bound
+        val TimestampUpperbound = queryProofParametersRequest.data.attributes.timestamp_upper_bound
+        val IdentityCounterLowerbound = queryProofParametersRequest.data.attributes.identity_counter_lower_bound.toString()
+        val IdentityCounterUpperbound = (passportInfo.identityReissueCounter.toLong() + 1).toString()
+        val ExpirationDateLowerbound = queryProofParametersRequest.data.attributes.expiration_date_lower_bound
+        val ExpirationDateUpperbound = queryProofParametersRequest.data.attributes.expiration_date_upper_bound // largets_identity_counter_upper_bound
+        val BirthDateLowerbound = queryProofParametersRequest.data.attributes.birth_date_lower_bound
+        val BirthDateUpperbound = queryProofParametersRequest.data.attributes.birth_date_upper_bound
+        val CitizenshipMask = queryProofParametersRequest.data.attributes.citizenship_mask
+
+        Log.i("generateQueryProof", """
+            dg1: $dg1
+            smtProofJSON: $smtProofJSON
+            selector: $selector
+            pkPassportHash: $pkPassportHash
+            issueTimestamp: $issueTimestamp
+            identityCounter: $identityCounter
+            eventID: $eventID
+            eventData: $eventData
+            TimestampLowerbound: $TimestampLowerbound
+            TimestampUpperbound: $TimestampUpperbound
+            IdentityCounterLowerbound: $IdentityCounterLowerbound
+            IdentityCounterUpperbound: $IdentityCounterUpperbound
+            ExpirationDateLowerbound: $ExpirationDateLowerbound
+            ExpirationDateUpperbound: $ExpirationDateUpperbound
+            BirthDateLowerbound: $BirthDateLowerbound
+            BirthDateUpperbound: $BirthDateUpperbound
+            CitizenshipMask: $CitizenshipMask
+        """.trimIndent())
+
+        val queryProofInputs = profiler.buildQueryIdentityInputs(
+            dg1,
+            smtProofJSON,
+            selector,
+            pkPassportHash,
+            issueTimestamp,
+            identityCounter,
+            eventID,
+            eventData,
+            TimestampLowerbound,
+            TimestampUpperbound,
+            IdentityCounterLowerbound,
+            IdentityCounterUpperbound,
+            ExpirationDateLowerbound,
+            ExpirationDateUpperbound,
+            BirthDateLowerbound,
+            BirthDateUpperbound,
+            CitizenshipMask,
         )
 
         ErrorHandler.logDebug("Inputs", queryProofInputs.toString())

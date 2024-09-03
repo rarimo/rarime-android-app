@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +26,7 @@ import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.home.LocalHomeViewModel
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
+import com.rarilabs.rarime.ui.components.AlertModalContent
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.SecondaryTextButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -59,9 +61,41 @@ fun HomeScreenHeader(
                 hideQrScanner()
 
                 homeViewModel.sendExtIntegratorCallback(text)
+
+                mainViewModel.setModalContent {
+                    AlertModalContent(
+                        title = "Success",
+                        subtitle = "Proof is generated",
+                        buttonText = "Ok",
+                        onClose = { mainViewModel.setModalVisibility(false) },
+                    )
+                }
             } catch (e: Exception) {
+
+                mainViewModel.setModalContent {
+                    AlertModalContent(
+                        title = "Error",
+                        subtitle = "Proof generating failed",
+                        buttonText = "Ok",
+                        withConfetti = false,
+                        mediaContent = {
+                            AppIcon(
+                                id = R.drawable.ic_warning,
+                                size = 24.dp,
+                                tint = RarimeTheme.colors.baseWhite,
+                                modifier = Modifier
+                                    .background(RarimeTheme.colors.errorMain, CircleShape)
+                                    .padding(28.dp)
+                            )
+                        },
+                        onClose = { mainViewModel.setModalVisibility(false) },
+                        buttonBg = RarimeTheme.colors.errorMain,
+                        buttonColor = RarimeTheme.colors.baseWhite
+                    )
+                }
                 ErrorHandler.logError("HomeScreenHeader", "HomeScreenHeaderError", e)
             }
+            mainViewModel.setModalVisibility(true)
         }
     }
 
