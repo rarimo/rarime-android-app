@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.api.registration
 
+import android.util.Log
 import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
@@ -140,6 +141,7 @@ class RegistrationManager @Inject constructor(
         return passportInfo
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     suspend fun getRevocationChallenge(): ByteArray? {
         return withContext(Dispatchers.IO) {
             val passportInfo = withContext(Dispatchers.IO) {
@@ -148,7 +150,7 @@ class RegistrationManager @Inject constructor(
 
             _activeIdentity.value = passportInfo!!.component1()!!.activeIdentity
 
-            ErrorHandler.logDebug("ActiveIdentity", _activeIdentity.value.toString())
+            ErrorHandler.logDebug("ActiveIdentity", _activeIdentity.value.toHexString())
 
             val ZERO_BYTES32 = ByteArray(32) { 0 }
             val isUserRevoking =
@@ -170,6 +172,7 @@ class RegistrationManager @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     fun buildRevocationCallData() {
         val dG15File = DG15File(revEDocument.value!!.dg15!!.decodeHexString().inputStream())
 
@@ -180,6 +183,8 @@ class RegistrationManager @Inject constructor(
         ErrorHandler.logDebug("buildRevocationCallData", revEDocument.value!!.aaSignature.toString())
 
         ErrorHandler.logDebug("buildRevocationCallData", pubKeyPem)
+
+        Log.i("activeIdentity.value", activeIdentity.value.toHexString())
 
         val callData = callDataBuilder.buildRevoceCalldata(
             activeIdentity.value,

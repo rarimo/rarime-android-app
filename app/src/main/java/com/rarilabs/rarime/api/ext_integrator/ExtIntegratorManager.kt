@@ -130,7 +130,12 @@ class ExtIntegratorManager @Inject constructor(
         val eventID = queryProofParametersRequest.data.attributes.event_id
         val eventData = queryProofParametersRequest.data.attributes.event_data
         val TimestampLowerbound = queryProofParametersRequest.data.attributes.timestamp_lower_bound
-        val TimestampUpperbound = queryProofParametersRequest.data.attributes.timestamp_upper_bound
+
+        val TimestampUpperbound =
+            if (identityInfo.issueTimestamp.toLong() >= queryProofParametersRequest.data.attributes.timestamp_upper_bound.toLong())
+                (identityInfo.issueTimestamp.toLong() + 1).toString()
+            else queryProofParametersRequest.data.attributes.timestamp_upper_bound
+
         val IdentityCounterLowerbound = queryProofParametersRequest.data.attributes.identity_counter_lower_bound.toString()
         val IdentityCounterUpperbound = (passportInfo.identityReissueCounter.toLong() + 1).toString()
         val ExpirationDateLowerbound = queryProofParametersRequest.data.attributes.expiration_date_lower_bound

@@ -36,7 +36,7 @@ class RegistrationAPIManager @Inject constructor(
 
         if (errorCode == 400 && errorBody?.contains("already registered") == true) {
             throw PassportAlreadyRegisteredByOtherPK()
-        } else if (errorBody?.contains("already revoked") == true) {
+        } else if (errorBody?.contains("already revoked") == true || errorBody?.contains("the leaf does not match") == true) {
             throw UserAlreadyRevoked()
         } else {
             throw Exception("Registration failed")
