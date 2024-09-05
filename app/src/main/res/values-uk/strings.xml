@@ -285,4 +285,20 @@
     <string name="create_identity_warning">Please store the private key safely and do not share it with anyone. If you lose this key, you will not be able to recover the account and will lose access forever.</string>
 
     <string name="downloading_status">Downloading: %1$s\%%</string>
+    <string name="ext_action_sign_typed_data">Sign Typed Data</string>
+    <string name="ext_action_authorize">Authorize</string>
+    <string name="ext_action_query_proof_gen">Query Proof Generation</string>
+    <string name="ext_action_sign_typed_data_payload">Payload</string>
+    <string name="ext_action_sign_typed_data_callback_url">Callback URL</string>
+    <string name="ext_action_authorize_payload">Payload</string>
+    <string name="ext_action_authorize_callback_url">Callback URL</string>
+    <string name="ext_action_query_proof_gen_callback_url">Callback Url</string>
+    <string name="ext_action_query_proof_gen_data_url">Proof params URL</string>
+    <string name="ext_action_query_proof_gen_id">Id</string>
+    <string name="ext_action_sign_typed_data_success">Message Signed</string>
+    <string name="ext_action_authorize_success">Authorized</string>
+    <string name="ext_action_query_proof_gen_success">Proof generated</string>
+    <string name="ext_action_sign_typed_data_fail">Can\\\'t sign message</string>
+    <string name="ext_action_authorize_fail">Can\\\'t authorize</string>
+    <string name="ext_action_query_proof_gen_fail">Can\\\'t generate proof</string>
 </resources>

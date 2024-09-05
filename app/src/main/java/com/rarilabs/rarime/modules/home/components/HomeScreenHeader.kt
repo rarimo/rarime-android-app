@@ -20,7 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.gson.Gson
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.ext_integrator.models.QrAction
 import com.rarilabs.rarime.data.tokens.PreviewerToken
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.home.LocalHomeViewModel
@@ -28,6 +30,7 @@ import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
 import com.rarilabs.rarime.ui.components.AlertModalContent
 import com.rarilabs.rarime.ui.components.AppIcon
+import com.rarilabs.rarime.ui.components.ExtIntActionPreview
 import com.rarilabs.rarime.ui.components.SecondaryTextButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
@@ -42,6 +45,8 @@ fun HomeScreenHeader(
     val scope = rememberCoroutineScope()
     val mainViewModel = LocalMainViewModel.current
     val homeViewModel = LocalHomeViewModel.current
+
+    var qrAction by remember { mutableStateOf<QrAction?>(null) }
 
     var isQrCodeScannerOpen by remember { mutableStateOf(false) }
 
@@ -60,42 +65,10 @@ fun HomeScreenHeader(
             try {
                 hideQrScanner()
 
-                homeViewModel.sendExtIntegratorCallback(text)
-
-                mainViewModel.setModalContent {
-                    AlertModalContent(
-                        title = "Success",
-                        subtitle = "Proof is generated",
-                        buttonText = "Ok",
-                        onClose = { mainViewModel.setModalVisibility(false) },
-                    )
-                }
+                qrAction = Gson().fromJson(text, QrAction::class.java)
             } catch (e: Exception) {
-
-                mainViewModel.setModalContent {
-                    AlertModalContent(
-                        title = "Error",
-                        subtitle = "Proof generating failed",
-                        buttonText = "Ok",
-                        withConfetti = false,
-                        mediaContent = {
-                            AppIcon(
-                                id = R.drawable.ic_warning,
-                                size = 24.dp,
-                                tint = RarimeTheme.colors.baseWhite,
-                                modifier = Modifier
-                                    .background(RarimeTheme.colors.errorMain, CircleShape)
-                                    .padding(28.dp)
-                            )
-                        },
-                        onClose = { mainViewModel.setModalVisibility(false) },
-                        buttonBg = RarimeTheme.colors.errorMain,
-                        buttonColor = RarimeTheme.colors.baseWhite
-                    )
-                }
                 ErrorHandler.logError("HomeScreenHeader", "HomeScreenHeaderError", e)
             }
-            mainViewModel.setModalVisibility(true)
         }
     }
 
@@ -103,6 +76,19 @@ fun HomeScreenHeader(
         ScanQrScreen(
             onBack = { hideQrScanner() },
             onScan = { onCompletion(it) }
+        )
+    }
+
+    qrAction?.let {
+        ExtIntActionPreview(
+            qrAction = it,
+            qrActionHandler = {
+                scope.launch { homeViewModel.sendExtIntegratorCallback(it) }
+            },
+            onCancel = { qrAction = null },
+            onSuccess = {
+                qrAction = null
+            }
         )
     }
 

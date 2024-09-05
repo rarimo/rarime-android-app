@@ -3,6 +3,7 @@ package com.rarilabs.rarime.modules.home
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.api.airdrop.AirDropManager
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorManager
+import com.rarilabs.rarime.api.ext_integrator.models.QrAction
 import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.tokens.PointsToken
@@ -42,8 +43,8 @@ class HomeViewModel @Inject constructor(
 
     val passportStatus = passportManager.passportStatus
 
-    suspend fun sendExtIntegratorCallback(payload: String) {
-        extIntegratorManager.handleAction(payload)
+    suspend fun sendExtIntegratorCallback(qrAction: QrAction) {
+        extIntegratorManager.handleAction(qrAction)
     }
 
     fun onPassportCardLookChange(passportCardLook: PassportCardLook) {

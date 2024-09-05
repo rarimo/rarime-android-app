@@ -30,9 +30,7 @@ class ExtIntegratorManager @Inject constructor(
     private val contractManager: RarimoContractManager,
     private val passportManager: PassportManager,
 ) {
-    suspend fun handleAction(requestJson: String) {
-        val qrAction = Gson().fromJson(requestJson, QrAction::class.java)
-
+    suspend fun handleAction(qrAction: QrAction) {
         when (qrAction.type) {
             ExtIntegratorActions.SignTypedData.value -> {
                 val signedMessage = signTypedData(qrAction)

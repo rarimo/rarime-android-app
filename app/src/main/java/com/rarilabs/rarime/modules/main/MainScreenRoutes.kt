@@ -24,8 +24,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
+import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.ext_integrator.models.QrAction
 import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.modules.home.HomeScreen
 import com.rarilabs.rarime.modules.intro.IntroScreen
@@ -53,6 +55,7 @@ import com.rarilabs.rarime.modules.wallet.WalletSendScreen
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppWebView
 import com.rarilabs.rarime.ui.components.CongratsInvitationModalContent
+import com.rarilabs.rarime.ui.components.ExtIntActionPreview
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.AppIconUtil
 import com.rarilabs.rarime.util.BiometricUtil
@@ -450,11 +453,11 @@ fun ExtIntegratorDLHandler(
 
     val scope = rememberCoroutineScope()
 
-    suspend fun handleDL() {
-        try {
-            mainViewModel.sendExtIntegratorCallback(Base64.getDecoder().decode(qrActionBase64).toString(Charsets.UTF_8))
+    var qrAction by remember { mutableStateOf<QrAction?>(null) }
 
-            onFinish()
+    fun handleDL() {
+        try {
+            qrAction = Gson().fromJson(Base64.getDecoder().decode(qrActionBase64).toString(Charsets.UTF_8), QrAction::class.java)
         } catch (e: Exception) {
             ErrorHandler.logError("MainScreen", "handleDL: $e", e)
             onError()
@@ -462,9 +465,20 @@ fun ExtIntegratorDLHandler(
     }
 
     LaunchedEffect(Unit) {
-        scope.launch {
-            handleDL()
-        }
+        handleDL()
+    }
+
+    qrAction?.let {
+        ExtIntActionPreview(
+            qrAction = it,
+            qrActionHandler = {
+                scope.launch { mainViewModel.sendExtIntegratorCallback(it) }
+            },
+            onCancel = { qrAction = null },
+            onSuccess = {
+                onFinish()
+            }
+        )
     }
 
     Box(

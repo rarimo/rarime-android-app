@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.api.airdrop.AirDropManager
 import com.rarilabs.rarime.api.auth.AuthManager
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorManager
+import com.rarilabs.rarime.api.ext_integrator.models.QrAction
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.manager.IdentityManager
@@ -170,7 +171,7 @@ class MainViewModel @Inject constructor(
         securityManager.updateBiometricsState(state)
     }
 
-    suspend fun sendExtIntegratorCallback(payload: String) {
-        extIntegratorManager.handleAction(payload)
+    suspend fun sendExtIntegratorCallback(qrAction: QrAction) {
+        extIntegratorManager.handleAction(qrAction)
     }
 }
