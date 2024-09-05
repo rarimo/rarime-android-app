@@ -161,21 +161,26 @@ fun ExtIntActionPreviewContent(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            PrimaryButton(
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Accept",
-                size = ButtonSize.Large,
-                enabled = !isSubmitting,
-                onClick = { handleAccept() }
-            )
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                PrimaryButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Accept",
+                    size = ButtonSize.Large,
+                    enabled = !isSubmitting,
+                    onClick = { handleAccept() }
+                )
 
-            TertiaryButton(
-                modifier = Modifier.fillMaxWidth(),
-                text = "Cancel",
-                size = ButtonSize.Large,
-                enabled = !isSubmitting,
-                onClick = { onCancel.invoke() }
-            )
+                TertiaryButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Cancel",
+                    size = ButtonSize.Large,
+                    enabled = !isSubmitting,
+                    onClick = { onCancel.invoke() }
+                )
+            }
         }
     }
 }
@@ -195,7 +200,7 @@ fun ExtIntActionPreviewRow(
     ) {
         Text(
             text = key,
-            style = RarimeTheme.typography.body2,
+            style = RarimeTheme.typography.body3,
             color = RarimeTheme.colors.textPrimary,
             textAlign = TextAlign.End,
         )
