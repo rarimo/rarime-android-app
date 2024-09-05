@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ExtIntActionPreview(
     qrAction: QrAction,
-    qrActionHandler: (qrAction: QrAction) -> Unit = {},
+    qrActionHandler: suspend (qrAction: QrAction) -> Unit = {},
     onCancel: () -> Unit = {},
     onSuccess: () -> Unit = {},
 ) {
@@ -90,7 +90,7 @@ fun ExtIntActionPreview(
 @Composable
 fun ExtIntActionPreviewContent(
     qrAction: QrAction,
-    qrActionHandler: (qrAction: QrAction) -> Unit = {},
+    qrActionHandler: suspend (qrAction: QrAction) -> Unit = {},
     onSuccess: () -> Unit = {},
     onFail: () -> Unit = {},
     onCancel: () -> Unit = {}

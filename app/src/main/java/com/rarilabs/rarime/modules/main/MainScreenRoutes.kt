@@ -471,9 +471,7 @@ fun ExtIntegratorDLHandler(
     qrAction?.let {
         ExtIntActionPreview(
             qrAction = it,
-            qrActionHandler = {
-                scope.launch { mainViewModel.sendExtIntegratorCallback(it) }
-            },
+            qrActionHandler = { mainViewModel.sendExtIntegratorCallback(it) },
             onCancel = { qrAction = null },
             onSuccess = {
                 onFinish()

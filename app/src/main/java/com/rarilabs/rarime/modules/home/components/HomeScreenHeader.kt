@@ -82,9 +82,7 @@ fun HomeScreenHeader(
     qrAction?.let {
         ExtIntActionPreview(
             qrAction = it,
-            qrActionHandler = {
-                scope.launch { homeViewModel.sendExtIntegratorCallback(it) }
-            },
+            qrActionHandler = { homeViewModel.sendExtIntegratorCallback(it) },
             onCancel = { qrAction = null },
             onSuccess = {
                 qrAction = null
