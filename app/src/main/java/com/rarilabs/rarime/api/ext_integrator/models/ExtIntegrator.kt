@@ -17,7 +17,7 @@ data class QrAction(
     val id: String,
     val type: String,
     val payload: String? = null,
-    @Json(name = "callback_url") val callbackUrl: String,
+    @Json(name = "callback_url") val callbackUrl: String? = null,
     @Json(name = "data_url") val dataUrl: String? = null,
 ) {
     fun getTitle(context: Context): String {
@@ -34,19 +34,18 @@ data class QrAction(
             ExtIntegratorActions.SignTypedData.value -> {
                 listOf(
                     Pair(context.getString(R.string.ext_action_sign_typed_data_payload), payload ?: ""),
-                    Pair(context.getString(R.string.ext_action_sign_typed_data_callback_url), callbackUrl),
+                    Pair(context.getString(R.string.ext_action_sign_typed_data_callback_url), callbackUrl ?: ""),
                 )
             }
             ExtIntegratorActions.Authorize.value -> {
                 listOf(
                     Pair(context.getString(R.string.ext_action_authorize_payload), payload ?: ""),
-                    Pair(context.getString(R.string.ext_action_authorize_callback_url), callbackUrl),
+                    Pair(context.getString(R.string.ext_action_authorize_callback_url), callbackUrl ?: ""),
                 )
             }
             ExtIntegratorActions.QueryProofGen.value -> {
                 listOf(
                     Pair(context.getString(R.string.ext_action_query_proof_gen_id), id),
-                    Pair(context.getString(R.string.ext_action_query_proof_gen_callback_url), callbackUrl),
                     Pair(context.getString(R.string.ext_action_query_proof_gen_data_url), dataUrl ?: ""),
                 )
             }
@@ -116,7 +115,7 @@ data class QueryProofGenResponseAttributes(
     val timestamp_lower_bound: String,
     val timestamp_upper_bound: String,
 
-
+    val callback_url: String,
 )
 
 @JsonClass(generateAdapter = true)

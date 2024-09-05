@@ -194,9 +194,9 @@ class ExtIntegratorManager @Inject constructor(
         }
 
         extIntegratorApiManager.queryProofCallback(
-            qrAction.callbackUrl,
+            queryProofParametersRequest.data.attributes.callback_url,
             queryProof,
-            userIdHash = qrAction.callbackUrl.split("/").last()
+            userIdHash = queryProofParametersRequest.data.attributes.callback_url.split("/").last()
         )
     }
 }
