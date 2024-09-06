@@ -29,30 +29,6 @@ data class QrAction(
         }
     }
 
-    fun getPreviewFields(context: Context): List<Pair<String, String>> {
-        return when(type) {
-            ExtIntegratorActions.SignTypedData.value -> {
-                listOf(
-                    Pair(context.getString(R.string.ext_action_sign_typed_data_payload), payload ?: ""),
-                    Pair(context.getString(R.string.ext_action_sign_typed_data_callback_url), callbackUrl ?: ""),
-                )
-            }
-            ExtIntegratorActions.Authorize.value -> {
-                listOf(
-                    Pair(context.getString(R.string.ext_action_authorize_payload), payload ?: ""),
-                    Pair(context.getString(R.string.ext_action_authorize_callback_url), callbackUrl ?: ""),
-                )
-            }
-            ExtIntegratorActions.QueryProofGen.value -> {
-                listOf(
-                    Pair(context.getString(R.string.ext_action_query_proof_gen_id), id),
-                    Pair(context.getString(R.string.ext_action_query_proof_gen_data_url), dataUrl ?: ""),
-                )
-            }
-            else -> emptyList()
-        }
-    }
-
     fun getSuccessMessage(context: Context): String {
         return when(type) {
             ExtIntegratorActions.SignTypedData.value -> context.getString(R.string.ext_action_sign_typed_data_success)

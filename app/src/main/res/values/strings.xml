@@ -300,7 +300,21 @@
     <string name="ext_action_sign_typed_data_success">Message Signed</string>
     <string name="ext_action_authorize_success">Authorized</string>
     <string name="ext_action_query_proof_gen_success">Proof generated</string>
-    <string name="ext_action_sign_typed_data_fail">Can\\\'t sign message</string>
-    <string name="ext_action_authorize_fail">Can\\\'t authorize</string>
-    <string name="ext_action_query_proof_gen_fail">Can\\\'t generate proof</string>
+    <string name="ext_action_sign_typed_data_fail">Can\'t sign message</string>
+    <string name="ext_action_authorize_fail">Can\'t authorize</string>
+    <string name="ext_action_query_proof_gen_fail">Can\'t generate proof</string>
+
+    <string name="ext_action_query_proof_gen_birth_date_lower_bound">birth_date_lower_bound</string>
+    <string name="ext_action_query_proof_gen_birth_date_upper_bound">birth_date_upper_bound</string>
+    <string name="ext_action_query_proof_gen_citizenship_mask">citizenship_mask</string>
+    <string name="ext_action_query_proof_gen_event_data">event_data</string>
+    <string name="ext_action_query_proof_gen_event_id">event_id</string>
+    <string name="ext_action_query_proof_gen_expiration_date_lower_bound">expiration_date_lower_bound</string>
+    <string name="ext_action_query_proof_gen_expiration_date_upper_bound">expiration_date_upper_bound</string>
+    <string name="ext_action_query_proof_gen_identity_counter">identity_counter</string>
+    <string name="ext_action_query_proof_gen_identity_counter_lower_bound">identity_counter_lower_bound</string>
+    <string name="ext_action_query_proof_gen_identity_counter_upper_bound">identity_counter_upper_bound</string>
+    <string name="ext_action_query_proof_gen_selector">selector</string>
+    <string name="ext_action_query_proof_gen_timestamp_lower_bound">timestamp_lower_bound</string>
+    <string name="ext_action_query_proof_gen_timestamp_upper_bound">timestamp_upper_bound</string>
 </resources>

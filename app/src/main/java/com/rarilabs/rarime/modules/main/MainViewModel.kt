@@ -5,8 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.api.airdrop.AirDropManager
 import com.rarilabs.rarime.api.auth.AuthManager
-import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorManager
-import com.rarilabs.rarime.api.ext_integrator.models.QrAction
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.manager.IdentityManager
@@ -24,7 +22,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
-import okio.ByteString.Companion.decodeHex
 import javax.inject.Inject
 
 enum class AppLoadingStates {
@@ -43,7 +40,6 @@ class MainViewModel @Inject constructor(
     private val identityManager: IdentityManager,
     private val passportManager: PassportManager,
     private val pointsManager: PointsManager,
-    private val extIntegratorManager: ExtIntegratorManager
 ) : ViewModel() {
     val isLogsDeleted = identityManager.isLogsDeleted
 
@@ -169,9 +165,5 @@ class MainViewModel @Inject constructor(
 
     fun updateBiometricsState(state: SecurityCheckState) {
         securityManager.updateBiometricsState(state)
-    }
-
-    suspend fun sendExtIntegratorCallback(qrAction: QrAction) {
-        extIntegratorManager.handleAction(qrAction)
     }
 }

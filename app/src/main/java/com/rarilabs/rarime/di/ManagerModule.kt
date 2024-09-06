@@ -18,7 +18,6 @@ import com.rarilabs.rarime.api.erc20.Erc20ApiManager
 import com.rarilabs.rarime.api.erc20.Erc20Manager
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorAPI
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorApiManager
-import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorManager
 import com.rarilabs.rarime.api.points.PointsAPI
 import com.rarilabs.rarime.api.points.PointsAPIManager
 import com.rarilabs.rarime.api.points.PointsManager
@@ -179,22 +178,6 @@ class APIModule {
     @Singleton
     fun provideExtIntegratorAPIManager(@Named("EXT_INTEGRATOR") retrofit: Retrofit): ExtIntegratorApiManager =
         ExtIntegratorApiManager(retrofit.create(ExtIntegratorAPI::class.java))
-
-    @Provides
-    @Singleton
-    fun provideExtIntegratorManager(
-        @ApplicationContext context: Context,
-        extIntegratorApiManager: ExtIntegratorApiManager,
-        identityManager: IdentityManager,
-        contractManager: RarimoContractManager,
-        passportManager: PassportManager
-    ): ExtIntegratorManager = ExtIntegratorManager(
-        context,
-        extIntegratorApiManager,
-        identityManager,
-        contractManager,
-        passportManager
-    )
 
     @Provides
     @Singleton

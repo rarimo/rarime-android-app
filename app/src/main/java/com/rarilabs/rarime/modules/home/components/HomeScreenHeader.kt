@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,9 +27,8 @@ import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.home.LocalHomeViewModel
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
-import com.rarilabs.rarime.ui.components.AlertModalContent
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.components.ExtIntActionPreview
+import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
 import com.rarilabs.rarime.ui.components.SecondaryTextButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
@@ -82,7 +80,6 @@ fun HomeScreenHeader(
     qrAction?.let {
         ExtIntActionPreview(
             qrAction = it,
-            qrActionHandler = { homeViewModel.sendExtIntegratorCallback(it) },
             onCancel = { qrAction = null },
             onSuccess = {
                 qrAction = null
