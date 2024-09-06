@@ -399,7 +399,8 @@ fun MainScreenRoutes(
                 ExtIntegratorDLHandler(
                     qrActionBase64 = qrActionBase64!!,
                     onFinish = { navigateWithPopUp(Screen.Main.Home.route) },
-                    onError = { navigateWithPopUp(Screen.Main.Home.route) }
+                    onError = { navigateWithPopUp(Screen.Main.Home.route) },
+                    onCancel = { navigateWithPopUp(Screen.Main.Home.route) }
                 )
             }
         }
@@ -448,11 +449,8 @@ fun ExtIntegratorDLHandler(
     qrActionBase64: String,
     onFinish: () -> Unit,
     onError: () -> Unit,
+    onCancel: () -> Unit,
 ) {
-    val mainViewModel = LocalMainViewModel.current
-
-    val scope = rememberCoroutineScope()
-
     var qrAction by remember { mutableStateOf<QrAction?>(null) }
 
     fun handleDL() {
@@ -471,7 +469,10 @@ fun ExtIntegratorDLHandler(
     qrAction?.let {
         ExtIntActionPreview(
             qrAction = it,
-            onCancel = { qrAction = null },
+            onCancel = {
+                qrAction = null
+                onCancel.invoke()
+            },
             onSuccess = {
                 onFinish()
             }
