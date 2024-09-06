@@ -106,7 +106,7 @@ fun ExtIntQueryProofHandler(
 @Composable
 private fun ExtIntQueryProofHandlerContent(
     qrAction: QrAction,
-    previewFields: List<Pair<String, String>>? = null,
+    previewFields: Map<String, String>? = null,
     isSubmitting: Boolean,
     sheetState: AppSheetState,
     handleAccept: () -> Unit = {},
@@ -240,7 +240,7 @@ private fun ExtIntQueryProofHandlerContentPreview() {
             id = "1",
             type = ExtIntegratorActions.QueryProofGen.value,
         ),
-        previewFields = listOf(
+        previewFields = mapOf(
             "Key 1" to "Value 1",
             "Key 2" to "Value 2",
             "Key 3" to "Value 3"

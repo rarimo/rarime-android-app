@@ -14,6 +14,9 @@ import com.rarilabs.rarime.data.ProofTxFull
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RarimoContractManager
+import com.rarilabs.rarime.modules.passportScan.calculateAgeFromBirthDate
+import com.rarilabs.rarime.util.Country
+import com.rarilabs.rarime.util.DateUtil
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
@@ -25,6 +28,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
+import org.web3j.utils.Numeric
+import java.time.Duration
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -46,8 +52,8 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
     val identityInfo: StateFlow<StateKeeper.IdentityInfo?>
         get() = _identityInfo.asStateFlow()
 
-    private var _fieldsParams = MutableStateFlow<List<Pair<String, String>>?>(null)
-    val fieldsParams: StateFlow<List<Pair<String, String>>?>
+    private var _fieldsParams = MutableStateFlow<MutableMap<String, String>>(mutableMapOf())
+    val fieldsParams: StateFlow<Map<String, String>>
         get() = _fieldsParams.asStateFlow()
 
     suspend fun loadDetails(qrAction: QrAction, context: Context) {
@@ -78,21 +84,79 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
         _passportInfo.value = passportInfoRaw.component1()
         _identityInfo.value = passportInfoRaw.component2()
 
-        _fieldsParams.value = listOf(
-            Pair(context.getString(R.string.ext_action_query_proof_gen_birth_date_lower_bound), queryProofParametersRequest.value?.data?.attributes?.birth_date_lower_bound.toString()),
-            Pair(context.getString(R.string.ext_action_query_proof_gen_birth_date_upper_bound), queryProofParametersRequest.value?.data?.attributes?.birth_date_upper_bound.toString()),
-            Pair(context.getString(R.string.ext_action_query_proof_gen_citizenship_mask), queryProofParametersRequest.value?.data?.attributes?.citizenship_mask.toString()),
-            Pair(context.getString(R.string.ext_action_query_proof_gen_event_data), queryProofParametersRequest.value?.data?.attributes?.event_data.toString()),
-            Pair(context.getString(R.string.ext_action_query_proof_gen_event_id), queryProofParametersRequest.value?.data?.attributes?.event_id.toString()),
-            Pair(context.getString(R.string.ext_action_query_proof_gen_expiration_date_lower_bound), queryProofParametersRequest.value?.data?.attributes?.expiration_date_lower_bound.toString()),
-            Pair(context.getString(R.string.ext_action_query_proof_gen_expiration_date_upper_bound), queryProofParametersRequest.value?.data?.attributes?.expiration_date_upper_bound.toString()),
-            Pair(context.getString(R.string.ext_action_query_proof_gen_identity_counter), queryProofParametersRequest.value?.data?.attributes?.identity_counter.toString()),
-            Pair(context.getString(R.string.ext_action_query_proof_gen_identity_counter_lower_bound), queryProofParametersRequest.value?.data?.attributes?.identity_counter_lower_bound.toString()),
-            Pair(context.getString(R.string.ext_action_query_proof_gen_identity_counter_upper_bound), queryProofParametersRequest.value?.data?.attributes?.identity_counter_upper_bound.toString()),
-            Pair(context.getString(R.string.ext_action_query_proof_gen_selector), queryProofParametersRequest.value?.data?.attributes?.selector.toString()),
-            Pair(context.getString(R.string.ext_action_query_proof_gen_timestamp_lower_bound), queryProofParametersRequest.value?.data?.attributes?.timestamp_lower_bound.toString()),
-            Pair(context.getString(R.string.ext_action_query_proof_gen_timestamp_upper_bound), queryProofParametersRequest.value?.data?.attributes?.timestamp_upper_bound.toString()),
-        )
+        val tempMap = mutableMapOf<String, String>()
+
+        try {
+            var age_lower_bound_years = if (
+                queryProofParametersRequest.value?.data?.attributes?.birth_date_upper_bound != null &&
+                queryProofParametersRequest.value?.data?.attributes?.birth_date_upper_bound != "0x303030303030"
+            ) {
+                val birthDateUpperBoundBytes = Numeric.hexStringToByteArray(
+                    queryProofParametersRequest.value?.data?.attributes?.birth_date_upper_bound
+                ).decodeToString()
+
+                val mrzParsedDate = DateUtil.convertFromMrzDate(birthDateUpperBoundBytes)
+
+                calculateAgeFromBirthDate(mrzParsedDate)
+            } else {
+                0
+            }
+
+            if (age_lower_bound_years > 0) {
+                tempMap.set(
+                    "Age",
+                    "${age_lower_bound_years}+"
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("age_lower_bound_years", e.message, e)
+        }
+
+        try {
+            var uniqueness = if (
+                queryProofParametersRequest.value?.data?.attributes?.timestamp_upper_bound?.toLong() != 0L ||
+                queryProofParametersRequest.value?.data?.attributes?.identity_counter_upper_bound?.toLong() != 0L
+            ) {
+                true
+            } else {
+                false
+            }
+
+            if (uniqueness) {
+                tempMap.set(
+                    "uniqueness",
+                    ""
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("uniqueness", e.message, e)
+        }
+
+        try {
+            var nationality = if (
+                queryProofParametersRequest.value?.data?.attributes?.citizenship_mask != null
+            ) {
+                val nationality =
+                    Numeric.hexStringToByteArray(queryProofParametersRequest.value?.data?.attributes?.citizenship_mask).decodeToString()
+
+                val country = Country.fromISOCode(nationality)
+
+                "${country.localizedName} ${country.flag}"
+            } else {
+                ""
+            }
+
+            if (nationality.isNotEmpty()) {
+                tempMap.set(
+                    "Nationality",
+                    nationality
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("nationality", e.message, e)
+        }
+
+        _fieldsParams.value = tempMap
     }
 
     suspend fun generateQueryProof(context: Context) {
