@@ -106,7 +106,7 @@ fun ExtIntQueryProofHandler(
 @Composable
 private fun ExtIntQueryProofHandlerContent(
     qrAction: QrAction,
-    previewFields: Map<String, String>? = null,
+    previewFields: Map<String, String> = mapOf(),
     isSubmitting: Boolean,
     sheetState: AppSheetState,
     handleAccept: () -> Unit = {},
@@ -149,14 +149,14 @@ private fun ExtIntQueryProofHandlerContent(
                 )
             }
 
-            previewFields?.let {
-                it.forEach { (key, value) ->
+            if (previewFields.isNotEmpty()) {
+                previewFields.forEach { (key, value) ->
                     ExtIntActionPreviewRow(
                         key = key,
                         value = value
                     )
                 }
-            } ?: run {
+            } else {
                 repeat(3) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
