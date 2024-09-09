@@ -3,6 +3,8 @@ package com.rarilabs.rarime.modules.main
 import android.content.Intent
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -10,8 +12,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -19,8 +24,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
+import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.ext_integrator.models.QrAction
 import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.modules.home.HomeScreen
 import com.rarilabs.rarime.modules.intro.IntroScreen
@@ -45,8 +52,11 @@ import com.rarilabs.rarime.modules.security.SetupPasscode
 import com.rarilabs.rarime.modules.wallet.WalletReceiveScreen
 import com.rarilabs.rarime.modules.wallet.WalletScreen
 import com.rarilabs.rarime.modules.wallet.WalletSendScreen
+import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppWebView
 import com.rarilabs.rarime.ui.components.CongratsInvitationModalContent
+import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
+import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.AppIconUtil
 import com.rarilabs.rarime.util.BiometricUtil
 import com.rarilabs.rarime.util.Constants
@@ -54,6 +64,7 @@ import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.LocaleUtil
 import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.launch
+import java.util.Base64
 
 @Composable
 fun MainScreenRoutes(
@@ -359,6 +370,40 @@ fun MainScreenRoutes(
                 )
             }
         }
+
+        composable(
+            route = Screen.ExtIntegrator.route,
+            deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = "${BaseConfig.INVITATION_BASE_URL}/external/{qrActionBase64}"
+                    action = Intent.ACTION_VIEW
+                }
+            ),
+            arguments = listOf(
+                navArgument("qrActionBase64") {
+                    type = NavType.StringType
+                }
+            )
+        ) { entry ->
+            val qrActionBase64 = entry.arguments?.getString("qrActionBase64")
+            AuthGuard(
+                init = {
+                    qrActionBase64?.let {
+                        savedNextNavScreen = Screen.Invitation.route.replace("{qrActionBase64}", qrActionBase64)
+                    } ?: run {
+                        savedNextNavScreen = Screen.Main.route
+                    }
+                },
+                navigate = navigateWithPopUp,
+            ) {
+                ExtIntegratorDLHandler(
+                    qrActionBase64 = qrActionBase64!!,
+                    onFinish = { navigateWithPopUp(Screen.Main.Home.route) },
+                    onError = { navigateWithPopUp(Screen.Main.Home.route) },
+                    onCancel = { navigateWithPopUp(Screen.Main.Home.route) }
+                )
+            }
+        }
     }
 }
 
@@ -397,4 +442,52 @@ fun AcceptInvitation(
     }
 
     AppLoadingScreen()
+}
+
+@Composable
+fun ExtIntegratorDLHandler(
+    qrActionBase64: String,
+    onFinish: () -> Unit,
+    onError: () -> Unit,
+    onCancel: () -> Unit,
+) {
+    var qrAction by remember { mutableStateOf<QrAction?>(null) }
+
+    fun handleDL() {
+        try {
+            qrAction = Gson().fromJson(Base64.getDecoder().decode(qrActionBase64).toString(Charsets.UTF_8), QrAction::class.java)
+        } catch (e: Exception) {
+            ErrorHandler.logError("MainScreen", "handleDL: $e", e)
+            onError()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        handleDL()
+    }
+
+    qrAction?.let {
+        ExtIntActionPreview(
+            qrAction = it,
+            onCancel = {
+                qrAction = null
+                onCancel.invoke()
+            },
+            onSuccess = {
+                onFinish()
+            }
+        )
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        AppIcon(
+            modifier = Modifier,
+            id = R.drawable.ic_qr_code,
+            size = 140.dp,
+            tint = RarimeTheme.colors.textPrimary
+        )
+    }
 }

@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
-import okio.ByteString.Companion.decodeHex
 import javax.inject.Inject
 
 enum class AppLoadingStates {
@@ -40,7 +39,7 @@ class MainViewModel @Inject constructor(
     private val authManager: AuthManager,
     private val identityManager: IdentityManager,
     private val passportManager: PassportManager,
-    private val pointsManager: PointsManager
+    private val pointsManager: PointsManager,
 ) : ViewModel() {
     val isLogsDeleted = identityManager.isLogsDeleted
 
