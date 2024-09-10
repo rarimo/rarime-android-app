@@ -226,9 +226,6 @@ class NfcUseCase(
             null
         }
 
-        //Arrays.copyOfRange(poseidonHash, poseidonHash.size - 8, poseidonHash.size).reversed().toByteArray()
-
-
         ErrorHandler.logDebug("PUB KEy", dg15?.publicKey?.encoded?.toHexString().toString())
 
 
@@ -358,6 +355,7 @@ class NfcUseCase(
                 ErrorHandler.logDebug("eDocument", Gson().toJson(eDocument))
                 ErrorHandler.logDebug("response", Gson().toJson(response))
             } catch (e: Exception) {
+                ErrorHandler.logError("cant read edocument or response for debug read", "", e)
             }
 
             return eDocument.copy(

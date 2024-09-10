@@ -154,8 +154,7 @@ class TextRecognitionAnalyzer(
             match?.let {
 
                 Log.i("PASSPORT_TD_3_LINE_2_REG", it.value)
-                var documentNumberWithCheckSum = it.value.substring(0, 10)
-                documentNumberWithCheckSum = documentNumberWithCheckSum.replace("O", "0")
+                val documentNumberWithCheckSum = it.value.substring(0, 10).replace("O", "0")
                 val dateOfBirthWithCheckSum = it.value.substring(13, 20)
                 val expiryDateWithCheckSum = it.value.substring(21, 28)
 
@@ -170,7 +169,7 @@ class TextRecognitionAnalyzer(
                     return
                 }
 
-                val documentNumber = match.value.substring(0, 9)
+                val documentNumber = match.value.substring(0, 9).replace("O", "0")
                 val dateOfBirth = match.value.substring(13, 19)
                 val expiryDate = match.value.substring(21, 27)
 
