@@ -162,7 +162,7 @@ dependencies {
 
 
     implementation("com.github.mhshams:jnbis:1.1.0")
-    implementation("com.gemalto.jp2:jp2-android:1.0.3")
+    implementation("dev.keiji.jp2:jp2-android:1.0.4")
 
     val lifecycle_version = "2.7.0"
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
