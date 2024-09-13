@@ -7,6 +7,7 @@ import com.rarilabs.rarime.modules.passportScan.models.DocType
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.PersonDetails
 import com.rarilabs.rarime.util.DateUtil
+import com.rarilabs.rarime.util.Dg15FileOwn
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.SecurityUtil
 import com.rarilabs.rarime.util.StringUtil
@@ -15,6 +16,8 @@ import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.publicKeyToPem
 import com.rarilabs.rarime.util.toBitArray
 import identity.Profile
+import identity.X509Util
+import net.sf.scuba.smartcards.CardFileInputStream
 import net.sf.scuba.smartcards.CardService
 import org.bouncycastle.asn1.cms.SignedData
 import org.bouncycastle.jce.provider.BouncyCastleProvider
@@ -23,7 +26,6 @@ import org.jmrtd.PassportService
 import org.jmrtd.lds.CardSecurityFile
 import org.jmrtd.lds.PACEInfo
 import org.jmrtd.lds.SODFile
-import org.jmrtd.lds.icao.DG15File
 import org.jmrtd.lds.icao.DG1File
 import org.jmrtd.lds.icao.DG2File
 import org.jmrtd.lds.iso19794.FaceImageInfo
@@ -216,15 +218,18 @@ class NfcUseCase(
         eDocument.isPassiveAuth = hashesMatched
 
 
+
         val dg15 = try {
-            val dG15File = service.getInputStream(PassportService.EF_DG15)
-            DG15File(dG15File)
+            val dG15File: CardFileInputStream = service.getInputStream(PassportService.EF_DG15, 256)
+            Dg15FileOwn(dG15File)
         } catch (
             e: Exception
         ) {
             ErrorHandler.logError("Nfc scan", "No DG15 file", e)
             null
         }
+
+        dg15!!.encoded
 
         ErrorHandler.logDebug("PUB KEy", dg15?.publicKey?.encoded?.toHexString().toString())
 
@@ -341,7 +346,7 @@ class NfcUseCase(
         }
 
         val sodFile = SODFileOwn(eDocument.sod!!.decodeHexString().inputStream())
-        val dg15 = DG15File(eDocument.dg15!!.decodeHexString().inputStream())
+        val dg15 = Dg15FileOwn(eDocument.dg15!!.decodeHexString().inputStream())
 
         try {
             val response = service.doAA(

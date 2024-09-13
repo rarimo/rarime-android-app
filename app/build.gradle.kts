@@ -23,8 +23,8 @@ android {
         minSdk = 27
         targetSdk = 34
 
-        versionCode = 21
-        versionName = "1.0.21"
+        versionCode = 26
+        versionName = "1.0.26"
 
         externalNativeBuild {
             cmake {
@@ -92,12 +92,14 @@ android {
             buildConfigField("Boolean", "isTestnet", "true")
         }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+        this.isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -109,6 +111,8 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+            excludes += "/META-INF/DISCLAIMER"
         }
     }
     externalNativeBuild {
@@ -158,7 +162,7 @@ dependencies {
 
     //// ACCOMPANIST ////
     implementation("com.google.accompanist:accompanist-permissions:0.31.6-rc")
-    implementation("org.jmrtd:jmrtd:0.7.27")
+    implementation("org.jmrtd:jmrtd:0.7.42")
 
 
     implementation("com.github.mhshams:jnbis:1.1.0")
@@ -193,13 +197,16 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
     //Web3
-    implementation("org.web3j:core:4.9.8")
-    implementation("org.bouncycastle:bcpkix-jdk15on:1.70")
+    implementation("org.web3j:core:4.12.1")
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.78.1")
 
     implementation("com.google.android.play:asset-delivery:2.2.2")
     implementation("com.google.android.play:asset-delivery-ktx:2.2.2")
 
     implementation("com.google.android.play:app-update:2.1.0")
     implementation("com.google.android.play:app-update-ktx:2.1.0")
+
+
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 
 }

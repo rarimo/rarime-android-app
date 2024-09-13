@@ -88,12 +88,12 @@ fun AppLoadingScreen() {
     val scale = remember { mutableFloatStateOf(1f) }
 
     LaunchedEffect(Unit) {
-        while (true) {
-            scale.floatValue = 1.1f
-            delay(500)
-            scale.floatValue = 1f
-            delay(500)
-        }
+//        while (true) {
+//            scale.floatValue = 1.1f
+//            delay(500)
+//            scale.floatValue = 1f
+//            delay(500)
+//        }
     }
 
     val animatedScale by animateFloatAsState(
