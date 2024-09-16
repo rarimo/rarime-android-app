@@ -52,5 +52,5 @@ sealed class Screen(val route: String) {
     }
 
     data object Invitation : Screen("invitation/{code}")
-    data object ExtIntegrator : Screen("external/{qrActionBase64}")
+    data object ExtIntegrator : Screen("external?type={type}&id={id}&payload={payload}&callback_url={callback_url}&data_url={data_url}")
 }

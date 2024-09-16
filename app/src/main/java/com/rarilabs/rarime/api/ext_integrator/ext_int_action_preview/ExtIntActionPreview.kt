@@ -64,7 +64,10 @@ fun ExtIntActionPreview(
                 buttonBg = RarimeTheme.colors.errorMain,
                 buttonColor = RarimeTheme.colors.baseWhite,
                 buttonText = "Ok",
-                onClose = { mainViewModel.setModalVisibility(false) },
+                onClose = {
+                    mainViewModel.setModalVisibility(false)
+                    onCancel.invoke()
+                },
             )
         }
         mainViewModel.setModalVisibility(true)

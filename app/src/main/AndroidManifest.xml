@@ -53,6 +53,14 @@
                 <data android:host="app.stage.rarime.com" />
                 <data android:pathPattern="/r/.*" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="rarime" android:host="external" />
+            </intent-filter>
         </activity>
 
         <activity-alias
@@ -91,16 +99,12 @@
                 <data android:pathPattern="/r/.*" />
             </intent-filter>
 
-            <intent-filter android:autoVerify="true">
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="https" />
-                <data android:scheme="http" />
-                <data android:host="app.stage.rarime.com" />
-                <data android:pathPattern="/external/.*" />
+                <data android:scheme="rarime" android:host="external" />
             </intent-filter>
         </activity-alias>
 
@@ -140,16 +144,12 @@
                 <data android:pathPattern="/r/.*" />
             </intent-filter>
 
-            <intent-filter android:autoVerify="true">
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="https" />
-                <data android:scheme="http" />
-                <data android:host="app.stage.rarime.com" />
-                <data android:pathPattern="/external/.*" />
+                <data android:scheme="rarime" android:host="external" />
             </intent-filter>
         </activity-alias>
 
@@ -189,16 +189,12 @@
                 <data android:pathPattern="/r/.*" />
             </intent-filter>
 
-            <intent-filter android:autoVerify="true">
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="https" />
-                <data android:scheme="http" />
-                <data android:host="app.stage.rarime.com" />
-                <data android:pathPattern="/external/.*" />
+                <data android:scheme="rarime" android:host="external" />
             </intent-filter>
         </activity-alias>
 
