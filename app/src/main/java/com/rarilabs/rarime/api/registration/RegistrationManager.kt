@@ -96,15 +96,17 @@ class RegistrationManager @Inject constructor(
 
         val jsonProof = Gson().toJson(zkProof)
 
-        val dG15File = DG15File(eDocument.dg15!!.decodeHexString().inputStream())
-
-        val pubKeyPem = dG15File.publicKey.publicKeyToPem()
+        val pubKeyPem = if (eDocument.dg15 != null) {
+            DG15File(eDocument.dg15!!.decodeHexString().inputStream()).publicKey.publicKeyToPem().toByteArray()
+        }else {
+            byteArrayOf()
+        }
 
         val callDataBuilder = CallDataBuilder()
         val callData = callDataBuilder.buildRegisterCalldata(
             jsonProof.toByteArray(),
             eDocument.aaSignature,
-            pubKeyPem.toByteArray(),
+            pubKeyPem,
             masterCertProof.root,
             certificateSize,
             isUserRevoking
