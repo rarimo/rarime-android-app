@@ -375,33 +375,73 @@ fun MainScreenRoutes(
             route = Screen.ExtIntegrator.route,
             deepLinks = listOf(
                 navDeepLink {
-                    uriPattern = "${BaseConfig.INVITATION_BASE_URL}/external/{qrActionBase64}"
+                    uriPattern = "rarime://${Screen.ExtIntegrator.route}"
                     action = Intent.ACTION_VIEW
-                }
+                },
             ),
             arguments = listOf(
-                navArgument("qrActionBase64") {
+                navArgument("type") {
                     type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                },
+                navArgument("id") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                },
+                navArgument("payload") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                },
+                navArgument("callback_url") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                },
+                navArgument("data_url") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
                 }
             )
         ) { entry ->
-            val qrActionBase64 = entry.arguments?.getString("qrActionBase64")
+            val type = entry.arguments?.getString("type")
+            val id = entry.arguments?.getString("id")
+            val payload = entry.arguments?.getString("payload")
+            val callbackUrl = entry.arguments?.getString("callback_url")
+            val dataUrl = entry.arguments?.getString("data_url")
+
+            val qrAction = if (id?.isNotEmpty() == true && type?.isNotEmpty() == true) {
+                QrAction(id = id, type = type, payload = payload, callbackUrl = callbackUrl, dataUrl = dataUrl)
+            } else { null }
+
             AuthGuard(
                 init = {
-                    qrActionBase64?.let {
-                        savedNextNavScreen = Screen.Invitation.route.replace("{qrActionBase64}", qrActionBase64)
+                    qrAction?.let {
+                        savedNextNavScreen = Screen.Invitation.route
+                            .replace("{type}", it.type)
+                            .replace("{id}", it.id)
+                            .replace("{payload}", it.payload ?: "")
+                            .replace("{callback_url}", it.callbackUrl ?: "")
+                            .replace("{data_url}", it.dataUrl ?: "")
                     } ?: run {
                         savedNextNavScreen = Screen.Main.route
                     }
                 },
                 navigate = navigateWithPopUp,
             ) {
-                ExtIntegratorDLHandler(
-                    qrActionBase64 = qrActionBase64!!,
-                    onFinish = { navigateWithPopUp(Screen.Main.Home.route) },
-                    onError = { navigateWithPopUp(Screen.Main.Home.route) },
-                    onCancel = { navigateWithPopUp(Screen.Main.Home.route) }
-                )
+                qrAction?.let {
+                    ExtIntegratorDLHandler(
+                        qrAction = qrAction,
+                        onFinish = { navigateWithPopUp(Screen.Main.Home.route) },
+                        onError = { navigateWithPopUp(Screen.Main.Home.route) },
+                        onCancel = { navigateWithPopUp(Screen.Main.Home.route) }
+                    )
+                } ?: run {
+                    navigateWithPopUp(Screen.Main.Home.route) // TODO: add error alert?
+                }
             }
         }
     }
@@ -446,48 +486,14 @@ fun AcceptInvitation(
 
 @Composable
 fun ExtIntegratorDLHandler(
-    qrActionBase64: String,
+    qrAction: QrAction,
     onFinish: () -> Unit,
     onError: () -> Unit,
     onCancel: () -> Unit,
 ) {
-    var qrAction by remember { mutableStateOf<QrAction?>(null) }
-
-    fun handleDL() {
-        try {
-            qrAction = Gson().fromJson(Base64.getDecoder().decode(qrActionBase64).toString(Charsets.UTF_8), QrAction::class.java)
-        } catch (e: Exception) {
-            ErrorHandler.logError("MainScreen", "handleDL: $e", e)
-            onError()
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        handleDL()
-    }
-
-    qrAction?.let {
-        ExtIntActionPreview(
-            qrAction = it,
-            onCancel = {
-                qrAction = null
-                onCancel.invoke()
-            },
-            onSuccess = {
-                onFinish()
-            }
-        )
-    }
-
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        AppIcon(
-            modifier = Modifier,
-            id = R.drawable.ic_qr_code,
-            size = 140.dp,
-            tint = RarimeTheme.colors.textPrimary
-        )
-    }
+    ExtIntActionPreview(
+        qrAction = qrAction,
+        onCancel = { onCancel.invoke() },
+        onSuccess = { onFinish.invoke() }
+    )
 }
