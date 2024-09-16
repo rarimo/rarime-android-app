@@ -113,6 +113,7 @@ class ProofViewModel @Inject constructor(
 
         if (proof?.existence == true) {
             ErrorHandler.logDebug("ProofViewModel", "Passport certificate is already registered")
+            return
         }
         val callDataBuilder = CallDataBuilder()
         val callData = callDataBuilder.buildRegisterCertificateCalldata(
