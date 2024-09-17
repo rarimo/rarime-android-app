@@ -28,7 +28,6 @@ import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.modules.home.HomeScreen
 import com.rarilabs.rarime.modules.intro.IntroScreen
 import com.rarilabs.rarime.modules.main.guards.AuthGuard
-import com.rarilabs.rarime.modules.notifications.NotificationsScreen
 import com.rarilabs.rarime.modules.passportScan.ScanPassportScreen
 import com.rarilabs.rarime.modules.passportVerify.ClaimAirdropScreen
 import com.rarilabs.rarime.modules.passportVerify.VerifyPassportScreen

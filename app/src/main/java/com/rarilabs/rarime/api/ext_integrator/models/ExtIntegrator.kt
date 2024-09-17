@@ -1,7 +1,5 @@
 package com.rarilabs.rarime.api.ext_integrator.models
 
-import android.content.Context
-import com.rarilabs.rarime.R
 import com.rarilabs.rarime.util.data.ZkProof
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
@@ -9,17 +7,8 @@ import com.squareup.moshi.JsonClass
 enum class ExtIntegratorActions(val value: String) {
     SignTypedData("signTypedData"),
     Authorize("authorize"),
-    QueryProofGen("QueryProofGen"),
+    QueryProofGen("proof-request"),
 }
-
-@JsonClass(generateAdapter = true)
-data class QrAction(
-    val id: String? = null,
-    val type: String,
-    val payload: String? = null,
-    @Json(name = "callback_url") val callbackUrl: String? = null,
-    @Json(name = "data_url") val dataUrl: String? = null,
-)
 
 @JsonClass(generateAdapter = true)
 data class RequestDataResponse(
