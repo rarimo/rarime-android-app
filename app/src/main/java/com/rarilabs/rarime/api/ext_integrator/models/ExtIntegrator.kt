@@ -1,7 +1,5 @@
 package com.rarilabs.rarime.api.ext_integrator.models
 
-import android.content.Context
-import com.rarilabs.rarime.R
 import com.rarilabs.rarime.util.data.ZkProof
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
@@ -9,43 +7,7 @@ import com.squareup.moshi.JsonClass
 enum class ExtIntegratorActions(val value: String) {
     SignTypedData("signTypedData"),
     Authorize("authorize"),
-    QueryProofGen("QueryProofGen"),
-}
-
-@JsonClass(generateAdapter = true)
-data class QrAction(
-    val id: String,
-    val type: String,
-    val payload: String? = null,
-    @Json(name = "callback_url") val callbackUrl: String? = null,
-    @Json(name = "data_url") val dataUrl: String? = null,
-) {
-    fun getTitle(context: Context): String {
-        return when(type) {
-            ExtIntegratorActions.SignTypedData.value -> context.getString(R.string.ext_action_sign_typed_data)
-            ExtIntegratorActions.Authorize.value -> context.getString(R.string.ext_action_authorize)
-            ExtIntegratorActions.QueryProofGen.value -> context.getString(R.string.ext_action_query_proof_gen)
-            else -> "Unknown"
-        }
-    }
-
-    fun getSuccessMessage(context: Context): String {
-        return when(type) {
-            ExtIntegratorActions.SignTypedData.value -> context.getString(R.string.ext_action_sign_typed_data_success)
-            ExtIntegratorActions.Authorize.value -> context.getString(R.string.ext_action_authorize_success)
-            ExtIntegratorActions.QueryProofGen.value -> context.getString(R.string.ext_action_query_proof_gen_success)
-            else -> "Unknown"
-        }
-    }
-
-    fun getFailMessage(context: Context): String {
-        return when(type) {
-            ExtIntegratorActions.SignTypedData.value -> context.getString(R.string.ext_action_sign_typed_data_fail)
-            ExtIntegratorActions.Authorize.value -> context.getString(R.string.ext_action_authorize_fail)
-            ExtIntegratorActions.QueryProofGen.value -> context.getString(R.string.ext_action_query_proof_gen_fail)
-            else -> "Unknown"
-        }
-    }
+    QueryProofGen("proof-request"),
 }
 
 @JsonClass(generateAdapter = true)
