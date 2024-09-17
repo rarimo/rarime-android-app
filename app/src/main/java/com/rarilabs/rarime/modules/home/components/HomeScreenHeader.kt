@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.home.components
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,12 +23,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.gson.Gson
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.ext_integrator.models.QrAction
+import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
 import com.rarilabs.rarime.data.tokens.PreviewerToken
 import com.rarilabs.rarime.manager.WalletAsset
-import com.rarilabs.rarime.modules.home.LocalHomeViewModel
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
 import com.rarilabs.rarime.ui.components.AppIcon
@@ -48,9 +47,8 @@ fun HomeScreenHeader(
 ) {
     val scope = rememberCoroutineScope()
     val mainViewModel = LocalMainViewModel.current
-    val homeViewModel = LocalHomeViewModel.current
 
-    var qrAction by remember { mutableStateOf<QrAction?>(null) }
+    var dataUri by remember { mutableStateOf<Uri?>(null) }
 
     var isQrCodeScannerOpen by remember { mutableStateOf(false) }
 
@@ -71,7 +69,7 @@ fun HomeScreenHeader(
             try {
                 hideQrScanner()
 
-                qrAction = Gson().fromJson(text, QrAction::class.java)
+                dataUri = Uri.parse(text)
             } catch (e: Exception) {
                 ErrorHandler.logError("HomeScreenHeader", "HomeScreenHeaderError", e)
             }
@@ -85,12 +83,12 @@ fun HomeScreenHeader(
         )
     }
 
-    qrAction?.let {
+    dataUri?.let {
         ExtIntActionPreview(
-            qrAction = it,
-            onCancel = { qrAction = null },
+            dataUri = it,
+            onCancel = { dataUri = null },
             onSuccess = {
-                qrAction = null
+                dataUri = null
             }
         )
     }

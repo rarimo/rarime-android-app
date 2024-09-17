@@ -23,7 +23,7 @@ fun ExtIntActionPreview(
         dataUri.getQueryParameter(paramName)
     }
 
-    val requestType = queryParams?.get("requestType")
+    val requestType = queryParams?.get("type")
 
     when (requestType) {
         ExtIntegratorActions.QueryProofGen.value -> {
