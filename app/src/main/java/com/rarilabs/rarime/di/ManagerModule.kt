@@ -26,6 +26,7 @@ import com.rarilabs.rarime.api.registration.RegistrationAPIManager
 import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
+import com.rarilabs.rarime.manager.NotificationManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.manager.SecurityManager
@@ -34,6 +35,9 @@ import com.rarilabs.rarime.manager.StableCoinContractManager
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.store.SecureSharedPrefsManagerImpl
+import com.rarilabs.rarime.store.room.notifications.AppDatabase
+import com.rarilabs.rarime.store.room.notifications.NotificationsDao
+import com.rarilabs.rarime.store.room.notifications.NotificationsRepository
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Binds
@@ -356,5 +360,29 @@ class APIModule {
     @Singleton
     fun provideStableCoinContractManager(@Named("STABLE_COIN") web3j: Web3j): StableCoinContractManager {
         return StableCoinContractManager(web3j)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppDatabase(@ApplicationContext appContext: Context): AppDatabase {
+        return AppDatabase.getDatabase(appContext)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDao(appDatabase: AppDatabase): NotificationsDao {
+        return appDatabase.notificationsDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideNotificationsRepository(taskDao: NotificationsDao): NotificationsRepository {
+        return NotificationsRepository(taskDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNotificationManager(notificationsRepository: NotificationsRepository): NotificationManager {
+        return NotificationManager(notificationsRepository)
     }
 }

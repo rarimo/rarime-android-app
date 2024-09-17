@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -113,6 +114,7 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             excludes += "/META-INF/versions/9/OSGI-INF/MANIFEST.MF"
             excludes += "/META-INF/DISCLAIMER"
+            excludes += "/META-INF/DEPENDENCIES"
         }
     }
     externalNativeBuild {
@@ -206,7 +208,29 @@ dependencies {
     implementation("com.google.android.play:app-update:2.1.0")
     implementation("com.google.android.play:app-update-ktx:2.1.0")
 
-
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 
+    //Room
+    val room_version = "2.6.1"
+
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+
+    // To use Kotlin annotation processing tool (kapt)
+    kapt("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+
+    //google services
+    implementation("com.google.firebase:firebase-analytics")
+    implementation ("com.google.android.gms:play-services-auth:20.7.0")
+    implementation ("com.google.firebase:firebase-auth")
+    implementation ("com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0")
+    implementation ("com.google.api-client:google-api-client:2.0.0")
+    implementation ("com.google.api-client:google-api-client-android:1.32.1")
+    implementation ("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
+    implementation ("com.google.auth:google-auth-library-oauth2-http:1.19.0")
+    implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
+    implementation("androidx.hilt:hilt-work:1.0.0") // ?
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
+    implementation("com.google.firebase:firebase-messaging:24.0.1")
 }
