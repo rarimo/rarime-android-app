@@ -14,7 +14,7 @@ enum class ExtIntegratorActions(val value: String) {
 
 @JsonClass(generateAdapter = true)
 data class QrAction(
-    val id: String,
+    val id: String? = null,
     val type: String,
     val payload: String? = null,
     @Json(name = "callback_url") val callbackUrl: String? = null,
