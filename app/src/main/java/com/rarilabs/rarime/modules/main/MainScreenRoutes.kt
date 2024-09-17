@@ -1,10 +1,10 @@
 package com.rarilabs.rarime.modules.main
 
+import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -12,11 +12,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -24,14 +21,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.ext_integrator.models.QrAction
+import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
 import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.modules.home.HomeScreen
 import com.rarilabs.rarime.modules.intro.IntroScreen
 import com.rarilabs.rarime.modules.main.guards.AuthGuard
+import com.rarilabs.rarime.modules.notifications.NotificationsScreen
 import com.rarilabs.rarime.modules.passportScan.ScanPassportScreen
 import com.rarilabs.rarime.modules.passportVerify.ClaimAirdropScreen
 import com.rarilabs.rarime.modules.passportVerify.VerifyPassportScreen
@@ -52,12 +49,8 @@ import com.rarilabs.rarime.modules.security.SetupPasscode
 import com.rarilabs.rarime.modules.wallet.WalletReceiveScreen
 import com.rarilabs.rarime.modules.wallet.WalletScreen
 import com.rarilabs.rarime.modules.wallet.WalletSendScreen
-import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppWebView
 import com.rarilabs.rarime.ui.components.CongratsInvitationModalContent
-import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
-import com.rarilabs.rarime.modules.notifications.NotificationsScreen
-import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.AppIconUtil
 import com.rarilabs.rarime.util.BiometricUtil
 import com.rarilabs.rarime.util.Constants
@@ -65,7 +58,6 @@ import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.LocaleUtil
 import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.launch
-import java.util.Base64
 
 @Composable
 fun MainScreenRoutes(
@@ -384,62 +376,24 @@ fun MainScreenRoutes(
                     action = Intent.ACTION_VIEW
                 },
             ),
-            arguments = listOf(
-                navArgument("type") {
-                    type = NavType.StringType
-                    nullable = true
-                    defaultValue = null
-                },
-                navArgument("id") {
-                    type = NavType.StringType
-                    nullable = true
-                    defaultValue = null
-                },
-                navArgument("payload") {
-                    type = NavType.StringType
-                    nullable = true
-                    defaultValue = null
-                },
-                navArgument("callback_url") {
-                    type = NavType.StringType
-                    nullable = true
-                    defaultValue = null
-                },
-                navArgument("data_url") {
-                    type = NavType.StringType
-                    nullable = true
-                    defaultValue = null
-                }
-            )
         ) { entry ->
-            val type = entry.arguments?.getString("type")
-            val id = entry.arguments?.getString("id")
-            val payload = entry.arguments?.getString("payload")
-            val callbackUrl = entry.arguments?.getString("callback_url")
-            val dataUrl = entry.arguments?.getString("data_url")
-
-            val qrAction = if (id?.isNotEmpty() == true && type?.isNotEmpty() == true) {
-                QrAction(id = id, type = type, payload = payload, callbackUrl = callbackUrl, dataUrl = dataUrl)
-            } else { null }
+            val context = LocalContext.current
+            val activity = context as? Activity
+            val dataUri = activity?.intent?.data
 
             AuthGuard(
                 init = {
-                    qrAction?.let {
-                        savedNextNavScreen = Screen.Invitation.route
-                            .replace("{type}", it.type)
-                            .replace("{id}", it.id ?: "")
-                            .replace("{payload}", it.payload ?: "")
-                            .replace("{callback_url}", it.callbackUrl ?: "")
-                            .replace("{data_url}", it.dataUrl ?: "")
+                    dataUri?.let {
+                        savedNextNavScreen = it.toString()
                     } ?: run {
                         savedNextNavScreen = Screen.Main.route
                     }
                 },
                 navigate = navigateWithPopUp,
             ) {
-                qrAction?.let {
+                dataUri?.let {
                     ExtIntegratorDLHandler(
-                        qrAction = qrAction,
+                        dataUri = dataUri,
                         onFinish = { navigateWithPopUp(Screen.Main.Home.route) },
                         onError = { navigateWithPopUp(Screen.Main.Home.route) },
                         onCancel = { navigateWithPopUp(Screen.Main.Home.route) }
@@ -491,14 +445,15 @@ fun AcceptInvitation(
 
 @Composable
 fun ExtIntegratorDLHandler(
-    qrAction: QrAction,
+    dataUri: Uri,
     onFinish: () -> Unit,
     onError: () -> Unit,
     onCancel: () -> Unit,
 ) {
     ExtIntActionPreview(
-        qrAction = qrAction,
+        dataUri = dataUri,
         onCancel = { onCancel.invoke() },
-        onSuccess = { onFinish.invoke() }
+        onSuccess = { onFinish.invoke() },
+        onError = { onError.invoke() }
     )
 }

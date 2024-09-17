@@ -7,7 +7,6 @@ import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorApiManager
-import com.rarilabs.rarime.api.ext_integrator.models.QrAction
 import com.rarilabs.rarime.api.ext_integrator.models.QueryProofGenResponse
 import com.rarilabs.rarime.contracts.rarimo.StateKeeper
 import com.rarilabs.rarime.data.ProofTxFull
@@ -56,8 +55,8 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
     val fieldsParams: StateFlow<Map<String, String>>
         get() = _fieldsParams.asStateFlow()
 
-    suspend fun loadDetails(qrAction: QrAction, context: Context) {
-        _queryProofParametersRequest.value = extIntegratorApiManager.queryProofData(qrAction.dataUrl!!)
+    suspend fun loadDetails(proofParamsUrl: String) {
+        _queryProofParametersRequest.value = extIntegratorApiManager.queryProofData(proofParamsUrl)
 
         val passportInfoKey: String = if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {
             identityManager.registrationProof.value!!.pub_signals[1]
