@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.ext_int_query_proof_handler
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,9 +31,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.ext_integrator.models.ExtIntegratorActions
-import com.rarilabs.rarime.api.ext_integrator.models.QrAction
+import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.ui.base.ButtonSize
+import com.rarilabs.rarime.ui.components.AlertModalContent
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppSheetState
@@ -47,13 +49,14 @@ import kotlinx.coroutines.launch
 fun ExtIntQueryProofHandler(
     viewModel: ExtIntQueryProofHandlerViewModel = hiltViewModel(),
 
-    qrAction: QrAction,
+    queryParams: Map<String, String?>?,
     onSuccess: () -> Unit = {},
     onFail: () -> Unit = {},
     onCancel: () -> Unit = {}
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val mainViewModel = LocalMainViewModel.current
 
     val previewFields by viewModel.fieldsParams.collectAsState()
 
@@ -62,16 +65,59 @@ fun ExtIntQueryProofHandler(
 
     val sheetState = rememberAppSheetState(true)
 
+    fun onSuccessHandler() {
+        mainViewModel.setModalContent {
+            AlertModalContent(
+                title = "Success",
+                subtitle = "Your request has been successfully submitted",
+                buttonText = "Ok",
+                onClose = {
+                    mainViewModel.setModalVisibility(false)
+                    onSuccess.invoke()
+                },
+            )
+        }
+        mainViewModel.setModalVisibility(true)
+    }
+
+    fun onFailHandler() {
+        mainViewModel.setModalContent {
+            AlertModalContent(
+                withConfetti = false,
+                title = "Failed",
+                subtitle = "Something went wrong. Please try again later",
+                mediaContent = {
+                    AppIcon(
+                        id = R.drawable.ic_warning,
+                        size = 24.dp,
+                        tint = RarimeTheme.colors.baseWhite,
+                        modifier = Modifier
+                            .background(RarimeTheme.colors.errorMain, CircleShape)
+                            .padding(28.dp)
+                    )
+                },
+                buttonBg = RarimeTheme.colors.errorMain,
+                buttonColor = RarimeTheme.colors.baseWhite,
+                buttonText = "Ok",
+                onClose = {
+                    mainViewModel.setModalVisibility(false)
+                    onFail.invoke()
+                },
+            )
+        }
+        mainViewModel.setModalVisibility(true)
+    }
+
     fun handleAccept() {
         scope.launch {
             isSubmitting = true
 
             try {
                 viewModel.generateQueryProof(context)
-                onSuccess.invoke()
+                onSuccessHandler()
             } catch (e: Exception) {
                 ErrorHandler.logError("ExtIntActionPreview", "handleAccept", e)
-                onFail.invoke()
+                onFailHandler()
             }
 
             sheetState.hide()
@@ -84,9 +130,15 @@ fun ExtIntQueryProofHandler(
             isLoaded = false
 
             try {
-                viewModel.loadDetails(qrAction, context)
+                val proofParamsUrl = queryParams?.get("proof_params_url")
+
+                proofParamsUrl?.let {
+                    viewModel.loadDetails(proofParamsUrl)
+                } ?: run {
+                    throw Exception("proof_params_url is null")
+                }
             } catch (e: Exception) {
-                onFail.invoke()
+                onFailHandler()
             }
 
             isLoaded = true
@@ -94,7 +146,6 @@ fun ExtIntQueryProofHandler(
     }
 
     ExtIntQueryProofHandlerContent(
-        qrAction = qrAction,
         previewFields = previewFields,
         isSubmitting = isSubmitting,
         sheetState = sheetState,
@@ -105,7 +156,6 @@ fun ExtIntQueryProofHandler(
 
 @Composable
 private fun ExtIntQueryProofHandlerContent(
-    qrAction: QrAction,
     previewFields: Map<String, String> = mapOf(),
     isSubmitting: Boolean,
     sheetState: AppSheetState,
@@ -136,7 +186,7 @@ private fun ExtIntQueryProofHandlerContent(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = qrAction.getTitle(context),
+                    text = "Query Proof Generation",
                     style = RarimeTheme.typography.h6,
                     color = RarimeTheme.colors.textPrimary,
                     modifier = Modifier.align(Alignment.CenterVertically)
@@ -236,10 +286,6 @@ fun ExtIntActionPreviewRow(
 @Composable
 private fun ExtIntQueryProofHandlerContentPreview() {
     ExtIntQueryProofHandlerContent(
-        qrAction = QrAction(
-            id = "1",
-            type = ExtIntegratorActions.QueryProofGen.value,
-        ),
         previewFields = mapOf(
             "Key 1" to "Value 1",
             "Key 2" to "Value 2",
