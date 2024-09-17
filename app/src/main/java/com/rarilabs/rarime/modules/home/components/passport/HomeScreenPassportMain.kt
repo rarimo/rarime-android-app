@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,6 +26,7 @@ import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.home.LocalHomeViewModel
 import com.rarilabs.rarime.modules.home.components.HomeScreenHeader
 import com.rarilabs.rarime.modules.home.components.RarimeInfoScreen
+import com.rarilabs.rarime.services.NotificationService
 import com.rarilabs.rarime.ui.components.ActionCard
 import com.rarilabs.rarime.ui.components.ActionCardVariants
 import com.rarilabs.rarime.ui.components.AppBottomSheet
@@ -80,6 +82,10 @@ fun HomeScreenPassportMainContent(
             homeViewModel.loadUserDetails()
             isLoading = false
         }
+    }
+
+    LaunchedEffect(Unit) {
+        NotificationService.subscribeToRewardableTopic()
     }
 
     Column(
