@@ -30,7 +30,7 @@ import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
+import com.rarilabs.rarime.modules.home.LocalHomeViewModel
 import com.rarilabs.rarime.ui.components.CircledBadgeWithCounter
 import com.rarilabs.rarime.ui.components.SecondaryTextButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -47,6 +47,7 @@ fun HomeScreenHeader(
 ) {
     val scope = rememberCoroutineScope()
     val mainViewModel = LocalMainViewModel.current
+    val homeViewModel = LocalHomeViewModel.current
 
     var dataUri by remember { mutableStateOf<Uri?>(null) }
 

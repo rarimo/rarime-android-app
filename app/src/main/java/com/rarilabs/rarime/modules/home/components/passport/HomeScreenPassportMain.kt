@@ -35,6 +35,7 @@ import com.rarilabs.rarime.ui.components.enter_program.EnterProgramFlow
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Constants
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.launch
 
@@ -80,12 +81,18 @@ fun HomeScreenPassportMainContent(
         scope.launch {
             isLoading = true
             homeViewModel.loadUserDetails()
+
+            homeViewModel.loadNotifications()
             isLoading = false
         }
     }
 
     LaunchedEffect(Unit) {
-        NotificationService.subscribeToRewardableTopic()
+        try {
+            NotificationService.subscribeToRewardableTopic()
+        } catch (e: Exception) {
+            ErrorHandler.logError("HomeScreenPassportMain", "error sub to rewardable topic", e)
+        }
     }
 
     Column(
