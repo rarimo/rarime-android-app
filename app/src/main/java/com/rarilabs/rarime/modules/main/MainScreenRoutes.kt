@@ -427,7 +427,7 @@ fun MainScreenRoutes(
                     qrAction?.let {
                         savedNextNavScreen = Screen.Invitation.route
                             .replace("{type}", it.type)
-                            .replace("{id}", it.id)
+                            .replace("{id}", it.id ?: "")
                             .replace("{payload}", it.payload ?: "")
                             .replace("{callback_url}", it.callbackUrl ?: "")
                             .replace("{data_url}", it.dataUrl ?: "")
