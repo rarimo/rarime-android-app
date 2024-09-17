@@ -16,7 +16,7 @@ class App: Application() {
             .setProjectId(Keys.ProjectId) // Required for Firebase Installations.
             .setApiKey(Keys.ApiKey) // Required for Auth.
             .build()
-        FirebaseApp.initializeApp(this, options, "Rarime")
+        FirebaseApp.initializeApp(this, options, "RariMe")
     }
 
     override fun onCreate() {
