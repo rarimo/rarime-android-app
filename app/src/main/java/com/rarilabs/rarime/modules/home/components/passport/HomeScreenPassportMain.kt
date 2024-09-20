@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,7 +25,6 @@ import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.home.LocalHomeViewModel
 import com.rarilabs.rarime.modules.home.components.HomeScreenHeader
 import com.rarilabs.rarime.modules.home.components.RarimeInfoScreen
-import com.rarilabs.rarime.services.NotificationService
 import com.rarilabs.rarime.ui.components.ActionCard
 import com.rarilabs.rarime.ui.components.ActionCardVariants
 import com.rarilabs.rarime.ui.components.AppBottomSheet
@@ -35,7 +33,6 @@ import com.rarilabs.rarime.ui.components.enter_program.EnterProgramFlow
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Constants
-import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.launch
 
@@ -81,17 +78,7 @@ fun HomeScreenPassportMainContent(
         scope.launch {
             isLoading = true
             homeViewModel.loadUserDetails()
-
-            homeViewModel.loadNotifications()
             isLoading = false
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        try {
-            NotificationService.subscribeToRewardableTopic()
-        } catch (e: Exception) {
-            ErrorHandler.logError("HomeScreenPassportMain", "error sub to rewardable topic", e)
         }
     }
 
@@ -99,10 +86,7 @@ fun HomeScreenPassportMainContent(
         modifier = Modifier
             .padding(vertical = 20.dp, horizontal = 12.dp)
     ) {
-        HomeScreenHeader(
-            walletAsset = selectedWalletAsset,
-            navigate = navigate,
-        ) {
+        HomeScreenHeader(walletAsset = selectedWalletAsset) {
             pointsToken?.balanceDetails?.let {
                 navigate(Screen.Main.Rewards.route)
             }

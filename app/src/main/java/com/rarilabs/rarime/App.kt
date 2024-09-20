@@ -1,28 +1,15 @@
 package com.rarilabs.rarime
 
 import android.app.Application
-import com.google.firebase.FirebaseApp
-import com.google.firebase.FirebaseOptions
-import com.rarilabs.rarime.config.Keys
 import dagger.hilt.android.HiltAndroidApp
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.security.Security
 
 @HiltAndroidApp
 class App: Application() {
-    private fun setupFireBase() {
-        val options = FirebaseOptions.Builder()
-            .setApplicationId(Keys.ApplicationId) // Required for Analytics.
-            .setProjectId(Keys.ProjectId) // Required for Firebase Installations.
-            .setApiKey(Keys.ApiKey) // Required for Auth.
-            .build()
-        FirebaseApp.initializeApp(this, options, "RariMe")
-    }
-
     override fun onCreate() {
         super.onCreate()
         setupBouncyCastle()
-        setupFireBase()
     }
 
     private fun setupBouncyCastle() {

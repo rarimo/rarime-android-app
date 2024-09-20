@@ -317,15 +317,4 @@
     <string name="ext_action_query_proof_gen_selector">selector</string>
     <string name="ext_action_query_proof_gen_timestamp_lower_bound">timestamp_lower_bound</string>
     <string name="ext_action_query_proof_gen_timestamp_upper_bound">timestamp_upper_bound</string>
-    <string name="no_notifications">No notifications</string>
-    <string name="default_duration_days">%1$s days</string>
-    <string name="default_duration_hours">%1$s hours</string>
-    <string name="default_duration_minutes">%1$s minutes</string>
-    <string name="default_duration_seconds">%1$s seconds</string>
-    <string name="time_ago">ago</string>
-    <string name="notifications_reward_loading">Loading...</string>
-    <string name="notifications_reward_claimed">Claimed</string>
-    <string name="notifications_allowed_claimed">Claim</string>
-    <string name="notifications_error">Error</string>
-    <string name="default_notification_channel_id">notifications</string>
 </resources>

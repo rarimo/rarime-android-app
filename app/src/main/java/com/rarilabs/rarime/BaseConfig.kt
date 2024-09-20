@@ -30,9 +30,6 @@ interface IConfig {
     val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP: Long
     val FEEDBACK_EMAIL: String
     val CHAIN: RarimoChains
-
-    val GLOBAL_NOTIFICATION_TOPIC: String
-    val REWARD_NOTIFICATION_TOPIC: String
 }
 
 /* TESTNET */
@@ -69,9 +66,6 @@ object TestNetConfig: IConfig {
 
     override val FEEDBACK_EMAIL = "apereliez1@gmail.com"
     override val CHAIN = RarimoChains.MainnetBeta
-
-    override val GLOBAL_NOTIFICATION_TOPIC = "rarime-stage"
-    override val REWARD_NOTIFICATION_TOPIC: String = "rarime-rewardable-stage"
 }
 
 // Mainnet
@@ -107,7 +101,4 @@ object MainnetConfig: IConfig {
     override val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP = 1715688000L
     override val FEEDBACK_EMAIL = "info@rarilabs.com"
     override val CHAIN = RarimoChains.Mainnet
-
-    override val GLOBAL_NOTIFICATION_TOPIC = "rarime"
-    override val REWARD_NOTIFICATION_TOPIC: String = "rarime-rewardable"
 }

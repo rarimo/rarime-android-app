@@ -2,17 +2,14 @@ package com.rarilabs.rarime.modules.home.components
 
 import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,30 +27,23 @@ import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.modules.home.LocalHomeViewModel
-import com.rarilabs.rarime.ui.components.CircledBadgeWithCounter
 import com.rarilabs.rarime.ui.components.SecondaryTextButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.NumberUtil
-import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreenHeader(
-    navigate: (String) -> Unit,
     walletAsset: WalletAsset,
     onBalanceClick: () -> Unit = {}
 ) {
     val scope = rememberCoroutineScope()
     val mainViewModel = LocalMainViewModel.current
-    val homeViewModel = LocalHomeViewModel.current
 
     var dataUri by remember { mutableStateOf<Uri?>(null) }
 
     var isQrCodeScannerOpen by remember { mutableStateOf(false) }
-
-    val notifications by homeViewModel.notReadNotifications.collectAsState()
 
     fun showQrScanner() {
         mainViewModel.setBottomBarVisibility(false)
@@ -101,9 +91,7 @@ fun HomeScreenHeader(
             IconButton(onClick = { showQrScanner() }) {
                 AppIcon(id = R.drawable.ic_qr_code, size = 24.dp, tint = RarimeTheme.colors.textPrimary)
             }
-        },
-        onNotificationClick = {navigate(Screen.NotificationsList.route)},
-        notifications.filter { it.isActive }.size
+        }
     )
 }
 
@@ -112,8 +100,6 @@ fun HomeScreenHeaderContent(
     walletAsset: WalletAsset,
     onBalanceClick: () -> Unit = {},
     actionContent: @Composable () -> Unit = {},
-    onNotificationClick: () -> Unit,
-    notificationsSize: Int
 ) {
 
 
@@ -122,7 +108,7 @@ fun HomeScreenHeaderContent(
         modifier = Modifier.padding(horizontal = 8.dp)
     ) {
         Row(
-            horizontalArrangement = Arrangement.Start,
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
@@ -152,20 +138,7 @@ fun HomeScreenHeaderContent(
                 )
             }
 
-            Spacer(modifier = Modifier.weight(1f))
-
             actionContent()
-
-            CircledBadgeWithCounter(
-                modifier = Modifier.clickable { onNotificationClick.invoke()},
-                iconId = R.drawable.ic_bell,
-                containerSize = 40,
-                count = notificationsSize,
-                containerColor = RarimeTheme.colors.backgroundPrimary,
-                contentSize = 20,
-                badgeSize = 16,
-                contentColor = RarimeTheme.colors.textPrimary
-            )
         }
     }
 }
@@ -185,9 +158,7 @@ fun HomeScreenHeaderContentPreview() {
                 IconButton(onClick = {  }) {
                     AppIcon(id = R.drawable.ic_qr_code, size = 24.dp, tint = RarimeTheme.colors.textPrimary)
                 }
-            },
-            onNotificationClick = {},
-            notificationsSize = 5
+            }
         )
     }
 }

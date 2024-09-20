@@ -7,8 +7,6 @@ import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.auth.AuthManager
 import com.rarilabs.rarime.api.points.models.BaseEvents
-import com.rarilabs.rarime.api.points.models.ClaimEventBody
-import com.rarilabs.rarime.api.points.models.ClaimEventData
 import com.rarilabs.rarime.api.points.models.CreateBalanceAttributes
 import com.rarilabs.rarime.api.points.models.CreateBalanceBody
 import com.rarilabs.rarime.api.points.models.CreateBalanceData
@@ -358,37 +356,5 @@ class PointsManager @Inject constructor(
                 PointsLeaderBoardBody(data = emptyList())
             }
         }
-    }
-
-    suspend fun getActiveEventsByName(name: String): PointsEventsListBody {
-        val statuses = listOf(
-            PointsEventStatuses.FULFILLED.value,
-        )
-
-        val names = listOf(
-            name
-        )
-
-        return getEvents(
-            filterParams = mapOf(
-                "filter[status]" to statuses.joinToString(","),
-                "filter[meta.static.name]" to names.joinToString(","),
-            )
-        )
-    }
-
-    suspend fun claimPointsByEventId(eventId: String, type: String): PointsEventBody {
-        val body = ClaimEventBody(data = ClaimEventData(id = eventId, type = type))
-        return withContext(Dispatchers.IO) {
-            try {
-                val response = pointsAPIManager.claimPointsByEvent(eventId, body)
-                response
-            } catch (e: Exception) {
-                ErrorHandler.logError("claimPointsByEventId", e.toString(), e)
-                throw e
-            }
-
-        }
-
     }
 }

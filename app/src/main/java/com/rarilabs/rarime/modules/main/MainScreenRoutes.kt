@@ -28,7 +28,6 @@ import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.modules.home.HomeScreen
 import com.rarilabs.rarime.modules.intro.IntroScreen
 import com.rarilabs.rarime.modules.main.guards.AuthGuard
-import com.rarilabs.rarime.modules.notifications.NotificationsScreen
 import com.rarilabs.rarime.modules.passportScan.ScanPassportScreen
 import com.rarilabs.rarime.modules.passportVerify.ClaimAirdropScreen
 import com.rarilabs.rarime.modules.passportVerify.VerifyPassportScreen
@@ -51,6 +50,8 @@ import com.rarilabs.rarime.modules.wallet.WalletScreen
 import com.rarilabs.rarime.modules.wallet.WalletSendScreen
 import com.rarilabs.rarime.ui.components.AppWebView
 import com.rarilabs.rarime.ui.components.CongratsInvitationModalContent
+import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
+import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.AppIconUtil
 import com.rarilabs.rarime.util.BiometricUtil
 import com.rarilabs.rarime.util.Constants
@@ -149,10 +150,6 @@ fun MainScreenRoutes(
                     }
                 )
             }
-        }
-
-        composable(Screen.NotificationsList.route) {
-            NotificationsScreen(onBack = {navController.popBackStack()})
         }
 
         composable(Screen.EnableBiometrics.route) {

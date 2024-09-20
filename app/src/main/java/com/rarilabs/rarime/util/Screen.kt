@@ -26,8 +26,6 @@ sealed class Screen(val route: String) {
 
     data object EnableBiometrics : Screen("enable_biometrics")
 
-    data object NotificationsList: Screen("notifications_list")
-
     data object Main : Screen("main") {
         data object Home : Screen("home")
         data object Wallet : Screen("wallet") {
