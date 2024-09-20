@@ -4,7 +4,7 @@
 [![Android 8.1+](https://img.shields.io/badge/Android-8.1+-3DDC84.svg?style=flat&logo=android)](https://developer.apple.com/ios/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](/LICENSE)
 
-RariMe is a self-custody identity wallet that allows users to verify their eligibility for Web3 services without exposing their personal data.
+RariMe is a self-custody identity wallet, that unlocks private but verifiable identities.
 
 ![App Image](images/app.png)
 
@@ -12,7 +12,7 @@ RariMe is a self-custody identity wallet that allows users to verify their eligi
 
 Requires Android 8.1 or higher.
 
-[![Google Play Image](https://rarime-landing-test.netlify.app/images/google-play.svg)](https://play.google.com/)
+[![Google Play Image](https://rarime-landing-test.netlify.app/images/google-play.svg)](https://play.google.com/store/apps/details?id=com.rarilabs.rarime)
 
 
 ## Features
