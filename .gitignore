@@ -16,3 +16,4 @@
 local.properties
 *.zkey
 /app/src/main/java/com/rarilabs/rarime/config/
+/app/google-services.json

@@ -22,10 +22,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.rarilabs.rarime" />
+                  <option name="mobileSdkAppId" value="1:730587319873:android:ed66b665a9e757794880c0" />
+                  <option name="projectId" value="rarime-ef3bc" />
+                  <option name="projectNumber" value="730587319873" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
