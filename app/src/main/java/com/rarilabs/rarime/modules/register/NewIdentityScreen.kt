@@ -39,8 +39,11 @@ import com.rarilabs.rarime.ui.components.PrimaryTextButton
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
+import com.rarilabs.rarime.util.isKeyValid
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.web3j.utils.Numeric
+import java.math.BigInteger
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -98,10 +101,6 @@ fun NewIdentityScreen(
     suspend fun handleInitPK(pk: String) {
         isSubmitting = true
 
-        if (savedPrivateKey.value.isNullOrEmpty()) {
-            savePrivateKey(pk)
-        }
-
         delay(1000)
         mainViewModel.tryLogin()
         delay(1000)
@@ -110,6 +109,10 @@ fun NewIdentityScreen(
             finishOnboarding("")
         } else {
             finishOnboarding(invitationCodeState.text)
+        }
+
+        if (savedPrivateKey.value.isNullOrEmpty()) {
+            savePrivateKey(pk)
         }
     }
 
@@ -144,7 +147,10 @@ fun NewIdentityScreenContent(
     }
 
     fun isPKValid(pk: String): Boolean {
-        return pk.length == 32 || pk.length == 64
+        if (!isKeyValid(BigInteger(Numeric.hexStringToByteArray(pk)))){
+            return false
+        }
+        return (pk.length == 32 || pk.length == 64)
     }
 
     fun initPrivateKey() {
