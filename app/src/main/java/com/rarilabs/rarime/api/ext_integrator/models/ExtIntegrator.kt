@@ -8,6 +8,7 @@ enum class ExtIntegratorActions(val value: String) {
     SignTypedData("signTypedData"),
     Authorize("authorize"),
     QueryProofGen("proof-request"),
+    LightVerification("light-verification"),
 }
 
 @JsonClass(generateAdapter = true)
@@ -71,4 +72,21 @@ data class QueryProofGenCallbackRequestData(
 @JsonClass(generateAdapter = true)
 data class QueryProofGenCallbackRequestAttributes(
     val proof: ZkProof,
+)
+
+@JsonClass(generateAdapter = true)
+data class LightSignatureCallbackRequest(
+    val data: LightSignatureCallbackRequestData,
+)
+
+@JsonClass(generateAdapter = true)
+data class LightSignatureCallbackRequestData(
+    val id: String,
+    val type: String = "receive_signature",
+    val attributes: LightSignatureCallbackRequestAttributes,
+)
+
+@JsonClass(generateAdapter = true)
+data class LightSignatureCallbackRequestAttributes(
+    val signature: String,
 )

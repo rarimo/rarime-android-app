@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.ext_int_query_proof_handler.ExtIntQueryProofHandler
+import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.light_proof_handler.LightProofHandler
 import com.rarilabs.rarime.api.ext_integrator.models.ExtIntegratorActions
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
@@ -28,6 +29,15 @@ fun ExtIntActionPreview(
     when (requestType) {
         ExtIntegratorActions.QueryProofGen.value -> {
             ExtIntQueryProofHandler(
+                queryParams = queryParams,
+                onCancel = onCancel,
+                onSuccess = { onSuccess() },
+                onFail = { onError() }
+            )
+        }
+
+        ExtIntegratorActions.LightVerification.value -> {
+            LightProofHandler(
                 queryParams = queryParams,
                 onCancel = onCancel,
                 onSuccess = { onSuccess() },
