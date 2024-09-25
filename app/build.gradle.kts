@@ -6,16 +6,25 @@ plugins {
 }
 
 android {
-    namespace = "com.distributedLab.rarime"
+    namespace = "com.rarilabs.rarime"
     compileSdk = 34
+
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+
+    assetPacks += listOf(":zkp_assets")
 
     defaultConfig {
 
-        applicationId = "com.distributedLab.rarime"
+        applicationId = "com.rarilabs.rarime"
         minSdk = 27
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+
+        versionCode = 29
+        versionName = "1.0.29"
 
         externalNativeBuild {
             cmake {
@@ -24,11 +33,17 @@ android {
             }
 
             ndk {
+                //noinspection ChromeOsAbiSupport
                 abiFilters += "arm64-v8a"
             }
         }
 
-        resourceConfigurations.plus(listOf("en", "uk"))
+        resourceConfigurations.plus(
+            listOf(
+                "en",
+//                "uk"
+            )
+        )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -43,17 +58,49 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
+
+        debug { }
+
+        create("debug_mainnet") {
+            initWith(getByName("debug"))
+            buildConfigField("Boolean", "isTestnet", "false")
+        }
+
+
+        create("release_mainnet") {
+            initWith(getByName("release"))
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            )
+            buildConfigField("Boolean", "isTestnet", "false")
+        }
+        create("debug_testnet") {
+            initWith(getByName("debug"))
+            buildConfigField("Boolean", "isTestnet", "true")
+        }
+        create("release_testnet") {
+            initWith(getByName("release"))
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            )
+            buildConfigField("Boolean", "isTestnet", "true")
+        }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+        this.isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -65,6 +112,8 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+            excludes += "/META-INF/DISCLAIMER"
         }
     }
     externalNativeBuild {
@@ -76,7 +125,15 @@ android {
 }
 
 dependencies {
+    implementation("com.auth0.android:jwtdecode:2.0.2")
 
+    implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
+    implementation("com.squareup.moshi:moshi:1.15.1")
+    implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
+//    implementation("moe.banana:moshi-jsonapi:master-SNAPSHOT")
+
+    implementation("com.github.jeziellago:compose-markdown:0.5.0")
+    implementation("io.coil-kt:coil-compose:2.6.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -102,7 +159,7 @@ dependencies {
     implementation(libs.androidx.camera.extensions)
 
     //// ML-KIT ////
-    implementation("com.google.mlkit:text-recognition:16.0.0")
+    implementation(libs.text.recognition)
 
     //// ACCOMPANIST ////
     implementation("com.google.accompanist:accompanist-permissions:0.31.6-rc")
@@ -110,7 +167,7 @@ dependencies {
 
 
     implementation("com.github.mhshams:jnbis:1.1.0")
-    implementation("com.gemalto.jp2:jp2-android:1.0.3")
+    implementation("dev.keiji.jp2:jp2-android:1.0.4")
 
     val lifecycle_version = "2.7.0"
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
@@ -121,12 +178,14 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     implementation("net.sf.scuba:scuba-sc-android:0.0.20")
-
     implementation("com.google.code.gson:gson:2.10.1")
     implementation(files("libs/Identity.aar"))
 
     // QR Code
+    implementation("com.google.mlkit:barcode-scanning:17.3.0")
+    implementation("network.chaintech:qr-kit:1.0.6")
     implementation("com.lightspark:compose-qr-code:1.0.1")
+
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.biometric:biometric:1.1.0")
@@ -141,5 +200,15 @@ dependencies {
     //Web3
     implementation("org.web3j:core:4.9.8")
     implementation("org.bouncycastle:bcpkix-jdk15on:1.70")
+
+
+    implementation("com.google.android.play:asset-delivery:2.2.2")
+    implementation("com.google.android.play:asset-delivery-ktx:2.2.2")
+
+    implementation("com.google.android.play:app-update:2.1.0")
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
+
+
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 
 }
