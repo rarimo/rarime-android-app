@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorApiManager
 import com.rarilabs.rarime.api.ext_integrator.models.QueryProofGenResponse
+import com.rarilabs.rarime.config.Keys
 import com.rarilabs.rarime.contracts.rarimo.StateKeeper
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
@@ -18,6 +19,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
+import org.web3j.crypto.ECKeyPair
+import org.web3j.crypto.Sign
 import org.web3j.utils.Numeric
 import javax.inject.Inject
 
@@ -41,14 +44,21 @@ class LightProofHandlerViewModel @Inject constructor(
         get() = _identityInfo.asStateFlow()
 
     suspend fun signHashedEventId() {
-        val eventId = queryProofParametersRequest.value?.data?.attributes?.event_id
+        val eventIdHex = queryProofParametersRequest.value?.data?.attributes?.event_id
             ?: throw Exception("Event ID is null")
 
-        val signedEventId = identityManager.getProfiler().signSecp256k1(eventId)
+        val lightVerificationSKBytes = Numeric.hexStringToByteArray(Keys.lightVerificationSKHex)
+
+        val signedEventId = Sign.signMessage(
+            Numeric.hexStringToByteArray(eventIdHex),
+            ECKeyPair.create(lightVerificationSKBytes)
+        )
+
+        val signature = Numeric.toHexString(signedEventId.r) + Numeric.toHexString(signedEventId.s).removePrefix("0x") + Numeric.toHexString(signedEventId.v).removePrefix("0x")
 
         extIntegratorApiManager.lightSignatureCallback(
             queryProofParametersRequest.value!!.data.attributes.callback_url,
-            signedEventId,
+            signature,
             userIdHash = queryProofParametersRequest.value!!.data.attributes.callback_url.split("/").last()
         )
     }
