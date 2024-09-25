@@ -19,10 +19,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
+import org.web3j.crypto.Credentials
 import org.web3j.crypto.ECKeyPair
 import org.web3j.crypto.Sign
 import org.web3j.utils.Numeric
+import java.security.MessageDigest
 import javax.inject.Inject
+
+@OptIn(ExperimentalStdlibApi::class)
+fun String.hashedWithSha256() =
+    MessageDigest.getInstance("SHA-256")
+        .digest(toByteArray())
+        .toHexString()
 
 @HiltViewModel
 class LightProofHandlerViewModel @Inject constructor(
@@ -43,22 +51,29 @@ class LightProofHandlerViewModel @Inject constructor(
     val identityInfo: StateFlow<StateKeeper.IdentityInfo?>
         get() = _identityInfo.asStateFlow()
 
+    @OptIn(ExperimentalStdlibApi::class)
     suspend fun signHashedEventId() {
-        val eventIdHex = queryProofParametersRequest.value?.data?.attributes?.event_id
+        val eventDataHex = queryProofParametersRequest.value?.data?.attributes?.event_data
             ?: throw Exception("Event ID is null")
 
-        val lightVerificationSKBytes = Numeric.hexStringToByteArray(Keys.lightVerificationSKHex)
+        val hashedEventData = eventDataHex.hashedWithSha256()
 
-        val signedEventId = Sign.signMessage(
-            Numeric.hexStringToByteArray(eventIdHex),
-            ECKeyPair.create(lightVerificationSKBytes)
+        val lightVerificationSKBytes = Keys.lightVerificationSKHex.hexToByteArray()
+
+        val ecKeyPairInstance = ECKeyPair.create(lightVerificationSKBytes)
+
+        val credentials = Credentials.create(ecKeyPairInstance)
+
+        val signedEventData = Sign.signMessage(
+            hashedEventData.toByteArray(),
+            credentials.ecKeyPair
         )
 
-        val signature = Numeric.toHexString(signedEventId.r) + Numeric.toHexString(signedEventId.s).removePrefix("0x") + Numeric.toHexString(signedEventId.v).removePrefix("0x")
+        val signature = signedEventData.r + signedEventData.s + signedEventData.v
 
         extIntegratorApiManager.lightSignatureCallback(
             queryProofParametersRequest.value!!.data.attributes.callback_url,
-            signature,
+            signature.toHexString(),
             userIdHash = queryProofParametersRequest.value!!.data.attributes.callback_url.split("/").last()
         )
     }
