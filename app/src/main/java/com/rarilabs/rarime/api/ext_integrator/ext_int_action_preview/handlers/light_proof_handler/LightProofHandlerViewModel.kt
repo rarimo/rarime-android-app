@@ -79,34 +79,6 @@ class LightProofHandlerViewModel @Inject constructor(
         ]
         * */
 
-        /* Current result
-        [
-          "10173837175855187110340789168929067379762120721468043004582343112777374002432", // - nullifier
-          "30.03.2000", // - birthDate
-          "26.06.2029", // - expirationDate
-          "0", // - name
-          "0", // - nameResidual
-          "UKR", // - nationality
-          "0x554B52", // - citizenship
-          "MALE", // - sex
-          "2000033005896", // - documentNumber
-          "12345678900987654321", // - eventID
-          "0x1f9b2dbfb11c2c52fda170de3510a440282a18ccc6d2e45a8d64be8e2f062057", // - eventData
-          "239417204782096562633720300564158775618221865060411243542004733913763074901", // - idStateRoot
-          "35361", // - selector
-          "2024-09-27T17:44:03.299934", // - currentDate
-          "0", // - timestampLowerbound
-          "1726059494", // - timestampUpperbound
-          "0", // - identityCounterLowerbound
-          "1", // - identityCounterUpperbound
-          "0x303030303030", // - birthDateLowerbound
-          "0x303630393237", // - birthDateUpperbound
-          "52983525027888", // - expirationDateLowerbound
-          "52983525027888", // - expirationDateUpperbound
-          "0x554B52" // - citizenshipMask
-        ]
-        * */
-
         val queryProofPubSignals = mutableListOf<String>()
 
         queryProofParametersRequest.value?.data?.attributes?.let {
