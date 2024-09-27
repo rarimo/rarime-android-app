@@ -50,16 +50,6 @@ class LightProofHandlerViewModel @Inject constructor(
     val identityInfo: StateFlow<StateKeeper.IdentityInfo?>
         get() = _identityInfo.asStateFlow()
 
-    // Helper function to get the uncompressed public key with "04" prefix
-    fun getUncompressedPublicKey(publicKey: BigInteger): String {
-        val xCoord = publicKey.shiftRight(256).toString(16).padStart(64, '0') // First 32 bytes
-        val yCoord = publicKey.and(BigInteger("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", 16))
-            .toString(16).padStart(64, '0') // Last 32 bytes
-
-        // Prefix with "04" for uncompressed public key format
-        return "04$xCoord$yCoord"
-    }
-
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun signHashedEventId() {
         /* Query Proof pub signals
@@ -90,7 +80,6 @@ class LightProofHandlerViewModel @Inject constructor(
         ]
         * */
 
-        // TODO: convert queryProofParametersRequest.data.attributes to Query Proof pub signals
         val queryProofPubSignals = mutableListOf<String>()
 
         queryProofParametersRequest.value?.data?.attributes?.let {
@@ -230,23 +219,6 @@ class LightProofHandlerViewModel @Inject constructor(
             identityManager.privateKey.value,
             Gson().toJson(queryProofPubSignals).toByteArray()
         )
-
-//        val eventDataHex = queryProofParametersRequest.value?.data?.attributes?.event_data
-//            ?: throw Exception("Event ID is null")
-//
-//        val hashedEventData = eventDataHex.hashedWithSha256()
-//
-//        val lightVerificationSKBytes = Numeric.hexStringToByteArray(Keys.lightVerificationSKHex)
-//
-//        val ecKeyPairInstance = ECKeyPair.create(lightVerificationSKBytes)
-//
-//        val signedEventData = Sign.signMessage(
-//            Numeric.hexStringToByteArray(hashedEventData),
-//            ecKeyPairInstance,
-//            false
-//        )
-//
-//        val signature = signedEventData.r + signedEventData.s + signedEventData.v
 
         extIntegratorApiManager.lightSignatureCallback(
             queryProofParametersRequest.value!!.data.attributes.callback_url,
