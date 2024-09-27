@@ -14,10 +14,12 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -137,38 +139,65 @@ fun MainScreenContent(
 ) {
     val mainViewModel = LocalMainViewModel.current
 
-    val passportStatus = mainViewModel.passportStatus.collectAsState()
-
-    val isModalShown = mainViewModel.isModalShown.collectAsState()
-    val modalContent = mainViewModel.modalContent.collectAsState()
-
+    // Collect states using 'by' to avoid accessing .value
+    val passportStatus by mainViewModel.passportStatus.collectAsState()
+    val isModalShown by mainViewModel.isModalShown.collectAsState()
+    val modalContent by mainViewModel.modalContent.collectAsState()
     val pointsToken by mainViewModel.pointsToken.collectAsState()
 
     val enterProgramSheetState = rememberAppSheetState()
 
+    // Use remember to cache navBackStackEntry and currentRoute
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-
-    val currentRoute = navBackStackEntry?.destination?.route
-    LaunchedEffect(currentRoute) {
-        mainViewModel.setBottomBarVisibility(currentRoute != null && currentRoute in mainRoutes)
+    val currentRoute by remember(navBackStackEntry) {
+        derivedStateOf { navBackStackEntry?.destination?.route }
     }
 
-    fun simpleNavigate(route: String) {
-        navController.navigate(route)
+    // Compute shouldShowBottomBar based on currentRoute
+    val shouldShowBottomBar by remember(currentRoute) {
+        derivedStateOf { currentRoute != null && currentRoute in mainRoutes }
     }
 
-    fun navigateWithPopUp(route: String) {
-        if (route == Screen.Main.Rewards.RewardsMain.route) {
-            pointsToken?.balanceDetails?.attributes?.let {} ?: run {
-                enterProgramSheetState.show()
-                return
-            }
+    // Use LaunchedEffect to update bottom bar visibility when shouldShowBottomBar changes
+    LaunchedEffect(shouldShowBottomBar) {
+        mainViewModel.setBottomBarVisibility(shouldShowBottomBar)
+    }
+
+    // Use rememberUpdatedState for pointsToken and enterProgramSheetState
+    val pointsTokenState = rememberUpdatedState(pointsToken)
+    val enterProgramSheetStateState = rememberUpdatedState(enterProgramSheetState)
+
+    // Define navigation functions using remember to prevent recomposition
+    val simpleNavigate = remember(navController) {
+        { route: String ->
+            navController.navigate(route)
         }
+    }
 
-        navController.navigate(route) {
-            popUpTo(navController.graph.id) { inclusive = true }
-            restoreState = true
-            launchSingleTop = true
+    val navigateWithPopUp = remember(navController) {
+        { route: String ->
+            val currentPointsToken = pointsTokenState.value
+            val currentEnterProgramSheetState = enterProgramSheetStateState.value
+            if (route == Screen.Main.Rewards.RewardsMain.route) {
+                if (currentPointsToken?.balanceDetails?.attributes == null) {
+                    currentEnterProgramSheetState.show()
+                }else {
+                    //TODO: should be return from here
+                    navController.navigate(route) {
+                        popUpTo(navController.graph.id) { inclusive = true }
+                        restoreState = true
+                        launchSingleTop = true
+                    }
+                }
+            }else {
+                navController.navigate(route) {
+                    popUpTo(navController.graph.id) { inclusive = true }
+                    restoreState = true
+                    launchSingleTop = true
+                }
+            }
+
+
         }
     }
 
@@ -198,9 +227,9 @@ fun MainScreenContent(
                 navigateWithPopUp = { navigateWithPopUp(it) }
             )
 
-            if (isModalShown.value) {
+            if (isModalShown) {
                 Dialog(onDismissRequest = { mainViewModel.setModalVisibility(false) }) {
-                    modalContent.value()
+                    modalContent()
                 }
             }
 
@@ -218,7 +247,7 @@ fun MainScreenContent(
                     },
                     sheetState = enterProgramSheetState,
                     hide = hide,
-                    passportStatus = passportStatus.value,
+                    passportStatus = passportStatus,
                 )
             }
         }

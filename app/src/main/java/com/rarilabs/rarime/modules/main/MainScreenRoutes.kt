@@ -174,14 +174,13 @@ fun MainScreenRoutes(
             ScanPassportScreen(
                 onClose = {
                     coroutineScope.launch {
-                        mainViewModel.loadUserDetails()
-
+                        //mainViewModel.loadUserDetails()
                         navController.popBackStack()
                     }
                 },
                 onClaim = {
                     coroutineScope.launch {
-                        mainViewModel.loadUserDetails()
+                        //mainViewModel.loadUserDetails()
                         navigateWithPopUp(Screen.Claim.Specific.route)
                     }
                 }
@@ -192,15 +191,15 @@ fun MainScreenRoutes(
             ScanPassportScreen(
                 onClose = {
                     coroutineScope.launch {
-                        val a = mainViewModel.loadUserDetails()
-                        a
+//                        val a = mainViewModel.loadUserDetails()
+//                        a
                         navigateWithPopUp(Screen.Main.route)
                     }
                 },
                 onClaim = {
                     coroutineScope.launch {
-                        val a = mainViewModel.loadUserDetails()
-                        a
+//                        val a = mainViewModel.loadUserDetails()
+//                        a
                         navigateWithPopUp(Screen.Claim.Reserve.route)
                     }
                 }
@@ -419,7 +418,7 @@ fun AcceptInvitation(
             code?.let {
                 mainViewModel.acceptInvitation(code)
 
-                mainViewModel.loadUserDetails()
+                //mainViewModel.loadUserDetails()
 
                 onFinish()
             } ?: run {
