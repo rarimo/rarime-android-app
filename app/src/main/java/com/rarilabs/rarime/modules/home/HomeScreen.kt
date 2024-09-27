@@ -2,6 +2,7 @@ package com.rarilabs.rarime.modules.home
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
@@ -18,6 +19,10 @@ fun HomeScreen(
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val isShowPassport by homeViewModel.isShowPassport.collectAsState()
+
+    LaunchedEffect(Unit) {
+        homeViewModel.loadUserDetails()
+    }
 
     CompositionLocalProvider(LocalHomeViewModel provides homeViewModel) {
         if (isShowPassport) {
