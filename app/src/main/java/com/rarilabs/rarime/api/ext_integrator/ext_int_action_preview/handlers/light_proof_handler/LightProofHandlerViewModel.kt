@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorApiManager
 import com.rarilabs.rarime.api.ext_integrator.models.QueryProofGenResponse
-import com.rarilabs.rarime.config.Keys
 import com.rarilabs.rarime.contracts.rarimo.StateKeeper
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
@@ -20,9 +19,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
-import org.web3j.crypto.ECDSASignature
-import org.web3j.crypto.ECKeyPair
-import org.web3j.crypto.Sign
 import org.web3j.utils.Numeric
 import java.math.BigInteger
 import java.security.MessageDigest
