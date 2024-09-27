@@ -50,7 +50,6 @@ class LightProofHandlerViewModel @Inject constructor(
     val identityInfo: StateFlow<StateKeeper.IdentityInfo?>
         get() = _identityInfo.asStateFlow()
 
-    @OptIn(ExperimentalStdlibApi::class)
     suspend fun signHashedEventId() {
         /* Query Proof pub signals
         [
@@ -80,21 +79,50 @@ class LightProofHandlerViewModel @Inject constructor(
         ]
         * */
 
+        /* Current result
+        [
+          "10173837175855187110340789168929067379762120721468043004582343112777374002432", // - nullifier
+          "30.03.2000", // - birthDate
+          "26.06.2029", // - expirationDate
+          "0", // - name
+          "0", // - nameResidual
+          "UKR", // - nationality
+          "0x554B52", // - citizenship
+          "MALE", // - sex
+          "2000033005896", // - documentNumber
+          "12345678900987654321", // - eventID
+          "0x1f9b2dbfb11c2c52fda170de3510a440282a18ccc6d2e45a8d64be8e2f062057", // - eventData
+          "239417204782096562633720300564158775618221865060411243542004733913763074901", // - idStateRoot
+          "35361", // - selector
+          "2024-09-27T17:44:03.299934", // - currentDate
+          "0", // - timestampLowerbound
+          "1726059494", // - timestampUpperbound
+          "0", // - identityCounterLowerbound
+          "1", // - identityCounterUpperbound
+          "0x303030303030", // - birthDateLowerbound
+          "0x303630393237", // - birthDateUpperbound
+          "52983525027888", // - expirationDateLowerbound
+          "52983525027888", // - expirationDateUpperbound
+          "0x554B52" // - citizenshipMask
+        ]
+        * */
+
         val queryProofPubSignals = mutableListOf<String>()
 
         queryProofParametersRequest.value?.data?.attributes?.let {
             // nullifier
-            val nullifier = identityManager.getUserPointsNullifier()
+            val nullifier = identityManager.getProfiler().calculateEventNullifierInt(
+                it.event_id
+            )
             queryProofPubSignals.add(nullifier)
 
             // birthDate
-            val birthDate = passportManager.passport.value?.personDetails?.birthDate
-                ?: throw Exception("Birth Date is null")
+            val birthDate = "0x303030303030"
 
             queryProofPubSignals.add(birthDate)
+
             // expirationDate
-            val expirationDate = passportManager.passport.value?.personDetails?.expiryDate
-                ?: throw Exception("Expiration Date is null")
+            val expirationDate = "0x303030303030"
 
             queryProofPubSignals.add(expirationDate)
 
@@ -105,51 +133,43 @@ class LightProofHandlerViewModel @Inject constructor(
             queryProofPubSignals.add("0")
 
             // nationality
-            val nationality = passportManager.passport.value?.personDetails?.nationality
-                ?: throw Exception("Nationality is null")
+            val nationality = "0"
 
             queryProofPubSignals.add(nationality)
 
             // citizenship
-            val citizenship = queryProofParametersRequest.value?.data?.attributes?.citizenship_mask // FIXME
-
-            if (citizenship == null) {
-                throw Exception("Citizenship is null")
-            }
+            val citizenship = passportManager.passport.value?.personDetails?.issuerAuthority
+                ?: throw Exception("Citizenship is null")
 
             queryProofPubSignals.add(citizenship)
+
             // sex
             val sex = passportManager.passport.value?.personDetails?.gender ?: throw Exception("sex is null")
 
             queryProofPubSignals.add(sex)
 
             // documentNumber
-            val documentNumber = passportManager.passport.value?.personDetails?.personalNumber
-                ?: throw Exception("documentNumber is null")
+            val documentNumber = "0"
 
             queryProofPubSignals.add(documentNumber)
 
             // eventID
-            val eventID = queryProofParametersRequest.value?.data?.attributes?.event_id
-                ?: throw Exception("Event ID is null")
+            val eventID = it.event_id
 
             queryProofPubSignals.add(eventID)
 
             // eventData
-            val eventData = queryProofParametersRequest.value?.data?.attributes?.event_data
-                ?: throw Exception("Event Data is null")
+            val eventData = it.event_data
 
             queryProofPubSignals.add(eventData)
 
             // idStateRoot
-            val idStateRoot = identityManager.registrationProof.value?.pub_signals?.get(0)
-                ?: throw Exception("idStateRoot is null") // FIXME
+            val idStateRoot = "0"
 
             queryProofPubSignals.add(idStateRoot)
 
             // selector
-            val selector = queryProofParametersRequest.value?.data?.attributes?.selector
-                ?: throw Exception("selector is null")
+            val selector = it.selector
 
             queryProofPubSignals.add(selector)
 
@@ -159,61 +179,54 @@ class LightProofHandlerViewModel @Inject constructor(
             queryProofPubSignals.add(currentDate)
 
             // timestampLowerbound
-            val timestampLowerbound = queryProofParametersRequest.value?.data?.attributes?.timestamp_lower_bound
-                ?: throw Exception("timestampLowerbound is null")
+            val timestampLowerbound = it.timestamp_lower_bound
 
             queryProofPubSignals.add(timestampLowerbound)
 
             // timestampUpperbound
-            val timestampUpperbound = queryProofParametersRequest.value?.data?.attributes?.timestamp_upper_bound
-                ?: throw Exception("timestampUpperbound is null")
+            val timestampUpperbound = it.timestamp_upper_bound
 
             queryProofPubSignals.add(timestampUpperbound)
 
             // identityCounterLowerbound
-            val identityCounterLowerbound = queryProofParametersRequest.value?.data?.attributes?.identity_counter_lower_bound
-                ?: throw Exception("identityCounterLowerbound is null")
+            val identityCounterLowerbound = it.identity_counter_lower_bound
 
             queryProofPubSignals.add(identityCounterLowerbound.toString())
 
             // identityCounterUpperbound
-            val identityCounterUpperbound = queryProofParametersRequest.value?.data?.attributes?.identity_counter_upper_bound
-                ?: throw Exception("identityCounterUpperbound is null")
+            val identityCounterUpperbound = it.identity_counter_upper_bound
 
             queryProofPubSignals.add(identityCounterUpperbound.toString())
 
             // birthDateLowerbound
-            val birthDateLowerbound = queryProofParametersRequest.value?.data?.attributes?.birth_date_lower_bound
-                ?: throw Exception("birthDateLowerbound is null")
+            val birthDateLowerbound = it.birth_date_lower_bound
 
             queryProofPubSignals.add(birthDateLowerbound)
 
             // birthDateUpperbound
-            val birthDateUpperbound = queryProofParametersRequest.value?.data?.attributes?.birth_date_upper_bound
-                ?: throw Exception("birthDateUpperbound is null")
+            val birthDateUpperbound = it.birth_date_upper_bound
 
             queryProofPubSignals.add(birthDateUpperbound)
 
             // expirationDateLowerbound
-            val expirationDateLowerbound = queryProofParametersRequest.value?.data?.attributes?.expiration_date_lower_bound
-                ?: throw Exception("expirationDateLowerbound is null")
+            val expirationDateLowerbound = it.expiration_date_lower_bound
 
             queryProofPubSignals.add(expirationDateLowerbound)
 
             // expirationDateUpperbound
-            val expirationDateUpperbound = queryProofParametersRequest.value?.data?.attributes?.expiration_date_upper_bound
-                ?: throw Exception("expirationDateUpperbound is null")
+            val expirationDateUpperbound = it.expiration_date_upper_bound
 
             queryProofPubSignals.add(expirationDateUpperbound)
 
             // citizenshipMask
-            val citizenshipMask = queryProofParametersRequest.value?.data?.attributes?.citizenship_mask
-                ?: throw Exception("citizenshipMask is null")
+            val citizenshipMask = it.citizenship_mask
 
             queryProofPubSignals.add(citizenshipMask)
         } ?: run {
             throw Exception("Query Proof parameters are null")
         }
+
+        Log.i("queryProofPubSignals", Gson().toJson(queryProofPubSignals).toString())
 
         val signature = Identity.signPubSignalsWithSecp256k1(
             identityManager.privateKey.value,
