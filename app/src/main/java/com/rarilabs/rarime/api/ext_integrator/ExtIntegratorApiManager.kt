@@ -34,7 +34,7 @@ class ExtIntegratorApiManager @Inject constructor(
             }
         }
     }
-    suspend fun lightSignatureCallback(url: String, signature: String, userIdHash: String) {
+    suspend fun lightSignatureCallback(url: String, pubSignals: List<String>, signature: String, userIdHash: String) {
         return withContext(Dispatchers.IO) {
             try {
                 extIntegratorAPI.lightSignatureCallback(
@@ -43,6 +43,7 @@ class ExtIntegratorApiManager @Inject constructor(
                         data = LightSignatureCallbackRequestData(
                             id = userIdHash,
                             attributes = LightSignatureCallbackRequestAttributes(
+                                pub_signals = pubSignals,
                                 signature = signature
                             )
                         )

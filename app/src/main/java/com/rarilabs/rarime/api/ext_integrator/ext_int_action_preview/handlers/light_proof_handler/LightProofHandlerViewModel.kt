@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorApiManager
 import com.rarilabs.rarime.api.ext_integrator.models.QueryProofGenResponse
+import com.rarilabs.rarime.config.Keys
 import com.rarilabs.rarime.contracts.rarimo.StateKeeper
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
@@ -23,6 +24,7 @@ import org.web3j.utils.Numeric
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import javax.inject.Inject
 
 @OptIn(ExperimentalStdlibApi::class)
@@ -51,34 +53,6 @@ class LightProofHandlerViewModel @Inject constructor(
         get() = _identityInfo.asStateFlow()
 
     suspend fun signHashedEventId() {
-        /* Query Proof pub signals
-        [
-             "20925303098627062266630214635967906856225360340756326562498326001746719100911", // 0 - nullifier
-             "52992115355956", // 1 - birthDate
-             "55216908480563", // 2 - expirationDate
-             "0", // 3 - name
-             "0", // 4 - nameResidual
-             "0", // 5 - nationality
-             "5589842", // 6 - citizenship
-             "0", // 7 - sex
-             "0", // 8 - documentNumber
-             "304358862882731539112827930982999386691702727710421481944329166126417129570", // 9 - eventID
-             "1217571210886365587192326979343136122389414675532", // 10 - eventData
-             "5904469035765435216409767735512782299719282306270684213646687525744667841608", // 11 - idStateRoot
-             "39", // 12 - selector
-             "52983525027888", // 13 - currentDate
-             "0", // 14 - timestampLowerbound
-             "0", // 15 - timestampUpperbound
-             "1", // 16 - identityCounterLowerbound
-             "0", // 17 - identityCounterUpperbound
-             "52983525027888", // 18 - birthDateLowerbound
-             "52983525027888", // 19 - birthDateUpperbound
-             "52983525027888", // 20 - expirationDateLowerbound
-             "5298352502788", // 21 - expirationDateUpperbound
-             "0" // 22 - citizenshipMask
-        ]
-        * */
-
         val queryProofPubSignals = mutableListOf<String>()
 
         queryProofParametersRequest.value?.data?.attributes?.let {
@@ -91,12 +65,16 @@ class LightProofHandlerViewModel @Inject constructor(
             // birthDate
             val birthDate = "0x303030303030"
 
-            queryProofPubSignals.add(birthDate)
+            val birthDateBN = BigInteger(Numeric.hexStringToByteArray(birthDate))
+
+            queryProofPubSignals.add(birthDateBN.toString())
 
             // expirationDate
             val expirationDate = "0x303030303030"
 
-            queryProofPubSignals.add(expirationDate)
+            val expirationDateBN = BigInteger(Numeric.hexStringToByteArray(expirationDate))
+
+            queryProofPubSignals.add(expirationDateBN.toString())
 
             // name
             queryProofPubSignals.add("0")
@@ -113,12 +91,16 @@ class LightProofHandlerViewModel @Inject constructor(
             val citizenship = passportManager.passport.value?.personDetails?.issuerAuthority
                 ?: throw Exception("Citizenship is null")
 
-            queryProofPubSignals.add(citizenship)
+            val citizenshipBN = BigInteger(citizenship.toByteArray())
+
+            queryProofPubSignals.add(citizenshipBN.toString())
 
             // sex
             val sex = passportManager.passport.value?.personDetails?.gender ?: throw Exception("sex is null")
 
-            queryProofPubSignals.add(sex)
+            val sexBN = BigInteger(sex.toByteArray())
+
+            queryProofPubSignals.add(sexBN.toString())
 
             // documentNumber
             val documentNumber = "0"
@@ -133,7 +115,9 @@ class LightProofHandlerViewModel @Inject constructor(
             // eventData
             val eventData = it.event_data
 
-            queryProofPubSignals.add(eventData)
+            val eventDataBN = BigInteger(Numeric.hexStringToByteArray(eventData))
+
+            queryProofPubSignals.add(eventDataBN.toString())
 
             // idStateRoot
             val idStateRoot = "0"
@@ -146,9 +130,11 @@ class LightProofHandlerViewModel @Inject constructor(
             queryProofPubSignals.add(selector)
 
             // currentDate
-            val currentDate = LocalDateTime.now().toString()
+            val currentDate = LocalDateTime.now()
 
-            queryProofPubSignals.add(currentDate)
+            val currentDateUnix = currentDate.toEpochSecond(ZoneOffset.UTC)
+
+            queryProofPubSignals.add(currentDateUnix.toString())
 
             // timestampLowerbound
             val timestampLowerbound = it.timestamp_lower_bound
@@ -173,12 +159,16 @@ class LightProofHandlerViewModel @Inject constructor(
             // birthDateLowerbound
             val birthDateLowerbound = it.birth_date_lower_bound
 
-            queryProofPubSignals.add(birthDateLowerbound)
+            val birthDateLowerboundBN = BigInteger(Numeric.hexStringToByteArray(birthDateLowerbound))
+
+            queryProofPubSignals.add(birthDateLowerboundBN.toString())
 
             // birthDateUpperbound
             val birthDateUpperbound = it.birth_date_upper_bound
 
-            queryProofPubSignals.add(birthDateUpperbound)
+            val birthDateUpperboundBN = BigInteger(Numeric.hexStringToByteArray(birthDateUpperbound))
+
+            queryProofPubSignals.add(birthDateUpperboundBN.toString())
 
             // expirationDateLowerbound
             val expirationDateLowerbound = it.expiration_date_lower_bound
@@ -193,7 +183,9 @@ class LightProofHandlerViewModel @Inject constructor(
             // citizenshipMask
             val citizenshipMask = it.citizenship_mask
 
-            queryProofPubSignals.add(citizenshipMask)
+            val citizenshipMaskBN = BigInteger(Numeric.hexStringToByteArray(citizenshipMask))
+
+            queryProofPubSignals.add(citizenshipMaskBN.toString())
         } ?: run {
             throw Exception("Query Proof parameters are null")
         }
@@ -201,12 +193,13 @@ class LightProofHandlerViewModel @Inject constructor(
         Log.i("queryProofPubSignals", Gson().toJson(queryProofPubSignals).toString())
 
         val signature = Identity.signPubSignalsWithSecp256k1(
-            identityManager.privateKey.value,
+            Keys.lightVerificationSKHex,
             Gson().toJson(queryProofPubSignals).toByteArray()
         )
 
         extIntegratorApiManager.lightSignatureCallback(
             queryProofParametersRequest.value!!.data.attributes.callback_url,
+            pubSignals = queryProofPubSignals,
             signature.removePrefix("0x"),
             userIdHash = queryProofParametersRequest.value!!.data.attributes.callback_url.split("/").last()
         )

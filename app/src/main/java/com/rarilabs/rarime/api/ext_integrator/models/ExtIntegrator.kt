@@ -88,5 +88,6 @@ data class LightSignatureCallbackRequestData(
 
 @JsonClass(generateAdapter = true)
 data class LightSignatureCallbackRequestAttributes(
+    val pub_signals: List<String>,
     val signature: String,
 )
