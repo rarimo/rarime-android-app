@@ -40,6 +40,8 @@ class LightProofHandlerViewModel @Inject constructor(
     private val contractManager: RarimoContractManager,
     private val identityManager: IdentityManager,
 ): ViewModel() {
+
+    //TODO: Remove MutableStateFlow if it isn’t used in the UI
     private var _queryProofParametersRequest = MutableStateFlow<QueryProofGenResponse?>(null)
     val queryProofParametersRequest: StateFlow<QueryProofGenResponse?>
         get() = _queryProofParametersRequest.asStateFlow()
