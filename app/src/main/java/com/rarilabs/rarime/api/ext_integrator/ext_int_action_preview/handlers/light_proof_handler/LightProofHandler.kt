@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
@@ -29,9 +30,9 @@ fun LightProofHandler(
     fun onSuccessHandler() {
         mainViewModel.setModalContent {
             AlertModalContent(
-                title = "Success", // TODO: translate me
-                subtitle = "You have successfully withdraw", // TODO: translate me
-                buttonText = "Ok", // TODO: translate me
+                title = stringResource(R.string.light_verification_success_title),
+                subtitle = stringResource(R.string.light_verification_success_subtitle),
+                buttonText = stringResource(R.string.light_verification_success_btn),
                 onClose = {
                     mainViewModel.setModalVisibility(false)
                     onSuccess.invoke()
@@ -45,8 +46,8 @@ fun LightProofHandler(
         mainViewModel.setModalContent {
             AlertModalContent(
                 withConfetti = false,
-                title = "Failed", // TODO: translate me
-                subtitle = "Failed to withdraw", // TODO: translate me
+                title = stringResource(R.string.light_verification_error_title),
+                subtitle = stringResource(R.string.light_verification_error_subtitle),
                 mediaContent = {
                     AppIcon(
                         id = R.drawable.ic_warning,
@@ -59,7 +60,7 @@ fun LightProofHandler(
                 },
                 buttonBg = RarimeTheme.colors.errorMain,
                 buttonColor = RarimeTheme.colors.baseWhite,
-                buttonText = "Ok", // TODO: translate me
+                buttonText = stringResource(R.string.light_verification_error_btn),
                 onClose = {
                     mainViewModel.setModalVisibility(false)
                     onFail.invoke()
@@ -81,7 +82,7 @@ fun LightProofHandler(
         },
 
         texts = HandlerPreviewerLayoutTexts(
-            title = "Light verification" // TODO: translate me
+            title = stringResource(R.string.light_verification_sheet_title)
         ),
 
         onSuccess = { onSuccessHandler() },
