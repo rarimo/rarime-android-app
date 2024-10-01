@@ -1,5 +1,6 @@
 package com.rarilabs.rarime
 
+import com.rarilabs.rarime.config.Keys
 import com.rarilabs.rarime.data.RarimoChains
 
 val BaseConfig: IConfig = if (BuildConfig.isTestnet) TestNetConfig else MainnetConfig
@@ -30,6 +31,7 @@ interface IConfig {
     val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP: Long
     val FEEDBACK_EMAIL: String
     val CHAIN: RarimoChains
+    val lightVerificationSKHex: String
 }
 
 /* TESTNET */
@@ -66,6 +68,7 @@ object TestNetConfig: IConfig {
 
     override val FEEDBACK_EMAIL = "apereliez1@gmail.com"
     override val CHAIN = RarimoChains.MainnetBeta
+    override val lightVerificationSKHex = Keys.lightVerificationSKHex
 }
 
 // Mainnet
@@ -101,4 +104,6 @@ object MainnetConfig: IConfig {
     override val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP = 1715688000L
     override val FEEDBACK_EMAIL = "info@rarilabs.com"
     override val CHAIN = RarimoChains.Mainnet
+    override val lightVerificationSKHex = Keys.lightVerificationSKHex
+
 }
