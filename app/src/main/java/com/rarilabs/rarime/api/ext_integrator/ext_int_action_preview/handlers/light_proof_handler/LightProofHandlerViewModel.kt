@@ -3,9 +3,9 @@ package com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.l
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
+import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorApiManager
 import com.rarilabs.rarime.api.ext_integrator.models.QueryProofGenResponse
-import com.rarilabs.rarime.config.Keys
 import com.rarilabs.rarime.contracts.rarimo.StateKeeper
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
@@ -193,7 +193,7 @@ class LightProofHandlerViewModel @Inject constructor(
         Log.i("queryProofPubSignals", Gson().toJson(queryProofPubSignals).toString())
 
         val signature = Identity.signPubSignalsWithSecp256k1(
-            Keys.lightVerificationSKHex,
+            BaseConfig.lightVerificationSKHex,
             Gson().toJson(queryProofPubSignals).toByteArray()
         )
 
