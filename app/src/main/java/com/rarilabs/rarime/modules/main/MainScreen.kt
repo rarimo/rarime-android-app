@@ -7,8 +7,11 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -34,6 +37,7 @@ import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppSheetState
+import com.rarilabs.rarime.ui.components.UiSnackbarDefault
 import com.rarilabs.rarime.ui.components.enter_program.EnterProgramFlow
 import com.rarilabs.rarime.ui.components.enter_program.UNSPECIFIED_PASSPORT_STEPS
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
@@ -144,6 +148,7 @@ fun MainScreenContent(
     val isModalShown by mainViewModel.isModalShown.collectAsState()
     val modalContent by mainViewModel.modalContent.collectAsState()
     val pointsToken by mainViewModel.pointsToken.collectAsState()
+    val snackbarContent = mainViewModel.snackbarContent.collectAsState()
 
     val enterProgramSheetState = rememberAppSheetState()
 
@@ -209,6 +214,16 @@ fun MainScreenContent(
                         currentRoute = currentRoute,
                         onRouteSelected = { navigateWithPopUp(it) }
                     )
+                }
+            },
+
+            snackbarHost = {
+                SnackbarHost(hostState = mainViewModel.snackbarHostState.value) {
+                    snackbarContent.value?.let {
+                        Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                            UiSnackbarDefault(it)
+                        }
+                    }
                 }
             },
         ) {
