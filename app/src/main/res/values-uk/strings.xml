@@ -315,4 +315,11 @@
     <string name="ext_action_query_proof_gen_selector">selector</string>
     <string name="ext_action_query_proof_gen_timestamp_lower_bound">timestamp_lower_bound</string>
     <string name="ext_action_query_proof_gen_timestamp_upper_bound">timestamp_upper_bound</string>
+
+    <string name="snackbar_success_title">Success</string>
+    <string name="snackbar_warning_title">Processing</string>
+    <string name="snackbar_error_title">Error</string>
+    <string name="snackbar_success_message">Operation completed successfully</string>
+    <string name="snackbar_error_message">An error has occured, please try again</string>
+    <string name="snackbar_warning_message">Please wait</string>
 </resources>
