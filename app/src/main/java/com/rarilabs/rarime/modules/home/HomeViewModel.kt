@@ -8,6 +8,7 @@ import com.rarilabs.rarime.data.tokens.PointsToken
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.manager.WalletManager
+import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -53,21 +54,26 @@ class HomeViewModel @Inject constructor(
     }
 
     suspend fun loadUserDetails() = coroutineScope {
+        val passportStatus = async {
+            try {
+                passportManager.loadPassportStatus()
+            }catch (e: Exception) {
+                ErrorHandler.logError("loadPassportStatus", "Error", e)
+            }
+        }
         val walletBalances = async {
             try {
                 walletManager.loadBalances()
             } catch (e: Exception) { /* Handle exception */
-            }
-        }
-        val airDropDetails = async {
-            try {
-                airDropManager.getAirDropByNullifier()
-            } catch (e: Exception) { /* Handle exception */
+                ErrorHandler.logError("loadBalances ", "Error", e)
             }
         }
 
+
+
         // Await for all the async operations to complete
+        passportStatus.await()
         walletBalances.await()
-        airDropDetails.await()
+
     }
 }

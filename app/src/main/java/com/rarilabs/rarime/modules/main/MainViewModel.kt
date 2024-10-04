@@ -114,14 +114,6 @@ class MainViewModel @Inject constructor(
                 /* Handle exception */
             }
         }
-        val airDropDetails = async {
-            try {
-                airDropManager.getAirDropByNullifier()
-            } catch (e: Exception) {
-                e.printStackTrace()
-                /* Handle exception */
-            }
-        }
         val passportStatus = async {
             try {
                 passportManager.loadPassportStatus()
@@ -133,7 +125,6 @@ class MainViewModel @Inject constructor(
 
         // Await for all the async operations to complete
         walletBalances.await()
-        airDropDetails.await()
         passportStatus.await()
     }
 
