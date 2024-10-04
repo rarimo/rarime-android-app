@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -67,24 +68,25 @@ enum class SnackbarSeverity {
 }
 
 data class SnackbarShowOptions(
-    val severity: SnackbarSeverity,
-    val containerColor: Color,
-    val title: String,
-    val message: String,
-    val textColor: Color,
-    val icon: Int,
-    val iconTint: Color,
+    val severity: SnackbarSeverity?,
+    val containerColor: Color?,
+    val title: String?,
+    val message: String?,
+    val textColor: Color?,
+    val icon: Int?,
+    val iconTint: Color?,
+    val duration: SnackbarDuration,
 )
 
-@Composable
 fun getSnackbarDefaultShowOptions(
-    severity: SnackbarSeverity = SnackbarSeverity.Success,
-    containerColor: Color = severity.containerColor(),
-    title: String = severity.defaultTitle(),
-    message: String = severity.defaultMessage(),
-    textColor: Color = severity.textColor(),
-    icon: Int = severity.icon(),
-    iconTint: Color = severity.iconTint(),
+    severity: SnackbarSeverity? = null,
+    containerColor: Color? = null,
+    title: String? = null,
+    message: String? = null,
+    textColor: Color? = null,
+    icon: Int? = null,
+    iconTint: Color? = null,
+    duration: SnackbarDuration = SnackbarDuration.Short,
 ): SnackbarShowOptions {
     return SnackbarShowOptions(
         severity = severity,
@@ -94,6 +96,7 @@ fun getSnackbarDefaultShowOptions(
         textColor = textColor,
         icon = icon,
         iconTint = iconTint,
+        duration = duration,
     )
 }
 
@@ -101,29 +104,37 @@ fun getSnackbarDefaultShowOptions(
 fun UiSnackbarDefault(
     options: SnackbarShowOptions = getSnackbarDefaultShowOptions()
 ) {
+    val severity = options.severity ?: SnackbarSeverity.Success
+    val containerColor = options.containerColor ?: severity.containerColor()
+    val title = options.title ?: severity.defaultTitle()
+    val message = options.message ?: severity.defaultMessage()
+    val textColor = options.textColor ?: severity.textColor()
+    val icon = options.icon ?: severity.icon()
+    val iconTint = options.iconTint ?: severity.iconTint()
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(options.containerColor, RoundedCornerShape(16.dp))
+            .background(containerColor, RoundedCornerShape(16.dp))
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        AppIcon(id = options.icon, tint = options.iconTint, size = 20.dp)
+        AppIcon(id = icon, tint = iconTint, size = 20.dp)
 
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
-                text = options.title,
+                text = title,
                 style = RarimeTheme.typography.subtitle4,
-                color = options.textColor
+                color = textColor
             )
 
             Text(
-                text = options.message,
+                text = message,
                 style = RarimeTheme.typography.body4,
-                color = options.textColor.copy(alpha = 0.64f)
+                color = textColor.copy(alpha = 0.64f)
             )
         }
     }

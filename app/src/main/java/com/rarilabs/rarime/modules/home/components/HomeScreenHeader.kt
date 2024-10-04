@@ -2,6 +2,8 @@ package com.rarilabs.rarime.modules.home.components
 
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
+import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.data.tokens.PreviewerToken
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
@@ -88,8 +91,17 @@ fun HomeScreenHeader(
         walletAsset = walletAsset,
         onBalanceClick = onBalanceClick,
         actionContent = {
-            IconButton(onClick = { showQrScanner() }) {
-                AppIcon(id = R.drawable.ic_qr_code, size = 24.dp, tint = RarimeTheme.colors.textPrimary)
+            if (mainViewModel.passportStatus.value != PassportStatus.UNSCANNED){
+                AppIcon(
+                    id = R.drawable.ic_qr_code,
+                    size = 20.dp,
+                    tint = RarimeTheme.colors.textPrimary,
+                    modifier = Modifier.clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                        onClick = { showQrScanner() }
+                    )
+                )
             }
         }
     )
@@ -101,15 +113,15 @@ fun HomeScreenHeaderContent(
     onBalanceClick: () -> Unit = {},
     actionContent: @Composable () -> Unit = {},
 ) {
-
-
     Column(
-        verticalArrangement = Arrangement.spacedBy(24.dp),
-        modifier = Modifier.padding(horizontal = 8.dp)
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+        modifier = Modifier
+            .padding(top = 16.dp)
+            .padding(horizontal = 8.dp)
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
             modifier = Modifier
                 .fillMaxWidth()
         ) {
@@ -155,9 +167,7 @@ fun HomeScreenHeaderContentPreview() {
         HomeScreenHeaderContent(
             walletAsset = WalletAsset("0x000000", PreviewerToken("0x00000000", "Reserved RMO", "RRMO")),
             actionContent = {
-                IconButton(onClick = {  }) {
-                    AppIcon(id = R.drawable.ic_qr_code, size = 24.dp, tint = RarimeTheme.colors.textPrimary)
-                }
+                AppIcon(id = R.drawable.ic_qr_code, size = 20.dp, tint = RarimeTheme.colors.textPrimary)
             }
         )
     }
