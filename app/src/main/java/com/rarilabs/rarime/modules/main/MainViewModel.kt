@@ -159,7 +159,10 @@ class MainViewModel @Inject constructor(
 
     suspend fun showSnackbar(options: SnackbarShowOptions) {
         _snackbarContent.value = options
-        val result = snackbarHostState.value.showSnackbar("")
+        val result = snackbarHostState.value.showSnackbar(
+            message = "",
+            duration = options.duration,
+        )
 
         when (result) {
             SnackbarResult.Dismissed -> {
