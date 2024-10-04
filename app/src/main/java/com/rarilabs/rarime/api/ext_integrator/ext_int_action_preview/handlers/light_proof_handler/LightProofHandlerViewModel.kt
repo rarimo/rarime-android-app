@@ -33,6 +33,9 @@ fun String.hashedWithSha256() =
         .digest(toByteArray())
         .toHexString()
 
+class YourAgeDoesNotMeetTheRequirements : Exception()
+class YourCitizenshipDoesNotMeetTheRequirements : Exception()
+
 @HiltViewModel
 class LightProofHandlerViewModel @Inject constructor(
     private val extIntegratorApiManager: ExtIntegratorApiManager,
@@ -40,6 +43,8 @@ class LightProofHandlerViewModel @Inject constructor(
     private val contractManager: RarimoContractManager,
     private val identityManager: IdentityManager,
 ): ViewModel() {
+
+    //TODO: Remove MutableStateFlow if it isn’t used in the UI
     private var _queryProofParametersRequest = MutableStateFlow<QueryProofGenResponse?>(null)
     val queryProofParametersRequest: StateFlow<QueryProofGenResponse?>
         get() = _queryProofParametersRequest.asStateFlow()
@@ -52,10 +57,39 @@ class LightProofHandlerViewModel @Inject constructor(
     val identityInfo: StateFlow<StateKeeper.IdentityInfo?>
         get() = _identityInfo.asStateFlow()
 
+    private val _requestMinimumAge = MutableStateFlow(0)
+    val requestMinimumAge: StateFlow<Int>
+        get() = _requestMinimumAge.asStateFlow()
+
+    private val _requestCitizenship = MutableStateFlow<String>("")
+    val requestCitizenship: StateFlow<String>
+        get() = _requestCitizenship.asStateFlow()
+
+    private var _exceptions = MutableStateFlow<List<Exception>>(listOf())
+    val exceptions: StateFlow<List<Exception>>
+        get() = _exceptions.asStateFlow()
+
     suspend fun signHashedEventId() {
         val queryProofPubSignals = mutableListOf<String>()
+        var tempExceptions = mutableListOf<Exception>()
 
         queryProofParametersRequest.value?.data?.attributes?.let {
+            // citizenship
+            val citizenship = passportManager.passport.value?.personDetails?.issuerAuthority
+                ?: throw Exception("Citizenship is null")
+
+            if (requestCitizenship.value.isNotEmpty() && requestCitizenship.value != citizenship) {
+                tempExceptions.add(YourCitizenshipDoesNotMeetTheRequirements())
+            }
+
+            val birthDate = passportManager.passport.value?.personDetails?.birthDate
+                ?: throw Exception("Birth date is null")
+            val age = calculateAgeFromBirthDate(birthDate)
+
+            if (requestMinimumAge.value > 0 && age < requestMinimumAge.value) {
+                tempExceptions.add(YourAgeDoesNotMeetTheRequirements())
+            }
+
             // nullifier
             val nullifier = identityManager.getProfiler().calculateEventNullifierInt(
                 it.event_id
@@ -63,17 +97,11 @@ class LightProofHandlerViewModel @Inject constructor(
             queryProofPubSignals.add(nullifier)
 
             // birthDate
-            val birthDate = "0x303030303030"
-
-            val birthDateBN = BigInteger(Numeric.hexStringToByteArray(birthDate))
-
+            val birthDateBN = BigInteger(Numeric.hexStringToByteArray("0x303030303030"))
             queryProofPubSignals.add(birthDateBN.toString())
 
             // expirationDate
-            val expirationDate = "0x303030303030"
-
-            val expirationDateBN = BigInteger(Numeric.hexStringToByteArray(expirationDate))
-
+            val expirationDateBN = BigInteger(Numeric.hexStringToByteArray("0x303030303030"))
             queryProofPubSignals.add(expirationDateBN.toString())
 
             // name
@@ -87,12 +115,7 @@ class LightProofHandlerViewModel @Inject constructor(
 
             queryProofPubSignals.add(nationality)
 
-            // citizenship
-            val citizenship = passportManager.passport.value?.personDetails?.issuerAuthority
-                ?: throw Exception("Citizenship is null")
-
             val citizenshipBN = BigInteger(citizenship.toByteArray())
-
             queryProofPubSignals.add(citizenshipBN.toString())
 
             // sex
@@ -190,7 +213,11 @@ class LightProofHandlerViewModel @Inject constructor(
             throw Exception("Query Proof parameters are null")
         }
 
-        Log.i("queryProofPubSignals", Gson().toJson(queryProofPubSignals).toString())
+        if (tempExceptions.isNotEmpty()) {
+            _exceptions.value = tempExceptions
+
+            throw tempExceptions.first()
+        }
 
         val signature = Identity.signPubSignalsWithSecp256k1(
             BaseConfig.lightVerificationSKHex,
@@ -236,7 +263,7 @@ class LightProofHandlerViewModel @Inject constructor(
         val tempMap = mutableMapOf<String, String>()
 
         try {
-            var age_lower_bound_years = if (
+            val ageLowerBoundYears = if (
                 queryProofParametersRequest.value?.data?.attributes?.birth_date_upper_bound != null &&
                 queryProofParametersRequest.value?.data?.attributes?.birth_date_upper_bound != "0x303030303030"
             ) {
@@ -251,55 +278,37 @@ class LightProofHandlerViewModel @Inject constructor(
                 0
             }
 
-            if (age_lower_bound_years > 0) {
-                tempMap.set(
-                    "Age",
-                    "${age_lower_bound_years}+"
-                )
+            _requestMinimumAge.value = ageLowerBoundYears
+
+            if (ageLowerBoundYears > 0) {
+                tempMap["Age"] = "${ageLowerBoundYears}+"
             }
         } catch (e: Exception) {
             Log.e("age_lower_bound_years", e.message, e)
         }
 
         try {
-            var uniqueness = if (
-                queryProofParametersRequest.value?.data?.attributes?.timestamp_upper_bound?.toLong() != 0L ||
+            val uniqueness = queryProofParametersRequest.value?.data?.attributes?.timestamp_upper_bound?.toLong() != 0L ||
                 queryProofParametersRequest.value?.data?.attributes?.identity_counter_upper_bound?.toLong() != 0L
-            ) {
-                true
-            } else {
-                false
-            }
-
-            if (uniqueness) {
-                tempMap.set(
-                    "uniqueness",
-                    ""
-                )
-            }
+            tempMap["Uniqueness"] = if (uniqueness) { "Yes" } else { "No" }
         } catch (e: Exception) {
             Log.e("uniqueness", e.message, e)
         }
 
         try {
-            var nationality = if (
+            val nationality = if (
                 queryProofParametersRequest.value?.data?.attributes?.citizenship_mask != null
             ) {
-                val nationality =
-                    Numeric.hexStringToByteArray(queryProofParametersRequest.value?.data?.attributes?.citizenship_mask).decodeToString()
-
-                val country = Country.fromISOCode(nationality)
-
-                "${country.localizedName} ${country.flag}"
+                Numeric.hexStringToByteArray(queryProofParametersRequest.value?.data?.attributes?.citizenship_mask).decodeToString()
             } else {
                 ""
             }
 
+            _requestCitizenship.value = nationality
+
             if (nationality.isNotEmpty()) {
-                tempMap.set(
-                    "Nationality",
-                    nationality
-                )
+                val country = Country.fromISOCode(nationality)
+                tempMap["Nationality"] = "${country.localizedName} ${country.flag}"
             }
         } catch (e: Exception) {
             Log.e("nationality", e.message, e)

@@ -34,7 +34,7 @@ fun AlertModalContent(
         AppIcon(
             id = R.drawable.ic_check,
             size = 24.dp,
-            tint = RarimeTheme.colors.textPrimary,
+            tint = RarimeTheme.colors.baseBlack,
             modifier = Modifier
                 .background(RarimeTheme.colors.primaryMain, CircleShape)
                 .padding(28.dp)
