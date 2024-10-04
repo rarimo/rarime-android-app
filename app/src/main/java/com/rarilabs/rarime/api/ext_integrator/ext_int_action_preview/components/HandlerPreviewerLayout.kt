@@ -50,7 +50,7 @@ fun HandlerPreviewerLayout(
     texts: HandlerPreviewerLayoutTexts,
 
     onSuccess: () -> Unit = {},
-    onFail: () -> Unit = {},
+    onFail: (e: Exception) -> Unit = {},
     onCancel: () -> Unit = {}
 ) {
     val scope = rememberCoroutineScope()
@@ -72,7 +72,7 @@ fun HandlerPreviewerLayout(
             } catch (e: Exception) {
                 ErrorHandler.logError("ExtIntActionPreview", "handleAccept", e)
                 sheetState.hide()
-                onFail.invoke()
+                onFail(e)
             }
 
             sheetState.hide()
@@ -90,7 +90,7 @@ fun HandlerPreviewerLayout(
             } catch (e: Exception) {
                 ErrorHandler.logError("ExtIntActionPreview", "loadPreviewFields", e)
                 sheetState.hide()
-                onFail.invoke()
+                onFail(e)
             }
 
             isLoaded = true

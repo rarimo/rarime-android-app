@@ -33,6 +33,9 @@ fun String.hashedWithSha256() =
         .digest(toByteArray())
         .toHexString()
 
+class YourAgeDoesNotMeetTheRequirements : Exception()
+class YourCitizenshipDoesNotMeetTheRequirements : Exception()
+
 @HiltViewModel
 class LightProofHandlerViewModel @Inject constructor(
     private val extIntegratorApiManager: ExtIntegratorApiManager,
@@ -62,8 +65,13 @@ class LightProofHandlerViewModel @Inject constructor(
     val requestCitizenship: StateFlow<String>
         get() = _requestCitizenship.asStateFlow()
 
+    private var _exceptions = MutableStateFlow<List<Exception>>(listOf())
+    val exceptions: StateFlow<List<Exception>>
+        get() = _exceptions.asStateFlow()
+
     suspend fun signHashedEventId() {
         val queryProofPubSignals = mutableListOf<String>()
+        var tempExceptions = mutableListOf<Exception>()
 
         queryProofParametersRequest.value?.data?.attributes?.let {
             // citizenship
@@ -71,7 +79,7 @@ class LightProofHandlerViewModel @Inject constructor(
                 ?: throw Exception("Citizenship is null")
 
             if (requestCitizenship.value.isNotEmpty() && requestCitizenship.value != citizenship) {
-                throw Exception("Your citizenship does not meet the requirements")
+                tempExceptions.add(YourCitizenshipDoesNotMeetTheRequirements())
             }
 
             val birthDate = passportManager.passport.value?.personDetails?.birthDate
@@ -79,7 +87,7 @@ class LightProofHandlerViewModel @Inject constructor(
             val age = calculateAgeFromBirthDate(birthDate)
 
             if (requestMinimumAge.value > 0 && age < requestMinimumAge.value) {
-                throw Exception("Your age does not meet the requirements")
+                tempExceptions.add(YourAgeDoesNotMeetTheRequirements())
             }
 
             // nullifier
@@ -205,7 +213,11 @@ class LightProofHandlerViewModel @Inject constructor(
             throw Exception("Query Proof parameters are null")
         }
 
-        Log.i("queryProofPubSignals", Gson().toJson(queryProofPubSignals).toString())
+        if (tempExceptions.isNotEmpty()) {
+            _exceptions.value = tempExceptions
+
+            throw tempExceptions.first()
+        }
 
         val signature = Identity.signPubSignalsWithSecp256k1(
             BaseConfig.lightVerificationSKHex,

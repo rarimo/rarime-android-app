@@ -1,5 +1,7 @@
 package com.rarilabs.rarime.modules.main
 
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -12,6 +14,7 @@ import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.SecurityManager
 import com.rarilabs.rarime.manager.SettingsManager
 import com.rarilabs.rarime.manager.WalletManager
+import com.rarilabs.rarime.ui.components.SnackbarShowOptions
 import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -63,6 +66,13 @@ class MainViewModel @Inject constructor(
     var colorScheme = settingsManager.colorScheme
     var isBottomBarShown = mutableStateOf(false)
         private set
+
+    var _snackbarContent = MutableStateFlow<SnackbarShowOptions?>(null)
+        private set
+    val snackbarContent: StateFlow<SnackbarShowOptions?>
+        get() = _snackbarContent.asStateFlow()
+
+    val snackbarHostState = mutableStateOf(SnackbarHostState())
 
     suspend fun initApp() {
         if (identityManager.privateKey.value == null) {
@@ -136,6 +146,27 @@ class MainViewModel @Inject constructor(
 
     fun setBottomBarVisibility(isVisible: Boolean) {
         isBottomBarShown.value = isVisible
+    }
+
+    suspend fun showSnackbar(options: SnackbarShowOptions) {
+        _snackbarContent.value = options
+        val result = snackbarHostState.value.showSnackbar(
+            message = "",
+            duration = options.duration,
+        )
+
+        when (result) {
+            SnackbarResult.Dismissed -> {
+                clearSnackbarOptions()
+            }
+            SnackbarResult.ActionPerformed -> {
+                clearSnackbarOptions()
+            }
+        }
+    }
+
+    fun clearSnackbarOptions() {
+        _snackbarContent.value = null
     }
 
     suspend fun finishIntro() {

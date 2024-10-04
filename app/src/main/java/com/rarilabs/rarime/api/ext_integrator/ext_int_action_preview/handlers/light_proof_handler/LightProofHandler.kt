@@ -1,20 +1,19 @@
 package com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.light_proof_handler
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.components.HandlerPreviewerLayout
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.components.HandlerPreviewerLayoutTexts
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
-import com.rarilabs.rarime.ui.components.AlertModalContent
-import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.components.SnackbarSeverity
+import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
+import kotlinx.coroutines.launch
 
 @Composable
 fun LightProofHandler(
@@ -25,49 +24,43 @@ fun LightProofHandler(
 
     viewModel: LightProofHandlerViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val mainViewModel = LocalMainViewModel.current
+    val exceptions = viewModel.exceptions.collectAsState()
 
     fun onSuccessHandler() {
-        mainViewModel.setModalContent {
-            AlertModalContent(
-                title = stringResource(R.string.light_verification_success_title),
-                subtitle = stringResource(R.string.light_verification_success_subtitle),
-                buttonText = stringResource(R.string.light_verification_success_btn),
-                onClose = {
-                    mainViewModel.setModalVisibility(false)
-                    onSuccess.invoke()
-                },
+        scope.launch {
+            mainViewModel.showSnackbar(
+                getSnackbarDefaultShowOptions(
+                    severity = SnackbarSeverity.Success,
+                    duration = SnackbarDuration.Long,
+                    title = context.getString(R.string.light_verification_success_title),
+                    message = context.getString(R.string.light_verification_success_subtitle),
+                )
             )
+            onSuccess.invoke()
         }
-        mainViewModel.setModalVisibility(true)
     }
 
-    fun onFailHandler() {
-        mainViewModel.setModalContent {
-            AlertModalContent(
-                withConfetti = false,
-                title = stringResource(R.string.light_verification_error_title),
-                subtitle = stringResource(R.string.light_verification_error_subtitle),
-                mediaContent = {
-                    AppIcon(
-                        id = R.drawable.ic_warning,
-                        size = 24.dp,
-                        tint = RarimeTheme.colors.baseWhite,
-                        modifier = Modifier
-                            .background(RarimeTheme.colors.errorMain, CircleShape)
-                            .padding(28.dp)
-                    )
-                },
-                buttonBg = RarimeTheme.colors.errorMain,
-                buttonColor = RarimeTheme.colors.baseWhite,
-                buttonText = stringResource(R.string.light_verification_error_btn),
-                onClose = {
-                    mainViewModel.setModalVisibility(false)
-                    onFail.invoke()
-                },
-            )
+    fun onFailHandler(e: Exception) {
+        val message = when(e) {
+            is YourAgeDoesNotMeetTheRequirements -> context.getString(R.string.light_verification_error_age)
+            is YourCitizenshipDoesNotMeetTheRequirements -> context.getString(R.string.light_verification_error_citizenship)
+            else -> context.getString(R.string.light_verification_error_subtitle)
         }
-        mainViewModel.setModalVisibility(true)
+
+        scope.launch {
+            mainViewModel.showSnackbar(
+                getSnackbarDefaultShowOptions(
+                    severity = SnackbarSeverity.Error,
+                    duration = SnackbarDuration.Long,
+                    title = context.getString(R.string.light_verification_error_title),
+                    message = message,
+                )
+            )
+            onFail.invoke()
+        }
     }
 
     HandlerPreviewerLayout(
@@ -86,7 +79,7 @@ fun LightProofHandler(
         ),
 
         onSuccess = { onSuccessHandler() },
-        onFail = { onFailHandler() },
+        onFail = { onFailHandler(it) },
         onCancel = onCancel,
     )
 }
