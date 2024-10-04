@@ -96,7 +96,7 @@ fun RewardsScreen(
         } else if (isAuthorized.value) {
             RewardsScreenContent(navigate)
         } else {
-            RewardsUnauthorized()
+            //RewardsUnauthorized()
         }
     }
 }
