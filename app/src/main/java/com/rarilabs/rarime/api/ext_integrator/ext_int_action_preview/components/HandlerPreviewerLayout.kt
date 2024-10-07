@@ -73,15 +73,16 @@ fun HandlerPreviewerLayout(
             isSubmitting = true
 
             try {
-                onAcceptHandler.invoke()
-                onSuccess.invoke()
+                onAcceptHandler()
+                sheetState.hide()
+                onSuccess()
+
+                return@launch
             } catch (e: Exception) {
                 ErrorHandler.logError("ExtIntActionPreview", "handleAccept", e)
                 sheetState.hide()
                 onFail(e)
             }
-
-            sheetState.hide()
             isSubmitting = false
         }
     }
@@ -113,7 +114,7 @@ fun HandlerPreviewerLayout(
         sheetState = sheetState,
 
         handleAccept = { handleAccept() },
-        onCancel = { onCancel.invoke() }
+        onCancel = { onCancel() }
     )
 }
 

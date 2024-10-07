@@ -218,10 +218,10 @@ fun MainScreenContent(
             },
 
             snackbarHost = {
-                SnackbarHost(hostState = mainViewModel.snackbarHostState.value) {
-                    snackbarContent.value?.let {
+                snackbarContent.value?.let { snackContent ->
+                    SnackbarHost(hostState = mainViewModel.snackbarHostState.value) {
                         Column(modifier = Modifier.padding(horizontal = 20.dp)) {
-                            UiSnackbarDefault(it)
+                            UiSnackbarDefault(snackContent)
                         }
                     }
                 }

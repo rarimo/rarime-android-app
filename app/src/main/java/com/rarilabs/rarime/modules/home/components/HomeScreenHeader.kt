@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -31,6 +33,8 @@ import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.SecondaryTextButton
+import com.rarilabs.rarime.ui.components.SnackbarSeverity
+import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.NumberUtil
@@ -72,38 +76,63 @@ fun HomeScreenHeader(
         }
     }
 
-    dataUri?.let {
+    key(dataUri) {
         ExtIntActionPreview(
-            dataUri = it,
-            onCancel = { dataUri = null },
-            onSuccess = {
-                dataUri = null
-            }
+            dataUri = dataUri,
+            onCancel = {},
+            onSuccess = {},
+            onError = {}
         )
-    } ?: run {
-        if (isQrCodeScannerOpen) {
-            ScanQrScreen(
-                onBack = { hideQrScanner() },
-                onScan = { onCompletion(it) }
-            )
-        }
     }
+
+    if (isQrCodeScannerOpen) {
+        ScanQrScreen(
+            onBack = { hideQrScanner() },
+            onScan = { onCompletion(it) }
+        )
+    }
+
 
     HomeScreenHeaderContent(
         walletAsset = walletAsset,
         onBalanceClick = onBalanceClick,
         actionContent = {
-            if (passportStatus.value != PassportStatus.UNSCANNED){
-                AppIcon(
-                    id = R.drawable.ic_qr_code,
-                    size = 20.dp,
-                    tint = RarimeTheme.colors.textPrimary,
-                    modifier = Modifier.clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() },
-                        onClick = { showQrScanner() }
+            Row (
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = {
+                        scope.launch {
+                            mainViewModel.showSnackbar(
+                                getSnackbarDefaultShowOptions(
+                                    title = "Hello snack",
+                                    message = "I'm here for ya",
+                                    severity = SnackbarSeverity.Success
+                                )
+                            )
+                        }
+                    }
+                ) {
+                    AppIcon(
+                        id = R.drawable.ic_warning,
+                        tint = RarimeTheme.colors.textPrimary,
+                        size = 20.dp
                     )
-                )
+                }
+
+                if (passportStatus.value != PassportStatus.UNSCANNED) {
+                    AppIcon(
+                        id = R.drawable.ic_qr_code,
+                        size = 20.dp,
+                        tint = RarimeTheme.colors.textPrimary,
+                        modifier = Modifier.clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = { showQrScanner() }
+                        )
+                    )
+                }
             }
         }
     )

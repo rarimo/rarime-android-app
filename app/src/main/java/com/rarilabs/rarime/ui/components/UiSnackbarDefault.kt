@@ -27,7 +27,7 @@ enum class SnackbarSeverity {
 
     @Composable
     fun containerColor(): Color = when (this) {
-        Success -> RarimeTheme.colors.successMain
+        Success -> RarimeTheme.colors.successDark
         Warning -> RarimeTheme.colors.warningMain
         Error -> RarimeTheme.colors.errorMain
     }
