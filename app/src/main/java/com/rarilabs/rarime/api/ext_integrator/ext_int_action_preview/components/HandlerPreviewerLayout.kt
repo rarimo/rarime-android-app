@@ -62,6 +62,12 @@ fun HandlerPreviewerLayout(
 
     val sheetState = rememberAppSheetState(true)
 
+    LaunchedEffect(sheetState.showSheet) {
+        if (!sheetState.showSheet) {
+            onCancel.invoke()
+        }
+    }
+
     fun handleAccept() {
         scope.launch {
             isSubmitting = true

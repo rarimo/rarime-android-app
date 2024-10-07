@@ -9,9 +9,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +48,8 @@ fun HomeScreenHeader(
 
     var isQrCodeScannerOpen by remember { mutableStateOf(false) }
 
+    val passportStatus = mainViewModel.passportStatus.collectAsState()
+
     fun showQrScanner() {
         mainViewModel.setBottomBarVisibility(false)
         isQrCodeScannerOpen = true
@@ -70,13 +72,6 @@ fun HomeScreenHeader(
         }
     }
 
-    if (isQrCodeScannerOpen) {
-        ScanQrScreen(
-            onBack = { hideQrScanner() },
-            onScan = { onCompletion(it) }
-        )
-    }
-
     dataUri?.let {
         ExtIntActionPreview(
             dataUri = it,
@@ -85,13 +80,20 @@ fun HomeScreenHeader(
                 dataUri = null
             }
         )
+    } ?: run {
+        if (isQrCodeScannerOpen) {
+            ScanQrScreen(
+                onBack = { hideQrScanner() },
+                onScan = { onCompletion(it) }
+            )
+        }
     }
 
     HomeScreenHeaderContent(
         walletAsset = walletAsset,
         onBalanceClick = onBalanceClick,
         actionContent = {
-            if (mainViewModel.passportStatus.value != PassportStatus.UNSCANNED){
+            if (passportStatus.value != PassportStatus.UNSCANNED){
                 AppIcon(
                     id = R.drawable.ic_qr_code,
                     size = 20.dp,
