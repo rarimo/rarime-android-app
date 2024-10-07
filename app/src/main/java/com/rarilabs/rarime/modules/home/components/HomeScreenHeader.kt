@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -33,8 +32,6 @@ import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.SecondaryTextButton
-import com.rarilabs.rarime.ui.components.SnackbarSeverity
-import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.NumberUtil
@@ -101,26 +98,6 @@ fun HomeScreenHeader(
                 horizontalArrangement = Arrangement.spacedBy(24.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(
-                    onClick = {
-                        scope.launch {
-                            mainViewModel.showSnackbar(
-                                getSnackbarDefaultShowOptions(
-                                    title = "Hello snack",
-                                    message = "I'm here for ya",
-                                    severity = SnackbarSeverity.Success
-                                )
-                            )
-                        }
-                    }
-                ) {
-                    AppIcon(
-                        id = R.drawable.ic_warning,
-                        tint = RarimeTheme.colors.textPrimary,
-                        size = 20.dp
-                    )
-                }
-
                 if (passportStatus.value != PassportStatus.UNSCANNED) {
                     AppIcon(
                         id = R.drawable.ic_qr_code,
