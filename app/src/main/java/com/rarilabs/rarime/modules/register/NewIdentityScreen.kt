@@ -55,7 +55,6 @@ fun NewIdentityScreen(
 ) {
     val scope = rememberCoroutineScope()
 
-    val context = LocalContext.current
     val mainViewModel = LocalMainViewModel.current
 
     val savedPrivateKey = newIdentityViewModel.savedPrivateKey.collectAsState()
@@ -101,9 +100,13 @@ fun NewIdentityScreen(
     suspend fun handleInitPK(pk: String) {
         isSubmitting = true
 
-        delay(1000)
-        mainViewModel.tryLogin()
-        delay(1000)
+
+
+        if (savedPrivateKey.value.isNullOrEmpty()) {
+            savePrivateKey(pk)
+        }else {
+            savePrivateKey(savedPrivateKey.value!!)
+        }
 
         if (invitationCodeState.text.isEmpty()) {
             finishOnboarding("")
@@ -111,9 +114,11 @@ fun NewIdentityScreen(
             finishOnboarding(invitationCodeState.text)
         }
 
-        if (savedPrivateKey.value.isNullOrEmpty()) {
-            savePrivateKey(pk)
-        }
+        delay(1000)
+        mainViewModel.tryLogin()
+        delay(1000)
+
+
     }
 
     NewIdentityScreenContent(
