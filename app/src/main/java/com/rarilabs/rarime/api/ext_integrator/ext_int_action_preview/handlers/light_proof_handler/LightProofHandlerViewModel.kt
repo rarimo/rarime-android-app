@@ -6,7 +6,6 @@ import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorApiManager
 import com.rarilabs.rarime.api.ext_integrator.models.QueryProofGenResponse
-import com.rarilabs.rarime.contracts.rarimo.StateKeeper
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RarimoContractManager
@@ -15,23 +14,14 @@ import com.rarilabs.rarime.util.Country
 import com.rarilabs.rarime.util.DateUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import identity.Identity
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.withContext
 import org.web3j.utils.Numeric
 import java.math.BigInteger
-import java.security.MessageDigest
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import javax.inject.Inject
-
-@OptIn(ExperimentalStdlibApi::class)
-fun String.hashedWithSha256() =
-    MessageDigest.getInstance("SHA-256")
-        .digest(toByteArray())
-        .toHexString()
 
 class YourAgeDoesNotMeetTheRequirements : Exception()
 class YourCitizenshipDoesNotMeetTheRequirements : Exception()
@@ -43,19 +33,10 @@ class LightProofHandlerViewModel @Inject constructor(
     private val contractManager: RarimoContractManager,
     private val identityManager: IdentityManager,
 ): ViewModel() {
-
     //TODO: Remove MutableStateFlow if it isn’t used in the UI
     private var _queryProofParametersRequest = MutableStateFlow<QueryProofGenResponse?>(null)
     val queryProofParametersRequest: StateFlow<QueryProofGenResponse?>
         get() = _queryProofParametersRequest.asStateFlow()
-
-    private var _passportInfo = MutableStateFlow<StateKeeper.PassportInfo?>(null)
-    val passportInfo: StateFlow<StateKeeper.PassportInfo?>
-        get() = _passportInfo.asStateFlow()
-
-    private var _identityInfo = MutableStateFlow<StateKeeper.IdentityInfo?>(null)
-    val identityInfo: StateFlow<StateKeeper.IdentityInfo?>
-        get() = _identityInfo.asStateFlow()
 
     private val _requestMinimumAge = MutableStateFlow(0)
     val requestMinimumAge: StateFlow<Int>
@@ -65,13 +46,8 @@ class LightProofHandlerViewModel @Inject constructor(
     val requestCitizenship: StateFlow<String>
         get() = _requestCitizenship.asStateFlow()
 
-    private var _exceptions = MutableStateFlow<List<Exception>>(listOf())
-    val exceptions: StateFlow<List<Exception>>
-        get() = _exceptions.asStateFlow()
-
     suspend fun signHashedEventId() {
         val queryProofPubSignals = mutableListOf<String>()
-        var tempExceptions = mutableListOf<Exception>()
 
         queryProofParametersRequest.value?.data?.attributes?.let {
             // citizenship
@@ -79,7 +55,7 @@ class LightProofHandlerViewModel @Inject constructor(
                 ?: throw Exception("Citizenship is null")
 
             if (requestCitizenship.value.isNotEmpty() && requestCitizenship.value != citizenship) {
-                tempExceptions.add(YourCitizenshipDoesNotMeetTheRequirements())
+                throw YourCitizenshipDoesNotMeetTheRequirements()
             }
 
             val birthDate = passportManager.passport.value?.personDetails?.birthDate
@@ -87,7 +63,7 @@ class LightProofHandlerViewModel @Inject constructor(
             val age = calculateAgeFromBirthDate(birthDate)
 
             if (requestMinimumAge.value > 0 && age < requestMinimumAge.value) {
-                tempExceptions.add(YourAgeDoesNotMeetTheRequirements())
+                throw YourAgeDoesNotMeetTheRequirements()
             }
 
             // nullifier
@@ -213,12 +189,6 @@ class LightProofHandlerViewModel @Inject constructor(
             throw Exception("Query Proof parameters are null")
         }
 
-        if (tempExceptions.isNotEmpty()) {
-            _exceptions.value = tempExceptions
-
-            throw tempExceptions.first()
-        }
-
         val signature = Identity.signPubSignalsWithSecp256k1(
             BaseConfig.lightVerificationSKHex,
             Gson().toJson(queryProofPubSignals).toByteArray()
@@ -234,31 +204,6 @@ class LightProofHandlerViewModel @Inject constructor(
 
     suspend fun loadDetails(proofParamsUrl: String): Map<String, String> {
         _queryProofParametersRequest.value = extIntegratorApiManager.queryProofData(proofParamsUrl)
-
-        val passportInfoKey: String = if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {
-            identityManager.registrationProof.value!!.pub_signals[1]
-        } else {
-            identityManager.registrationProof.value!!.pub_signals[0]
-        }
-        var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
-
-        if (passportInfoKeyBytes.size > 32) {
-            passportInfoKeyBytes = ByteArray(32 - passportInfoKeyBytes.size) + passportInfoKeyBytes
-        } else if (passportInfoKeyBytes.size < 32) {
-            val len = 32 - passportInfoKeyBytes.size
-            var tempByteArray = ByteArray(len) { 0 }
-            tempByteArray += passportInfoKeyBytes
-            passportInfoKeyBytes = tempByteArray
-        }
-
-        val stateKeeperContract = contractManager.getStateKeeper()
-
-        val passportInfoRaw = withContext(Dispatchers.IO) {
-            stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()
-        }
-
-        _passportInfo.value = passportInfoRaw.component1()
-        _identityInfo.value = passportInfoRaw.component2()
 
         val tempMap = mutableMapOf<String, String>()
 
