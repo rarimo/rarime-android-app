@@ -2,7 +2,6 @@ package com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.l
 
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -27,40 +26,39 @@ fun LightProofHandler(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val mainViewModel = LocalMainViewModel.current
-    val exceptions = viewModel.exceptions.collectAsState()
 
     fun onSuccessHandler() {
         scope.launch {
             mainViewModel.showSnackbar(
-                getSnackbarDefaultShowOptions(
+                options = getSnackbarDefaultShowOptions(
                     severity = SnackbarSeverity.Success,
                     duration = SnackbarDuration.Long,
                     title = context.getString(R.string.light_verification_success_title),
                     message = context.getString(R.string.light_verification_success_subtitle),
                 )
             )
-            onSuccess.invoke()
         }
+        onSuccess.invoke()
     }
 
     fun onFailHandler(e: Exception) {
-        val message = when(e) {
-            is YourAgeDoesNotMeetTheRequirements -> context.getString(R.string.light_verification_error_age)
-            is YourCitizenshipDoesNotMeetTheRequirements -> context.getString(R.string.light_verification_error_citizenship)
-            else -> context.getString(R.string.light_verification_error_subtitle)
-        }
-
         scope.launch {
+            val message = when(e) {
+                is YourAgeDoesNotMeetTheRequirements -> context.getString(R.string.light_verification_error_age)
+                is YourCitizenshipDoesNotMeetTheRequirements -> context.getString(R.string.light_verification_error_citizenship)
+                else -> context.getString(R.string.light_verification_error_subtitle)
+            }
+
             mainViewModel.showSnackbar(
-                getSnackbarDefaultShowOptions(
+                options = getSnackbarDefaultShowOptions(
                     severity = SnackbarSeverity.Error,
                     duration = SnackbarDuration.Long,
                     title = context.getString(R.string.light_verification_error_title),
                     message = message,
                 )
             )
-            onFail.invoke()
         }
+        onFail.invoke()
     }
 
     HandlerPreviewerLayout(

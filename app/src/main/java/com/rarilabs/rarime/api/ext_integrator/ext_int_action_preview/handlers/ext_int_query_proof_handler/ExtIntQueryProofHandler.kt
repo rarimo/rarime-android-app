@@ -69,6 +69,12 @@ fun ExtIntQueryProofHandler(
 
     val sheetState = rememberAppSheetState(true)
 
+    LaunchedEffect(sheetState.showSheet) {
+        if (!sheetState.showSheet) {
+            onCancel.invoke()
+        }
+    }
+
     fun onSuccessHandler() {
         scope.launch {
             mainViewModel.showSnackbar(
