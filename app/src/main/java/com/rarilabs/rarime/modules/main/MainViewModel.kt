@@ -159,6 +159,7 @@ class MainViewModel @Inject constructor(
             SnackbarResult.Dismissed -> {
                 clearSnackbarOptions()
             }
+
             SnackbarResult.ActionPerformed -> {
                 clearSnackbarOptions()
             }

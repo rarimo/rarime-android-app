@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppBottomSheet
@@ -37,6 +36,7 @@ import com.rarilabs.rarime.ui.components.TertiaryButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
+import kotlinx.coroutines.launch
 
 data class HandlerPreviewerLayoutTexts(
     val title: String
@@ -62,20 +62,27 @@ fun HandlerPreviewerLayout(
 
     val sheetState = rememberAppSheetState(true)
 
+    LaunchedEffect(sheetState.showSheet) {
+        if (!sheetState.showSheet) {
+            onCancel.invoke()
+        }
+    }
+
     fun handleAccept() {
         scope.launch {
             isSubmitting = true
 
             try {
-                onAcceptHandler.invoke()
-                onSuccess.invoke()
+                onAcceptHandler()
+                sheetState.hide()
+                onSuccess()
+
+                return@launch
             } catch (e: Exception) {
                 ErrorHandler.logError("ExtIntActionPreview", "handleAccept", e)
                 sheetState.hide()
                 onFail(e)
             }
-
-            sheetState.hide()
             isSubmitting = false
         }
     }
@@ -107,7 +114,7 @@ fun HandlerPreviewerLayout(
         sheetState = sheetState,
 
         handleAccept = { handleAccept() },
-        onCancel = { onCancel.invoke() }
+        onCancel = { onCancel() }
     )
 }
 
@@ -259,7 +266,7 @@ fun HandlerPreviewerLayoutContentPreview() {
         isSubmitting = false,
         sheetState = rememberAppSheetState(true),
 
-        handleAccept = {  },
-        onCancel = {  }
+        handleAccept = { },
+        onCancel = { }
     )
 }
