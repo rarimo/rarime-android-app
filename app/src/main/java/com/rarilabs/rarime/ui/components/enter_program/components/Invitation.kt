@@ -75,7 +75,8 @@ fun Invitation(
             isSubmitting = true
 
             try {
-                invitationViewModel.loadBalance() //.createBalance(invitationCodeState.text)
+                invitationViewModel.createNLoadBalance(invitationCodeState.text)
+
                 onNext()
             } catch (e: Exception) {
                 ErrorHandler.logError("verifyCode", e.toString(), e)

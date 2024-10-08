@@ -11,7 +11,7 @@ class InvitationViewModel @Inject constructor(
     private val pointsManager: PointsManager,
     private val walletManager: WalletManager
 ): ViewModel() {
-    suspend fun createBalance(referralCode: String) {
+    suspend fun createNLoadBalance(referralCode: String) {
         pointsManager.createPointsBalance(referralCode)
         walletManager.loadBalances()
     }
