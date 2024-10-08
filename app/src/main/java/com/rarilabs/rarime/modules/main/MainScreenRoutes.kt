@@ -50,8 +50,6 @@ import com.rarilabs.rarime.modules.wallet.WalletScreen
 import com.rarilabs.rarime.modules.wallet.WalletSendScreen
 import com.rarilabs.rarime.ui.components.AppWebView
 import com.rarilabs.rarime.ui.components.CongratsInvitationModalContent
-import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
-import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.AppIconUtil
 import com.rarilabs.rarime.util.BiometricUtil
 import com.rarilabs.rarime.util.Constants
