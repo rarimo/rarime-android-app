@@ -14,7 +14,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ScanPassportScreenViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
     private val passportManager: PassportManager,
     private val identityManager: IdentityManager,
     private val registrationManager: RegistrationManager,

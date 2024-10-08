@@ -15,4 +15,8 @@ class InvitationViewModel @Inject constructor(
         pointsManager.createPointsBalance(referralCode)
         walletManager.loadBalances()
     }
+
+    suspend fun loadBalance() {
+        pointsManager.getPointsBalance()
+    }
 }

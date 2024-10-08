@@ -102,7 +102,7 @@ data class CreateBalanceData(
 
 @JsonClass(generateAdapter = true)
 data class CreateBalanceAttributes(
-    @Json(name = "referred_by") val referredBy: String
+    @Json(name = "referred_by") val referredBy: String?
 )
 
 @JsonClass(generateAdapter = true)

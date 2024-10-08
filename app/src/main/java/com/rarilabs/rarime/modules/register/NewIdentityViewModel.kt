@@ -14,7 +14,9 @@ import com.google.api.services.drive.DriveScopes
 import com.google.api.services.drive.model.File
 import com.google.api.services.drive.model.FileList
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.manager.IdentityManager
+import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +29,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NewIdentityViewModel @Inject constructor(
-    val identityManager: IdentityManager
+    val identityManager: IdentityManager,
+    val pointsManager: PointsManager,
+    val walletManager: WalletManager
 ) : ViewModel() {
     val savedPrivateKey = identityManager.privateKey
 
@@ -108,9 +112,14 @@ class NewIdentityViewModel @Inject constructor(
     fun genPrivateKey(): String {
         return identityManager.genPrivateKey()
     }
-//
-//    suspend fun createBalance(referralCode: String?) {
-//        pointsManager.createPointsBalance(referralCode)
-//        walletManager.loadBalances()
-//    }
+
+    suspend fun setReferralCodeIfUserHasPointsBalance() {
+        val balance = pointsManager.getPointsBalance()
+
+
+    }
+    suspend fun createBalance(referralCode: String?) {
+        pointsManager.createPointsBalance(referralCode)
+        walletManager.loadBalances()
+    }
 }
