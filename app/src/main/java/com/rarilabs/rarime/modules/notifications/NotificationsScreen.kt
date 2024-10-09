@@ -41,7 +41,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.launch
 import com.rarilabs.rarime.BuildConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.store.room.notifications.models.NotificationEntityData
@@ -50,14 +49,14 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.DateUtil
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 
 @Composable
 fun NotificationsScreen(
-    onBack: () -> Unit,
-    notificationsViewModel: NotificationsViewModel = hiltViewModel()
+    onBack: () -> Unit, notificationsViewModel: NotificationsViewModel = hiltViewModel()
 ) {
     val notifications by notificationsViewModel.notificationsList.collectAsState()
 
@@ -68,19 +67,20 @@ fun NotificationsScreen(
     val state = rememberAppSheetState()
 
 
-    selectedNotification?.let {
-        NotificationItemAppSheet(it, state)
-    }
     NotificationScreenContent(notifications,
-        deleteNotification = { it -> notificationsViewModel.deleteNotifications(it) },
+        deleteNotification = notificationsViewModel.deleteNotifications,
         readNotification = { it ->
             notificationsViewModel.readNotifications(it)
             selectedNotification = it
             state.show()
         },
-        addNotification = { it -> notificationsViewModel.addNotifications(it) },
-        onBack = { onBack.invoke() }
-    )
+        addNotification = notificationsViewModel.addNotifications,
+        onBack = onBack)
+
+
+    if (selectedNotification != null) {
+        NotificationItemAppSheet(selectedNotification!!, state)
+    }
 }
 
 @Composable
@@ -154,8 +154,7 @@ fun NotificationScreenContent(
             }
         } else {
             LazyColumn {
-                itemsIndexed(
-                    items = notificationsList.sortedByDescending { it.date.toLong() },
+                itemsIndexed(items = notificationsList.sortedByDescending { it.date.toLong() },
                     key = { _, item -> item.notificationId }) { index, item ->
                     val isLast = (index < notificationsList.size - 1)
                     NotificationItem(item, isLast, onClick = {
@@ -223,17 +222,13 @@ fun NotificationItem(
         }
     })
 
-    SwipeToDismissBox(
-        state = dismissState,
-        backgroundContent = { DismissBackground(dismissState = dismissState) }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(RarimeTheme.colors.backgroundPrimary)
-                .padding(horizontal = 20.dp)
-                .clickable { onClick(currentItem) }
-        ) {
+    SwipeToDismissBox(state = dismissState,
+        backgroundContent = { DismissBackground(dismissState = dismissState) }) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .background(RarimeTheme.colors.backgroundPrimary)
+            .padding(horizontal = 20.dp)
+            .clickable { onClick(currentItem) }) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
@@ -266,8 +261,7 @@ fun NotificationItem(
 
                 Text(
                     text = DateUtil.getDurationString(
-                        DateUtil.duration(timeStr),
-                        context
+                        DateUtil.duration(timeStr), context
                     ) + " " + stringResource(
                         id = R.string.time_ago
                     ),
@@ -331,11 +325,10 @@ private fun NotificationsScreenPreview() {
             description = "It is a long established fact that a reader will be distracted by the readable",
             date = "162347176",
             isActive = false,
-
+            type = "info",
             null,
-            null
         )
     )
 
-    NotificationScreenContent(listOf(), {}, {}, {}) {}
+    NotificationScreenContent(notificationList, {}, {}, {}) {}
 }

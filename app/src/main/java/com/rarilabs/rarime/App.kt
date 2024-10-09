@@ -11,12 +11,7 @@ import java.security.Security
 @HiltAndroidApp
 class App: Application() {
     private fun setupFireBase() {
-        val options = FirebaseOptions.Builder()
-            .setApplicationId(Keys.ApplicationId) // Required for Analytics.
-            .setProjectId(Keys.ProjectId) // Required for Firebase Installations.
-            .setApiKey(Keys.ApiKey) // Required for Auth.
-            .build()
-        FirebaseApp.initializeApp(this, options, "RariMe")
+        FirebaseApp.initializeApp(this)
     }
 
     override fun onCreate() {

@@ -212,15 +212,11 @@ private fun EnterProgramFlowPreview() {
         }
     }
 
-    AppBottomSheet(
-        state = nonSpecificAppSheetState,
-        fullScreen = true,
-        isHeaderEnabled = false,
-    ) { hide ->
+
         EnterProgramFlow(
             onFinish = {},
             sheetState = nonSpecificAppSheetState,
-            hide = hide
+            hide = {}
         )
-    }
+
 }

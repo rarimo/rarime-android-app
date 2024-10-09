@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.manager
 
+import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -8,8 +9,9 @@ import com.rarilabs.rarime.store.room.notifications.NotificationsRepository
 import com.rarilabs.rarime.store.room.notifications.models.NotificationEntityData
 import javax.inject.Inject
 
+
 class NotificationManager @Inject constructor(
-    private val notificationsRepository: NotificationsRepository
+    private val notificationsRepository: NotificationsRepository,
 ) {
     private val _notificationsList = MutableStateFlow<List<NotificationEntityData>>(emptyList())
 
@@ -37,6 +39,8 @@ class NotificationManager @Inject constructor(
     suspend fun loadNotifications() {
         _notificationsList.value = notificationsRepository.getAllNotifications()
     }
+
+
 
 
     //BLocking

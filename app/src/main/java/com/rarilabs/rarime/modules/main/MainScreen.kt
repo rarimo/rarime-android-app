@@ -33,10 +33,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.components.AppSheetState
 import com.rarilabs.rarime.ui.components.UiSnackbarDefault
 import com.rarilabs.rarime.ui.components.enter_program.EnterProgramFlow
 import com.rarilabs.rarime.ui.components.enter_program.UNSPECIFIED_PASSPORT_STEPS
@@ -44,7 +42,6 @@ import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.AppTheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Screen
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 val mainRoutes = listOf(
@@ -186,7 +183,7 @@ fun MainScreenContent(
             if (route == Screen.Main.Rewards.RewardsMain.route) {
                 if (currentPointsToken?.balanceDetails?.attributes == null) {
                     currentEnterProgramSheetState.show()
-                }else {
+                } else {
                     //TODO: should be return from here
                     navController.navigate(route) {
                         popUpTo(navController.graph.id) { inclusive = true }
@@ -194,7 +191,7 @@ fun MainScreenContent(
                         launchSingleTop = true
                     }
                 }
-            }else {
+            } else {
                 navController.navigate(route) {
                     popUpTo(navController.graph.id) { inclusive = true }
                     restoreState = true

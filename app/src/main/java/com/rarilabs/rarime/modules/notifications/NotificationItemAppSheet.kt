@@ -24,7 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.launch
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.notifications.logic.parseRewardNotification
 import com.rarilabs.rarime.modules.notifications.logic.resolveNotificationType
@@ -38,6 +37,7 @@ import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.DateUtil
 import com.rarilabs.rarime.util.ErrorHandler
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -54,7 +54,7 @@ fun NotificationItemAppSheetContent(
     item: NotificationEntityData,
     state: AppSheetState = rememberAppSheetState(),
     getPointsReward: suspend (String) -> Unit,
-    checkIsRewarded: suspend (String) -> Boolean
+    checkIsRewarded: suspend (String?) -> Boolean
 ) {
 
     val scope = rememberCoroutineScope()
@@ -63,7 +63,10 @@ fun NotificationItemAppSheetContent(
         resolveNotificationType(item.type.toString())
     }
     val context = LocalContext.current
-    Column(modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp)) {
+    Column(
+        modifier = Modifier
+            .padding(start = 20.dp, end = 20.dp, top = 20.dp)
+    ) {
         Row {
             Spacer(modifier = Modifier.weight(1f))
             BaseIconButton(
@@ -111,14 +114,18 @@ fun NotificationItemAppSheetContent(
             LaunchedEffect(Unit) {
                 status = ClaimStatus.LOADING
                 try {
-                    val res = checkIsRewarded(eventData.eventName)
+                    val res = checkIsRewarded(eventData?.eventName)
                     status = if (res) {
                         ClaimStatus.CLAIMED
                     } else {
                         ClaimStatus.ALLOWED
                     }
                 } catch (e: Exception) {
-                    ErrorHandler.logError("checkIsRewarded", "Error during checking rewardStatus", e)
+                    ErrorHandler.logError(
+                        "checkIsRewarded",
+                        "Error during checking rewardStatus",
+                        e
+                    )
                     status = ClaimStatus.ERROR
                 }
             }
@@ -138,7 +145,7 @@ fun NotificationItemAppSheetContent(
                     scope.launch {
                         try {
                             status = ClaimStatus.LOADING
-                            val res = getPointsReward(eventData.eventName)
+                            val res = getPointsReward(eventData!!.eventName)
                             res
                             status = ClaimStatus.CLAIMED
                         } catch (e: Exception) {
@@ -160,8 +167,8 @@ fun NotificationItemAppSheet(
 ) {
 
     AppBottomSheet(
-        modifier = Modifier.background(RarimeTheme.colors.backgroundPrimary),
         state = state,
+        fullScreen = true,
         isHeaderEnabled = false,
     ) {
         NotificationItemAppSheetContent(
@@ -182,7 +189,7 @@ fun NotificationItemAppSheetPreview() {
         description = "It is a long established fact that a reader will be distracted by the readable",
         date = "100000",
         isActive = true,
-        type = null,
+        type = "reward",
         data = null
     )
 

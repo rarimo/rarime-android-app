@@ -35,6 +35,8 @@ interface IConfig {
 
     val GLOBAL_NOTIFICATION_TOPIC: String
     val REWARD_NOTIFICATION_TOPIC: String
+    val GOOGLE_WEB_KEY: String
+    val APP_ID_FIREBASE: String
 }
 
 /* TESTNET */
@@ -72,6 +74,9 @@ object TestNetConfig: IConfig {
     override val FEEDBACK_EMAIL = "apereliez1@gmail.com"
     override val CHAIN = RarimoChains.MainnetBeta
     override val lightVerificationSKHex = Keys.lightVerificationSKHex
+    override val GOOGLE_WEB_KEY = Keys.GOOGLE_WEB_KEY
+    override val APP_ID_FIREBASE = Keys.APP_ID
+
 
     override val GLOBAL_NOTIFICATION_TOPIC = "rarime-stage"
     override val REWARD_NOTIFICATION_TOPIC: String = "rarime-rewardable-stage"
@@ -111,6 +116,8 @@ object MainnetConfig: IConfig {
     override val FEEDBACK_EMAIL = "info@rarilabs.com"
     override val CHAIN = RarimoChains.Mainnet
     override val lightVerificationSKHex = Keys.lightVerificationSKHex
+    override val GOOGLE_WEB_KEY = Keys.GOOGLE_WEB_KEY
+    override val APP_ID_FIREBASE = Keys.APP_ID
 
     override val GLOBAL_NOTIFICATION_TOPIC = "rarime"
     override val REWARD_NOTIFICATION_TOPIC: String = "rarime-rewardable"

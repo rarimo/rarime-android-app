@@ -4,6 +4,8 @@ plugins {
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
     id("kotlin-parcelize")
+    id("com.google.gms.google-services")
+
 }
 
 android {
@@ -13,6 +15,12 @@ android {
     bundle {
         language {
             enableSplit = false
+        }
+    }
+
+    packaging {
+        resources {
+            pickFirsts.add("META-INF/DEPENDENCIES")
         }
     }
 
@@ -224,6 +232,8 @@ dependencies {
 
     //google services
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-core:9.6.1")
+
     implementation ("com.google.android.gms:play-services-auth:20.7.0")
     implementation ("com.google.firebase:firebase-auth")
     implementation ("com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0")

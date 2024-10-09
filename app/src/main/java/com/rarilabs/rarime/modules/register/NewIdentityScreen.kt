@@ -1,5 +1,7 @@
 package com.rarilabs.rarime.modules.register
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,28 +24,36 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
+import com.google.api.services.drive.DriveScopes
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.points.InvitationUsedException
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppTextField
+import com.rarilabs.rarime.ui.components.AppTextFieldState
 import com.rarilabs.rarime.ui.components.CardContainer
-import com.rarilabs.rarime.ui.components.HorizontalDivider
+import com.rarilabs.rarime.ui.components.CircledBadge
 import com.rarilabs.rarime.ui.components.InfoAlert
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.PrimaryTextButton
+import com.rarilabs.rarime.ui.components.SnackbarSeverity
+import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
-import com.rarilabs.rarime.util.isKeyValid
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.web3j.utils.Numeric
-import java.math.BigInteger
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -57,16 +67,56 @@ fun NewIdentityScreen(
 
     val context = LocalContext.current
     val mainViewModel = LocalMainViewModel.current
-
-    val savedPrivateKey = newIdentityViewModel.savedPrivateKey.collectAsState()
-
+    val savedPrivateKey by newIdentityViewModel.savedPrivateKey.collectAsState()
     var isSubmitting by remember { mutableStateOf(false) }
-
     val privateKey by remember {
         mutableStateOf(newIdentityViewModel.genPrivateKey())
     }
 
+    var isDriveState by remember { mutableStateOf(true) }
+    var isDriveButtonEnabled by remember { mutableStateOf(true) }
+
+    val signInErrorOptions = getSnackbarDefaultShowOptions(
+        severity = SnackbarSeverity.Error, message = stringResource(
+            R.string.drive_error_cant_sign_in_google_identity_account
+        )
+    )
+    val restoreErrorOptions = getSnackbarDefaultShowOptions(
+        severity = SnackbarSeverity.Error, message = stringResource(
+            R.string.drive_error_you_dont_have_restored_private_key
+        )
+    )
+    val backUpErrorOptions = getSnackbarDefaultShowOptions(
+        severity = SnackbarSeverity.Error, message = stringResource(
+            R.string.drive_error_cant_back_up_your_private_key
+        )
+    )
+
+
+    val googleSignInClient = remember {
+        GoogleSignIn.getClient(
+            context, GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestScopes(com.google.android.gms.common.api.Scope(DriveScopes.DRIVE_APPDATA))
+                .build()
+        )
+    }
+
+    val signInResultLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            scope.launch {
+                handleSignInResult(task, newIdentityViewModel) {
+                    mainViewModel.showSnackbar(signInErrorOptions)
+                }
+            }
+
+        }
+
+    val signedInAccount by newIdentityViewModel.signedInAccount.collectAsState()
+
     val invitationCodeState = rememberAppTextFieldState(initialText = "")
+
 
     fun savePrivateKey(pk: String) {
         newIdentityViewModel.identityManager.savePrivateKey(pk);
@@ -75,72 +125,174 @@ fun NewIdentityScreen(
     fun finishOnboarding(code: String) {
         scope.launch {
             try {
-//                newIdentityViewModel.createBalance(code)
-
+                newIdentityViewModel.pointsManager.getPointsBalance()
+                //newIdentityViewModel.createBalance(code)
                 onNext.invoke()
             } catch (e: Exception) {
                 ErrorHandler.logError("finishOnboarding", e.toString(), e)
 
-//                if (e is InvitationNotExistException) {
-//                    invitationCodeState.updateErrorMessage(
-//                        context.getString(R.string.create_identity_referral_code_not_exist_msg)
-//                    )
-//                    isSubmitting = false
-//                } else if (e is InvitationUsedException) {
-//                    onNext.invoke()
-//                } else {
-//                    invitationCodeState.updateErrorMessage(
-//                        context.getString(R.string.create_identity_referral_code_invalid_msg)
-//                    )
-//                    isSubmitting = false
-//                }
+                when (e) {
+                    is InvitationUsedException -> {
+                        onNext.invoke()
+                    }
+                }
             }
+        }
+    }
+
+
+    suspend fun restorePrivateKey() {
+        scope.launch {
+            try {
+                isDriveButtonEnabled = false
+                val driveService = newIdentityViewModel.getDriveService(signedInAccount!!, context)
+                val pk = newIdentityViewModel.restorePrivateKey(driveService)
+                    ?: throw IllegalStateException("No private key found")
+
+                savePrivateKey(pk)
+
+                delay(1000)
+                mainViewModel.tryLogin()
+                delay(1000)
+
+                if (invitationCodeState.text.isEmpty()) {
+                    finishOnboarding("")
+                } else {
+                    finishOnboarding(invitationCodeState.text)
+                }
+
+            } catch (e: Exception) {
+                isDriveButtonEnabled = true
+                ErrorHandler.logError("restorePrivateKey", "Cant restore private key", e)
+                mainViewModel.showSnackbar(restoreErrorOptions)
+            }
+        }
+
+    }
+
+    suspend fun backUpPrivateKey() {
+        scope.launch {
+            try {
+                isDriveButtonEnabled = false
+                val pk = if (savedPrivateKey == null) {
+                    val pk = newIdentityViewModel.genPrivateKey()
+                    savePrivateKey(pk)
+                    pk
+                } else {
+                    savedPrivateKey!!
+                }
+
+                val driveService = newIdentityViewModel.getDriveService(signedInAccount!!, context)
+                newIdentityViewModel.backupPrivateKey(driveService, pk)
+
+
+                delay(1000)
+                mainViewModel.tryLogin()
+                delay(1000)
+
+                if (invitationCodeState.text.isEmpty()) {
+                    finishOnboarding("")
+                } else {
+                    finishOnboarding(invitationCodeState.text)
+                }
+            } catch (e: Exception) {
+                isDriveButtonEnabled = true
+                ErrorHandler.logError("backUpPrivateKey", "Cant back up private key", e)
+                mainViewModel.showSnackbar(backUpErrorOptions)
+            }
+
         }
     }
 
     suspend fun handleInitPK(pk: String) {
         isSubmitting = true
 
-
-
-        if (savedPrivateKey.value.isNullOrEmpty()) {
+        if (savedPrivateKey.isNullOrEmpty()) {
             savePrivateKey(pk)
-        }else {
-            savePrivateKey(savedPrivateKey.value!!)
-        }
-
-        if (invitationCodeState.text.isEmpty()) {
-            finishOnboarding("")
-        } else {
-            finishOnboarding(invitationCodeState.text)
         }
 
         delay(1000)
         mainViewModel.tryLogin()
         delay(1000)
 
-
+        if (invitationCodeState.text.isEmpty()) {
+            finishOnboarding("")
+        } else {
+            finishOnboarding(invitationCodeState.text)
+        }
     }
 
-    NewIdentityScreenContent(
-        onBack = onBack,
-        privateKey = privateKey,
-        isImporting = isImporting,
-        handleInitPK = { scope.launch { handleInitPK(it) } },
-        isSubmitting = isSubmitting,
-    )
+    if (isDriveState) {
+        if (isImporting) {
+            RestoreScreen(
+                onDriveRestore = { scope.launch { restorePrivateKey() } },
+                signInAccount = signedInAccount,
+                signIn = {
+                    signInResultLauncher.launch(
+                        googleSignInClient.signInIntent
+                    )
+                },
+                isDriveButtonEnabled = isDriveButtonEnabled,
+                onBack = onBack
+            ) {
+                isDriveState = false
+            }
+        } else {
+            BackUpScreen(
+                onDriveBackup = { scope.launch { backUpPrivateKey() } },
+                signInAccount = signedInAccount,
+                signIn = {
+                    signInResultLauncher.launch(
+                        googleSignInClient.signInIntent
+                    )
+                },
+                onManualBackup = { isDriveState = false },
+                onBack = onBack,
+                isDriveButtonEnabled = isDriveButtonEnabled,
+                privateKey = privateKey
+            )
+        }
+    } else {
+        NewIdentityScreenContent(
+            onBack = { isDriveState = true },
+            privateKey = privateKey,
+            isImporting = isImporting,
+            handleInitPK = { scope.launch { handleInitPK(it) } },
+            isSubmitting = isSubmitting,
+            invitationCodeState = invitationCodeState,
+        )
+    }
+
+
 }
 
+private suspend fun handleSignInResult(
+    completedTask: Task<GoogleSignInAccount>,
+    viewModel: NewIdentityViewModel,
+    onError: suspend () -> Unit
+) {
+    try {
+        val account = completedTask.getResult(ApiException::class.java)
+        if (account != null) {
+            viewModel.setSignedInAccount(account)
+        }
+    } catch (e: ApiException) {
+        onError()
+        ErrorHandler.logError("handleSignInResult", "Failed to sign in", e)
+    }
+}
 
 @Composable
 fun NewIdentityScreenContent(
     onBack: () -> Unit,
     isImporting: Boolean = false,
     isSubmitting: Boolean = false,
+    invitationCodeState: AppTextFieldState,
     privateKey: String,
     handleInitPK: (pk: String) -> Unit,
 ) {
     val privateKeyFieldState = rememberAppTextFieldState(initialText = "")
+
 
     val clipboardManager = LocalClipboardManager.current
     var isCopied by remember { mutableStateOf(false) }
@@ -153,10 +305,7 @@ fun NewIdentityScreenContent(
     }
 
     fun isPKValid(pk: String): Boolean {
-        if (!isKeyValid(BigInteger(Numeric.hexStringToByteArray(pk)))){
-            return false
-        }
-        return (pk.length == 32 || pk.length == 64)
+        return pk.length == 32 || pk.length == 64
     }
 
     fun initPrivateKey() {
@@ -171,13 +320,23 @@ fun NewIdentityScreenContent(
         handleInitPK(pkToSave)
     }
 
+
+
     IdentityStepLayout(
         onBack = onBack,
-        title = stringResource(R.string.new_identity_title),
+        title = "",
         nextButton = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(24.dp),
             ) {
+//                if (!isImporting) {
+//                    AppTextField(
+//                        state = invitationCodeState,
+//                        placeholder = stringResource(id = R.string.create_identity_invitation_code_placeholder),
+//                        enabled = !isSubmitting,
+//                    )
+//                }
+
                 PrimaryButton(modifier = Modifier.fillMaxWidth(),
                     size = ButtonSize.Large,
                     text = stringResource(
@@ -190,59 +349,81 @@ fun NewIdentityScreenContent(
             }
         }
     ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 64.dp),
+            verticalArrangement = Arrangement.spacedBy(32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            CircledBadge(
+                contentSize = 80,
+                containerSize = 120,
+                painter = painterResource(
+                    id = R.drawable.ic_key
+                ),
+            )
+            Text(
+                text = if (isImporting) {
+                    stringResource(R.string.create_identity_import_title)
+                } else {
+                    stringResource(R.string.create_identity_title)
+                },
+                style = RarimeTheme.typography.h4,
+                color = RarimeTheme.colors.textPrimary
+            )
+        }
+
         Column(modifier = Modifier.fillMaxWidth()) {
             CardContainer {
-                Column {
-                    if (isImporting) {
-                        AppTextField(
-                            enabled = !isSubmitting,
-                            state = privateKeyFieldState,
-                            placeholder = stringResource(R.string.create_identity_import_placeholder)
+                if (isImporting) {
+                    AppTextField(
+                        enabled = !isSubmitting,
+                        state = privateKeyFieldState,
+                        placeholder = stringResource(R.string.create_identity_import_placeholder)
+                    )
+                } else {
+                    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                        Text(
+                            text = privateKey,
+                            style = RarimeTheme.typography.body3,
+                            color = RarimeTheme.colors.textPrimary,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    RarimeTheme.colors.componentPrimary,
+                                    RoundedCornerShape(8.dp)
+                                )
+                                .padding(vertical = 14.dp, horizontal = 16.dp)
                         )
-                    } else {
-                        Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                            Text(
-                                text = privateKey,
-                                style = RarimeTheme.typography.body3,
-                                color = RarimeTheme.colors.textPrimary,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(
-                                        RarimeTheme.colors.componentPrimary,
-                                        RoundedCornerShape(8.dp)
-                                    )
-                                    .padding(vertical = 14.dp, horizontal = 16.dp)
-                            )
-                            Row(
-                                horizontalArrangement = Arrangement.Center,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                PrimaryTextButton(
-                                    size = ButtonSize.Large,
-                                    leftIcon = if (isCopied) R.drawable.ic_check else R.drawable.ic_copy_simple,
-                                    text = (if (isCopied) {
-                                        stringResource(R.string.create_identity_copied_msg)
-                                    } else {
-                                        stringResource(R.string.create_identity_copy_btn)
-                                    }).uppercase(),
-                                    onClick = {
-                                        clipboardManager.setText(AnnotatedString(privateKey))
-                                        isCopied = true
-                                    })
-                            }
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            PrimaryTextButton(
+                                size = ButtonSize.Large,
+                                leftIcon = if (isCopied) R.drawable.ic_check else R.drawable.ic_copy_simple,
+                                text = (if (isCopied) {
+                                    stringResource(R.string.create_identity_copied_msg)
+                                } else {
+                                    stringResource(R.string.create_identity_copy_btn)
+                                }).uppercase(),
+                                onClick = {
+                                    clipboardManager.setText(AnnotatedString(privateKey))
+                                    isCopied = true
+                                })
                         }
-                    }
-
-                    if (!isImporting) {
-                        Spacer(modifier = Modifier.height(20.dp))
-                        HorizontalDivider()
-                        Spacer(modifier = Modifier.height(20.dp))
-                        InfoAlert(text = stringResource(R.string.create_identity_warning))
                     }
                 }
             }
+
+            if (!isImporting) {
+                Spacer(modifier = Modifier.height(8.dp))
+                InfoAlert(text = stringResource(R.string.create_identity_warning))
+            }
         }
     }
+
 }
 
 @Preview
@@ -252,6 +433,7 @@ private fun NewIdentityScreenContentPreview() {
         onBack = {},
         privateKey = "324523h423grewadisabudbawiudawwafa",
         handleInitPK = {},
+        invitationCodeState = rememberAppTextFieldState(initialText = "")
     )
 }
 
@@ -263,5 +445,6 @@ private fun NewIdentityScreenContentImportingPreview() {
         isImporting = true,
         privateKey = "324523h423grewadisabudbawiudawwafa",
         handleInitPK = {},
+        invitationCodeState = rememberAppTextFieldState(initialText = "")
     )
 }

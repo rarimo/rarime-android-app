@@ -49,6 +49,7 @@ fun HomeScreen(
     }
 
     LaunchedEffect(Unit) {
+        homeViewModel.loadNotifications()
         homeViewModel.loadUserDetails()
     }
 

@@ -1,11 +1,14 @@
 package com.rarilabs.rarime.modules.home.components.passport
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -80,9 +83,8 @@ fun HomeScreenPassportMainContent(
     fun reloadUserDetails() = run {
         scope.launch {
             isLoading = true
-            homeViewModel.loadUserDetails()
-
             homeViewModel.loadNotifications()
+            homeViewModel.loadUserDetails()
             isLoading = false
         }
     }
@@ -111,7 +113,9 @@ fun HomeScreenPassportMainContent(
         Spacer(modifier = Modifier.size(24.dp))
 
         Column(
-            modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             passport.value?.let {
                 PassportCard(
@@ -183,6 +187,8 @@ fun HomeScreenPassportMainContent(
                     rarimoInfoSheetState.show()
                 }
             )
+
+            Spacer(modifier = Modifier.weight(1f))
         }
 
         AppBottomSheet(state = rarimoInfoSheetState, fullScreen = true) { hide ->

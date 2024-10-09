@@ -12,7 +12,11 @@ fun resolveNotificationType(notificationTypeString: String): NotificationType {
     }
 }
 
-fun parseRewardNotification(notificationEntityData: NotificationEntityData): NotificationRewardContent {
-    val response = Gson().fromJson(notificationEntityData.data, NotificationRewardContent::class.java)
+fun parseRewardNotification(notificationEntityData: NotificationEntityData): NotificationRewardContent? {
+    val response = try {
+        Gson().fromJson(notificationEntityData.data, NotificationRewardContent::class.java)
+    } catch (e: Exception) {
+        null
+    }
     return response
 }

@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.IconButton
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -30,10 +30,10 @@ import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActio
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.data.tokens.PreviewerToken
 import com.rarilabs.rarime.manager.WalletAsset
+import com.rarilabs.rarime.modules.home.LocalHomeViewModel
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.modules.home.LocalHomeViewModel
 import com.rarilabs.rarime.ui.components.CircledBadgeWithCounter
 import com.rarilabs.rarime.ui.components.SecondaryTextButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -111,25 +111,27 @@ fun HomeScreenHeader(
         walletAsset = walletAsset,
         onBalanceClick = onBalanceClick,
         actionContent = {
-            Row (
+            Row(
                 horizontalArrangement = Arrangement.spacedBy(24.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (passportStatus.value != PassportStatus.UNSCANNED) {
-                    AppIcon(
-                        id = R.drawable.ic_qr_code,
-                        size = 20.dp,
-                        tint = RarimeTheme.colors.textPrimary,
+                    CircledBadgeWithCounter(
                         modifier = Modifier.clickable(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() },
                             onClick = { showQrScanner() }
-                        )
+                        ),
+                        iconId = R.drawable.ic_qr_code,
+                        contentSize = 20,
+                        contentColor = RarimeTheme.colors.textPrimary,
+                        containerSize = 40,
+                        containerColor = RarimeTheme.colors.backgroundPrimary
                     )
                 }
             }
         },
-        onNotificationClick = {navigate(Screen.NotificationsList.route)},
+        onNotificationClick = { navigate(Screen.NotificationsList.route) },
         notificationsSize = notifications.filter { it.isActive }.size
     )
 }
@@ -181,8 +183,10 @@ fun HomeScreenHeaderContent(
 
             actionContent()
 
+            Spacer(modifier = Modifier.width(20.dp))
+
             CircledBadgeWithCounter(
-                modifier = Modifier.clickable { onNotificationClick.invoke()},
+                modifier = Modifier.clickable { onNotificationClick.invoke() },
                 iconId = R.drawable.ic_bell,
                 containerSize = 40,
                 count = notificationsSize,
@@ -205,9 +209,18 @@ fun HomeScreenHeaderContentPreview() {
             .background(RarimeTheme.colors.backgroundPrimary)
     ) {
         HomeScreenHeaderContent(
-            walletAsset = WalletAsset("0x000000", PreviewerToken("0x00000000", "Reserved RMO", "RRMO")),
+            walletAsset = WalletAsset(
+                "0x000000",
+                PreviewerToken("0x00000000", "Reserved RMO", "RRMO")
+            ),
             actionContent = {
-                AppIcon(id = R.drawable.ic_qr_code, size = 20.dp, tint = RarimeTheme.colors.textPrimary)
+                CircledBadgeWithCounter(
+                    iconId = R.drawable.ic_qr_code,
+                    contentSize = 20,
+                    contentColor = RarimeTheme.colors.textPrimary,
+                    containerSize = 40,
+                    containerColor = RarimeTheme.colors.backgroundPrimary
+                )
             },
             onNotificationClick = {},
             notificationsSize = 5

@@ -355,4 +355,32 @@
     <string name="notifications_allowed_claimed">Claim</string>
     <string name="notifications_error">Error</string>
     <string name="default_notification_channel_id">notifications</string>
+
+    <string name="google_drive_backup_title">Google drive backup</string>
+    <string name="google_drive_backup_backed_up">Your account is backed up with Google Drive. If you lose your device, you can recover your account.</string>
+    <string name="google_drive_backup_delete_btn">Delete Backup</string>
+    <string name="google_drive_backup_not_backed_up">Your account is not backed up. If you lose your device, you will lose access to your account.</string>
+    <string name="google_drive_backup_not_backed_uo">Back Up with Google Drive</string>
+    <string name="google_drive_backup_pks_are_not_equal">Your account is backed up with Google Drive, but the keys do not match. If you lose your device, you will not be able to recover your account.</string>
+    <string name="google_drive_backup_sign_in">Sign In</string>
+    <string name="google_drive_backup_sign_in_description">You need to sign in to be able to restore your private key</string>
+    <string name="google_drive_backup_delete_old_key">Delete old key</string>
+
+    <string name="drive_error_cant_sign_in_google_identity_account">Can\'t sign in to Google identity account</string>
+    <string name="drive_error_you_dont_have_restored_private_key">You don\'t have restored private key</string>
+    <string name="drive_error_cant_back_up_your_private_key">Failed to back up, try again later</string>
+
+    <string name="drive_loading">Loading...</string>
+    <string name="drive_sign_in_to_google_drive">Sign in to Google Drive</string>
+    <string name="drive_restore_using_google_drive">Restore using Google Drive</string>
+    <string name="drive_restore_description">You can restore account using your Google Drive backup or Private Key</string>
+    <string name="drive_continue_without_backup">Back up using a key</string>
+
+    <string name="dreive_title_restore_your_account">Restore your\naccount</string>
+    <string name="drive_back_up_to_google_drive">Back up with Google Drive</string>
+    <string name="drive_title_back_up_your_account">Back up your\naccount</string>
+    <string name="restore_using_key">Restore using a key</string>
+
+    <string name="drive_backup_description">Your account is not backed up. If you lose your device, you will lose access to your account</string>
+
 </resources>

@@ -2,14 +2,19 @@ package com.rarilabs.rarime.modules.notifications
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.points.models.PointsEventBody
+import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class NotificationAppSheetViewModel @Inject constructor(private val pointsManager: PointsManager) : ViewModel() {
-    suspend fun checkIfRewarded(eventName: String): Boolean {
+class NotificationAppSheetViewModel @Inject constructor(private val pointsManager: PointsManager) :
+    ViewModel() {
+    suspend fun checkIfRewarded(eventName: String?): Boolean {
+
+        if (eventName == null) {
+            return true
+        }
         val events = pointsManager.getActiveEventsByName(eventName)
         val currentEvent = events.data.firstOrNull()
         if (currentEvent == null) {
@@ -27,7 +32,7 @@ class NotificationAppSheetViewModel @Inject constructor(private val pointsManage
             throw IllegalStateException()
 //            return null
         }
-        
+
         return pointsManager.claimPointsByEventId(currentEvent.id, "claim_event")
     }
 
