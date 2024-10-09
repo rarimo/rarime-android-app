@@ -47,6 +47,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "REFRESH_TOKEN" to "REFRESH_TOKEN",
         "IS_IN_WAITLIST" to "IS_IN_WAITLIST",
         "IS_LOGS_DELETED" to "IS_LOGS_DELETED",
+        "DEFERRED_REFERRAL_CODE" to "DEFERRED_REFERRAL_CODE"
     )
 
     private val PREFS_FILE_NAME = "sharedPrefFile12"
@@ -390,5 +391,15 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         val editor = getEditor()
         editor.putBoolean(accessTokens["IS_LOGS_DELETED"], isLogsDeleted)
         editor.apply()
+    }
+
+    override fun saveDeferredReferralCode(referralCode: String) {
+        val editor = getEditor()
+        editor.putString(accessTokens["DEFERRED_REFERRAL_CODE"], referralCode)
+        editor.apply()
+    }
+
+    override fun getDeferredReferralCode(): String? {
+        return getSharedPreferences().getString(accessTokens["DEFERRED_REFERRAL_CODE"], null)
     }
 }

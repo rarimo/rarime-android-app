@@ -33,6 +33,7 @@ import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
+import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
@@ -52,6 +53,7 @@ class PointsManager @Inject constructor(
     private val identityManager: IdentityManager,
     private val authManager: AuthManager,
     private val passportManager: PassportManager,
+    private val secureSharedPrefsManager: SecureSharedPrefsManager
 ) {
     suspend fun createPointsBalance(referralCode: String?) {
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
@@ -387,8 +389,14 @@ class PointsManager @Inject constructor(
                 ErrorHandler.logError("claimPointsByEventId", e.toString(), e)
                 throw e
             }
-
         }
+    }
 
+    fun saveDeferredReferralCode(referralCode: String) {
+        secureSharedPrefsManager.saveDeferredReferralCode(referralCode)
+    }
+
+    fun getDeferredReferralCode(): String? {
+        return secureSharedPrefsManager.getDeferredReferralCode()
     }
 }
