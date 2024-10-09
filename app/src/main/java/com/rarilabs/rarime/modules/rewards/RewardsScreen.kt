@@ -22,7 +22,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,9 +54,11 @@ import com.rarilabs.rarime.modules.rewards.view_models.LeaderBoardItem
 import com.rarilabs.rarime.modules.rewards.view_models.MOCKED_LEADER_BOARD_LIST
 import com.rarilabs.rarime.modules.rewards.view_models.RewardsViewModel
 import com.rarilabs.rarime.ui.components.AppBottomSheet
+import com.rarilabs.rarime.ui.components.AppCircularProgressIndicator
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppSkeleton
 import com.rarilabs.rarime.ui.components.CardContainer
+import com.rarilabs.rarime.ui.components.ErrorView
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -69,34 +74,60 @@ val localRewardsScreenViewModel =
 fun RewardsScreen(
     navigate: (String) -> Unit, rewardsViewModel: RewardsViewModel = hiltViewModel()
 ) {
-    val isAuthorized = rewardsViewModel.isAuthorized.collectAsState()
+    val isAuthorized by rewardsViewModel.isAuthorized.collectAsState()
 
-    val passportStatus = rewardsViewModel.passportStatus.collectAsState()
+    var isLoading by remember {
+        mutableStateOf(false)
+    }
+
+    var isError by remember {
+        mutableStateOf(false)
+    }
+
+    val passportStatus by rewardsViewModel.passportStatus.collectAsState()
 
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         scope.launch {
             try {
+                isLoading = true
                 rewardsViewModel.init()
+                isLoading = false
             } catch (e: Exception) {
                 ErrorHandler.logError("RewardsScreenContent", "init: ${e.message}", e)
+                isError = true
             }
         }
     }
 
     CompositionLocalProvider(localRewardsScreenViewModel provides rewardsViewModel) {
 
-        if (passportStatus.value == PassportStatus.NOT_ALLOWED || passportStatus.value == PassportStatus.WAITLIST_NOT_ALLOWED) {
+        if (passportStatus == PassportStatus.NOT_ALLOWED || passportStatus == PassportStatus.WAITLIST_NOT_ALLOWED) {
             rewardsViewModel.getNationality()?.let {
                 UnSupportedPassport(
                     nationality = it
                 )
             }
-        } else if (isAuthorized.value) {
+        }
+        else if (isError) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                ErrorView()
+            }
+        }else if (isLoading) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AppCircularProgressIndicator()
+            }
+        } else if (isAuthorized) {
             RewardsScreenContent(navigate)
-        } else {
-            RewardsUnauthorized()
         }
     }
 }
@@ -134,21 +165,21 @@ fun RewardsScreenContent(
 ) {
     val rewardsViewModel = localRewardsScreenViewModel.current
 
-    val passportStatus = rewardsViewModel.passportStatus.collectAsState()
+    val passportStatus by rewardsViewModel.passportStatus.collectAsState()
 
-    val pointsWalletAsset = rewardsViewModel.pointsWalletAsset.collectAsState()
+    val pointsWalletAsset by rewardsViewModel.pointsWalletAsset.collectAsState()
 
-    val limitedTimeEvents = rewardsViewModel.limitedTimeEvents.collectAsState()
+    val limitedTimeEvents by rewardsViewModel.limitedTimeEvents.collectAsState()
 
-    val activeTasksEvents = rewardsViewModel.activeTasksEvents.collectAsState()
+    val activeTasksEvents by rewardsViewModel.activeTasksEvents.collectAsState()
 
-    val leaderBoardList = rewardsViewModel.leaderBoardList.collectAsState()
+    val leaderBoardList by rewardsViewModel.leaderBoardList.collectAsState()
 
     val pointsToken by rewardsViewModel.pointsToken.collectAsState()
 
     val userLeaderBoardItem by rewardsViewModel.userLeaderBoardItem.collectAsState()
 
-    pointsWalletAsset.value?.let { walletAsset ->
+    pointsWalletAsset?.let { walletAsset ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -167,7 +198,7 @@ fun RewardsScreenContent(
                 )
 
                 RewardsRatingBadge(
-                    leaderBoardList = leaderBoardList.value,
+                    leaderBoardList = leaderBoardList,
                     walletAsset = walletAsset,
                     userLeaderBoardItem = userLeaderBoardItem,
                 )
@@ -185,13 +216,13 @@ fun RewardsScreenContent(
                     RewardsScreenUserStatistic(
                         navigate = navigate,
                         pointsWalletAsset = walletAsset,
-                        passportStatus = passportStatus.value,
+                        passportStatus = passportStatus,
                         pointsBalanceData = it,
                     )
                 }
 
-                limitedTimeEvents.value?.let {
-                    if (passportStatus.value == PassportStatus.ALLOWED && it.isNotEmpty()) {
+                limitedTimeEvents?.let {
+                    if (passportStatus == PassportStatus.ALLOWED && it.isNotEmpty()) {
                         CardContainer {
                             LimitedEventsList(navigate = navigate, limitedTimeEvents = it)
                         }
@@ -200,7 +231,7 @@ fun RewardsScreenContent(
 
                 CardContainer {
                     ActiveTasksList(
-                        navigate = navigate, activeTasksEvents = activeTasksEvents.value
+                        navigate = navigate, activeTasksEvents = activeTasksEvents
                     )
                 }
 

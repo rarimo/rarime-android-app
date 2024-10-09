@@ -51,6 +51,8 @@ import com.rarilabs.rarime.modules.wallet.WalletScreen
 import com.rarilabs.rarime.modules.wallet.WalletSendScreen
 import com.rarilabs.rarime.ui.components.AppWebView
 import com.rarilabs.rarime.ui.components.CongratsInvitationModalContent
+import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
+import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.AppIconUtil
 import com.rarilabs.rarime.util.BiometricUtil
 import com.rarilabs.rarime.util.Constants
@@ -177,14 +179,13 @@ fun MainScreenRoutes(
             ScanPassportScreen(
                 onClose = {
                     coroutineScope.launch {
-                        mainViewModel.loadUserDetails()
-
+                        //mainViewModel.loadUserDetails()
                         navController.popBackStack()
                     }
                 },
                 onClaim = {
                     coroutineScope.launch {
-                        mainViewModel.loadUserDetails()
+                        //mainViewModel.loadUserDetails()
                         navigateWithPopUp(Screen.Claim.Specific.route)
                     }
                 }
@@ -195,15 +196,15 @@ fun MainScreenRoutes(
             ScanPassportScreen(
                 onClose = {
                     coroutineScope.launch {
-                        val a = mainViewModel.loadUserDetails()
-                        a
+//                        val a = mainViewModel.loadUserDetails()
+//                        a
                         navigateWithPopUp(Screen.Main.route)
                     }
                 },
                 onClaim = {
                     coroutineScope.launch {
-                        val a = mainViewModel.loadUserDetails()
-                        a
+//                        val a = mainViewModel.loadUserDetails()
+//                        a
                         navigateWithPopUp(Screen.Claim.Reserve.route)
                     }
                 }
@@ -422,7 +423,7 @@ fun AcceptInvitation(
             code?.let {
                 mainViewModel.acceptInvitation(code)
 
-                mainViewModel.loadUserDetails()
+                //mainViewModel.loadUserDetails()
 
                 onFinish()
             } ?: run {

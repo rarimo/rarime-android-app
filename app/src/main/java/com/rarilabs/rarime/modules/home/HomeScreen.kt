@@ -48,6 +48,10 @@ fun HomeScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        homeViewModel.loadUserDetails()
+    }
+
     CompositionLocalProvider(LocalHomeViewModel provides homeViewModel) {
         if (isShowPassport) {
             HomeScreenPassportMain(navigate)

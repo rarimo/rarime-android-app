@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.manager
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.Gson
 import com.rarilabs.rarime.api.cosmos.CosmosManager
@@ -14,6 +15,8 @@ import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -114,34 +117,58 @@ class WalletManager @Inject constructor(
         dataStoreManager.saveSelectedWalletAsset(walletAsset)
     }
 
-    suspend fun loadBalances() {
-        withContext(Dispatchers.IO) {
-            val balances = getWalletAssets()
+    suspend fun loadBalances() = withContext(Dispatchers.IO) {
+        val balances = getWalletAssets()
 
-            val cs = coroutineScope {
+        try {
+            // Parallel execution of balance updates
+            val res =coroutineScope {
                 balances.forEach { balance ->
-                    launch {
+                    async {
                         balance.token.loadDetails()
                         ErrorHandler.logDebug("loadDetails", balance.token.symbol)
-                    }
-                    launch {
+
                         balance.loadBalance()
                         ErrorHandler.logDebug("loadBalances", balance.balance.value.toString())
-                    }
-                    launch {
+
                         balance.loadTransactions()
                         ErrorHandler.logDebug("loadTransactions", balance.token.toString())
                     }
                 }
             }
-            cs.toString()
-            _walletAssets.value = balances.toList()
+            res.toString()
 
-            dataStoreManager.saveWalletAssets(_walletAssets.value)
+            val newWalletAssets = balances.toList()
 
-            _pointsToken.value = getPointsToken(balances.toList())
+            val areBalancesEqual = newWalletAssets.size == _walletAssets.value.size && newWalletAssets.zip(_walletAssets.value).all {
+                    (newAsset, oldAsset) -> newAsset.balance.value == oldAsset.balance.value && newAsset.token.symbol == oldAsset.token.symbol
+            }
 
-            _selectedWalletAsset.value = dataStoreManager.readSelectedWalletAsset(balances.toList())
+            // Update _walletAssets only if data has changed
+            if (!areBalancesEqual) {
+                Log.i("Updated wallet", "_walletAssets.value")
+                _walletAssets.value = newWalletAssets
+                dataStoreManager.saveWalletAssets(newWalletAssets)
+            }
+
+            // Update _pointsToken only if it has changed
+            val newPointsToken = getPointsToken(newWalletAssets)
+            if (_pointsToken.value?.balanceDetails?.attributes?.amount != newPointsToken?.balanceDetails?.attributes?.amount) {
+
+                Log.i("Updated wallet", "_pointsToken.value")
+                _pointsToken.value = newPointsToken
+            }
+
+            // Update _selectedWalletAsset only if it has changed
+            val newSelectedWalletAsset = dataStoreManager.readSelectedWalletAsset(newWalletAssets)
+            if (_selectedWalletAsset.value.humanBalance() != newSelectedWalletAsset.humanBalance()) {
+
+                Log.i("Updated wallet", "_selectedWalletAsset.value")
+                _selectedWalletAsset.value = newSelectedWalletAsset
+            }
+        } catch (e: Exception) {
+            // Handle exceptions appropriately
+            ErrorHandler.logError("loadBalances", "Error during loading balances",e)
         }
     }
 }

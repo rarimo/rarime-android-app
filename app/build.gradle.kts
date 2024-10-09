@@ -24,8 +24,8 @@ android {
         minSdk = 27
         targetSdk = 34
 
-        versionCode = 26
-        versionName = "1.0.26"
+        versionCode = 33
+        versionName = "1.0.33-internal"
 
         externalNativeBuild {
             cmake {
@@ -34,6 +34,7 @@ android {
             }
 
             ndk {
+                //noinspection ChromeOsAbiSupport
                 abiFilters += "arm64-v8a"
             }
         }

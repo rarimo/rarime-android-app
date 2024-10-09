@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.theme.AppTheme
+import com.rarilabs.rarime.ui.theme.RarimeColors
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 class AppCheckboxState(initialChecked: Boolean = false) {
@@ -51,26 +53,42 @@ fun AppCheckbox(
     enabled: Boolean = true,
     state: AppCheckboxState = rememberAppCheckboxState(),
 ) {
-    val animatedBgColor by animateColorAsState(
-        targetValue = if (state.checked) RarimeTheme.colors.primaryDark
-        else RarimeTheme.colors.componentPrimary, label = ""
-    )
+
+    val colors = RarimeTheme.colors
+
+    val targetColor by remember(state.checked) {
+        derivedStateOf {
+            if (state.checked) colors.primaryDark else colors.componentPrimary
+        }
+    }
+
+    val animatedBgColor by animateColorAsState(targetValue = targetColor, label = "")
+
+    val interactionSource = remember { MutableInteractionSource() }
+
+    // Extract the onClick lambda to avoid capturing variables unnecessarily
+    val onClickAction = remember(enabled, state) {
+        {
+            if (enabled) state.updateChecked(!state.checked)
+        }
+    }
 
     Box(modifier = modifier
         .background(animatedBgColor, RoundedCornerShape(4.dp))
-        .border(1.dp, RarimeTheme.colors.componentPrimary, RoundedCornerShape(4.dp))
+        .border(1.dp, colors.componentPrimary, RoundedCornerShape(4.dp))
         .padding(2.dp)
-        .clickable(interactionSource = remember { MutableInteractionSource() },
+        .clickable(interactionSource = interactionSource,
             indication = null,
-            onClick = { if (enabled) state.updateChecked(!state.checked) })) {
+            onClick = onClickAction))
+    {
+
         AppIcon(
             id = R.drawable.ic_check,
             size = 16.dp,
-            tint = if (state.checked) RarimeTheme.colors.baseBlack else Color.Transparent,
+            tint = if (state.checked) colors.baseBlack else Color.Transparent,
         )
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 private fun AppCheckboxPreview() {

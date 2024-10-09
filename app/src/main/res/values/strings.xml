@@ -317,6 +317,33 @@
     <string name="ext_action_query_proof_gen_selector">selector</string>
     <string name="ext_action_query_proof_gen_timestamp_lower_bound">timestamp_lower_bound</string>
     <string name="ext_action_query_proof_gen_timestamp_upper_bound">timestamp_upper_bound</string>
+
+    <string name="snackbar_success_title">Success</string>
+    <string name="snackbar_warning_title">Processing</string>
+    <string name="snackbar_error_title">Error</string>
+    <string name="snackbar_success_message">Operation completed successfully</string>
+    <string name="snackbar_error_message">An error has occured, please try again</string>
+    <string name="snackbar_warning_message">Please wait</string>
+
+    <string name="light_verification_sheet_title">Light Verification</string>
+    <string name="light_verification_success_title">Success</string>
+    <string name="light_verification_success_subtitle">The verification is successful</string>
+    <string name="light_verification_success_btn">Okay</string>
+    <string name="light_verification_error_title">Error</string>
+
+    <string name="light_verification_error_age">Your age does not meet the requirements</string>
+    <string name="light_verification_error_citizenship">Your citizenship does not meet the requirements</string>
+    <string name="light_verification_error_subtitle">Failed to submit verification</string>
+
+    <string name="light_verification_error_btn">Close</string>
+
+    <string name="query_proof_sheet_title">Query Proof Generation</string>
+    <string name="query_proof_success_title">Success</string>
+    <string name="query_proof_success_subtitle">Your request has been successfully submitted</string>
+    <string name="query_proof_success_btn">Okay</string>
+    <string name="query_proof_error_title">Error</string>
+    <string name="query_proof_error_subtitle">Something went wrong. Please try again later</string>
+    <string name="query_proof_error_btn">Close</string>
     <string name="no_notifications">No notifications</string>
     <string name="default_duration_days">%1$s days</string>
     <string name="default_duration_hours">%1$s hours</string>

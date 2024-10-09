@@ -7,17 +7,22 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -32,6 +37,7 @@ import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppSheetState
+import com.rarilabs.rarime.ui.components.UiSnackbarDefault
 import com.rarilabs.rarime.ui.components.enter_program.EnterProgramFlow
 import com.rarilabs.rarime.ui.components.enter_program.UNSPECIFIED_PASSPORT_STEPS
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
@@ -137,38 +143,66 @@ fun MainScreenContent(
 ) {
     val mainViewModel = LocalMainViewModel.current
 
-    val passportStatus = mainViewModel.passportStatus.collectAsState()
-
-    val isModalShown = mainViewModel.isModalShown.collectAsState()
-    val modalContent = mainViewModel.modalContent.collectAsState()
-
+    // Collect states using 'by' to avoid accessing .value
+    val passportStatus by mainViewModel.passportStatus.collectAsState()
+    val isModalShown by mainViewModel.isModalShown.collectAsState()
+    val modalContent by mainViewModel.modalContent.collectAsState()
     val pointsToken by mainViewModel.pointsToken.collectAsState()
+    val snackbarContent = mainViewModel.snackbarContent.collectAsState()
 
     val enterProgramSheetState = rememberAppSheetState()
 
+    // Use remember to cache navBackStackEntry and currentRoute
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-
-    val currentRoute = navBackStackEntry?.destination?.route
-    LaunchedEffect(currentRoute) {
-        mainViewModel.setBottomBarVisibility(currentRoute != null && currentRoute in mainRoutes)
+    val currentRoute by remember(navBackStackEntry) {
+        derivedStateOf { navBackStackEntry?.destination?.route }
     }
 
-    fun simpleNavigate(route: String) {
-        navController.navigate(route)
+    // Compute shouldShowBottomBar based on currentRoute
+    val shouldShowBottomBar by remember(currentRoute) {
+        derivedStateOf { currentRoute != null && currentRoute in mainRoutes }
     }
 
-    fun navigateWithPopUp(route: String) {
-        if (route == Screen.Main.Rewards.RewardsMain.route) {
-            pointsToken?.balanceDetails?.attributes?.let {} ?: run {
-                enterProgramSheetState.show()
-                return
-            }
+    // Use LaunchedEffect to update bottom bar visibility when shouldShowBottomBar changes
+    LaunchedEffect(shouldShowBottomBar) {
+        mainViewModel.setBottomBarVisibility(shouldShowBottomBar)
+    }
+
+    // Use rememberUpdatedState for pointsToken and enterProgramSheetState
+    val pointsTokenState = rememberUpdatedState(pointsToken)
+    val enterProgramSheetStateState = rememberUpdatedState(enterProgramSheetState)
+
+    // Define navigation functions using remember to prevent recomposition
+    val simpleNavigate = remember(navController) {
+        { route: String ->
+            navController.navigate(route)
         }
+    }
 
-        navController.navigate(route) {
-            popUpTo(navController.graph.id) { inclusive = true }
-            restoreState = true
-            launchSingleTop = true
+    val navigateWithPopUp = remember(navController) {
+        { route: String ->
+            val currentPointsToken = pointsTokenState.value
+            val currentEnterProgramSheetState = enterProgramSheetStateState.value
+            if (route == Screen.Main.Rewards.RewardsMain.route) {
+                if (currentPointsToken?.balanceDetails?.attributes == null) {
+                    currentEnterProgramSheetState.show()
+                }else {
+                    //TODO: should be return from here
+                    navController.navigate(route) {
+                        popUpTo(navController.graph.id) { inclusive = true }
+                        restoreState = true
+                        launchSingleTop = true
+                    }
+                }
+            }else {
+                navController.navigate(route) {
+                    popUpTo(navController.graph.id) { inclusive = true }
+                    restoreState = true
+                    launchSingleTop = true
+                }
+            }
+
+
         }
     }
 
@@ -180,6 +214,16 @@ fun MainScreenContent(
                         currentRoute = currentRoute,
                         onRouteSelected = { navigateWithPopUp(it) }
                     )
+                }
+            },
+
+            snackbarHost = {
+                snackbarContent.value?.let { snackContent ->
+                    SnackbarHost(hostState = mainViewModel.snackbarHostState.value) {
+                        Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                            UiSnackbarDefault(snackContent)
+                        }
+                    }
                 }
             },
         ) {
@@ -198,9 +242,9 @@ fun MainScreenContent(
                 navigateWithPopUp = { navigateWithPopUp(it) }
             )
 
-            if (isModalShown.value) {
+            if (isModalShown) {
                 Dialog(onDismissRequest = { mainViewModel.setModalVisibility(false) }) {
-                    modalContent.value()
+                    modalContent()
                 }
             }
 
@@ -218,7 +262,7 @@ fun MainScreenContent(
                     },
                     sheetState = enterProgramSheetState,
                     hide = hide,
-                    passportStatus = passportStatus.value,
+                    passportStatus = passportStatus,
                 )
             }
         }

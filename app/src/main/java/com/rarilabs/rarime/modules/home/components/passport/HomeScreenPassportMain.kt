@@ -108,7 +108,7 @@ fun HomeScreenPassportMainContent(
             }
         }
 
-        Spacer(modifier = Modifier.size(32.dp))
+        Spacer(modifier = Modifier.size(24.dp))
 
         Column(
             modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)

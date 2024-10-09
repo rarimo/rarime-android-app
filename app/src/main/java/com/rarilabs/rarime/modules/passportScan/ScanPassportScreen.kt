@@ -171,6 +171,7 @@ fun ScanPassportScreen(
                     },
                     eDocument = eDoc.value!!,
                     onError = { e, regProof ->
+                        ErrorHandler.logError("GenerateProofStep", "Error", e)
                         regProof?.let {
                             scanPassportScreenViewModel.saveRegistrationProof(it)
                         }
@@ -203,7 +204,7 @@ fun ScanPassportScreen(
             ScanPassportState.FINISH_PASSPORT_FLOW -> {
                 if (balance?.balanceDetails == null) {
                     onClose.invoke()
-
+                    scanPassportScreenViewModel.savePassport()
                 }else {
                     onClaim.invoke()
                 }

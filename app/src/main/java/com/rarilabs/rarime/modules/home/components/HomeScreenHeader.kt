@@ -3,6 +3,7 @@ package com.rarilabs.rarime.modules.home.components
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -25,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
+import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.data.tokens.PreviewerToken
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
@@ -53,6 +56,7 @@ fun HomeScreenHeader(
 
     var isQrCodeScannerOpen by remember { mutableStateOf(false) }
 
+    val passportStatus = mainViewModel.passportStatus.collectAsState()
     val notifications by homeViewModel.notReadNotifications.collectAsState()
 
     fun showQrScanner() {
@@ -77,6 +81,15 @@ fun HomeScreenHeader(
         }
     }
 
+    key(dataUri) {
+        ExtIntActionPreview(
+            dataUri = dataUri,
+            onCancel = {},
+            onSuccess = {},
+            onError = {}
+        )
+    }
+
     if (isQrCodeScannerOpen) {
         ScanQrScreen(
             onBack = { hideQrScanner() },
@@ -98,12 +111,26 @@ fun HomeScreenHeader(
         walletAsset = walletAsset,
         onBalanceClick = onBalanceClick,
         actionContent = {
-            IconButton(onClick = { showQrScanner() }) {
-                AppIcon(id = R.drawable.ic_qr_code, size = 24.dp, tint = RarimeTheme.colors.textPrimary)
+            Row (
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (passportStatus.value != PassportStatus.UNSCANNED) {
+                    AppIcon(
+                        id = R.drawable.ic_qr_code,
+                        size = 20.dp,
+                        tint = RarimeTheme.colors.textPrimary,
+                        modifier = Modifier.clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = { showQrScanner() }
+                        )
+                    )
+                }
             }
         },
         onNotificationClick = {navigate(Screen.NotificationsList.route)},
-        notifications.filter { it.isActive }.size
+        notificationsSize = notifications.filter { it.isActive }.size
     )
 }
 
@@ -115,10 +142,8 @@ fun HomeScreenHeaderContent(
     onNotificationClick: () -> Unit,
     notificationsSize: Int
 ) {
-
-
     Column(
-        verticalArrangement = Arrangement.spacedBy(24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier.padding(horizontal = 8.dp)
     ) {
         Row(
@@ -182,9 +207,7 @@ fun HomeScreenHeaderContentPreview() {
         HomeScreenHeaderContent(
             walletAsset = WalletAsset("0x000000", PreviewerToken("0x00000000", "Reserved RMO", "RRMO")),
             actionContent = {
-                IconButton(onClick = {  }) {
-                    AppIcon(id = R.drawable.ic_qr_code, size = 24.dp, tint = RarimeTheme.colors.textPrimary)
-                }
+                AppIcon(id = R.drawable.ic_qr_code, size = 20.dp, tint = RarimeTheme.colors.textPrimary)
             },
             onNotificationClick = {},
             notificationsSize = 5

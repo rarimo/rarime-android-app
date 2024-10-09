@@ -1,5 +1,8 @@
 package com.rarilabs.rarime.api.ext_integrator
 
+import com.rarilabs.rarime.api.ext_integrator.models.LightSignatureCallbackRequest
+import com.rarilabs.rarime.api.ext_integrator.models.LightSignatureCallbackRequestAttributes
+import com.rarilabs.rarime.api.ext_integrator.models.LightSignatureCallbackRequestData
 import com.rarilabs.rarime.api.ext_integrator.models.QueryProofGenCallbackRequest
 import com.rarilabs.rarime.api.ext_integrator.models.QueryProofGenCallbackRequestAttributes
 import com.rarilabs.rarime.api.ext_integrator.models.QueryProofGenCallbackRequestData
@@ -22,6 +25,26 @@ class ExtIntegratorApiManager @Inject constructor(
                             id = userIdHash,
                             attributes = QueryProofGenCallbackRequestAttributes(
                                 proof = proof
+                            )
+                        )
+                    )
+                )
+            } catch (e: Exception) {
+                throw Exception(e.toString())
+            }
+        }
+    }
+    suspend fun lightSignatureCallback(url: String, pubSignals: List<String>, signature: String, userIdHash: String) {
+        return withContext(Dispatchers.IO) {
+            try {
+                extIntegratorAPI.lightSignatureCallback(
+                    url,
+                    LightSignatureCallbackRequest(
+                        data = LightSignatureCallbackRequestData(
+                            id = userIdHash,
+                            attributes = LightSignatureCallbackRequestAttributes(
+                                pub_signals = pubSignals,
+                                signature = signature
                             )
                         )
                     )

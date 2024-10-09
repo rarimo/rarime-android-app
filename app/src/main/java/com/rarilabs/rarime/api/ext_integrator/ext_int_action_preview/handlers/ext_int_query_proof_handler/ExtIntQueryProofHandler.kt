@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,7 +41,9 @@ import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppSheetState
 import com.rarilabs.rarime.ui.components.AppSkeleton
 import com.rarilabs.rarime.ui.components.PrimaryButton
+import com.rarilabs.rarime.ui.components.SnackbarSeverity
 import com.rarilabs.rarime.ui.components.TertiaryButton
+import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
@@ -65,47 +69,38 @@ fun ExtIntQueryProofHandler(
 
     val sheetState = rememberAppSheetState(true)
 
-    fun onSuccessHandler() {
-        mainViewModel.setModalContent {
-            AlertModalContent(
-                title = "Success",
-                subtitle = "Your request has been successfully submitted",
-                buttonText = "Ok",
-                onClose = {
-                    mainViewModel.setModalVisibility(false)
-                    onSuccess.invoke()
-                },
-            )
+    LaunchedEffect(sheetState.showSheet) {
+        if (!sheetState.showSheet) {
+            onCancel.invoke()
         }
-        mainViewModel.setModalVisibility(true)
+    }
+
+    fun onSuccessHandler() {
+        scope.launch {
+            mainViewModel.showSnackbar(
+                getSnackbarDefaultShowOptions(
+                    severity = SnackbarSeverity.Success,
+                    duration = SnackbarDuration.Long,
+                    title = context.getString(R.string.query_proof_success_title),
+                    message = context.getString(R.string.query_proof_success_subtitle),
+                )
+            )
+            onSuccess.invoke()
+        }
     }
 
     fun onFailHandler() {
-        mainViewModel.setModalContent {
-            AlertModalContent(
-                withConfetti = false,
-                title = "Failed",
-                subtitle = "Something went wrong. Please try again later",
-                mediaContent = {
-                    AppIcon(
-                        id = R.drawable.ic_warning,
-                        size = 24.dp,
-                        tint = RarimeTheme.colors.baseWhite,
-                        modifier = Modifier
-                            .background(RarimeTheme.colors.errorMain, CircleShape)
-                            .padding(28.dp)
-                    )
-                },
-                buttonBg = RarimeTheme.colors.errorMain,
-                buttonColor = RarimeTheme.colors.baseWhite,
-                buttonText = "Ok",
-                onClose = {
-                    mainViewModel.setModalVisibility(false)
-                    onFail.invoke()
-                },
+        scope.launch {
+            mainViewModel.showSnackbar(
+                getSnackbarDefaultShowOptions(
+                    severity = SnackbarSeverity.Error,
+                    duration = SnackbarDuration.Long,
+                    title = context.getString(R.string.query_proof_error_title),
+                    message = context.getString(R.string.query_proof_error_subtitle),
+                )
             )
+            onFail.invoke()
         }
-        mainViewModel.setModalVisibility(true)
     }
 
     fun handleAccept() {
@@ -162,8 +157,6 @@ private fun ExtIntQueryProofHandlerContent(
     handleAccept: () -> Unit = {},
     onCancel: () -> Unit = {}
 ) {
-    val context = LocalContext.current
-
     AppBottomSheet(
         state = sheetState,
         isHeaderEnabled = false,
@@ -186,7 +179,7 @@ private fun ExtIntQueryProofHandlerContent(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Query Proof Generation",
+                    text = stringResource(id = R.string.query_proof_sheet_title),
                     style = RarimeTheme.typography.h6,
                     color = RarimeTheme.colors.textPrimary,
                     modifier = Modifier.align(Alignment.CenterVertically)
