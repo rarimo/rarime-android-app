@@ -2,9 +2,14 @@ package com.rarilabs.rarime
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.appsflyer.AppsFlyerLib
+import com.appsflyer.deeplink.DeepLink
+import com.appsflyer.deeplink.DeepLinkListener
+import com.appsflyer.deeplink.DeepLinkResult
 import com.rarilabs.rarime.manager.NfcManager
 import com.rarilabs.rarime.manager.ScanNFCState
 import com.rarilabs.rarime.modules.appUpdate.InAppUpdate
@@ -23,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         installSplashScreen()
 
         ErrorHandler.initialize(this)
-
+        initAppsFlyer()
         nfcManager.activity = this
 
         setContent {
@@ -51,6 +56,33 @@ class MainActivity : AppCompatActivity() {
         setIntent(intent)
 
         nfcManager.handleNewIntent(intent)
+    }
+
+    private fun initAppsFlyer() {
+        AppsFlyerLib.getInstance()
+            .init(BaseConfig.APPSFLYER_DEV_KEY, null, application.applicationContext)
+        AppsFlyerLib.getInstance().subscribeForDeepLink(object : DeepLinkListener {
+            override fun onDeepLinking(deepLinkResult: DeepLinkResult) {
+                if (deepLinkResult.status != DeepLinkResult.Status.FOUND) {
+                    ErrorHandler.logError(
+                        "AppsFlyer",
+                        "Deep link not found, status: ${deepLinkResult.status}"
+                    )
+                    ErrorHandler.logError("AppsFlyer", "Deep link error: ${deepLinkResult.error}")
+                    return
+                }
+
+                val deepLinkObj: DeepLink = deepLinkResult.deepLink
+                if (deepLinkObj.isDeferred == true) {
+                    Log.i("AppsFlyer", "Deep link value: ${deepLinkObj.deepLinkValue ?: "null"}")
+                    if (deepLinkObj.deepLinkValue != null) {
+                        nfcManager.pointsManager.saveDeferredReferralCode(deepLinkObj.deepLinkValue!!)
+                    }
+                }
+            }
+        })
+
+        AppsFlyerLib.getInstance().start(application.applicationContext)
     }
 
 }

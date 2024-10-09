@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,7 +64,8 @@ fun Invitation(
     invitationViewModel: InvitationViewModel = hiltViewModel()
 ) {
 
-    val invitationCodeState = rememberAppTextFieldState(initialText = "")
+    val invitationCodeState =
+        rememberAppTextFieldState(initialText = invitationViewModel.getDeferredReferralCode() ?: "")
 
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -76,7 +78,6 @@ fun Invitation(
 
             try {
                 invitationViewModel.createNLoadBalance(invitationCodeState.text)
-
                 onNext()
             } catch (e: Exception) {
                 ErrorHandler.logError("verifyCode", e.toString(), e)
@@ -97,6 +98,14 @@ fun Invitation(
             }
 
             isSubmitting = false
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        if (invitationViewModel.getDeferredReferralCode().isNullOrEmpty()){
+            return@LaunchedEffect
+        }else{
+            verifyCode()
         }
     }
 

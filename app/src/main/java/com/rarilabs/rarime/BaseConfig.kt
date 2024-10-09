@@ -7,6 +7,7 @@ val BaseConfig: IConfig = if (BuildConfig.isTestnet) TestNetConfig else MainnetC
 
 
 interface IConfig {
+    val APPSFLYER_DEV_KEY: String
     val RELAYER_URL: String
     val EVM_RPC_URL: String
     val COSMOS_RPC_URL: String
@@ -32,7 +33,6 @@ interface IConfig {
     val FEEDBACK_EMAIL: String
     val CHAIN: RarimoChains
     val lightVerificationSKHex: String
-
     val GLOBAL_NOTIFICATION_TOPIC: String
     val REWARD_NOTIFICATION_TOPIC: String
     val GOOGLE_WEB_KEY: String
@@ -80,6 +80,7 @@ object TestNetConfig: IConfig {
 
     override val GLOBAL_NOTIFICATION_TOPIC = "rarime-stage"
     override val REWARD_NOTIFICATION_TOPIC: String = "rarime-rewardable-stage"
+    override val APPSFLYER_DEV_KEY = Keys.APPSFLYER_DEV_KEY
 }
 
 // Mainnet
@@ -121,4 +122,6 @@ object MainnetConfig: IConfig {
 
     override val GLOBAL_NOTIFICATION_TOPIC = "rarime"
     override val REWARD_NOTIFICATION_TOPIC: String = "rarime-rewardable"
+    override val APPSFLYER_DEV_KEY = Keys.APPSFLYER_DEV_KEY
+
 }

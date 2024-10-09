@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
+import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +21,8 @@ enum class ScanNFCState {
 }
 
 class NfcManager @Inject constructor(
-    private val context: Context
+    private val context: Context,
+    val pointsManager: PointsManager
 ) {
     private lateinit var adapter: NfcAdapter
 

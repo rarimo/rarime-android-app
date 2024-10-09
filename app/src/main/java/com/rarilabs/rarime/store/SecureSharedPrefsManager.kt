@@ -76,4 +76,7 @@ interface SecureSharedPrefsManager {
 
     fun readIsLogsDeleted(): Boolean
     fun saveIsLogsDeleted(isLogsDeleted: Boolean)
+
+    fun saveDeferredReferralCode(referralCode: String)
+    fun getDeferredReferralCode(): String?
 }

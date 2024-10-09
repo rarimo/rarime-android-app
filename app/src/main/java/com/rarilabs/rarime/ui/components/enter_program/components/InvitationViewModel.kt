@@ -16,6 +16,8 @@ class InvitationViewModel @Inject constructor(
         walletManager.loadBalances()
     }
 
+    val getDeferredReferralCode = pointsManager::getDeferredReferralCode
+
     suspend fun loadBalance() {
         pointsManager.getPointsBalance()
     }

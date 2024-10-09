@@ -68,8 +68,8 @@ abstract class ManagerModule {
 class APIModule {
     @Provides
     @Singleton
-    fun provideNfcManager(@ApplicationContext context: Context): NfcManager {
-        return NfcManager(context)
+    fun provideNfcManager(@ApplicationContext context: Context, pointsManager: PointsManager): NfcManager {
+        return NfcManager(context, pointsManager)
     }
 
     @Provides
@@ -236,7 +236,8 @@ class APIModule {
         pointsAPIManager: PointsAPIManager,
         identityManager: IdentityManager,
         authManager: AuthManager,
-        passportManager: PassportManager
+        passportManager: PassportManager,
+        sharedPrefsManager: SecureSharedPrefsManager
     ): PointsManager = PointsManager(
         context,
         contractManager,
@@ -244,6 +245,7 @@ class APIModule {
         identityManager,
         authManager,
         passportManager,
+        sharedPrefsManager
     )
 
     @Provides
