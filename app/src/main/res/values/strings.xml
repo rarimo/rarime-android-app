@@ -344,6 +344,17 @@
     <string name="query_proof_error_title">Error</string>
     <string name="query_proof_error_subtitle">Something went wrong. Please try again later</string>
     <string name="query_proof_error_btn">Close</string>
+    <string name="no_notifications">No notifications</string>
+    <string name="default_duration_days">%1$s days</string>
+    <string name="default_duration_hours">%1$s hours</string>
+    <string name="default_duration_minutes">%1$s minutes</string>
+    <string name="default_duration_seconds">%1$s seconds</string>
+    <string name="time_ago">ago</string>
+    <string name="notifications_reward_loading">Loading...</string>
+    <string name="notifications_reward_claimed">Claimed</string>
+    <string name="notifications_allowed_claimed">Claim</string>
+    <string name="notifications_error">Error</string>
+    <string name="default_notification_channel_id">notifications</string>
 
     <string name="google_drive_backup_title">Google drive backup</string>
     <string name="google_drive_backup_backed_up">Your account is backed up with Google Drive. If you lose your device, you can recover your account.</string>

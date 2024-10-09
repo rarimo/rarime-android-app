@@ -114,3 +114,80 @@ fun CircledBadgeWithCounter(
 
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun CircledBadgePreview() {
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier,
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CircledBadge(
+                iconId = R.drawable.ic_lock, contentColor = RarimeTheme.colors.baseBlack
+            )
+            CircledBadge(
+                containerSize = 160,
+                iconId = R.drawable.ic_lock,
+                contentSize = 80,
+                contentColor = RarimeTheme.colors.baseBlack
+            )
+            CircledBadge(
+                containerSize = 160,
+                painter = painterResource(id = R.drawable.reward_coin),
+                contentSize = 80,
+            )
+            CircledBadge(
+                containerSize = 160,
+                containerColor = RarimeTheme.colors.secondaryMain,
+                painter = painterResource(id = R.drawable.reward_coin),
+                contentSize = 120
+            )
+        }
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CircledBadgeWithCounter(
+                count = 2, containerSize = 40, badgeSize = 20
+            ) {
+                AppIcon(
+                    id = R.drawable.ic_bell, size = 20.dp, tint = RarimeTheme.colors.baseBlack
+                )
+            }
+
+            CircledBadgeWithCounter(
+                containerSize = 160, badgeSize = 40, count = 4
+            ) {
+                AppIcon(
+                    id = R.drawable.ic_lock,
+                    size = 80.dp,
+                    tint = RarimeTheme.colors.baseBlack
+                )
+            }
+            CircledBadgeWithCounter(
+                containerSize = 160
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.reward_coin),
+                    contentDescription = ""
+                )
+            }
+            CircledBadgeWithCounter(
+                containerSize = 160, containerColor = RarimeTheme.colors.secondaryMain
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.reward_coin),
+                    contentDescription = ""
+                )
+            }
+        }
+    }
+}

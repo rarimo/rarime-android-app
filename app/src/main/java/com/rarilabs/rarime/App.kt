@@ -1,15 +1,23 @@
 package com.rarilabs.rarime
 
 import android.app.Application
+import com.google.firebase.FirebaseApp
+import com.google.firebase.FirebaseOptions
+import com.rarilabs.rarime.config.Keys
 import dagger.hilt.android.HiltAndroidApp
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.security.Security
 
 @HiltAndroidApp
 class App: Application() {
+    private fun setupFireBase() {
+        FirebaseApp.initializeApp(this)
+    }
+
     override fun onCreate() {
         super.onCreate()
         setupBouncyCastle()
+        setupFireBase()
     }
 
     private fun setupBouncyCastle() {
