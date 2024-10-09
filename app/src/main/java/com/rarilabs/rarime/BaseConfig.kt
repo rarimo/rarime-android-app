@@ -32,6 +32,8 @@ interface IConfig {
     val FEEDBACK_EMAIL: String
     val CHAIN: RarimoChains
     val lightVerificationSKHex: String
+    val GOOGLE_WEB_KEY: String
+    val APP_ID_FIREBASE: String
 }
 
 /* TESTNET */
@@ -69,6 +71,9 @@ object TestNetConfig: IConfig {
     override val FEEDBACK_EMAIL = "apereliez1@gmail.com"
     override val CHAIN = RarimoChains.MainnetBeta
     override val lightVerificationSKHex = Keys.lightVerificationSKHex
+    override val GOOGLE_WEB_KEY = Keys.GOOGLE_WEB_KEY
+    override val APP_ID_FIREBASE = Keys.APP_ID
+
 }
 
 // Mainnet
@@ -105,5 +110,7 @@ object MainnetConfig: IConfig {
     override val FEEDBACK_EMAIL = "info@rarilabs.com"
     override val CHAIN = RarimoChains.Mainnet
     override val lightVerificationSKHex = Keys.lightVerificationSKHex
+    override val GOOGLE_WEB_KEY = Keys.GOOGLE_WEB_KEY
+    override val APP_ID_FIREBASE = Keys.APP_ID
 
 }

@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.modules.main
 
-import android.util.Log
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
@@ -160,6 +159,7 @@ class MainViewModel @Inject constructor(
             SnackbarResult.Dismissed -> {
                 clearSnackbarOptions()
             }
+
             SnackbarResult.ActionPerformed -> {
                 clearSnackbarOptions()
             }
