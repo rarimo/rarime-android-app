@@ -1,5 +1,7 @@
 package com.rarilabs.rarime.util
 
+import android.content.Context
+import com.rarilabs.rarime.R
 import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -110,6 +112,36 @@ object DateUtil {
             format.format(date)
         } else {
             ""
+        }
+    }
+
+    fun duration(from: LocalDateTime, to: LocalDateTime = LocalDateTime.now()): Duration {
+        return Duration.between(from, to)
+    }
+
+    fun getDurationString(duration: Duration, context: Context): String {
+        return when {
+            duration.toDays() > 0 -> context.getString(
+                R.string.default_duration_days,
+                duration.toDays().toString()
+            )
+
+            duration.toHours() > 0 -> context.getString(
+                R.string.default_duration_hours,
+                duration.toHours().toString()
+            )
+
+            duration.toMinutes() > 0 -> context.getString(
+                R.string.default_duration_minutes,
+                duration.toMinutes().toString()
+            )
+
+            duration.seconds > 0 -> context.getString(
+                R.string.default_duration_seconds,
+                duration.seconds.toString()
+            )
+
+            else -> ""
         }
     }
 }

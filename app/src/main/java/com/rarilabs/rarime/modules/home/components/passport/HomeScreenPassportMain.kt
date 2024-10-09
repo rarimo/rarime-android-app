@@ -1,12 +1,16 @@
 package com.rarilabs.rarime.modules.home.components.passport
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,6 +29,7 @@ import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.home.LocalHomeViewModel
 import com.rarilabs.rarime.modules.home.components.HomeScreenHeader
 import com.rarilabs.rarime.modules.home.components.RarimeInfoScreen
+import com.rarilabs.rarime.services.NotificationService
 import com.rarilabs.rarime.ui.components.ActionCard
 import com.rarilabs.rarime.ui.components.ActionCardVariants
 import com.rarilabs.rarime.ui.components.AppBottomSheet
@@ -33,6 +38,7 @@ import com.rarilabs.rarime.ui.components.enter_program.EnterProgramFlow
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Constants
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.launch
 
@@ -77,8 +83,17 @@ fun HomeScreenPassportMainContent(
     fun reloadUserDetails() = run {
         scope.launch {
             isLoading = true
+            homeViewModel.loadNotifications()
             homeViewModel.loadUserDetails()
             isLoading = false
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        try {
+            NotificationService.subscribeToRewardableTopic()
+        } catch (e: Exception) {
+            ErrorHandler.logError("HomeScreenPassportMain", "error sub to rewardable topic", e)
         }
     }
 
@@ -86,7 +101,10 @@ fun HomeScreenPassportMainContent(
         modifier = Modifier
             .padding(vertical = 20.dp, horizontal = 12.dp)
     ) {
-        HomeScreenHeader(walletAsset = selectedWalletAsset) {
+        HomeScreenHeader(
+            walletAsset = selectedWalletAsset,
+            navigate = navigate,
+        ) {
             pointsToken?.balanceDetails?.let {
                 navigate(Screen.Main.Rewards.route)
             }
@@ -95,7 +113,9 @@ fun HomeScreenPassportMainContent(
         Spacer(modifier = Modifier.size(24.dp))
 
         Column(
-            modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             passport.value?.let {
                 PassportCard(
@@ -167,6 +187,8 @@ fun HomeScreenPassportMainContent(
                     rarimoInfoSheetState.show()
                 }
             )
+
+            Spacer(modifier = Modifier.weight(1f))
         }
 
         AppBottomSheet(state = rarimoInfoSheetState, fullScreen = true) { hide ->

@@ -64,6 +64,7 @@ fun NewIdentityScreen(
     newIdentityViewModel: NewIdentityViewModel = hiltViewModel()
 ) {
     val scope = rememberCoroutineScope()
+
     val context = LocalContext.current
     val mainViewModel = LocalMainViewModel.current
     val savedPrivateKey by newIdentityViewModel.savedPrivateKey.collectAsState()

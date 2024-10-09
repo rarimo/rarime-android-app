@@ -5,6 +5,7 @@ import com.rarilabs.rarime.api.airdrop.AirDropManager
 import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.tokens.PointsToken
+import com.rarilabs.rarime.manager.NotificationManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.manager.WalletManager
@@ -22,8 +23,11 @@ class HomeViewModel @Inject constructor(
     private val passportManager: PassportManager,
     private val airDropManager: AirDropManager,
     private val walletManager: WalletManager,
+    private val notificationManager: NotificationManager
 ) : ViewModel() {
     val isAirDropClaimed = airDropManager.isAirDropClaimed
+
+    val notReadNotifications = notificationManager.notificationList
 
     private val _selectedWalletAsset =
         MutableStateFlow(walletManager.walletAssets.value.find { it.token is PointsToken })
@@ -51,6 +55,14 @@ class HomeViewModel @Inject constructor(
 
     fun onPassportIdentifiersChange(passportIdentifiers: List<PassportIdentifier>) {
         passportManager.updatePassportIdentifiers(passportIdentifiers)
+    }
+
+    suspend fun loadNotifications() {
+        try {
+            notificationManager.loadNotifications()
+        } catch (e: Exception) {
+            ErrorHandler.logError("HomeViewModel", "error load notifications", e)
+        }
     }
 
     suspend fun loadUserDetails() = coroutineScope {
