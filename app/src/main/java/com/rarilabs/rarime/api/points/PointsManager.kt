@@ -51,7 +51,7 @@ class PointsManager @Inject constructor(
     private val authManager: AuthManager,
     private val passportManager: PassportManager,
 ) {
-    suspend fun createPointsBalance(referralCode: String) {
+    suspend fun createPointsBalance(referralCode: String?) {
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
         if (userNullifierHex.isEmpty()) {
@@ -65,7 +65,7 @@ class PointsManager @Inject constructor(
                         id = userNullifierHex,
                         type = "create_balance",
                         attributes = CreateBalanceAttributes(
-                            referredBy = referralCode
+                            referredBy = if (referralCode.isNullOrEmpty()) null else referralCode
                         )
                     )
                 ), "Bearer ${authManager.accessToken.value!!}"
