@@ -52,8 +52,6 @@ fun HomeScreenHeader(
     val mainViewModel = LocalMainViewModel.current
     val homeViewModel = LocalHomeViewModel.current
 
-    var dataUri by remember { mutableStateOf<Uri?>(null) }
-
     var isQrCodeScannerOpen by remember { mutableStateOf(false) }
 
     val passportStatus = mainViewModel.passportStatus.collectAsState()
@@ -73,37 +71,17 @@ fun HomeScreenHeader(
         scope.launch {
             try {
                 hideQrScanner()
-
-                dataUri = Uri.parse(text)
+                mainViewModel.setExtIntDataURI(Uri.parse(text))
             } catch (e: Exception) {
                 ErrorHandler.logError("HomeScreenHeader", "HomeScreenHeaderError", e)
             }
         }
     }
 
-    key(dataUri) {
-        ExtIntActionPreview(
-            dataUri = dataUri,
-            onCancel = {},
-            onSuccess = {},
-            onError = {}
-        )
-    }
-
     if (isQrCodeScannerOpen) {
         ScanQrScreen(
             onBack = { hideQrScanner() },
             onScan = { onCompletion(it) }
-        )
-    }
-
-    dataUri?.let {
-        ExtIntActionPreview(
-            dataUri = it,
-            onCancel = { dataUri = null },
-            onSuccess = {
-                dataUri = null
-            }
         )
     }
 
