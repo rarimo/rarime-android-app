@@ -69,3 +69,7 @@ fun ByteArray.toBase64(): String =
 fun String.fromBase64ToByteArray(): ByteArray {
     return Base64.getDecoder().decode(this)
 }
+
+fun ByteArray.toUInt(): UInt {
+    return java.nio.ByteBuffer.wrap(this).int.toUInt()
+}

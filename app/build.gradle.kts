@@ -5,7 +5,6 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
-
 }
 
 android {
@@ -32,8 +31,8 @@ android {
         minSdk = 27
         targetSdk = 34
 
-        versionCode = 33
-        versionName = "1.0.33-internal"
+        versionCode = 36
+        versionName = "2.0.2-internal"
 
         externalNativeBuild {
             cmake {
@@ -136,7 +135,6 @@ android {
 
 dependencies {
     implementation("com.auth0.android:jwtdecode:2.0.2")
-
     implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
     implementation("com.squareup.moshi:moshi:1.15.1")
     implementation("com.squareup.retrofit2:converter-moshi:2.11.0")

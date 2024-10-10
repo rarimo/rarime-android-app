@@ -92,6 +92,7 @@ class ProofViewModel @Inject constructor(
         val x509Util = X509Util()
 
         val pubKeySize = x509Util.getRSASize(publicKeyBytes)
+
         _registerCircuitData.value = if (pubKeySize == 4096L)
             RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA4096
         else

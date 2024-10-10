@@ -52,8 +52,10 @@ import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
+import com.rarilabs.rarime.util.isKeyValid
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.web3j.utils.Numeric
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -313,7 +315,11 @@ fun NewIdentityScreenContent(
 
         if (!isPKValid(pkToSave)) {
             privateKeyFieldState.updateErrorMessage("Invalid private key format")
+            return
+        }
 
+        if (isKeyValid(Numeric.toBigInt(Numeric.hexStringToByteArray(pkToSave)))) {
+            privateKeyFieldState.updateErrorMessage("Invalid private key format")
             return
         }
 
