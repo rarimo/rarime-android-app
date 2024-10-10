@@ -19,6 +19,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -33,6 +34,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.UiSnackbarDefault
@@ -145,7 +147,11 @@ fun MainScreenContent(
     val isModalShown by mainViewModel.isModalShown.collectAsState()
     val modalContent by mainViewModel.modalContent.collectAsState()
     val pointsToken by mainViewModel.pointsToken.collectAsState()
-    val snackbarContent = mainViewModel.snackbarContent.collectAsState()
+
+    val snackbarHostState by mainViewModel.snackbarHostState.collectAsState()
+    val snackbarContent by mainViewModel.snackbarContent.collectAsState()
+
+    val extIntDataURI by mainViewModel.extIntDataURI.collectAsState()
 
     val enterProgramSheetState = rememberAppSheetState()
 
@@ -215,8 +221,8 @@ fun MainScreenContent(
             },
 
             snackbarHost = {
-                snackbarContent.value?.let { snackContent ->
-                    SnackbarHost(hostState = mainViewModel.snackbarHostState.value) {
+                SnackbarHost(hostState = snackbarHostState) {
+                    snackbarContent?.let { snackContent ->
                         Column(modifier = Modifier.padding(horizontal = 20.dp)) {
                             UiSnackbarDefault(snackContent)
                         }
@@ -232,6 +238,10 @@ fun MainScreenContent(
                     .fillMaxSize()
                     .background(RarimeTheme.colors.backgroundPrimary)
             )
+
+            key(extIntDataURI) {
+                ExtIntActionPreview(dataUri = extIntDataURI)
+            }
 
             MainScreenRoutes(
                 navController = navController,
