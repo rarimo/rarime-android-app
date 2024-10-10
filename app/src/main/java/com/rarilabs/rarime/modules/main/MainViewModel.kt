@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.main
 
+import android.net.Uri
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
@@ -72,7 +73,17 @@ class MainViewModel @Inject constructor(
     val snackbarContent: StateFlow<SnackbarShowOptions?>
         get() = _snackbarContent.asStateFlow()
 
-    val snackbarHostState = mutableStateOf(SnackbarHostState())
+    private var _snackbarHostState = MutableStateFlow(SnackbarHostState())
+    val snackbarHostState: StateFlow<SnackbarHostState>
+        get() = _snackbarHostState.asStateFlow()
+
+    private var _extIntDataURI = MutableStateFlow<Uri?>(null)
+    val extIntDataURI: StateFlow<Uri?>
+        get() = _extIntDataURI.asStateFlow()
+
+    fun setExtIntDataURI(uri: Uri?) {
+        _extIntDataURI.value = uri
+    }
 
     suspend fun initApp() {
         if (identityManager.privateKey.value == null) {
@@ -150,7 +161,7 @@ class MainViewModel @Inject constructor(
 
     suspend fun showSnackbar(options: SnackbarShowOptions) {
         _snackbarContent.value = options
-        val result = snackbarHostState.value.showSnackbar(
+        val result = _snackbarHostState.value.showSnackbar(
             message = "",
             duration = options.duration,
         )
