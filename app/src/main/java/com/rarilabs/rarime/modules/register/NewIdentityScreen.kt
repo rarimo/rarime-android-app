@@ -329,14 +329,6 @@ fun NewIdentityScreenContent(
             Column(
                 verticalArrangement = Arrangement.spacedBy(24.dp),
             ) {
-//                if (!isImporting) {
-//                    AppTextField(
-//                        state = invitationCodeState,
-//                        placeholder = stringResource(id = R.string.create_identity_invitation_code_placeholder),
-//                        enabled = !isSubmitting,
-//                    )
-//                }
-
                 PrimaryButton(modifier = Modifier.fillMaxWidth(),
                     size = ButtonSize.Large,
                     text = stringResource(
@@ -351,8 +343,7 @@ fun NewIdentityScreenContent(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 64.dp),
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -373,6 +364,8 @@ fun NewIdentityScreenContent(
                 color = RarimeTheme.colors.textPrimary
             )
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         Column(modifier = Modifier.fillMaxWidth()) {
             CardContainer {
