@@ -390,15 +390,9 @@ fun MainScreenRoutes(
                 },
                 navigate = navigateWithPopUp,
             ) {
-                dataUri?.let {
-                    ExtIntegratorDLHandler(
-                        dataUri = dataUri,
-                        onFinish = { navigateWithPopUp(Screen.Main.Home.route) },
-                        onError = { navigateWithPopUp(Screen.Main.Home.route) },
-                        onCancel = { navigateWithPopUp(Screen.Main.Home.route) }
-                    )
-                } ?: run {
-                    navigateWithPopUp(Screen.Main.Home.route) // TODO: add error alert?
+                LaunchedEffect(Unit) {
+                    navigateWithPopUp(Screen.Main.Home.route)
+                    mainViewModel.setExtIntDataURI(dataUri)
                 }
             }
         }
@@ -440,19 +434,4 @@ fun AcceptInvitation(
     }
 
     AppLoadingScreen()
-}
-
-@Composable
-fun ExtIntegratorDLHandler(
-    dataUri: Uri,
-    onFinish: () -> Unit,
-    onError: () -> Unit,
-    onCancel: () -> Unit,
-) {
-    ExtIntActionPreview(
-        dataUri = dataUri,
-        onCancel = { onCancel.invoke() },
-        onSuccess = { onFinish.invoke() },
-        onError = { onError.invoke() }
-    )
 }
