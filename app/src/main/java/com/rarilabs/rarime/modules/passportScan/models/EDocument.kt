@@ -1,17 +1,25 @@
 package com.rarilabs.rarime.modules.passportScan.models
 
+import CircuitAAAlgorithm
+import CircuitAAType
+import CircuitAlgorithmType
+import CircuitCurveType
+import CircuitDocumentType
+import CircuitExponentType
+import CircuitHashAlgorithmType
+import CircuitKeySizeType
+import CircuitPassportHashType
+import CircuitSignatureType
+import RegisterIdentityCircuitType
 import com.rarilabs.rarime.modules.passportScan.nfc.SODFileOwn
-import com.rarilabs.rarime.util.circuits.CircuitSignatureCurveType
-import com.rarilabs.rarime.util.circuits.CircuitSignatureExponentType
-import com.rarilabs.rarime.util.circuits.CircuitSignatureKeySizeType
-import com.rarilabs.rarime.util.circuits.RegisterIdentityCircuitType
+import com.rarilabs.rarime.util.Dg15FileOwn
+import com.rarilabs.rarime.util.circuits.SODAlgorithm
 import com.rarilabs.rarime.util.decodeHexString
-import org.bouncycastle.asn1.eac.ECDSAPublicKey
-import java.security.interfaces.ECKey
-import java.security.interfaces.ECPublicKey
-import java.security.interfaces.RSAPublicKey
-import java.security.spec.ECParameterSpec
-
+import findSubarrayIndex
+import org.jmrtd.lds.icao.DG1File
+import java.math.BigInteger
+import java.security.MessageDigest
+import java.security.PublicKey
 
 data class EDocument(
     var docType: DocType? = null,
@@ -33,41 +41,249 @@ data class EDocument(
         return SODFileOwn(sodStream)
     }
 
-    fun getRegisterIdentityCircuitType(): RegisteredCircuitData {
-        val sod = getSodFile()
-        val sodSignatureAlgorithmName = sod.docSigningCertificate.sigAlgName
+    fun getDg1File(): DG1File {
+        val dg1File = this.dg1!!.decodeHexString().inputStream()
+        return DG1File(dg1File)
     }
 
+    fun getDg15File(): Dg15FileOwn {
+        val dG15File = this.dg15!!.decodeHexString().inputStream()
+        return Dg15FileOwn(dG15File)
+    }
 
-    private fun getSodPublicKeySupportedSize(size: Int): CircuitSignatureKeySizeType? {
+    fun getRegisterIdentityCircuitType(): RegisterIdentityCircuitType? {
+        try {
+            // Initialize DataGroup1 and SOD using jMRTD
+            val dg1Group = getDg1File()
+            val sodFile = getSodFile()
+
+            // Get the signature algorithm from SOD
+            val sodSignatureAlgorithmName = sodFile.digestEncryptionAlgorithm
+            val sodSignatureAlgorithm = SODAlgorithm.fromValue(sodSignatureAlgorithmName) ?: return null
+
+            // Get the public key from SOD and determine its size
+            val sodPublicKey = sodFile.docSigningCertificate.publicKey
+            val publicKeySize = getPublicKeySupportedSize(sodPublicKey.encoded.size) ?: return null
+
+            // Create the CircuitSignatureType
+            val signatureType = CircuitSignatureType(
+                staticId = 0u,
+                algorithm = sodSignatureAlgorithm.getCircuitSignatureAlgorithm(),
+                keySize = publicKeySize,
+                exponent = getPublicKeyExponent(sodPublicKey),
+                // TODO: Handle RSAPSS if needed
+                salt = null,
+                curve = getPublicKeyCurve(sodPublicKey),
+                hashAlgorithm = sodSignatureAlgorithm.getCircuitSignatureHashAlgorithm()
+            )
+
+            // Get the passport hash type
+            val digestAlgorithm = sodFile.digestAlgorithm
+            val encapsulatedContentDigestAlgorithm = digestAlgorithm
+            val passportHashType = CircuitPassportHashType.fromValue(encapsulatedContentDigestAlgorithm) ?: return null
+
+            // Get the document type
+            val documentTypeString = getStandardizedDocumentType(dg1Group.mrzInfo.documentCode)
+            val documentType = CircuitDocumentType.fromValue(documentTypeString) ?: return null
+
+            // Get encapsulated content and signed attributes
+            val dataGroupHashes = sodFile.dataGroupHashes
+            val encapsulatedContent = dataGroupHashes.values.fold(ByteArray(0)) { acc, bytes -> acc + bytes }
+            val signedAttributes = sodFile.encoded
+
+            // Calculate chunk numbers and hashes
+            val ecChunkNumber = getChunkNumber(encapsulatedContent, passportHashType.getChunkSize())
+            val ecHash = sodFile.readASN1Data().decodeHexString()
+
+            // Find digest positions
+            val ecDigestPosition = signedAttributes.findSubarrayIndex(ecHash)
+                ?: throw Exception("Unable to find EC digest position")
+
+            val dg1Hash = dg1Group.encodedHash(passportHashType.value.uppercase())
+            val dg1DigestPositionShift = encapsulatedContent.findSubarrayIndex(dg1Hash)
+                ?: throw Exception("Unable to find DG1 digest position")
+
+            // Initialize the circuit type
+            var circuitType = RegisterIdentityCircuitType(
+                signatureType = signatureType,
+                passportHashType = passportHashType,
+                documentType = documentType,
+                ecChunkNumber = ecChunkNumber,
+                ecDigestPosition = ecDigestPosition.toUInt() * 8u,
+                dg1DigestPositionShift = dg1DigestPositionShift.toUInt() * 8u,
+                aaType = null
+            )
+
+            // Process DG15 if available
+            if (!dg15.isNullOrEmpty()) {
+                val dg15Wrapper = getDg15File()
+
+                val dg15Hash = dg15Wrapper.encodedHash(passportHashType.value.uppercase())
+
+                val dg15DigestPositionShift = encapsulatedContent.findSubarrayIndex(dg15Hash)
+                    ?: throw Exception("Unable to find DG15 digest position")
+
+                val dg15ChunkNumber = getChunkNumber(dg15!!.decodeHexString(), passportHashType.getChunkSize())
+
+                var pubkeyData: ByteArray
+                val aaAlgorithm: CircuitAlgorithmType
+                var aaKeySize: CircuitKeySizeType? = null
+                var aaExponent: CircuitExponentType? = null
+                var aaCurve: CircuitCurveType? = null
+
+                val publicKey = dg15Wrapper.publicKey
+
+                if (publicKey.algorithm.equals("RSA", ignoreCase = true)) {
+                    pubkeyData = CryptoUtilsLocal.getModulusFromRSAPublicKey(publicKey) ?: ByteArray(0)
+                    aaAlgorithm = CircuitAlgorithmType.RSA
+
+                    aaKeySize = getPublicKeySupportedSize(CryptoUtilsLocal.getPublicKeySize(publicKey))
+                    aaExponent = getPublicKeyExponent(publicKey)
+                } else if (publicKey.algorithm.equals("EC", ignoreCase = true)) {
+                    pubkeyData = CryptoUtilsLocal.getXYFromECDSAPublicKey(publicKey) ?: ByteArray(0)
+                    aaAlgorithm = CircuitAlgorithmType.ECDSA
+
+                    aaCurve = getPublicKeyCurve(publicKey)
+                } else {
+                    throw Exception("Unable to find public key")
+                }
+
+                val aaKeyPositionShift = dg15?.decodeHexString()?.findSubarrayIndex(pubkeyData)
+                    ?: throw Exception("Unable to find AA key position")
+
+                circuitType.aaType = CircuitAAType(
+                    aaAlgorithm = CircuitAAAlgorithm(
+                        staticId = 0u,
+                        algorithm = aaAlgorithm,
+                        keySize = aaKeySize,
+                        exponent = aaExponent,
+                        salt = null,
+                        curve = aaCurve,
+                        hashAlgorithm = CircuitHashAlgorithmType.HA160
+                    ),
+                    dg15DigestPositionShift = dg15DigestPositionShift.toUInt() * 8u,
+                    dg15ChunkNumber = dg15ChunkNumber,
+                    aaKeyPositionShift = aaKeyPositionShift.toUInt() * 8u
+                )
+            }
+
+            return circuitType
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
+        }
+    }
+
+    private fun getPublicKeySupportedSize(size: Int): CircuitKeySizeType? {
         return when (size) {
-            2048 -> CircuitSignatureKeySizeType.B2048
-            4096 -> CircuitSignatureKeySizeType.B4096
-            256 -> CircuitSignatureKeySizeType.B256
-            320 -> CircuitSignatureKeySizeType.B320
-            192 -> CircuitSignatureKeySizeType.B192
+            1024 -> CircuitKeySizeType.B1024
+            2048 -> CircuitKeySizeType.B2048
+            4096 -> CircuitKeySizeType.B4096
+            256 -> CircuitKeySizeType.B256
+            320 -> CircuitKeySizeType.B320
+            192 -> CircuitKeySizeType.B192
             else -> null
         }
     }
 
-    private fun getSodPublicKeyExponent(publicKey: RSAPublicKey): CircuitSignatureExponentType? {
-        val exponent = publicKey.publicExponent.toLong()
-        return when (exponent.toUInt()) {
-            3u -> CircuitSignatureExponentType.E3
-            65537u -> CircuitSignatureExponentType.E65537
+    private fun getPublicKeyExponent(publicKey: PublicKey?): CircuitExponentType? {
+        val exponent = CryptoUtilsLocal.getExponentFromPublicKey(publicKey) ?: return null
+        val exponentBN = BigInteger(exponent)
+        return when {
+            exponentBN == BigInteger.valueOf(3L) -> CircuitExponentType.E3
+            exponentBN == BigInteger.valueOf(65537L) -> CircuitExponentType.E65537
             else -> null
         }
     }
 
-    private fun getSodPublicKeyCurve(publicKey: ECPublicKey?): CircuitSignatureCurveType? {
-        val params: ECParameterSpec = publicKey!!.params
-        params.getCurveName()
-//        return when (curve) {
-//            "secp256r1" -> RegisterIdentityCircuitType.CircuitSignatureType.CircuitSignatureCurveType.SECP256R1
-//            "brainpoolP256r1" -> RegisterIdentityCircuitType.CircuitSignatureType.CircuitSignatureCurveType.BRAINPOOLP256
-//            "brainpoolP320r1" -> RegisterIdentityCircuitType.CircuitSignatureType.CircuitSignatureCurveType.BRAINPOOL320R1
-//            "secp192r1" -> RegisterIdentityCircuitType.CircuitSignatureType.CircuitSignatureCurveType.SECP192R1
-//            else -> null
-//        }
+    private fun getPublicKeyCurve(publicKey: PublicKey?): CircuitCurveType? {
+        val curve = CryptoUtilsLocal.getCurveFromECDSAPublicKey(publicKey) ?: return null
+        return when (curve.lowercase()) {
+            "secp256r1" -> CircuitCurveType.SECP256R1
+            "brainpoolp256r1" -> CircuitCurveType.BRAINPOOLP256
+            "brainpoolp320r1" -> CircuitCurveType.BRAINPOOL320R1
+            "secp192r1" -> CircuitCurveType.SECP192R1
+            else -> null
+        }
     }
+
+    private fun getChunkNumber(data: ByteArray, chunkSize: UInt): UInt {
+        val length = data.size.toUInt() * 8u + 1u + 64u
+        return length / chunkSize + if (length % chunkSize == 0u) 0u else 1u
+    }
+
+    private fun getStandardizedDocumentType(documentCode: String): String {
+        return when (documentCode) {
+            "P" -> "TD3" // Passport
+            "ID" -> "TD1" // Identity Card
+            else -> "TD1" // Default to TD1
+        }
+    }
+}
+
+private object CryptoUtilsLocal {
+    fun getPublicKeySize(publicKey: PublicKey?): Int {
+        return when (publicKey) {
+            is java.security.interfaces.RSAPublicKey -> publicKey.modulus.bitLength()
+            is org.bouncycastle.jce.interfaces.ECPublicKey -> publicKey.q.curve.fieldSize
+            else -> 0
+        }
+    }
+
+    fun getModulusFromRSAPublicKey(publicKey: PublicKey?): ByteArray? {
+        return if (publicKey is java.security.interfaces.RSAPublicKey) {
+            publicKey.modulus.toByteArray()
+        } else {
+            null
+        }
+    }
+
+    fun getExponentFromPublicKey(publicKey: PublicKey?): ByteArray? {
+        return if (publicKey is java.security.interfaces.RSAPublicKey) {
+            publicKey.publicExponent.toByteArray()
+        } else {
+            null
+        }
+    }
+
+    fun getXYFromECDSAPublicKey(publicKey: PublicKey?): ByteArray? {
+        return if (publicKey is org.bouncycastle.jce.interfaces.ECPublicKey) {
+            val q = publicKey.q.normalize()
+            val x = q.affineXCoord.encoded
+            val y = q.affineYCoord.encoded
+            x + y
+        } else {
+            null
+        }
+    }
+
+    fun getCurveFromECDSAPublicKey(publicKey: PublicKey?): String? {
+        return if (publicKey is org.bouncycastle.jce.interfaces.ECPublicKey) {
+            val curveName = publicKey.parameters.toString()
+            curveName
+        } else {
+            null
+        }
+    }
+}
+
+// Extension function to compute hash
+fun DG1File.encodedHash(algorithm: String): ByteArray {
+    val messageDigest = MessageDigest.getInstance(algorithm, "BC")
+    return messageDigest.digest(this.encoded)
+}
+
+fun Dg15FileOwn.encodedHash(algorithm: String): ByteArray {
+    val messageDigest = MessageDigest.getInstance(algorithm, "BC")
+    return messageDigest.digest(this.encoded)
+}
+
+// Extension function to find subarray index
+fun ByteArray.findSubarrayIndex(subarray: ByteArray): Int? {
+    for (i in indices) {
+        if (i + subarray.size <= size && copyOfRange(i, i + subarray.size).contentEquals(subarray)) {
+            return i
+        }
+    }
+    return null
 }
