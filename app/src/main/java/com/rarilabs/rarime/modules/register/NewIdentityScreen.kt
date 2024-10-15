@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.register
 
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -313,13 +314,16 @@ fun NewIdentityScreenContent(
     fun initPrivateKey() {
         val pkToSave = if (isImporting) privateKeyFieldState.text else privateKey
 
+
         if (!isPKValid(pkToSave)) {
             privateKeyFieldState.updateErrorMessage("Invalid private key format")
+            Log.i("Here", "isPKValid(pkToSave)")
             return
         }
 
-        if (isKeyValid(Numeric.toBigInt(Numeric.hexStringToByteArray(pkToSave)))) {
+        if (!isKeyValid(Numeric.toBigInt(Numeric.hexStringToByteArray(pkToSave)))) {
             privateKeyFieldState.updateErrorMessage("Invalid private key format")
+            Log.i("Here", "isKeyValid()")
             return
         }
 

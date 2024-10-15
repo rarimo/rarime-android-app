@@ -3,11 +3,8 @@ package com.rarilabs.rarime.util;
 
 import static com.rarilabs.rarime.util.ParseASN1RsaKt.parseASN1RsaManually;
 
-import android.util.Log;
-
 import org.jmrtd.Util;
 import org.jmrtd.lds.DataGroup;
-import org.web3j.utils.Numeric;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -87,7 +84,11 @@ public class Dg15FileOwn extends DataGroup {
         for (String algorithm : PUBLIC_KEY_ALGORITHMS) {
             try {
                 if (algorithm.equals("RSA")) {
-                    return parseASN1RsaManually(keyBytes);
+                    try {
+                        return parseASN1RsaManually(keyBytes);
+                    } catch (Exception e) {
+                        return getPublicKeyInternal(algorithm, pubKeySpec);
+                    }
                 }
                 return getPublicKeyInternal(algorithm, pubKeySpec);
             } catch (InvalidKeySpecException ikse) {

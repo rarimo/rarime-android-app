@@ -225,6 +225,8 @@ class NfcUseCase(
             null
         }
 
+        eDocument.dg15 = dg15?.encoded?.toHexString()
+
         ErrorHandler.logDebug("PUB KEy", dg15?.publicKey?.encoded?.toHexString().toString())
 
         ErrorHandler.logDebug("Digest Algorithm", sodFile.digestAlgorithm)

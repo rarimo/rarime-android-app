@@ -22,6 +22,8 @@ import java.security.MessageDigest
 import java.security.PublicKey
 import java.security.interfaces.ECPublicKey
 import java.security.interfaces.RSAPublicKey
+import java.security.spec.ECFieldF2m
+import java.security.spec.ECFieldFp
 
 data class EDocument(
     var docType: DocType? = null,
@@ -53,6 +55,22 @@ data class EDocument(
         return Dg15FileOwn(dG15File)
     }
 
+    fun getPublicKeySize(publicKey: PublicKey?): Int {
+        return when (publicKey) {
+            is RSAPublicKey -> publicKey.modulus.bitLength()
+            is ECPublicKey -> {
+                val params = publicKey.params
+                val curve = params.curve
+                when (val field = curve.field) {
+                    is ECFieldFp -> field.p.bitLength() // For prime fields
+                    is ECFieldF2m -> field.m // For binary fields
+                    else -> throw IllegalArgumentException("Unsupported ECField type")
+                }
+            }
+            else -> throw IllegalArgumentException("Unsupported key type or null key")
+        }
+    }
+
     fun getRegisterIdentityCircuitType(): RegisterIdentityCircuitType? {
         try {
             // Initialize DataGroup1 and SOD using jMRTD
@@ -65,7 +83,7 @@ data class EDocument(
 
             // Get the public key from SOD and determine its size
             val sodPublicKey = sodFile.docSigningCertificate.publicKey
-            val publicKeySize = getPublicKeySupportedSize(sodPublicKey.encoded.size) ?: return null
+            val publicKeySize = getPublicKeySupportedSize(getPublicKeySize(sodPublicKey)) ?: return null
 
             // Create the CircuitSignatureType
             val signatureType = CircuitSignatureType(
@@ -73,7 +91,6 @@ data class EDocument(
                 algorithm = sodSignatureAlgorithm.getCircuitSignatureAlgorithm(),
                 keySize = publicKeySize,
                 exponent = getPublicKeyExponent(sodPublicKey),
-                // TODO: Handle RSAPSS if needed
                 salt = null,
                 curve = getPublicKeyCurve(sodPublicKey),
                 hashAlgorithm = sodSignatureAlgorithm.getCircuitSignatureHashAlgorithm()

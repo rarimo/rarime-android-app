@@ -4,7 +4,7 @@ import CircuitAlgorithmType
 import CircuitHashAlgorithmType
 
 enum class SODAlgorithm(val value: String) {
-    SHA256WithRSAEncryption("sha256WithRSAEncryption"),
+    SHA256WithRSAEncryption("sha256WithRSA"),
     RSASSAPSS("rsassaPss"),
     ECDSA_WITH_SHA1("ecdsa_with_SHA1"),
     ECDSA_WITH_SHA256("ecdsa_with_SHA256");

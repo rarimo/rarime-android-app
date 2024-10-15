@@ -242,7 +242,7 @@ Java_com_rarilabs_rarime_util_ZkpUtil_auth(JNIEnv *env, jobject thiz,
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity_1_256_3_5_576_248_NA(JNIEnv *env, jobject thiz,
+Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity125635576248NA(JNIEnv *env, jobject thiz,
                                                                              jstring filePath,jlong fileSizeJ,
                                                                              jbyteArray json_buffer, jlong json_size,
                                                                              jbyteArray wtns_buffer, jlongArray wtns_size,
@@ -300,7 +300,7 @@ Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity_1_256_3_5_576_248_NA(JNIE
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity_1_256_3_6_576_248_1_2432_5_296(JNIEnv *env, jobject thiz,
+Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity125636576248124325296(JNIEnv *env, jobject thiz,
                                                                             jstring filePath,jlong fileSizeJ,
                                                                             jbyteArray json_buffer, jlong json_size,
                                                                             jbyteArray wtns_buffer, jlongArray wtns_size,
@@ -358,7 +358,7 @@ Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity_1_256_3_6_576_248_1_2432_
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity_2_256_3_6_336_264_21_2448_6_2008(JNIEnv *env, jobject thiz,
+Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity22563633626421244862008(JNIEnv *env, jobject thiz,
                                                                                       jstring filePath,jlong fileSizeJ,
                                                                                       jbyteArray json_buffer, jlong json_size,
                                                                                       jbyteArray wtns_buffer, jlongArray wtns_size,
@@ -416,7 +416,7 @@ Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity_2_256_3_6_336_264_21_2448
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity_21_256_3_7_336_264_21_3072_6_2008(JNIEnv *env, jobject thiz,
+Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity212563733626421307262008(JNIEnv *env, jobject thiz,
                                                                                         jstring filePath,jlong fileSizeJ,
                                                                                         jbyteArray json_buffer, jlong json_size,
                                                                                         jbyteArray wtns_buffer, jlongArray wtns_size,

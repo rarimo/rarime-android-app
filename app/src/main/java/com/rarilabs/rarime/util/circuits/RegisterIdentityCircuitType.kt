@@ -51,10 +51,10 @@ data class CircuitSignatureType(
 }
 
 enum class CircuitPassportHashType(val value: String) {
-    SHA1("sha1"),
-    SHA256("sha256"),
-    SHA384("sha384"),
-    SHA512("sha512");
+    SHA1("sha-1"),
+    SHA256("sha-256"),
+    SHA384("sha-384"),
+    SHA512("sha-512");
 
     fun getId(): UInt {
         return when (this) {

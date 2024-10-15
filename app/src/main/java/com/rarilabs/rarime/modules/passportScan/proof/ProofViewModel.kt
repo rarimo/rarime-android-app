@@ -3,6 +3,7 @@ package com.rarilabs.rarime.modules.passportScan.proof
 import RegisterIdentityCircuitType
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -153,7 +154,7 @@ class ProofViewModel @Inject constructor(
                         filePaths.dat,
                         filePaths.datLen,
                         inputs,
-                        ZkpUtil::registerIdentity_1_256_3_5_576_248_NA
+                        ZkpUtil::registerIdentity125635576248NA
                     )
                 }
 
@@ -164,7 +165,7 @@ class ProofViewModel @Inject constructor(
                         filePaths.dat,
                         filePaths.datLen,
                         inputs,
-                        ZkpUtil::registerIdentity_1_256_3_6_576_248_1_2432_5_296
+                        ZkpUtil::registerIdentity125636576248124325296
                     )
                 }
 
@@ -175,7 +176,7 @@ class ProofViewModel @Inject constructor(
                         filePaths.dat,
                         filePaths.datLen,
                         inputs,
-                        ZkpUtil::registerIdentity_2_256_3_6_336_264_21_2448_6_2008
+                        ZkpUtil::registerIdentity22563633626421244862008
                     )
                 }
                 RegisteredCircuitData.REGISTER_IDENTITY_21_256_3_7_336_264_21_3072_6_2008 -> {
@@ -185,7 +186,7 @@ class ProofViewModel @Inject constructor(
                         filePaths.dat,
                         filePaths.datLen,
                         inputs,
-                        ZkpUtil::registerIdentity_21_256_3_7_336_264_21_3072_6_2008
+                        ZkpUtil::registerIdentity212563733626421307262008
                     )
                 }
             }
@@ -210,6 +211,7 @@ class ProofViewModel @Inject constructor(
         }
 
         val registerIdentityCircuitType = eDocument.getRegisterIdentityCircuitType()
+
 
         val registerIdentityCircuitName = registerIdentityCircuitType?.buildName()
             ?: throw Exception("Invalid registerIdentityCircuitType")

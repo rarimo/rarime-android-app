@@ -61,7 +61,7 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
-    external fun registerIdentity_1_256_3_5_576_248_NA(
+    external fun registerIdentity125635576248NA(
         datFilePath: String,
         datFileLen: Long,
         jsonBuffer: ByteArray,
@@ -72,19 +72,7 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
-    external fun registerIdentity_1_256_3_6_576_248_1_2432_5_296(
-        datFilePath: String,
-        datFileLen: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
-        wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
-        errorMsg: ByteArray,
-        errorMsgMaxSize: Long
-    ): Int
-
-
-    external fun registerIdentity_2_256_3_6_336_264_21_2448_6_2008(
+    external fun registerIdentity125636576248124325296(
         datFilePath: String,
         datFileLen: Long,
         jsonBuffer: ByteArray,
@@ -96,7 +84,19 @@ object ZkpUtil {
     ): Int
 
 
-    external fun registerIdentity_21_256_3_7_336_264_21_3072_6_2008(
+    external fun registerIdentity22563633626421244862008(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+
+    external fun registerIdentity212563733626421307262008(
         datFilePath: String,
         datFileLen: Long,
         jsonBuffer: ByteArray,
@@ -109,6 +109,7 @@ object ZkpUtil {
 
 
     init {
+
         System.loadLibrary("rarime")
     }
 
