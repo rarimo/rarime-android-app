@@ -123,7 +123,7 @@ class NfcUseCase(
         }
 
 
-        var digestAlgorithm = sodFile.digestAlgorithm
+        val digestAlgorithm = sodFile.digestAlgorithm
         ErrorHandler.logDebug("Nfc scan", "Digest Algorithm: $digestAlgorithm")
         val docSigningCert = sodFile.docSigningCertificate
         val pemFile: String = SecurityUtil.convertToPEM(docSigningCert)
@@ -205,19 +205,15 @@ class NfcUseCase(
         for (faceInfo in faceInfos) {
             allFaceImageInfos.addAll(faceInfo.faceImageInfos)
         }
-        if (!allFaceImageInfos.isEmpty()) {
+        if (allFaceImageInfos.isNotEmpty()) {
             val faceImageInfo = allFaceImageInfos.iterator().next()
-            personDetails!!.faceImageInfo = faceImageInfo
+            personDetails.faceImageInfo = faceImageInfo
         }
-
-
 
         eDocument.docType = docType
         eDocument.personDetails = personDetails
         eDocument.additionalPersonDetails = additionalPersonDetails
         eDocument.isPassiveAuth = hashesMatched
-
-
 
         val dg15 = try {
             val dG15File: CardFileInputStream = service.getInputStream(PassportService.EF_DG15, 256)
@@ -228,8 +224,6 @@ class NfcUseCase(
             ErrorHandler.logError("Nfc scan", "No DG15 file", e)
             null
         }
-
-        dg15!!.encoded
 
         ErrorHandler.logDebug("PUB KEy", dg15?.publicKey?.encoded?.toHexString().toString())
 
