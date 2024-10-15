@@ -271,6 +271,7 @@ class NfcUseCase(
         )
 
         val signature = sodFile.encryptedDigest
+        eDocument.dg15 = dg15?.encoded?.toHexString()
 
         eDocument.dg15Pem = dg15?.publicKey?.publicKeyToPem()
 
@@ -286,7 +287,6 @@ class NfcUseCase(
 
 
             ErrorHandler.logError("PUBLIC KEY", sodFile.docSigningCertificate.publicKey.toString())
-            eDocument.dg15 = dg15?.encoded?.toHexString()
         } catch (e: Exception) {
             ErrorHandler.logError("NFC SCAN", "Smt wrong with Log data while scanning", e)
         }
