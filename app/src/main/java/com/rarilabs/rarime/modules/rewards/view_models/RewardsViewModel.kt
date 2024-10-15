@@ -6,19 +6,19 @@ import com.rarilabs.rarime.api.auth.AuthManager
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.points.models.BaseEvents
 import com.rarilabs.rarime.api.points.models.PointsEventAttributes
-import com.rarilabs.rarime.data.tokens.PointsToken
 import com.rarilabs.rarime.api.points.models.PointsEventData
 import com.rarilabs.rarime.api.points.models.PointsEventMeta
 import com.rarilabs.rarime.api.points.models.PointsEventMetaDynamic
 import com.rarilabs.rarime.api.points.models.PointsEventMetaStatic
 import com.rarilabs.rarime.api.points.models.PointsEventStatuses
+import com.rarilabs.rarime.data.tokens.PointsToken
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.ui.components.MARKDOWN_CONTENT
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -119,7 +119,7 @@ val CONST_MOCKED_EVENTS_LIST = listOf(
  * Better to keep this class, in order to development process
  * and minimal leaderboard object requirements
  */
-data class LeaderBoardItem (
+data class LeaderBoardItem(
     val number: Int,
     val address: String,
     val balance: Double,
@@ -430,12 +430,12 @@ class RewardsViewModel @Inject constructor(
     private val authManager: AuthManager,
     private val pointsManager: PointsManager,
 
-) : ViewModel() {
+    ) : ViewModel() {
     val passportStatus = passportManager.passportStatus
 
     val isAuthorized = authManager.isAuthorized
 
-    private fun getPointsWalletAsset (): WalletAsset? {
+    private fun getPointsWalletAsset(): WalletAsset? {
         return walletManager.walletAssets.value.find { it.token is PointsToken }
     }
 
@@ -482,38 +482,30 @@ class RewardsViewModel @Inject constructor(
         return passportManager.getIsoCode()
     }
 
-    suspend fun init() {
-        coroutineScope {
-            launch {
-                _limitedTimeEvents.value = pointsManager.getTimeLimitedEvents().data
-            }
-            launch {
-                _activeTasksEvents.value = pointsManager.getActiveEvents().data
-            }
-            launch {
-                walletManager.loadBalances()
-            }
-            launch {
-                _pointsWalletAsset.value = getPointsWalletAsset()
-            }
-            launch {
-                val response = pointsManager.getLeaderBoard()
-
-                val mappedLeaderBoard = response.data.mapIndexed { idx, it ->
-                    LeaderBoardItem(
-                        number = it.attributes.rank?.toInt() ?: (idx + 1),
-                        address = it.id,
-                        balance = it.attributes.amount.toDouble(),
-                        tokenIcon = R.drawable.ic_rarimo
-                    )
-                }
-
-                _leaderBoardList.value = mappedLeaderBoard.toList()
-            }
-            launch {
-                _userLeaderBoardItem.value = getUserLeaderBoardItem()
+    suspend fun init() = coroutineScope {
+        val limitedTimeEventsDeferred = async { pointsManager.getTimeLimitedEvents().data }
+        val activeTasksEventsDeferred = async { pointsManager.getActiveEvents().data }
+        val loadBalancesJob = launch { walletManager.loadBalances() }
+        val pointsWalletAssetDeferred = async { getPointsWalletAsset() }
+        val leaderBoardDeferred = async {
+            val response = pointsManager.getLeaderBoard()
+            response.data.mapIndexed { idx, it ->
+                LeaderBoardItem(
+                    number = it.attributes.rank?.toInt() ?: (idx + 1),
+                    address = it.id,
+                    balance = it.attributes.amount.toDouble(),
+                    tokenIcon = R.drawable.ic_rarimo
+                )
             }
         }
+        val userLeaderBoardItemDeferred = async { getUserLeaderBoardItem() }
+
+        _limitedTimeEvents.value = limitedTimeEventsDeferred.await()
+        _activeTasksEvents.value = activeTasksEventsDeferred.await()
+        loadBalancesJob.join()
+        _pointsWalletAsset.value = pointsWalletAssetDeferred.await()
+        _leaderBoardList.value = leaderBoardDeferred.await()
+        _userLeaderBoardItem.value = userLeaderBoardItemDeferred.await()
     }
 
     suspend fun login() {

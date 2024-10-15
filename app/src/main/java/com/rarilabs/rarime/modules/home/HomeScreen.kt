@@ -45,6 +45,12 @@ fun HomeScreen(
             } catch(e: Exception) {
                 Log.e(e.toString(), e.stackTraceToString(), e)
             }
+
+            try {
+                //homeViewModel.generateTestProof()
+            }catch (e: Exception) {
+                Log.e("Exep", "xd", e)
+            }
         }
     }
 

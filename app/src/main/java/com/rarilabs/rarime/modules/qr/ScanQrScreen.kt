@@ -28,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.rarilabs.rarime.R
@@ -47,8 +48,10 @@ fun ScanQrScreenContent(onBack: () -> Unit, onScan: (String) -> Unit) {
             modifier = Modifier.zIndex(1f),
             onCompletion = onScan
         )
-        Box(modifier = Modifier.fillMaxSize().zIndex(2f)) {
-            CameraMask()
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .zIndex(2f)) {
+            CameraMask(boxSize = 300.dp)
             AppIcon(
                 id = R.drawable.ic_caret_left,
                 size = 20.dp,
@@ -75,7 +78,7 @@ fun ScanQrScreenContent(onBack: () -> Unit, onScan: (String) -> Unit) {
                 Image(
                     painter = painterResource(id = R.drawable.qr_frame),
                     contentDescription = null,
-                    modifier = Modifier.size(222.dp)
+                    modifier = Modifier.size(300.dp)
                 )
                 Text(
                     text = stringResource(R.string.scan_qr_description),
@@ -90,9 +93,9 @@ fun ScanQrScreenContent(onBack: () -> Unit, onScan: (String) -> Unit) {
 }
 
 @Composable
-private fun CameraMask() {
-    val boxSize = 220.dp
-    val topPadding = 200.dp
+private fun CameraMask(
+    boxSize: Dp = 220.dp, topPadding: Dp = 200.dp
+) {
     val cornerRadius = 8.dp
 
     Canvas(modifier = Modifier.fillMaxSize()) {
@@ -122,7 +125,9 @@ private fun CameraMask() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewScanQrScreen() {
-    Column(modifier = Modifier.fillMaxWidth().background(Color.White)) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .background(Color.White)) {
 
     }
 }
