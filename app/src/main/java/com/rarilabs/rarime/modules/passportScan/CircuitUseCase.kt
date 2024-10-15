@@ -3,9 +3,9 @@ package com.rarilabs.rarime.modules.passportScan
 import android.content.Context
 import android.util.Log
 import com.rarilabs.rarime.BaseConfig
-import com.rarilabs.rarime.modules.passportScan.models.RegisteredCircuitData
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.FileDownloaderInternal
+import com.rarilabs.rarime.util.circuits.RegisteredCircuitData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
@@ -22,12 +22,13 @@ class CircuitUseCase(val context: Context) {
         circuitData: RegisteredCircuitData, onProgressUpdate: (Int, Boolean) -> Unit
     ): DownloadRequest? = suspendCancellableCoroutine { continuation ->
         val circuitURL = when (circuitData) {
-            RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA2048 -> BaseConfig.REGISTER_IDENTITY_CIRCUIT_DATA_RSA2048
-            RegisteredCircuitData.REGISTER_IDENTITY_UNIVERSAL_RSA4096 -> BaseConfig.REGISTER_IDENTITY_CIRCUIT_DATA_RSA4096
+            RegisteredCircuitData.REGISTER_IDENTITY_1_256_3_5_576_248_NA -> BaseConfig.registerIdentity_1_256_3_5_576_248_NA
+            RegisteredCircuitData.REGISTER_IDENTITY_1_256_3_6_576_248_1_2432_5_296 -> BaseConfig.registerIdentity_1_256_3_6_576_248_1_2432_5_296
+            RegisteredCircuitData.REGISTER_IDENTITY_2_256_3_6_336_264_21_2448_6_2008 -> BaseConfig.registerIdentity_2_256_3_6_336_264_21_2448_6_2008
+            RegisteredCircuitData.REGISTER_IDENTITY_21_256_3_7_336_264_21_3072_6_2008 -> BaseConfig.registerIdentity_21_256_3_7_336_264_21_3072_6_2008
         }
 
         continuation.invokeOnCancellation {
-            // Handle coroutine cancellation if needed
             ErrorHandler.logError("Download", "Download coroutine cancelled")
         }
 

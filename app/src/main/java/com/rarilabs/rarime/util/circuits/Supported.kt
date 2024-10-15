@@ -175,3 +175,4 @@ object SupportRegisterIdentityCircuitAAType {
         }?.staticId
     }
 }
+

@@ -20,6 +20,8 @@ import org.jmrtd.lds.icao.DG1File
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.PublicKey
+import java.security.interfaces.ECPublicKey
+import java.security.interfaces.RSAPublicKey
 
 data class EDocument(
     var docType: DocType? = null,
@@ -79,8 +81,7 @@ data class EDocument(
 
             // Get the passport hash type
             val digestAlgorithm = sodFile.digestAlgorithm
-            val encapsulatedContentDigestAlgorithm = digestAlgorithm
-            val passportHashType = CircuitPassportHashType.fromValue(encapsulatedContentDigestAlgorithm) ?: return null
+            val passportHashType = CircuitPassportHashType.fromValue(digestAlgorithm) ?: return null
 
             // Get the document type
             val documentTypeString = getStandardizedDocumentType(dg1Group.mrzInfo.documentCode)
@@ -104,7 +105,7 @@ data class EDocument(
                 ?: throw Exception("Unable to find DG1 digest position")
 
             // Initialize the circuit type
-            var circuitType = RegisterIdentityCircuitType(
+            val circuitType = RegisterIdentityCircuitType(
                 signatureType = signatureType,
                 passportHashType = passportHashType,
                 documentType = documentType,
@@ -125,7 +126,7 @@ data class EDocument(
 
                 val dg15ChunkNumber = getChunkNumber(dg15!!.decodeHexString(), passportHashType.getChunkSize())
 
-                var pubkeyData: ByteArray
+                val pubkeyData: ByteArray
                 val aaAlgorithm: CircuitAlgorithmType
                 var aaKeySize: CircuitKeySizeType? = null
                 var aaExponent: CircuitExponentType? = null
@@ -134,13 +135,13 @@ data class EDocument(
                 val publicKey = dg15Wrapper.publicKey
 
                 if (publicKey.algorithm.equals("RSA", ignoreCase = true)) {
-                    pubkeyData = CryptoUtilsLocal.getModulusFromRSAPublicKey(publicKey) ?: ByteArray(0)
+                    pubkeyData = CryptoUtilsPassport.getModulusFromRSAPublicKey(publicKey) ?: ByteArray(0)
                     aaAlgorithm = CircuitAlgorithmType.RSA
 
-                    aaKeySize = getPublicKeySupportedSize(CryptoUtilsLocal.getPublicKeySize(publicKey))
+                    aaKeySize = getPublicKeySupportedSize(CryptoUtilsPassport.getPublicKeySize(publicKey))
                     aaExponent = getPublicKeyExponent(publicKey)
                 } else if (publicKey.algorithm.equals("EC", ignoreCase = true)) {
-                    pubkeyData = CryptoUtilsLocal.getXYFromECDSAPublicKey(publicKey) ?: ByteArray(0)
+                    pubkeyData = CryptoUtilsPassport.getXYFromECDSAPublicKey(publicKey) ?: ByteArray(0)
                     aaAlgorithm = CircuitAlgorithmType.ECDSA
 
                     aaCurve = getPublicKeyCurve(publicKey)
@@ -161,9 +162,9 @@ data class EDocument(
                         curve = aaCurve,
                         hashAlgorithm = CircuitHashAlgorithmType.HA160
                     ),
-                    dg15DigestPositionShift = dg15DigestPositionShift.toUInt() * 8u,
+                    dg15DigestPositionShift = dg15DigestPositionShift * 8u,
                     dg15ChunkNumber = dg15ChunkNumber,
-                    aaKeyPositionShift = aaKeyPositionShift.toUInt() * 8u
+                    aaKeyPositionShift = aaKeyPositionShift * 8u
                 )
             }
 
@@ -187,7 +188,7 @@ data class EDocument(
     }
 
     private fun getPublicKeyExponent(publicKey: PublicKey?): CircuitExponentType? {
-        val exponent = CryptoUtilsLocal.getExponentFromPublicKey(publicKey) ?: return null
+        val exponent = CryptoUtilsPassport.getExponentFromPublicKey(publicKey) ?: return null
         val exponentBN = BigInteger(exponent)
         return when {
             exponentBN == BigInteger.valueOf(3L) -> CircuitExponentType.E3
@@ -197,7 +198,7 @@ data class EDocument(
     }
 
     private fun getPublicKeyCurve(publicKey: PublicKey?): CircuitCurveType? {
-        val curve = CryptoUtilsLocal.getCurveFromECDSAPublicKey(publicKey) ?: return null
+        val curve = CryptoUtilsPassport.getCurveFromECDSAPublicKey(publicKey) ?: return null
         return when (curve.lowercase()) {
             "secp256r1" -> CircuitCurveType.SECP256R1
             "brainpoolp256r1" -> CircuitCurveType.BRAINPOOLP256
@@ -221,7 +222,16 @@ data class EDocument(
     }
 }
 
-private object CryptoUtilsLocal {
+object CryptoUtilsPassport {
+
+    fun getDataFromPublicKey(publicKey: PublicKey?): ByteArray? {
+        return when (publicKey) {
+            is RSAPublicKey -> getModulusFromRSAPublicKey(publicKey)
+            is ECPublicKey -> getXYFromECDSAPublicKey(publicKey)
+            else -> null
+        }
+    }
+
     fun getPublicKeySize(publicKey: PublicKey?): Int {
         return when (publicKey) {
             is java.security.interfaces.RSAPublicKey -> publicKey.modulus.bitLength()
