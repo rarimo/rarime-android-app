@@ -1,6 +1,8 @@
 package com.rarilabs.rarime.util
 
+import org.jmrtd.lds.icao.DG1File
 import java.math.BigInteger
+import java.security.MessageDigest
 import java.security.PublicKey
 import java.util.Base64
 
@@ -69,6 +71,16 @@ fun ByteArray.toBase64(): String =
 
 fun String.fromBase64ToByteArray(): ByteArray {
     return Base64.getDecoder().decode(this)
+}
+
+fun DG1File.encodedHash(algorithm: String): ByteArray {
+    val messageDigest = MessageDigest.getInstance(algorithm, "BC")
+    return messageDigest.digest(this.encoded)
+}
+
+fun Dg15FileOwn.encodedHash(algorithm: String): ByteArray {
+    val messageDigest = MessageDigest.getInstance(algorithm, "BC")
+    return messageDigest.digest(this.encoded)
 }
 
 fun ByteArray.toUInt(): UInt {

@@ -2,11 +2,11 @@ package com.rarilabs.rarime.util
 
 import android.content.Context
 import android.content.res.AssetManager
+import com.google.gson.Gson
 import com.rarilabs.rarime.util.ZkpUtil.groth16InternalStorage
 import com.rarilabs.rarime.util.ZkpUtil.groth16ProverBig
 import com.rarilabs.rarime.util.data.Proof
 import com.rarilabs.rarime.util.data.ZkProof
-import com.google.gson.Gson
 import java.io.ByteArrayOutputStream
 
 object ZkpUtil {
@@ -107,6 +107,38 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
+    external fun registerIdentity225636336248124323256(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+    external fun registerIdentity125636576264124483256(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+    external fun registerIdentity225636576248124323256(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
 
     init {
 
@@ -167,7 +199,16 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         ErrorHandler.logDebug("proofDataLen", witnessLen[0].toInt().toString())
 
         val verification = groth16InternalStorage(
-            zkeyFilePath, zkeyFileLen,witnessData, witnessLen[0], proofData, proofLen, pubData, pubLen, msg, 256
+            zkeyFilePath,
+            zkeyFileLen,
+            witnessData,
+            witnessLen[0],
+            proofData,
+            proofLen,
+            pubData,
+            pubLen,
+            msg,
+            256
         )
 
         if (verification == -2) {

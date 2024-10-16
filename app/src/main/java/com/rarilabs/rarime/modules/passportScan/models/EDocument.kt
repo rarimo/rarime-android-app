@@ -11,12 +11,19 @@ import CircuitKeySizeType
 import CircuitPassportHashType
 import CircuitSignatureType
 import RegisterIdentityCircuitType
+import android.util.Log
 import com.rarilabs.rarime.modules.passportScan.nfc.SODFileOwn
 import com.rarilabs.rarime.util.Dg15FileOwn
 import com.rarilabs.rarime.util.circuits.SODAlgorithm
 import com.rarilabs.rarime.util.decodeHexString
 import findSubarrayIndex
+import org.bouncycastle.asn1.ASN1OctetString
+import org.bouncycastle.asn1.cms.Attribute
+import org.bouncycastle.asn1.cms.CMSAttributes
+import org.bouncycastle.cms.CMSSignedData
+import org.bouncycastle.cms.SignerInformation
 import org.jmrtd.lds.icao.DG1File
+import org.web3j.utils.Numeric
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.PublicKey
@@ -67,11 +74,26 @@ data class EDocument(
                     else -> throw IllegalArgumentException("Unsupported ECField type")
                 }
             }
+
             else -> throw IllegalArgumentException("Unsupported key type or null key")
         }
     }
 
-    fun getRegisterIdentityCircuitType(): RegisterIdentityCircuitType? {
+
+    fun getMessageDigestFromSignedAttributes(cmsSignedData: CMSSignedData): ByteArray {
+        val signerInfos = cmsSignedData.signerInfos
+        val signerInfo = signerInfos.signers.iterator().next() as SignerInformation
+        val signedAttributes = signerInfo.signedAttributes
+            ?: throw Exception("Signed attributes not found")
+
+        val messageDigestAttr: Attribute = signedAttributes.get(CMSAttributes.messageDigest)
+            ?: throw Exception("MessageDigest attribute not found")
+
+        val digestValue = messageDigestAttr.attributeValues[0] as ASN1OctetString
+        return digestValue.octets
+    }
+
+    fun getRegisterIdentityCircuitType(): RegisterIdentityCircuitType {
         try {
             // Initialize DataGroup1 and SOD using jMRTD
             val dg1Group = getDg1File()
@@ -79,11 +101,13 @@ data class EDocument(
 
             // Get the signature algorithm from SOD
             val sodSignatureAlgorithmName = sodFile.digestEncryptionAlgorithm
-            val sodSignatureAlgorithm = SODAlgorithm.fromValue(sodSignatureAlgorithmName) ?: return null
+            val sodSignatureAlgorithm = SODAlgorithm.fromValue(sodSignatureAlgorithmName)
+                ?: throw IllegalStateException("SOD algorithm not found")
 
             // Get the public key from SOD and determine its size
             val sodPublicKey = sodFile.docSigningCertificate.publicKey
-            val publicKeySize = getPublicKeySupportedSize(getPublicKeySize(sodPublicKey)) ?: return null
+            val publicKeySize = getPublicKeySupportedSize(getPublicKeySize(sodPublicKey))
+                ?: throw IllegalStateException("Public key size not found")
 
             // Create the CircuitSignatureType
             val signatureType = CircuitSignatureType(
@@ -98,20 +122,25 @@ data class EDocument(
 
             // Get the passport hash type
             val digestAlgorithm = sodFile.digestAlgorithm
-            val passportHashType = CircuitPassportHashType.fromValue(digestAlgorithm) ?: return null
+            val passportHashType = CircuitPassportHashType.fromValue(digestAlgorithm)
+                ?: throw IllegalArgumentException("Invalid digest algorithm")
 
             // Get the document type
             val documentTypeString = getStandardizedDocumentType(dg1Group.mrzInfo.documentCode)
-            val documentType = CircuitDocumentType.fromValue(documentTypeString) ?: return null
+            val documentType = CircuitDocumentType.fromValue(documentTypeString)
+                ?: throw IllegalArgumentException("Invalid document type")
 
-            // Get encapsulated content and signed attributes
-            val dataGroupHashes = sodFile.dataGroupHashes
-            val encapsulatedContent = dataGroupHashes.values.fold(ByteArray(0)) { acc, bytes -> acc + bytes }
-            val signedAttributes = sodFile.encoded
+            // **Extract CMS Signed Data from SOD**
+            //val cmsSignedData = extractCMSData(sodFile.encoded)
 
-            // Calculate chunk numbers and hashes
+            // **Extract encapsulated content and signed attributes**
+            val signedAttributes = sodFile.eContent
+            val encapsulatedContent = sodFile.readASN1Data().decodeHexString()
+
+            val ecHash = MessageDigest.getInstance(digestAlgorithm).digest(encapsulatedContent)
+
+            // Calculate chunk numbers
             val ecChunkNumber = getChunkNumber(encapsulatedContent, passportHashType.getChunkSize())
-            val ecHash = sodFile.readASN1Data().decodeHexString()
 
             // Find digest positions
             val ecDigestPosition = signedAttributes.findSubarrayIndex(ecHash)
@@ -141,7 +170,8 @@ data class EDocument(
                 val dg15DigestPositionShift = encapsulatedContent.findSubarrayIndex(dg15Hash)
                     ?: throw Exception("Unable to find DG15 digest position")
 
-                val dg15ChunkNumber = getChunkNumber(dg15!!.decodeHexString(), passportHashType.getChunkSize())
+                val dg15ChunkNumber =
+                    getChunkNumber(dg15!!.decodeHexString(), passportHashType.getChunkSize())
 
                 val pubkeyData: ByteArray
                 val aaAlgorithm: CircuitAlgorithmType
@@ -152,13 +182,16 @@ data class EDocument(
                 val publicKey = dg15Wrapper.publicKey
 
                 if (publicKey.algorithm.equals("RSA", ignoreCase = true)) {
-                    pubkeyData = CryptoUtilsPassport.getModulusFromRSAPublicKey(publicKey) ?: ByteArray(0)
+                    pubkeyData =
+                        CryptoUtilsPassport.getModulusFromRSAPublicKey(publicKey) ?: ByteArray(0)
                     aaAlgorithm = CircuitAlgorithmType.RSA
 
-                    aaKeySize = getPublicKeySupportedSize(CryptoUtilsPassport.getPublicKeySize(publicKey))
+                    aaKeySize =
+                        getPublicKeySupportedSize(CryptoUtilsPassport.getPublicKeySize(publicKey))
                     aaExponent = getPublicKeyExponent(publicKey)
                 } else if (publicKey.algorithm.equals("EC", ignoreCase = true)) {
-                    pubkeyData = CryptoUtilsPassport.getXYFromECDSAPublicKey(publicKey) ?: ByteArray(0)
+                    pubkeyData =
+                        CryptoUtilsPassport.getXYFromECDSAPublicKey(publicKey) ?: ByteArray(0)
                     aaAlgorithm = CircuitAlgorithmType.ECDSA
 
                     aaCurve = getPublicKeyCurve(publicKey)
@@ -166,7 +199,10 @@ data class EDocument(
                     throw Exception("Unable to find public key")
                 }
 
-                val aaKeyPositionShift = dg15?.decodeHexString()?.findSubarrayIndex(pubkeyData)
+                Log.i("PubKeyData", Numeric.toHexStringNoPrefix(pubkeyData))
+                Log.i("dg15", Numeric.toHexStringNoPrefix(dg15Wrapper.encoded))
+
+                val aaKeyPositionShift = dg15Wrapper.encoded.findSubarrayIndex(pubkeyData)
                     ?: throw Exception("Unable to find AA key position")
 
                 circuitType.aaType = CircuitAAType(
@@ -188,7 +224,7 @@ data class EDocument(
             return circuitType
         } catch (e: Exception) {
             e.printStackTrace()
-            return null
+            throw e
         }
     }
 
@@ -237,6 +273,7 @@ data class EDocument(
             else -> "TD1" // Default to TD1
         }
     }
+
 }
 
 object CryptoUtilsPassport {
@@ -259,7 +296,15 @@ object CryptoUtilsPassport {
 
     fun getModulusFromRSAPublicKey(publicKey: PublicKey?): ByteArray? {
         return if (publicKey is java.security.interfaces.RSAPublicKey) {
-            publicKey.modulus.toByteArray()
+
+            val pubKeyHex = Numeric.toHexStringNoPrefix(publicKey.modulus.toByteArray())
+
+            if (pubKeyHex.startsWith("00")) {
+                return Numeric.hexStringToByteArray(pubKeyHex.split("00")[1])
+            } else {
+                return Numeric.hexStringToByteArray(pubKeyHex)
+            }
+
         } else {
             null
         }
@@ -308,7 +353,11 @@ fun Dg15FileOwn.encodedHash(algorithm: String): ByteArray {
 // Extension function to find subarray index
 fun ByteArray.findSubarrayIndex(subarray: ByteArray): Int? {
     for (i in indices) {
-        if (i + subarray.size <= size && copyOfRange(i, i + subarray.size).contentEquals(subarray)) {
+        if (i + subarray.size <= size && copyOfRange(
+                i,
+                i + subarray.size
+            ).contentEquals(subarray)
+        ) {
             return i
         }
     }

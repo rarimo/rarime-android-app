@@ -32,6 +32,15 @@ set_target_properties(registerIdentity_2_256_3_6_336_264_21_2448_6_2008 PROPERTI
 add_library(registerIdentity_21_256_3_7_336_264_21_3072_6_2008 SHARED IMPORTED)
 set_target_properties(registerIdentity_21_256_3_7_336_264_21_3072_6_2008 PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/lib/libwitnesscalc_registerIdentity_21_256_3_7_336_264_21_3072_6_2008.so)
 
+add_library(registerIdentity_1_256_3_6_576_264_1_2448_3_256 SHARED IMPORTED)
+set_target_properties(registerIdentity_1_256_3_6_576_264_1_2448_3_256 PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/lib/libwitnesscalc_registerIdentity_1_256_3_6_576_264_1_2448_3_256.so)
+
+add_library(registerIdentity_2_256_3_6_336_248_1_2432_3_256 SHARED IMPORTED)
+set_target_properties(registerIdentity_2_256_3_6_336_248_1_2432_3_256 PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/lib/libwitnesscalc_registerIdentity_2_256_3_6_336_248_1_2432_3_256.so)
+
+add_library(registerIdentity_2_256_3_6_576_248_1_2432_3_256 SHARED IMPORTED)
+set_target_properties(registerIdentity_2_256_3_6_576_248_1_2432_3_256 PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/lib/libwitnesscalc_registerIdentity_2_256_3_6_576_248_1_2432_3_256.so)
+
 
 add_library(${CMAKE_PROJECT_NAME} SHARED
         rarime.cpp)
@@ -43,4 +52,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         registerIdentity_1_256_3_6_576_248_1_2432_5_296
         registerIdentity_2_256_3_6_336_264_21_2448_6_2008
         registerIdentity_21_256_3_7_336_264_21_3072_6_2008
+        registerIdentity_1_256_3_6_576_264_1_2448_3_256
+        registerIdentity_2_256_3_6_336_248_1_2432_3_256
+        registerIdentity_2_256_3_6_576_248_1_2432_3_256
 )

@@ -36,15 +36,19 @@ interface IConfig {
     val GOOGLE_WEB_KEY: String
     val APP_ID_FIREBASE: String
 
-   val registerIdentity_1_256_3_5_576_248_NA: String
-   val registerIdentity_1_256_3_6_576_248_1_2432_5_296: String
-   val registerIdentity_2_256_3_6_336_264_21_2448_6_2008: String
-   val registerIdentity_21_256_3_7_336_264_21_3072_6_2008: String
+    val registerIdentity_1_256_3_5_576_248_NA: String
+    val registerIdentity_1_256_3_6_576_248_1_2432_5_296: String
+    val registerIdentity_2_256_3_6_336_264_21_2448_6_2008: String
+    val registerIdentity_21_256_3_7_336_264_21_3072_6_2008: String
+
+    val registerIdentity_1_256_3_6_576_264_1_2448_3_256: String
+    val registerIdentity_2_256_3_6_336_248_1_2432_3_256: String
+    val registerIdentity_2_256_3_6_576_248_1_2432_3_256: String
 
 }
 
 /* TESTNET */
-object TestNetConfig: IConfig {
+object TestNetConfig : IConfig {
     override val RELAYER_URL = "https://api.orgs.app.stage.rarime.com"
     override val EVM_RPC_URL = "https://rpc.evm.node1.mainnet-beta.rarimo.com"
     override val COSMOS_RPC_URL = "https://rpc-api.node1.mainnet-beta.rarimo.com"
@@ -82,19 +86,32 @@ object TestNetConfig: IConfig {
     override val REWARD_NOTIFICATION_TOPIC: String = "rarime-rewardable-stage"
     override val APPSFLYER_DEV_KEY = Keys.APPSFLYER_DEV_KEY
 
-    override val registerIdentity_1_256_3_5_576_248_NA: String = "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_5_576_248_NA-download.zip"
-    override val registerIdentity_1_256_3_6_576_248_1_2432_5_296: String = "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_6_576_248_1_2432_5_296-download.zip"
-    override val registerIdentity_2_256_3_6_336_264_21_2448_6_2008: String = "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_2_256_3_6_336_264_21_2448_6_2008-download.zip"
-    override val registerIdentity_21_256_3_7_336_264_21_3072_6_2008: String = "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_21_256_3_7_336_264_21_3072_6_2008-download.zip"
+    override val registerIdentity_1_256_3_5_576_248_NA: String =
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_5_576_248_NA-download.zip"
+    override val registerIdentity_1_256_3_6_576_248_1_2432_5_296: String =
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_6_576_248_1_2432_5_296-download.zip"
+    override val registerIdentity_2_256_3_6_336_264_21_2448_6_2008: String =
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_2_256_3_6_336_264_21_2448_6_2008-download.zip"
+    override val registerIdentity_21_256_3_7_336_264_21_3072_6_2008: String =
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_21_256_3_7_336_264_21_3072_6_2008-download.zip"
+
+
+    override val registerIdentity_1_256_3_6_576_264_1_2448_3_256: String =
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.1/registerIdentity_1_256_3_6_576_264_1_2448_3_256-download.zip"
+    override val registerIdentity_2_256_3_6_336_248_1_2432_3_256: String =
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.1/registerIdentity_2_256_3_6_336_248_1_2432_3_256-download.zip"
+    override val registerIdentity_2_256_3_6_576_248_1_2432_3_256: String =
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.1/registerIdentity_2_256_3_6_576_248_1_2432_3_256-download.zip"
 
 }
 
 // Mainnet
-object MainnetConfig: IConfig {
+object MainnetConfig : IConfig {
     override val RELAYER_URL = "https://api.app.rarime.com"
     override val EVM_RPC_URL = "https://rpc.evm.mainnet.rarimo.com"
     override val COSMOS_RPC_URL = "https://rpc-api.mainnet.rarimo.com"
-    override val EVM_SERVICE_URL = "https://api.orgs.app.rarime.com/integrations/evm-airdrop-svc-glo/"
+    override val EVM_SERVICE_URL =
+        "https://api.orgs.app.rarime.com/integrations/evm-airdrop-svc-glo/"
     override val DISCORD_URL = "https://discord.gg/Bzjm5MDXrU"
     override val TWITTER_URL = "https://x.com/Rarimo_protocol"
 
@@ -125,9 +142,19 @@ object MainnetConfig: IConfig {
     override val REWARD_NOTIFICATION_TOPIC: String = "rarime-rewardable"
     override val APPSFLYER_DEV_KEY = Keys.APPSFLYER_DEV_KEY
 
-    override val registerIdentity_1_256_3_5_576_248_NA: String = "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_5_576_248_NA-download.zip"
-    override val registerIdentity_1_256_3_6_576_248_1_2432_5_296: String = "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_6_576_248_1_2432_5_296-download.zip"
-    override val registerIdentity_2_256_3_6_336_264_21_2448_6_2008: String = "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_2_256_3_6_336_264_21_2448_6_2008-download.zip"
-    override val registerIdentity_21_256_3_7_336_264_21_3072_6_2008: String = "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_21_256_3_7_336_264_21_3072_6_2008-download.zip"
+    override val registerIdentity_1_256_3_5_576_248_NA: String =
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_5_576_248_NA-download.zip"
+    override val registerIdentity_1_256_3_6_576_248_1_2432_5_296: String =
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_6_576_248_1_2432_5_296-download.zip"
+    override val registerIdentity_2_256_3_6_336_264_21_2448_6_2008: String =
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_2_256_3_6_336_264_21_2448_6_2008-download.zip"
+    override val registerIdentity_21_256_3_7_336_264_21_3072_6_2008: String =
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_21_256_3_7_336_264_21_3072_6_2008-download.zip"
+    override val registerIdentity_1_256_3_6_576_264_1_2448_3_256: String =
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.1/registerIdentity_1_256_3_6_576_264_1_2448_3_256-download.zip"
+    override val registerIdentity_2_256_3_6_336_248_1_2432_3_256: String =
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.1/registerIdentity_2_256_3_6_336_248_1_2432_3_256-download.zip"
+    override val registerIdentity_2_256_3_6_576_248_1_2432_3_256: String =
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.1/registerIdentity_2_256_3_6_576_248_1_2432_3_256-download.zip"
 
 }

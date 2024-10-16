@@ -285,7 +285,6 @@ class NfcUseCase(
             ErrorHandler.logError("pubKey", "pubKey: " + pubKey?.toHexString())
             ErrorHandler.logError("signature", "signature: " + signature.toHexString())
 
-
             ErrorHandler.logError("PUBLIC KEY", sodFile.docSigningCertificate.publicKey.toString())
             eDocument.dg15 = dg15?.encoded?.toHexString()
         } catch (e: Exception) {
