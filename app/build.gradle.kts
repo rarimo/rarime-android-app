@@ -31,8 +31,9 @@ android {
         minSdk = 27
         targetSdk = 34
 
-        versionCode = 36
-        versionName = "2.0.2-internal"
+
+        versionCode = 38
+        versionName = "2.0.4"
 
         externalNativeBuild {
             cmake {

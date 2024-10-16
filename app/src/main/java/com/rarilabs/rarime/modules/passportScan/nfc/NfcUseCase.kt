@@ -121,7 +121,7 @@ class NfcUseCase(
         }
 
 
-        var digestAlgorithm = sodFile.digestAlgorithm
+        val digestAlgorithm = sodFile.digestAlgorithm
         ErrorHandler.logDebug("Nfc scan", "Digest Algorithm: $digestAlgorithm")
         val docSigningCert = sodFile.docSigningCertificate
         val pemFile: String = SecurityUtil.convertToPEM(docSigningCert)
@@ -206,14 +206,10 @@ class NfcUseCase(
             personDetails.faceImageInfo = faceImageInfo
         }
 
-
-
         eDocument.docType = docType
         eDocument.personDetails = personDetails
         eDocument.additionalPersonDetails = additionalPersonDetails
         eDocument.isPassiveAuth = hashesMatched
-
-
 
         val dg15 = try {
             val dG15File: CardFileInputStream = service.getInputStream(PassportService.EF_DG15, 256)
@@ -272,6 +268,7 @@ class NfcUseCase(
         )
 
         val signature = sodFile.encryptedDigest
+        eDocument.dg15 = dg15?.encoded?.toHexString()
 
         eDocument.dg15Pem = dg15?.publicKey?.publicKeyToPem()
 
@@ -286,7 +283,6 @@ class NfcUseCase(
             ErrorHandler.logError("signature", "signature: " + signature.toHexString())
 
             ErrorHandler.logError("PUBLIC KEY", sodFile.docSigningCertificate.publicKey.toString())
-            eDocument.dg15 = dg15?.encoded?.toHexString()
         } catch (e: Exception) {
             ErrorHandler.logError("NFC SCAN", "Smt wrong with Log data while scanning", e)
         }

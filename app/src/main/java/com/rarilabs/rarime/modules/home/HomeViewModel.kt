@@ -1,6 +1,10 @@
 package com.rarilabs.rarime.modules.home
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import android.content.Context
+import android.util.Log
+import androidx.lifecycle.AndroidViewModel
+import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.airdrop.AirDropManager
 import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
@@ -10,21 +14,26 @@ import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.util.ErrorHandler
+import com.rarilabs.rarime.util.ZKPUseCase
+import com.rarilabs.rarime.util.ZkpUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    private val app: Application,
     private val passportManager: PassportManager,
     private val airDropManager: AirDropManager,
     private val walletManager: WalletManager,
     private val notificationManager: NotificationManager
-) : ViewModel() {
+) : AndroidViewModel(app) {
     val isAirDropClaimed = airDropManager.isAirDropClaimed
 
     val notReadNotifications = notificationManager.notificationList
@@ -69,7 +78,7 @@ class HomeViewModel @Inject constructor(
         val passportStatus = async {
             try {
                 passportManager.loadPassportStatus()
-            }catch (e: Exception) {
+            } catch (e: Exception) {
                 ErrorHandler.logError("loadPassportStatus", "Error", e)
             }
         }
@@ -85,4 +94,20 @@ class HomeViewModel @Inject constructor(
         passportStatus.await()
         walletBalances.await()
     }
+
+//    suspend fun generateTestProof() {
+//        val assetContext: Context = (app as Context).createPackageContext("com.rarilabs.rarime", 0)
+//        val assetManager = assetContext.assets
+//
+//        val zkp = ZKPUseCase(app as Context, assetManager)
+//        val res= withContext(Dispatchers.Default) {
+//            zkp.generateZKP(
+//                "circuit_register_test.zkey",
+//                R.raw.register_identity_2_256_3_6_336_264_21_2448_6_2008,
+//                inputs.toByteArray(),
+//                ZkpUtil::registerIdentityTest
+//            )
+//        }
+//        Log.e("Res", res.toString())
+//    }
 }
