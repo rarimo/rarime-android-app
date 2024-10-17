@@ -93,7 +93,6 @@ class HomeViewModel @Inject constructor(
         // Await for all the async operations to complete
         passportStatus.await()
         walletBalances.await()
-
     }
 
 //    suspend fun generateTestProof() {
