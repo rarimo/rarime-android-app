@@ -35,7 +35,7 @@ class CircuitUseCase(val context: Context) {
             ErrorHandler.logError("Download", "Download coroutine cancelled")
         }
 
-        if (fileExists(context, CIRCUIT_NAME_ARCHIVE)) {
+        if (fileExists(context, circuitData.name + ".zip")) {
             val zkeyLen = fileDownloader.getFileAbsolute(getZkeyFilePath(circuitData)).length()
             val datLen = fileDownloader.getFileAbsolute(getDatFilePath(circuitData)).length()
             val downloadRequest = DownloadRequest(
@@ -51,17 +51,16 @@ class CircuitUseCase(val context: Context) {
 
 
         fileDownloader.downloadFile(
-            circuitURL, CIRCUIT_NAME_ARCHIVE
+            circuitURL, getCircuitArchive(circuitData)
         ) { success, isFinished, progress ->
             if (success) {
-
                 if (!isFinished) {
                     onProgressUpdate(progress, false)
                 } else {
                     onProgressUpdate(100, true)
 
                     Log.i("Download", "File Downloaded")
-                    val archive = fileDownloader.getFile(CIRCUIT_NAME_ARCHIVE)
+                    val archive = fileDownloader.getFile(getCircuitArchive(circuitData))
                     val resultOfUnzip = fileDownloader.unzipFile(archive)
                     if (resultOfUnzip) {
                         onProgressUpdate(100, true)
@@ -86,13 +85,11 @@ class CircuitUseCase(val context: Context) {
                     }
                 }
 
-
             } else {
                 ErrorHandler.logError("Download", "Download failed")
                 continuation.resume(null) {}
             }
         }
-
     }
 
     fun getDatFilePath(circuitData: RegisteredCircuitData): String {
@@ -104,11 +101,10 @@ class CircuitUseCase(val context: Context) {
         return file.exists()
     }
 
+    fun getCircuitArchive(circuitData: RegisteredCircuitData): String {
+        return circuitData.name + ".zip"
+    }
     fun getZkeyFilePath(circuitData: RegisteredCircuitData): String {
         return "${context.filesDir}/${circuitData.value}-download/circuit_final.zkey"
-    }
-
-    private companion object {
-        const val CIRCUIT_NAME_ARCHIVE = "CIRCUIT_ARCHIVE.zip"
     }
 }

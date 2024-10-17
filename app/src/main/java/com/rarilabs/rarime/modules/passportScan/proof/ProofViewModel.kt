@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.google.gson.GsonBuilder
 import com.rarilabs.rarime.BaseConfig
@@ -254,7 +255,6 @@ class ProofViewModel @Inject constructor(
 
 
         val registerIdentityCircuitName = registerIdentityCircuitType.buildName()
-            ?: throw Exception("Invalid registerIdentityCircuitType")
 
         val registeredCircuitData = RegisteredCircuitData.fromValue(registerIdentityCircuitName)!!
 
@@ -359,9 +359,7 @@ class ProofViewModel @Inject constructor(
 
         val encapsulatedContent = sodFile.readASN1Data()
         val signedAttributes = sodFile.eContent
-
-        val publicKey = sodFile.docSigningCertificate.publicKey
-
+        val publicKey = sodFile.getDocSigningCertificate().publicKey
         val signature = sodFile.encryptedDigest
 
         ErrorHandler.logDebug("sign", proof.siblings.size.toString())
@@ -371,14 +369,13 @@ class ProofViewModel @Inject constructor(
             proof.siblings.map { it.toBase64() },
             existence = proof.existence,
         )
-
-        val proofJson = gson.toJson(proofTx)
+//
+//        val proofJson = gson.toJson(proofTx)
 
         val pubKeyData = CryptoUtilsPassport.getDataFromPublicKey(publicKey)
             ?: throw IllegalArgumentException("invalid pubkey data")
 
         val smartChunkingNumber = CircuitUtil.calculateSmartChunkingNumber(pubKeyData.size * 8)
-
         val smartChunkingToBlockSize = (circuitType.passportHashType.getChunkSize())
 
 
@@ -386,11 +383,13 @@ class ProofViewModel @Inject constructor(
             listOf()
         } else {
             CircuitUtil.smartChunking2(
-                eDocument.getDg15File().encoded,
+                eDocument.getDg15File()!!.encoded,
                 circuitType.aaType!!.dg15ChunkNumber.toLong(),
-                smartChunkingNumber.toLong()
+                smartChunkingToBlockSize.toLong()
             )
         }
+
+        Log.i("dg15 size", dg15.size.toString())
 
         val encapsulatedChunks = CircuitUtil.smartChunking2(
             encapsulatedContent.decodeHexString(),
@@ -407,12 +406,12 @@ class ProofViewModel @Inject constructor(
         val pubKeyChunks = CircuitUtil.smartChunking(
             BigInteger(pubKeyData),
             smartChunkingNumber
-        )
+        ).map { it.toString() }
 
         val signatureChunks = CircuitUtil.smartChunking(
             BigInteger(signature),
             smartChunkingNumber
-        )
+        ).map { it.toString() }
 
         val dg1Chunks = CircuitUtil.smartChunking2(
             eDocument.dg1!!.decodeHexString(),
@@ -428,8 +427,8 @@ class ProofViewModel @Inject constructor(
             signature = signatureChunks,
             dg1 = dg1Chunks,
             dg15 = dg15,
-            slaveMerkleRoot = proof.root.toBase64(),
-            slaveMerkleInclusionBranches = proof.siblings.map { it.toBase64() }
+            slaveMerkleRoot = Numeric.toHexString(proof.root),
+            slaveMerkleInclusionBranches = proof.siblings.map { Numeric.toHexString(it) }
         )
 
 

@@ -15,7 +15,9 @@ import android.util.Log
 import com.rarilabs.rarime.modules.passportScan.nfc.SODFileOwn
 import com.rarilabs.rarime.util.Dg15FileOwn
 import com.rarilabs.rarime.util.circuits.SODAlgorithm
+import com.rarilabs.rarime.util.circuits.deriveCurveName
 import com.rarilabs.rarime.util.decodeHexString
+import com.rarilabs.rarime.util.encodedHash
 import findSubarrayIndex
 import org.bouncycastle.asn1.ASN1OctetString
 import org.bouncycastle.asn1.cms.Attribute
@@ -31,6 +33,7 @@ import java.security.interfaces.ECPublicKey
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.ECFieldF2m
 import java.security.spec.ECFieldFp
+
 
 data class EDocument(
     var docType: DocType? = null,
@@ -57,7 +60,8 @@ data class EDocument(
         return DG1File(dg1File)
     }
 
-    fun getDg15File(): Dg15FileOwn {
+    fun getDg15File(): Dg15FileOwn? {
+        if (this.dg15.isNullOrEmpty()) return null
         val dG15File = this.dg15!!.decodeHexString().inputStream()
         return Dg15FileOwn(dG15File)
     }
@@ -83,8 +87,8 @@ data class EDocument(
     fun getMessageDigestFromSignedAttributes(cmsSignedData: CMSSignedData): ByteArray {
         val signerInfos = cmsSignedData.signerInfos
         val signerInfo = signerInfos.signers.iterator().next() as SignerInformation
-        val signedAttributes = signerInfo.signedAttributes
-            ?: throw Exception("Signed attributes not found")
+        val signedAttributes =
+            signerInfo.signedAttributes ?: throw Exception("Signed attributes not found")
 
         val messageDigestAttr: Attribute = signedAttributes.get(CMSAttributes.messageDigest)
             ?: throw Exception("MessageDigest attribute not found")
@@ -116,7 +120,7 @@ data class EDocument(
                 keySize = publicKeySize,
                 exponent = getPublicKeyExponent(sodPublicKey),
                 salt = null,
-                curve = getPublicKeyCurve(sodPublicKey),
+                curve = if (sodPublicKey is ECPublicKey) getPublicKeyCurve(sodPublicKey) else null,
                 hashAlgorithm = sodSignatureAlgorithm.getCircuitSignatureHashAlgorithm()
             )
 
@@ -127,15 +131,17 @@ data class EDocument(
 
             // Get the document type
             val documentTypeString = getStandardizedDocumentType(dg1Group.mrzInfo.documentCode)
-            val documentType = CircuitDocumentType.fromValue(documentTypeString)
-                ?: throw IllegalArgumentException("Invalid document type")
+            val documentType =
+                CircuitDocumentType.fromValue(documentTypeString) ?: throw IllegalArgumentException(
+                    "Invalid document type"
+                )
 
             // **Extract CMS Signed Data from SOD**
             //val cmsSignedData = extractCMSData(sodFile.encoded)
 
             // **Extract encapsulated content and signed attributes**
             val signedAttributes = sodFile.eContent
-            val encapsulatedContent = sodFile.readASN1Data().decodeHexString()
+            val encapsulatedContent = Numeric.hexStringToByteArray(sodFile.readASN1Data())
 
             val ecHash = MessageDigest.getInstance(digestAlgorithm).digest(encapsulatedContent)
 
@@ -165,13 +171,13 @@ data class EDocument(
             if (!dg15.isNullOrEmpty()) {
                 val dg15Wrapper = getDg15File()
 
-                val dg15Hash = dg15Wrapper.encodedHash(passportHashType.value.uppercase())
+                val dg15Hash = dg15Wrapper!!.encodedHash(passportHashType.value.uppercase())
 
                 val dg15DigestPositionShift = encapsulatedContent.findSubarrayIndex(dg15Hash)
                     ?: throw Exception("Unable to find DG15 digest position")
 
                 val dg15ChunkNumber =
-                    getChunkNumber(dg15!!.decodeHexString(), passportHashType.getChunkSize())
+                    getChunkNumber(dg15Wrapper.encoded, passportHashType.getChunkSize())
 
                 val pubkeyData: ByteArray
                 val aaAlgorithm: CircuitAlgorithmType
@@ -190,16 +196,17 @@ data class EDocument(
                         getPublicKeySupportedSize(CryptoUtilsPassport.getPublicKeySize(publicKey))
                     aaExponent = getPublicKeyExponent(publicKey)
                 } else if (publicKey.algorithm.equals("EC", ignoreCase = true)) {
+                    val pubKey = publicKey as ECPublicKey
                     pubkeyData =
-                        CryptoUtilsPassport.getXYFromECDSAPublicKey(publicKey) ?: ByteArray(0)
+                        CryptoUtilsPassport.getXYFromECDSAPublicKey(pubKey) ?: ByteArray(0)
                     aaAlgorithm = CircuitAlgorithmType.ECDSA
 
-                    aaCurve = getPublicKeyCurve(publicKey)
+                    aaCurve = getPublicKeyCurve(pubKey)
+                    Log.i("aaCurve",aaCurve?.name.toString())
                 } else {
                     throw Exception("Unable to find public key")
                 }
 
-                Log.i("PubKeyData", Numeric.toHexStringNoPrefix(pubkeyData))
                 Log.i("dg15", Numeric.toHexStringNoPrefix(dg15Wrapper.encoded))
 
                 val aaKeyPositionShift = dg15Wrapper.encoded.findSubarrayIndex(pubkeyData)
@@ -243,22 +250,25 @@ data class EDocument(
     private fun getPublicKeyExponent(publicKey: PublicKey?): CircuitExponentType? {
         val exponent = CryptoUtilsPassport.getExponentFromPublicKey(publicKey) ?: return null
         val exponentBN = BigInteger(exponent)
-        return when {
-            exponentBN == BigInteger.valueOf(3L) -> CircuitExponentType.E3
-            exponentBN == BigInteger.valueOf(65537L) -> CircuitExponentType.E65537
+        return when (exponentBN) {
+            BigInteger.valueOf(3L) -> CircuitExponentType.E3
+            BigInteger.valueOf(65537L) -> CircuitExponentType.E65537
             else -> null
         }
     }
 
-    private fun getPublicKeyCurve(publicKey: PublicKey?): CircuitCurveType? {
-        val curve = CryptoUtilsPassport.getCurveFromECDSAPublicKey(publicKey) ?: return null
-        return when (curve.lowercase()) {
-            "secp256r1" -> CircuitCurveType.SECP256R1
-            "brainpoolp256r1" -> CircuitCurveType.BRAINPOOLP256
-            "brainpoolp320r1" -> CircuitCurveType.BRAINPOOL320R1
-            "secp192r1" -> CircuitCurveType.SECP192R1
-            else -> null
+    private fun getPublicKeyCurve(publicKey: ECPublicKey?): CircuitCurveType? {
+        if (publicKey == null) return null
+        val curve = CryptoUtilsPassport.getCurveOidFromPublicKey(publicKey)
+        val res =  when (curve.lowercase()) {
+            "secp256r1" -> CircuitCurveType.SECP256R1       // secp256r1
+            "brainpoolp256r1" -> CircuitCurveType.BRAINPOOLP256  // brainpoolP256r1
+            "brainpoolp320r1" -> CircuitCurveType.BRAINPOOL320R1 // brainpoolP320r1
+            "secp192r1" -> CircuitCurveType.SECP192R1       // secp192r1
+            else -> throw IllegalArgumentException("Unsupported curve")
         }
+
+        return res
     }
 
     private fun getChunkNumber(data: ByteArray, chunkSize: UInt): UInt {
@@ -280,7 +290,7 @@ object CryptoUtilsPassport {
 
     fun getDataFromPublicKey(publicKey: PublicKey?): ByteArray? {
         return when (publicKey) {
-            is RSAPublicKey -> getModulusFromRSAPublicKey(publicKey)
+            is RSAPublicKey -> getModulusFromRSAPublicKeyWithPrefix(publicKey)
             is ECPublicKey -> getXYFromECDSAPublicKey(publicKey)
             else -> null
         }
@@ -288,19 +298,17 @@ object CryptoUtilsPassport {
 
     fun getPublicKeySize(publicKey: PublicKey?): Int {
         return when (publicKey) {
-            is java.security.interfaces.RSAPublicKey -> publicKey.modulus.bitLength()
+            is RSAPublicKey -> publicKey.modulus.bitLength()
             is org.bouncycastle.jce.interfaces.ECPublicKey -> publicKey.q.curve.fieldSize
             else -> 0
         }
     }
 
     fun getModulusFromRSAPublicKey(publicKey: PublicKey?): ByteArray? {
-        return if (publicKey is java.security.interfaces.RSAPublicKey) {
-
-            val pubKeyHex = Numeric.toHexStringNoPrefix(publicKey.modulus.toByteArray())
-
+        return if (publicKey is RSAPublicKey) {
+            val pubKeyHex = Numeric.toHexStringNoPrefix(publicKey.modulus)
             if (pubKeyHex.startsWith("00")) {
-                return Numeric.hexStringToByteArray(pubKeyHex.split("00")[1])
+                return Numeric.hexStringToByteArray(pubKeyHex.split("00", limit = 2)[1])
             } else {
                 return Numeric.hexStringToByteArray(pubKeyHex)
             }
@@ -310,15 +318,23 @@ object CryptoUtilsPassport {
         }
     }
 
+    fun getModulusFromRSAPublicKeyWithPrefix(publicKey: PublicKey?): ByteArray? {
+        return if (publicKey is RSAPublicKey) {
+            return publicKey.modulus.toByteArray()
+        } else {
+            null
+        }
+    }
+
     fun getExponentFromPublicKey(publicKey: PublicKey?): ByteArray? {
-        return if (publicKey is java.security.interfaces.RSAPublicKey) {
+        return if (publicKey is RSAPublicKey) {
             publicKey.publicExponent.toByteArray()
         } else {
             null
         }
     }
 
-    fun getXYFromECDSAPublicKey(publicKey: PublicKey?): ByteArray? {
+    fun getXYFromECDSAPublicKey(publicKey: ECPublicKey?): ByteArray? {
         return if (publicKey is org.bouncycastle.jce.interfaces.ECPublicKey) {
             val q = publicKey.q.normalize()
             val x = q.affineXCoord.encoded
@@ -329,37 +345,7 @@ object CryptoUtilsPassport {
         }
     }
 
-    fun getCurveFromECDSAPublicKey(publicKey: PublicKey?): String? {
-        return if (publicKey is org.bouncycastle.jce.interfaces.ECPublicKey) {
-            val curveName = publicKey.parameters.toString()
-            curveName
-        } else {
-            null
-        }
+    fun getCurveOidFromPublicKey(publicKey: ECPublicKey): String {
+        return deriveCurveName(publicKey)
     }
-}
-
-// Extension function to compute hash
-fun DG1File.encodedHash(algorithm: String): ByteArray {
-    val messageDigest = MessageDigest.getInstance(algorithm, "BC")
-    return messageDigest.digest(this.encoded)
-}
-
-fun Dg15FileOwn.encodedHash(algorithm: String): ByteArray {
-    val messageDigest = MessageDigest.getInstance(algorithm, "BC")
-    return messageDigest.digest(this.encoded)
-}
-
-// Extension function to find subarray index
-fun ByteArray.findSubarrayIndex(subarray: ByteArray): Int? {
-    for (i in indices) {
-        if (i + subarray.size <= size && copyOfRange(
-                i,
-                i + subarray.size
-            ).contentEquals(subarray)
-        ) {
-            return i
-        }
-    }
-    return null
 }

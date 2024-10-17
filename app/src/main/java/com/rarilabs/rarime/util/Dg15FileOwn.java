@@ -32,7 +32,7 @@ public class Dg15FileOwn extends DataGroup {
 
     private static final Logger LOGGER = Logger.getLogger("org.jmrtd");
 
-    private static final String[] PUBLIC_KEY_ALGORITHMS = {"RSA", "EC", "DSA", "DH", "EdDSA"};
+    private static final String[] PUBLIC_KEY_ALGORITHMS = {"EC", "DSA", "DH", "EdDSA", "RSA"};
 
     private PublicKey publicKey;
 

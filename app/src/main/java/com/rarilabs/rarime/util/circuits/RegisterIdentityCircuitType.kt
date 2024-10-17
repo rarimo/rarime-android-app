@@ -10,9 +10,9 @@ data class RegisterIdentityCircuitType(
     val dg1DigestPositionShift: UInt,
     var aaType: CircuitAAType? = null
 ) {
-    fun buildName(): String? {
+    fun buildName(): String {
         var name = "registerIdentity"
-        val signatureTypeId = signatureType.getId() ?: return null
+        val signatureTypeId = signatureType.getId() ?: throw IllegalArgumentException("No signatureType")
 
         name += "_$signatureTypeId"
         name += "_${passportHashType.getId()}"
@@ -22,7 +22,7 @@ data class RegisterIdentityCircuitType(
         name += "_$dg1DigestPositionShift"
 
         aaType?.let { aa ->
-            val aaTypeId = aa.aaAlgorithm.getId() ?: return null
+            val aaTypeId = aa.aaAlgorithm.getId() ?: throw IllegalStateException("aa.aaAlgorithm.getId not found")
 
             name += "_$aaTypeId"
             name += "_${aa.dg15DigestPositionShift}"

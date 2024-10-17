@@ -94,8 +94,6 @@ object TestNetConfig : IConfig {
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_2_256_3_6_336_264_21_2448_6_2008-download.zip"
     override val registerIdentity_21_256_3_7_336_264_21_3072_6_2008: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_21_256_3_7_336_264_21_3072_6_2008-download.zip"
-
-
     override val registerIdentity_1_256_3_6_576_264_1_2448_3_256: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.1/registerIdentity_1_256_3_6_576_264_1_2448_3_256-download.zip"
     override val registerIdentity_2_256_3_6_336_248_1_2432_3_256: String =
