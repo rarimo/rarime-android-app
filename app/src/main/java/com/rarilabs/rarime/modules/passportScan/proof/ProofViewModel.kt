@@ -2,8 +2,6 @@ package com.rarilabs.rarime.modules.passportScan.proof
 
 import RegisterIdentityCircuitType
 import android.app.Application
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
@@ -139,11 +137,11 @@ class ProofViewModel @Inject constructor(
 
         val inputs = buildRegistrationCircuits(eDocument, registerIdentityCircuitType)
 
-        val clipboard =
-            (application as Context).getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-
-        val clip = ClipData.newPlainText("arbitrary label", inputs.decodeToString())
-        clipboard.setPrimaryClip(clip)
+//        val clipboard =
+//            (application as Context).getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+//
+//        val clip = ClipData.newPlainText("arbitrary label", inputs.decodeToString())
+//        clipboard.setPrimaryClip(clip)
 
 
         val assetContext: Context =
@@ -228,6 +226,50 @@ class ProofViewModel @Inject constructor(
                         filePaths.datLen,
                         inputs,
                         ZkpUtil::registerIdentity225636576248124323256
+                    )
+                }
+
+                RegisteredCircuitData.REGISTER_IDENTITY_11_256_3_3_576_248_1_1184_5_264 -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity1125633576248111845264
+                    )
+                }
+
+                RegisteredCircuitData.REGISTER_IDENTITY_12_256_3_3_336_232_NA -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity1225633336232NA
+                    )
+                }
+
+                RegisteredCircuitData.REGISTER_IDENTITY_1_256_3_4_336_232_1_1480_5_296 -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity125634336232114805296
+                    )
+                }
+
+                RegisteredCircuitData.REGISTER_IDENTITY_1_256_3_4_600_248_1_1496_3_256 -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity125634600248114963256
                     )
                 }
             }

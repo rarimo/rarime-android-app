@@ -19,6 +19,7 @@ import com.rarilabs.rarime.BuildConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.passportScan.camera.ScanMRZStep
+import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.ScanPassportScreenViewModel
 import com.rarilabs.rarime.modules.passportScan.nfc.ReadEDocStep
 import com.rarilabs.rarime.modules.passportScan.nfc.RevocationStep
@@ -31,7 +32,7 @@ import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.data.ZkProof
 import org.jmrtd.lds.icao.MRZInfo
 
-private enum class ScanPassportState {
+enum class ScanPassportState {
     SCAN_MRZ, READ_NFC, PASSPORT_DATA, GENERATE_PROOF, FINISH_PASSPORT_FLOW, UNSUPPORTED_PASSPORT, NOT_ALLOWED_PASSPORT,
     REVOCATION_PROCESS,
     GET_IN_TOUCH,
@@ -42,6 +43,7 @@ fun ScanPassportScreen(
     onClose: () -> Unit,
     onClaim: () -> Unit,
     scanPassportScreenViewModel: ScanPassportScreenViewModel = hiltViewModel(),
+    initialEDocument: EDocument? = scanPassportScreenViewModel.eDocument.value
 ) {
     val context = LocalContext.current
     val mainViewModel = LocalMainViewModel.current
@@ -52,10 +54,17 @@ fun ScanPassportScreen(
     var nfcAttempts by remember { mutableStateOf(0) }
 
     val balance by scanPassportScreenViewModel.pointsToken.collectAsState()
-    val eDoc = scanPassportScreenViewModel.eDocument.collectAsState()
+    val eDoc by scanPassportScreenViewModel.eDocument.collectAsState()
 
     var isAlreadyVerified by remember {
         mutableStateOf(false)
+    }
+
+    LaunchedEffect(Unit) {
+        if (initialEDocument != null) {
+            scanPassportScreenViewModel.setPassportTEMP(initialEDocument)
+            state = ScanPassportState.PASSPORT_DATA
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -135,7 +144,7 @@ fun ScanPassportScreen(
                 PassportDataStep(
                     onNext = {
                         state =
-                            if (NOT_ALLOWED_COUNTRIES.contains(eDoc.value?.personDetails?.nationality)) {
+                            if (NOT_ALLOWED_COUNTRIES.contains(eDoc?.personDetails?.nationality)) {
                                 ScanPassportState.NOT_ALLOWED_PASSPORT
                             } else {
                                 ScanPassportState.GENERATE_PROOF
@@ -145,7 +154,7 @@ fun ScanPassportScreen(
                         scanPassportScreenViewModel.resetPassportState()
                         onClose()
                     },
-                    eDocument = eDoc.value!!
+                    eDocument = eDoc ?: throw IllegalStateException("No document")
                 )
             }
 
@@ -157,7 +166,7 @@ fun ScanPassportScreen(
 
                         // we allow to "not_allowed" country citizens generate an incognito ID,
                         // so we need to double check here, cuz we use same component.
-                        if (!NOT_ALLOWED_COUNTRIES.contains(eDoc.value?.personDetails?.nationality)) {
+                        if (!NOT_ALLOWED_COUNTRIES.contains(eDoc?.personDetails?.nationality)) {
                             if (isAlreadyVerified) {
                                 onClose.invoke()
                             } else {
@@ -167,7 +176,7 @@ fun ScanPassportScreen(
                             onClose.invoke()
                         }
                     },
-                    eDocument = eDoc.value!!,
+                    eDocument = eDoc?: throw IllegalStateException("No Document"),
                     onError = { e, regProof ->
                         ErrorHandler.logError("GenerateProofStep", "Error", e)
                         regProof?.let {
@@ -182,7 +191,7 @@ fun ScanPassportScreen(
 
             ScanPassportState.NOT_ALLOWED_PASSPORT -> {
                 NotAllowedPassportScreen(
-                    eDocument = eDoc.value!!,
+                    eDocument = eDoc ?: throw IllegalStateException("No Document"),
                     onClose = onClose
                 ) {
                     state = ScanPassportState.GENERATE_PROOF
@@ -191,7 +200,7 @@ fun ScanPassportScreen(
 
             ScanPassportState.UNSUPPORTED_PASSPORT -> {
                 WaitlistPassportScreen(
-                    eDocument = eDoc.value!!,
+                    eDocument = eDoc ?: throw IllegalStateException("No Document"),
                     onClose = {
                         scanPassportScreenViewModel.savePassport()
                         onClose.invoke()
@@ -215,7 +224,7 @@ fun ScanPassportScreen(
                 }, onNext = {
                     scanPassportScreenViewModel.finishRevocation()
 
-                    if (!NOT_ALLOWED_COUNTRIES.contains(eDoc.value?.personDetails?.nationality)) {
+                    if (!NOT_ALLOWED_COUNTRIES.contains(eDoc?.personDetails?.nationality)) {
                         state = ScanPassportState.FINISH_PASSPORT_FLOW
                     } else {
                         onClose.invoke()
@@ -228,7 +237,7 @@ fun ScanPassportScreen(
 
             ScanPassportState.GET_IN_TOUCH -> {
                 GetInTouchScreen(
-                    eDoc = eDoc.value,
+                    eDoc = eDoc,
                     onClose = {
                         scanPassportScreenViewModel.resetPassportState()
                         onClose.invoke()

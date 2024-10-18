@@ -1,20 +1,25 @@
 package com.rarilabs.rarime.modules.home.components.no_passport
 
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.rarilabs.rarime.BuildConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.tokens.PreviewerToken
 import com.rarilabs.rarime.manager.WalletAsset
@@ -25,10 +30,13 @@ import com.rarilabs.rarime.ui.components.ActionCard
 import com.rarilabs.rarime.ui.components.ActionCardVariants
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
+import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.enter_program.EnterProgramFlow
 import com.rarilabs.rarime.ui.components.enter_program.UNSPECIFIED_PASSPORT_STEPS
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.GetCustomContents
+import com.rarilabs.rarime.util.ParseEDocumentFromJson
 import com.rarilabs.rarime.util.Screen
 
 @Composable
@@ -50,11 +58,32 @@ fun HomeScreenNoPassportMainContent(
 ) {
     val homeViewModel = LocalHomeViewModel.current
 
+    val context = LocalContext.current
     val pointsToken by homeViewModel.pointsToken.collectAsState()
 
     val rarimoInfoSheetState = rememberAppSheetState()
 
     val nonSpecificAppSheetState = rememberAppSheetState()
+
+    val filePicker =
+        rememberLauncherForActivityResult(contract = GetCustomContents(isMultiple = false),
+            onResult = { uris ->
+                try {
+                    if (uris.isEmpty()) {
+                        return@rememberLauncherForActivityResult
+                    }
+
+                    val uri = uris.first()
+
+                    val eDocument =
+                        ParseEDocumentFromJson().parseEDocument(uri, context)
+
+                    homeViewModel.setTempEDocument(eDocument)
+                    navigate(Screen.ScanPassport.ScanPassportPoints.route)
+                } catch (e: Exception) {
+                    Log.e("ScanPassportScreen", "Failed to read file", e)
+                }
+            })
 
 //    val specificAppSheetState = rememberAppSheetState()
 
@@ -77,6 +106,11 @@ fun HomeScreenNoPassportMainContent(
             modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             GreetCommonActionCard(mediaContent = {
+                if (BuildConfig.isTestnet) {
+                    PrimaryButton(modifier = Modifier.fillMaxWidth(), onClick = {
+                        filePicker.launch("application/json")
+                    }, text = "Import from JSON")
+                }
                 Image(
                     modifier = Modifier.size(110.dp),
                     painter = painterResource(id = R.drawable.reward_coin),

@@ -34,10 +34,10 @@ import java.time.Period
 
 @Composable
 fun PassportDataStep(onNext: () -> Unit, onClose: () -> Unit, eDocument: EDocument) {
-    val faceImageInfo = eDocument.personDetails!!.faceImageInfo
+    val faceImageInfo = eDocument.personDetails?.faceImageInfo
     val image = faceImageInfo?.let { ImageUtil.getImage(it).bitmapImage }
 
-    val isUnsupported = NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails!!.nationality)
+    val isUnsupported = NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)
 
     PassportDataStepContent(
         onNext = onNext,
