@@ -89,9 +89,9 @@ class NfcManager @Inject constructor(
 
     fun startScanning(customTagsHandler: (Tag) -> Unit, onError: (Exception) -> Unit) {
         try {
+            enableForegroundDispatch()
             this.handleTags = customTagsHandler
             this.onError = onError
-            enableForegroundDispatch()
         } catch (e: Exception) {
             ErrorHandler.logError("NfcManager", "Error starting NFC scanning", e)
             _state.value = ScanNFCState.ERROR
