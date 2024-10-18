@@ -209,7 +209,7 @@ class RegistrationManager @Inject constructor(
             } catch (e: Exception) {
                 ErrorHandler.logError("RegistrationManager:revoke:", "Error: $e", e)
 
-                if (!(e is UserAlreadyRevoked)) {
+                if (e !is UserAlreadyRevoked) {
                     throw e
                 }
             }

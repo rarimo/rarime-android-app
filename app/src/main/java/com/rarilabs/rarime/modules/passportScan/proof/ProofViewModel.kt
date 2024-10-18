@@ -256,6 +256,7 @@ class ProofViewModel @Inject constructor(
 
         val registerIdentityCircuitName = registerIdentityCircuitType.buildName()
 
+        ErrorHandler.logDebug("registerIdentityCircuitName", registerIdentityCircuitName)
         val registeredCircuitData = RegisteredCircuitData.fromValue(registerIdentityCircuitName)!!
 
 
