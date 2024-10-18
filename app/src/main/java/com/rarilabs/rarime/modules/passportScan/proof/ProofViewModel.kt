@@ -256,6 +256,8 @@ class ProofViewModel @Inject constructor(
 
         val registerIdentityCircuitName = registerIdentityCircuitType.buildName()
 
+        registrationManager.setCircuitData(registerIdentityCircuitType)
+
         ErrorHandler.logDebug("registerIdentityCircuitName", registerIdentityCircuitName)
         val registeredCircuitData = RegisteredCircuitData.fromValue(registerIdentityCircuitName)!!
 
@@ -306,8 +308,8 @@ class ProofViewModel @Inject constructor(
                     proof,
                     eDocument,
                     registrationManager.masterCertProof.value!!,
-                    registrationManager.certificatePubKeySize.value,
-                    false
+                    false,
+                    registerIdentityCircuitName
                 )
 
                 _state.value = PassportProofState.FINALIZING
@@ -322,8 +324,8 @@ class ProofViewModel @Inject constructor(
                 proof,
                 eDocument,
                 registrationManager.masterCertProof.value!!,
-                registrationManager.certificatePubKeySize.value,
-                false
+                false,
+                registerIdentityCircuitName
             )
 
             _state.value = PassportProofState.FINALIZING

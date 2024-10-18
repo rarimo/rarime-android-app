@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.api.registration
 
+import RegisterIdentityCircuitType
 import android.util.Log
 import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
@@ -18,8 +19,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
-import org.web3j.tuples.generated.Tuple2
 import org.jmrtd.lds.icao.DG15File
+import org.web3j.tuples.generated.Tuple2
 import javax.inject.Inject
 
 class RegistrationManager @Inject constructor(
@@ -30,11 +31,6 @@ class RegistrationManager @Inject constructor(
         private set
     val masterCertProof: StateFlow<Proof?>
         get() = _masterCertProof.asStateFlow()
-
-    private var _certificatePubKeySize = MutableStateFlow(0L)
-        private set
-    val certificatePubKeySize: StateFlow<Long>
-        get() = _certificatePubKeySize.asStateFlow()
 
     private var _activeIdentity = MutableStateFlow(ByteArray(0))
         private set
@@ -63,23 +59,34 @@ class RegistrationManager @Inject constructor(
     val revEDocument: StateFlow<EDocument?>
         get() = _revEDocument.asStateFlow()
 
+    private var circuitData: RegisterIdentityCircuitType? = null
+
+    fun getCircuitData(): RegisterIdentityCircuitType? {
+        return circuitData
+    }
+
+    fun setCircuitData(circuitData: RegisterIdentityCircuitType) {
+        this.circuitData = circuitData
+    }
+
     fun setRevEDocument(eDocument: EDocument) {
         _revEDocument.value = eDocument
     }
+
     fun setRegistrationProof(proof: ZkProof) {
         _registrationProof.value = proof
     }
+
     fun setEDocument(eDocument: EDocument) {
         _eDocument.value = eDocument
     }
+
     fun setMasterCertProof(proof: Proof) {
         _masterCertProof.value = proof
     }
-    fun setCertSize(size: Long) {
-        _certificatePubKeySize.value = size
-    }
 
-    suspend fun relayerRegister(callData: ByteArray, destination: String) = registrationAPIManager.register(callData, destination)
+    suspend fun relayerRegister(callData: ByteArray, destination: String) =
+        registrationAPIManager.register(callData, destination)
 
     /**
      * if isUserRevoking is true, then this method is re-issuance for revoked passport
@@ -89,16 +96,17 @@ class RegistrationManager @Inject constructor(
         zkProof: ZkProof,
         eDocument: EDocument,
         masterCertProof: Proof,
-        certificateSize: Long,
-        isUserRevoking: Boolean
+        isUserRevoking: Boolean,
+        registerIdentityCircuitName: String
     ) {
         _eDocument.value = eDocument
 
         val jsonProof = Gson().toJson(zkProof)
 
         val pubKeyPem = if (eDocument.dg15 != null) {
-            DG15File(eDocument.dg15!!.decodeHexString().inputStream()).publicKey.publicKeyToPem().toByteArray()
-        }else {
+            DG15File(eDocument.dg15!!.decodeHexString().inputStream()).publicKey.publicKeyToPem()
+                .toByteArray()
+        } else {
             byteArrayOf()
         }
 
@@ -108,8 +116,8 @@ class RegistrationManager @Inject constructor(
             eDocument.aaSignature,
             pubKeyPem,
             masterCertProof.root,
-            certificateSize,
-            isUserRevoking
+            isUserRevoking,
+            registerIdentityCircuitName
         )
 
         withContext(Dispatchers.IO) {
@@ -182,7 +190,10 @@ class RegistrationManager @Inject constructor(
 
         val callDataBuilder = CallDataBuilder()
 
-        ErrorHandler.logDebug("buildRevocationCallData", revEDocument.value!!.aaSignature.toString())
+        ErrorHandler.logDebug(
+            "buildRevocationCallData",
+            revEDocument.value!!.aaSignature.toString()
+        )
 
         ErrorHandler.logDebug("buildRevocationCallData", pubKeyPem)
 
@@ -201,7 +212,10 @@ class RegistrationManager @Inject constructor(
     suspend fun revoke() {
         try {
             try {
-                val txResponse = registrationAPIManager.register(revocationCallData.value!!, BaseConfig.REGISTER_CONTRACT_ADDRESS)
+                val txResponse = registrationAPIManager.register(
+                    revocationCallData.value!!,
+                    BaseConfig.REGISTER_CONTRACT_ADDRESS
+                )
 
                 txResponse.data.attributes.tx_hash.let {
                     rarimoContractManager.checkIsTransactionSuccessful(it)
@@ -216,14 +230,13 @@ class RegistrationManager @Inject constructor(
 
             ErrorHandler.logDebug("registrationProof.value!!", registrationProof.value!!.toString())
             ErrorHandler.logDebug("masterCertProof.value!!", masterCertProof.value!!.toString())
-            ErrorHandler.logDebug("certificatePubKeySize.value", certificatePubKeySize.value.toString())
 
             register(
                 registrationProof.value!!,
                 eDocument.value!!,
                 masterCertProof.value!!,
-                certificatePubKeySize.value,
-                true
+                true,
+                getCircuitData()!!.buildName()
             )
         } catch (e: Exception) {
             ErrorHandler.logError("RevocationStepViewModel", "Error: $e", e)
