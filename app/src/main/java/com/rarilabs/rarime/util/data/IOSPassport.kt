@@ -14,5 +14,6 @@ data class IOSPassport(
     var nationality: String,
     var passportImageRaw: String,
     var signature: String,
+    var personalNumber: String,
     var sod: String
 )
