@@ -2,6 +2,8 @@ package com.rarilabs.rarime.modules.passportScan.proof
 
 import RegisterIdentityCircuitType
 import android.app.Application
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
@@ -10,7 +12,6 @@ import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.registration.PassportAlreadyRegisteredByOtherPK
 import com.rarilabs.rarime.api.registration.RegistrationManager
-import com.rarilabs.rarime.data.ProofTx
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.manager.WalletManager
@@ -28,7 +29,6 @@ import com.rarilabs.rarime.util.circuits.CircuitUtil
 import com.rarilabs.rarime.util.circuits.RegisteredCircuitData
 import com.rarilabs.rarime.util.data.ZkProof
 import com.rarilabs.rarime.util.decodeHexString
-import com.rarilabs.rarime.util.toBase64
 import dagger.hilt.android.lifecycle.HiltViewModel
 import identity.CallDataBuilder
 import identity.X509Util
@@ -137,11 +137,11 @@ class ProofViewModel @Inject constructor(
 
         val inputs = buildRegistrationCircuits(eDocument, registerIdentityCircuitType)
 
-//        val clipboard =
-//            (application as Context).getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-//
-//        val clip = ClipData.newPlainText("arbitrary label", inputs.decodeToString())
-//        clipboard.setPrimaryClip(clip)
+        val clipboard =
+            (application as Context).getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+
+        val clip = ClipData.newPlainText("arbitrary label", inputs.decodeToString())
+        clipboard.setPrimaryClip(clip)
 
 
         val assetContext: Context =
@@ -312,8 +312,8 @@ class ProofViewModel @Inject constructor(
                 }
             }
         }
-        _state.value = PassportProofState.READING_DATA
 
+        _state.value = PassportProofState.READING_DATA
 
         val proof = withContext(Dispatchers.IO) {
             generateRegisterIdentityProof(
@@ -402,20 +402,12 @@ class ProofViewModel @Inject constructor(
             contract.getProof(indexHex.decodeHexString()).send()
         }
 
-        val encapsulatedContent = sodFile.readASN1Data()
+        val encapsulatedContent = Numeric.hexStringToByteArray(sodFile.readASN1Data())
         val signedAttributes = sodFile.eContent
         val publicKey = sodFile.getDocSigningCertificate().publicKey
         val signature = sodFile.encryptedDigest
 
         ErrorHandler.logDebug("sign", proof.siblings.size.toString())
-
-        val proofTx = ProofTx(
-            proof.root.toBase64(),
-            proof.siblings.map { it.toBase64() },
-            existence = proof.existence,
-        )
-//
-//        val proofJson = gson.toJson(proofTx)
 
         val pubKeyData = CryptoUtilsPassport.getDataFromPublicKey(publicKey)
             ?: throw IllegalArgumentException("invalid pubkey data")
@@ -428,7 +420,7 @@ class ProofViewModel @Inject constructor(
             listOf()
         } else {
             CircuitUtil.smartChunking2(
-                eDocument.getDg15File()!!.encoded,
+                eDocument.dg15!!.decodeHexString(),
                 circuitType.aaType!!.dg15ChunkNumber.toLong(),
                 smartChunkingToBlockSize.toLong()
             )
@@ -437,7 +429,7 @@ class ProofViewModel @Inject constructor(
         Log.i("dg15 size", dg15.size.toString())
 
         val encapsulatedChunks = CircuitUtil.smartChunking2(
-            encapsulatedContent.decodeHexString(),
+            encapsulatedContent,
             circuitType.ecChunkNumber.toLong(),
             smartChunkingToBlockSize.toLong()
         )
@@ -449,12 +441,12 @@ class ProofViewModel @Inject constructor(
         )
 
         val pubKeyChunks = CircuitUtil.smartChunking(
-            BigInteger(pubKeyData),
+            BigInteger(1, pubKeyData),
             smartChunkingNumber
         ).map { it.toString() }
 
         val signatureChunks = CircuitUtil.smartChunking(
-            BigInteger(signature),
+            BigInteger(1, signature),
             smartChunkingNumber
         ).map { it.toString() }
 
@@ -480,6 +472,7 @@ class ProofViewModel @Inject constructor(
         registrationManager.setMasterCertProof(proof)
 
 
+
         return gson.toJson(inputs).toByteArray()
     }
 
@@ -495,10 +488,6 @@ class ProofViewModel @Inject constructor(
             ErrorHandler.logError("registerByDocument", "Error during readICAO", e)
             null
         }
-    }
-
-    private fun getRegistrationCircuitData() {
-
     }
 
 }

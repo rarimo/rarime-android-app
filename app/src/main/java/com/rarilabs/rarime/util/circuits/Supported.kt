@@ -136,15 +136,6 @@ object SupportRegisterIdentityCircuitAAType {
 
         // ECDSA
         CircuitAAAlgorithm(
-            staticId = 20u,
-            algorithm = CircuitAlgorithmType.ECDSA,
-            keySize = null,
-            exponent = null,
-            salt = null,
-            curve = CircuitCurveType.SECP256R1,
-            hashAlgorithm = CircuitHashAlgorithmType.HA160
-        ),
-        CircuitAAAlgorithm(
             staticId = 21u,
             algorithm = CircuitAlgorithmType.ECDSA,
             keySize = null,
@@ -152,25 +143,12 @@ object SupportRegisterIdentityCircuitAAType {
             salt = null,
             curve = CircuitCurveType.BRAINPOOLP256,
             hashAlgorithm = CircuitHashAlgorithmType.HA160
-        ),
-        CircuitAAAlgorithm(
-            staticId = 13u,
-            algorithm = CircuitAlgorithmType.ECDSA,
-            keySize = null,
-            exponent = null,
-            salt = null,
-            curve = CircuitCurveType.SECP192R1,
-            hashAlgorithm = CircuitHashAlgorithmType.HA160
         )
     )
 
     fun getSupportedSignatureTypeId(type: CircuitAAAlgorithm): UInt? {
         return supported.firstOrNull {
             it.algorithm == type.algorithm &&
-                    it.keySize == type.keySize &&
-                    it.exponent == type.exponent &&
-                    it.salt == type.salt &&
-                    it.curve == type.curve &&
                     it.hashAlgorithm == type.hashAlgorithm
         }?.staticId
     }
