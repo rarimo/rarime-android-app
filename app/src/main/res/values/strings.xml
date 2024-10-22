@@ -250,7 +250,7 @@
     <string name="delete_profile_confirm_btn">Yes</string>
     <string name="delete_profile_cancel_btn">No</string>
     <string name="you_have_already_registered">You have already registered</string>
-    <string name="you_have_already_registered_offer">Do you want to revocate your passport?</string>
+    <string name="you_have_already_registered_offer">Do you want to revoke your passport?</string>
     <string name="you_have_already_registered_confirm">Yes</string>
     <string name="you_have_already_registered_cancel">No</string>
     <string name="send_us_feedback">Send feedback\n</string>
@@ -382,5 +382,7 @@
     <string name="restore_using_key">Restore using a key</string>
 
     <string name="drive_backup_description">Your account is not backed up. If you lose your device, you will lose access to your account</string>
+    <string name="passport_already_registered_no_dg15_title">You have already registered</string>
+    <string name="passport_already_registered_no_dg15_description">You can`t revoke your passport. try to find your previous private key</string>
 
 </resources>

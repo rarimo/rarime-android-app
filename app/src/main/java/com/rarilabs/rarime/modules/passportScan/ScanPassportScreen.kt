@@ -80,7 +80,18 @@ fun ScanPassportScreen(
             onClose.invoke()
         }else {
             mainViewModel.setModalContent {
-                ConfirmationDialog(
+                if (eDoc?.dg15.isNullOrEmpty()) {
+                    ConfirmationDialog(
+                        title = stringResource(R.string.passport_already_registered_no_dg15_title),
+                        subtitle = stringResource(R.string.passport_already_registered_no_dg15_description),
+                        confirmButtonText = stringResource(id = R.string.you_have_already_registered_confirm),
+                        onConfirm = {
+                            mainViewModel.setModalVisibility(false)
+                            onClose.invoke()
+                        }
+                    )
+                }else {
+                    ConfirmationDialog(
                         title = stringResource(R.string.you_have_already_registered),
                         subtitle = stringResource(R.string.you_have_already_registered_offer),
                         cancelButtonText = stringResource(id = R.string.you_have_already_registered_cancel),
@@ -94,7 +105,9 @@ fun ScanPassportScreen(
                             mainViewModel.setModalVisibility(false)
                             onClose.invoke()
                         },
-                )
+                    )
+                }
+
             }
             mainViewModel.setModalVisibility(true)
         }

@@ -14,9 +14,7 @@ import com.rarilabs.rarime.util.StringUtil
 import com.rarilabs.rarime.util.addCharAtIndex
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.publicKeyToPem
-import com.rarilabs.rarime.util.toBitArray
 import identity.Profile
-import identity.X509Util
 import net.sf.scuba.smartcards.CardFileInputStream
 import net.sf.scuba.smartcards.CardService
 import org.bouncycastle.asn1.cms.SignedData
@@ -347,7 +345,6 @@ class NfcUseCase(
             )
 
             try {
-                ErrorHandler.logDebug("eDocument", Gson().toJson(eDocument))
                 ErrorHandler.logDebug("response", Gson().toJson(response))
             } catch (e: Exception) {
                 ErrorHandler.logError("cant read edocument or response for debug read", "", e)
@@ -370,7 +367,7 @@ class NfcUseCase(
 class SODFileOwn(inputStream: InputStream?) : SODFile(inputStream) {
     @OptIn(ExperimentalStdlibApi::class)
     fun readASN1Data(): String {
-        val a = SODFile::class.java.getDeclaredField("signedData");
+        val a = SODFile::class.java.getDeclaredField("signedData")
         a.isAccessible = true
 
         val v: SignedData = a.get(this) as SignedData

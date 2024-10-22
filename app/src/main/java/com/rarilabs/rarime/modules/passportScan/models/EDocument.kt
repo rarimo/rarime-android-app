@@ -21,11 +21,15 @@ import com.rarilabs.rarime.util.circuits.deriveCurveName
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.encodedHash
 import findSubarrayIndex
-import org.bouncycastle.asn1.ASN1Primitive
-import org.bouncycastle.asn1.pkcs.RSASSAPSSparams
-import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo
+import org.bouncycastle.asn1.ASN1InputStream
+import org.bouncycastle.asn1.ASN1Integer
+import org.bouncycastle.asn1.ASN1Sequence
+import org.bouncycastle.asn1.ASN1Set
+import org.bouncycastle.asn1.ASN1TaggedObject
+import org.bouncycastle.asn1.DLApplicationSpecific
 import org.jmrtd.lds.icao.DG1File
 import org.web3j.utils.Numeric
+import java.io.ByteArrayInputStream
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.PublicKey
@@ -163,8 +167,8 @@ data class EDocument(
                     MessageDigest.getInstance(passportHashType.value.uppercase(), "BC")
                 val dg15Hash = messageDigest.digest(dg15!!.decodeHexString())
 
-                val dg15DigestPositionShift = encapsulatedContent.findSubarrayIndex(dg15Hash)
-                    ?: throw Exception(
+                val dg15DigestPositionShift =
+                    encapsulatedContent.findSubarrayIndex(dg15Hash) ?: throw Exception(
                         "Unable to find DG15 digest position: dg15Hash: ${
                             Numeric.toHexStringNoPrefix(
                                 dg15Hash
@@ -172,8 +176,7 @@ data class EDocument(
                         } \n ${Numeric.toHexStringNoPrefix(encapsulatedContent)}"
                     )
 
-                val dg15ChunkNumber =
-                    getChunkNumber(dg15Raw, passportHashType.getChunkSize())
+                val dg15ChunkNumber = getChunkNumber(dg15Raw, passportHashType.getChunkSize())
 
                 val pubkeyData: ByteArray
                 val aaAlgorithm: CircuitAlgorithmType
@@ -193,8 +196,7 @@ data class EDocument(
                     aaExponent = getPublicKeyExponent(publicKey)
                 } else if (publicKey.algorithm.equals("EC", ignoreCase = true)) {
                     val pubKey = publicKey as ECPublicKey
-                    pubkeyData =
-                        CryptoUtilsPassport.getXYFromECDSAPublicKey(pubKey) ?: ByteArray(0)
+                    pubkeyData = CryptoUtilsPassport.getXYFromECDSAPublicKey(pubKey) ?: ByteArray(0)
                     aaAlgorithm = CircuitAlgorithmType.ECDSA
 
                     aaCurve = getPublicKeyCurve(pubKey)
@@ -243,29 +245,72 @@ data class EDocument(
     }
 
     private fun getSaltSize(): CircuitSaltType? {
-        val sod = getSodFile()
-        val publicKey = sod.docSigningCertificate.publicKey
-        val encoded: ByteArray = publicKey.encoded
-        val subjectPublicKeyInfo =
-            SubjectPublicKeyInfo.getInstance(ASN1Primitive.fromByteArray(encoded))
-        val algId = subjectPublicKeyInfo.algorithm
+        val asn1Data = Numeric.hexStringToByteArray(sod)
+        ASN1InputStream(ByteArrayInputStream(asn1Data)).use { asn1InputStream ->
+            val asn1Object = asn1InputStream.readObject()
 
+            if (asn1Object !is DLApplicationSpecific) {
+                ErrorHandler.logError("Unexpected ASN.1 object type", asn1Object::class.java.toString())
+                return null
+            }
 
-        // Check if the public key uses RSASSA-PSS
-        try {
+            val content = ASN1Sequence.getInstance(asn1Object.getObject())
+            ErrorHandler.logDebug("DLApplicationSpecific Content:", content.toString())
 
-            val params = RSASSAPSSparams.getInstance(algId.parameters)
-            val saltLength = params.saltLength.toInt()
-            return when (saltLength) {
-                32 -> CircuitSaltType.S32
-                48 -> CircuitSaltType.S48
+            // Navigate to the issuer
+            val issuer = (content.getObjectAt(1) as? ASN1TaggedObject)?.let {
+                ASN1Sequence.getInstance(it.getObject())
+            } ?: run {
+                ErrorHandler.logError("Failed to retrieve Issuer", "")
+                return null
+            }
+            ErrorHandler.logDebug("Issuer:", issuer.toString())
+
+            // Find the RDNSequence
+            val rdnSequence = ASN1Sequence.getInstance(issuer)
+            ErrorHandler.logDebug("Issuer RDNSequence:", rdnSequence.toString())
+
+            // Find the last element in RDNSequence, which should be a SET
+            val lastSet = (rdnSequence.getObjectAt(rdnSequence.size() - 1) as? ASN1TaggedObject)?.let {
+                ASN1Set.getInstance(it.getObject())
+            } ?: rdnSequence.getObjectAt(rdnSequence.size() - 1) as? ASN1Set ?: run {
+                ErrorHandler.logError("Failed to retrieve Last SET in RDNSequence", "")
+                return null
+            }
+            ErrorHandler.logDebug("Last element in RDNSequence (SET):", lastSet.toString())
+
+            // Get the first element in the SET, which should be a SEQUENCE
+            val firstElement = lastSet.getObjectAt(0) as? ASN1Sequence ?: run {
+                ErrorHandler.logError("Failed to retrieve First SEQUENCE in SET", "")
+                return null
+            }
+            ErrorHandler.logDebug("First element in SET (Sequence):", firstElement.toString())
+
+            // Find the pre-last item in the SEQUENCE
+            val preLastItem = firstElement.getObjectAt(firstElement.size() - 2) as? ASN1Sequence ?: run {
+                ErrorHandler.logError("Failed to retrieve Pre-last SEQUENCE in First Element", "")
+                return null
+            }
+            ErrorHandler.logDebug("Pre-last item in first element sequence:", preLastItem.toString())
+
+            // Find the SEQUENCE with 3 elements and get the last element, which should be an INTEGER
+            val targetSequence = preLastItem.getObjectAt(preLastItem.size() - 1) as? ASN1Sequence ?: run {
+                ErrorHandler.logError("Failed to retrieve Target SEQUENCE", "")
+                return null
+            }
+            ErrorHandler.logDebug("Target sequence with 3 elements:", targetSequence.toString())
+
+            val targetInteger = (targetSequence.getObjectAt(targetSequence.size() - 1) as? ASN1TaggedObject)?.let {
+                ASN1Integer.getInstance(it.getObject())
+            } ?: ASN1Integer.getInstance(targetSequence.getObjectAt(targetSequence.size() - 1))
+
+            return when (targetInteger.value.toInt()) {
                 64 -> CircuitSaltType.S64
+                48 -> CircuitSaltType.S48
+                32 -> CircuitSaltType.S32
                 else -> null
             }
-        } catch (e: Exception) {
-            ErrorHandler.logError("getSaltSize", "error getting salt", e)
         }
-        return null
     }
 
     private fun getPublicKeyExponent(publicKey: PublicKey?): CircuitExponentType? {

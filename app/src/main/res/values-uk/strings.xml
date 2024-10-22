@@ -383,4 +383,5 @@
     <string name="notifications_allowed_claimed">Claim</string>
     <string name="notifications_error">Error</string>
     <string name="default_notification_channel_id">notifications</string>
+    <string name="passport_already_registered_no_dg15_title">You have already registered</string>
 </resources>
