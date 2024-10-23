@@ -28,8 +28,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import org.web3j.utils.Numeric
-import java.time.Duration
-import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -112,14 +110,8 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
         }
 
         try {
-            var uniqueness = if (
-                queryProofParametersRequest.value?.data?.attributes?.timestamp_upper_bound?.toLong() != 0L ||
-                queryProofParametersRequest.value?.data?.attributes?.identity_counter_upper_bound?.toLong() != 0L
-            ) {
-                true
-            } else {
-                false
-            }
+            var uniqueness = queryProofParametersRequest.value?.data?.attributes?.timestamp_upper_bound?.toLong() != 0L ||
+            queryProofParametersRequest.value?.data?.attributes?.identity_counter_upper_bound?.toLong() != 0L
 
             if (uniqueness) {
                 tempMap.set(
@@ -133,7 +125,7 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
 
         try {
             var nationality = if (
-                queryProofParametersRequest.value?.data?.attributes?.citizenship_mask != null
+                queryProofParametersRequest.value?.data?.attributes?.citizenship_mask != null && queryProofParametersRequest.value?.data?.attributes?.citizenship_mask != "0x"
             ) {
                 val nationality =
                     Numeric.hexStringToByteArray(queryProofParametersRequest.value?.data?.attributes?.citizenship_mask).decodeToString()
