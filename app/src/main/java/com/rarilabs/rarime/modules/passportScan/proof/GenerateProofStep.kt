@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.registration.PassportAlreadyRegisteredByOtherPK
-import com.rarilabs.rarime.api.registration.UserAlreadyRegistered
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.CardContainer
@@ -141,7 +140,7 @@ private fun GenerateProofStepContent(
         ) {
             GeneralProcessingStatus(processingStatus)
 
-            CardContainer() {
+            CardContainer {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxWidth()

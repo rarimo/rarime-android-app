@@ -1,15 +1,13 @@
 package com.rarilabs.rarime.api.registration
 
-import com.rarilabs.rarime.BaseConfig
+
 import com.rarilabs.rarime.api.registration.models.RegisterBody
 import com.rarilabs.rarime.api.registration.models.RegisterData
 import com.rarilabs.rarime.api.registration.models.RegisterResponseBody
 import com.rarilabs.rarime.util.ErrorHandler
 import javax.inject.Inject
-
-class UserAlreadyRegistered() : Exception()
-class UserAlreadyRevoked() : Exception()
-class PassportAlreadyRegisteredByOtherPK() : Exception()
+class UserAlreadyRevoked : Exception()
+class PassportAlreadyRegisteredByOtherPK : Exception()
 
 class RegistrationAPIManager @Inject constructor(
     private val registrationAPI: RegistrationAPI

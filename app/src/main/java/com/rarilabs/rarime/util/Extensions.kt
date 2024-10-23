@@ -1,5 +1,8 @@
 package com.rarilabs.rarime.util
 
+import org.jmrtd.lds.icao.DG1File
+import java.math.BigInteger
+import java.security.MessageDigest
 import java.security.PublicKey
 import java.util.Base64
 
@@ -68,4 +71,47 @@ fun ByteArray.toBase64(): String =
 
 fun String.fromBase64ToByteArray(): ByteArray {
     return Base64.getDecoder().decode(this)
+}
+
+fun DG1File.encodedHash(algorithm: String): ByteArray {
+    val messageDigest = MessageDigest.getInstance(algorithm, "BC")
+    return messageDigest.digest(this.encoded)
+}
+
+fun Dg15FileOwn.encodedHash(algorithm: String): ByteArray {
+    val messageDigest = MessageDigest.getInstance(algorithm, "BC")
+    return messageDigest.digest(this.encoded)
+}
+
+fun ByteArray.toUInt(): UInt {
+    return java.nio.ByteBuffer.wrap(this).int.toUInt()
+}
+
+fun ByteArray.toBits(): List<Long> {
+    val bits = mutableListOf<Long>()
+    for (byte in this) {
+        for (i in 0 until 8) {
+            bits.add(((byte.toInt() shr (7 - i)) and 1).toLong())
+        }
+    }
+    return bits
+}
+
+
+fun BigInteger.toNormalizedByteArray(capacity: Int = 0): ByteArray {
+    // Convert the BigInteger to a byte array
+    var result = this.toByteArray()
+
+    // Remove leading zero byte if present (caused by sign bit in two's complement representation)
+    if (result.size > 1 && result[0] == 0.toByte()) {
+        result = result.copyOfRange(1, result.size)
+    }
+
+    // Pad with leading zeros to match the desired capacity
+    if (capacity != 0 && capacity > result.size) {
+        val padding = ByteArray(capacity - result.size) { 0 }
+        result = padding + result
+    }
+
+    return result
 }

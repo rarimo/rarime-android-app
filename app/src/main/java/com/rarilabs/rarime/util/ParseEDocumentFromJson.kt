@@ -10,7 +10,6 @@ import com.rarilabs.rarime.util.data.IOSPassport
 import org.bouncycastle.asn1.ASN1InputStream
 import org.bouncycastle.asn1.ASN1Primitive
 import org.bouncycastle.util.encoders.Base64
-import org.jmrtd.lds.icao.DG11File
 
 
 class ParseEDocumentFromJson {
@@ -26,15 +25,16 @@ class ParseEDocumentFromJson {
     fun parseEDocument(fileName: Uri, context: Context): EDocument {
         val json = readFile(fileName, context)
         try {
-            val androidEDocument: EDocument = Gson().fromJson(json, EDocument::class.java)
-            return androidEDocument
-        }catch (e: Exception) {
-            Log.i("Error parsing", "Not Android EDocument type", e)
-        }
+            val struct = parseToStruct(json)
+            val eDocument = convertToEDocument(struct)
+            return eDocument
 
-        val struct = parseToStruct(json)
-        val eDocument = convertToEDocument(struct)
-        return eDocument
+        }catch (e: Exception) {
+            Log.i("Error parsing", "Not IOS EDocument type", e)
+        }
+        val androidEDocument: EDocument = Gson().fromJson(json, EDocument::class.java)
+        return androidEDocument
+
     }
 
     private fun parseToStruct(json: String): IOSPassport {

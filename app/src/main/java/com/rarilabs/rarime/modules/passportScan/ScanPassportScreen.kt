@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,7 +30,6 @@ import com.rarilabs.rarime.ui.components.ConfirmationDialog
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.data.ZkProof
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.jmrtd.lds.icao.MRZInfo
 
 enum class ScanPassportState {
@@ -82,7 +80,18 @@ fun ScanPassportScreen(
             onClose.invoke()
         }else {
             mainViewModel.setModalContent {
-                ConfirmationDialog(
+                if (eDoc?.dg15.isNullOrEmpty()) {
+                    ConfirmationDialog(
+                        title = stringResource(R.string.passport_already_registered_no_dg15_title),
+                        subtitle = stringResource(R.string.passport_already_registered_no_dg15_description),
+                        confirmButtonText = stringResource(id = R.string.you_have_already_registered_confirm),
+                        onConfirm = {
+                            mainViewModel.setModalVisibility(false)
+                            onClose.invoke()
+                        }
+                    )
+                }else {
+                    ConfirmationDialog(
                         title = stringResource(R.string.you_have_already_registered),
                         subtitle = stringResource(R.string.you_have_already_registered_offer),
                         cancelButtonText = stringResource(id = R.string.you_have_already_registered_cancel),
@@ -96,7 +105,9 @@ fun ScanPassportScreen(
                             mainViewModel.setModalVisibility(false)
                             onClose.invoke()
                         },
-                )
+                    )
+                }
+
             }
             mainViewModel.setModalVisibility(true)
         }
