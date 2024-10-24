@@ -32,7 +32,7 @@ class LightProofHandlerViewModel @Inject constructor(
     private val passportManager: PassportManager,
     private val contractManager: RarimoContractManager,
     private val identityManager: IdentityManager,
-): ViewModel() {
+) : ViewModel() {
     //TODO: Remove MutableStateFlow if it isn’t used in the UI
     private var _queryProofParametersRequest = MutableStateFlow<QueryProofGenResponse?>(null)
     val queryProofParametersRequest: StateFlow<QueryProofGenResponse?>
@@ -95,7 +95,8 @@ class LightProofHandlerViewModel @Inject constructor(
             queryProofPubSignals.add(citizenshipBN.toString())
 
             // sex
-            val sex = passportManager.passport.value?.personDetails?.gender ?: throw Exception("sex is null")
+            val sex = passportManager.passport.value?.personDetails?.gender
+                ?: throw Exception("sex is null")
 
             val sexBN = BigInteger(sex.toByteArray())
 
@@ -158,14 +159,16 @@ class LightProofHandlerViewModel @Inject constructor(
             // birthDateLowerbound
             val birthDateLowerbound = it.birth_date_lower_bound
 
-            val birthDateLowerboundBN = BigInteger(Numeric.hexStringToByteArray(birthDateLowerbound))
+            val birthDateLowerboundBN =
+                BigInteger(Numeric.hexStringToByteArray(birthDateLowerbound))
 
             queryProofPubSignals.add(birthDateLowerboundBN.toString())
 
             // birthDateUpperbound
             val birthDateUpperbound = it.birth_date_upper_bound
 
-            val birthDateUpperboundBN = BigInteger(Numeric.hexStringToByteArray(birthDateUpperbound))
+            val birthDateUpperboundBN =
+                BigInteger(Numeric.hexStringToByteArray(birthDateUpperbound))
 
             queryProofPubSignals.add(birthDateUpperboundBN.toString())
 
@@ -182,7 +185,10 @@ class LightProofHandlerViewModel @Inject constructor(
             // citizenshipMask
             val citizenshipMask = it.citizenship_mask
 
-            val citizenshipMaskBN = BigInteger(Numeric.hexStringToByteArray(citizenshipMask))
+            val citizenshipMaskBN =
+                if (citizenshipMask.isEmpty() || citizenshipMask == "0x") BigInteger(Numeric.hexStringToByteArray("0x303030303030")) else BigInteger(
+                    Numeric.hexStringToByteArray(citizenshipMask)
+                )
 
             queryProofPubSignals.add(citizenshipMaskBN.toString())
         } ?: run {
@@ -198,7 +204,8 @@ class LightProofHandlerViewModel @Inject constructor(
             queryProofParametersRequest.value!!.data.attributes.callback_url,
             pubSignals = queryProofPubSignals,
             signature.removePrefix("0x"),
-            userIdHash = queryProofParametersRequest.value!!.data.attributes.callback_url.split("/").last()
+            userIdHash = queryProofParametersRequest.value!!.data.attributes.callback_url.split("/")
+                .last()
         )
     }
 
@@ -233,18 +240,24 @@ class LightProofHandlerViewModel @Inject constructor(
         }
 
         try {
-            val uniqueness = queryProofParametersRequest.value?.data?.attributes?.timestamp_upper_bound?.toLong() != 0L ||
-                queryProofParametersRequest.value?.data?.attributes?.identity_counter_upper_bound?.toLong() != 0L
-            tempMap["Uniqueness"] = if (uniqueness) { "Yes" } else { "No" }
+            val uniqueness =
+                queryProofParametersRequest.value?.data?.attributes?.timestamp_upper_bound?.toLong() != 0L ||
+                        queryProofParametersRequest.value?.data?.attributes?.identity_counter_upper_bound?.toLong() != 0L
+            tempMap["Uniqueness"] = if (uniqueness) {
+                "Yes"
+            } else {
+                "No"
+            }
         } catch (e: Exception) {
             Log.e("uniqueness", e.message, e)
         }
 
         try {
             val nationality = if (
-                queryProofParametersRequest.value?.data?.attributes?.citizenship_mask != null
+                queryProofParametersRequest.value?.data?.attributes?.citizenship_mask != null && queryProofParametersRequest.value?.data?.attributes?.citizenship_mask != "0x"
             ) {
-                Numeric.hexStringToByteArray(queryProofParametersRequest.value?.data?.attributes?.citizenship_mask).decodeToString()
+                Numeric.hexStringToByteArray(queryProofParametersRequest.value?.data?.attributes?.citizenship_mask)
+                    .decodeToString()
             } else {
                 ""
             }

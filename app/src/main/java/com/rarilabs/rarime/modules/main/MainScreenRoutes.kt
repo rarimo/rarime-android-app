@@ -2,7 +2,6 @@ package com.rarilabs.rarime.modules.main
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
@@ -23,7 +22,6 @@ import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
 import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.modules.home.HomeScreen
 import com.rarilabs.rarime.modules.intro.IntroScreen

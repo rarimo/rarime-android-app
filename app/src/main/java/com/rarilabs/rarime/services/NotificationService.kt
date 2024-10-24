@@ -14,11 +14,11 @@ import androidx.hilt.work.HiltWorkerFactory
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import dagger.hilt.android.AndroidEntryPoint
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.MainActivity
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.store.room.notifications.models.NotificationEntityData
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.IOException
 import java.net.URL
 import java.util.Calendar
@@ -74,7 +74,6 @@ class NotificationService :
                 null
             )
 
-            // TODO: Doesn't work on Background
             notificationManager.addNotificationSync(notificationEntityData)
 
             sendNotification(

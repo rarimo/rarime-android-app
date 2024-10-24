@@ -19,7 +19,6 @@ import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.circuits.SODAlgorithm
 import com.rarilabs.rarime.util.circuits.deriveCurveName
 import com.rarilabs.rarime.util.decodeHexString
-import com.rarilabs.rarime.util.encodedHash
 import findSubarrayIndex
 import org.bouncycastle.asn1.ASN1InputStream
 import org.bouncycastle.asn1.ASN1Integer
@@ -142,7 +141,12 @@ data class EDocument(
             val ecDigestPosition = signedAttributes.findSubarrayIndex(ecHash)
                 ?: throw Exception("Unable to find EC digest position")
 
-            val dg1Hash = dg1Group.encodedHash(passportHashType.value.uppercase())
+
+            val messageDigestDG1 =
+                MessageDigest.getInstance(passportHashType.value.uppercase(), "BC")
+
+            val dg1Hash = messageDigestDG1.digest(dg1!!.decodeHexString())
+
             val dg1DigestPositionShift = encapsulatedContent.findSubarrayIndex(dg1Hash)
                 ?: throw Exception("Unable to find DG1 digest position")
 

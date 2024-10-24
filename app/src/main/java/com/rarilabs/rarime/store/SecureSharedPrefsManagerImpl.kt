@@ -2,9 +2,10 @@ package com.rarilabs.rarime.store
 
 import android.app.Application
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.data.enums.AppLanguage
 import com.rarilabs.rarime.data.enums.PassportCardLook
@@ -15,11 +16,10 @@ import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.manager.WalletAssetJSON
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.wallet.models.Transaction
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.LocaleUtil
 import com.rarilabs.rarime.util.data.ZkProof
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.rarilabs.rarime.util.ErrorHandler
+import javax.crypto.AEADBadTagException
 import javax.inject.Inject
 
 
@@ -55,22 +55,27 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
 
 
     private fun getSharedPreferences(): SharedPreferences {
-        if (sharedPref == null) {
-            val masterKey =
-                MasterKey.Builder(application).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
-            sharedPref = EncryptedSharedPreferences.create(
-                application,
-                PREFS_FILE_NAME,
-                masterKey,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )
-            return sharedPref!!
+        return try {
+            if (sharedPref == null) {
+                val masterKey = MasterKey.Builder(application)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build()
+                sharedPref = EncryptedSharedPreferences.create(
+                    application,
+                    PREFS_FILE_NAME,
+                    masterKey,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                )
+            }
+            sharedPref!!
+        } catch (e: AEADBadTagException) {
+            // Handle corrupted data, e.g., reset shared preferences
+            application.deleteSharedPreferences(PREFS_FILE_NAME)
+            getSharedPreferences() // Retry after reset
         }
-
-        return sharedPref!!
-
     }
+
 
     private fun getEditor(): SharedPreferences.Editor {
         return getSharedPreferences().edit()
