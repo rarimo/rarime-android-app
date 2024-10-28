@@ -62,7 +62,12 @@ fun ProfileScreen(
             isFeedbackDialogShown = false
         })
 
-    val language by viewModel.language
+
+    val image = remember {
+        viewModel.getImage()
+    }
+
+    //val language by viewModel.language
     val colorScheme by viewModel.colorScheme
 
     Column(
@@ -105,7 +110,7 @@ fun ProfileScreen(
                             color = RarimeTheme.colors.textSecondary
                         )
                     }
-                    PassportImage(image = null, size = 40.dp)
+                    PassportImage(image = image, size = 40.dp)
                 }
             }
             CardContainer {

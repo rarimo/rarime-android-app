@@ -28,17 +28,14 @@ class RegistrationManager @Inject constructor(
     private val rarimoContractManager: RarimoContractManager,
 ) {
     private var _masterCertProof = MutableStateFlow<Proof?>(null)
-        private set
     val masterCertProof: StateFlow<Proof?>
         get() = _masterCertProof.asStateFlow()
 
     private var _activeIdentity = MutableStateFlow(ByteArray(0))
-        private set
     val activeIdentity: StateFlow<ByteArray>
         get() = _activeIdentity.asStateFlow()
 
     private var _registrationProof = MutableStateFlow<ZkProof?>(null)
-        private set
     val registrationProof: StateFlow<ZkProof?>
         get() = _registrationProof.asStateFlow()
 
@@ -104,7 +101,7 @@ class RegistrationManager @Inject constructor(
         val jsonProof = Gson().toJson(zkProof)
 
         val pubKeyPem = if (eDocument.dg15 != null) {
-            DG15File(eDocument.dg15!!.decodeHexString().inputStream()).publicKey.publicKeyToPem()
+            eDocument.getDg15File()!!.publicKey.publicKeyToPem()
                 .toByteArray()
         } else {
             byteArrayOf()

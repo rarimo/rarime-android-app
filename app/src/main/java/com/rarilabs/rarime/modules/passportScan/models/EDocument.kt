@@ -115,6 +115,7 @@ data class EDocument(
 
             // Get the passport hash type
             val digestAlgorithm = sodFile.digestAlgorithm
+            val digestEncryptionAlgorithm = sodFile.signerInfoDigestAlgorithm
             val passportHashType = CircuitPassportHashType.fromValue(digestAlgorithm)
                 ?: throw IllegalArgumentException("Invalid digest algorithm")
 
@@ -132,10 +133,11 @@ data class EDocument(
             val signedAttributes = sodFile.eContent
             val encapsulatedContent = Numeric.hexStringToByteArray(sodFile.readASN1Data())
 
-            val ecHash = MessageDigest.getInstance(digestAlgorithm).digest(encapsulatedContent)
+            val ecHash = MessageDigest.getInstance(digestEncryptionAlgorithm, "BC").digest(encapsulatedContent)
 
             // Calculate chunk numbers
             val ecChunkNumber = getChunkNumber(encapsulatedContent, passportHashType.getChunkSize())
+
 
             // Find digest positions
             val ecDigestPosition = signedAttributes.findSubarrayIndex(ecHash)
@@ -243,6 +245,7 @@ data class EDocument(
             4096 -> CircuitKeySizeType.B4096
             256 -> CircuitKeySizeType.B256
             320 -> CircuitKeySizeType.B320
+            384 -> CircuitKeySizeType.B384
             192 -> CircuitKeySizeType.B192
             else -> null
         }
@@ -254,7 +257,10 @@ data class EDocument(
             val asn1Object = asn1InputStream.readObject()
 
             if (asn1Object !is DLApplicationSpecific) {
-                ErrorHandler.logError("Unexpected ASN.1 object type", asn1Object::class.java.toString())
+                ErrorHandler.logError(
+                    "Unexpected ASN.1 object type",
+                    asn1Object::class.java.toString()
+                )
                 return null
             }
 
@@ -275,12 +281,13 @@ data class EDocument(
             ErrorHandler.logDebug("Issuer RDNSequence:", rdnSequence.toString())
 
             // Find the last element in RDNSequence, which should be a SET
-            val lastSet = (rdnSequence.getObjectAt(rdnSequence.size() - 1) as? ASN1TaggedObject)?.let {
-                ASN1Set.getInstance(it.getObject())
-            } ?: rdnSequence.getObjectAt(rdnSequence.size() - 1) as? ASN1Set ?: run {
-                ErrorHandler.logError("Failed to retrieve Last SET in RDNSequence", "")
-                return null
-            }
+            val lastSet =
+                (rdnSequence.getObjectAt(rdnSequence.size() - 1) as? ASN1TaggedObject)?.let {
+                    ASN1Set.getInstance(it.getObject())
+                } ?: rdnSequence.getObjectAt(rdnSequence.size() - 1) as? ASN1Set ?: run {
+                    ErrorHandler.logError("Failed to retrieve Last SET in RDNSequence", "")
+                    return null
+                }
             ErrorHandler.logDebug("Last element in RDNSequence (SET):", lastSet.toString())
 
             // Get the first element in the SET, which should be a SEQUENCE
@@ -291,22 +298,31 @@ data class EDocument(
             ErrorHandler.logDebug("First element in SET (Sequence):", firstElement.toString())
 
             // Find the pre-last item in the SEQUENCE
-            val preLastItem = firstElement.getObjectAt(firstElement.size() - 2) as? ASN1Sequence ?: run {
-                ErrorHandler.logError("Failed to retrieve Pre-last SEQUENCE in First Element", "")
-                return null
-            }
-            ErrorHandler.logDebug("Pre-last item in first element sequence:", preLastItem.toString())
+            val preLastItem =
+                firstElement.getObjectAt(firstElement.size() - 2) as? ASN1Sequence ?: run {
+                    ErrorHandler.logError(
+                        "Failed to retrieve Pre-last SEQUENCE in First Element",
+                        ""
+                    )
+                    return null
+                }
+            ErrorHandler.logDebug(
+                "Pre-last item in first element sequence:",
+                preLastItem.toString()
+            )
 
             // Find the SEQUENCE with 3 elements and get the last element, which should be an INTEGER
-            val targetSequence = preLastItem.getObjectAt(preLastItem.size() - 1) as? ASN1Sequence ?: run {
-                ErrorHandler.logError("Failed to retrieve Target SEQUENCE", "")
-                return null
-            }
+            val targetSequence =
+                preLastItem.getObjectAt(preLastItem.size() - 1) as? ASN1Sequence ?: run {
+                    ErrorHandler.logError("Failed to retrieve Target SEQUENCE", "")
+                    return null
+                }
             ErrorHandler.logDebug("Target sequence with 3 elements:", targetSequence.toString())
 
-            val targetInteger = (targetSequence.getObjectAt(targetSequence.size() - 1) as? ASN1TaggedObject)?.let {
-                ASN1Integer.getInstance(it.getObject())
-            } ?: ASN1Integer.getInstance(targetSequence.getObjectAt(targetSequence.size() - 1))
+            val targetInteger =
+                (targetSequence.getObjectAt(targetSequence.size() - 1) as? ASN1TaggedObject)?.let {
+                    ASN1Integer.getInstance(it.getObject())
+                } ?: ASN1Integer.getInstance(targetSequence.getObjectAt(targetSequence.size() - 1))
 
             return when (targetInteger.value.toInt()) {
                 64 -> CircuitSaltType.S64
@@ -335,7 +351,8 @@ data class EDocument(
             "brainpoolp256r1" -> CircuitCurveType.BRAINPOOLP256  // brainpoolP256r1
             "brainpoolp320r1" -> CircuitCurveType.BRAINPOOL320R1 // brainpoolP320r1
             "secp192r1" -> CircuitCurveType.SECP192R1       // secp192r1
-            else -> throw IllegalArgumentException("Unsupported curve")
+            "brainpoolp384r1" -> CircuitCurveType.BRAINPOOLP384R1
+            else -> throw IllegalArgumentException("Unsupported curve: " + curve.lowercase())
         }
 
         return res
@@ -347,10 +364,15 @@ data class EDocument(
     }
 
     private fun getStandardizedDocumentType(documentCode: String): String {
-        return when (documentCode) {
+
+        val normalizedDocumentType = documentCode
+            .replace("<", "")
+            .replace("O", "")
+
+        return when (normalizedDocumentType) {
             "P" -> "TD3" // Passport
             "ID" -> "TD1" // Identity Card
-            else -> "TD1" // Default to TD1
+            else -> "TD3" // Default to TD3
         }
     }
 

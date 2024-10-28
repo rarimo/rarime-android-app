@@ -7,6 +7,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.points.PointsManager
@@ -293,15 +294,34 @@ class ProofViewModel @Inject constructor(
             ErrorHandler.logError(TAG, "Error: $e", e)
         }
 
-        val registerIdentityCircuitType = eDocument.getRegisterIdentityCircuitType()
+        val registerIdentityCircuitType = try {
+            eDocument.getRegisterIdentityCircuitType()
+        } catch (e: Exception) {
+            ErrorHandler.logError("registerByDocument", "Cant getRegisterIdentityCircuitType", e)
+            throw e
+        }
 
 
-        val registerIdentityCircuitName = registerIdentityCircuitType.buildName()
+        val registerIdentityCircuitName = try {
+            registerIdentityCircuitType.buildName()
+        } catch (e: Exception) {
+            ErrorHandler.logError(
+                "registerIdentityCircuitType.buildName()",
+                "cant get register identity name",
+                e
+            )
+            ErrorHandler.logError(
+                "registerIdentityCircuitType",
+                Gson().toJson(registerIdentityCircuitType)
+            )
+            throw e
+        }
 
         registrationManager.setCircuitData(registerIdentityCircuitType)
 
         ErrorHandler.logDebug("registerIdentityCircuitName", registerIdentityCircuitName)
-        val registeredCircuitData = RegisteredCircuitData.fromValue(registerIdentityCircuitName)!!
+        val registeredCircuitData = RegisteredCircuitData.fromValue(registerIdentityCircuitName)
+            ?: throw IllegalStateException("Circuit $registerIdentityCircuitName is not supported")
 
 
         val filePaths = withContext(Dispatchers.Default) {

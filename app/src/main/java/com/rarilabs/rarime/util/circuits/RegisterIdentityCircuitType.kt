@@ -1,3 +1,4 @@
+import com.google.gson.Gson
 import com.rarilabs.rarime.util.circuits.SupportRegisterIdentityCircuitAAType
 import com.rarilabs.rarime.util.circuits.SupportRegisterIdentityCircuitSignatureType
 
@@ -12,7 +13,7 @@ data class RegisterIdentityCircuitType(
 ) {
     fun buildName(): String {
         var name = "registerIdentity"
-        val signatureTypeId = signatureType.getId() ?: throw IllegalArgumentException("No signatureType")
+        val signatureTypeId = signatureType.getId() ?: throw IllegalArgumentException("No signatureType: " + Gson().toJson(signatureType))
 
         name += "_$signatureTypeId"
         name += "_${passportHashType.getId()}"
@@ -123,7 +124,7 @@ enum class CircuitAlgorithmType {
 }
 
 enum class CircuitKeySizeType {
-    B1024, B2048, B4096, B256, B320, B192
+    B1024, B2048, B4096, B256, B320, B192, B384
 }
 
 enum class CircuitExponentType {
@@ -135,7 +136,7 @@ enum class CircuitSaltType {
 }
 
 enum class CircuitCurveType {
-    SECP256R1, BRAINPOOLP256, BRAINPOOL320R1, SECP192R1
+    SECP256R1, BRAINPOOLP256, BRAINPOOL320R1, SECP192R1, BRAINPOOLP384R1
 }
 
 enum class CircuitHashAlgorithmType {

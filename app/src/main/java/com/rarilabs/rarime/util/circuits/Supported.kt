@@ -79,6 +79,7 @@ object SupportRegisterIdentityCircuitSignatureType {
             curve = CircuitCurveType.SECP256R1,
             hashAlgorithm = CircuitHashAlgorithmType.HA256
         ),
+
         CircuitSignatureType(
             staticId = 21u,
             algorithm = CircuitAlgorithmType.ECDSA,

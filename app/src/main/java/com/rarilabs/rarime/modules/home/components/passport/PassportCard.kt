@@ -56,7 +56,6 @@ import com.rarilabs.rarime.ui.components.PassportImage
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Constants
-import com.rarilabs.rarime.util.ImageUtil
 
 
 @Composable
@@ -76,8 +75,9 @@ fun PassportCard(
 
     // TODO: fix recomposition
     val fullName = passport.personDetails!!.name + " " + passport.personDetails!!.surname
-    val faceImageInfo = passport.personDetails!!.faceImageInfo
-    val image = if (faceImageInfo == null) null else ImageUtil.getImage(faceImageInfo).bitmapImage!!
+    val image = remember {
+        passport.personDetails!!.getPortraitImage()
+    }
 
     val isInfoHidden = isIncognito && !isPressing
 
@@ -396,14 +396,18 @@ fun StatusCard(modifier: Modifier = Modifier, passportStatus: PassportStatus) {
     }
 
     when (passportStatus) {
-        PassportStatus.WAITLIST_NOT_ALLOWED,
-        PassportStatus.WAITLIST -> remember {
+        PassportStatus.WAITLIST_NOT_ALLOWED -> {
+            statusIcon = R.drawable.ic_globe_simple_x
+            statusTitle = R.string.unsupported_card_title
+        }
+
+        PassportStatus.WAITLIST -> {
             statusIcon = R.drawable.ic_globe_simple_time
             statusTitle = R.string.waitlist_title
             statusDescription = R.string.waitlist_card_subtitle
         }
 
-        PassportStatus.NOT_ALLOWED -> remember {
+        PassportStatus.NOT_ALLOWED -> {
             statusIcon = R.drawable.ic_globe_simple_x
             statusTitle = R.string.unsupported_card_title
         }
