@@ -351,8 +351,8 @@
     <string name="default_duration_seconds">%1$s seconds</string>
     <string name="time_ago">ago</string>
     <string name="notifications_reward_loading">Loading...</string>
-    <string name="notifications_reward_claimed">Claimed</string>
-    <string name="notifications_allowed_claimed">Claim</string>
+    <string name="notifications_reward_claimed">Reserved</string>
+    <string name="notifications_allowed_claimed">Reserve</string>
     <string name="notifications_error">Error</string>
     <string name="default_notification_channel_id">notifications</string>
 
