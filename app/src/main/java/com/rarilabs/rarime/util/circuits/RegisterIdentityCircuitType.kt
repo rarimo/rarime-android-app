@@ -124,7 +124,7 @@ enum class CircuitAlgorithmType {
 }
 
 enum class CircuitKeySizeType {
-    B1024, B2048, B4096, B256, B320, B192, B384
+    B1024, B2048, B4096, B256, B320, B192, B384, B3072
 }
 
 enum class CircuitExponentType {

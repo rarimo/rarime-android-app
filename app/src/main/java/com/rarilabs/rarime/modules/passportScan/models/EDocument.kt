@@ -100,7 +100,7 @@ data class EDocument(
             // Get the public key from SOD and determine its size
             val sodPublicKey = sodFile.docSigningCertificate.publicKey
             val publicKeySize = getPublicKeySupportedSize(getPublicKeySize(sodPublicKey))
-                ?: throw IllegalStateException("Public key size not found")
+                ?: throw IllegalStateException("Public key size not found: " + getPublicKeySize(sodPublicKey))
 
             // Create the CircuitSignatureType
             val signatureType = CircuitSignatureType(
@@ -126,7 +126,6 @@ data class EDocument(
                     "Invalid document type"
                 )
 
-            // **Extract CMS Signed Data from SOD**
             //val cmsSignedData = extractCMSData(sodFile.encoded)
 
             // **Extract encapsulated content and signed attributes**
@@ -158,8 +157,8 @@ data class EDocument(
                 passportHashType = passportHashType,
                 documentType = documentType,
                 ecChunkNumber = ecChunkNumber,
-                ecDigestPosition = ecDigestPosition.toUInt() * 8u,
-                dg1DigestPositionShift = dg1DigestPositionShift.toUInt() * 8u,
+                ecDigestPosition = ecDigestPosition * 8u,
+                dg1DigestPositionShift = dg1DigestPositionShift * 8u,
                 aaType = null
             )
 
@@ -240,6 +239,7 @@ data class EDocument(
 
     private fun getPublicKeySupportedSize(size: Int): CircuitKeySizeType? {
         return when (size) {
+            3072 -> CircuitKeySizeType.B3072
             1024 -> CircuitKeySizeType.B1024
             2048 -> CircuitKeySizeType.B2048
             4096 -> CircuitKeySizeType.B4096
