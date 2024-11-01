@@ -5,7 +5,6 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
-
 }
 
 android {
@@ -32,12 +31,13 @@ android {
         minSdk = 27
         targetSdk = 34
 
-        versionCode = 38
-        versionName = "2.0.4"
+
+        versionCode = 43
+        versionName = "2.0.8"
 
         externalNativeBuild {
             cmake {
-                cppFlags += "-fexceptions -frtti -std=c++11"
+                cppFlags += ""
                 arguments += "-DANDROID_STL=c++_shared"
             }
 
@@ -79,8 +79,6 @@ android {
             initWith(getByName("debug"))
             buildConfigField("Boolean", "isTestnet", "false")
         }
-
-
         create("release_mainnet") {
             initWith(getByName("release"))
             isMinifyEnabled = false
@@ -136,7 +134,6 @@ android {
 
 dependencies {
     implementation("com.auth0.android:jwtdecode:2.0.2")
-
     implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
     implementation("com.squareup.moshi:moshi:1.15.1")
     implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
@@ -245,8 +242,6 @@ dependencies {
     implementation("androidx.hilt:hilt-work:1.0.0") // ?
     implementation("androidx.work:work-runtime-ktx:2.9.1")
     implementation("com.google.firebase:firebase-messaging:24.0.1")
-
-
 
     // AppsFlyer
     implementation("com.appsflyer:af-android-sdk:6.15.1")

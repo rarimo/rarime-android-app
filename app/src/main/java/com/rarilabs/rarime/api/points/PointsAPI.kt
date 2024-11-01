@@ -13,7 +13,6 @@ import com.rarilabs.rarime.api.points.models.PointsWithdrawalBody
 import com.rarilabs.rarime.api.points.models.VerifyPassportBody
 import com.rarilabs.rarime.api.points.models.VerifyPassportResponse
 import com.rarilabs.rarime.api.points.models.WithdrawBody
-import com.rarilabs.rarime.BaseConfig
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -59,11 +58,6 @@ interface PointsAPI {/* BALANCE */
     @GET("/integrations/rarime-points-svc/v1/public/point_price")
     suspend fun getPointPrice(): PointsPrice
 
-    // TODO: implement
-//    @GET("${BaseConfig.RELAYER_URL}/integrations/rarime-points-svc/v1/public/isWithdrawalAllowed")
-//    suspend fun isWithdrawalAllowed(): Boolean
-
-    /* EVENTS */
 
     @GET("/integrations/rarime-points-svc/v1/public/event_types")
     suspend fun getEventTypes(@QueryMap params: Map<String, String>): PointsEventsTypesBody

@@ -91,7 +91,10 @@ object SecurityUtil {
                 }
                 ecdsaAASignature.initVerify(ecdsaPublicKey)
                 if (response.size % 2 != 0) {
-                    ErrorHandler.logDebug(TAG, "Active Authentication response is not of even length")
+                    ErrorHandler.logDebug(
+                        TAG,
+                        "Active Authentication response is not of even length"
+                    )
                 }
                 val length = response.size / 2
                 val r = Util.os2i(response, 0, length)
@@ -104,7 +107,10 @@ object SecurityUtil {
                     val asn1Sequence = DERSequence(asn1Encodables)
                     result = ecdsaAASignature.verify(asn1Sequence.encoded)
                 } catch (exp: IOException) {
-                    ErrorHandler.logError(TAG, "Unexpected exception during AA signature verification with ECDSA")
+                    ErrorHandler.logError(
+                        TAG,
+                        "Unexpected exception during AA signature verification with ECDSA"
+                    )
                     exp.printStackTrace()
                 }
             } catch (e: Exception) {
@@ -141,6 +147,7 @@ object SecurityUtil {
         }
         return 0
     }
+
 
     fun convertToPEM(certificate: X509Certificate): String {
         val stringWriter = StringWriter()

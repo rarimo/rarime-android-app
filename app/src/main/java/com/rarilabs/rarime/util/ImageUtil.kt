@@ -18,8 +18,8 @@ package com.rarilabs.rarime.util
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
-import com.rarilabs.rarime.modules.passportScan.models.Image
 import com.gemalto.jp2.JP2Decoder
+import com.rarilabs.rarime.modules.passportScan.models.Image
 import org.jmrtd.lds.AbstractImageInfo
 import org.jnbis.WsqDecoder
 import java.io.ByteArrayInputStream
@@ -56,6 +56,10 @@ object ImageUtil {
             bitmapImage = Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, false)
         }
         return bitmapImage
+    }
+
+    fun getImageFromBase64(base64: String): Bitmap {
+        return decodeImage("image/jpeg", Base64.decode(base64, Base64.DEFAULT).inputStream())
     }
 
     @Throws(IOException::class)
