@@ -11,6 +11,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorkerFactory
+import com.google.android.gms.tasks.Task
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -137,8 +138,8 @@ class NotificationService :
 
     companion object {
 
-        fun getToken(): String? {
-            return FirebaseMessaging.getInstance().token.result
+        fun getToken(): Task<String>{
+            return FirebaseMessaging.getInstance().token
         }
 
         fun subscribeToRewardableTopic() {
@@ -146,14 +147,19 @@ class NotificationService :
         }
 
         private fun subscribeToTopic(topic: String) {
-            Log.d("Subscribed to topic", topic)
-            FirebaseMessaging.getInstance().subscribeToTopic(topic).addOnCompleteListener { task ->
-                var msg = "Subscribed to topic: $topic"
-                if (!task.isSuccessful) {
-                    msg = "Subscription to topic failed"
+
+            val task = getToken()
+            task.addOnSuccessListener {
+                Log.d("Subscribed to topic", topic)
+                FirebaseMessaging.getInstance().subscribeToTopic(topic).addOnCompleteListener { task ->
+                    var msg = "Subscribed to topic: $topic"
+                    if (!task.isSuccessful) {
+                        msg = "Subscription to topic failed"
+                    }
+                    Log.d("TAG", msg)
                 }
-                Log.d("TAG", msg)
             }
+
         }
     }
 }

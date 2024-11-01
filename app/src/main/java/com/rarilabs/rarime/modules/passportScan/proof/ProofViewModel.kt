@@ -2,8 +2,6 @@ package com.rarilabs.rarime.modules.passportScan.proof
 
 import RegisterIdentityCircuitType
 import android.app.Application
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
@@ -87,7 +85,7 @@ class ProofViewModel @Inject constructor(
         val sodFile = SODFileOwn(sodStream)
         val x509Util = X509Util()
 
-        val certificate = SecurityUtil.convertToPEM(sodFile.docSigningCertificate)
+        val slaveCertificate = SecurityUtil.convertToPEM(sodFile.docSigningCertificate)
 
         val certificatesSMTAddress = BaseConfig.CERTIFICATES_SMT_CONTRACT_ADDRESS
 
@@ -95,7 +93,7 @@ class ProofViewModel @Inject constructor(
 
         val icao = readICAO(context = application.applicationContext)
         val slaveCertificateIndex =
-            x509Util.getSlaveCertificateIndex(certificate.toByteArray(), icao)
+            x509Util.getSlaveCertificateIndex(slaveCertificate.toByteArray(), icao)
 
         val proof = withContext(Dispatchers.IO) {
             certificatesSMTContract.getProof(slaveCertificateIndex).send()
@@ -107,10 +105,8 @@ class ProofViewModel @Inject constructor(
         }
         val callDataBuilder = CallDataBuilder()
         val callData = callDataBuilder.buildRegisterCertificateCalldata(
-            BaseConfig.ICAO_COSMOS_RPC,
-            certificate.toByteArray(),
-            BaseConfig.MASTER_CERTIFICATES_BUCKETNAME,
-            BaseConfig.MASTER_CERTIFICATES_FILENAME
+            icao,
+            slaveCertificate.toByteArray()
         )
 
         val response = withContext(Dispatchers.IO) {
@@ -138,11 +134,6 @@ class ProofViewModel @Inject constructor(
 
         val inputs = buildRegistrationCircuits(eDocument, registerIdentityCircuitType)
 
-        val clipboard =
-            (application as Context).getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-
-        val clip = ClipData.newPlainText("arbitrary label", inputs.decodeToString())
-        clipboard.setPrimaryClip(clip)
 
 
         val assetContext: Context =

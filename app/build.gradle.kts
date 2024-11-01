@@ -32,8 +32,8 @@ android {
         targetSdk = 34
 
 
-        versionCode = 38
-        versionName = "2.0.4"
+        versionCode = 43
+        versionName = "2.0.8"
 
         externalNativeBuild {
             cmake {
@@ -79,8 +79,6 @@ android {
             initWith(getByName("debug"))
             buildConfigField("Boolean", "isTestnet", "false")
         }
-
-
         create("release_mainnet") {
             initWith(getByName("release"))
             isMinifyEnabled = false
@@ -244,8 +242,6 @@ dependencies {
     implementation("androidx.hilt:hilt-work:1.0.0") // ?
     implementation("androidx.work:work-runtime-ktx:2.9.1")
     implementation("com.google.firebase:firebase-messaging:24.0.1")
-
-
 
     // AppsFlyer
     implementation("com.appsflyer:af-android-sdk:6.15.1")

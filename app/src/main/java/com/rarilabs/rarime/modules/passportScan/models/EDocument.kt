@@ -26,12 +26,15 @@ import org.bouncycastle.asn1.ASN1Sequence
 import org.bouncycastle.asn1.ASN1Set
 import org.bouncycastle.asn1.ASN1TaggedObject
 import org.bouncycastle.asn1.DLApplicationSpecific
+import org.bouncycastle.jce.provider.BouncyCastleProvider
+import org.bouncycastle.math.ec.ECPoint
 import org.jmrtd.lds.icao.DG1File
 import org.web3j.utils.Numeric
 import java.io.ByteArrayInputStream
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.PublicKey
+import java.security.Security
 import java.security.interfaces.ECPublicKey
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.ECFieldF2m
@@ -419,21 +422,67 @@ object CryptoUtilsPassport {
         }
     }
 
-    fun getXYFromECDSAPublicKey(publicKey: ECPublicKey?): ByteArray? {
-        if (publicKey is org.bouncycastle.jce.interfaces.ECPublicKey) {
-            val q = publicKey.q.normalize()
-            val fieldSizeInBits = q.curve.fieldSize
-            val fieldSizeInBytes = (fieldSizeInBits + 7) / 8 // Convert bits to bytes
+    /**
+     * Extracts the X and Y coordinates from an ECDSA public key and concatenates them.
+     *
+     * @param publicKey The ECDSA public key.
+     * @return A ByteArray containing the concatenated X and Y coordinates, or null if extraction fails.
+     */
+    fun getXYFromECDSAPublicKey(publicKey: PublicKey?): ByteArray? {
+        // Ensure the public key is not null
+        if (publicKey == null) return null
 
-            val x = q.affineXCoord.toBigInteger().toByteArray()
-            val y = q.affineYCoord.toBigInteger().toByteArray()
+        try {
+            // Add BouncyCastle as a security provider if it's not already added
+            if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+                Security.addProvider(BouncyCastleProvider())
+            }
 
-            val xPadded = x.padLeft(fieldSizeInBytes)
-            val yPadded = y.padLeft(fieldSizeInBytes)
+            // Cast the PublicKey to BouncyCastle's ECPublicKey interface
+            val ecPublicKey = publicKey as? org.bouncycastle.jce.interfaces.ECPublicKey ?: return null
 
-            return xPadded + yPadded
+            // Get the EC point (Q) and normalize it
+            val q: ECPoint = ecPublicKey.q.normalize()
+
+            // Extract the affine X and Y coordinates as BigIntegers
+            val x = q.affineXCoord.toBigInteger()
+            val y = q.affineYCoord.toBigInteger()
+
+            // Determine the byte length based on the curve's field size
+            val curve = ecPublicKey.parameters.curve
+            val fieldSize = (curve.fieldSize + 7) / 8 // Corrected line
+
+            // Convert BigIntegers to byte arrays
+            var xBytes = x.toByteArray()
+            var yBytes = y.toByteArray()
+
+            // Ensure the byte arrays are exactly fieldSize bytes
+            xBytes = adjustToFixedLength(xBytes, fieldSize)
+            yBytes = adjustToFixedLength(yBytes, fieldSize)
+
+            // Concatenate X and Y bytes
+            return xBytes + yBytes
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
         }
-        return null
+    }
+
+    /**
+     * Adjusts a byte array to a fixed length by removing a leading zero byte if present
+     * or padding with leading zeros if necessary.
+     *
+     * @param bytes The original byte array.
+     * @param length The desired fixed length.
+     * @return A byte array of the specified fixed length.
+     */
+    private fun adjustToFixedLength(bytes: ByteArray, length: Int): ByteArray {
+        return when {
+            bytes.size == length -> bytes
+            bytes.size == length + 1 && bytes[0] == 0.toByte() -> bytes.copyOfRange(1, bytes.size)
+            bytes.size < length -> ByteArray(length - bytes.size) + bytes
+            else -> bytes.takeLast(length).toByteArray() // Truncate if longer
+        }
     }
 
     fun ByteArray.padLeft(targetSize: Int): ByteArray {
