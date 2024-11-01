@@ -14,9 +14,7 @@ import com.rarilabs.rarime.util.StringUtil
 import com.rarilabs.rarime.util.addCharAtIndex
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.publicKeyToPem
-import com.rarilabs.rarime.util.toBitArray
 import identity.Profile
-import identity.X509Util
 import net.sf.scuba.smartcards.CardFileInputStream
 import net.sf.scuba.smartcards.CardService
 import org.bouncycastle.asn1.cms.SignedData
@@ -44,10 +42,8 @@ class NfcUseCase(
     private var additionalPersonDetails: AdditionalPersonDetails = AdditionalPersonDetails()
 
     private fun cropByteArray(inputByteArray: ByteArray, endNumber: Int): ByteArray {
-        // Make sure endNumber is within bounds
         val endIndex = if (endNumber > inputByteArray.size) inputByteArray.size else endNumber
 
-        // Use copyOfRange to crop the ByteArray
         return inputByteArray.copyOfRange(0, endIndex)
     }
 
@@ -137,13 +133,12 @@ class NfcUseCase(
         val digestEncryptionAlgorithm = sodFile.digestEncryptionAlgorithm
 
         ErrorHandler.logDebug("Nfc scan", "Digest Encryption Algorithm: $digestEncryptionAlgorithm")
-        //publishProgress("Loading digest algorithm")
+
         val digest: MessageDigest = if (Security.getAlgorithms("MessageDigest").contains(digestAlgorithm)) {
             MessageDigest.getInstance(digestAlgorithm)
         } else {
             MessageDigest.getInstance(digestAlgorithm, BouncyCastleProvider())
         }
-        //publishProgress("Reading Personal Details")
 
         // -- Personal Details -- //
         val dg1In = service.getInputStream(PassportService.EF_DG1)
@@ -181,12 +176,11 @@ class NfcUseCase(
         } else {
             hashesMatched = false
         }
-        //publishProgress("Reading Face Image")
 
         // -- Face Image -- //
         val dg2In = service.getInputStream(PassportService.EF_DG2)
         val dg2File = DG2File(dg2In)
-        //publishProgress("Decoding Face Image")
+
         val dg2StoredHash = sodFile.dataGroupHashes[2]
         val dg2ComputedHash = digest.digest(dg2File.encoded)
         ErrorHandler.logDebug(
@@ -225,8 +219,9 @@ class NfcUseCase(
             null
         }
 
-        ErrorHandler.logDebug("PUB KEy", dg15?.publicKey?.encoded?.toHexString().toString())
+        eDocument.dg15 = dg15?.encoded?.toHexString()
 
+        ErrorHandler.logDebug("PUB KEy", dg15?.publicKey?.encoded?.toHexString().toString())
 
         ErrorHandler.logDebug("Digest Algorithm", sodFile.digestAlgorithm)
         ErrorHandler.logDebug("signerInfoDigestAlgorithm", sodFile.signerInfoDigestAlgorithm)
@@ -284,7 +279,6 @@ class NfcUseCase(
             )
             ErrorHandler.logError("pubKey", "pubKey: " + pubKey?.toHexString())
             ErrorHandler.logError("signature", "signature: " + signature.toHexString())
-
 
             ErrorHandler.logError("PUBLIC KEY", sodFile.docSigningCertificate.publicKey.toString())
         } catch (e: Exception) {
@@ -351,7 +345,6 @@ class NfcUseCase(
             )
 
             try {
-                ErrorHandler.logDebug("eDocument", Gson().toJson(eDocument))
                 ErrorHandler.logDebug("response", Gson().toJson(response))
             } catch (e: Exception) {
                 ErrorHandler.logError("cant read edocument or response for debug read", "", e)
@@ -374,7 +367,7 @@ class NfcUseCase(
 class SODFileOwn(inputStream: InputStream?) : SODFile(inputStream) {
     @OptIn(ExperimentalStdlibApi::class)
     fun readASN1Data(): String {
-        val a = SODFile::class.java.getDeclaredField("signedData");
+        val a = SODFile::class.java.getDeclaredField("signedData")
         a.isAccessible = true
 
         val v: SignedData = a.get(this) as SignedData

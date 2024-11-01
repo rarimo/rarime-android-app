@@ -1,10 +1,7 @@
 package com.rarilabs.rarime.modules.home
 
 import android.app.Application
-import android.content.Context
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.airdrop.AirDropManager
 import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.data.enums.PassportCardLook
@@ -16,16 +13,12 @@ import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.util.ErrorHandler
-import com.rarilabs.rarime.util.ZKPUseCase
-import com.rarilabs.rarime.util.ZkpUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -100,7 +93,6 @@ class HomeViewModel @Inject constructor(
         // Await for all the async operations to complete
         passportStatus.await()
         walletBalances.await()
-
     }
 
 //    suspend fun generateTestProof() {

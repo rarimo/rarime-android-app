@@ -2,6 +2,7 @@ package com.rarilabs.rarime.modules.profile
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
@@ -29,6 +30,12 @@ class ProfileViewModel @Inject constructor(
 
     val language = settingsManager.language
     val colorScheme = settingsManager.colorScheme
+
+    fun getImage(): Bitmap? {
+        val passport = passportManager.passport.value
+
+        return passport?.personDetails?.getPortraitImage()
+    }
 
     suspend fun clearAllData(context: Context) {
         dataStoreManager.clearAllData()

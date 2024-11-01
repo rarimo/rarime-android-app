@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -28,16 +29,16 @@ import com.rarilabs.rarime.ui.components.RewardChip
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
-import com.rarilabs.rarime.util.ImageUtil
 import java.time.LocalDate
 import java.time.Period
 
 @Composable
 fun PassportDataStep(onNext: () -> Unit, onClose: () -> Unit, eDocument: EDocument) {
-    val faceImageInfo = eDocument.personDetails!!.faceImageInfo
-    val image = faceImageInfo?.let { ImageUtil.getImage(it).bitmapImage }
+    val image = remember {
+        eDocument.personDetails?.getPortraitImage()
+    }
 
-    val isUnsupported = NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails!!.nationality)
+    val isUnsupported = NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)
 
     PassportDataStepContent(
         onNext = onNext,

@@ -2,11 +2,11 @@ package com.rarilabs.rarime.util
 
 import android.content.Context
 import android.content.res.AssetManager
+import com.google.gson.Gson
 import com.rarilabs.rarime.util.ZkpUtil.groth16InternalStorage
 import com.rarilabs.rarime.util.ZkpUtil.groth16ProverBig
 import com.rarilabs.rarime.util.data.Proof
 import com.rarilabs.rarime.util.data.ZkProof
-import com.google.gson.Gson
 import java.io.ByteArrayOutputStream
 
 object ZkpUtil {
@@ -61,7 +61,7 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
-    external fun registerIdentityUniversalRSA2048(
+    external fun registerIdentity125635576248NA(
         datFilePath: String,
         datFileLen: Long,
         jsonBuffer: ByteArray,
@@ -72,7 +72,7 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
-    external fun registerIdentityUniversalRSA4096(
+    external fun registerIdentity125636576248124325296(
         datFilePath: String,
         datFileLen: Long,
         jsonBuffer: ByteArray,
@@ -83,8 +83,109 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
+
+    external fun registerIdentity22563633626421244862008(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+
+    external fun registerIdentity212563733626421307262008(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+    external fun registerIdentity225636336248124323256(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+    external fun registerIdentity125636576264124483256(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+    external fun registerIdentity225636576248124323256(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+    external fun registerIdentity1125633576248111845264(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+    external fun registerIdentity1225633336232NA(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+    external fun registerIdentity125634336232114805296(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+    external fun registerIdentity125634600248114963256(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
 
     init {
+
         System.loadLibrary("rarime")
     }
 
@@ -142,7 +243,16 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         ErrorHandler.logDebug("proofDataLen", witnessLen[0].toInt().toString())
 
         val verification = groth16InternalStorage(
-            zkeyFilePath, zkeyFileLen,witnessData, witnessLen[0], proofData, proofLen, pubData, pubLen, msg, 256
+            zkeyFilePath,
+            zkeyFileLen,
+            witnessData,
+            witnessLen[0],
+            proofData,
+            proofLen,
+            pubData,
+            pubLen,
+            msg,
+            256
         )
 
         if (verification == -2) {
