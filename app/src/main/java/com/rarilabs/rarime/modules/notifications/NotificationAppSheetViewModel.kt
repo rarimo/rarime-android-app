@@ -24,12 +24,12 @@ class NotificationAppSheetViewModel @Inject constructor(private val pointsManage
         return false
     }
 
-    suspend fun claimRewardsEvent(eventName: String): PointsEventBody? {
+    suspend fun claimRewardsEvent(eventName: String): PointsEventBody {
         val events = pointsManager.getActiveEventsByName(eventName)
         val currentEvent = events.data.firstOrNull()
         if (currentEvent == null) {
             Log.i("claimRewardsEvent", "events.data is empty")
-            throw IllegalStateException()
+            throw IllegalStateException("Event is Null")
 //            return null
         }
 

@@ -1,11 +1,13 @@
 package com.rarilabs.rarime.modules.rewards.view_models
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.auth.AuthManager
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.points.models.BaseEvents
 import com.rarilabs.rarime.api.points.models.PointsEventAttributes
+import com.rarilabs.rarime.api.points.models.PointsEventBody
 import com.rarilabs.rarime.api.points.models.PointsEventData
 import com.rarilabs.rarime.api.points.models.PointsEventMeta
 import com.rarilabs.rarime.api.points.models.PointsEventMetaDynamic
@@ -480,6 +482,23 @@ class RewardsViewModel @Inject constructor(
 
     fun getNationality(): String? {
         return passportManager.getIsoCode()
+    }
+
+
+    suspend fun claimRewardsEvent(eventName: String): PointsEventBody {
+        val events = pointsManager.getActiveEventsByName(eventName)
+        val currentEvent = events.data.firstOrNull()
+        if (currentEvent == null) {
+            Log.i("claimRewardsEvent", "events.data is empty")
+            throw IllegalStateException("Event is Null")
+        }
+
+        return pointsManager.claimPointsByEventId(currentEvent.id, "claim_event")
+    }
+
+    suspend fun refreshEvents() = coroutineScope {
+        val activeTasksEventsDeferred = async { pointsManager.getActiveEvents().data }
+        _activeTasksEvents.value = activeTasksEventsDeferred.await()
     }
 
     suspend fun init() = coroutineScope {
