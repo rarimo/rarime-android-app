@@ -9,6 +9,7 @@ enum class BaseEvents(val value: String) {
     REFERRAL_SPECIFIC("referral_specific"),
     BE_REFERRED("be_referred"),
     FREE_WEEKLY("free_weekly"),
+    EARLY_TEST("early_test"),
 }
 
 enum class PointsEventStatuses(val value: String) {

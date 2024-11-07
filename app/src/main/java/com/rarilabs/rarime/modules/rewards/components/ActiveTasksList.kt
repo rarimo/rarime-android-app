@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.api.points.models.PointsEventData
+import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.modules.rewards.view_models.CONST_MOCKED_EVENTS_LIST
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -18,13 +19,23 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 fun ActiveTasksList(
     modifier: Modifier = Modifier,
     navigate: (String) -> Unit,
-    pointsEventData: List<PointsEventData>
+    pointsEventData: List<PointsEventData>,
+    passportStatus: PassportStatus,
+    claimEvent: suspend (String) -> Unit,
+    refreshEvents: suspend () -> Unit
+
 ) {
-    Column (
+    Column(
         modifier = modifier
     ) {
         pointsEventData.forEachIndexed { idx, item ->
-            ActiveTaskItem(navigate = navigate, pointEvent = item)
+            ActiveTaskItem(
+                navigate = navigate,
+                pointEvent = item,
+                passportStatus = passportStatus,
+                claimEvent = claimEvent,
+                refreshEvents = refreshEvents
+            )
 
             if (idx != pointsEventData.size - 1) {
                 HorizontalDivider(
@@ -46,8 +57,8 @@ fun ActiveTasksListSkeleton() {
 
 @Preview
 @Composable
-private fun TimeEventsListPreview () {
-    Column (
+private fun TimeEventsListPreview() {
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(RarimeTheme.colors.backgroundPrimary)
@@ -56,8 +67,10 @@ private fun TimeEventsListPreview () {
     ) {
         ActiveTasksList(
             navigate = {},
-            pointsEventData = CONST_MOCKED_EVENTS_LIST
-        )
+            pointsEventData = CONST_MOCKED_EVENTS_LIST,
+            passportStatus = PassportStatus.ALLOWED,
+            claimEvent = {}
+        ) {}
 
         ActiveTasksListSkeleton()
     }
