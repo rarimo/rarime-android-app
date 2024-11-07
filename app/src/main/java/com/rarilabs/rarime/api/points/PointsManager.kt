@@ -323,6 +323,7 @@ class PointsManager @Inject constructor(
         val names = listOf(
             BaseEvents.REFERRAL_COMMON.value,
             BaseEvents.PASSPORT_SCAN.value,
+            BaseEvents.EARLY_TEST.value
         )
 
         val statuses = listOf(

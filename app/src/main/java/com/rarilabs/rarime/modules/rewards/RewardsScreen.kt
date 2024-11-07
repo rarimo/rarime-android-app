@@ -109,8 +109,7 @@ fun RewardsScreen(
                     nationality = it
                 )
             }
-        }
-        else if (isError) {
+        } else if (isError) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
@@ -118,7 +117,7 @@ fun RewardsScreen(
             ) {
                 ErrorView()
             }
-        }else if (isLoading) {
+        } else if (isLoading) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
@@ -129,33 +128,6 @@ fun RewardsScreen(
         } else if (isAuthorized) {
             RewardsScreenContent(navigate)
         }
-    }
-}
-
-@Composable
-fun RewardsUnauthorized() {
-    val rewardsViewModel = localRewardsScreenViewModel.current
-
-    val coroutineScope = rememberCoroutineScope()
-
-    suspend fun login() {
-        try {
-            rewardsViewModel.login()
-        } catch (e: Exception) {
-            ErrorHandler.logError("HomeViewModel", "login: ${e.message}", e)
-        }
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
-            .padding(12.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // TODO: implement properly
-        PrimaryButton(text = "Login", onClick = { coroutineScope.launch { login() } })
     }
 }
 
@@ -231,7 +203,15 @@ fun RewardsScreenContent(
 
                 CardContainer {
                     ActiveTasksList(
-                        navigate = navigate, activeTasksEvents = activeTasksEvents
+                        navigate = navigate,
+                        activeTasksEvents = activeTasksEvents,
+                        passportStatus = passportStatus,
+                        refreshEvents = {
+                            rewardsViewModel.refreshEvents()
+                        },
+                        claimEvent = { it ->
+                            rewardsViewModel.claimRewardsEvent(it)
+                        }
                     )
                 }
 
@@ -416,7 +396,11 @@ fun LimitedEventsList(
 
 @Composable
 fun ActiveTasksList(
-    navigate: (String) -> Unit, activeTasksEvents: List<PointsEventData>?
+    navigate: (String) -> Unit,
+    activeTasksEvents: List<PointsEventData>?,
+    passportStatus: PassportStatus,
+    refreshEvents: suspend () -> Unit,
+    claimEvent: suspend (String) -> Unit
 ) {
     Column {
         Row(
@@ -441,7 +425,11 @@ fun ActiveTasksList(
                 )
             } else {
                 ActiveTasksList(
-                    navigate = navigate, pointsEventData = it
+                    navigate = navigate,
+                    pointsEventData = it,
+                    passportStatus = passportStatus,
+                    refreshEvents = refreshEvents,
+                    claimEvent = claimEvent
                 )
             }
         } ?: ActiveTasksListSkeleton()
@@ -450,7 +438,9 @@ fun ActiveTasksList(
 
 @Composable
 fun RewardsRatingBadge(
-    leaderBoardList: List<LeaderBoardItem>, walletAsset: WalletAsset, userLeaderBoardItem: LeaderBoardItem
+    leaderBoardList: List<LeaderBoardItem>,
+    walletAsset: WalletAsset,
+    userLeaderBoardItem: LeaderBoardItem
 ) {
     val leaderboardSheetState = rememberAppSheetState()
 
@@ -517,7 +507,9 @@ fun RewardsRatingBadgeSkeleton() {
 @Composable
 fun RewardsRatingBadgePreview() {
     RewardsRatingBadge(
-        leaderBoardList = listOf(), walletAsset = WalletAsset("", PreviewerToken("")), MOCKED_LEADER_BOARD_LIST[0]
+        leaderBoardList = listOf(),
+        walletAsset = WalletAsset("", PreviewerToken("")),
+        MOCKED_LEADER_BOARD_LIST[0]
     )
 }
 
@@ -596,13 +588,25 @@ private fun RewardsEventsListsPreview() {
             modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             ActiveTasksList(
-                navigate = {}, activeTasksEvents = CONST_MOCKED_EVENTS_LIST.subList(0, 2)
+                navigate = {},
+                pointsEventData = CONST_MOCKED_EVENTS_LIST.subList(0, 2),
+                passportStatus = PassportStatus.ALLOWED,
+                claimEvent = {},
+                refreshEvents = {}
             )
             ActiveTasksList(
-                navigate = {}, activeTasksEvents = listOf()
+                navigate = {},
+                pointsEventData = listOf(),
+                passportStatus = PassportStatus.ALLOWED,
+                claimEvent = {},
+                refreshEvents = {}
             )
             ActiveTasksList(
-                navigate = {}, activeTasksEvents = null
+                navigate = {},
+                pointsEventData = listOf(),
+                passportStatus = PassportStatus.ALLOWED,
+                claimEvent = {},
+                refreshEvents = {}
             )
         }
     }
