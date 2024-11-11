@@ -317,7 +317,7 @@ class ProofViewModel @Inject constructor(
         val eDocument = eDoc.value!!
 
         try {
-            registerCertificate(eDocument)
+            //registerCertificate(eDocument)
         } catch (e: Exception) {
             ErrorHandler.logError(TAG, "Error: $e", e)
         }

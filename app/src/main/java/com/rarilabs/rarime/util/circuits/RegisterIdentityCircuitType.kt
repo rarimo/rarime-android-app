@@ -124,7 +124,7 @@ enum class CircuitAlgorithmType {
 }
 
 enum class CircuitKeySizeType {
-    B1024, B2048, B4096, B256, B320, B192, B384, B3072
+    B1024, B2048, B4096, B256, B320, B192, B384, B3072, B224
 }
 
 enum class CircuitExponentType {
@@ -136,11 +136,11 @@ enum class CircuitSaltType {
 }
 
 enum class CircuitCurveType {
-    SECP256R1, BRAINPOOLP256, BRAINPOOL320R1, SECP192R1, BRAINPOOLP384R1
+    SECP256R1, BRAINPOOLP256, BRAINPOOL320R1, SECP192R1, BRAINPOOLP384R1, SECP224R1
 }
 
 enum class CircuitHashAlgorithmType {
-    HA256, HA384, HA160
+    HA256, HA384, HA160, HA224
 }
 fun ByteArray.findSubarrayIndex(subarray: ByteArray): UInt? {
     for (i in indices) {
