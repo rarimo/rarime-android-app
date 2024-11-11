@@ -13,12 +13,9 @@ import java.security.Provider
 import java.security.PublicKey
 import java.security.Security
 import java.security.Signature
-import java.security.cert.Certificate
 import java.security.cert.X509Certificate
 import java.security.interfaces.ECPublicKey
 import java.security.interfaces.RSAPublicKey
-import java.security.spec.MGF1ParameterSpec
-import java.security.spec.PSSParameterSpec
 import javax.crypto.Cipher
 
 
@@ -118,34 +115,6 @@ object SecurityUtil {
             }
         }
         return result
-    }
-
-    fun findSaltRSA_PSS(
-        digestEncryptionAlgorithm: String,
-        docSigningCert: Certificate?,
-        eContent: ByteArray?,
-        signature: ByteArray?
-    ): Int {
-        for (i in 0..512) {
-            try {
-                val sig = Signature.getInstance(digestEncryptionAlgorithm, BC_PROVIDER)
-                if (digestEncryptionAlgorithm.endsWith("withRSA/PSS")) {
-                    val mgf1ParameterSpec = MGF1ParameterSpec("SHA-256")
-                    val pssParameterSpec =
-                        PSSParameterSpec("SHA-256", "MGF1", mgf1ParameterSpec, i, 1)
-                    sig.setParameter(pssParameterSpec)
-                }
-                sig.initVerify(docSigningCert)
-                sig.update(eContent)
-                val verify = sig.verify(signature)
-                if (verify) {
-                    return i
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-        return 0
     }
 
 

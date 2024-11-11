@@ -26,7 +26,6 @@ import org.bouncycastle.asn1.ASN1Sequence
 import org.bouncycastle.asn1.ASN1Set
 import org.bouncycastle.asn1.ASN1TaggedObject
 import org.bouncycastle.asn1.DLApplicationSpecific
-import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.bouncycastle.math.ec.ECPoint
 import org.jmrtd.lds.icao.DG1File
 import org.web3j.utils.Numeric
@@ -34,7 +33,6 @@ import java.io.ByteArrayInputStream
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.PublicKey
-import java.security.Security
 import java.security.interfaces.ECPublicKey
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.ECFieldF2m
@@ -139,7 +137,6 @@ data class EDocument(
 
             // Calculate chunk numbers
             val ecChunkNumber = getChunkNumber(encapsulatedContent, passportHashType.getChunkSize())
-
 
             // Find digest positions
             val ecDigestPosition = signedAttributes.findSubarrayIndex(ecHash)
@@ -429,14 +426,10 @@ object CryptoUtilsPassport {
      * @return A ByteArray containing the concatenated X and Y coordinates, or null if extraction fails.
      */
     fun getXYFromECDSAPublicKey(publicKey: PublicKey?): ByteArray? {
-        // Ensure the public key is not null
+
         if (publicKey == null) return null
 
         try {
-            // Add BouncyCastle as a security provider if it's not already added
-            if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-                Security.addProvider(BouncyCastleProvider())
-            }
 
             // Cast the PublicKey to BouncyCastle's ECPublicKey interface
             val ecPublicKey = publicKey as? org.bouncycastle.jce.interfaces.ECPublicKey ?: return null

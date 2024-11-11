@@ -1,6 +1,9 @@
 package com.rarilabs.rarime.util.circuits
 
 import com.rarilabs.rarime.util.toBits
+import org.bouncycastle.asn1.ASN1InputStream
+import org.bouncycastle.asn1.ASN1Integer
+import org.bouncycastle.asn1.ASN1Sequence
 import java.math.BigInteger
 import java.nio.ByteBuffer
 
@@ -55,6 +58,22 @@ object CircuitUtil {
 
     fun calculateSmartChunkingNumber(bytesNumber: Int): Int {
         return if (bytesNumber == 2048) 32 else 64
+    }
+
+    fun parseECDSASignature(signatureEcdsa: ByteArray): ByteArray? {
+        try {
+            val asn1InputStream = ASN1InputStream(signatureEcdsa)
+
+            val asn1Sequence = asn1InputStream.readObject() as ASN1Sequence
+
+            val r = (asn1Sequence.getObjectAt(0) as ASN1Integer).positiveValue
+            val s = (asn1Sequence.getObjectAt(1) as ASN1Integer).positiveValue
+
+            return r.toByteArray() + s.toByteArray()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
+        }
     }
 
 }
