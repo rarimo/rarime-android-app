@@ -1,19 +1,20 @@
 package com.rarilabs.rarime.manager
 
-import com.rarilabs.rarime.store.SecureSharedPrefsManager
+import com.rarilabs.rarime.store.room.notifications.NotificationsRepository
+import com.rarilabs.rarime.store.room.notifications.models.NotificationEntityData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.runBlocking
-import com.rarilabs.rarime.store.room.notifications.NotificationsRepository
-import com.rarilabs.rarime.store.room.notifications.models.NotificationEntityData
 import javax.inject.Inject
 
 
 class NotificationManager @Inject constructor(
     private val notificationsRepository: NotificationsRepository,
+    private val passportManager: PassportManager
 ) {
     private val _notificationsList = MutableStateFlow<List<NotificationEntityData>>(emptyList())
+
 
     val notificationList: StateFlow<List<NotificationEntityData>>
         get() = _notificationsList.asStateFlow()
@@ -40,8 +41,13 @@ class NotificationManager @Inject constructor(
         _notificationsList.value = notificationsRepository.getAllNotifications()
     }
 
+    fun getNationality(): String? =
+        passportManager.passport.value?.personDetails?.nationality
 
+    fun resolvePassportCircuitName(): String? =
+        passportManager.passport.value?.getRegisterIdentityCircuitType()?.buildName()
 
+    fun getPassportStatus() = passportManager.passportStatus.value
 
     //BLocking
     fun readNotificationsSync(notificationEntityData: NotificationEntityData) {
@@ -52,7 +58,6 @@ class NotificationManager @Inject constructor(
                 _notificationsList.value = notificationsRepository.getAllNotifications()
             }
         }
-
     }
 
     fun deleteNotificationsSync(notificationEntityData: NotificationEntityData) {

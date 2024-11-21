@@ -148,7 +148,7 @@ class ProofViewModel @Inject constructor(
 
 
         val customDispatcher = Executors.newFixedThreadPool(1) { runnable ->
-            Thread(null, runnable, "LargeStackThread", 100 * 1024 * 1024) // 2 MB stack size
+            Thread(null, runnable, "LargeStackThread", 100 * 1024 * 1024) // 100 MB stack size
         }.asCoroutineDispatcher()
 
 
@@ -317,7 +317,7 @@ class ProofViewModel @Inject constructor(
         val eDocument = eDoc.value!!
 
         try {
-            //registerCertificate(eDocument)
+            registerCertificate(eDocument)
         } catch (e: Exception) {
             ErrorHandler.logError(TAG, "Error: $e", e)
         }
