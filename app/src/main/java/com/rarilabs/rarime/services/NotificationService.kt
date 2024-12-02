@@ -15,9 +15,14 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.MainActivity
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.data.enums.PassportStatus
+import com.rarilabs.rarime.modules.notifications.models.NotificationType
+import com.rarilabs.rarime.services.models.UniversalNotificationContent
+import com.rarilabs.rarime.services.models.UserStatus
 import com.rarilabs.rarime.store.room.notifications.models.NotificationEntityData
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.IOException
@@ -48,6 +53,7 @@ class NotificationService :
             val messageType = data["type"]
             val messageData = data["content"]
 
+
             val notificationEntityData = NotificationEntityData(
                 notificationId = Random.nextLong(),
                 header = title,
@@ -57,6 +63,16 @@ class NotificationService :
                 type = messageType,
                 data = messageData
             )
+
+            val type = resolveType(messageType)
+
+            if (type == NotificationType.UNIVERSAL) {
+                val isAllowedToReceive = resolveUniversalNotification(notificationEntityData)
+                if (!isAllowedToReceive) {
+                    return
+                }
+            }
+
             notificationManager.addNotificationSync(notificationEntityData)
 
             sendNotification(
@@ -82,6 +98,65 @@ class NotificationService :
                 message.notification?.title,
                 message.notification?.imageUrl
             )
+        }
+    }
+
+    private fun resolveUniversalNotification(notificationData: NotificationEntityData): Boolean {
+        val data = notificationData.data
+        val universalContent = Gson().fromJson(data, UniversalNotificationContent::class.java)
+
+        val nationality = universalContent.nationality
+
+        val circuitName = universalContent.new_supported_circuit
+
+        val eventType = universalContent.event_type
+
+        val userStatus = universalContent.user_statuses
+
+        if (nationality != null) {
+            val userNationality = notificationManager.getNationality() ?: return false
+
+            if (nationality != userNationality) {
+                return false
+            }
+        }
+
+        if (circuitName != null) {
+            val userPassportCircuit =
+                notificationManager.resolvePassportCircuitName() ?: return false
+
+            if (circuitName.lowercase() != userPassportCircuit.lowercase()) {
+                return false
+            }
+        }
+
+        if (userStatus != null) {
+            val currentUserStatus = notificationManager.getPassportStatus()
+
+            val currentUserStatusString = when (currentUserStatus) {
+                PassportStatus.UNSCANNED -> UserStatus.UNSCANNED
+                PassportStatus.ALLOWED -> UserStatus.VERIFIED
+                PassportStatus.WAITLIST -> UserStatus.WAITLIST
+                PassportStatus.NOT_ALLOWED -> UserStatus.VERIFIED
+                PassportStatus.WAITLIST_NOT_ALLOWED -> UserStatus.WAITLIST
+            }
+
+            if (!userStatus.contains(currentUserStatusString)) {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    private fun resolveType(type: String?): NotificationType {
+        if (type == null) {
+            return NotificationType.INFO
+        }
+        return try {
+            NotificationType.valueOf(type)
+        } catch (e: Exception) {
+            NotificationType.INFO
         }
     }
 
@@ -138,7 +213,7 @@ class NotificationService :
 
     companion object {
 
-        fun getToken(): Task<String>{
+        fun getToken(): Task<String> {
             return FirebaseMessaging.getInstance().token
         }
 
@@ -151,13 +226,14 @@ class NotificationService :
             val task = getToken()
             task.addOnSuccessListener {
                 Log.d("Subscribed to topic", topic)
-                FirebaseMessaging.getInstance().subscribeToTopic(topic).addOnCompleteListener { task ->
-                    var msg = "Subscribed to topic: $topic"
-                    if (!task.isSuccessful) {
-                        msg = "Subscription to topic failed"
+                FirebaseMessaging.getInstance().subscribeToTopic(topic)
+                    .addOnCompleteListener { task ->
+                        var msg = "Subscribed to topic: $topic"
+                        if (!task.isSuccessful) {
+                            msg = "Subscription to topic failed"
+                        }
+                        Log.d("TAG", msg)
                     }
-                    Log.d("TAG", msg)
-                }
             }
 
         }

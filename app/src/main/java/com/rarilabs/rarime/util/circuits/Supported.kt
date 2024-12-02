@@ -81,6 +81,16 @@ object SupportRegisterIdentityCircuitSignatureType {
         ),
 
         CircuitSignatureType(
+            staticId = 24u,
+            algorithm = CircuitAlgorithmType.ECDSA,
+            keySize = CircuitKeySizeType.B224,
+            exponent = null,
+            salt = null,
+            curve = CircuitCurveType.SECP224R1,
+            hashAlgorithm = CircuitHashAlgorithmType.HA224
+        ),
+
+        CircuitSignatureType(
             staticId = 21u,
             algorithm = CircuitAlgorithmType.ECDSA,
             keySize = CircuitKeySizeType.B256,
@@ -106,6 +116,15 @@ object SupportRegisterIdentityCircuitSignatureType {
             salt = null,
             curve = CircuitCurveType.SECP192R1,
             hashAlgorithm = CircuitHashAlgorithmType.HA160
+        ),
+        CircuitSignatureType(
+            staticId = 20u,
+            algorithm = CircuitAlgorithmType.ECDSA,
+            keySize = CircuitKeySizeType.B256,
+            exponent = null,
+            salt = null,
+            curve = CircuitCurveType.PRIME256V1,
+            hashAlgorithm = CircuitHashAlgorithmType.HA256
         )
     )
 

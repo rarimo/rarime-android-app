@@ -99,13 +99,17 @@ class HomeViewModel @Inject constructor(
 //        val assetContext: Context = (app as Context).createPackageContext("com.rarilabs.rarime", 0)
 //        val assetManager = assetContext.assets
 //
+//        val inputs = """
+//
+//        """.trimIndent()
+//
 //        val zkp = ZKPUseCase(app as Context, assetManager)
 //        val res= withContext(Dispatchers.Default) {
 //            zkp.generateZKP(
 //                "circuit_register_test.zkey",
-//                R.raw.register_identity_2_256_3_6_336_264_21_2448_6_2008,
+//                R.raw.registeridentity_2_256_3_6_336_264_21_2448_6_2008,
 //                inputs.toByteArray(),
-//                ZkpUtil::registerIdentityTest
+//                ZkpUtil::test
 //            )
 //        }
 //        Log.e("Res", res.toString())

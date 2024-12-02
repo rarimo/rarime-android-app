@@ -260,6 +260,8 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
             )
         }
 
+
+
         extIntegratorApiManager.queryProofCallback(
             queryProofParametersRequest.value!!.data.attributes.callback_url,
             queryProof,

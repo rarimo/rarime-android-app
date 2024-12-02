@@ -384,7 +384,7 @@ class APIModule {
 
     @Provides
     @Singleton
-    fun provideNotificationManager(notificationsRepository: NotificationsRepository): NotificationManager {
-        return NotificationManager(notificationsRepository)
+    fun provideNotificationManager(notificationsRepository: NotificationsRepository, passportManager: PassportManager): NotificationManager {
+        return NotificationManager(notificationsRepository, passportManager)
     }
 }

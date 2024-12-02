@@ -1,5 +1,7 @@
 package com.rarilabs.rarime.api.ext_integrator
 
+import android.util.Log
+import com.google.gson.Gson
 import com.rarilabs.rarime.api.ext_integrator.models.LightSignatureCallbackRequest
 import com.rarilabs.rarime.api.ext_integrator.models.LightSignatureCallbackRequestAttributes
 import com.rarilabs.rarime.api.ext_integrator.models.LightSignatureCallbackRequestData
@@ -17,24 +19,33 @@ class ExtIntegratorApiManager @Inject constructor(
 ) {
     suspend fun queryProofCallback(url: String, proof: ZkProof, userIdHash: String) {
         return withContext(Dispatchers.IO) {
+            val payload = QueryProofGenCallbackRequest(
+                data = QueryProofGenCallbackRequestData(
+                    id = userIdHash,
+                    attributes = QueryProofGenCallbackRequestAttributes(
+                        proof = proof
+                    )
+                )
+            )
+            val str = Gson().toJson(payload)
+            Log.i("payload", str)
             try {
                 extIntegratorAPI.queryProofCallback(
                     url,
-                    QueryProofGenCallbackRequest(
-                        data = QueryProofGenCallbackRequestData(
-                            id = userIdHash,
-                            attributes = QueryProofGenCallbackRequestAttributes(
-                                proof = proof
-                            )
-                        )
-                    )
+                    payload
                 )
             } catch (e: Exception) {
                 throw Exception(e.toString())
             }
         }
     }
-    suspend fun lightSignatureCallback(url: String, pubSignals: List<String>, signature: String, userIdHash: String) {
+
+    suspend fun lightSignatureCallback(
+        url: String,
+        pubSignals: List<String>,
+        signature: String,
+        userIdHash: String
+    ) {
         return withContext(Dispatchers.IO) {
             try {
                 extIntegratorAPI.lightSignatureCallback(

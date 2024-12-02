@@ -1,6 +1,9 @@
 package com.rarilabs.rarime.util.circuits
 
 import com.rarilabs.rarime.util.toBits
+import org.bouncycastle.asn1.ASN1InputStream
+import org.bouncycastle.asn1.ASN1Integer
+import org.bouncycastle.asn1.ASN1Sequence
 import java.math.BigInteger
 import java.nio.ByteBuffer
 
@@ -55,6 +58,34 @@ object CircuitUtil {
 
     fun calculateSmartChunkingNumber(bytesNumber: Int): Int {
         return if (bytesNumber == 2048) 32 else 64
+    }
+
+    fun parseECDSASignature(signatureEcdsa: ByteArray): ByteArray? {
+        try {
+            val asn1InputStream = ASN1InputStream(signatureEcdsa)
+            val asn1Sequence = asn1InputStream.readObject() as ASN1Sequence
+
+            val r = (asn1Sequence.getObjectAt(0) as ASN1Integer).positiveValue.toByteArray()
+            val s = (asn1Sequence.getObjectAt(1) as ASN1Integer).positiveValue.toByteArray()
+
+            // Normalize r and s to 32 bytes
+            val normalizedR = normalizeTo32Bytes(r)
+            val normalizedS = normalizeTo32Bytes(s)
+
+            return normalizedR + normalizedS
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
+        }
+    }
+
+    // Helper function to normalize a byte array to exactly 32 bytes
+    private fun normalizeTo32Bytes(input: ByteArray): ByteArray {
+        return when {
+            input.size > 32 -> input.copyOfRange(input.size - 32, input.size) // Truncate leading bytes
+            input.size < 32 -> ByteArray(32 - input.size) + input // Pad with leading zeros
+            else -> input // Already 32 bytes
+        }
     }
 
 }

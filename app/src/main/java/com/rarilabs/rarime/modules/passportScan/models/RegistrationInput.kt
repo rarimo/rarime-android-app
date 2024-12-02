@@ -1,12 +1,10 @@
 package com.rarilabs.rarime.modules.passportScan.models
 
-import java.math.BigInteger
-
 data class RegisterIdentityInputs(
-    val signature: List<String>,
+    val signature: List<Long>,
     val signedAttributes: List<Long>,
     val dg1: List<Long>,
-    val pubkey: List<String>,
+    val pubkey: List<Long>,
     val slaveMerkleRoot: String,
     val skIdentity: String,
     val dg15: List<Long>,

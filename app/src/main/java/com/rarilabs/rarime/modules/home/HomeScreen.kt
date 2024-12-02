@@ -14,7 +14,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.firebase.messaging.FirebaseMessaging
 import com.rarilabs.rarime.modules.home.components.no_passport.HomeScreenNoPassportMain
 import com.rarilabs.rarime.modules.home.components.passport.HomeScreenPassportMain
 
@@ -46,11 +45,11 @@ fun HomeScreen(
                 Log.e(e.toString(), e.stackTraceToString(), e)
             }
 
-            try {
-                //homeViewModel.generateTestProof()
-            }catch (e: Exception) {
-                Log.e("Exep", "xd", e)
-            }
+//            try {
+//                homeViewModel.generateTestProof()
+//            }catch (e: Exception) {
+//                Log.e("Exep", "xd", e)
+//            }
         }
     }
 
