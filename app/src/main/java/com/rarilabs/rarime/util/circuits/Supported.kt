@@ -116,6 +116,15 @@ object SupportRegisterIdentityCircuitSignatureType {
             salt = null,
             curve = CircuitCurveType.SECP192R1,
             hashAlgorithm = CircuitHashAlgorithmType.HA160
+        ),
+        CircuitSignatureType(
+            staticId = 20u,
+            algorithm = CircuitAlgorithmType.ECDSA,
+            keySize = CircuitKeySizeType.B256,
+            exponent = null,
+            salt = null,
+            curve = CircuitCurveType.PRIME256V1,
+            hashAlgorithm = CircuitHashAlgorithmType.HA256
         )
     )
 

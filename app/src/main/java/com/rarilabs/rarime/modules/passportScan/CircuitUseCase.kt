@@ -36,6 +36,7 @@ class CircuitUseCase(val context: Context) {
             RegisteredCircuitData.REGISTER_IDENTITY_1_160_3_4_576_200_NA -> BaseConfig.registerIdentity_1_160_3_4_576_200_NA
             RegisteredCircuitData.REGISTER_IDENTITY_21_256_3_3_336_232_NA -> BaseConfig.registerIdentity_21_256_3_3_336_232_NA
             RegisteredCircuitData.REGISTER_IDENTITY_24_256_3_4_336_232_NA -> BaseConfig.registerIdentity_24_256_3_4_336_232_NA
+            RegisteredCircuitData.REGISTER_IDENTITY_20_256_3_3_336_224_NA -> BaseConfig.registerIdentity_20_256_3_3_336_224_NA
         }
 
         continuation.invokeOnCancellation {

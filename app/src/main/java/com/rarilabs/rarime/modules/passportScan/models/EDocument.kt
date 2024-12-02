@@ -127,15 +127,12 @@ data class EDocument(
                     "Invalid document type"
                 )
 
-            //val cmsSignedData = extractCMSData(sodFile.encoded)
 
-            // **Extract encapsulated content and signed attributes**
             val signedAttributes = sodFile.eContent
             val encapsulatedContent = Numeric.hexStringToByteArray(sodFile.readASN1Data())
 
             val ecHash = MessageDigest.getInstance(digestEncryptionAlgorithm, "BC").digest(encapsulatedContent)
 
-            // Calculate chunk numbers
             val ecChunkNumber = getChunkNumber(encapsulatedContent, passportHashType.getChunkSize())
 
             // Find digest positions
@@ -354,6 +351,8 @@ data class EDocument(
             "secp192r1" -> CircuitCurveType.SECP192R1       // secp192r1
             "brainpoolp384r1" -> CircuitCurveType.BRAINPOOLP384R1
             "secp224r1" -> CircuitCurveType.SECP224R1 // secp224r
+            "prime256v1" -> CircuitCurveType.PRIME256V1
+            "prime256v2" -> CircuitCurveType.PRIME256V2
             else -> throw IllegalArgumentException("Unsupported curve: " + curve.lowercase())
         }
 

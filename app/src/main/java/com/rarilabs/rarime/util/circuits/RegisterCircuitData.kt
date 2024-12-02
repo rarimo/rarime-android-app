@@ -15,7 +15,9 @@ enum class RegisteredCircuitData(val value: String) {
 
     REGISTER_IDENTITY_1_160_3_4_576_200_NA("registerIdentity_1_160_3_4_576_200_NA"),
     REGISTER_IDENTITY_21_256_3_3_336_232_NA("registerIdentity_21_256_3_3_336_232_NA"),
-    REGISTER_IDENTITY_24_256_3_4_336_232_NA("registerIdentity_24_256_3_4_336_232_NA");
+    REGISTER_IDENTITY_24_256_3_4_336_232_NA("registerIdentity_24_256_3_4_336_232_NA"),
+
+    REGISTER_IDENTITY_20_256_3_3_336_224_NA("registerIdentity_20_256_3_3_336_224_NA");
 
 
     companion object {

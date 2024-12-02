@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -137,7 +138,8 @@ class ProofViewModel @Inject constructor(
     ): ZkProof {
         ErrorHandler.logDebug("ProofViewModel", "Generating proof")
 
-        val inputs = buildRegistrationCircuits(eDocument, registerIdentityCircuitType)
+        val inputs =
+            buildRegistrationCircuits(eDocument, registerIdentityCircuitType)
 
 
         val assetContext: Context =
@@ -307,6 +309,16 @@ class ProofViewModel @Inject constructor(
                         ZkpUtil::registerIdentity2425634336232NA
                     )
                 }
+                RegisteredCircuitData.REGISTER_IDENTITY_20_256_3_3_336_224_NA -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity2025633336224NA
+                    )
+                }
             }
         }
 
@@ -444,10 +456,10 @@ class ProofViewModel @Inject constructor(
 
             val slaveCertificateIndex =
                 x509Utils.getSlaveCertificateIndex(certPem.toByteArray(), icao)
-            val indexHex = slaveCertificateIndex.toHexString()
+            val indexHex = Numeric.toHexStringNoPrefix(slaveCertificateIndex)
             val contract = rarimoContractManager.getPoseidonSMT(certificatesSMTAddress)
 
-            contract.getProof(indexHex.decodeHexString()).send()
+            contract.getProof(Numeric.hexStringToByteArray(indexHex)).send()
         }
 
         val encapsulatedContent = Numeric.hexStringToByteArray(sodFile.readASN1Data())
@@ -496,6 +508,7 @@ class ProofViewModel @Inject constructor(
         }
 
         val signatureChunks = if (publicKey is ECPublicKey) {
+            Log.i("signatureChunks", Numeric.toHexStringNoPrefix(CircuitUtil.parseECDSASignature(signature)))
             CircuitUtil.parseECDSASignature(signature)?.toBits() ?: throw Exception("Invalid ECDSA signature")
         } else {
             CircuitUtil.smartChunking(
@@ -503,6 +516,8 @@ class ProofViewModel @Inject constructor(
                 smartChunkingNumber
             ).map { it.toLong() }
         }
+
+
 
 
         val dg1Chunks = CircuitUtil.smartChunking2(

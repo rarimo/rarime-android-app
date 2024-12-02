@@ -63,16 +63,28 @@ object CircuitUtil {
     fun parseECDSASignature(signatureEcdsa: ByteArray): ByteArray? {
         try {
             val asn1InputStream = ASN1InputStream(signatureEcdsa)
-
             val asn1Sequence = asn1InputStream.readObject() as ASN1Sequence
 
-            val r = (asn1Sequence.getObjectAt(0) as ASN1Integer).positiveValue
-            val s = (asn1Sequence.getObjectAt(1) as ASN1Integer).positiveValue
+            val r = (asn1Sequence.getObjectAt(0) as ASN1Integer).positiveValue.toByteArray()
+            val s = (asn1Sequence.getObjectAt(1) as ASN1Integer).positiveValue.toByteArray()
 
-            return r.toByteArray() + s.toByteArray()
+            // Normalize r and s to 32 bytes
+            val normalizedR = normalizeTo32Bytes(r)
+            val normalizedS = normalizeTo32Bytes(s)
+
+            return normalizedR + normalizedS
         } catch (e: Exception) {
             e.printStackTrace()
             return null
+        }
+    }
+
+    // Helper function to normalize a byte array to exactly 32 bytes
+    private fun normalizeTo32Bytes(input: ByteArray): ByteArray {
+        return when {
+            input.size > 32 -> input.copyOfRange(input.size - 32, input.size) // Truncate leading bytes
+            input.size < 32 -> ByteArray(32 - input.size) + input // Pad with leading zeros
+            else -> input // Already 32 bytes
         }
     }
 
