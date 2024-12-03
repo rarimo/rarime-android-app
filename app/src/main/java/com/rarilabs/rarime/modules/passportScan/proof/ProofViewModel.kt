@@ -5,7 +5,6 @@ import android.app.Application
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -456,10 +455,10 @@ class ProofViewModel @Inject constructor(
 
             val slaveCertificateIndex =
                 x509Utils.getSlaveCertificateIndex(certPem.toByteArray(), icao)
-            val indexHex = Numeric.toHexStringNoPrefix(slaveCertificateIndex)
+            val indexHex = slaveCertificateIndex.toHexString()
             val contract = rarimoContractManager.getPoseidonSMT(certificatesSMTAddress)
 
-            contract.getProof(Numeric.hexStringToByteArray(indexHex)).send()
+            contract.getProof(indexHex.hexToByteArray()).send()
         }
 
         val encapsulatedContent = Numeric.hexStringToByteArray(sodFile.readASN1Data())
@@ -498,27 +497,31 @@ class ProofViewModel @Inject constructor(
             smartChunkingToBlockSize.toLong()
         )
 
-        val pubKeyChunks = if (publicKey is ECPublicKey) {
-            pubKeyData.toBits().map { it }
-        } else {
-            CircuitUtil.smartChunking(
-                BigInteger(1, pubKeyData),
-                smartChunkingNumber
-            ).map { it.toLong() }
+        val pubKeyChunks = when (publicKey) {
+            is ECPublicKey -> {
+                pubKeyData.toBits().map { it }
+            }
+
+            else -> {
+                CircuitUtil.smartChunking(
+                    BigInteger(1, pubKeyData),
+                    smartChunkingNumber
+                ).map { it.toLong() }
+            }
         }
 
-        val signatureChunks = if (publicKey is ECPublicKey) {
-            Log.i("signatureChunks", Numeric.toHexStringNoPrefix(CircuitUtil.parseECDSASignature(signature)))
-            CircuitUtil.parseECDSASignature(signature)?.toBits() ?: throw Exception("Invalid ECDSA signature")
-        } else {
-            CircuitUtil.smartChunking(
-                BigInteger(1, signature),
-                smartChunkingNumber
-            ).map { it.toLong() }
+        val signatureChunks = when (publicKey) {
+            is ECPublicKey -> {
+                CircuitUtil.parseECDSASignature(signature)?.toBits() ?: throw Exception("Invalid ECDSA signature")
+            }
+
+            else -> {
+                CircuitUtil.smartChunking(
+                    BigInteger(1, signature),
+                    smartChunkingNumber
+                ).map { it.toLong() }
+            }
         }
-
-
-
 
         val dg1Chunks = CircuitUtil.smartChunking2(
             eDocument.dg1!!.decodeHexString(),
