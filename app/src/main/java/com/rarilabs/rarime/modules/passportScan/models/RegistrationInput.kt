@@ -1,10 +1,10 @@
 package com.rarilabs.rarime.modules.passportScan.models
 
 data class RegisterIdentityInputs(
-    val signature: List<Long>,
+    val signature: List<String>,
     val signedAttributes: List<Long>,
     val dg1: List<Long>,
-    val pubkey: List<Long>,
+    val pubkey: List<String>,
     val slaveMerkleRoot: String,
     val skIdentity: String,
     val dg15: List<Long>,

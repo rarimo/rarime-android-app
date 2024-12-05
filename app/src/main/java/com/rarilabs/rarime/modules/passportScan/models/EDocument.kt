@@ -240,6 +240,7 @@ data class EDocument(
             1024 -> CircuitKeySizeType.B1024
             2048 -> CircuitKeySizeType.B2048
             4096 -> CircuitKeySizeType.B4096
+            512 -> CircuitKeySizeType.B512
             256 -> CircuitKeySizeType.B256
             320 -> CircuitKeySizeType.B320
             384 -> CircuitKeySizeType.B384
@@ -353,6 +354,7 @@ data class EDocument(
             "secp224r1" -> CircuitCurveType.SECP224R1 // secp224r
             "prime256v1" -> CircuitCurveType.PRIME256V1
             "prime256v2" -> CircuitCurveType.PRIME256V2
+            "brainpoolp512r1" -> CircuitCurveType.BRAINPOOLP512R1
             else -> throw IllegalArgumentException("Unsupported curve: " + curve.lowercase())
         }
 

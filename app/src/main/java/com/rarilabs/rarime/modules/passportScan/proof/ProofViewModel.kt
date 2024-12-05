@@ -60,8 +60,8 @@ class ProofViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
     private val privateKeyBytes = identityManager.privateKeyBytes
 
-    private var _state = MutableStateFlow(PassportProofState.READING_DATA)
-    val state: StateFlow<PassportProofState>
+    private var _state: MutableStateFlow<PassportProofState?> = MutableStateFlow(null)
+    val state: StateFlow<PassportProofState?>
         get() = _state.asStateFlow()
 
     private val second = 1000L
@@ -308,6 +308,7 @@ class ProofViewModel @Inject constructor(
                         ZkpUtil::registerIdentity2425634336232NA
                     )
                 }
+
                 RegisteredCircuitData.REGISTER_IDENTITY_20_256_3_3_336_224_NA -> {
                     zkp.generateRegisterZKP(
                         filePaths!!.zkey,
@@ -365,7 +366,7 @@ class ProofViewModel @Inject constructor(
 
         val filePaths = withContext(Dispatchers.Default) {
             CircuitUseCase(application as Context).download(registeredCircuitData) { progress, visibility ->
-                if (_state.value.value < PassportProofState.APPLYING_ZERO_KNOWLEDGE.value) {
+                if (_state.value?.value!! < PassportProofState.APPLYING_ZERO_KNOWLEDGE.value) {
                     _progress.value = progress
                     _progressVisibility.value = !visibility
                 }
@@ -466,14 +467,11 @@ class ProofViewModel @Inject constructor(
         val publicKey = sodFile.getDocSigningCertificate().publicKey
         val signature = sodFile.encryptedDigest
 
-        ErrorHandler.logDebug("sign", proof.siblings.size.toString())
-
         val pubKeyData = CryptoUtilsPassport.getDataFromPublicKey(publicKey)
             ?: throw IllegalArgumentException("invalid pubkey data")
 
         val smartChunkingNumber = CircuitUtil.calculateSmartChunkingNumber(pubKeyData.size * 8)
         val smartChunkingToBlockSize = (circuitType.passportHashType.getChunkSize())
-
 
         val dg15: List<Long> = if (eDocument.dg15.isNullOrEmpty()) {
             listOf()
@@ -499,27 +497,28 @@ class ProofViewModel @Inject constructor(
 
         val pubKeyChunks = when (publicKey) {
             is ECPublicKey -> {
-                pubKeyData.toBits().map { it }
+                pubKeyData.toBits().map { it.toString() }
             }
 
             else -> {
                 CircuitUtil.smartChunking(
                     BigInteger(1, pubKeyData),
                     smartChunkingNumber
-                ).map { it.toLong() }
+                ).map { it.toString() }
             }
         }
 
         val signatureChunks = when (publicKey) {
             is ECPublicKey -> {
-                CircuitUtil.parseECDSASignature(signature)?.toBits() ?: throw Exception("Invalid ECDSA signature")
+                CircuitUtil.parseECDSASignature(signature)?.toBits()?.map { it.toString() }
+                    ?: throw Exception("Invalid ECDSA signature")
             }
 
             else -> {
                 CircuitUtil.smartChunking(
                     BigInteger(1, signature),
                     smartChunkingNumber
-                ).map { it.toLong() }
+                ).map { it.toString() }
             }
         }
 
@@ -537,11 +536,9 @@ class ProofViewModel @Inject constructor(
             signature = signatureChunks,
             dg1 = dg1Chunks,
             dg15 = dg15,
-            slaveMerkleRoot = Numeric.toHexString(proof.root),
-            slaveMerkleInclusionBranches = proof.siblings.map { Numeric.toHexString(it) }
+            slaveMerkleRoot = (BigInteger(proof.root)).toString(),
+            slaveMerkleInclusionBranches = proof.siblings.map { (BigInteger(it).toString()) }
         )
-
-
 
         registrationManager.setMasterCertProof(proof)
 
