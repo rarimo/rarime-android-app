@@ -60,7 +60,8 @@ class ProofViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
     private val privateKeyBytes = identityManager.privateKeyBytes
 
-    private var _state: MutableStateFlow<PassportProofState?> = MutableStateFlow(null)
+    private var _state: MutableStateFlow<PassportProofState> =
+        MutableStateFlow(PassportProofState.READING_DATA)
     val state: StateFlow<PassportProofState?>
         get() = _state.asStateFlow()
 
@@ -68,7 +69,7 @@ class ProofViewModel @Inject constructor(
 
     private val TAG = ProofViewModel::class.java.simpleName
 
-    val eDoc = registrationManager.eDocument
+    private val eDoc = registrationManager.eDocument
     val regProof = registrationManager.registrationProof
     val pointsToken = walletManager.pointsToken
 
@@ -319,6 +320,61 @@ class ProofViewModel @Inject constructor(
                         ZkpUtil::registerIdentity2025633336224NA
                     )
                 }
+
+                RegisteredCircuitData.REGISTER_IDENTITY_1_256_3_3_576_248_NA -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity125633576248NA
+                    )
+                }
+
+                RegisteredCircuitData.REGISTER_IDENTITY_1_160_3_3_576_200_NA -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity116033576200NA
+                    )
+                }
+
+                RegisteredCircuitData.REGISTER_IDENTITY_10_256_3_3_576_248_1_1184_5_264 -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity1025633576248111845264
+                    )
+                }
+
+                RegisteredCircuitData.REGISTER_IDENTITY_11_256_3_5_576_248_1_1808_4_256 -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity1125635576248118084256
+                    )
+                }
+
+                RegisteredCircuitData.REGISTER_IDENTITY_21_256_3_3_576_232_NA -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity2125633576232NA
+                    )
+                }
             }
         }
 
@@ -366,7 +422,7 @@ class ProofViewModel @Inject constructor(
 
         val filePaths = withContext(Dispatchers.Default) {
             CircuitUseCase(application as Context).download(registeredCircuitData) { progress, visibility ->
-                if (_state.value?.value!! < PassportProofState.APPLYING_ZERO_KNOWLEDGE.value) {
+                if (_state.value.value < PassportProofState.APPLYING_ZERO_KNOWLEDGE.value) {
                     _progress.value = progress
                     _progressVisibility.value = !visibility
                 }
