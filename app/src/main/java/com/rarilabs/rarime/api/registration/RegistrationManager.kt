@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import org.jmrtd.lds.icao.DG15File
 import org.web3j.tuples.generated.Tuple2
+import org.web3j.utils.Numeric
 import javax.inject.Inject
 
 class RegistrationManager @Inject constructor(
@@ -100,18 +101,22 @@ class RegistrationManager @Inject constructor(
 
         val jsonProof = Gson().toJson(zkProof)
 
-        val pubKeyPem = if (eDocument.dg15 != null) {
+        val pubKeyPem = if (!eDocument.dg15.isNullOrEmpty()) {
             eDocument.getDg15File()!!.publicKey.publicKeyToPem()
                 .toByteArray()
         } else {
             byteArrayOf()
         }
 
+        val encapsulatedContent =
+            Numeric.hexStringToByteArray(eDocument.getSodFile().readASN1Data())
+
         val callDataBuilder = CallDataBuilder()
         val callData = callDataBuilder.buildRegisterCalldata(
             jsonProof.toByteArray(),
             eDocument.aaSignature,
             pubKeyPem,
+            encapsulatedContent.size.toLong() * 8L,
             masterCertProof.root,
             isUserRevoking,
             registerIdentityCircuitName
@@ -196,10 +201,15 @@ class RegistrationManager @Inject constructor(
 
         Log.i("activeIdentity.value", activeIdentity.value.toHexString())
 
+        val encapsulatedContent =
+            Numeric.hexStringToByteArray(revEDocument.value!!.getSodFile().readASN1Data())
+
+
         val callData = callDataBuilder.buildRevoceCalldata(
             activeIdentity.value,
             revEDocument.value!!.aaSignature,
             pubKeyPem.toByteArray(),
+            encapsulatedContent.size.toLong() * 8
         )
 
         ErrorHandler.logDebug("callData", callData.toString())

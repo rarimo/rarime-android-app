@@ -103,7 +103,7 @@ fun GenerateProofStep(
 
     fun getItemStatus(item: PassportProofState): ProcessingStatus {
         val isSuccess =
-            processingStatus == ProcessingStatus.SUCCESS || currentState.value + 1 > item.value
+            processingStatus == ProcessingStatus.SUCCESS || (currentState?.value ?: 0) + 1 > item.value
         if (isSuccess) return ProcessingStatus.SUCCESS
         if (processingStatus == ProcessingStatus.FAILURE) return ProcessingStatus.FAILURE
         return ProcessingStatus.PROCESSING

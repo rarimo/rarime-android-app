@@ -26,7 +26,6 @@ import org.bouncycastle.asn1.ASN1Sequence
 import org.bouncycastle.asn1.ASN1Set
 import org.bouncycastle.asn1.ASN1TaggedObject
 import org.bouncycastle.asn1.DLApplicationSpecific
-import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.bouncycastle.math.ec.ECPoint
 import org.jmrtd.lds.icao.DG1File
 import org.web3j.utils.Numeric
@@ -34,7 +33,6 @@ import java.io.ByteArrayInputStream
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.PublicKey
-import java.security.Security
 import java.security.interfaces.ECPublicKey
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.ECFieldF2m
@@ -129,17 +127,13 @@ data class EDocument(
                     "Invalid document type"
                 )
 
-            //val cmsSignedData = extractCMSData(sodFile.encoded)
 
-            // **Extract encapsulated content and signed attributes**
             val signedAttributes = sodFile.eContent
             val encapsulatedContent = Numeric.hexStringToByteArray(sodFile.readASN1Data())
 
             val ecHash = MessageDigest.getInstance(digestEncryptionAlgorithm, "BC").digest(encapsulatedContent)
 
-            // Calculate chunk numbers
             val ecChunkNumber = getChunkNumber(encapsulatedContent, passportHashType.getChunkSize())
-
 
             // Find digest positions
             val ecDigestPosition = signedAttributes.findSubarrayIndex(ecHash)
@@ -246,9 +240,11 @@ data class EDocument(
             1024 -> CircuitKeySizeType.B1024
             2048 -> CircuitKeySizeType.B2048
             4096 -> CircuitKeySizeType.B4096
+            512 -> CircuitKeySizeType.B512
             256 -> CircuitKeySizeType.B256
             320 -> CircuitKeySizeType.B320
             384 -> CircuitKeySizeType.B384
+            224 -> CircuitKeySizeType.B224
             192 -> CircuitKeySizeType.B192
             else -> null
         }
@@ -355,6 +351,10 @@ data class EDocument(
             "brainpoolp320r1" -> CircuitCurveType.BRAINPOOL320R1 // brainpoolP320r1
             "secp192r1" -> CircuitCurveType.SECP192R1       // secp192r1
             "brainpoolp384r1" -> CircuitCurveType.BRAINPOOLP384R1
+            "secp224r1" -> CircuitCurveType.SECP224R1 // secp224r
+            "prime256v1" -> CircuitCurveType.PRIME256V1
+            "prime256v2" -> CircuitCurveType.PRIME256V2
+            "brainpoolp512r1" -> CircuitCurveType.BRAINPOOLP512R1
             else -> throw IllegalArgumentException("Unsupported curve: " + curve.lowercase())
         }
 
@@ -429,14 +429,10 @@ object CryptoUtilsPassport {
      * @return A ByteArray containing the concatenated X and Y coordinates, or null if extraction fails.
      */
     fun getXYFromECDSAPublicKey(publicKey: PublicKey?): ByteArray? {
-        // Ensure the public key is not null
+
         if (publicKey == null) return null
 
         try {
-            // Add BouncyCastle as a security provider if it's not already added
-            if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-                Security.addProvider(BouncyCastleProvider())
-            }
 
             // Cast the PublicKey to BouncyCastle's ECPublicKey interface
             val ecPublicKey = publicKey as? org.bouncycastle.jce.interfaces.ECPublicKey ?: return null

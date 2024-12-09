@@ -19,7 +19,7 @@ class AuthAPIManager @Inject constructor(
             try {
                 authAPI.authorize(body)
             } catch (e: Exception) {
-                throw Exception(e.toString())
+                throw Exception(e.message)
             }
         }
     }
