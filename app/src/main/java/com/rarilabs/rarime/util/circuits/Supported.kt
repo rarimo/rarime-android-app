@@ -31,6 +31,27 @@ object SupportRegisterIdentityCircuitSignatureType {
             hashAlgorithm = CircuitHashAlgorithmType.HA256
         ),
 
+        CircuitSignatureType(
+            staticId = 3u, // TODO: check id
+            algorithm = CircuitAlgorithmType.RSA,
+            keySize = CircuitKeySizeType.B2048,
+            exponent = CircuitExponentType.E65537,
+            salt = null,
+            curve = null,
+            hashAlgorithm = CircuitHashAlgorithmType.HA160
+        ),
+
+        CircuitSignatureType(
+            staticId = 3u, // TODO: check id
+            algorithm = CircuitAlgorithmType.RSA,
+            keySize = CircuitKeySizeType.B3072,
+            exponent = CircuitExponentType.E3,
+            salt = null,
+            curve = null,
+            hashAlgorithm = CircuitHashAlgorithmType.HA160
+        ),
+
+
         // RSAPSS
         CircuitSignatureType(
             staticId = 10u,
@@ -69,6 +90,16 @@ object SupportRegisterIdentityCircuitSignatureType {
             hashAlgorithm = CircuitHashAlgorithmType.HA384
         ),
 
+        CircuitSignatureType(
+            staticId = 11u,
+            algorithm = CircuitAlgorithmType.RSAPSS,
+            keySize = CircuitKeySizeType.B3072,
+            exponent = CircuitExponentType.E65537,
+            salt = CircuitSaltType.S32,
+            curve = null,
+            hashAlgorithm = CircuitHashAlgorithmType.HA256
+        ),
+
         // ECDSA
         CircuitSignatureType(
             staticId = 20u,
@@ -78,6 +109,16 @@ object SupportRegisterIdentityCircuitSignatureType {
             salt = null,
             curve = CircuitCurveType.SECP256R1,
             hashAlgorithm = CircuitHashAlgorithmType.HA256
+        ),
+
+        CircuitSignatureType(
+            staticId = 24u,
+            algorithm = CircuitAlgorithmType.ECDSA,
+            keySize = CircuitKeySizeType.B224,
+            exponent = null,
+            salt = null,
+            curve = CircuitCurveType.SECP224R1,
+            hashAlgorithm = CircuitHashAlgorithmType.HA224
         ),
 
         CircuitSignatureType(
@@ -106,7 +147,35 @@ object SupportRegisterIdentityCircuitSignatureType {
             salt = null,
             curve = CircuitCurveType.SECP192R1,
             hashAlgorithm = CircuitHashAlgorithmType.HA160
+        ),
+        CircuitSignatureType(
+            staticId = 20u,
+            algorithm = CircuitAlgorithmType.ECDSA,
+            keySize = CircuitKeySizeType.B256,
+            exponent = null,
+            salt = null,
+            curve = CircuitCurveType.PRIME256V1,
+            hashAlgorithm = CircuitHashAlgorithmType.HA256
+        ),
+        CircuitSignatureType(
+            staticId = 20u,
+            algorithm = CircuitAlgorithmType.ECDSA,
+            keySize = CircuitKeySizeType.B384,
+            exponent = null,
+            salt = null,
+            curve = CircuitCurveType.BRAINPOOLP384R1,
+            hashAlgorithm = CircuitHashAlgorithmType.HA384
+        ),
+        CircuitSignatureType(
+            staticId = 20u,
+            algorithm = CircuitAlgorithmType.ECDSA,
+            keySize = CircuitKeySizeType.B512,
+            exponent = null,
+            salt = null,
+            curve = CircuitCurveType.BRAINPOOLP512R1,
+            hashAlgorithm = CircuitHashAlgorithmType.HA512
         )
+
     )
 
     fun getSupportedSignatureTypeId(type: CircuitSignatureType): UInt? {

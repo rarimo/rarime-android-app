@@ -13,7 +13,8 @@ data class RegisterIdentityCircuitType(
 ) {
     fun buildName(): String {
         var name = "registerIdentity"
-        val signatureTypeId = signatureType.getId() ?: throw IllegalArgumentException("No signatureType: " + Gson().toJson(signatureType))
+        val signatureTypeId = signatureType.getId()
+            ?: throw IllegalArgumentException("No signatureType: " + Gson().toJson(signatureType))
 
         name += "_$signatureTypeId"
         name += "_${passportHashType.getId()}"
@@ -23,7 +24,8 @@ data class RegisterIdentityCircuitType(
         name += "_$dg1DigestPositionShift"
 
         aaType?.let { aa ->
-            val aaTypeId = aa.aaAlgorithm.getId() ?: throw IllegalStateException("aa.aaAlgorithm.getId not found")
+            val aaTypeId = aa.aaAlgorithm.getId()
+                ?: throw IllegalStateException("aa.aaAlgorithm.getId not found")
 
             name += "_$aaTypeId"
             name += "_${aa.dg15DigestPositionShift}"
@@ -47,15 +49,13 @@ data class CircuitSignatureType(
     val hashAlgorithm: CircuitHashAlgorithmType
 ) {
     fun getId(): String? {
-        return SupportRegisterIdentityCircuitSignatureType.getSupportedSignatureTypeId(this)?.toString()
+        return SupportRegisterIdentityCircuitSignatureType.getSupportedSignatureTypeId(this)
+            ?.toString()
     }
 }
 
 enum class CircuitPassportHashType(val value: String) {
-    SHA1("sha-1"),
-    SHA256("sha-256"),
-    SHA384("sha-384"),
-    SHA512("sha-512");
+    SHA1("sha-1"), SHA256("sha-256"), SHA384("sha-384"), SHA512("sha-512");
 
     fun getId(): UInt {
         return when (this) {
@@ -81,8 +81,7 @@ enum class CircuitPassportHashType(val value: String) {
 }
 
 enum class CircuitDocumentType(val value: String) {
-    TD1("TD1"),
-    TD3("TD3");
+    TD1("TD1"), TD3("TD3");
 
     fun getId(): UInt {
         return when (this) {
@@ -124,7 +123,16 @@ enum class CircuitAlgorithmType {
 }
 
 enum class CircuitKeySizeType {
-    B1024, B2048, B4096, B256, B320, B192, B384, B3072
+    B1024,
+    B2048,
+    B4096,
+    B256,
+    B320,
+    B192,
+    B384,
+    B3072,
+    B224,
+    B512
 }
 
 enum class CircuitExponentType {
@@ -136,15 +144,27 @@ enum class CircuitSaltType {
 }
 
 enum class CircuitCurveType {
-    SECP256R1, BRAINPOOLP256, BRAINPOOL320R1, SECP192R1, BRAINPOOLP384R1
+    SECP256R1,
+    BRAINPOOLP256,
+    BRAINPOOL320R1,
+    SECP192R1,
+    BRAINPOOLP384R1,
+    SECP224R1,
+    PRIME256V1,
+    PRIME256V2,
+    BRAINPOOLP512R1
 }
 
 enum class CircuitHashAlgorithmType {
-    HA256, HA384, HA160
+    HA256, HA384, HA160, HA224, HA512
 }
+
 fun ByteArray.findSubarrayIndex(subarray: ByteArray): UInt? {
     for (i in indices) {
-        if (i + subarray.size <= size && copyOfRange(i, i + subarray.size).contentEquals(subarray)) {
+        if (i + subarray.size <= size && copyOfRange(
+                i, i + subarray.size
+            ).contentEquals(subarray)
+        ) {
             return i.toUInt()
         }
     }

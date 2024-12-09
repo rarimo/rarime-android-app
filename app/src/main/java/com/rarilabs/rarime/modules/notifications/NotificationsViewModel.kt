@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NotificationsViewModel @Inject constructor(
-    private val notificationsManager: NotificationManager
+    private val notificationsManager: NotificationManager,
 ) : ViewModel() {
 
     val notificationsList = notificationsManager.notificationList
