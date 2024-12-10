@@ -1,11 +1,23 @@
 package com.rarilabs.rarime.api.registration
 
 
+import CircuitPassportHashType
+import com.rarilabs.rarime.api.registration.models.DocumentSodAttributes
 import com.rarilabs.rarime.api.registration.models.RegisterBody
 import com.rarilabs.rarime.api.registration.models.RegisterData
 import com.rarilabs.rarime.api.registration.models.RegisterResponseBody
+import com.rarilabs.rarime.api.registration.models.VerifySodRequest
+import com.rarilabs.rarime.api.registration.models.VerifySodRequestAttributes
+import com.rarilabs.rarime.api.registration.models.VerifySodRequestData
+import com.rarilabs.rarime.api.registration.models.VerifySodResponse
+import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.util.ErrorHandler
+import com.rarilabs.rarime.util.SecurityUtil
+import com.rarilabs.rarime.util.circuits.SODAlgorithm
+import com.rarilabs.rarime.util.data.ZkProof
+import org.web3j.utils.Numeric
 import javax.inject.Inject
+
 class UserAlreadyRevoked : Exception()
 class PassportAlreadyRegisteredByOtherPK : Exception()
 
@@ -39,9 +51,59 @@ class RegistrationAPIManager @Inject constructor(
         } else if (errorBody?.contains("proof") == true) {
             ErrorHandler.logError("Registration failed with proof", errorBody.toString())
             throw Exception("Registration failed")
-        }
-        else {
+        } else {
             throw Exception("Registration failed")
         }
+    }
+
+    suspend fun lightRegistration(eDocument: EDocument, zkProof: ZkProof): VerifySodResponse {
+        val sodFile = eDocument.getSodFile()
+
+        val signedAttributes = sodFile.eContent
+        val encapsulatedContent = Numeric.hexStringToByteArray(sodFile.readASN1Data())
+        val signature = sodFile.encryptedDigest
+
+        val cert = sodFile.docSigningCertificate
+        val certPem = SecurityUtil.convertToPEM(cert)
+
+        val digestAlgorithm = sodFile.digestAlgorithm
+        val encapsulatedContentDigestAlgorithm = CircuitPassportHashType.fromValue(digestAlgorithm)
+            ?: throw IllegalArgumentException("Invalid digest algorithm")
+
+        val sodSignatureAlgorithmName = sodFile.digestEncryptionAlgorithm
+
+        val sodSignatureAlgorithm = SODAlgorithm.fromValue(sodSignatureAlgorithmName)
+            ?: throw IllegalStateException("SOD algorithm not found: $sodSignatureAlgorithmName")
+
+        val request = VerifySodRequest(
+            data = VerifySodRequestData(
+                id = "",
+                type = "document-sod",
+                attributes = VerifySodRequestAttributes(
+                    zk_proof = "",
+                    document_sod = DocumentSodAttributes(
+                        hash_algorithm = encapsulatedContentDigestAlgorithm.value.uppercase(),
+                        signature_algorithm = sodSignatureAlgorithm.value,
+                        signed_attributes = Numeric.toHexString(signedAttributes),
+                        signature = Numeric.toHexString(signature),
+                        encapsulated_content = Numeric.toHexString(encapsulatedContent),
+                        pem_file = certPem,
+                        dg15 = eDocument.dg15!!,
+                        aa_signature = Numeric.toHexString(eDocument.aaSignature)
+                    )
+                )
+            )
+        )
+
+        val response = registrationAPI.incognitoLightRegistrator(request)
+
+        if (response.isSuccessful) {
+            return response.body()!!
+        }
+
+        val errorBody = response.errorBody()?.string()
+        ErrorHandler.logError("RegistrationAPIManager", errorBody.toString())
+
+        throw Exception("Failed to register via light registration: $errorBody")
     }
 }

@@ -151,7 +151,6 @@ enum class CircuitCurveType {
     BRAINPOOLP384R1,
     SECP224R1,
     PRIME256V1,
-    PRIME256V2,
     BRAINPOOLP512R1
 }
 

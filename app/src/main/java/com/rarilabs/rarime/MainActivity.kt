@@ -37,11 +37,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-//        nfcManager.enableForegroundDispatch()
-    }
-
     override fun onPause() {
         super.onPause()
 
@@ -54,7 +49,6 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-
         nfcManager.handleNewIntent(intent)
     }
 
