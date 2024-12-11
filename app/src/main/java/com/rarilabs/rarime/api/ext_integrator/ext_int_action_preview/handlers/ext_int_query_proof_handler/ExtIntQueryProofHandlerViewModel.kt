@@ -110,8 +110,9 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
         }
 
         try {
-            var uniqueness = queryProofParametersRequest.value?.data?.attributes?.timestamp_upper_bound?.toLong() != 0L ||
-            queryProofParametersRequest.value?.data?.attributes?.identity_counter_upper_bound?.toLong() != 0L
+            var uniqueness =
+                queryProofParametersRequest.value?.data?.attributes?.timestamp_upper_bound?.toULong() != 0uL ||
+                        queryProofParametersRequest.value?.data?.attributes?.identity_counter_upper_bound?.toULong() != 0uL
 
             if (uniqueness) {
                 tempMap.set(
@@ -197,8 +198,10 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
         val TimestampLowerbound = queryProofParametersRequest.value!!.data.attributes.timestamp_lower_bound
 
         val TimestampUpperbound =
-            if (identityInfo.value!!.issueTimestamp.toLong() >= queryProofParametersRequest.value!!.data.attributes.timestamp_upper_bound.toLong())
-                (identityInfo.value!!.issueTimestamp.toLong() + 1).toString()
+            if (identityInfo.value!!.issueTimestamp.toString()
+                    .toULong() >= queryProofParametersRequest.value!!.data.attributes.timestamp_upper_bound.toULong()
+            )
+                (identityInfo.value!!.issueTimestamp.toString().toULong() + 1u).toString()
             else queryProofParametersRequest.value!!.data.attributes.timestamp_upper_bound
 
         val IdentityCounterLowerbound = queryProofParametersRequest.value!!.data.attributes.identity_counter_lower_bound.toString()

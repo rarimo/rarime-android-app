@@ -326,7 +326,7 @@ data class EDocument(
         val passportHashType = CircuitPassportHashType.fromValue(digestAlgorithm)
             ?: throw IllegalArgumentException("Invalid digest algorithm")
 
-        return circuitName + "_" + passportHashType.getId()
+        return circuitName + passportHashType.getId()
     }
 
     private fun getPublicKeyExponent(publicKey: PublicKey?): CircuitExponentType? {

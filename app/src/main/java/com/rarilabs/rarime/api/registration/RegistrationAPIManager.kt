@@ -2,7 +2,6 @@ package com.rarilabs.rarime.api.registration
 
 
 import CircuitPassportHashType
-import com.google.gson.Gson
 import com.rarilabs.rarime.api.registration.models.DocumentSodAttributes
 import com.rarilabs.rarime.api.registration.models.RegisterBody
 import com.rarilabs.rarime.api.registration.models.RegisterData
@@ -73,24 +72,29 @@ class RegistrationAPIManager @Inject constructor(
 
         val sodSignatureAlgorithmName = sodFile.digestEncryptionAlgorithm
 
-        val sodSignatureAlgorithm = SODAlgorithm.fromValue(sodSignatureAlgorithmName)
+        val sodSignatureAlgorithm =
+            SODAlgorithm.fromValue(sodSignatureAlgorithmName)?.getCircuitSignatureAlgorithm()
             ?: throw IllegalStateException("SOD algorithm not found: $sodSignatureAlgorithmName")
+
 
         val request = VerifySodRequest(
             data = VerifySodRequestData(
                 id = "",
                 type = "document-sod",
                 attributes = VerifySodRequestAttributes(
-                    zk_proof = Gson().toJson(zkProof),
+                    zk_proof = zkProof,
                     document_sod = DocumentSodAttributes(
-                        hash_algorithm = encapsulatedContentDigestAlgorithm.value.uppercase(),
-                        signature_algorithm = sodSignatureAlgorithm.value,
+                        hash_algorithm = encapsulatedContentDigestAlgorithm.value.uppercase()
+                            .replace("-", ""),
+                        signature_algorithm = sodSignatureAlgorithm.name,
                         signed_attributes = Numeric.toHexString(signedAttributes),
                         signature = Numeric.toHexString(signature),
                         encapsulated_content = Numeric.toHexString(encapsulatedContent),
                         pem_file = certPem,
                         dg15 = eDocument.dg15!!,
-                        aa_signature = Numeric.toHexString(eDocument.aaSignature)
+                        aa_signature = if (eDocument.aaSignature?.isEmpty() != false) "" else Numeric.toHexString(
+                            eDocument.aaSignature
+                        )
                     )
                 )
             )

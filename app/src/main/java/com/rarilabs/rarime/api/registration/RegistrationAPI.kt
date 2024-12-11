@@ -12,6 +12,6 @@ interface RegistrationAPI {
     @POST("/integrations/registration-relayer/v1/register")
     suspend fun register(@Body body: RegisterBody): Response<RegisterResponseBody>
 
-    @POST("/intergrations/incognito-light-registrator/v1/register")
+    @POST("/integrations/incognito-light-registrator/v1/register")
     suspend fun incognitoLightRegistrator(@Body body: VerifySodRequest): Response<VerifySodResponse>
 }

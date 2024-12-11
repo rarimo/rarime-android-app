@@ -77,7 +77,8 @@ fun GenerateProofStep(
 
     suspend fun lightRegistration() {
         try {
-            proofViewModel.lightRegistration()
+            val proof = proofViewModel.lightRegistration()
+            onClose(proof)
         } catch (e: Exception) {
             ErrorHandler.logError("lightRegistration", e.toString(), e)
             onError(e, registrationProof.value)

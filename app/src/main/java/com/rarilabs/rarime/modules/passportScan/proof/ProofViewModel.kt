@@ -486,7 +486,7 @@ class ProofViewModel @Inject constructor(
         }
     }
 
-    suspend fun lightRegistration() {
+    suspend fun lightRegistration(): ZkProof {
         val privateKeyBytes = privateKeyBytes!!
         val eDocument = eDoc.value!!
 
@@ -495,6 +495,8 @@ class ProofViewModel @Inject constructor(
         ErrorHandler.logDebug("registerIdentityCircuitName", registerIdentityCircuitName)
         val registeredCircuitData = RegisteredCircuitData.fromValue(registerIdentityCircuitName)
             ?: throw IllegalStateException("Circuit $registerIdentityCircuitName is not supported")
+
+        _state.value = PassportProofState.READING_DATA
 
 
         val filePaths = withContext(Dispatchers.Default) {
@@ -506,6 +508,9 @@ class ProofViewModel @Inject constructor(
             }
         }
 
+        _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
+
+
         val lightProof = withContext(Dispatchers.Default) {
             generateLightRegistrationProof(
                 filePaths!!,
@@ -516,7 +521,15 @@ class ProofViewModel @Inject constructor(
         }
 
 
+        _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
+
+
         val res = registrationManager.lightRegistration(eDocument, lightProof)
+
+        _state.value = PassportProofState.FINALIZING
+
+
+        return lightProof
 
     }
 
@@ -600,12 +613,11 @@ class ProofViewModel @Inject constructor(
         val smartChunkingToBlockSize = passportHashType.getChunkSize()
 
         val dg1Chunks = CircuitUtil.smartChunking2(
-            eDocument.dg1!!.decodeHexString(), 2, smartChunkingToBlockSize.toLong()
+            eDocument.dg1!!.decodeHexString(), 1, smartChunkingToBlockSize.toLong()
         )
 
-
         return RegisterIdentityLightInputs(
-            skIdentity = Numeric.toHexStringNoPrefix(privateKey), dg1 = dg1Chunks
+            skIdentity = Numeric.toHexString(privateKey), dg1 = dg1Chunks
         )
     }
 
