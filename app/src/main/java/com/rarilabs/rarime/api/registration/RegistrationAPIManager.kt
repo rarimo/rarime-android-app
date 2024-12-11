@@ -2,6 +2,7 @@ package com.rarilabs.rarime.api.registration
 
 
 import CircuitPassportHashType
+import com.google.gson.Gson
 import com.rarilabs.rarime.api.registration.models.DocumentSodAttributes
 import com.rarilabs.rarime.api.registration.models.RegisterBody
 import com.rarilabs.rarime.api.registration.models.RegisterData
@@ -80,7 +81,7 @@ class RegistrationAPIManager @Inject constructor(
                 id = "",
                 type = "document-sod",
                 attributes = VerifySodRequestAttributes(
-                    zk_proof = "",
+                    zk_proof = Gson().toJson(zkProof),
                     document_sod = DocumentSodAttributes(
                         hash_algorithm = encapsulatedContentDigestAlgorithm.value.uppercase(),
                         signature_algorithm = sodSignatureAlgorithm.value,

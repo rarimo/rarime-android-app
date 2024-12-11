@@ -75,6 +75,15 @@ fun GenerateProofStep(
         }
     }
 
+    suspend fun lightRegistration() {
+        try {
+            proofViewModel.lightRegistration()
+        } catch (e: Exception) {
+            ErrorHandler.logError("lightRegistration", e.toString(), e)
+            onError(e, registrationProof.value)
+        }
+    }
+
     LaunchedEffect(view) {
         view.keepScreenOn = true
     }
@@ -91,19 +100,28 @@ fun GenerateProofStep(
             try {
                 proofViewModel.registerByDocument()
                 onClose(registrationProof.value!!)
+            } catch (e: PassportAlreadyRegisteredByOtherPK) {
+                onAlreadyRegistered.invoke(registrationProof.value!!)
+                return@launch
             } catch (e: Exception) {
-                ErrorHandler.logError("registerByDocument", "Error during registerByDocument", e)
-
-                if (e is PassportAlreadyRegisteredByOtherPK) {
-                    onAlreadyRegistered.invoke(registrationProof.value!!)
-                    return@launch
+                ErrorHandler.logError(
+                    "registerByDocument",
+                    "Error during registerByDocument, trying to use light registration",
+                    e
+                )
+                try {
+                    lightRegistration()
+                } catch (e: Exception) {
+                    ErrorHandler.logError(
+                        "lightRegistration",
+                        "Error during lightRegistration",
+                        e
+                    )
+                    if (!Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
+                        joinRewardsProgram()
+                    }
+                    onError(e, registrationProof.value)
                 }
-
-                if (!Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
-                    joinRewardsProgram()
-                }
-
-                onError(e, registrationProof.value)
             }
         }
     }

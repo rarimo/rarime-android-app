@@ -486,7 +486,7 @@ class ProofViewModel @Inject constructor(
         }
     }
 
-    suspend fun lightRegistration(): ZkProof {
+    suspend fun lightRegistration() {
         val privateKeyBytes = privateKeyBytes!!
         val eDocument = eDoc.value!!
 
@@ -515,7 +515,8 @@ class ProofViewModel @Inject constructor(
             )
         }
 
-        return lightProof
+
+        val res = registrationManager.lightRegistration(eDocument, lightProof)
 
     }
 
@@ -583,7 +584,6 @@ class ProofViewModel @Inject constructor(
                 throw Exception("Unsupported Light Circuit type")
             }
         }
-
 
         return zkProof
     }

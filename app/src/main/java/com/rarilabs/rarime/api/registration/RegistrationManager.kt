@@ -4,6 +4,7 @@ import RegisterIdentityCircuitType
 import android.util.Log
 import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
+import com.rarilabs.rarime.api.registration.models.VerifySodResponse
 import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
 import com.rarilabs.rarime.contracts.rarimo.StateKeeper
 import com.rarilabs.rarime.manager.RarimoContractManager
@@ -129,6 +130,10 @@ class RegistrationManager @Inject constructor(
                 rarimoContractManager.checkIsTransactionSuccessful(it)
             }
         }
+    }
+
+    suspend fun lightRegistration(eDocument: EDocument, zkProof: ZkProof): VerifySodResponse {
+        return registrationAPIManager.lightRegistration(eDocument, zkProof)
     }
 
     suspend fun getPassportInfo(eDocument: EDocument): Tuple2<StateKeeper.PassportInfo, StateKeeper.IdentityInfo>? {
