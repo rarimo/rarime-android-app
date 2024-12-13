@@ -51,7 +51,7 @@ fun ExtIntQueryProofHandler(
     viewModel: ExtIntQueryProofHandlerViewModel = hiltViewModel(),
 
     queryParams: Map<String, String?>?,
-    onSuccess: () -> Unit = {},
+    onSuccess: (destination: String?) -> Unit = {},
     onFail: () -> Unit = {},
     onCancel: () -> Unit = {}
 ) {
@@ -66,14 +66,19 @@ fun ExtIntQueryProofHandler(
 
     val sheetState = rememberAppSheetState(true)
 
+    LaunchedEffect(Unit) {
+        sheetState.show()
+    }
     LaunchedEffect(sheetState.showSheet) {
         if (!sheetState.showSheet) {
+            sheetState.hide() // Reset state after hiding
             onCancel.invoke()
         }
     }
 
     fun onSuccessHandler() {
         scope.launch {
+            val redirectURL = queryParams?.get("redirect_uri")
             mainViewModel.showSnackbar(
                 getSnackbarDefaultShowOptions(
                     severity = SnackbarSeverity.Success,
@@ -82,7 +87,7 @@ fun ExtIntQueryProofHandler(
                     message = context.getString(R.string.query_proof_success_subtitle),
                 )
             )
-            onSuccess.invoke()
+            onSuccess.invoke(redirectURL)
         }
     }
 

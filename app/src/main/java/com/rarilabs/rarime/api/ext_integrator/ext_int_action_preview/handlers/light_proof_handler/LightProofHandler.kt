@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 fun LightProofHandler(
     queryParams: Map<String, String?>?,
     onCancel: () -> Unit = {},
-    onSuccess: () -> Unit = {},
+    onSuccess: (destination: String?) -> Unit = {},
     onFail: () -> Unit = {},
 
     viewModel: LightProofHandlerViewModel = hiltViewModel()
@@ -28,6 +28,9 @@ fun LightProofHandler(
     val mainViewModel = LocalMainViewModel.current
 
     fun onSuccessHandler() {
+
+        val redirectUri = queryParams?.get("redirect_uri")
+
         scope.launch {
             mainViewModel.showSnackbar(
                 options = getSnackbarDefaultShowOptions(
@@ -38,7 +41,7 @@ fun LightProofHandler(
                 )
             )
         }
-        onSuccess.invoke()
+        onSuccess.invoke(redirectUri)
     }
 
     fun onFailHandler(e: Exception) {

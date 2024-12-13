@@ -62,8 +62,13 @@ fun HandlerPreviewerLayout(
 
     val sheetState = rememberAppSheetState(true)
 
+    LaunchedEffect(Unit) {
+        sheetState.show()
+    }
+
     LaunchedEffect(sheetState.showSheet) {
         if (!sheetState.showSheet) {
+            sheetState.hide()
             onCancel.invoke()
         }
     }

@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.modules.home.components.passport
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -74,10 +73,8 @@ fun HomeScreenPassportMainContent(
 
     val pointsToken by homeViewModel.pointsToken.collectAsState()
 
-    val isAirDropClaimed by homeViewModel.isAirDropClaimed.collectAsState()
 
     val rarimoInfoSheetState = rememberAppSheetState()
-    val specificAppSheetState = rememberAppSheetState()
     val verifyPassportSheetState = rememberAppSheetState()
 
     fun reloadUserDetails() = run {
