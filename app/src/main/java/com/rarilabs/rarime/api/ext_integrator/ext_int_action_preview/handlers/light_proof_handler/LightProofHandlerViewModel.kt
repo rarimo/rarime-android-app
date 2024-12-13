@@ -95,8 +95,14 @@ class LightProofHandlerViewModel @Inject constructor(
             queryProofPubSignals.add(citizenshipBN.toString())
 
             // sex
-            val sex = passportManager.passport.value?.personDetails?.gender
+            val sexRaw = passportManager.passport.value?.personDetails?.gender
                 ?: throw Exception("sex is null")
+
+            val sex = when (sexRaw) {
+                "MALE" -> "M"
+                "FEMALE" -> "F"
+                else -> "O"
+            }
 
             val sexBN = BigInteger(sex.toByteArray())
 
