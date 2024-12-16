@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloatAsState
@@ -37,7 +38,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
 import com.rarilabs.rarime.ui.components.AppBottomSheet
@@ -64,10 +64,10 @@ val LocalMainViewModel = compositionLocalOf<MainViewModel> { error("No MainViewM
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
+    navController: NavHostController
 ) {
     val coroutineScope = rememberCoroutineScope()
     val appLoadingState = mainViewModel.appLoadingState
-    val navController: NavHostController = rememberNavController()
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
@@ -193,6 +193,8 @@ fun MainScreenContent(
         { route: String ->
             val currentPointsToken = pointsTokenState.value
             val currentEnterProgramSheetState = enterProgramSheetStateState.value
+
+            Log.d("URL string", route)
             if (route == Screen.Main.Rewards.RewardsMain.route) {
                 if (currentPointsToken?.balanceDetails?.attributes == null) {
                     currentEnterProgramSheetState.show()

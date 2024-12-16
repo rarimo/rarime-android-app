@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.util
 
+import android.net.Uri
 import java.util.Locale
 
 /**
@@ -29,5 +30,37 @@ object StringUtil {
             restPart = restPart.substring(1)
         }
         return firstPart + personalNumber + restPart
+    }
+
+    fun parseHost(rawURL: String): String? {
+        return try {
+            val uri = Uri.parse(rawURL)
+            when (uri.scheme) {
+                "http", "https" -> uri.host
+                else -> uri.authority ?: uri.host
+            }
+        } catch (e: Exception) {
+            extractTargetRaw(rawURL)
+        }
+    }
+
+    private fun extractTargetRaw(url: String): String? {
+        try {
+            // Find the start of the target (after the scheme delimiter "://")
+            val schemeDelimiter = "://"
+            val startIndex = url.indexOf(schemeDelimiter)
+            if (startIndex == -1) return null // No scheme delimiter found
+
+            // Extract the substring starting after "://"
+            val remainder = url.substring(startIndex + schemeDelimiter.length)
+
+            // Find the first "/" after the scheme to isolate the target
+            val endIndex = remainder.indexOf("/")
+            return if (endIndex == -1) remainder else remainder.substring(0, endIndex)
+        } catch (e: Exception) {
+            // Log errors for invalid input
+            println("Error extracting target: ${e.message}")
+            return null
+        }
     }
 }

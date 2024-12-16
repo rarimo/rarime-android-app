@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -128,9 +127,12 @@ fun ExtIntQueryProofHandler(
 
             try {
                 val proofParamsUrl = queryParams?.get("proof_params_url")
+                val redirectUri = queryParams?.get("redirect_uri")
+
+
 
                 proofParamsUrl?.let {
-                    viewModel.loadDetails(proofParamsUrl)
+                    viewModel.loadDetails(proofParamsUrl, redirectUri!!)
                 } ?: run {
                     throw Exception("proof_params_url is null")
                 }
@@ -166,7 +168,6 @@ private fun ExtIntQueryProofHandlerContent(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.75f)
                 .padding(
                     top = 24.dp,
                     start = 24.dp,

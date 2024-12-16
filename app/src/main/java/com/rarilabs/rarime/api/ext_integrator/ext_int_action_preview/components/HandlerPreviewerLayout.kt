@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,6 +35,7 @@ import com.rarilabs.rarime.ui.components.TertiaryButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
+import com.rarilabs.rarime.util.StringUtil
 import kotlinx.coroutines.launch
 
 data class HandlerPreviewerLayoutTexts(
@@ -109,18 +109,13 @@ fun HandlerPreviewerLayout(
         }
     }
 
-    HandlerPreviewerLayoutContent(
-        previewFields = previewFields,
+    HandlerPreviewerLayoutContent(previewFields = previewFields,
 
         texts = texts,
 
-        isLoaded = isLoaded,
-        isSubmitting = isSubmitting,
-        sheetState = sheetState,
+        isLoaded = isLoaded, isSubmitting = isSubmitting, sheetState = sheetState,
 
-        handleAccept = { handleAccept() },
-        onCancel = { onCancel() }
-    )
+        handleAccept = { handleAccept() }, onCancel = { onCancel() })
 }
 
 @Composable
@@ -129,12 +124,9 @@ private fun HandlerPreviewerLayoutContent(
 
     texts: HandlerPreviewerLayoutTexts,
 
-    isLoaded: Boolean = false,
-    isSubmitting: Boolean,
-    sheetState: AppSheetState,
+    isLoaded: Boolean = false, isSubmitting: Boolean, sheetState: AppSheetState,
 
-    handleAccept: () -> Unit = {},
-    onCancel: () -> Unit = {}
+    handleAccept: () -> Unit = {}, onCancel: () -> Unit = {}
 ) {
     AppBottomSheet(
         state = sheetState,
@@ -143,19 +135,14 @@ private fun HandlerPreviewerLayoutContent(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.75f)
                 .padding(
-                    top = 24.dp,
-                    start = 24.dp,
-                    end = 24.dp,
-                    bottom = 16.dp
+                    top = 24.dp, start = 24.dp, end = 24.dp, bottom = 16.dp
                 )
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = texts.title,
@@ -173,10 +160,20 @@ private fun HandlerPreviewerLayoutContent(
 
             if (previewFields.isNotEmpty()) {
                 previewFields.forEach { (key, value) ->
-                    HandlerPreviewerLayoutRow(
-                        key = key,
-                        value = value
-                    )
+                    if (key == "Redirection URL") {
+                        val url = StringUtil.parseHost(value)
+                        if (url != null) {
+                            HandlerPreviewerLayoutRow(
+                                key = key, value = url
+                            )
+                        }
+
+                    } else {
+                        HandlerPreviewerLayoutRow(
+                            key = key, value = value
+                        )
+                    }
+
                 }
             } else {
                 repeat(3) {
@@ -202,24 +199,19 @@ private fun HandlerPreviewerLayoutContent(
             Spacer(modifier = Modifier.weight(1f))
 
             Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                PrimaryButton(
-                    modifier = Modifier.fillMaxWidth(),
+                PrimaryButton(modifier = Modifier.fillMaxWidth(),
                     text = "Accept",
                     size = ButtonSize.Large,
                     enabled = !isSubmitting && isLoaded,
-                    onClick = { handleAccept() }
-                )
+                    onClick = { handleAccept() })
 
-                TertiaryButton(
-                    modifier = Modifier.fillMaxWidth(),
+                TertiaryButton(modifier = Modifier.fillMaxWidth(),
                     text = "Cancel",
                     size = ButtonSize.Large,
                     enabled = !isSubmitting && isLoaded,
-                    onClick = { onCancel.invoke() }
-                )
+                    onClick = { onCancel.invoke() })
             }
         }
     }
@@ -227,9 +219,7 @@ private fun HandlerPreviewerLayoutContent(
 
 @Composable
 fun HandlerPreviewerLayoutRow(
-    modifier: Modifier = Modifier,
-    key: String,
-    value: String
+    modifier: Modifier = Modifier, key: String, value: String
 ) {
     Row(
         modifier = Modifier
@@ -257,21 +247,15 @@ fun HandlerPreviewerLayoutRow(
 @Preview(showBackground = true)
 @Composable
 fun HandlerPreviewerLayoutContentPreview() {
-    HandlerPreviewerLayoutContent(
-        previewFields = mapOf(
-            "Key 1" to "Value 1",
-            "Key 2" to "Value 2",
-            "Key 3" to "Value 3"
-        ),
+    HandlerPreviewerLayoutContent(previewFields = mapOf(
+        "Key 1" to "Value 1", "Key 2" to "Value 2", "Key 3" to "Value 3"
+    ),
 
         texts = HandlerPreviewerLayoutTexts(
             title = "Title"
         ),
 
-        isSubmitting = false,
-        sheetState = rememberAppSheetState(true),
+        isSubmitting = false, sheetState = rememberAppSheetState(true),
 
-        handleAccept = { },
-        onCancel = { }
-    )
+        handleAccept = { }, onCancel = { })
 }

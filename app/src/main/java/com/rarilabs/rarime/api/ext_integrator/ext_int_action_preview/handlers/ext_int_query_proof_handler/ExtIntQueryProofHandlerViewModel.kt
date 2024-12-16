@@ -53,7 +53,7 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
     val fieldsParams: StateFlow<Map<String, String>>
         get() = _fieldsParams.asStateFlow()
 
-    suspend fun loadDetails(proofParamsUrl: String) {
+    suspend fun loadDetails(proofParamsUrl: String, redirectUrl: String) {
         _queryProofParametersRequest.value = extIntegratorApiManager.queryProofData(proofParamsUrl)
 
         val passportInfoKey: String = if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {
@@ -143,6 +143,8 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
                     nationality
                 )
             }
+
+
         } catch (e: Exception) {
             Log.e("nationality", e.message, e)
         }

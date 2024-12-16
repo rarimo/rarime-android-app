@@ -20,7 +20,6 @@ fun LightProofHandler(
     onCancel: () -> Unit = {},
     onSuccess: (destination: String?) -> Unit = {},
     onFail: () -> Unit = {},
-
     viewModel: LightProofHandlerViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -71,8 +70,9 @@ fun LightProofHandler(
         loadPreviewFields = {
             val proofParamsUrl = queryParams?.get("proof_params_url")
                 ?: throw Exception("Missing required parameters")
+            val redirectUri = queryParams.get("redirect_uri")
 
-            viewModel.loadDetails(proofParamsUrl)
+            viewModel.loadDetails(proofParamsUrl, redirectUri)
         },
 
         texts = HandlerPreviewerLayoutTexts(
