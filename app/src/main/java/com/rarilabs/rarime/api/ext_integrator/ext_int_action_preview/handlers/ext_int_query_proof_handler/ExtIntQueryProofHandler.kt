@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -44,6 +43,8 @@ import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
 @Composable
@@ -51,7 +52,7 @@ fun ExtIntQueryProofHandler(
     viewModel: ExtIntQueryProofHandlerViewModel = hiltViewModel(),
 
     queryParams: Map<String, String?>?,
-    onSuccess: () -> Unit = {},
+    onSuccess: (destination: String?) -> Unit = {},
     onFail: () -> Unit = {},
     onCancel: () -> Unit = {}
 ) {
@@ -66,24 +67,36 @@ fun ExtIntQueryProofHandler(
 
     val sheetState = rememberAppSheetState(true)
 
+    LaunchedEffect(Unit) {
+        sheetState.show()
+    }
     LaunchedEffect(sheetState.showSheet) {
         if (!sheetState.showSheet) {
+            sheetState.hide() // Reset state after hiding
             onCancel.invoke()
         }
     }
 
     fun onSuccessHandler() {
+        val redirectUrl = queryParams?.get("redirect_uri")
+
         scope.launch {
-            mainViewModel.showSnackbar(
-                getSnackbarDefaultShowOptions(
-                    severity = SnackbarSeverity.Success,
-                    duration = SnackbarDuration.Long,
-                    title = context.getString(R.string.query_proof_success_title),
-                    message = context.getString(R.string.query_proof_success_subtitle),
+            val snackBar = async {
+                mainViewModel.showSnackbar(
+                    options = getSnackbarDefaultShowOptions(
+                        severity = SnackbarSeverity.Success,
+                        duration = SnackbarDuration.Long,
+                        title = context.getString(R.string.light_verification_success_title),
+                        message = context.getString(R.string.light_verification_success_subtitle),
+                    )
                 )
-            )
-            onSuccess.invoke()
+            }
+            val redirect = async { onSuccess.invoke(redirectUrl) }
+
+            awaitAll(snackBar, redirect)
         }
+
+
     }
 
     fun onFailHandler() {
@@ -123,9 +136,12 @@ fun ExtIntQueryProofHandler(
 
             try {
                 val proofParamsUrl = queryParams?.get("proof_params_url")
+                val redirectUrl = queryParams?.get("redirect_uri")
+
+
 
                 proofParamsUrl?.let {
-                    viewModel.loadDetails(proofParamsUrl)
+                    viewModel.loadDetails(proofParamsUrl, redirectUrl!!)
                 } ?: run {
                     throw Exception("proof_params_url is null")
                 }
@@ -161,7 +177,6 @@ private fun ExtIntQueryProofHandlerContent(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.75f)
                 .padding(
                     top = 24.dp,
                     start = 24.dp,

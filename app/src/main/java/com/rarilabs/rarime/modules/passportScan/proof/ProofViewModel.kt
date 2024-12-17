@@ -2,8 +2,6 @@ package com.rarilabs.rarime.modules.passportScan.proof
 
 import RegisterIdentityCircuitType
 import android.app.Application
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import com.google.gson.Gson
@@ -597,11 +595,6 @@ class ProofViewModel @Inject constructor(
         )
 
         registrationManager.setMasterCertProof(proof)
-
-        val clipboard =
-            (application as Context).getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
-        val clip = ClipData.newPlainText(null, Gson().toJson(inputs))
-        clipboard!!.setPrimaryClip(clip)
 
         return gson.toJson(inputs).toByteArray()
     }

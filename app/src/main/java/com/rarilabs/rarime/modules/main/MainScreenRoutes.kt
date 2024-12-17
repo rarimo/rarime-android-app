@@ -150,7 +150,7 @@ fun MainScreenRoutes(
         }
 
         composable(Screen.NotificationsList.route) {
-            NotificationsScreen(onBack = {navController.popBackStack()})
+            NotificationsScreen(onBack = { navController.popBackStack() })
         }
 
         composable(Screen.EnableBiometrics.route) {
@@ -372,9 +372,15 @@ fun MainScreenRoutes(
                     uriPattern = "rarime://${Screen.ExtIntegrator.route}"
                     action = Intent.ACTION_VIEW
                 },
+                navDeepLink {
+                    uriPattern =
+                        "android-app://androidx.navigation/rarime://${Screen.ExtIntegrator.route}"
+                    action = Intent.ACTION_VIEW
+                },
             ),
         ) { entry ->
-            val context = LocalContext.current
+
+        val context = LocalContext.current
             val activity = context as? Activity
             val dataUri = activity?.intent?.data
 

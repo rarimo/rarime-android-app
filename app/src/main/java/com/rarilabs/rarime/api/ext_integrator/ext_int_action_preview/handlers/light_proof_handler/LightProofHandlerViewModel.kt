@@ -186,7 +186,11 @@ class LightProofHandlerViewModel @Inject constructor(
             val citizenshipMask = it.citizenship_mask
 
             val citizenshipMaskBN =
-                if (citizenshipMask.isEmpty() || citizenshipMask == "0x") BigInteger(Numeric.hexStringToByteArray("0x303030303030")) else BigInteger(
+                if (citizenshipMask.isEmpty() || citizenshipMask == "0x") BigInteger(
+                    Numeric.hexStringToByteArray(
+                        "0x303030303030"
+                    )
+                ) else BigInteger(
                     Numeric.hexStringToByteArray(citizenshipMask)
                 )
 
@@ -209,7 +213,7 @@ class LightProofHandlerViewModel @Inject constructor(
         )
     }
 
-    suspend fun loadDetails(proofParamsUrl: String): Map<String, String> {
+    suspend fun loadDetails(proofParamsUrl: String, redirectUrl: String?): Map<String, String> {
         _queryProofParametersRequest.value = extIntegratorApiManager.queryProofData(proofParamsUrl)
 
         val tempMap = mutableMapOf<String, String>()
@@ -271,6 +275,11 @@ class LightProofHandlerViewModel @Inject constructor(
         } catch (e: Exception) {
             Log.e("nationality", e.message, e)
         }
+
+        if (redirectUrl != null) {
+            tempMap["Redirection URL"] = redirectUrl
+        }
+
 
         return tempMap
     }
