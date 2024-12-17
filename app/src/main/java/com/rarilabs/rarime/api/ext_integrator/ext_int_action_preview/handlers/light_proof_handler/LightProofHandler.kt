@@ -12,6 +12,8 @@ import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.components.
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.ui.components.SnackbarSeverity
 import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
 @Composable
@@ -28,24 +30,29 @@ fun LightProofHandler(
 
     fun onSuccessHandler() {
 
-        val redirectUri = queryParams?.get("redirect_uri")
+        val redirectUrl = queryParams?.get("redirect_uri")
 
         scope.launch {
-            mainViewModel.showSnackbar(
-                options = getSnackbarDefaultShowOptions(
-                    severity = SnackbarSeverity.Success,
-                    duration = SnackbarDuration.Long,
-                    title = context.getString(R.string.light_verification_success_title),
-                    message = context.getString(R.string.light_verification_success_subtitle),
+            val snackBar = async {
+                mainViewModel.showSnackbar(
+                    options = getSnackbarDefaultShowOptions(
+                        severity = SnackbarSeverity.Success,
+                        duration = SnackbarDuration.Long,
+                        title = context.getString(R.string.light_verification_success_title),
+                        message = context.getString(R.string.light_verification_success_subtitle),
+                    )
                 )
-            )
+            }
+            val redirect = async { onSuccess.invoke(redirectUrl) }
+
+            awaitAll(snackBar, redirect)
         }
-        onSuccess.invoke(redirectUri)
+
     }
 
     fun onFailHandler(e: Exception) {
         scope.launch {
-            val message = when(e) {
+            val message = when (e) {
                 is YourAgeDoesNotMeetTheRequirements -> context.getString(R.string.light_verification_error_age)
                 is YourCitizenshipDoesNotMeetTheRequirements -> context.getString(R.string.light_verification_error_citizenship)
                 else -> context.getString(R.string.light_verification_error_subtitle)
@@ -70,9 +77,9 @@ fun LightProofHandler(
         loadPreviewFields = {
             val proofParamsUrl = queryParams?.get("proof_params_url")
                 ?: throw Exception("Missing required parameters")
-            val redirectUri = queryParams.get("redirect_uri")
+            val redirectUrl = queryParams.get("redirect_uri")
 
-            viewModel.loadDetails(proofParamsUrl, redirectUri)
+            viewModel.loadDetails(proofParamsUrl, redirectUrl)
         },
 
         texts = HandlerPreviewerLayoutTexts(

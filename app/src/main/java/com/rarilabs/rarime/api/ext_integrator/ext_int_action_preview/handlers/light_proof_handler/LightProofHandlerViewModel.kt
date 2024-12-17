@@ -213,7 +213,7 @@ class LightProofHandlerViewModel @Inject constructor(
         )
     }
 
-    suspend fun loadDetails(proofParamsUrl: String, redirectionURL: String?): Map<String, String> {
+    suspend fun loadDetails(proofParamsUrl: String, redirectUrl: String?): Map<String, String> {
         _queryProofParametersRequest.value = extIntegratorApiManager.queryProofData(proofParamsUrl)
 
         val tempMap = mutableMapOf<String, String>()
@@ -276,8 +276,8 @@ class LightProofHandlerViewModel @Inject constructor(
             Log.e("nationality", e.message, e)
         }
 
-        if (redirectionURL != null) {
-            tempMap["Redirection URL"] = redirectionURL
+        if (redirectUrl != null) {
+            tempMap["Redirection URL"] = redirectUrl
         }
 
 

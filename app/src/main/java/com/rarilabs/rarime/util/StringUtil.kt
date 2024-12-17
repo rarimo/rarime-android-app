@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.util
 
 import android.net.Uri
+import android.util.Log
 import java.util.Locale
 
 /**
@@ -59,7 +60,7 @@ object StringUtil {
             return if (endIndex == -1) remainder else remainder.substring(0, endIndex)
         } catch (e: Exception) {
             // Log errors for invalid input
-            println("Error extracting target: ${e.message}")
+            Log.i("extractTargetRaw", "Error extracting target: ${e.message}")
             return null
         }
     }

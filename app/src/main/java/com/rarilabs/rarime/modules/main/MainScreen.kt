@@ -98,6 +98,8 @@ fun MainScreen(
 fun AppLoadingScreen() {
     val scale = remember { mutableFloatStateOf(1f) }
 
+
+    // pulse animation
     LaunchedEffect(Unit) {
         while (true) {
             scale.floatValue = 1.1f

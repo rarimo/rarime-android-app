@@ -43,6 +43,8 @@ import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
 @Composable
@@ -76,18 +78,25 @@ fun ExtIntQueryProofHandler(
     }
 
     fun onSuccessHandler() {
+        val redirectUrl = queryParams?.get("redirect_uri")
+
         scope.launch {
-            val redirectURL = queryParams?.get("redirect_uri")
-            mainViewModel.showSnackbar(
-                getSnackbarDefaultShowOptions(
-                    severity = SnackbarSeverity.Success,
-                    duration = SnackbarDuration.Long,
-                    title = context.getString(R.string.query_proof_success_title),
-                    message = context.getString(R.string.query_proof_success_subtitle),
+            val snackBar = async {
+                mainViewModel.showSnackbar(
+                    options = getSnackbarDefaultShowOptions(
+                        severity = SnackbarSeverity.Success,
+                        duration = SnackbarDuration.Long,
+                        title = context.getString(R.string.light_verification_success_title),
+                        message = context.getString(R.string.light_verification_success_subtitle),
+                    )
                 )
-            )
-            onSuccess.invoke(redirectURL)
+            }
+            val redirect = async { onSuccess.invoke(redirectUrl) }
+
+            awaitAll(snackBar, redirect)
         }
+
+
     }
 
     fun onFailHandler() {
@@ -127,12 +136,12 @@ fun ExtIntQueryProofHandler(
 
             try {
                 val proofParamsUrl = queryParams?.get("proof_params_url")
-                val redirectUri = queryParams?.get("redirect_uri")
+                val redirectUrl = queryParams?.get("redirect_uri")
 
 
 
                 proofParamsUrl?.let {
-                    viewModel.loadDetails(proofParamsUrl, redirectUri!!)
+                    viewModel.loadDetails(proofParamsUrl, redirectUrl!!)
                 } ?: run {
                     throw Exception("proof_params_url is null")
                 }
