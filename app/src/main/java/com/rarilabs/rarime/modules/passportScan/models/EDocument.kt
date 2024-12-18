@@ -245,6 +245,7 @@ data class EDocument(
             1024 -> CircuitKeySizeType.B1024
             2048 -> CircuitKeySizeType.B2048
             4096 -> CircuitKeySizeType.B4096
+            521 -> CircuitKeySizeType.B521
             512 -> CircuitKeySizeType.B512
             256 -> CircuitKeySizeType.B256
             320 -> CircuitKeySizeType.B320

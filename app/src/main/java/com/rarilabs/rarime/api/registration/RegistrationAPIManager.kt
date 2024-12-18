@@ -2,19 +2,20 @@ package com.rarilabs.rarime.api.registration
 
 
 import CircuitPassportHashType
-import com.rarilabs.rarime.api.registration.models.DocumentSodAttributes
 import com.rarilabs.rarime.api.registration.models.RegisterBody
 import com.rarilabs.rarime.api.registration.models.RegisterData
 import com.rarilabs.rarime.api.registration.models.RegisterResponseBody
 import com.rarilabs.rarime.api.registration.models.VerifySodRequest
 import com.rarilabs.rarime.api.registration.models.VerifySodRequestAttributes
 import com.rarilabs.rarime.api.registration.models.VerifySodRequestData
+import com.rarilabs.rarime.api.registration.models.VerifySodRequestDocumentSod
 import com.rarilabs.rarime.api.registration.models.VerifySodResponse
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.SecurityUtil
 import com.rarilabs.rarime.util.circuits.SODAlgorithm
 import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.decodeHexString
 import org.web3j.utils.Numeric
 import javax.inject.Inject
 
@@ -74,16 +75,16 @@ class RegistrationAPIManager @Inject constructor(
 
         val sodSignatureAlgorithm =
             SODAlgorithm.fromValue(sodSignatureAlgorithmName)?.getCircuitSignatureAlgorithm()
-            ?: throw IllegalStateException("SOD algorithm not found: $sodSignatureAlgorithmName")
+                ?: throw IllegalStateException("SOD algorithm not found: $sodSignatureAlgorithmName")
 
 
         val request = VerifySodRequest(
             data = VerifySodRequestData(
                 id = "",
-                type = "document-sod",
+                type = "register",
                 attributes = VerifySodRequestAttributes(
                     zk_proof = zkProof,
-                    document_sod = DocumentSodAttributes(
+                    document_sod = VerifySodRequestDocumentSod(
                         hash_algorithm = encapsulatedContentDigestAlgorithm.value.uppercase()
                             .replace("-", ""),
                         signature_algorithm = sodSignatureAlgorithm.name,
@@ -91,7 +92,8 @@ class RegistrationAPIManager @Inject constructor(
                         signature = Numeric.toHexString(signature),
                         encapsulated_content = Numeric.toHexString(encapsulatedContent),
                         pem_file = certPem,
-                        dg15 = eDocument.dg15!!,
+                        dg15 = if (eDocument.dg15 != null) eDocument.dg15!! else "",
+                        sod = Numeric.toHexString(eDocument.sod!!.decodeHexString()),
                         aa_signature = if (eDocument.aaSignature?.isEmpty() != false) "" else Numeric.toHexString(
                             eDocument.aaSignature
                         )

@@ -132,7 +132,8 @@ enum class CircuitKeySizeType {
     B384,
     B3072,
     B224,
-    B512
+    B512,
+    B521
 }
 
 enum class CircuitExponentType {

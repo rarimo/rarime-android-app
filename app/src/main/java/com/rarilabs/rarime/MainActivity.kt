@@ -1,11 +1,14 @@
 package com.rarilabs.rarime
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.appsflyer.AppsFlyerLib
 import com.appsflyer.deeplink.DeepLink
 import com.appsflyer.deeplink.DeepLinkListener
@@ -23,6 +26,11 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var nfcManager: NfcManager
 
+
+    private var navController: NavHostController? = null
+
+    private var deepLinkData: Uri? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
@@ -32,13 +40,15 @@ class MainActivity : AppCompatActivity() {
         nfcManager.activity = this
 
         setContent {
+            navController = rememberNavController()
             InAppUpdate(activity = this)
-            MainScreen()
+            MainScreen(navController = navController!!)
         }
     }
 
     override fun onPause() {
         super.onPause()
+
 
         if (nfcManager.state.value != ScanNFCState.NOT_SCANNING) {
             nfcManager.disableForegroundDispatch()
@@ -49,6 +59,14 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+
+        if (navController != null) {
+            val data = intent.data
+            handleDeepLink(data)
+        }
+
+
+
         nfcManager.handleNewIntent(intent)
     }
 
@@ -78,5 +96,17 @@ class MainActivity : AppCompatActivity() {
 
         AppsFlyerLib.getInstance().start(application.applicationContext)
     }
-
+    private fun handleDeepLink(uri: Uri?) {
+        if (uri == null) {
+            Log.i("uri", "uri is null")
+            return
+        }
+        //TODO: there is an issue that will cause onNewIntent to be called twice when the activity is already present.
+        if (intent?.data != null) {
+            deepLinkData = uri
+            navController?.navigate(uri)
+        } else {
+            Log.i("Smt wrong", "intent?.data == null")
+        }
+    }
 }

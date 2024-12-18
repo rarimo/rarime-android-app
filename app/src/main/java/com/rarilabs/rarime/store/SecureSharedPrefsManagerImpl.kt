@@ -6,6 +6,7 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.rarilabs.rarime.api.registration.models.LightRegistrationData
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.data.enums.AppLanguage
 import com.rarilabs.rarime.data.enums.PassportCardLook
@@ -47,7 +48,8 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "REFRESH_TOKEN" to "REFRESH_TOKEN",
         "IS_IN_WAITLIST" to "IS_IN_WAITLIST",
         "IS_LOGS_DELETED" to "IS_LOGS_DELETED",
-        "DEFERRED_REFERRAL_CODE" to "DEFERRED_REFERRAL_CODE"
+        "DEFERRED_REFERRAL_CODE" to "DEFERRED_REFERRAL_CODE",
+        "LIGHT_REGISTRATION_DATA" to "LIGHT_REGISTRATION_DATA"
     )
 
     private val PREFS_FILE_NAME = "sharedPrefFile12"
@@ -392,6 +394,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     override fun readIsLogsDeleted(): Boolean {
         return getSharedPreferences().getBoolean(accessTokens["IS_LOGS_DELETED"], false)
     }
+
     override fun saveIsLogsDeleted(isLogsDeleted: Boolean) {
         val editor = getEditor()
         editor.putBoolean(accessTokens["IS_LOGS_DELETED"], isLogsDeleted)
@@ -406,5 +409,24 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
 
     override fun getDeferredReferralCode(): String? {
         return getSharedPreferences().getString(accessTokens["DEFERRED_REFERRAL_CODE"], null)
+    }
+
+    override fun saveLightRegistrationData(lightRegistrationData: LightRegistrationData) {
+        val editor = getEditor()
+        val lightRegistrationDataJson = Gson().toJson(lightRegistrationData)
+        editor.putString(accessTokens["LIGHT_REGISTRATION_DATA"], lightRegistrationDataJson)
+        editor.apply()
+    }
+
+    override fun getLightRegistrationData(): LightRegistrationData? {
+        val lightRegistrationDataJson =
+            getSharedPreferences().getString(accessTokens["LIGHT_REGISTRATION_DATA"], null)
+
+        val lightRegistrationData = Gson().fromJson(
+            lightRegistrationDataJson,
+            LightRegistrationData::class.java
+        )
+
+        return lightRegistrationData
     }
 }

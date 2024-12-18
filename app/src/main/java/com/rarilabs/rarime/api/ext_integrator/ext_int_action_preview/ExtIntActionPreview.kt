@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.ext_int_query_proof_handler.ExtIntQueryProofHandler
@@ -17,14 +18,17 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 fun ExtIntActionPreview(
     dataUri: Uri?,
     onCancel: () -> Unit = {},
-    onSuccess: () -> Unit = {},
+    onSuccess: (destination: String?) -> Unit = {},
     onError: () -> Unit = {}
 ) {
-    val queryParams = dataUri?.queryParameterNames?.associateWith { paramName ->
-        dataUri.getQueryParameter(paramName)
+    val queryParams = remember {
+        dataUri?.queryParameterNames?.associateWith { paramName ->
+            dataUri.getQueryParameter(paramName)
+        }
     }
-
-    val requestType = queryParams?.get("type")
+    val requestType = remember {
+        queryParams?.get("type")
+    }
 
     if (queryParams?.isNotEmpty() == true) {
         when (requestType) {
@@ -32,7 +36,7 @@ fun ExtIntActionPreview(
                 ExtIntQueryProofHandler(
                     queryParams = queryParams,
                     onCancel = onCancel,
-                    onSuccess = { onSuccess() },
+                    onSuccess = { destination -> onSuccess(destination) },
                     onFail = { onError() }
                 )
             }
@@ -41,7 +45,7 @@ fun ExtIntActionPreview(
                 LightProofHandler(
                     queryParams = queryParams,
                     onCancel = onCancel,
-                    onSuccess = { onSuccess() },
+                    onSuccess = { destination -> onSuccess(destination) },
                     onFail = { onError() }
                 )
             }

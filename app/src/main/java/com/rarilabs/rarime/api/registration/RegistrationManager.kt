@@ -76,6 +76,10 @@ class RegistrationManager @Inject constructor(
         _registrationProof.value = proof
     }
 
+    fun setLightRegistrationData() {
+
+    }
+
     fun setEDocument(eDocument: EDocument) {
         _eDocument.value = eDocument
     }
@@ -156,6 +160,39 @@ class RegistrationManager @Inject constructor(
         }
 
         return passportInfo
+    }
+
+    suspend fun lightRegisterRelayer(zkProof: ZkProof, verifySodResponse: VerifySodResponse) {
+        val signature = verifySodResponse.data.attributes.signature.let {
+            it.ifEmpty {
+                throw IllegalStateException("verifySodResponse.data.attributes.signature is empty")
+            }
+        }
+
+        val passportHash = verifySodResponse.data.attributes.passport_hash.let {
+            it.ifEmpty {
+                throw IllegalStateException("verifySodResponse.data.attributes.passport_hash is empty")
+            }
+        }
+
+        val publicKey = verifySodResponse.data.attributes.public_key.let {
+            it.ifEmpty {
+                throw IllegalStateException("verifySodResponse.data.attributes.public_key is null")
+            }
+        }
+
+        val callDataBuilder = CallDataBuilder()
+        val callData = callDataBuilder.buildRegisterSimpleCalldata(
+            Gson().toJson(
+                zkProof
+            ).toByteArray(),
+            Numeric.hexStringToByteArray(signature),
+            Numeric.hexStringToByteArray(passportHash),
+            Numeric.hexStringToByteArray(publicKey),
+            verifySodResponse.data.attributes.verifier
+        )
+
+        registrationAPIManager.register(callData, BaseConfig.REGISTRATION_SIMPLE_CONTRACT_ADRRESS)
     }
 
     @OptIn(ExperimentalStdlibApi::class)

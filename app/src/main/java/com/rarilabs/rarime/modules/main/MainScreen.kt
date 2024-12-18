@@ -1,6 +1,11 @@
 package com.rarilabs.rarime.modules.main
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
@@ -27,12 +32,12 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
 import com.rarilabs.rarime.ui.components.AppBottomSheet
@@ -44,6 +49,7 @@ import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.AppTheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Screen
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 val mainRoutes = listOf(
@@ -58,10 +64,10 @@ val LocalMainViewModel = compositionLocalOf<MainViewModel> { error("No MainViewM
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
+    navController: NavHostController
 ) {
     val coroutineScope = rememberCoroutineScope()
     val appLoadingState = mainViewModel.appLoadingState
-    val navController: NavHostController = rememberNavController()
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
@@ -92,13 +98,15 @@ fun MainScreen(
 fun AppLoadingScreen() {
     val scale = remember { mutableFloatStateOf(1f) }
 
+
+    // pulse animation
     LaunchedEffect(Unit) {
-//        while (true) {
-//            scale.floatValue = 1.1f
-//            delay(500)
-//            scale.floatValue = 1f
-//            delay(500)
-//        }
+        while (true) {
+            scale.floatValue = 1.1f
+            delay(500)
+            scale.floatValue = 1f
+            delay(500)
+        }
     }
 
     val animatedScale by animateFloatAsState(
@@ -141,6 +149,7 @@ fun MainScreenContent(
     navController: NavHostController,
 ) {
     val mainViewModel = LocalMainViewModel.current
+    val context = LocalContext.current
 
     // Collect states using 'by' to avoid accessing .value
     val passportStatus by mainViewModel.passportStatus.collectAsState()
@@ -186,6 +195,8 @@ fun MainScreenContent(
         { route: String ->
             val currentPointsToken = pointsTokenState.value
             val currentEnterProgramSheetState = enterProgramSheetStateState.value
+
+            Log.d("URL string", route)
             if (route == Screen.Main.Rewards.RewardsMain.route) {
                 if (currentPointsToken?.balanceDetails?.attributes == null) {
                     currentEnterProgramSheetState.show()
@@ -239,8 +250,23 @@ fun MainScreenContent(
                     .background(RarimeTheme.colors.backgroundPrimary)
             )
 
-            key(extIntDataURI) {
-                ExtIntActionPreview(dataUri = extIntDataURI)
+            key(extIntDataURI?.second) {
+                extIntDataURI?.first?.let { uri ->
+                    ExtIntActionPreview(dataUri = uri, onSuccess = { deeplink ->
+                        if (!deeplink.isNullOrEmpty()) {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deeplink))
+                            try {
+                                context.startActivity(intent)
+                            } catch (e: ActivityNotFoundException) {
+                                Toast.makeText(
+                                    context,
+                                    "No app available to open this link.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    })
+                }
             }
 
             MainScreenRoutes(

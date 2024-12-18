@@ -3,8 +3,6 @@ package com.rarilabs.rarime.modules.passportScan.proof
 import CircuitPassportHashType
 import RegisterIdentityCircuitType
 import android.app.Application
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import com.google.gson.Gson
@@ -34,6 +32,7 @@ import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.toBits
 import dagger.hilt.android.lifecycle.HiltViewModel
 import identity.CallDataBuilder
+import identity.Identity
 import identity.X509Util
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -524,13 +523,46 @@ class ProofViewModel @Inject constructor(
         _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
 
 
-        val res = registrationManager.lightRegistration(eDocument, lightProof)
+        val registerResponse = registrationManager.lightRegistration(eDocument, lightProof)
+
+        val profile = identityManager.getProfiler()
+        val currentIdentityKey = profile.publicKeyHash
+
+
+        val stateKeeperContract = rarimoContractManager.getStateKeeper()
+
+        val passportInfoKey = if (eDocument.dg15.isNullOrEmpty()) {
+            registerResponse.data.attributes.passport_hash
+        } else {
+            registerResponse.data.attributes.public_key
+        }
+
+        var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
+
+        if (passportInfoKeyBytes.size != 32) {
+            passportInfoKeyBytes = ByteArray(32 - passportInfoKeyBytes.size) + passportInfoKeyBytes
+        }
+
+        val passportInfo = withContext(Dispatchers.IO) {
+            stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send().component1()
+        }
+
+        if (passportInfo.activeIdentity.contentEquals(currentIdentityKey)) {
+            ErrorHandler.logDebug(TAG, "Passport is already registered with this PK")
+            registrationManager.setRegistrationProof(lightProof)
+            identityManager.setLightRegistrationData(registerResponse.data.attributes)
+            return lightProof
+        }
+
 
         _state.value = PassportProofState.FINALIZING
 
+        registrationManager.lightRegisterRelayer(lightProof, registerResponse)
+
+        registrationManager.setRegistrationProof(lightProof)
+        identityManager.setLightRegistrationData(registerResponse.data.attributes)
 
         return lightProof
-
     }
 
     private fun generateLightRegistrationProof(
@@ -613,7 +645,7 @@ class ProofViewModel @Inject constructor(
         val smartChunkingToBlockSize = passportHashType.getChunkSize()
 
         val dg1Chunks = CircuitUtil.smartChunking2(
-            eDocument.dg1!!.decodeHexString(), 1, smartChunkingToBlockSize.toLong()
+            Numeric.hexStringToByteArray(eDocument.dg1), 1, smartChunkingToBlockSize.toLong()
         )
 
         return RegisterIdentityLightInputs(
@@ -719,11 +751,6 @@ class ProofViewModel @Inject constructor(
             slaveMerkleInclusionBranches = proof.siblings.map { (BigInteger(it).toString()) })
 
         registrationManager.setMasterCertProof(proof)
-
-        val clipboard =
-            (application as Context).getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
-        val clip = ClipData.newPlainText(null, Gson().toJson(inputs))
-        clipboard!!.setPrimaryClip(clip)
 
         return gson.toJson(inputs).toByteArray()
     }

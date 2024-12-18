@@ -77,12 +77,13 @@ class MainViewModel @Inject constructor(
     val snackbarHostState: StateFlow<SnackbarHostState>
         get() = _snackbarHostState.asStateFlow()
 
-    private var _extIntDataURI = MutableStateFlow<Uri?>(null)
-    val extIntDataURI: StateFlow<Uri?>
+    private var _extIntDataURI = MutableStateFlow<Pair<Uri?, Long>?>(null)
+    val extIntDataURI: StateFlow<Pair<Uri?, Long>?>
         get() = _extIntDataURI.asStateFlow()
 
     fun setExtIntDataURI(uri: Uri?) {
-        _extIntDataURI.value = uri
+        val tempUrl = uri?.buildUpon()?.build().let { it to System.currentTimeMillis() }
+        _extIntDataURI.value = tempUrl
     }
 
     suspend fun initApp() {

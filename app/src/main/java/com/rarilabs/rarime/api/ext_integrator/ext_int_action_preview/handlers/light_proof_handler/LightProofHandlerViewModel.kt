@@ -12,6 +12,7 @@ import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.modules.passportScan.calculateAgeFromBirthDate
 import com.rarilabs.rarime.util.Country
 import com.rarilabs.rarime.util.DateUtil
+import com.rarilabs.rarime.util.decodeHexString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import identity.Identity
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -121,14 +122,17 @@ class LightProofHandlerViewModel @Inject constructor(
             // eventData
             val eventData = it.event_data
 
-            val eventDataBN = BigInteger(Numeric.hexStringToByteArray(eventData))
+            val eventDataBN = BigInteger(1, Numeric.hexStringToByteArray(eventData))
 
             queryProofPubSignals.add(eventDataBN.toString())
 
-            // idStateRoot
-            val idStateRoot = "0"
 
-            queryProofPubSignals.add(idStateRoot)
+            // idStateRoot
+            val anonymousId = Identity.calculateAnonymousID(
+                passportManager.passport.value!!.dg1!!.decodeHexString(), BaseConfig.POINTS_SVC_ID
+            )
+
+            queryProofPubSignals.add(BigInteger(anonymousId).toString())
 
             // selector
             val selector = it.selector
@@ -192,7 +196,11 @@ class LightProofHandlerViewModel @Inject constructor(
             val citizenshipMask = it.citizenship_mask
 
             val citizenshipMaskBN =
-                if (citizenshipMask.isEmpty() || citizenshipMask == "0x") BigInteger(Numeric.hexStringToByteArray("0x303030303030")) else BigInteger(
+                if (citizenshipMask.isEmpty() || citizenshipMask == "0x") BigInteger(
+                    Numeric.hexStringToByteArray(
+                        "0x303030303030"
+                    )
+                ) else BigInteger(
                     Numeric.hexStringToByteArray(citizenshipMask)
                 )
 
@@ -215,7 +223,7 @@ class LightProofHandlerViewModel @Inject constructor(
         )
     }
 
-    suspend fun loadDetails(proofParamsUrl: String): Map<String, String> {
+    suspend fun loadDetails(proofParamsUrl: String, redirectUrl: String?): Map<String, String> {
         _queryProofParametersRequest.value = extIntegratorApiManager.queryProofData(proofParamsUrl)
 
         val tempMap = mutableMapOf<String, String>()
@@ -277,6 +285,11 @@ class LightProofHandlerViewModel @Inject constructor(
         } catch (e: Exception) {
             Log.e("nationality", e.message, e)
         }
+
+        if (redirectUrl != null) {
+            tempMap["Redirection URL"] = redirectUrl
+        }
+
 
         return tempMap
     }
