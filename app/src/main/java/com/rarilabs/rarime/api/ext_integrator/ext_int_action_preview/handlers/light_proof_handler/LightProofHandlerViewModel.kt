@@ -12,6 +12,7 @@ import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.modules.passportScan.calculateAgeFromBirthDate
 import com.rarilabs.rarime.util.Country
 import com.rarilabs.rarime.util.DateUtil
+import com.rarilabs.rarime.util.decodeHexString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import identity.Identity
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -95,8 +96,14 @@ class LightProofHandlerViewModel @Inject constructor(
             queryProofPubSignals.add(citizenshipBN.toString())
 
             // sex
-            val sex = passportManager.passport.value?.personDetails?.gender
+            val sexRaw = passportManager.passport.value?.personDetails?.gender
                 ?: throw Exception("sex is null")
+
+            val sex = when (sexRaw) {
+                "MALE" -> "M"
+                "FEMALE" -> "F"
+                else -> "O"
+            }
 
             val sexBN = BigInteger(sex.toByteArray())
 
@@ -115,14 +122,16 @@ class LightProofHandlerViewModel @Inject constructor(
             // eventData
             val eventData = it.event_data
 
-            val eventDataBN = BigInteger(Numeric.hexStringToByteArray(eventData))
+            val eventDataBN = BigInteger(1, Numeric.hexStringToByteArray(eventData))
 
             queryProofPubSignals.add(eventDataBN.toString())
 
             // idStateRoot
-            val idStateRoot = "0"
+            val anonymousId = Identity.calculateAnonymousID(
+                passportManager.passport.value!!.dg1!!.decodeHexString(), BaseConfig.POINTS_SVC_ID
+            )
 
-            queryProofPubSignals.add(idStateRoot)
+            queryProofPubSignals.add(BigInteger(anonymousId).toString())
 
             // selector
             val selector = it.selector
