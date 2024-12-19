@@ -54,7 +54,10 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
         get() = _fieldsParams.asStateFlow()
 
     suspend fun loadDetails(proofParamsUrl: String, redirectUrl: String?) {
-        _queryProofParametersRequest.value = extIntegratorApiManager.queryProofData(proofParamsUrl)
+        _queryProofParametersRequest.value = withContext(Dispatchers.IO) {
+            extIntegratorApiManager.queryProofData(proofParamsUrl)
+        }
+
 
         val passportInfoKey: String = if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {
             identityManager.registrationProof.value!!.pub_signals[1]
@@ -110,14 +113,13 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
         }
 
         try {
-            var uniqueness = queryProofParametersRequest.value?.data?.attributes?.timestamp_upper_bound?.toLong() != 0L ||
-            queryProofParametersRequest.value?.data?.attributes?.identity_counter_upper_bound?.toLong() != 0L
-
-            if (uniqueness) {
-                tempMap.set(
-                    "uniqueness",
-                    ""
-                )
+            val uniqueness =
+                queryProofParametersRequest.value?.data?.attributes?.timestamp_upper_bound?.toLong() != 0L ||
+                        queryProofParametersRequest.value?.data?.attributes?.identity_counter_upper_bound?.toLong() != 0L
+            tempMap["Uniqueness"] = if (uniqueness) {
+                "Yes"
+            } else {
+                "No"
             }
         } catch (e: Exception) {
             Log.e("uniqueness", e.message, e)
@@ -203,8 +205,10 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
         val TimestampLowerbound = queryProofParametersRequest.value!!.data.attributes.timestamp_lower_bound
 
         val TimestampUpperbound =
-            if (identityInfo.value!!.issueTimestamp.toLong() >= queryProofParametersRequest.value!!.data.attributes.timestamp_upper_bound.toLong())
-                (identityInfo.value!!.issueTimestamp.toLong() + 1).toString()
+            if (identityInfo.value!!.issueTimestamp.toString()
+                    .toULong() >= queryProofParametersRequest.value!!.data.attributes.timestamp_upper_bound.toULong()
+            )
+                (identityInfo.value!!.issueTimestamp.toString().toULong() + 1u).toString()
             else queryProofParametersRequest.value!!.data.attributes.timestamp_upper_bound
 
         val IdentityCounterLowerbound = queryProofParametersRequest.value!!.data.attributes.identity_counter_lower_bound.toString()
