@@ -4,6 +4,7 @@ import android.app.Application
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.rarilabs.rarime.config.Keys
+import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.HiltAndroidApp
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.security.Security
@@ -16,6 +17,8 @@ class App: Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        ErrorHandler.initialize(this)
         setupBouncyCastle()
         setupFireBase()
     }

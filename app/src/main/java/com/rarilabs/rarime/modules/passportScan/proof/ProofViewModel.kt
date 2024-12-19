@@ -532,12 +532,12 @@ class ProofViewModel @Inject constructor(
         val stateKeeperContract = rarimoContractManager.getStateKeeper()
 
         val passportInfoKey = if (eDocument.dg15.isNullOrEmpty()) {
-            registerResponse.data.attributes.passport_hash
+            BigInteger(Numeric.hexStringToByteArray(registerResponse.data.attributes.passport_hash))
         } else {
-            registerResponse.data.attributes.public_key
+            BigInteger(Numeric.hexStringToByteArray(registerResponse.data.attributes.public_key))
         }
 
-        var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
+        var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey.toString())
 
         if (passportInfoKeyBytes.size != 32) {
             passportInfoKeyBytes = ByteArray(32 - passportInfoKeyBytes.size) + passportInfoKeyBytes
@@ -557,7 +557,12 @@ class ProofViewModel @Inject constructor(
 
         _state.value = PassportProofState.FINALIZING
 
-        registrationManager.lightRegisterRelayer(lightProof, registerResponse)
+
+        val res = withContext(Dispatchers.IO) {
+            registrationManager.lightRegisterRelayer(lightProof, registerResponse)
+        }
+
+        res
 
         registrationManager.setRegistrationProof(lightProof)
         identityManager.setLightRegistrationData(registerResponse.data.attributes)
