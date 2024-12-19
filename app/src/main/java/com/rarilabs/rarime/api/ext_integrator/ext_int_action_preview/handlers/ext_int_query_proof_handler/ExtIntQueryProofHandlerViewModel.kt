@@ -54,7 +54,10 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
         get() = _fieldsParams.asStateFlow()
 
     suspend fun loadDetails(proofParamsUrl: String, redirectUrl: String?) {
-        _queryProofParametersRequest.value = extIntegratorApiManager.queryProofData(proofParamsUrl)
+        _queryProofParametersRequest.value = withContext(Dispatchers.IO) {
+            extIntegratorApiManager.queryProofData(proofParamsUrl)
+        }
+
 
         val passportInfoKey: String = if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {
             identityManager.registrationProof.value!!.pub_signals[1]
@@ -110,15 +113,13 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
         }
 
         try {
-            var uniqueness =
-                queryProofParametersRequest.value?.data?.attributes?.timestamp_upper_bound?.toULong() != 0uL ||
-                        queryProofParametersRequest.value?.data?.attributes?.identity_counter_upper_bound?.toULong() != 0uL
-
-            if (uniqueness) {
-                tempMap.set(
-                    "uniqueness",
-                    ""
-                )
+            val uniqueness =
+                queryProofParametersRequest.value?.data?.attributes?.timestamp_upper_bound?.toLong() != 0L ||
+                        queryProofParametersRequest.value?.data?.attributes?.identity_counter_upper_bound?.toLong() != 0L
+            tempMap["Uniqueness"] = if (uniqueness) {
+                "Yes"
+            } else {
+                "No"
             }
         } catch (e: Exception) {
             Log.e("uniqueness", e.message, e)

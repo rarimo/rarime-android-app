@@ -50,7 +50,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun ExtIntQueryProofHandler(
     viewModel: ExtIntQueryProofHandlerViewModel = hiltViewModel(),
-
     queryParams: Map<String, String?>?,
     onSuccess: (destination: String?) -> Unit = {},
     onFail: () -> Unit = {},
@@ -95,8 +94,6 @@ fun ExtIntQueryProofHandler(
 
             awaitAll(snackBar, redirect)
         }
-
-
     }
 
     fun onFailHandler() {
@@ -136,15 +133,10 @@ fun ExtIntQueryProofHandler(
 
             try {
                 val proofParamsUrl = queryParams?.get("proof_params_url")
-                val redirectUrl = queryParams?.get("redirect_uri")
+                    ?: throw Exception("Missing required parameters")
+                val redirectUrl = queryParams["redirect_uri"]
 
-
-
-                proofParamsUrl?.let {
-                    viewModel.loadDetails(proofParamsUrl, redirectUrl!!)
-                } ?: run {
-                    throw Exception("proof_params_url is null")
-                }
+                viewModel.loadDetails(proofParamsUrl, redirectUrl)
             } catch (e: Exception) {
                 onFailHandler()
             }
