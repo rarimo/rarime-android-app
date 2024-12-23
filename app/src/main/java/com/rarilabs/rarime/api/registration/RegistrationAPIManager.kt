@@ -31,7 +31,8 @@ class RegistrationAPIManager @Inject constructor(
             RegisterBody(
                 data = RegisterData(
                     tx_data = "0x" + callData.toHexString(),
-                    destination = destination
+                    destination = destination,
+                    no_send = true
                 )
             )
         )

@@ -4,6 +4,7 @@ import RegisterIdentityCircuitType
 import android.util.Log
 import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
+import com.rarilabs.rarime.api.registration.models.LightRegistrationData
 import com.rarilabs.rarime.api.registration.models.VerifySodResponse
 import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
 import com.rarilabs.rarime.contracts.rarimo.StateKeeper
@@ -139,11 +140,13 @@ class RegistrationManager @Inject constructor(
 
     suspend fun getPassportInfo(
         eDocument: EDocument,
-        zkProof: ZkProof
+        zkProof: ZkProof,
+        lightRegistrationData: LightRegistrationData? = null
     ): Tuple2<StateKeeper.PassportInfo, StateKeeper.IdentityInfo>? {
         val stateKeeperContract = rarimoContractManager.getStateKeeper()
 
-        val passportInfoKeyBytes = passportManager.getPassportInfoKey(eDocument, zkProof)
+        val passportInfoKeyBytes =
+            passportManager.getPassportInfoKey(eDocument, zkProof, lightRegistrationData)
 
         val passportInfo = withContext(Dispatchers.IO) {
             stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()

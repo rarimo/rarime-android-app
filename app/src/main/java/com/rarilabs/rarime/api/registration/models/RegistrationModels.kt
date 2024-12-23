@@ -29,5 +29,6 @@ data class RegisterBody(
 @JsonClass(generateAdapter = true)
 data class RegisterData(
     val tx_data: String,
+    val no_send: Boolean,
     val destination: String
 )

@@ -1,7 +1,5 @@
 package com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.ext_int_query_proof_handler
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -275,15 +273,6 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
             BirthDateLowerbound,
             BirthDateUpperbound,
             CitizenshipMask,
-        )
-
-        val clipboardManager =
-            context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-
-        clipboardManager.setPrimaryClip(
-            ClipData.newPlainText(
-                null, queryProofInputs.decodeToString()
-            )
         )
 
         val queryProof = withContext(Dispatchers.Default) {
