@@ -149,16 +149,25 @@ class PassportManager @Inject constructor(
         updatePassportStatus(if (isUnsupported) PassportStatus.WAITLIST_NOT_ALLOWED else PassportStatus.WAITLIST)
     }
 
-    fun getPassportInfoKey(eDocument: EDocument, zkProof: ZkProof): ByteArray {
-        val lightProofData: LightRegistrationData? = dataStoreManager.getLightRegistrationData()
+    fun getPassportInfoKey(
+        eDocument: EDocument,
+        zkProof: ZkProof,
+        lightProofData: LightRegistrationData? = null
+    ): ByteArray {
+
+        var _lightProofData: LightRegistrationData? = lightProofData
+
+        if (_lightProofData == null) {
+            _lightProofData = dataStoreManager.getLightRegistrationData()
+        }
 
         val passportInfoKey: String =
 
-            if (lightProofData != null) {
+            if (_lightProofData != null) {
                 if (eDocument.dg15.isNullOrEmpty()) {
-                    BigInteger(Numeric.hexStringToByteArray(lightProofData.passport_hash)).toString()
+                    BigInteger(Numeric.hexStringToByteArray(_lightProofData.passport_hash)).toString()
                 } else {
-                    BigInteger(Numeric.hexStringToByteArray(lightProofData.public_key)).toString()
+                    BigInteger(Numeric.hexStringToByteArray(_lightProofData.public_key)).toString()
                 }
             } else {
                 if (eDocument.dg15.isNullOrEmpty()) {

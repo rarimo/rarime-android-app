@@ -97,7 +97,6 @@ fun GenerateProofStep(
             } catch (e: Exception) {
                 ErrorHandler.logError("Cant register certificate", "Error: $e", e)
             }
-
             try {
                 proofViewModel.registerByDocument()
                 onClose(registrationProof.value!!)

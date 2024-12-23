@@ -32,7 +32,6 @@ import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.toBits
 import dagger.hilt.android.lifecycle.HiltViewModel
 import identity.CallDataBuilder
-import identity.Identity
 import identity.X509Util
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -426,7 +425,6 @@ class ProofViewModel @Inject constructor(
             throw e
         }
 
-
         val registerIdentityCircuitName = try {
             registerIdentityCircuitType.buildName()
         } catch (e: Exception) {
@@ -477,7 +475,6 @@ class ProofViewModel @Inject constructor(
         }
 
         val ZERO_BYTES32 = ByteArray(32) { 0 }
-
 
         val currentIdentityKey = identityManager.getProfiler().publicKeyHash
         _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
@@ -557,26 +554,15 @@ class ProofViewModel @Inject constructor(
         val profile = identityManager.getProfiler()
         val currentIdentityKey = profile.publicKeyHash
 
-
-        val stateKeeperContract = rarimoContractManager.getStateKeeper()
-
-        val passportInfoKey = if (eDocument.dg15.isNullOrEmpty()) {
-            BigInteger(Numeric.hexStringToByteArray(registerResponse.data.attributes.passport_hash))
-        } else {
-            BigInteger(Numeric.hexStringToByteArray(registerResponse.data.attributes.public_key))
+        val passportInfoKey = withContext(Dispatchers.IO) {
+            registrationManager.getPassportInfo(
+                eDocument,
+                lightProof,
+                registerResponse.data.attributes
+            )!!.component1()
         }
 
-        var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey.toString())
-
-        if (passportInfoKeyBytes.size != 32) {
-            passportInfoKeyBytes = ByteArray(32 - passportInfoKeyBytes.size) + passportInfoKeyBytes
-        }
-
-        val passportInfo = withContext(Dispatchers.IO) {
-            stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send().component1()
-        }
-
-        if (passportInfo.activeIdentity.contentEquals(currentIdentityKey)) {
+        if (passportInfoKey.activeIdentity.contentEquals(currentIdentityKey)) {
             ErrorHandler.logDebug(TAG, "Passport is already registered with this PK")
             registrationManager.setRegistrationProof(lightProof)
             identityManager.setLightRegistrationData(registerResponse.data.attributes)
@@ -801,5 +787,4 @@ class ProofViewModel @Inject constructor(
             null
         }
     }
-
 }
