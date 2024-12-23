@@ -7,6 +7,7 @@ import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.registration.models.VerifySodResponse
 import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
 import com.rarilabs.rarime.contracts.rarimo.StateKeeper
+import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.util.ErrorHandler
@@ -14,7 +15,6 @@ import com.rarilabs.rarime.util.data.ZkProof
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.publicKeyToPem
 import identity.CallDataBuilder
-import identity.Identity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,6 +28,7 @@ import javax.inject.Inject
 class RegistrationManager @Inject constructor(
     private val registrationAPIManager: RegistrationAPIManager,
     private val rarimoContractManager: RarimoContractManager,
+    private val passportManager: PassportManager
 ) {
     private var _masterCertProof = MutableStateFlow<Proof?>(null)
     val masterCertProof: StateFlow<Proof?>
@@ -74,10 +75,6 @@ class RegistrationManager @Inject constructor(
 
     fun setRegistrationProof(proof: ZkProof) {
         _registrationProof.value = proof
-    }
-
-    fun setLightRegistrationData() {
-
     }
 
     fun setEDocument(eDocument: EDocument) {
@@ -140,20 +137,13 @@ class RegistrationManager @Inject constructor(
         return registrationAPIManager.lightRegistration(eDocument, zkProof)
     }
 
-    suspend fun getPassportInfo(eDocument: EDocument): Tuple2<StateKeeper.PassportInfo, StateKeeper.IdentityInfo>? {
+    suspend fun getPassportInfo(
+        eDocument: EDocument,
+        zkProof: ZkProof
+    ): Tuple2<StateKeeper.PassportInfo, StateKeeper.IdentityInfo>? {
         val stateKeeperContract = rarimoContractManager.getStateKeeper()
 
-        val passportInfoKey: String = if (eDocument.dg15.isNullOrEmpty()) {
-            registrationProof.value!!.pub_signals[1]
-        } else {
-            registrationProof.value!!.pub_signals[0]
-        }
-
-        var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
-
-        if (passportInfoKeyBytes.size != 32) {
-            passportInfoKeyBytes = ByteArray(32 - passportInfoKeyBytes.size) + passportInfoKeyBytes
-        }
+        val passportInfoKeyBytes = passportManager.getPassportInfoKey(eDocument, zkProof)
 
         val passportInfo = withContext(Dispatchers.IO) {
             stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()
@@ -192,14 +182,25 @@ class RegistrationManager @Inject constructor(
             verifySodResponse.data.attributes.verifier
         )
 
-        registrationAPIManager.register(callData, BaseConfig.REGISTRATION_SIMPLE_CONTRACT_ADRRESS)
+
+        withContext(Dispatchers.IO) {
+            val response =
+                relayerRegister(callData, BaseConfig.REGISTRATION_SIMPLE_CONTRACT_ADRRESS)
+
+            Log.i("response", response.data.attributes.tx_hash)
+            val txData = response.data.attributes.tx_hash.let {
+                rarimoContractManager.checkIsTransactionSuccessful(it)
+            }
+            Log.i("response", txData.toString())
+        }
+
     }
 
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun getRevocationChallenge(): ByteArray? {
         return withContext(Dispatchers.IO) {
             val passportInfo = withContext(Dispatchers.IO) {
-                getPassportInfo(eDocument.value!!)
+                getPassportInfo(eDocument.value!!, registrationProof.value!!)
             }
 
             _activeIdentity.value = passportInfo!!.component1()!!.activeIdentity

@@ -149,7 +149,7 @@ class ProofViewModel @Inject constructor(
 
 
         val customDispatcher = Executors.newFixedThreadPool(1) { runnable ->
-            Thread(null, runnable, "LargeStackThread", 100 * 1024 * 1024) // 100 MB stack size
+            Thread(null, runnable, "LargeStackThread", 100 * 1024 * 1024) // 800 MB stack size
         }.asCoroutineDispatcher()
 
 
@@ -375,11 +375,41 @@ class ProofViewModel @Inject constructor(
                     )
                 }
 
-                RegisteredCircuitData.REGISTER_IDENTITY_160 -> throw IllegalStateException("You not allowed to be here")
-                RegisteredCircuitData.REGISTER_IDENTITY_224 -> throw IllegalStateException("You not allowed to be here")
-                RegisteredCircuitData.REGISTER_IDENTITY_256 -> throw IllegalStateException("You not allowed to be here")
-                RegisteredCircuitData.REGISTER_IDENTITY_384 -> throw IllegalStateException("You not allowed to be here")
-                RegisteredCircuitData.REGISTER_IDENTITY_512 -> throw IllegalStateException("You not allowed to be here")
+                RegisteredCircuitData.REGISTER_IDENTITY_3_160_3_3_336_200_N -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity316033336200NA
+                    )
+                }
+
+                RegisteredCircuitData.REGISTER_IDENTITY_3_160_3_4_576_216_1_1512_3_256 -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity316034576216115123256
+                    )
+                }
+
+                RegisteredCircuitData.REGISTER_IDENTITY_2_256_3_6_336_264_1_2448_3_256 -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity225636336264124483256
+                    )
+                }
+
+                else -> throw IllegalStateException("You not allowed to be here")
+
             }
         }
 
@@ -440,7 +470,7 @@ class ProofViewModel @Inject constructor(
 
 
         val passportInfo = try {
-            registrationManager.getPassportInfo(eDocument)
+            registrationManager.getPassportInfo(eDocument, proof)
         } catch (e: Exception) {
             ErrorHandler.logError(TAG, "Error: $e", e)
             null
@@ -509,7 +539,6 @@ class ProofViewModel @Inject constructor(
 
         _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
 
-
         val lightProof = withContext(Dispatchers.Default) {
             generateLightRegistrationProof(
                 filePaths!!,
@@ -554,9 +583,7 @@ class ProofViewModel @Inject constructor(
             return lightProof
         }
 
-
         _state.value = PassportProofState.FINALIZING
-
 
         val res = withContext(Dispatchers.IO) {
             registrationManager.lightRegisterRelayer(lightProof, registerResponse)
@@ -580,6 +607,7 @@ class ProofViewModel @Inject constructor(
         val inputs = Gson().toJson(getLightRegistrationInputs(eDocument, privateKey)).toByteArray()
         val assetContext: Context =
             (application as Context).createPackageContext("com.rarilabs.rarime", 0)
+
         val assetManager = assetContext.assets
 
         val zkp = ZKPUseCase(application as Context, assetManager)

@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.manager
 
 import androidx.compose.runtime.mutableStateOf
+import com.rarilabs.rarime.api.registration.models.LightRegistrationData
 import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.enums.PassportStatus
@@ -8,12 +9,15 @@ import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.ErrorHandler
+import com.rarilabs.rarime.util.data.ZkProof
 import identity.Identity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
+import org.web3j.utils.Numeric
+import java.math.BigInteger
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -84,7 +88,7 @@ class PassportManager @Inject constructor(
     suspend fun getPassportActiveIdentity(): String? {
 
         try {
-            val passportInfoKey: String? = if (passport.value?.dg15?.isEmpty() ?: false) {
+            val passportInfoKey: String? = if (passport.value?.dg15?.isEmpty() == true) {
                 identityManager.registrationProof.value?.pub_signals?.get(1)
             } else {
                 identityManager.registrationProof.value?.pub_signals?.get(0)
@@ -105,6 +109,7 @@ class PassportManager @Inject constructor(
 
             return passportInfoRaw.component1().activeIdentity.toHexString()
         } catch (e: Exception) {
+            ErrorHandler.logError("getPassportActiveIdentity", e.message.toString(), e)
             return null
         }
 
@@ -118,14 +123,16 @@ class PassportManager @Inject constructor(
 
         val isInWaitlist = dataStoreManager.readIsInWaitlist()
 
-        val isUnsupported = Constants.NOT_ALLOWED_COUNTRIES.contains(passport.value!!.personDetails?.nationality)
+        val isUnsupported =
+            Constants.NOT_ALLOWED_COUNTRIES.contains(passport.value!!.personDetails?.nationality)
         var isIdentityCreated = false
 
         try {
             val activeIdentity = getPassportActiveIdentity()
 
             isIdentityCreated = activeIdentity != null && activeIdentity.isNotEmpty()
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+        }
 
         if (isInWaitlist) {
             updatePassportStatus(PassportStatus.WAITLIST)
@@ -140,5 +147,39 @@ class PassportManager @Inject constructor(
         }
 
         updatePassportStatus(if (isUnsupported) PassportStatus.WAITLIST_NOT_ALLOWED else PassportStatus.WAITLIST)
+    }
+
+    fun getPassportInfoKey(eDocument: EDocument, zkProof: ZkProof): ByteArray {
+        val lightProofData: LightRegistrationData? = dataStoreManager.getLightRegistrationData()
+
+        val passportInfoKey: String =
+
+            if (lightProofData != null) {
+                if (eDocument.dg15.isNullOrEmpty()) {
+                    BigInteger(Numeric.hexStringToByteArray(lightProofData.passport_hash)).toString()
+                } else {
+                    BigInteger(Numeric.hexStringToByteArray(lightProofData.public_key)).toString()
+                }
+            } else {
+                if (eDocument.dg15.isNullOrEmpty()) {
+                    zkProof.pub_signals[1] //lightProofData.passport_hash
+                } else {
+                    zkProof.pub_signals[0] //lightProofData.public_key
+                }
+            }
+
+
+        var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
+
+        if (passportInfoKeyBytes.size > 32) {
+            passportInfoKeyBytes = ByteArray(32 - passportInfoKeyBytes.size) + passportInfoKeyBytes
+        } else if (passportInfoKeyBytes.size < 32) {
+            val len = 32 - passportInfoKeyBytes.size
+            var tempByteArray = ByteArray(len) { 0 }
+            tempByteArray += passportInfoKeyBytes
+            passportInfoKeyBytes = tempByteArray
+        }
+
+        return passportInfoKeyBytes
     }
 }

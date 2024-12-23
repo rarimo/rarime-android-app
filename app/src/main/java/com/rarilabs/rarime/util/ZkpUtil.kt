@@ -295,6 +295,41 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
+
+    external fun registerIdentity225636336264124483256(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+
+    external fun registerIdentity316033336200NA(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+    external fun registerIdentity316034576216115123256(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
     external fun registerIdentityLight160(
         datFilePath: String,
         datFileLen: Long,
