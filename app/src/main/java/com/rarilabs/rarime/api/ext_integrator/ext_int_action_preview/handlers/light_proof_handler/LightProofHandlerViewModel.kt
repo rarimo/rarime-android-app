@@ -126,6 +126,7 @@ class LightProofHandlerViewModel @Inject constructor(
 
             queryProofPubSignals.add(eventDataBN.toString())
 
+
             // idStateRoot
             val anonymousId = Identity.calculateAnonymousID(
                 passportManager.passport.value!!.dg1!!.decodeHexString(), BaseConfig.POINTS_SVC_ID

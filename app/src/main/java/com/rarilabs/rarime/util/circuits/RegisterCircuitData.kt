@@ -23,7 +23,17 @@ enum class RegisteredCircuitData(val value: String) {
 
     REGISTER_IDENTITY_10_256_3_3_576_248_1_1184_5_264("registerIdentity_10_256_3_3_576_248_1_1184_5_264"),
     REGISTER_IDENTITY_11_256_3_5_576_248_1_1808_4_256("registerIdentity_11_256_3_5_576_248_1_1808_4_256"),
-    REGISTER_IDENTITY_21_256_3_3_576_232_NA("registerIdentity_21_256_3_3_576_232_NA");
+    REGISTER_IDENTITY_21_256_3_3_576_232_NA("registerIdentity_21_256_3_3_576_232_NA"),
+
+    REGISTER_IDENTITY_3_160_3_3_336_200_N("registerIdentity_3_160_3_3_336_200_NA"),
+    REGISTER_IDENTITY_3_160_3_4_576_216_1_1512_3_256("registerIdentity_3_160_3_4_576_216_1_1512_3_256"),
+    REGISTER_IDENTITY_2_256_3_6_336_264_1_2448_3_256("registerIdentity_2_256_3_6_336_264_1_2448_3_256"),
+
+    REGISTER_IDENTITY_160("registerIdentityLight160"),
+    REGISTER_IDENTITY_224("registerIdentityLight224"),
+    REGISTER_IDENTITY_256("registerIdentityLight256"),
+    REGISTER_IDENTITY_384("registerIdentityLight384"),
+    REGISTER_IDENTITY_512("registerIdentityLight512");
 
     companion object {
         private val map = entries.associateBy(RegisteredCircuitData::value)

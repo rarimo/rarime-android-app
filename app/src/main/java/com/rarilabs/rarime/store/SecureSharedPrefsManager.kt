@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.store
 
+import com.rarilabs.rarime.api.registration.models.LightRegistrationData
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.data.enums.AppLanguage
 import com.rarilabs.rarime.data.enums.PassportCardLook
@@ -79,4 +80,7 @@ interface SecureSharedPrefsManager {
 
     fun saveDeferredReferralCode(referralCode: String)
     fun getDeferredReferralCode(): String?
+
+    fun saveLightRegistrationData(lightRegistrationData: LightRegistrationData)
+    fun getLightRegistrationData(): LightRegistrationData?
 }

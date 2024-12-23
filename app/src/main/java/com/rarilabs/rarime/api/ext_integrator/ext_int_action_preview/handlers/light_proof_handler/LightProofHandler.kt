@@ -77,7 +77,7 @@ fun LightProofHandler(
         loadPreviewFields = {
             val proofParamsUrl = queryParams?.get("proof_params_url")
                 ?: throw Exception("Missing required parameters")
-            val redirectUrl = queryParams.get("redirect_uri")
+            val redirectUrl = queryParams["redirect_uri"]
 
             viewModel.loadDetails(proofParamsUrl, redirectUrl)
         },

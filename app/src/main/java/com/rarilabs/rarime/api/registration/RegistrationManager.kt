@@ -4,8 +4,10 @@ import RegisterIdentityCircuitType
 import android.util.Log
 import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
+import com.rarilabs.rarime.api.registration.models.VerifySodResponse
 import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
 import com.rarilabs.rarime.contracts.rarimo.StateKeeper
+import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.util.ErrorHandler
@@ -13,7 +15,6 @@ import com.rarilabs.rarime.util.data.ZkProof
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.publicKeyToPem
 import identity.CallDataBuilder
-import identity.Identity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +28,7 @@ import javax.inject.Inject
 class RegistrationManager @Inject constructor(
     private val registrationAPIManager: RegistrationAPIManager,
     private val rarimoContractManager: RarimoContractManager,
+    private val passportManager: PassportManager
 ) {
     private var _masterCertProof = MutableStateFlow<Proof?>(null)
     val masterCertProof: StateFlow<Proof?>
@@ -131,20 +133,17 @@ class RegistrationManager @Inject constructor(
         }
     }
 
-    suspend fun getPassportInfo(eDocument: EDocument): Tuple2<StateKeeper.PassportInfo, StateKeeper.IdentityInfo>? {
+    suspend fun lightRegistration(eDocument: EDocument, zkProof: ZkProof): VerifySodResponse {
+        return registrationAPIManager.lightRegistration(eDocument, zkProof)
+    }
+
+    suspend fun getPassportInfo(
+        eDocument: EDocument,
+        zkProof: ZkProof
+    ): Tuple2<StateKeeper.PassportInfo, StateKeeper.IdentityInfo>? {
         val stateKeeperContract = rarimoContractManager.getStateKeeper()
 
-        val passportInfoKey: String = if (eDocument.dg15.isNullOrEmpty()) {
-            registrationProof.value!!.pub_signals[1]
-        } else {
-            registrationProof.value!!.pub_signals[0]
-        }
-
-        var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
-
-        if (passportInfoKeyBytes.size != 32) {
-            passportInfoKeyBytes = ByteArray(32 - passportInfoKeyBytes.size) + passportInfoKeyBytes
-        }
+        val passportInfoKeyBytes = passportManager.getPassportInfoKey(eDocument, zkProof)
 
         val passportInfo = withContext(Dispatchers.IO) {
             stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()
@@ -153,11 +152,55 @@ class RegistrationManager @Inject constructor(
         return passportInfo
     }
 
+    suspend fun lightRegisterRelayer(zkProof: ZkProof, verifySodResponse: VerifySodResponse) {
+        val signature = verifySodResponse.data.attributes.signature.let {
+            it.ifEmpty {
+                throw IllegalStateException("verifySodResponse.data.attributes.signature is empty")
+            }
+        }
+
+        val passportHash = verifySodResponse.data.attributes.passport_hash.let {
+            it.ifEmpty {
+                throw IllegalStateException("verifySodResponse.data.attributes.passport_hash is empty")
+            }
+        }
+
+        val publicKey = verifySodResponse.data.attributes.public_key.let {
+            it.ifEmpty {
+                throw IllegalStateException("verifySodResponse.data.attributes.public_key is null")
+            }
+        }
+
+        val callDataBuilder = CallDataBuilder()
+        val callData = callDataBuilder.buildRegisterSimpleCalldata(
+            Gson().toJson(
+                zkProof
+            ).toByteArray(),
+            Numeric.hexStringToByteArray(signature),
+            Numeric.hexStringToByteArray(passportHash),
+            Numeric.hexStringToByteArray(publicKey),
+            verifySodResponse.data.attributes.verifier
+        )
+
+
+        withContext(Dispatchers.IO) {
+            val response =
+                relayerRegister(callData, BaseConfig.REGISTRATION_SIMPLE_CONTRACT_ADRRESS)
+
+            Log.i("response", response.data.attributes.tx_hash)
+            val txData = response.data.attributes.tx_hash.let {
+                rarimoContractManager.checkIsTransactionSuccessful(it)
+            }
+            Log.i("response", txData.toString())
+        }
+
+    }
+
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun getRevocationChallenge(): ByteArray? {
         return withContext(Dispatchers.IO) {
             val passportInfo = withContext(Dispatchers.IO) {
-                getPassportInfo(eDocument.value!!)
+                getPassportInfo(eDocument.value!!, registrationProof.value!!)
             }
 
             _activeIdentity.value = passportInfo!!.component1()!!.activeIdentity

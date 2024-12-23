@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.manager
 
 import com.rarilabs.rarime.BaseConfig
+import com.rarilabs.rarime.api.registration.models.LightRegistrationData
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.data.ZkProof
 import com.rarilabs.rarime.util.decodeHexString
@@ -46,6 +47,13 @@ class IdentityManager @Inject constructor(
         proof?.let {
             dataStoreManager.saveRegistrationProof(proof)
         }
+    }
+
+    fun setLightRegistrationData(data: LightRegistrationData?) {
+        data?.let {
+            dataStoreManager.saveLightRegistrationData(it)
+        }
+
     }
 
     fun getProfiler(): Profile{
@@ -97,4 +105,6 @@ class IdentityManager @Inject constructor(
         _privateKey.value = pk
         dataStoreManager.savePrivateKey(pk)
     }
+
+
 }

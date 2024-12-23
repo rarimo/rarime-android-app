@@ -380,7 +380,7 @@ fun MainScreenRoutes(
             ),
         ) { entry ->
 
-        val context = LocalContext.current
+            val context = LocalContext.current
             val activity = context as? Activity
             val dataUri = activity?.intent?.data
 

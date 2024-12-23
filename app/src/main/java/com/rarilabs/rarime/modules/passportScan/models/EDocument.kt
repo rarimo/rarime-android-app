@@ -101,7 +101,11 @@ data class EDocument(
             // Get the public key from SOD and determine its size
             val sodPublicKey = sodFile.docSigningCertificate.publicKey
             val publicKeySize = getPublicKeySupportedSize(getPublicKeySize(sodPublicKey))
-                ?: throw IllegalStateException("Public key size not found: " + getPublicKeySize(sodPublicKey))
+                ?: throw IllegalStateException(
+                    "Public key size not found: " + getPublicKeySize(
+                        sodPublicKey
+                    )
+                )
 
             // Create the CircuitSignatureType
             val signatureType = CircuitSignatureType(
@@ -131,7 +135,8 @@ data class EDocument(
             val signedAttributes = sodFile.eContent
             val encapsulatedContent = Numeric.hexStringToByteArray(sodFile.readASN1Data())
 
-            val ecHash = MessageDigest.getInstance(digestEncryptionAlgorithm, "BC").digest(encapsulatedContent)
+            val ecHash = MessageDigest.getInstance(digestEncryptionAlgorithm, "BC")
+                .digest(encapsulatedContent)
 
             val ecChunkNumber = getChunkNumber(encapsulatedContent, passportHashType.getChunkSize())
 
@@ -240,6 +245,7 @@ data class EDocument(
             1024 -> CircuitKeySizeType.B1024
             2048 -> CircuitKeySizeType.B2048
             4096 -> CircuitKeySizeType.B4096
+            521 -> CircuitKeySizeType.B521
             512 -> CircuitKeySizeType.B512
             256 -> CircuitKeySizeType.B256
             320 -> CircuitKeySizeType.B320
@@ -256,67 +262,46 @@ data class EDocument(
             val asn1Object = asn1InputStream.readObject()
 
             if (asn1Object !is DLApplicationSpecific) {
-                ErrorHandler.logError(
-                    "Unexpected ASN.1 object type",
-                    asn1Object::class.java.toString()
-                )
                 return null
             }
 
             val content = ASN1Sequence.getInstance(asn1Object.getObject())
-            ErrorHandler.logDebug("DLApplicationSpecific Content:", content.toString())
 
             // Navigate to the issuer
             val issuer = (content.getObjectAt(1) as? ASN1TaggedObject)?.let {
                 ASN1Sequence.getInstance(it.getObject())
             } ?: run {
-                ErrorHandler.logError("Failed to retrieve Issuer", "")
                 return null
             }
-            ErrorHandler.logDebug("Issuer:", issuer.toString())
 
             // Find the RDNSequence
             val rdnSequence = ASN1Sequence.getInstance(issuer)
-            ErrorHandler.logDebug("Issuer RDNSequence:", rdnSequence.toString())
 
             // Find the last element in RDNSequence, which should be a SET
             val lastSet =
                 (rdnSequence.getObjectAt(rdnSequence.size() - 1) as? ASN1TaggedObject)?.let {
                     ASN1Set.getInstance(it.getObject())
                 } ?: rdnSequence.getObjectAt(rdnSequence.size() - 1) as? ASN1Set ?: run {
-                    ErrorHandler.logError("Failed to retrieve Last SET in RDNSequence", "")
                     return null
                 }
-            ErrorHandler.logDebug("Last element in RDNSequence (SET):", lastSet.toString())
 
             // Get the first element in the SET, which should be a SEQUENCE
             val firstElement = lastSet.getObjectAt(0) as? ASN1Sequence ?: run {
                 ErrorHandler.logError("Failed to retrieve First SEQUENCE in SET", "")
                 return null
             }
-            ErrorHandler.logDebug("First element in SET (Sequence):", firstElement.toString())
 
             // Find the pre-last item in the SEQUENCE
             val preLastItem =
                 firstElement.getObjectAt(firstElement.size() - 2) as? ASN1Sequence ?: run {
-                    ErrorHandler.logError(
-                        "Failed to retrieve Pre-last SEQUENCE in First Element",
-                        ""
-                    )
                     return null
                 }
-            ErrorHandler.logDebug(
-                "Pre-last item in first element sequence:",
-                preLastItem.toString()
-            )
 
             // Find the SEQUENCE with 3 elements and get the last element, which should be an INTEGER
             val targetSequence =
                 preLastItem.getObjectAt(preLastItem.size() - 1) as? ASN1Sequence ?: run {
-                    ErrorHandler.logError("Failed to retrieve Target SEQUENCE", "")
                     return null
                 }
-            ErrorHandler.logDebug("Target sequence with 3 elements:", targetSequence.toString())
 
             val targetInteger =
                 (targetSequence.getObjectAt(targetSequence.size() - 1) as? ASN1TaggedObject)?.let {
@@ -330,6 +315,19 @@ data class EDocument(
                 else -> null
             }
         }
+    }
+
+    fun getRegisterIdentityLightCircuitName(): String {
+        val circuitName = "registerIdentityLight"
+
+        val sod = getSodFile()
+
+
+        val digestAlgorithm = sod.digestAlgorithm
+        val passportHashType = CircuitPassportHashType.fromValue(digestAlgorithm)
+            ?: throw IllegalArgumentException("Invalid digest algorithm")
+
+        return circuitName + passportHashType.getId()
     }
 
     private fun getPublicKeyExponent(publicKey: PublicKey?): CircuitExponentType? {
@@ -353,7 +351,7 @@ data class EDocument(
             "brainpoolp384r1" -> CircuitCurveType.BRAINPOOLP384R1
             "secp224r1" -> CircuitCurveType.SECP224R1 // secp224r
             "prime256v1" -> CircuitCurveType.PRIME256V1
-            "prime256v2" -> CircuitCurveType.PRIME256V2
+            "prime256v2" -> CircuitCurveType.PRIME256V1 // prime256v2 --> prime256v1 with seed
             "brainpoolp512r1" -> CircuitCurveType.BRAINPOOLP512R1
             else -> throw IllegalArgumentException("Unsupported curve: " + curve.lowercase())
         }
@@ -435,7 +433,8 @@ object CryptoUtilsPassport {
         try {
 
             // Cast the PublicKey to BouncyCastle's ECPublicKey interface
-            val ecPublicKey = publicKey as? org.bouncycastle.jce.interfaces.ECPublicKey ?: return null
+            val ecPublicKey =
+                publicKey as? org.bouncycastle.jce.interfaces.ECPublicKey ?: return null
 
             // Get the EC point (Q) and normalize it
             val q: ECPoint = ecPublicKey.q.normalize()

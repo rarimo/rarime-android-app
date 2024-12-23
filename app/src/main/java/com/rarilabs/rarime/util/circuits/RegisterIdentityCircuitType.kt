@@ -132,7 +132,8 @@ enum class CircuitKeySizeType {
     B384,
     B3072,
     B224,
-    B512
+    B512,
+    B521
 }
 
 enum class CircuitExponentType {
@@ -151,7 +152,6 @@ enum class CircuitCurveType {
     BRAINPOOLP384R1,
     SECP224R1,
     PRIME256V1,
-    PRIME256V2,
     BRAINPOOLP512R1
 }
 

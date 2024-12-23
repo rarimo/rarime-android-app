@@ -75,35 +75,62 @@ fun GenerateProofStep(
         }
     }
 
+    suspend fun lightRegistration() {
+        try {
+            val proof = proofViewModel.lightRegistration()
+            onClose(proof)
+        } catch (e: Exception) {
+            ErrorHandler.logError("lightRegistration", e.toString(), e)
+            onError(e, registrationProof.value)
+        }
+    }
+
     LaunchedEffect(view) {
         view.keepScreenOn = true
     }
 
     LaunchedEffect(true) {
         scope.launch {
+
+            try {
+                proofViewModel.registerCertificate(eDocument)
+            } catch (e: Exception) {
+                ErrorHandler.logError("Cant register certificate", "Error: $e", e)
+            }
+
             try {
                 proofViewModel.registerByDocument()
                 onClose(registrationProof.value!!)
+            } catch (e: PassportAlreadyRegisteredByOtherPK) {
+                onAlreadyRegistered.invoke(registrationProof.value!!)
+                return@launch
             } catch (e: Exception) {
-                ErrorHandler.logError("registerByDocument", "Error during registerByDocument", e)
-
-                if (e is PassportAlreadyRegisteredByOtherPK) {
-                    onAlreadyRegistered.invoke(registrationProof.value!!)
-                    return@launch
+                ErrorHandler.logError(
+                    "registerByDocument",
+                    "Error during registerByDocument, trying to use light registration",
+                    e
+                )
+                try {
+                    lightRegistration()
+                } catch (e: Exception) {
+                    ErrorHandler.logError(
+                        "lightRegistration",
+                        "Error during lightRegistration",
+                        e
+                    )
+                    if (!Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
+                        joinRewardsProgram()
+                    }
+                    onError(e, registrationProof.value)
                 }
-
-                if (!Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
-                    joinRewardsProgram()
-                }
-
-                onError(e, registrationProof.value)
             }
         }
     }
 
     fun getItemStatus(item: PassportProofState): ProcessingStatus {
         val isSuccess =
-            processingStatus == ProcessingStatus.SUCCESS || (currentState?.value ?: 0) + 1 > item.value
+            processingStatus == ProcessingStatus.SUCCESS || (currentState?.value
+                ?: 0) + 1 > item.value
         if (isSuccess) return ProcessingStatus.SUCCESS
         if (processingStatus == ProcessingStatus.FAILURE) return ProcessingStatus.FAILURE
         return ProcessingStatus.PROCESSING

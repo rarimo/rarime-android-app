@@ -11,9 +11,7 @@ import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 
@@ -51,16 +49,10 @@ class ProfileViewModel @Inject constructor(
         Runtime.getRuntime().exit(0)
     }
 
-    suspend fun getDecryptedFeedbackFile(): File {
+    fun getDecryptedFeedbackFile(): File {
         val pointsNullifier = identityManager.getUserPointsNullifier()
 
         ErrorHandler.logDebug("sendFeedback", "pointsNullifier: $pointsNullifier")
-
-        val activeIdentity = withContext(Dispatchers.IO) {
-            passportManager.getPassportActiveIdentity()
-        }
-
-        ErrorHandler.logDebug("sendFeedback", "activeIdentity: $activeIdentity")
 
         val logFile = ErrorHandler.getLogFile()
 

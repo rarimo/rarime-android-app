@@ -1,9 +1,9 @@
 package com.rarilabs.rarime.modules.passportScan.models
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.registration.RegistrationManager
+import com.rarilabs.rarime.api.registration.models.LightRegistrationData
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.WalletManager
@@ -56,5 +56,9 @@ class ScanPassportScreenViewModel @Inject constructor(
     fun saveRegistrationProof(registrationProof: ZkProof) {
         ErrorHandler.logDebug("ScanPassportScreenViewModel", "saveRegistrationProof")
         identityManager.setRegistrationProof(registrationProof)
+    }
+
+    fun saveLightRegistrationData(lightRegistrationData: LightRegistrationData?) {
+        identityManager.setLightRegistrationData(lightRegistrationData)
     }
 }

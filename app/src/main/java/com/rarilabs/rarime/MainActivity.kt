@@ -35,7 +35,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         installSplashScreen()
 
-        ErrorHandler.initialize(this)
         initAppsFlyer()
         nfcManager.activity = this
 
