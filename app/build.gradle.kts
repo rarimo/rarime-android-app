@@ -32,7 +32,7 @@ android {
         targetSdk = 34
 
 
-        versionCode = 53
+        versionCode = 54
         versionName = "2.1.4"
 
         externalNativeBuild {
