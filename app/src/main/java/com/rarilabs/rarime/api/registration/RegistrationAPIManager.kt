@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.api.registration
 
 
+import CircuitAlgorithmType
 import CircuitPassportHashType
 import com.rarilabs.rarime.api.registration.models.RegisterBody
 import com.rarilabs.rarime.api.registration.models.RegisterData
@@ -78,6 +79,11 @@ class RegistrationAPIManager @Inject constructor(
             SODAlgorithm.fromValue(sodSignatureAlgorithmName)?.getCircuitSignatureAlgorithm()
                 ?: throw IllegalStateException("SOD algorithm not found: $sodSignatureAlgorithmName")
 
+        val sodSignatureAlgorithmNameText = when (sodSignatureAlgorithm) {
+            CircuitAlgorithmType.RSA -> "RSA"
+            CircuitAlgorithmType.RSAPSS -> "RSA-PSS"
+            CircuitAlgorithmType.ECDSA -> "ECDSA"
+        }
 
         val request = VerifySodRequest(
             data = VerifySodRequestData(
@@ -88,7 +94,7 @@ class RegistrationAPIManager @Inject constructor(
                     document_sod = VerifySodRequestDocumentSod(
                         hash_algorithm = encapsulatedContentDigestAlgorithm.value.uppercase()
                             .replace("-", ""),
-                        signature_algorithm = sodSignatureAlgorithm.name,
+                        signature_algorithm = sodSignatureAlgorithmNameText,
                         signed_attributes = Numeric.toHexString(signedAttributes),
                         signature = Numeric.toHexString(signature),
                         encapsulated_content = Numeric.toHexString(encapsulatedContent),

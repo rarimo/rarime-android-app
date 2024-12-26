@@ -468,6 +468,10 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
             throw Exception("Not enough memory for verification ${msg.decodeToString()}")
         }
 
+        if (verification == 3) {
+            throw Exception("Error during verification with code 3 ${msg.decodeToString()}")
+        }
+
         if (verification == 1) {
             throw Exception("Error during verification ${msg.decodeToString()}")
         }
@@ -560,6 +564,10 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
 
         if (verification == 1) {
             throw Exception("Error during verification ${msg.decodeToString()}")
+        }
+
+        if (verification == 3) {
+            throw Exception("Error during verification with code 3 ${msg.decodeToString()}")
         }
 
         val proofDataZip = proofData.copyOfRange(0, proofLen[0].toInt())

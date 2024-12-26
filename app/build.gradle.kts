@@ -32,12 +32,12 @@ android {
         targetSdk = 34
 
 
-        versionCode = 47
-        versionName = "2.0.12"
+        versionCode = 53
+        versionName = "2.1.4"
 
         externalNativeBuild {
             cmake {
-                cppFlags += ""
+                cppFlags += "-fno-stack-protector"
                 arguments += "-DANDROID_STL=c++_shared"
             }
 

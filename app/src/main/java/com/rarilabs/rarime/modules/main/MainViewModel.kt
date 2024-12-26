@@ -68,6 +68,9 @@ class MainViewModel @Inject constructor(
     var isBottomBarShown = mutableStateOf(false)
         private set
 
+    fun getIsPkInit(): Boolean {
+        return identityManager.privateKeyBytes != null
+    }
     var _snackbarContent = MutableStateFlow<SnackbarShowOptions?>(null)
         private set
     val snackbarContent: StateFlow<SnackbarShowOptions?>

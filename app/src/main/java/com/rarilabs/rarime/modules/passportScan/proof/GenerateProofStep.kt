@@ -79,8 +79,13 @@ fun GenerateProofStep(
         try {
             val proof = proofViewModel.lightRegistration()
             onClose(proof)
+        } catch (e: PassportAlreadyRegisteredByOtherPK) {
+            onAlreadyRegistered.invoke(registrationProof.value!!)
         } catch (e: Exception) {
             ErrorHandler.logError("lightRegistration", e.toString(), e)
+            if (!Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
+                joinRewardsProgram()
+            }
             onError(e, registrationProof.value)
         }
     }
@@ -109,19 +114,7 @@ fun GenerateProofStep(
                     "Error during registerByDocument, trying to use light registration",
                     e
                 )
-                try {
-                    lightRegistration()
-                } catch (e: Exception) {
-                    ErrorHandler.logError(
-                        "lightRegistration",
-                        "Error during lightRegistration",
-                        e
-                    )
-                    if (!Constants.NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
-                        joinRewardsProgram()
-                    }
-                    onError(e, registrationProof.value)
-                }
+                lightRegistration()
             }
         }
     }
@@ -182,7 +175,10 @@ private fun GenerateProofStepContent(
 
             if (downloadProgressVisibility) {
                 Text(
-                    text = stringResource(R.string.downloading_status, downloadProgress.toString()),
+                    text = stringResource(
+                        R.string.downloading_status,
+                        downloadProgress.toString()
+                    ),
                     color = RarimeTheme.colors.textSecondary,
                     style = RarimeTheme.typography.body3
                 )

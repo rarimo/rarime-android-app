@@ -80,7 +80,7 @@ fun MainScreenRoutes(
 
     NavHost(
         navController,
-        startDestination = Screen.Main.route,
+        startDestination = if (mainViewModel.getIsPkInit()) Screen.Main.route else Screen.Intro.route,
         enterTransition = { fadeIn() },
         exitTransition = { ExitTransition.None },
     ) {

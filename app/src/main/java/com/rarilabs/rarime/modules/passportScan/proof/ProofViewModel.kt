@@ -146,9 +146,8 @@ class ProofViewModel @Inject constructor(
 
         val zkp = ZKPUseCase(application as Context, assetManager)
 
-
         val customDispatcher = Executors.newFixedThreadPool(1) { runnable ->
-            Thread(null, runnable, "LargeStackThread", 100 * 1024 * 1024) // 800 MB stack size
+            Thread(null, runnable, "LargeStackThread", 100 * 1024 * 1024) // 100 MB stack size
         }.asCoroutineDispatcher()
 
 
@@ -374,38 +373,38 @@ class ProofViewModel @Inject constructor(
                     )
                 }
 
-                RegisteredCircuitData.REGISTER_IDENTITY_3_160_3_3_336_200_N -> {
-                    zkp.generateRegisterZKP(
-                        filePaths!!.zkey,
-                        filePaths.zkeyLen,
-                        filePaths.dat,
-                        filePaths.datLen,
-                        inputs,
-                        ZkpUtil::registerIdentity316033336200NA
-                    )
-                }
-
-                RegisteredCircuitData.REGISTER_IDENTITY_3_160_3_4_576_216_1_1512_3_256 -> {
-                    zkp.generateRegisterZKP(
-                        filePaths!!.zkey,
-                        filePaths.zkeyLen,
-                        filePaths.dat,
-                        filePaths.datLen,
-                        inputs,
-                        ZkpUtil::registerIdentity316034576216115123256
-                    )
-                }
-
-                RegisteredCircuitData.REGISTER_IDENTITY_2_256_3_6_336_264_1_2448_3_256 -> {
-                    zkp.generateRegisterZKP(
-                        filePaths!!.zkey,
-                        filePaths.zkeyLen,
-                        filePaths.dat,
-                        filePaths.datLen,
-                        inputs,
-                        ZkpUtil::registerIdentity225636336264124483256
-                    )
-                }
+//                RegisteredCircuitData.REGISTER_IDENTITY_3_160_3_3_336_200_N -> {
+//                    zkp.generateRegisterZKP(
+//                        filePaths!!.zkey,
+//                        filePaths.zkeyLen,
+//                        filePaths.dat,
+//                        filePaths.datLen,
+//                        inputs,
+//                        ZkpUtil::registerIdentity316033336200NA
+//                    )
+//                }
+//
+//                RegisteredCircuitData.REGISTER_IDENTITY_3_160_3_4_576_216_1_1512_3_256 -> {
+//                    zkp.generateRegisterZKP(
+//                        filePaths!!.zkey,
+//                        filePaths.zkeyLen,
+//                        filePaths.dat,
+//                        filePaths.datLen,
+//                        inputs,
+//                        ZkpUtil::registerIdentity316034576216115123256
+//                    )
+//                }
+//
+//                RegisteredCircuitData.REGISTER_IDENTITY_2_256_3_6_336_264_1_2448_3_256 -> {
+//                    zkp.generateRegisterZKP(
+//                        filePaths!!.zkey,
+//                        filePaths.zkeyLen,
+//                        filePaths.dat,
+//                        filePaths.datLen,
+//                        inputs,
+//                        ZkpUtil::registerIdentity225636336264124483256
+//                    )
+//                }
 
                 else -> throw IllegalStateException("You not allowed to be here")
 
@@ -455,11 +454,11 @@ class ProofViewModel @Inject constructor(
 
         _state.value = PassportProofState.READING_DATA
 
-        val proof = withContext(Dispatchers.IO) {
+        val proof =
             generateRegisterIdentityProof(
                 eDocument, registeredCircuitData, filePaths, registerIdentityCircuitType
             )
-        }
+
 
         registrationManager.setRegistrationProof(proof)
 
