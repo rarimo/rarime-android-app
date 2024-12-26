@@ -307,16 +307,16 @@ class ProofViewModel @Inject constructor(
                     )
                 }
 
-                RegisteredCircuitData.REGISTER_IDENTITY_20_256_3_3_336_224_NA -> {
-                    zkp.generateRegisterZKP(
-                        filePaths!!.zkey,
-                        filePaths.zkeyLen,
-                        filePaths.dat,
-                        filePaths.datLen,
-                        inputs,
-                        ZkpUtil::registerIdentity2025633336224NA
-                    )
-                }
+//                RegisteredCircuitData.REGISTER_IDENTITY_20_256_3_3_336_224_NA -> {
+//                    zkp.generateRegisterZKP(
+//                        filePaths!!.zkey,
+//                        filePaths.zkeyLen,
+//                        filePaths.dat,
+//                        filePaths.datLen,
+//                        inputs,
+//                        ZkpUtil::registerIdentity2025633336224NA
+//                    )
+//                }
 
                 RegisteredCircuitData.REGISTER_IDENTITY_1_256_3_3_576_248_NA -> {
                     zkp.generateRegisterZKP(
