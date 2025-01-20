@@ -4,6 +4,7 @@ import CircuitPassportHashType
 import RegisterIdentityCircuitType
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -307,16 +308,16 @@ class ProofViewModel @Inject constructor(
                     )
                 }
 
-//                RegisteredCircuitData.REGISTER_IDENTITY_20_256_3_3_336_224_NA -> {
-//                    zkp.generateRegisterZKP(
-//                        filePaths!!.zkey,
-//                        filePaths.zkeyLen,
-//                        filePaths.dat,
-//                        filePaths.datLen,
-//                        inputs,
-//                        ZkpUtil::registerIdentity2025633336224NA
-//                    )
-//                }
+                RegisteredCircuitData.REGISTER_IDENTITY_20_256_3_3_336_224_NA -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity2025633336224NA
+                    )
+                }
 
                 RegisteredCircuitData.REGISTER_IDENTITY_1_256_3_3_576_248_NA -> {
                     zkp.generateRegisterZKP(
@@ -373,41 +374,73 @@ class ProofViewModel @Inject constructor(
                     )
                 }
 
-//                RegisteredCircuitData.REGISTER_IDENTITY_3_160_3_3_336_200_N -> {
-//                    zkp.generateRegisterZKP(
-//                        filePaths!!.zkey,
-//                        filePaths.zkeyLen,
-//                        filePaths.dat,
-//                        filePaths.datLen,
-//                        inputs,
-//                        ZkpUtil::registerIdentity316033336200NA
-//                    )
-//                }
-//
-//                RegisteredCircuitData.REGISTER_IDENTITY_3_160_3_4_576_216_1_1512_3_256 -> {
-//                    zkp.generateRegisterZKP(
-//                        filePaths!!.zkey,
-//                        filePaths.zkeyLen,
-//                        filePaths.dat,
-//                        filePaths.datLen,
-//                        inputs,
-//                        ZkpUtil::registerIdentity316034576216115123256
-//                    )
-//                }
-//
-//                RegisteredCircuitData.REGISTER_IDENTITY_2_256_3_6_336_264_1_2448_3_256 -> {
-//                    zkp.generateRegisterZKP(
-//                        filePaths!!.zkey,
-//                        filePaths.zkeyLen,
-//                        filePaths.dat,
-//                        filePaths.datLen,
-//                        inputs,
-//                        ZkpUtil::registerIdentity225636336264124483256
-//                    )
-//                }
+                RegisteredCircuitData.REGISTER_IDENTITY_3_160_3_3_336_200_NA -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity316033336200NA
+                    )
+                }
 
-                else -> throw IllegalStateException("You not allowed to be here")
+                RegisteredCircuitData.REGISTER_IDENTITY_3_160_3_4_576_216_1_1512_3_256 -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity316034576216115123256
+                    )
+                }
 
+                RegisteredCircuitData.REGISTER_IDENTITY_2_256_3_6_336_264_1_2448_3_256 -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity225636336264124483256
+                    )
+                }
+
+                RegisteredCircuitData.REGISTER_IDENTITY_21_256_3_4_576_232_NA -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity2125634576232NA
+                    )
+                }
+
+                RegisteredCircuitData.REGISTER_IDENTITY_11_256_3_3_576_240_1_864_5_264 -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity112563357624018645264
+                    )
+                }
+
+                RegisteredCircuitData.REGISTER_IDENTITY_11_256_3_5_576_248_1_1808_5_296 -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity1125635576248118085296
+                    )
+                }
+
+                else -> throw IllegalStateException("You are not allowed to be here")
             }
         }
 
@@ -459,6 +492,7 @@ class ProofViewModel @Inject constructor(
                 eDocument, registeredCircuitData, filePaths, registerIdentityCircuitType
             )
 
+        Log.i("Registration proof", GsonBuilder().setPrettyPrinting().create().toJson(proof))
 
         registrationManager.setRegistrationProof(proof)
 
@@ -726,6 +760,9 @@ class ProofViewModel @Inject constructor(
         val signedAttrChunks = CircuitUtil.smartChunking2(
             signedAttributes, 2, smartChunkingToBlockSize.toLong()
         )
+
+        Log.i("signedAttrChunks gson", Gson().toJson(signedAttrChunks))
+        Log.i("signedAttrChunks", signedAttrChunks.toString())
 
         val pubKeyChunks = when (publicKey) {
             is ECPublicKey -> {

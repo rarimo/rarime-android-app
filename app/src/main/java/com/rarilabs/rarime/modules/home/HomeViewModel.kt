@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.modules.home
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import com.rarilabs.rarime.api.airdrop.AirDropManager
 import com.rarilabs.rarime.api.registration.RegistrationManager
@@ -13,6 +14,7 @@ import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.util.ErrorHandler
+import com.rarilabs.rarime.util.ZKPUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -95,15 +97,15 @@ class HomeViewModel @Inject constructor(
         walletBalances.await()
     }
 
-//    suspend fun generateTestProof() {
-//        val assetContext: Context = (app as Context).createPackageContext("com.rarilabs.rarime", 0)
-//        val assetManager = assetContext.assets
-//
-//        val inputs = """
-//
-//        """.trimIndent()
-//
-//        val zkp = ZKPUseCase(app as Context, assetManager)
+    suspend fun generateTestProof() {
+        val assetContext: Context = (app as Context).createPackageContext("com.rarilabs.rarime", 0)
+        val assetManager = assetContext.assets
+
+        val inputs = """
+
+        """.trimIndent()
+
+        val zkp = ZKPUseCase(app as Context, assetManager)
 //        val res= withContext(Dispatchers.Default) {
 //            zkp.generateZKP(
 //                "circuit_register_test.zkey",
@@ -113,5 +115,5 @@ class HomeViewModel @Inject constructor(
 //            )
 //        }
 //        Log.e("Res", res.toString())
-//    }
+    }
 }
