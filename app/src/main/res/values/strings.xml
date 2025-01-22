@@ -385,5 +385,6 @@
     <string name="drive_backup_description">Your account is not backed up. If you lose your device, you will lose access to your account</string>
     <string name="passport_already_registered_no_dg15_title">You have already registered</string>
     <string name="passport_already_registered_no_dg15_description">You can`t revoke your passport. try to find your previous private key</string>
+    <string name="scan">Scan</string>
 
 </resources>

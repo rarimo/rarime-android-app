@@ -5,6 +5,7 @@ import android.nfc.tech.IsoDep
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
+import com.rarilabs.rarime.modules.passportScan.nfc.NfcScanStep
 import com.rarilabs.rarime.modules.passportScan.nfc.NfcUseCase
 import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +29,11 @@ class ReadEDocStepViewModel @Inject constructor(
     val state = nfcManager.state
 
     val resetState = nfcManager::resetState
+    private val _currentNfcScanStep = MutableStateFlow<NfcScanStep>(NfcScanStep.PREPARING)
+
+    val currentNfcScanStep: StateFlow<NfcScanStep>
+        get() = _currentNfcScanStep.asStateFlow()
+
 
     private var _scanExceptionInstance = MutableStateFlow<Exception?>(null)
     val scanExceptionInstance: StateFlow<Exception?>
@@ -47,7 +53,8 @@ class ReadEDocStepViewModel @Inject constructor(
         val privateKeyBytes = identityManager.privateKeyBytes
 
         bacKey = BACKey(passportNumber, birthDate, expirationDate)
-        scanNfcUseCase = NfcUseCase(isoDep, bacKey, privateKeyBytes!!)
+        scanNfcUseCase = NfcUseCase(isoDep, bacKey, privateKeyBytes!!, _currentNfcScanStep)
+
 
         eDocument = scanNfcUseCase.scanPassport()
 
@@ -64,7 +71,10 @@ class ReadEDocStepViewModel @Inject constructor(
 
     fun startScanning(mrzInfo: MRZInfo) {
         this.mrzInfo = mrzInfo
-
         nfcManager.startScanning(::handleScan, onError = { onError(it) })
+    }
+
+    fun stopScanning() {
+        nfcManager.disableForegroundDispatch()
     }
 }

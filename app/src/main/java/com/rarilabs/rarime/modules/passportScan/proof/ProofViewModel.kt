@@ -523,6 +523,9 @@ class ProofViewModel @Inject constructor(
                     registerIdentityCircuitName
                 )
 
+                delay(second * 1)
+
+
                 _state.value = PassportProofState.FINALIZING
 
                 delay(second * 1)
@@ -538,11 +541,15 @@ class ProofViewModel @Inject constructor(
                 false,
                 registerIdentityCircuitName
             )
+            delay(second * 1)
+
 
             _state.value = PassportProofState.FINALIZING
 
             delay(second * 1)
         }
+
+        delay(second * 1)
     }
 
     suspend fun lightRegistration(): ZkProof {
@@ -555,6 +562,7 @@ class ProofViewModel @Inject constructor(
         val registeredCircuitData = RegisteredCircuitData.fromValue(registerIdentityCircuitName)
             ?: throw IllegalStateException("Circuit $registerIdentityCircuitName is not supported")
 
+        delay(second * 2)
         _state.value = PassportProofState.READING_DATA
 
 
@@ -567,6 +575,7 @@ class ProofViewModel @Inject constructor(
             }
         }
 
+        delay(second * 2)
         _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
 
         val lightProof = withContext(Dispatchers.Default) {
@@ -578,7 +587,7 @@ class ProofViewModel @Inject constructor(
             )
         }
 
-
+        delay(second * 2)
         _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
 
 
@@ -601,7 +610,7 @@ class ProofViewModel @Inject constructor(
             identityManager.setLightRegistrationData(registerResponse.data.attributes)
             return lightProof
         }
-
+        delay(second * 2)
         _state.value = PassportProofState.FINALIZING
 
         val res = withContext(Dispatchers.IO) {
@@ -612,7 +621,7 @@ class ProofViewModel @Inject constructor(
 
         registrationManager.setRegistrationProof(lightProof)
         identityManager.setLightRegistrationData(registerResponse.data.attributes)
-
+        delay(second * 1)
         return lightProof
     }
 
