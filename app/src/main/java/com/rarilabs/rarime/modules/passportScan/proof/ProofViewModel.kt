@@ -616,6 +616,7 @@ class ProofViewModel @Inject constructor(
         _state.value = PassportProofState.READING_DATA
 
 
+        //TODO: Don't forget to update download manager here
         val filePaths = withContext(Dispatchers.Default) {
             CircuitUseCase(application as Context).download(registeredCircuitData) { progress, visibility ->
                 if (_state.value.value < PassportProofState.APPLYING_ZERO_KNOWLEDGE.value) {

@@ -148,9 +148,9 @@ fun GenerateProofStep(
 
     if (circuitDownloadErrorDialogState) {
         AppAlertDialog(
-            title = "Connection has lost",
-            text = "Check your internet connection and try again",
-            confirmText = "Retry",
+            title = stringResource(R.string.connection_lost_circuits_header),
+            text = stringResource(R.string.connection_lost_circuits_body),
+            confirmText = stringResource(R.string.connection_lost_circuits_retry),
             onConfirm = {
                 circuitDownloadErrorDialogState = false; scope.launch { defaultRegistration() }
             }, onDismiss = {

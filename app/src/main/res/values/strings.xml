@@ -386,5 +386,8 @@
     <string name="passport_already_registered_no_dg15_title">You have already registered</string>
     <string name="passport_already_registered_no_dg15_description">You can`t revoke your passport. try to find your previous private key</string>
     <string name="scan">Scan</string>
+    <string name="connection_lost_circuits_header">Connection Lost</string>
+    <string name="connection_lost_circuits_body">Please check your internet connection and try again.</string>
+    <string name="connection_lost_circuits_retry">Retry</string>
 
 </resources>

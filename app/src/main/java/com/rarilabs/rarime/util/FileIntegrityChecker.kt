@@ -7,8 +7,6 @@ import java.security.MessageDigest
 
 object FileIntegrityChecker {
 
-    private const val TAG = "FileIntegrityChecker"
-
     /**
      * Computes the MD5 checksum for a given file.
      *
