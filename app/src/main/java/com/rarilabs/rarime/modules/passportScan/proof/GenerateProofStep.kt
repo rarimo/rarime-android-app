@@ -30,7 +30,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.registration.PassportAlreadyRegisteredByOtherPK
+import com.rarilabs.rarime.modules.passportScan.ConnectionError
+import com.rarilabs.rarime.modules.passportScan.DownloadCircuitError
+import com.rarilabs.rarime.modules.passportScan.UnpackingError
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
+import com.rarilabs.rarime.ui.components.AppAlertDialog
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.CirclesLoader
@@ -57,12 +61,16 @@ fun GenerateProofStep(
     val currentState by proofViewModel.state.collectAsState()
     val registrationProof = proofViewModel.regProof.collectAsState()
 
-    var processingStatus by remember { mutableStateOf(ProcessingStatus.PROCESSING) }
+    val processingStatus by remember { mutableStateOf(ProcessingStatus.PROCESSING) }
 
     val downloadProgress by proofViewModel.progress.collectAsState()
     val downloadProgressVisibility by proofViewModel.progressVisibility.collectAsState()
 
     val view = LocalView.current
+
+    var circuitDownloadErrorDialogState by remember {
+        mutableStateOf(false)
+    }
 
     val scope = rememberCoroutineScope()
 
@@ -90,32 +98,42 @@ fun GenerateProofStep(
         }
     }
 
+    suspend fun defaultRegistration() {
+        try {
+            proofViewModel.registerCertificate(eDocument)
+        } catch (e: Exception) {
+            ErrorHandler.logError("Cant register certificate", "Error: $e", e)
+        }
+
+        try {
+            proofViewModel.registerByDocument()
+            onClose(registrationProof.value!!)
+        } catch (e: PassportAlreadyRegisteredByOtherPK) {
+            onAlreadyRegistered.invoke(registrationProof.value!!)
+            return
+        } catch (e: ConnectionError) {
+            proofViewModel.resetState()
+            circuitDownloadErrorDialogState = true
+        } catch (e: UnpackingError) {
+            proofViewModel.resetState()
+            circuitDownloadErrorDialogState = true
+        } catch (e: Exception) {
+            ErrorHandler.logError(
+                "registerByDocument",
+                "Error during registerByDocument, trying to use light registration",
+                e
+            )
+            lightRegistration()
+        }
+    }
+
     LaunchedEffect(view) {
         view.keepScreenOn = true
     }
 
     LaunchedEffect(true) {
         scope.launch {
-
-            try {
-                proofViewModel.registerCertificate(eDocument)
-            } catch (e: Exception) {
-                ErrorHandler.logError("Cant register certificate", "Error: $e", e)
-            }
-            try {
-                proofViewModel.registerByDocument()
-                onClose(registrationProof.value!!)
-            } catch (e: PassportAlreadyRegisteredByOtherPK) {
-                onAlreadyRegistered.invoke(registrationProof.value!!)
-                return@launch
-            } catch (e: Exception) {
-                ErrorHandler.logError(
-                    "registerByDocument",
-                    "Error during registerByDocument, trying to use light registration",
-                    e
-                )
-                lightRegistration()
-            }
+            defaultRegistration()
         }
     }
 
@@ -127,6 +145,19 @@ fun GenerateProofStep(
         if (processingStatus == ProcessingStatus.FAILURE) return ProcessingStatus.FAILURE
         return ProcessingStatus.PROCESSING
     }
+
+    if (circuitDownloadErrorDialogState) {
+        AppAlertDialog(
+            title = "Connection has lost",
+            text = "Check your internet connection and try again",
+            confirmText = "Retry",
+            onConfirm = {
+                circuitDownloadErrorDialogState = false; scope.launch { defaultRegistration() }
+            }, onDismiss = {
+                onError(DownloadCircuitError(), registrationProof.value)
+            })
+    }
+
 
     GenerateProofStepContent(
         processingStatus = processingStatus,
@@ -169,7 +200,6 @@ private fun GenerateProofStepContent(
                             item = item, status = getItemStatus(item)
                         )
                     }
-
                 }
             }
 

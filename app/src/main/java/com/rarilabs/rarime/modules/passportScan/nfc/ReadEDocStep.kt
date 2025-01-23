@@ -140,15 +140,13 @@ private fun ReadEDocStepContent(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(64.dp),
                 ) {
-                    getNfcAnimation().let {
-                        AppAnimation(
-                            modifier = Modifier
-                                .size(240.dp)
-                                .scale(1.5f)
-                                .zIndex(2f),
-                            id = it,
-                        )
-                    }
+                    AppAnimation(
+                        modifier = Modifier
+                            .size(240.dp)
+                            .scale(1.5f)
+                            .zIndex(2f),
+                        id = getNfcAnimation(),
+                    )
 
                     when (state) {
                         ScanNFCState.NOT_SCANNING -> {

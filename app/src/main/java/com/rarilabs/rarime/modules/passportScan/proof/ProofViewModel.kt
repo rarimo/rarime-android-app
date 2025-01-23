@@ -9,6 +9,7 @@ import androidx.lifecycle.AndroidViewModel
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.rarilabs.rarime.BaseConfig
+import com.rarilabs.rarime.BuildConfig
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.registration.PassportAlreadyRegisteredByOtherPK
 import com.rarilabs.rarime.api.registration.RegistrationManager
@@ -16,6 +17,8 @@ import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.modules.passportScan.CircuitUseCase
+import com.rarilabs.rarime.modules.passportScan.ConnectionError
+import com.rarilabs.rarime.modules.passportScan.DownloadCircuitError
 import com.rarilabs.rarime.modules.passportScan.DownloadRequest
 import com.rarilabs.rarime.modules.passportScan.models.CryptoUtilsPassport
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
@@ -67,6 +70,11 @@ class ProofViewModel @Inject constructor(
         get() = _state.asStateFlow()
 
     private val second = 1000L
+
+    fun resetState() {
+        _progressVisibility.value = false
+        _state.value = PassportProofState.READING_DATA
+    }
 
     private val TAG = ProofViewModel::class.java.simpleName
 
@@ -447,16 +455,26 @@ class ProofViewModel @Inject constructor(
         return proof
     }
 
-    suspend fun registerByDocument() {
-        val eDocument = eDoc.value!!
-
+    private fun getCircuitType(eDocument: EDocument): RegisterIdentityCircuitType {
         val registerIdentityCircuitType = try {
             eDocument.getRegisterIdentityCircuitType()
         } catch (e: Exception) {
             ErrorHandler.logError("registerByDocument", "Cant getRegisterIdentityCircuitType", e)
             throw e
         }
+        return registerIdentityCircuitType
 
+    }
+
+    private fun getCircuitData(registerIdentityCircuitName: String): RegisteredCircuitData {
+        ErrorHandler.logDebug("registerIdentityCircuitName", registerIdentityCircuitName)
+        val registeredCircuitData = RegisteredCircuitData.fromValue(registerIdentityCircuitName)
+            ?: throw IllegalStateException("Circuit $registerIdentityCircuitName is not supported")
+
+        return registeredCircuitData
+    }
+
+    private fun getCircuitName(registerIdentityCircuitType: RegisterIdentityCircuitType): String {
         val registerIdentityCircuitName = try {
             registerIdentityCircuitType.buildName()
         } catch (e: Exception) {
@@ -468,29 +486,59 @@ class ProofViewModel @Inject constructor(
             )
             throw e
         }
+        return registerIdentityCircuitName
+    }
 
-        registrationManager.setCircuitData(registerIdentityCircuitType)
+    suspend fun registerByDocument() {
+        val eDocument = eDoc.value!!
 
-        ErrorHandler.logDebug("registerIdentityCircuitName", registerIdentityCircuitName)
-        val registeredCircuitData = RegisteredCircuitData.fromValue(registerIdentityCircuitName)
-            ?: throw IllegalStateException("Circuit $registerIdentityCircuitName is not supported")
+        //Get circuit type
+        val circuitType = getCircuitType(eDocument)
 
+        registrationManager.setCircuitData(circuitType)
 
-        val filePaths = withContext(Dispatchers.Default) {
-            CircuitUseCase(application as Context).download(registeredCircuitData) { progress, visibility ->
-                if (_state.value.value < PassportProofState.APPLYING_ZERO_KNOWLEDGE.value) {
+        val circuitName = getCircuitName(circuitType)
+
+        val circuitData = getCircuitData(circuitName)
+
+        val circuitUseCase = CircuitUseCase(application as Context)
+
+        val filePaths = try {
+            withContext(Dispatchers.Default) {
+                circuitUseCase.download(circuitData) { progress, visibility ->
                     _progress.value = progress
                     _progressVisibility.value = !visibility
                 }
-            }
+            } ?: throw DownloadCircuitError()
+        } catch (e: ConnectionError) {
+            ErrorHandler.logError("CircuitUseCase", "Network issue encountered", e)
+            throw e
+        } catch (e: DownloadCircuitError) {
+            ErrorHandler.logError("CircuitUseCase", "Circuit download failed", e)
+            throw e
+        } catch (e: Exception) {
+            ErrorHandler.logError("CircuitUseCase", "Unexpected error occurred", e)
+            circuitUseCase.deleteRedunantFiles(circuitData)
+            throw DownloadCircuitError().apply { initCause(e) }
         }
-
         _state.value = PassportProofState.READING_DATA
 
+
+        //Proof generation
         val proof =
             generateRegisterIdentityProof(
-                eDocument, registeredCircuitData, filePaths, registerIdentityCircuitType
+                eDocument, circuitData, filePaths, circuitType
             )
+
+        if (!BuildConfig.isTestnet) {
+            try {
+                ErrorHandler.logDebug("deleting zkey, dat and Archive", "Start")
+                circuitUseCase.deleteRedunantFiles(circuitData)
+                ErrorHandler.logDebug("deleting zkey, dat and Archive", "Finish")
+            } catch (e: Exception) {
+                ErrorHandler.logError("Error deleting zkey, dat and Archive", "Error", e)
+            }
+        }
 
         Log.i("Registration proof", GsonBuilder().setPrettyPrinting().create().toJson(proof))
 
@@ -499,7 +547,7 @@ class ProofViewModel @Inject constructor(
         _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
         _progressVisibility.value = false
 
-
+        // Get passport info
         val passportInfo = try {
             registrationManager.getPassportInfo(eDocument, proof)
         } catch (e: Exception) {
@@ -511,6 +559,8 @@ class ProofViewModel @Inject constructor(
 
         val currentIdentityKey = identityManager.getProfiler().publicKeyHash
         _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
+
+        //registration
         passportInfo?.let {
             if (it.component1()?.activeIdentity?.toHexString() == currentIdentityKey.toHexString()) {
                 ErrorHandler.logDebug(TAG, "Passport is already registered with this PK")
@@ -520,7 +570,7 @@ class ProofViewModel @Inject constructor(
                     eDocument,
                     registrationManager.masterCertProof.value!!,
                     false,
-                    registerIdentityCircuitName
+                    circuitName
                 )
 
                 delay(second * 1)
@@ -539,7 +589,7 @@ class ProofViewModel @Inject constructor(
                 eDocument,
                 registrationManager.masterCertProof.value!!,
                 false,
-                registerIdentityCircuitName
+                circuitName
             )
             delay(second * 1)
 
