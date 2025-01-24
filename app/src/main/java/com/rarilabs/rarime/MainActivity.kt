@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var nfcManager: NfcManager
 
-
     private var navController: NavHostController? = null
 
     private var deepLinkData: Uri? = null
@@ -34,7 +33,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
-
         initAppsFlyer()
         nfcManager.activity = this
 
@@ -47,8 +45,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-
-
         if (nfcManager.state.value != ScanNFCState.NOT_SCANNING) {
             nfcManager.disableForegroundDispatch()
         }
@@ -63,9 +59,6 @@ class MainActivity : AppCompatActivity() {
             val data = intent.data
             handleDeepLink(data)
         }
-
-
-
         nfcManager.handleNewIntent(intent)
     }
 

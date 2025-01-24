@@ -235,7 +235,6 @@ class NotificationService :
                         Log.d("TAG", msg)
                     }
             }
-
         }
     }
 }

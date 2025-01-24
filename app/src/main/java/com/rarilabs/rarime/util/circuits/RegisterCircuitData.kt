@@ -29,7 +29,6 @@ enum class RegisteredCircuitData(val value: String) {
     REGISTER_IDENTITY_3_160_3_4_576_216_1_1512_3_256("registerIdentity_3_160_3_4_576_216_1_1512_3_256"),
     REGISTER_IDENTITY_2_256_3_6_336_264_1_2448_3_256("registerIdentity_2_256_3_6_336_264_1_2448_3_256"),
 
-
     REGISTER_IDENTITY_21_256_3_4_576_232_NA("registerIdentity_21_256_3_4_576_232_NA"),
     REGISTER_IDENTITY_11_256_3_3_576_240_1_864_5_264("registerIdentity_11_256_3_3_576_240_1_864_5_264"),
     REGISTER_IDENTITY_11_256_3_5_576_248_1_1808_5_296("registerIdentity_11_256_3_5_576_248_1_1808_5_296"),
