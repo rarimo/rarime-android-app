@@ -78,7 +78,7 @@ class RegistrationManager @Inject constructor(
         _registrationProof.value = proof
     }
 
-    fun setEDocument(eDocument: EDocument) {
+    fun setEDocument(eDocument: EDocument?) {
         _eDocument.value = eDocument
     }
 

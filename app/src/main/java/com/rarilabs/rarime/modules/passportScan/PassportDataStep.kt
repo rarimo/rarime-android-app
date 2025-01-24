@@ -114,7 +114,6 @@ private fun PassportDataStepContent(
                                 )
                                 if (!isUnsupported) {
                                     RewardChip(
-                                        // TODO: remove hardcoded const
                                         reward = Constants.SCAN_PASSPORT_REWARD.toInt(),
                                         isActive = true
                                     )

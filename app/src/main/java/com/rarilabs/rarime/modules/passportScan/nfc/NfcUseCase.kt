@@ -15,6 +15,7 @@ import com.rarilabs.rarime.util.addCharAtIndex
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.publicKeyToPem
 import identity.Profile
+import kotlinx.coroutines.flow.MutableStateFlow
 import net.sf.scuba.smartcards.CardFileInputStream
 import net.sf.scuba.smartcards.CardService
 import org.bouncycastle.asn1.cms.SignedData
@@ -33,13 +34,27 @@ import java.security.MessageDigest
 import java.security.Security
 import java.util.Arrays
 
+
+enum class NfcScanStep(val step: Int) {
+    PREPARING(0),
+    SOD(1),
+    DG1SCAN(2),
+    DG2SCAN(3),
+    DG15Scan(4),
+
+}
+
 class NfcUseCase(
-    private val isoDep: IsoDep, private val bacKey: BACKeySpec, private val privateKey: ByteArray
+    private val isoDep: IsoDep, private val bacKey: BACKeySpec, private val privateKey: ByteArray,
+    private val currentStateMutableFlow: MutableStateFlow<NfcScanStep> = MutableStateFlow(
+        NfcScanStep.PREPARING
+    )
 ) {
     private var eDocument: EDocument = EDocument()
     private var docType: DocType = DocType.OTHER
     private var personDetails: PersonDetails = PersonDetails()
     private var additionalPersonDetails: AdditionalPersonDetails = AdditionalPersonDetails()
+
 
     private fun cropByteArray(inputByteArray: ByteArray, endNumber: Int): ByteArray {
         val endIndex = if (endNumber > inputByteArray.size) inputByteArray.size else endNumber
@@ -97,6 +112,9 @@ class NfcUseCase(
 
         var hashesMatched = true
         ////publishProgress("Reading sod file")
+
+        currentStateMutableFlow.value = NfcScanStep.SOD
+
         val sodIn1 = service.getInputStream(PassportService.EF_SOD)
 
         val byteArray = ByteArray(1024 * 1024)
@@ -140,6 +158,8 @@ class NfcUseCase(
             MessageDigest.getInstance(digestAlgorithm, BouncyCastleProvider())
         }
 
+        currentStateMutableFlow.value = NfcScanStep.DG1SCAN
+
         // -- Personal Details -- //
         val dg1In = service.getInputStream(PassportService.EF_DG1)
         val dg1File = DG1File(dg1In)
@@ -177,6 +197,8 @@ class NfcUseCase(
             hashesMatched = false
         }
 
+        currentStateMutableFlow.value = NfcScanStep.DG2SCAN
+
         // -- Face Image -- //
         val dg2In = service.getInputStream(PassportService.EF_DG2)
         val dg2File = DG2File(dg2In)
@@ -208,6 +230,10 @@ class NfcUseCase(
         eDocument.personDetails = personDetails
         eDocument.additionalPersonDetails = additionalPersonDetails
         eDocument.isPassiveAuth = hashesMatched
+
+
+        currentStateMutableFlow.value = NfcScanStep.DG15Scan
+
 
         val dg15 = try {
             val dG15File: CardFileInputStream = service.getInputStream(PassportService.EF_DG15, 256)

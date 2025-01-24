@@ -31,13 +31,12 @@ android {
         minSdk = 27
         targetSdk = 34
 
-
-        versionCode = 47
-        versionName = "2.0.12"
+        versionCode = 57
+        versionName = "2.1.7"
 
         externalNativeBuild {
             cmake {
-                cppFlags += ""
+                cppFlags += "-fno-stack-protector"
                 arguments += "-DANDROID_STL=c++_shared"
             }
 
@@ -50,7 +49,6 @@ android {
         resourceConfigurations.plus(
             listOf(
                 "en",
-//                "uk"
             )
         )
 

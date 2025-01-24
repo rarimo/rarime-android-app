@@ -85,9 +85,7 @@ fun PassportCard(
     Column(verticalArrangement = Arrangement.spacedBy((-43).dp)) {
         if (
             listOf(
-                PassportStatus.WAITLIST_NOT_ALLOWED,
                 PassportStatus.WAITLIST,
-                PassportStatus.NOT_ALLOWED,
             ).contains(passportStatus)
         ) {
             StatusCard(modifier = Modifier.padding(top = 20.dp), passportStatus)

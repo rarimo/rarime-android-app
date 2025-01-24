@@ -43,7 +43,7 @@ fun ScanPassportScreen(
     onClose: () -> Unit,
     onClaim: () -> Unit,
     scanPassportScreenViewModel: ScanPassportScreenViewModel = hiltViewModel(),
-    initialEDocument: EDocument? = scanPassportScreenViewModel.eDocument.value
+    initialEDocument: EDocument? = if (BuildConfig.isTestnet) scanPassportScreenViewModel.eDocument.value else null
 ) {
     val context = LocalContext.current
     val mainViewModel = LocalMainViewModel.current
@@ -78,7 +78,7 @@ fun ScanPassportScreen(
 
             Toast.makeText(context, R.string.you_have_already_registered, Toast.LENGTH_SHORT).show()
             onClose.invoke()
-        }else {
+        } else {
             mainViewModel.setModalContent {
                 if (eDoc?.dg15.isNullOrEmpty()) {
                     ConfirmationDialog(
@@ -90,7 +90,7 @@ fun ScanPassportScreen(
                             onClose.invoke()
                         }
                     )
-                }else {
+                } else {
                     ConfirmationDialog(
                         title = stringResource(R.string.you_have_already_registered),
                         subtitle = stringResource(R.string.you_have_already_registered_offer),
@@ -156,16 +156,12 @@ fun ScanPassportScreen(
             ScanPassportState.PASSPORT_DATA -> {
                 PassportDataStep(
                     onNext = {
-                        state =
-                            if (NOT_ALLOWED_COUNTRIES.contains(eDoc?.personDetails?.nationality)) {
-                                ScanPassportState.NOT_ALLOWED_PASSPORT
-                            } else {
-                                ScanPassportState.GENERATE_PROOF
-                            }
+                        state = ScanPassportState.GENERATE_PROOF
+
                     },
                     onClose = {
-                        scanPassportScreenViewModel.resetPassportState()
                         onClose()
+                        scanPassportScreenViewModel.resetPassportState()
                     },
                     eDocument = eDoc ?: throw IllegalStateException("No document")
                 )
@@ -189,7 +185,7 @@ fun ScanPassportScreen(
                             onClose.invoke()
                         }
                     },
-                    eDocument = eDoc?: throw IllegalStateException("No Document"),
+                    eDocument = eDoc ?: throw IllegalStateException("No Document"),
                     onError = { e, regProof ->
                         ErrorHandler.logError("GenerateProofStep", "Error", e)
                         regProof?.let {
@@ -225,7 +221,7 @@ fun ScanPassportScreen(
                 if (balance?.balanceDetails == null) {
                     onClose.invoke()
                     scanPassportScreenViewModel.savePassport()
-                }else {
+                } else {
                     onClaim.invoke()
                 }
             }

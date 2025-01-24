@@ -330,6 +330,39 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
+    external fun registerIdentity2125634576232NA(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+    external fun registerIdentity112563357624018645264(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+    external fun registerIdentity1125635576248118085296(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
     external fun registerIdentityLight160(
         datFilePath: String,
         datFileLen: Long,
@@ -468,6 +501,10 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
             throw Exception("Not enough memory for verification ${msg.decodeToString()}")
         }
 
+        if (verification == 3) {
+            throw Exception("Error during verification with code 3 ${msg.decodeToString()}")
+        }
+
         if (verification == 1) {
             throw Exception("Error during verification ${msg.decodeToString()}")
         }
@@ -560,6 +597,10 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
 
         if (verification == 1) {
             throw Exception("Error during verification ${msg.decodeToString()}")
+        }
+
+        if (verification == 3) {
+            throw Exception("Error during verification with code 3 ${msg.decodeToString()}")
         }
 
         val proofDataZip = proofData.copyOfRange(0, proofLen[0].toInt())

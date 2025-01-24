@@ -9,9 +9,10 @@ enum class RegisteredCircuitData(val value: String) {
     REGISTER_IDENTITY_2_256_3_6_336_248_1_2432_3_256("registerIdentity_2_256_3_6_336_248_1_2432_3_256"),
     REGISTER_IDENTITY_2_256_3_6_576_248_1_2432_3_256("registerIdentity_2_256_3_6_576_248_1_2432_3_256"),
     REGISTER_IDENTITY_11_256_3_3_576_248_1_1184_5_264("registerIdentity_11_256_3_3_576_248_1_1184_5_264"),
-    REGISTER_IDENTITY_12_256_3_3_336_232_NA("registerIdentity_12_256_3_3_336_232_NA"),
+
+    //REGISTER_IDENTITY_12_256_3_3_336_232_NA("registerIdentity_12_256_3_3_336_232_NA"),
     REGISTER_IDENTITY_1_256_3_4_336_232_1_1480_5_296("registerIdentity_1_256_3_4_336_232_1_1480_5_296"),
-    REGISTER_IDENTITY_1_256_3_4_600_248_1_1496_3_256("registerIdentity_1_256_3_4_600_248_1_1496_3_256"),
+    //REGISTER_IDENTITY_1_256_3_4_600_248_1_1496_3_256("registerIdentity_1_256_3_4_600_248_1_1496_3_256"), // China
 
     REGISTER_IDENTITY_1_160_3_4_576_200_NA("registerIdentity_1_160_3_4_576_200_NA"),
     REGISTER_IDENTITY_21_256_3_3_336_232_NA("registerIdentity_21_256_3_3_336_232_NA"),
@@ -25,9 +26,13 @@ enum class RegisteredCircuitData(val value: String) {
     REGISTER_IDENTITY_11_256_3_5_576_248_1_1808_4_256("registerIdentity_11_256_3_5_576_248_1_1808_4_256"),
     REGISTER_IDENTITY_21_256_3_3_576_232_NA("registerIdentity_21_256_3_3_576_232_NA"),
 
-    REGISTER_IDENTITY_3_160_3_3_336_200_N("registerIdentity_3_160_3_3_336_200_NA"),
-    REGISTER_IDENTITY_3_160_3_4_576_216_1_1512_3_256("registerIdentity_3_160_3_4_576_216_1_1512_3_256"),
+    //REGISTER_IDENTITY_3_160_3_3_336_200_NA("registerIdentity_3_160_3_3_336_200_NA"),
+    //REGISTER_IDENTITY_3_160_3_4_576_216_1_1512_3_256("registerIdentity_3_160_3_4_576_216_1_1512_3_256"),
     REGISTER_IDENTITY_2_256_3_6_336_264_1_2448_3_256("registerIdentity_2_256_3_6_336_264_1_2448_3_256"),
+
+    REGISTER_IDENTITY_21_256_3_4_576_232_NA("registerIdentity_21_256_3_4_576_232_NA"),
+    REGISTER_IDENTITY_11_256_3_3_576_240_1_864_5_264("registerIdentity_11_256_3_3_576_240_1_864_5_264"),
+    REGISTER_IDENTITY_11_256_3_5_576_248_1_1808_5_296("registerIdentity_11_256_3_5_576_248_1_1808_5_296"),
 
     REGISTER_IDENTITY_160("registerIdentityLight160"),
     REGISTER_IDENTITY_224("registerIdentityLight224"),
@@ -38,5 +43,41 @@ enum class RegisteredCircuitData(val value: String) {
     companion object {
         private val map = entries.associateBy(RegisteredCircuitData::value)
         fun fromValue(value: String) = map[value]
+
+        fun getMD5Checksum(item: RegisteredCircuitData): String {
+            return when (item) {
+                REGISTER_IDENTITY_1_256_3_5_576_248_NA -> "2b739404c000ed35f4862f684e96a0bf"
+                REGISTER_IDENTITY_1_256_3_6_576_248_1_2432_5_296 -> "4c8a1ce87221bcf66105a87ea575f759"
+                REGISTER_IDENTITY_2_256_3_6_336_264_21_2448_6_2008 -> "fa510ff9d20eb4a01e19cdb3062e9f05"
+                REGISTER_IDENTITY_21_256_3_7_336_264_21_3072_6_2008 -> "511f124fb8609d82040b1a11fc7cd40d"
+                REGISTER_IDENTITY_1_256_3_6_576_264_1_2448_3_256 -> "fd13435c1cb675eb5bbdf0f2d6c33f19"
+                REGISTER_IDENTITY_2_256_3_6_336_248_1_2432_3_256 -> "6d9cc80b7409b23b4884f188bd03ee25"
+                REGISTER_IDENTITY_2_256_3_6_576_248_1_2432_3_256 -> "5b0f89a6bae679527d8c640377b3b514"
+                REGISTER_IDENTITY_11_256_3_3_576_248_1_1184_5_264 -> "b4c5509a00817d56a0550ccb3ac305a4"
+                //REGISTER_IDENTITY_12_256_3_3_336_232_NA -> "08bc36b05da033c929248d792a4931dc"
+                REGISTER_IDENTITY_1_256_3_4_336_232_1_1480_5_296 -> "91c25d7d1b58ceb0641626c43d779ede"
+                //REGISTER_IDENTITY_1_256_3_4_600_248_1_1496_3_256 -> "88ff8b120264ee3d22541279e4bf178b"
+                REGISTER_IDENTITY_1_160_3_4_576_200_NA -> "9960ebf7217bb5e16ab4c00316950fd2"
+                REGISTER_IDENTITY_21_256_3_3_336_232_NA -> "fe31d586eb256ac3b083d62bfe4cfab1"
+                REGISTER_IDENTITY_24_256_3_4_336_232_NA -> "087818466bf2e66787d2fa9f85b3e1d7"
+                REGISTER_IDENTITY_20_256_3_3_336_224_NA -> "67b0e34b817bb5ee784f3b09365002b2"
+                REGISTER_IDENTITY_1_256_3_3_576_248_NA -> "dfed3eb3fadf58a600eac72467f7cd2a"
+                REGISTER_IDENTITY_1_160_3_3_576_200_NA -> "b39fb35073dc51c1b064bf087a510408"
+                REGISTER_IDENTITY_10_256_3_3_576_248_1_1184_5_264 -> "14dc077383ee7ca3c27edb11c13a0aab"
+                REGISTER_IDENTITY_11_256_3_5_576_248_1_1808_4_256 -> "b80f22fe10c7d1cb5e82ea25aaa0e93e"
+                REGISTER_IDENTITY_21_256_3_3_576_232_NA -> "83777494ca7b193a1736ecd00b21dbb1"
+                //REGISTER_IDENTITY_3_160_3_3_336_200_NA -> "21225f86350dae28064a77226a479459"
+                //REGISTER_IDENTITY_3_160_3_4_576_216_1_1512_3_256 -> "caf666cfd6885a835cbd33898e60de57"
+                REGISTER_IDENTITY_2_256_3_6_336_264_1_2448_3_256 -> "30fb0296c029509021b1db4b537276ec"
+                REGISTER_IDENTITY_21_256_3_4_576_232_NA -> "fd63fbae28f9add5543305baacd18a4e"
+                REGISTER_IDENTITY_11_256_3_3_576_240_1_864_5_264 -> "3372885b088a24ba96cf1ef01743a150"
+                REGISTER_IDENTITY_11_256_3_5_576_248_1_1808_5_296 -> "68f4009c2ca480288cb38944d0acd2fa"
+                REGISTER_IDENTITY_160 -> "1a99142a2a23d507b06a551bf1ee0fd8"
+                REGISTER_IDENTITY_224 -> "cc50d457d404b034c3fc17225046aa64"
+                REGISTER_IDENTITY_256 -> "e5ebd20ead9761988f571aadeacf835c"
+                REGISTER_IDENTITY_384 -> "fc9897bb18cfe4bd1d0e57b27985f02d"
+                REGISTER_IDENTITY_512 -> "b9130f5087ad5424b9d058c2ab3c469b"
+            }
+        }
     }
 }

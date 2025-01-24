@@ -41,7 +41,7 @@ class NfcManager @Inject constructor(
     }
 
     /* ENABLE SCANNING */
-    fun enableForegroundDispatch() {
+    private fun enableForegroundDispatch() {
         ErrorHandler.logDebug("NfcManager", "Enabling NFC foreground dispatch")
         adapter = NfcAdapter.getDefaultAdapter(activity)
         val intent = Intent(context, activity.javaClass)

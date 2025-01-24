@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,18 +72,21 @@ private enum class IntroStep(
     )
 }
 
-private val introSteps = listOf(
-    IntroStep.Welcome,
-    IntroStep.Identity,
-    IntroStep.Privacy,
-    IntroStep.Rewards
-)
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun IntroScreen(
     navigate: (String) -> Unit
 ) {
+    val introSteps = remember {
+        listOf(
+            IntroStep.Welcome,
+            IntroStep.Identity,
+            IntroStep.Privacy,
+            IntroStep.Rewards
+        )
+    }
     val stepState = rememberPagerState(pageCount = { introSteps.size })
     val coroutineScope = rememberCoroutineScope()
 

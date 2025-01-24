@@ -4,10 +4,12 @@ import CircuitPassportHashType
 import RegisterIdentityCircuitType
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.rarilabs.rarime.BaseConfig
+import com.rarilabs.rarime.BuildConfig
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.registration.PassportAlreadyRegisteredByOtherPK
 import com.rarilabs.rarime.api.registration.RegistrationManager
@@ -15,6 +17,8 @@ import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.modules.passportScan.CircuitUseCase
+import com.rarilabs.rarime.modules.passportScan.ConnectionError
+import com.rarilabs.rarime.modules.passportScan.DownloadCircuitError
 import com.rarilabs.rarime.modules.passportScan.DownloadRequest
 import com.rarilabs.rarime.modules.passportScan.models.CryptoUtilsPassport
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
@@ -66,6 +70,11 @@ class ProofViewModel @Inject constructor(
         get() = _state.asStateFlow()
 
     private val second = 1000L
+
+    fun resetState() {
+        _progressVisibility.value = false
+        _state.value = PassportProofState.READING_DATA
+    }
 
     private val TAG = ProofViewModel::class.java.simpleName
 
@@ -146,9 +155,8 @@ class ProofViewModel @Inject constructor(
 
         val zkp = ZKPUseCase(application as Context, assetManager)
 
-
         val customDispatcher = Executors.newFixedThreadPool(1) { runnable ->
-            Thread(null, runnable, "LargeStackThread", 100 * 1024 * 1024) // 800 MB stack size
+            Thread(null, runnable, "LargeStackThread", 100 * 1024 * 1024) // 100 MB stack size
         }.asCoroutineDispatcher()
 
 
@@ -242,16 +250,16 @@ class ProofViewModel @Inject constructor(
                     )
                 }
 
-                RegisteredCircuitData.REGISTER_IDENTITY_12_256_3_3_336_232_NA -> {
-                    zkp.generateRegisterZKP(
-                        filePaths!!.zkey,
-                        filePaths.zkeyLen,
-                        filePaths.dat,
-                        filePaths.datLen,
-                        inputs,
-                        ZkpUtil::registerIdentity1225633336232NA
-                    )
-                }
+//                RegisteredCircuitData.REGISTER_IDENTITY_12_256_3_3_336_232_NA -> {
+//                    zkp.generateRegisterZKP(
+//                        filePaths!!.zkey,
+//                        filePaths.zkeyLen,
+//                        filePaths.dat,
+//                        filePaths.datLen,
+//                        inputs,
+//                        ZkpUtil::registerIdentity1225633336232NA
+//                    )
+//                }
 
                 RegisteredCircuitData.REGISTER_IDENTITY_1_256_3_4_336_232_1_1480_5_296 -> {
                     zkp.generateRegisterZKP(
@@ -264,16 +272,16 @@ class ProofViewModel @Inject constructor(
                     )
                 }
 
-                RegisteredCircuitData.REGISTER_IDENTITY_1_256_3_4_600_248_1_1496_3_256 -> {
-                    zkp.generateRegisterZKP(
-                        filePaths!!.zkey,
-                        filePaths.zkeyLen,
-                        filePaths.dat,
-                        filePaths.datLen,
-                        inputs,
-                        ZkpUtil::registerIdentity125634600248114963256
-                    )
-                }
+//                RegisteredCircuitData.REGISTER_IDENTITY_1_256_3_4_600_248_1_1496_3_256 -> {
+//                    zkp.generateRegisterZKP(
+//                        filePaths!!.zkey,
+//                        filePaths.zkeyLen,
+//                        filePaths.dat,
+//                        filePaths.datLen,
+//                        inputs,
+//                        ZkpUtil::registerIdentity125634600248114963256
+//                    )
+//                }
 
                 RegisteredCircuitData.REGISTER_IDENTITY_1_160_3_4_576_200_NA -> {
                     zkp.generateRegisterZKP(
@@ -374,27 +382,27 @@ class ProofViewModel @Inject constructor(
                     )
                 }
 
-                RegisteredCircuitData.REGISTER_IDENTITY_3_160_3_3_336_200_N -> {
-                    zkp.generateRegisterZKP(
-                        filePaths!!.zkey,
-                        filePaths.zkeyLen,
-                        filePaths.dat,
-                        filePaths.datLen,
-                        inputs,
-                        ZkpUtil::registerIdentity316033336200NA
-                    )
-                }
-
-                RegisteredCircuitData.REGISTER_IDENTITY_3_160_3_4_576_216_1_1512_3_256 -> {
-                    zkp.generateRegisterZKP(
-                        filePaths!!.zkey,
-                        filePaths.zkeyLen,
-                        filePaths.dat,
-                        filePaths.datLen,
-                        inputs,
-                        ZkpUtil::registerIdentity316034576216115123256
-                    )
-                }
+//                RegisteredCircuitData.REGISTER_IDENTITY_3_160_3_3_336_200_NA -> {
+//                    zkp.generateRegisterZKP(
+//                        filePaths!!.zkey,
+//                        filePaths.zkeyLen,
+//                        filePaths.dat,
+//                        filePaths.datLen,
+//                        inputs,
+//                        ZkpUtil::registerIdentity316033336200NA
+//                    )
+//                }
+//
+//                RegisteredCircuitData.REGISTER_IDENTITY_3_160_3_4_576_216_1_1512_3_256 -> {
+//                    zkp.generateRegisterZKP(
+//                        filePaths!!.zkey,
+//                        filePaths.zkeyLen,
+//                        filePaths.dat,
+//                        filePaths.datLen,
+//                        inputs,
+//                        ZkpUtil::registerIdentity316034576216115123256
+//                    )
+//                }
 
                 RegisteredCircuitData.REGISTER_IDENTITY_2_256_3_6_336_264_1_2448_3_256 -> {
                     zkp.generateRegisterZKP(
@@ -407,24 +415,66 @@ class ProofViewModel @Inject constructor(
                     )
                 }
 
-                else -> throw IllegalStateException("You not allowed to be here")
+                RegisteredCircuitData.REGISTER_IDENTITY_21_256_3_4_576_232_NA -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity2125634576232NA
+                    )
+                }
 
+                RegisteredCircuitData.REGISTER_IDENTITY_11_256_3_3_576_240_1_864_5_264 -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity112563357624018645264
+                    )
+                }
+
+                RegisteredCircuitData.REGISTER_IDENTITY_11_256_3_5_576_248_1_1808_5_296 -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity1125635576248118085296
+                    )
+                }
+
+                else -> throw IllegalStateException("You are not allowed to be here")
             }
         }
 
         return proof
     }
 
-    suspend fun registerByDocument() {
-        val eDocument = eDoc.value!!
-
+    private fun getCircuitType(eDocument: EDocument): RegisterIdentityCircuitType {
         val registerIdentityCircuitType = try {
             eDocument.getRegisterIdentityCircuitType()
         } catch (e: Exception) {
             ErrorHandler.logError("registerByDocument", "Cant getRegisterIdentityCircuitType", e)
             throw e
         }
+        return registerIdentityCircuitType
 
+    }
+
+    private fun getCircuitData(registerIdentityCircuitName: String): RegisteredCircuitData {
+        ErrorHandler.logDebug("registerIdentityCircuitName", registerIdentityCircuitName)
+        val registeredCircuitData = RegisteredCircuitData.fromValue(registerIdentityCircuitName)
+            ?: throw IllegalStateException("Circuit $registerIdentityCircuitName is not supported")
+
+        return registeredCircuitData
+    }
+
+    private fun getCircuitName(registerIdentityCircuitType: RegisterIdentityCircuitType): String {
         val registerIdentityCircuitName = try {
             registerIdentityCircuitType.buildName()
         } catch (e: Exception) {
@@ -436,37 +486,68 @@ class ProofViewModel @Inject constructor(
             )
             throw e
         }
+        return registerIdentityCircuitName
+    }
 
-        registrationManager.setCircuitData(registerIdentityCircuitType)
+    suspend fun registerByDocument() {
+        val eDocument = eDoc.value!!
 
-        ErrorHandler.logDebug("registerIdentityCircuitName", registerIdentityCircuitName)
-        val registeredCircuitData = RegisteredCircuitData.fromValue(registerIdentityCircuitName)
-            ?: throw IllegalStateException("Circuit $registerIdentityCircuitName is not supported")
+        //Get circuit type
+        val circuitType = getCircuitType(eDocument)
 
+        registrationManager.setCircuitData(circuitType)
 
-        val filePaths = withContext(Dispatchers.Default) {
-            CircuitUseCase(application as Context).download(registeredCircuitData) { progress, visibility ->
-                if (_state.value.value < PassportProofState.APPLYING_ZERO_KNOWLEDGE.value) {
+        val circuitName = getCircuitName(circuitType)
+
+        val circuitData = getCircuitData(circuitName)
+
+        val circuitUseCase = CircuitUseCase(application as Context)
+
+        val filePaths = try {
+            withContext(Dispatchers.Default) {
+                circuitUseCase.download(circuitData) { progress, visibility ->
                     _progress.value = progress
                     _progressVisibility.value = !visibility
                 }
+            } ?: throw DownloadCircuitError()
+        } catch (e: ConnectionError) {
+            ErrorHandler.logError("CircuitUseCase", "Network issue encountered", e)
+            throw e
+        } catch (e: DownloadCircuitError) {
+            ErrorHandler.logError("CircuitUseCase", "Circuit download failed", e)
+            throw e
+        } catch (e: Exception) {
+            ErrorHandler.logError("CircuitUseCase", "Unexpected error occurred", e)
+            circuitUseCase.deleteRedunantFiles(circuitData)
+            throw DownloadCircuitError().apply { initCause(e) }
+        }
+        _state.value = PassportProofState.READING_DATA
+
+
+        //Proof generation
+        val proof =
+            generateRegisterIdentityProof(
+                eDocument, circuitData, filePaths, circuitType
+            )
+
+        if (!BuildConfig.isTestnet) {
+            try {
+                ErrorHandler.logDebug("deleting zkey, dat and Archive", "Start")
+                circuitUseCase.deleteRedunantFiles(circuitData)
+                ErrorHandler.logDebug("deleting zkey, dat and Archive", "Finish")
+            } catch (e: Exception) {
+                ErrorHandler.logError("Error deleting zkey, dat and Archive", "Error", e)
             }
         }
 
-        _state.value = PassportProofState.READING_DATA
-
-        val proof = withContext(Dispatchers.IO) {
-            generateRegisterIdentityProof(
-                eDocument, registeredCircuitData, filePaths, registerIdentityCircuitType
-            )
-        }
+        Log.i("Registration proof", GsonBuilder().setPrettyPrinting().create().toJson(proof))
 
         registrationManager.setRegistrationProof(proof)
 
         _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
         _progressVisibility.value = false
 
-
+        // Get passport info
         val passportInfo = try {
             registrationManager.getPassportInfo(eDocument, proof)
         } catch (e: Exception) {
@@ -478,6 +559,8 @@ class ProofViewModel @Inject constructor(
 
         val currentIdentityKey = identityManager.getProfiler().publicKeyHash
         _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
+
+        //registration
         passportInfo?.let {
             if (it.component1()?.activeIdentity?.toHexString() == currentIdentityKey.toHexString()) {
                 ErrorHandler.logDebug(TAG, "Passport is already registered with this PK")
@@ -487,8 +570,11 @@ class ProofViewModel @Inject constructor(
                     eDocument,
                     registrationManager.masterCertProof.value!!,
                     false,
-                    registerIdentityCircuitName
+                    circuitName
                 )
+
+                delay(second * 1)
+
 
                 _state.value = PassportProofState.FINALIZING
 
@@ -503,13 +589,17 @@ class ProofViewModel @Inject constructor(
                 eDocument,
                 registrationManager.masterCertProof.value!!,
                 false,
-                registerIdentityCircuitName
+                circuitName
             )
+            delay(second * 1)
+
 
             _state.value = PassportProofState.FINALIZING
 
             delay(second * 1)
         }
+
+        delay(second * 1)
     }
 
     suspend fun lightRegistration(): ZkProof {
@@ -522,9 +612,11 @@ class ProofViewModel @Inject constructor(
         val registeredCircuitData = RegisteredCircuitData.fromValue(registerIdentityCircuitName)
             ?: throw IllegalStateException("Circuit $registerIdentityCircuitName is not supported")
 
+        delay(second * 2)
         _state.value = PassportProofState.READING_DATA
 
 
+        //TODO: Don't forget to update download manager here
         val filePaths = withContext(Dispatchers.Default) {
             CircuitUseCase(application as Context).download(registeredCircuitData) { progress, visibility ->
                 if (_state.value.value < PassportProofState.APPLYING_ZERO_KNOWLEDGE.value) {
@@ -534,6 +626,7 @@ class ProofViewModel @Inject constructor(
             }
         }
 
+        delay(second * 2)
         _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
 
         val lightProof = withContext(Dispatchers.Default) {
@@ -545,7 +638,7 @@ class ProofViewModel @Inject constructor(
             )
         }
 
-
+        delay(second * 2)
         _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
 
 
@@ -568,7 +661,7 @@ class ProofViewModel @Inject constructor(
             identityManager.setLightRegistrationData(registerResponse.data.attributes)
             return lightProof
         }
-
+        delay(second * 2)
         _state.value = PassportProofState.FINALIZING
 
         val res = withContext(Dispatchers.IO) {
@@ -579,7 +672,7 @@ class ProofViewModel @Inject constructor(
 
         registrationManager.setRegistrationProof(lightProof)
         identityManager.setLightRegistrationData(registerResponse.data.attributes)
-
+        delay(second * 1)
         return lightProof
     }
 
@@ -727,6 +820,9 @@ class ProofViewModel @Inject constructor(
         val signedAttrChunks = CircuitUtil.smartChunking2(
             signedAttributes, 2, smartChunkingToBlockSize.toLong()
         )
+
+        Log.i("signedAttrChunks gson", Gson().toJson(signedAttrChunks))
+        Log.i("signedAttrChunks", signedAttrChunks.toString())
 
         val pubKeyChunks = when (publicKey) {
             is ECPublicKey -> {

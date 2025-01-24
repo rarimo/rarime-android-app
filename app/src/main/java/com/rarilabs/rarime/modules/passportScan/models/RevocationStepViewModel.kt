@@ -54,7 +54,6 @@ class RevocationStepViewModel @Inject constructor(
         /* sign with passport */
         val updatedEDoc = scanNfcUseCase.signRevocationWithPassport(
             registrationManager.revocationChallenge.value!!,
-            // TODO: is it modify eDocument through reference?
             registrationManager.eDocument.value!!
         )
 

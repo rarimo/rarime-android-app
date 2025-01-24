@@ -3,6 +3,7 @@ package com.rarilabs.rarime.modules.passportScan.nfc
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,11 +11,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -27,9 +28,12 @@ import com.rarilabs.rarime.manager.ScanNFCState
 import com.rarilabs.rarime.modules.passportScan.ScanPassportLayout
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.ReadEDocStepViewModel
+import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppAnimation
+import com.rarilabs.rarime.ui.components.AppBottomSheet
+import com.rarilabs.rarime.ui.components.PrimaryButton
+import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
-import net.sf.scuba.data.Gender
 import okio.IOException
 import org.jmrtd.lds.icao.MRZInfo
 
@@ -45,12 +49,12 @@ fun ReadEDocStep(
     val state by readEDocStepViewModel.state.collectAsState()
     val scanExceptionInstance = readEDocStepViewModel.scanExceptionInstance.collectAsState()
 
-    LaunchedEffect(Unit) {
-        readEDocStepViewModel.startScanning(mrzInfo)
-    }
+    val currentStep by readEDocStepViewModel.currentNfcScanStep.collectAsState()
+
 
     fun handleScanPassportLayoutClose() {
         readEDocStepViewModel.resetState()
+        readEDocStepViewModel.resetNfcScanStep()
         onClose()
     }
 
@@ -63,8 +67,8 @@ fun ReadEDocStep(
     fun handleScanPassportLayoutError() {
         scanExceptionInstance.value?.let {
             readEDocStepViewModel.resetState()
-
-            val errorMessage = when(scanExceptionInstance.value) {
+            readEDocStepViewModel.resetNfcScanStep()
+            val errorMessage = when (scanExceptionInstance.value) {
                 is IOException -> stringResource(id = R.string.nfc_error_interrupt)
                 else -> stringResource(id = R.string.nfc_error_unknown)
             }
@@ -85,6 +89,10 @@ fun ReadEDocStep(
         handleScanPassportLayoutScanned = { handleScanPassportLayoutScanned() },
         handleScanPassportLayoutError = { handleScanPassportLayoutError() },
         state = state,
+        startScanning = { readEDocStepViewModel.startScanning(mrzInfo) },
+        stopScanning = { readEDocStepViewModel.resetState() },
+        currentNfcScanStep = currentStep,
+        resetNFCScanState = { readEDocStepViewModel.resetNfcScanStep() }
     )
 }
 
@@ -93,11 +101,26 @@ private fun ReadEDocStepContent(
     handleScanPassportLayoutClose: () -> Unit,
     handleScanPassportLayoutScanned: () -> Unit,
     handleScanPassportLayoutError: @Composable () -> Unit,
+    currentNfcScanStep: NfcScanStep,
+    startScanning: () -> Unit,
+    stopScanning: () -> Unit,
     state: ScanNFCState,
+    resetNFCScanState: () -> Unit
 ) {
+    val scanSheetState = rememberAppSheetState(showSheet = false)
     fun getNfcAnimation(): Int {
         return R.raw.anim_passport_nfc
     }
+
+    AppBottomSheet(state = scanSheetState) {
+        NfcScanBottomSheet(
+            currentStep = currentNfcScanStep,
+            onStart = startScanning,
+            scanSheetState = scanSheetState,
+            onClose = { scanSheetState.hide(); resetNFCScanState();stopScanning() }
+        )
+    }
+
 
     ScanPassportLayout(
         step = 2,
@@ -110,7 +133,9 @@ private fun ReadEDocStepContent(
             modifier = Modifier.fillMaxSize()
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(top = 100.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 100.dp),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -119,14 +144,13 @@ private fun ReadEDocStepContent(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(64.dp),
                 ) {
-                    getNfcAnimation()?.let {
-                        AppAnimation(
-                            modifier = Modifier
-                                .size(240.dp)
-                                .zIndex(2f),
-                            id = it,
-                        )
-                    }
+                    AppAnimation(
+                        modifier = Modifier
+                            .size(240.dp)
+                            .scale(1.5f)
+                            .zIndex(2f),
+                        id = getNfcAnimation(),
+                    )
 
                     when (state) {
                         ScanNFCState.NOT_SCANNING -> {
@@ -151,13 +175,13 @@ private fun ReadEDocStepContent(
                         }
 
                         ScanNFCState.SCANNING -> {
-                            Text(
-                                text = stringResource(R.string.nfc_reader_scanning),
-                                style = RarimeTheme.typography.body3,
-                                color = RarimeTheme.colors.textSecondary,
-                                modifier = Modifier.width(250.dp),
-                                textAlign = TextAlign.Center
-                            )
+//                            Text(
+//                                text = stringResource(R.string.nfc_reader_scanning),
+//                                style = RarimeTheme.typography.body3,
+//                                color = RarimeTheme.colors.textSecondary,
+//                                modifier = Modifier.width(250.dp),
+//                                textAlign = TextAlign.Center
+//                            )
                         }
 
                         ScanNFCState.SCANNED -> {
@@ -168,10 +192,23 @@ private fun ReadEDocStepContent(
                             handleScanPassportLayoutError()
                         }
                     }
+
                 }
+                Spacer(modifier = Modifier.weight(1f))
+                PrimaryButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+
+                        .padding(start = 24.dp, end = 24.dp, bottom = 24.dp),
+                    onClick = { scanSheetState.show() },
+                    size = ButtonSize.Large,
+                    text = stringResource(R.string.scan)
+                )
             }
         }
+
     }
+
 }
 
 @Preview
@@ -185,5 +222,9 @@ private fun ReadEDocStepContentPreview() {
         handleScanPassportLayoutScanned = {},
         handleScanPassportLayoutError = {},
         state = ScanNFCState.NOT_SCANNING,
+        currentNfcScanStep = NfcScanStep.PREPARING,
+        stopScanning = {},
+        startScanning = {},
+        resetNFCScanState = {}
     )
 }
