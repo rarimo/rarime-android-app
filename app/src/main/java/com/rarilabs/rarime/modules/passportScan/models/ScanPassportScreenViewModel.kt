@@ -43,7 +43,7 @@ class ScanPassportScreenViewModel @Inject constructor(
         saveRegistrationProof(registrationManager.registrationProof.value!!)
     }
 
-    fun setPassportTEMP(eDocument: EDocument) {
+    fun setPassportTEMP(eDocument: EDocument?) {
         registrationManager.setEDocument(eDocument)
     }
 

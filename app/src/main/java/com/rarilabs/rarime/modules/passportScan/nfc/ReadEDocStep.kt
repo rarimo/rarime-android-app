@@ -54,6 +54,7 @@ fun ReadEDocStep(
 
     fun handleScanPassportLayoutClose() {
         readEDocStepViewModel.resetState()
+        readEDocStepViewModel.resetNfcScanStep()
         onClose()
     }
 
@@ -66,7 +67,7 @@ fun ReadEDocStep(
     fun handleScanPassportLayoutError() {
         scanExceptionInstance.value?.let {
             readEDocStepViewModel.resetState()
-
+            readEDocStepViewModel.resetNfcScanStep()
             val errorMessage = when (scanExceptionInstance.value) {
                 is IOException -> stringResource(id = R.string.nfc_error_interrupt)
                 else -> stringResource(id = R.string.nfc_error_unknown)
@@ -90,7 +91,8 @@ fun ReadEDocStep(
         state = state,
         startScanning = { readEDocStepViewModel.startScanning(mrzInfo) },
         stopScanning = { readEDocStepViewModel.resetState() },
-        currentNfcScanStep = currentStep
+        currentNfcScanStep = currentStep,
+        resetNFCScanState = { readEDocStepViewModel.resetNfcScanStep() }
     )
 }
 
@@ -103,6 +105,7 @@ private fun ReadEDocStepContent(
     startScanning: () -> Unit,
     stopScanning: () -> Unit,
     state: ScanNFCState,
+    resetNFCScanState: () -> Unit
 ) {
     val scanSheetState = rememberAppSheetState(showSheet = false)
     fun getNfcAnimation(): Int {
@@ -114,7 +117,8 @@ private fun ReadEDocStepContent(
             currentStep = currentNfcScanStep,
             onStart = startScanning,
             scanSheetState = scanSheetState,
-            onClose = { scanSheetState.hide(); stopScanning() })
+            onClose = { scanSheetState.hide(); resetNFCScanState();stopScanning() }
+        )
     }
 
 
@@ -220,6 +224,7 @@ private fun ReadEDocStepContentPreview() {
         state = ScanNFCState.NOT_SCANNING,
         currentNfcScanStep = NfcScanStep.PREPARING,
         stopScanning = {},
-        startScanning = {}
+        startScanning = {},
+        resetNFCScanState = {}
     )
 }

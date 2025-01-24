@@ -34,6 +34,10 @@ class ReadEDocStepViewModel @Inject constructor(
     val currentNfcScanStep: StateFlow<NfcScanStep>
         get() = _currentNfcScanStep.asStateFlow()
 
+    fun resetNfcScanStep() {
+        _currentNfcScanStep.value = NfcScanStep.PREPARING
+    }
+
 
     private var _scanExceptionInstance = MutableStateFlow<Exception?>(null)
     val scanExceptionInstance: StateFlow<Exception?>

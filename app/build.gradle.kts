@@ -31,9 +31,8 @@ android {
         minSdk = 27
         targetSdk = 34
 
-
-        versionCode = 55
-        versionName = "2.1.5"
+        versionCode = 57
+        versionName = "2.1.7"
 
         externalNativeBuild {
             cmake {
@@ -50,7 +49,6 @@ android {
         resourceConfigurations.plus(
             listOf(
                 "en",
-//                "uk"
             )
         )
 
