@@ -31,8 +31,8 @@ android {
         minSdk = 27
         targetSdk = 34
 
-        versionCode = 57
-        versionName = "2.1.7"
+        versionCode = 60
+        versionName = "2.1.10"
 
         externalNativeBuild {
             cmake {
@@ -43,6 +43,7 @@ android {
             ndk {
                 //noinspection ChromeOsAbiSupport
                 abiFilters += "arm64-v8a"
+                debugSymbolLevel = "SYMBOL_TABLE"
             }
         }
 

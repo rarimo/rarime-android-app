@@ -250,16 +250,16 @@ class ProofViewModel @Inject constructor(
                     )
                 }
 
-//                RegisteredCircuitData.REGISTER_IDENTITY_12_256_3_3_336_232_NA -> {
-//                    zkp.generateRegisterZKP(
-//                        filePaths!!.zkey,
-//                        filePaths.zkeyLen,
-//                        filePaths.dat,
-//                        filePaths.datLen,
-//                        inputs,
-//                        ZkpUtil::registerIdentity1225633336232NA
-//                    )
-//                }
+                RegisteredCircuitData.REGISTER_IDENTITY_12_256_3_3_336_232_NA -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity1225633336232NA
+                    )
+                }
 
                 RegisteredCircuitData.REGISTER_IDENTITY_1_256_3_4_336_232_1_1480_5_296 -> {
                     zkp.generateRegisterZKP(
@@ -272,16 +272,16 @@ class ProofViewModel @Inject constructor(
                     )
                 }
 
-//                RegisteredCircuitData.REGISTER_IDENTITY_1_256_3_4_600_248_1_1496_3_256 -> {
-//                    zkp.generateRegisterZKP(
-//                        filePaths!!.zkey,
-//                        filePaths.zkeyLen,
-//                        filePaths.dat,
-//                        filePaths.datLen,
-//                        inputs,
-//                        ZkpUtil::registerIdentity125634600248114963256
-//                    )
-//                }
+                RegisteredCircuitData.REGISTER_IDENTITY_1_256_3_4_600_248_1_1496_3_256 -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity125634600248114963256
+                    )
+                }
 
                 RegisteredCircuitData.REGISTER_IDENTITY_1_160_3_4_576_200_NA -> {
                     zkp.generateRegisterZKP(
@@ -382,27 +382,27 @@ class ProofViewModel @Inject constructor(
                     )
                 }
 
-//                RegisteredCircuitData.REGISTER_IDENTITY_3_160_3_3_336_200_NA -> {
-//                    zkp.generateRegisterZKP(
-//                        filePaths!!.zkey,
-//                        filePaths.zkeyLen,
-//                        filePaths.dat,
-//                        filePaths.datLen,
-//                        inputs,
-//                        ZkpUtil::registerIdentity316033336200NA
-//                    )
-//                }
-//
-//                RegisteredCircuitData.REGISTER_IDENTITY_3_160_3_4_576_216_1_1512_3_256 -> {
-//                    zkp.generateRegisterZKP(
-//                        filePaths!!.zkey,
-//                        filePaths.zkeyLen,
-//                        filePaths.dat,
-//                        filePaths.datLen,
-//                        inputs,
-//                        ZkpUtil::registerIdentity316034576216115123256
-//                    )
-//                }
+                RegisteredCircuitData.REGISTER_IDENTITY_3_160_3_3_336_200_NA -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity316033336200NA
+                    )
+                }
+
+                RegisteredCircuitData.REGISTER_IDENTITY_3_160_3_4_576_216_1_1512_3_256 -> {
+                    zkp.generateRegisterZKP(
+                        filePaths!!.zkey,
+                        filePaths.zkeyLen,
+                        filePaths.dat,
+                        filePaths.datLen,
+                        inputs,
+                        ZkpUtil::registerIdentity316034576216115123256
+                    )
+                }
 
                 RegisteredCircuitData.REGISTER_IDENTITY_2_256_3_6_336_264_1_2448_3_256 -> {
                     zkp.generateRegisterZKP(
