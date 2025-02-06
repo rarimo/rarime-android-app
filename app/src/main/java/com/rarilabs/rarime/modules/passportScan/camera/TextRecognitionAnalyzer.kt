@@ -33,7 +33,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 fun buildTempMrz(
-    documentNumber: String, dateOfBirth: String, expiryDate: String
+    documentNumber: String, dateOfBirth: String, expiryDate: String, nationality: String
 ): MRZInfo? {
     var mrzInfo: MRZInfo? = null
     try {
@@ -43,7 +43,7 @@ fun buildTempMrz(
             "",
             "",
             documentNumber,
-            "NNN",
+            nationality,
             dateOfBirth,
             Gender.UNSPECIFIED,
             expiryDate,
@@ -79,7 +79,7 @@ class TextRecognitionAnalyzer(
     private val PASSPORT_TD_3_LINE_1_REGEX = "(P[A-Z0-9<]{1})([A-Z]{3})([A-Z0-9<]{39})"
 
     private val PASSPORT_TD_3_LINE_2_REGEX = Regex(
-        "[0-9A-Z<]{10}[A-Z]{3}[0-9]{7}[MFX][0-9]{7}"
+        "[0-9A-Z<]{10}(?:[A-Z]{3}|D<<)[0-9]{7}[MFX][0-9]{7}"
     )
 
     private fun onProcess(
@@ -172,14 +172,15 @@ class TextRecognitionAnalyzer(
                 val documentNumber = match.value.substring(0, 9).replace("O", "0")
                 val dateOfBirth = match.value.substring(13, 19)
                 val expiryDate = match.value.substring(21, 27)
+                val nationality = it.value.substring(10, 13)
 
                 val mrz = buildTempMrz(
                     documentNumber,
                     dateOfBirth,
                     expiryDate,
+                    nationality
                 ) ?: return
                 onDetectedTextUpdated(mrz)
-
             }
         } catch (e: Exception) {
             e.printStackTrace()

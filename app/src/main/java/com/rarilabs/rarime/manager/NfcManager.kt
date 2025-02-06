@@ -54,7 +54,10 @@ class NfcManager @Inject constructor(
     /* DISABLE SCANNING */
     fun disableForegroundDispatch() {
         ErrorHandler.logDebug("NfcManager", "Disabling NFC foreground dispatch")
-        adapter.disableForegroundDispatch(activity)
+
+        if (this::adapter.isInitialized) {
+            adapter.disableForegroundDispatch(activity)
+        }
     }
 
     /* SCAN HANDLING */

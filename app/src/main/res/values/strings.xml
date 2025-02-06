@@ -61,7 +61,7 @@
     <!--SCAN PASSPORT : NFC-->
     <string name="nfc_reader_title">NFC Reader</string>
     <string name="nfc_reader_text">Reading personal data</string>
-    <string name="nfc_reader_hint_1">1. Make sure you remove the case from the device</string>
+    <string name="nfc_reader_hint_1">Place your passport cover to the back of your phone</string>
     <string name="nfc_reader_hint_2">2. Place your Passport\/ID to the back of your phone</string>
     <string name="nfc_reader_scanning">Scanning…</string>
     <string name="nfc_error_interrupt">Scan interrupted, try again</string>
@@ -384,10 +384,22 @@
 
     <string name="drive_backup_description">Your account is not backed up. If you lose your device, you will lose access to your account</string>
     <string name="passport_already_registered_no_dg15_title">You have already registered</string>
-    <string name="passport_already_registered_no_dg15_description">You can`t revoke your passport. try to find your previous private key</string>
     <string name="scan">Scan</string>
     <string name="connection_lost_circuits_header">Connection Lost</string>
     <string name="connection_lost_circuits_body">Please check your internet connection and try again.</string>
     <string name="connection_lost_circuits_retry">Retry</string>
+    <string name="scan_mrzstep_content_tutorial_title">How to scan?</string>
+    <string name="passport_already_registered_no_dg15_description">You can`t revoke your passport. try to find your previous private key</string>
+    <string name="scan_mrzstep_content_tutorial_desc">Watch the tutorial</string>
+    <string name="scan_mrzstep_content_bottom_sheet_case_title">Remove Case</string>
+    <string name="scan_mrzstep_content_bottom_sheet_case_description">Make sure you remove the case from the device</string>
+    <string name="scan_mrzstep_content_bottom_sheet_case_btn">Next</string>
+    <string name="scan_mrzstep_content_bottom_sheet_mrz_title">Scan your document</string>
+    <string name="scan_mrzstep_content_bottom_sheet_mrz_description">Place the document inside the white borders</string>
+    <string name="scan_mrzstep_content_bottom_sheet_mrz_btn">Next</string>
+
+    <string name="scan_mrzstep_content_bottom_sheet_nfc_title">NFC Reader</string>
+    <string name="scan_mrzstep_content_bottom_sheet_nfc_description">Place your Passport\/ID to the back of your phone and press continue</string>
+    <string name="scan_mrzstep_content_bottom_sheet_nfc_btn">Let\'s scan</string>
 
 </resources>
