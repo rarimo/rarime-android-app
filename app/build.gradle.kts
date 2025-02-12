@@ -31,8 +31,8 @@ android {
         minSdk = 27
         targetSdk = 34
 
-        versionCode = 57
-        versionName = "2.1.7"
+        versionCode = 60
+        versionName = "2.1.10"
 
         externalNativeBuild {
             cmake {
@@ -43,6 +43,7 @@ android {
             ndk {
                 //noinspection ChromeOsAbiSupport
                 abiFilters += "arm64-v8a"
+                debugSymbolLevel = "SYMBOL_TABLE"
             }
         }
 
@@ -139,6 +140,7 @@ dependencies {
 
     implementation("com.github.jeziellago:compose-markdown:0.5.0")
     implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation("io.coil-kt:coil-gif:2.6.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -165,6 +167,8 @@ dependencies {
 
     //// ML-KIT ////
     implementation(libs.text.recognition)
+    implementation("com.google.mlkit:segmentation-selfie:16.0.0-beta6")
+
 
     //// ACCOMPANIST ////
     implementation("com.google.accompanist:accompanist-permissions:0.31.6-rc")

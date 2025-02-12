@@ -57,6 +57,15 @@ private fun PassportDataStepContent(
     image: Bitmap? = null,
     isUnsupported: Boolean,
 ) {
+
+//    LaunchedEffect(Unit) {
+//        if (image != null) {
+//            BackgroundRemover().removeBackground(image) {
+//                procImage = it
+//            }
+//        }
+//    }
+
     ScanPassportLayout(
         step = 3,
         title = stringResource(R.string.passport_data_title),

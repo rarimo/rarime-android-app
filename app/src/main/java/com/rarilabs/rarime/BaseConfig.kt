@@ -144,7 +144,7 @@ object TestNetConfig : IConfig {
     override val registerIdentity_1_256_3_4_336_232_1_1480_5_296 =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.2/registerIdentity_1_256_3_4_336_232_1_1480_5_296-download.zip"
     override val registerIdentity_1_256_3_4_600_248_1_1496_3_256 =
-        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.2/registerIdentity_1_256_3_4_600_248_1_1496_3_256-download.zip"
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.8/registerIdentity_1_256_3_4_600_248_1_1496_3_256-download.zip"
 
     override val registerIdentity_1_160_3_4_576_200_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.3/registerIdentity_1_160_3_4_576_200_NA-download.zip"
@@ -167,11 +167,11 @@ object TestNetConfig : IConfig {
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.5/registerIdentity_21_256_3_3_576_232_NA-download.zip"
 
     override val registerIdentity_3_160_3_3_336_200_NA =
-        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.7/registerIdentity_3_160_3_3_336_200_NA-download.zip"
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.7-fix/registerIdentity_3_160_3_3_336_200_NA-download.zip"
     override val registerIdentity_3_160_3_4_576_216_1_1512_3_256 =
-        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.7/registerIdentity_3_160_3_4_576_216_1_1512_3_256-download.zip"
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.7-fix/registerIdentity_3_160_3_4_576_216_1_1512_3_256-download.zip"
     override val registerIdentity_2_256_3_6_336_264_1_2448_3_256 =
-        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.7/registerIdentity_2_256_3_6_336_264_1_2448_3_256-download.zip"
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.7-fix/registerIdentity_2_256_3_6_336_264_1_2448_3_256-download.zip"
 
 
     override val registerIdentity_21_256_3_4_576_232_NA: String =
@@ -254,7 +254,7 @@ object MainnetConfig : IConfig {
     override val registerIdentity_1_256_3_4_336_232_1_1480_5_296 =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.2/registerIdentity_1_256_3_4_336_232_1_1480_5_296-download.zip"
     override val registerIdentity_1_256_3_4_600_248_1_1496_3_256 =
-        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.2/registerIdentity_1_256_3_4_600_248_1_1496_3_256-download.zip"
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.8/registerIdentity_1_256_3_4_600_248_1_1496_3_256-download.zip"
 
     override val registerIdentity_1_160_3_4_576_200_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.3/registerIdentity_1_160_3_4_576_200_NA-download.zip"
@@ -278,11 +278,11 @@ object MainnetConfig : IConfig {
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.5/registerIdentity_21_256_3_3_576_232_NA-download.zip"
 
     override val registerIdentity_3_160_3_3_336_200_NA =
-        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.7/registerIdentity_3_160_3_3_336_200_NA-download.zip"
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.7-fix/registerIdentity_3_160_3_3_336_200_NA-download.zip"
     override val registerIdentity_3_160_3_4_576_216_1_1512_3_256 =
-        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.7/registerIdentity_3_160_3_4_576_216_1_1512_3_256-download.zip"
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.7-fix/registerIdentity_3_160_3_4_576_216_1_1512_3_256-download.zip"
     override val registerIdentity_2_256_3_6_336_264_1_2448_3_256 =
-        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.7/registerIdentity_2_256_3_6_336_264_1_2448_3_256-download.zip"
+        "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.7-fix/registerIdentity_2_256_3_6_336_264_1_2448_3_256-download.zip"
 
     override val registerIdentity_21_256_3_4_576_232_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.8/registerIdentity_21_256_3_4_576_232_NA-download.zip"
