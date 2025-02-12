@@ -187,7 +187,7 @@ private fun ManualInputForm(
                     birthDateFieldState.selectedDateMillis, "yyMMdd"
                 ), DateUtil.convertToDate(
                     expiryDateFieldState.selectedDateMillis, "yyMMdd"
-                ), nationality = "USA"
+                ), nationality = ""
             )
         } catch (e: Exception) {
             // TODO: Handle error
