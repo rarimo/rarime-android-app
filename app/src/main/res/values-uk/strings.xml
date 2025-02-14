@@ -402,4 +402,6 @@
     <string name="scan_mrzstep_content_bottom_sheet_nfc_title">NFC Reader</string>
     <string name="scan_mrzstep_content_bottom_sheet_nfc_description">Place your Passport\/ID to the back of your phone and press continue</string>
     <string name="scan_mrzstep_content_bottom_sheet_nfc_btn">Let\'s scan</string>
+    <string name="maintenance_in_progress">Maintenance in Progress</string>
+    <string name="we_re_upgrading_for_a_better_experience_back_soon">We\'re upgrading for a better\nexperience. Back soon!</string>
 </resources>
