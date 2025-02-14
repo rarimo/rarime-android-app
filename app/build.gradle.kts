@@ -138,6 +138,9 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
 //    implementation("moe.banana:moshi-jsonapi:master-SNAPSHOT")
 
+    implementation("androidx.compose.animation:animation:1.7.8")
+
+
     implementation("com.github.jeziellago:compose-markdown:0.5.0")
     implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("io.coil-kt:coil-gif:2.6.0")

@@ -240,7 +240,7 @@ fun MainScreenContent(
                     }
                 }
             },
-        ) {
+        ) { innerPadding ->
             ScreenBarsColor(
                 colorScheme = mainViewModel.colorScheme.value, route = currentRoute ?: ""
             )
@@ -272,7 +272,7 @@ fun MainScreenContent(
             MainScreenRoutes(
                 navController = navController,
                 simpleNavigate = { simpleNavigate(it) },
-                navigateWithPopUp = { navigateWithPopUp(it) }
+                navigateWithPopUp = { navigateWithPopUp(it) },
             )
 
             if (isModalShown) {

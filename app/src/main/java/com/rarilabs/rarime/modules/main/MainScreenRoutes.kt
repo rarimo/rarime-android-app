@@ -23,7 +23,7 @@ import androidx.navigation.navDeepLink
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.SecurityCheckState
-import com.rarilabs.rarime.modules.home.HomeScreen
+import com.rarilabs.rarime.modules.home.v2.HomeScreen
 import com.rarilabs.rarime.modules.intro.IntroScreen
 import com.rarilabs.rarime.modules.main.guards.AuthGuard
 import com.rarilabs.rarime.modules.notifications.NotificationsScreen
@@ -79,7 +79,7 @@ fun MainScreenRoutes(
     }
 
     NavHost(
-        navController,
+        navController = navController,
         startDestination = if (mainViewModel.getIsPkInit()) Screen.Main.route else Screen.Intro.route,
         enterTransition = { fadeIn() },
         exitTransition = { ExitTransition.None },
@@ -175,13 +175,11 @@ fun MainScreenRoutes(
             ScanPassportScreen(
                 onClose = {
                     coroutineScope.launch {
-                        //mainViewModel.loadUserDetails()
                         navController.popBackStack()
                     }
                 },
                 onClaim = {
                     coroutineScope.launch {
-                        //mainViewModel.loadUserDetails()
                         navigateWithPopUp(Screen.Claim.Specific.route)
                     }
                 }
@@ -192,15 +190,11 @@ fun MainScreenRoutes(
             ScanPassportScreen(
                 onClose = {
                     coroutineScope.launch {
-//                        val a = mainViewModel.loadUserDetails()
-//                        a
                         navigateWithPopUp(Screen.Main.route)
                     }
                 },
                 onClaim = {
                     coroutineScope.launch {
-//                        val a = mainViewModel.loadUserDetails()
-//                        a
                         navigateWithPopUp(Screen.Claim.Reserve.route)
                     }
                 }
@@ -224,7 +218,7 @@ fun MainScreenRoutes(
         ) {
             composable(Screen.Main.Home.route) {
                 AuthGuard(navigate = navigateWithPopUp) {
-                    HomeScreen(navigate = { simpleNavigate(it) })
+                    HomeScreen()
                 }
             }
 
