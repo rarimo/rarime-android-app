@@ -92,6 +92,10 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
                 return@withContext
             }
 
+            if (response.code() == 409) {
+                throw IllegalStateException()
+            }
+
 
             ErrorHandler.logError(
                 "verify Passport failed",
@@ -208,3 +212,6 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
         throw Exception(response.errorBody()?.string())
     }
 }
+
+
+class ConflictException(message: String) : Exception("ConflictException: $message")

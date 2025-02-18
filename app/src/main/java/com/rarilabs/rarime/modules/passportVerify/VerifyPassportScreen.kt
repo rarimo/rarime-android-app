@@ -25,6 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.points.ConflictException
+import com.rarilabs.rarime.modules.home.components.ErrorReservedPointsContent
 import com.rarilabs.rarime.modules.home.components.ReservedCongratsModalContent
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.passportVerify.viewModels.ReserveTokenViewModel
@@ -37,11 +39,14 @@ import com.rarilabs.rarime.ui.components.rememberAppCheckboxState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.ErrorHandler
+import com.rarilabs.rarime.util.ZkpException
 import kotlinx.coroutines.launch
 
 @Composable
 fun VerifyPassportScreen(
-    reserveTokenViewModel: ReserveTokenViewModel = hiltViewModel(), onFinish: () -> Unit
+    reserveTokenViewModel: ReserveTokenViewModel = hiltViewModel(),
+    onFinish: () -> Unit,
+    onSendError: () -> Unit
 ) {
     val mainViewModal = LocalMainViewModel.current
     var isReserving by remember { mutableStateOf(false) }
@@ -59,10 +64,44 @@ fun VerifyPassportScreen(
                     onClose = { mainViewModal.setModalVisibility(false) },
                 )
             }
-
             onFinish()
-        } catch(e: Exception) {
-            ErrorHandler.logError("VerifyPoitntsScreen", "Error reserving tokens", e)
+        } catch (e: ZkpException) {
+            if (e.message?.contains("timestampUpperbound") == true) {
+                mainViewModal.setModalVisibility(true)
+                reserveTokenViewModel.setAlreadyReserved()
+                mainViewModal.setModalContent {
+                    ErrorReservedPointsContent(
+                        onClose = { mainViewModal.setModalVisibility(false) },
+                        title = stringResource(R.string.passport_is_expired_error_header),
+                        description = stringResource(R.string.passport_is_expired_error_description)
+                    )
+                }
+                ErrorHandler.logError("VerifyPoitntsScreen", "ConflictException", e)
+                onFinish()
+            }
+        } catch (e: ConflictException) {
+            mainViewModal.setModalVisibility(true)
+            reserveTokenViewModel.setAlreadyReserved()
+            mainViewModal.setModalContent {
+                ErrorReservedPointsContent(
+                    onClose = { mainViewModal.setModalVisibility(false) },
+                    title = stringResource(R.string.already_reserved_points_header),
+                    description = stringResource(R.string.already_reserved_points_body)
+                )
+            }
+            ErrorHandler.logError("VerifyPoitntsScreen", "ConflictException", e)
+            onFinish()
+        } catch (e: Exception) {
+            mainViewModal.setModalVisibility(true)
+            mainViewModal.setModalContent {
+                ErrorReservedPointsContent(
+                    onClose = { onSendError.invoke() },
+                    title = stringResource(R.string.reserve_error_header),
+                    description = stringResource(R.string.reserve_error_description)
+                )
+            }
+            ErrorHandler.logError("VerifyPoitntsScreen", "ConflictException", e)
+            onFinish()
         }
         isReserving = false
     }
@@ -147,6 +186,7 @@ fun VerifyPassportScreen(
         }
     }
 }
+
 
 @Preview
 @Composable

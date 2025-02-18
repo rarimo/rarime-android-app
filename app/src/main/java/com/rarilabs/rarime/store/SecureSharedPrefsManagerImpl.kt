@@ -49,7 +49,8 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "IS_IN_WAITLIST" to "IS_IN_WAITLIST",
         "IS_LOGS_DELETED" to "IS_LOGS_DELETED",
         "DEFERRED_REFERRAL_CODE" to "DEFERRED_REFERRAL_CODE",
-        "LIGHT_REGISTRATION_DATA" to "LIGHT_REGISTRATION_DATA"
+        "LIGHT_REGISTRATION_DATA" to "LIGHT_REGISTRATION_DATA",
+        "ALREADY_RESERVED" to "ALREADY_RESERVED",
     )
 
     private val PREFS_FILE_NAME = "sharedPrefFile12"
@@ -428,5 +429,15 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         )
 
         return lightRegistrationData
+    }
+
+    override fun saveIsAlreadyReserved(isAlreadyReserved: Boolean) {
+        val editor = getEditor()
+        editor.putBoolean(accessTokens["ALREADY_RESERVED"], isAlreadyReserved)
+        editor.apply()
+    }
+
+    override fun getIsAlreadyReserved(): Boolean {
+        return getSharedPreferences().getBoolean(accessTokens["ALREADY_RESERVED"], false)
     }
 }
