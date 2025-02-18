@@ -1,5 +1,10 @@
 package com.rarilabs.rarime.modules.home.v2
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +33,7 @@ import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 
 data class CardProperties(
@@ -39,76 +45,115 @@ data class CardProperties(
 )
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HomeCard(
     modifier: Modifier = Modifier,
     cardProperties: CardProperties,
+    id: Int,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
     footer: @Composable () -> Unit,
     onCardClick: () -> Unit,
 ) {
-    Card(
-        modifier = modifier,
-        onClick = onCardClick,
-        shape = RoundedCornerShape(32.dp)
-    ) {
-        Column(
-            Modifier
-                .background(cardProperties.backgroundGradient)
-                .padding(top = 12.dp)
+
+    with(sharedTransitionScope) {
+        Card(
+            modifier = modifier.sharedBounds(
+                rememberSharedContentState(key = "$id-bound"),
+                animatedVisibilityScope = animatedContentScope,
+                enter = fadeIn(),
+                exit = fadeOut(),
+                resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+            ),
+            onClick = onCardClick,
+            shape = RoundedCornerShape(32.dp)
         ) {
-            Row(
-                modifier = Modifier
-                    .padding(start = 24.dp, end = 12.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+            Column(
+                Modifier
+                    .background(cardProperties.backgroundGradient)
+                    .sharedElement(
+                        rememberSharedContentState("baackground-${id}"),
+                        animatedVisibilityScope = animatedContentScope
+                    )
+                    .padding(top = 12.dp)
             ) {
-                Column(modifier = Modifier.padding(top = 20.dp)) {
-                    Text(
-                        modifier = Modifier.padding(),
-                        style = RarimeTheme.typography.h5,
-                        text = cardProperties.header
-                    )
-                    Text(
-                        modifier = Modifier.padding(),
-                        style = RarimeTheme.typography.h4,
-                        text = cardProperties.subTitle,
-
-                        )
-                }
-
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                Row(
                     modifier = Modifier
-                        .width(72.dp)
-                        .height(72.dp)
-                        .background(RarimeTheme.colors.componentPrimary, CircleShape)
+                        .padding(start = 24.dp, end = 12.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    AppIcon(
-                        id = cardProperties.icon,
-                        size = 32.dp,
-                        tint = RarimeTheme.colors.textPrimary
+                    Column(modifier = Modifier.padding(top = 20.dp)) {
+                        with(sharedTransitionScope) {
+                            Text(
+                                modifier = Modifier
+                                    .sharedElement(
+                                        state = rememberSharedContentState(
+                                            "header-${id}"
+                                        ), animatedVisibilityScope = animatedContentScope
+                                    ),
+                                style = RarimeTheme.typography.h5,
+                                text = cardProperties.header
+                            )
+                        }
+                        with(sharedTransitionScope) {
+                            Text(
+                                modifier = Modifier
+                                    .sharedElement(
+                                        state = rememberSharedContentState(
+                                            "subTitle-${id}"
+                                        ), animatedVisibilityScope = animatedContentScope
+                                    ),
+                                style = RarimeTheme.typography.h4,
+                                text = cardProperties.subTitle,
+
+                                )
+                        }
+                    }
+
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .width(72.dp)
+                            .height(72.dp)
+                            .background(RarimeTheme.colors.componentPrimary, CircleShape)
+                    ) {
+                        AppIcon(
+                            id = cardProperties.icon,
+                            size = 32.dp,
+                            tint = RarimeTheme.colors.textPrimary.also { it.alpha },
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+                with(sharedTransitionScope) {
+                    Image(
+                        painter = painterResource(cardProperties.image),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .sharedElement(
+                                state = rememberSharedContentState(
+                                    "image-${id}"
+                                ), animatedVisibilityScope = animatedContentScope
+                            )
+                            .fillMaxWidth(),
+                        contentScale = ContentScale.FillWidth
                     )
                 }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                footer()
             }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Image(
-                modifier = Modifier.fillMaxWidth(),
-                painter = painterResource(cardProperties.image),
-                contentDescription = null,
-                contentScale = ContentScale.FillWidth
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            footer()
         }
     }
 }
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
 private fun HomeCardPreview() {
@@ -128,9 +173,11 @@ private fun HomeCardPreview() {
         ),
         onCardClick = {},
         footer = {
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
+            ) {
                 TransparentButton(enabled = true,
                     size = ButtonSize.Large,
                     modifier = Modifier.fillMaxWidth(),
@@ -138,33 +185,22 @@ private fun HomeCardPreview() {
                     text = "Enabled",
                     onClick = { })
             }
-        }
+        },
+        type = CardType.UNFORGETTABLE_WALLET,
+        //expandedFooter = {}
     )
 
-    HomeCard(cardProperties = prop.properties, onCardClick = {}, footer = {
-//        Column(
-//            modifier = Modifier
-//                .padding(24.dp)
-//        ) {
-//            Row(
-//                Modifier
-//                    .clip(RoundedCornerShape(8.dp))
-//                    .background(RarimeTheme.colors.baseWhite)
-//                    .padding(vertical = 8.dp, horizontal = 16.dp),
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                Text(text = "149250-1596", style = RarimeTheme.typography.h5)
-//                VerticalDivider(
-//                    modifier = Modifier
-//                        .height(24.dp)
-//                        .padding(horizontal = 16.dp)
-//                )
-//                AppIcon(id = R.drawable.ic_copy_simple)
-//            }
-//            Spacer(Modifier.height(20.dp))
-//            Text(text = "*Nothing leaves thi devise")
-//        }
+    PrevireSharedAnimationProvider { state, anim ->
+        HomeCard(
+            cardProperties = prop.properties,
+            onCardClick = {},
+            id = 2,
+            sharedTransitionScope = state,
+            animatedContentScope = anim,
+            footer = {
+                prop.footer()
+            })
+    }
 
-        prop.footer()
-    })
+
 }

@@ -33,6 +33,10 @@ fun HomeScreen(
         )
 
         LaunchedEffect(Unit) {
+            //homeViewModel.generateTestProof()
+        }
+
+        LaunchedEffect(Unit) {
             try {
                 if (!notificationPermission.status.isGranted) {
                     Log.i("Not granted notification", "Nice")

@@ -40,7 +40,6 @@
 #include "witnesscalc_registerIdentity_21_256_3_4_576_232_NA.h"
 #include "witnesscalc_registerIdentity_11_256_3_5_576_248_1_1808_5_296.h"
 
-
 #include <jni.h>
 #include <iostream>
 #include <string>

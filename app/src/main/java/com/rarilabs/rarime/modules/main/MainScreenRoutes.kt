@@ -3,6 +3,8 @@ package com.rarilabs.rarime.modules.main
 import android.app.Activity
 import android.content.Intent
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -57,6 +59,8 @@ import com.rarilabs.rarime.util.LocaleUtil
 import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.launch
 
+
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainScreenRoutes(
     navController: NavHostController,
@@ -78,319 +82,324 @@ fun MainScreenRoutes(
         }
     }
 
-    NavHost(
-        navController = navController,
-        startDestination = if (mainViewModel.getIsPkInit()) Screen.Main.route else Screen.Intro.route,
-        enterTransition = { fadeIn() },
-        exitTransition = { ExitTransition.None },
-    ) {
-        composable(Screen.Intro.route) {
-            IntroScreen { simpleNavigate(it) }
-        }
-
-        navigation(
-            startDestination = Screen.Register.NewIdentity.route,
-            route = Screen.Register.route
+    SharedTransitionLayout {
+        NavHost(
+            navController = navController,
+            startDestination = if (mainViewModel.getIsPkInit()) Screen.Main.route else Screen.Intro.route,
+            enterTransition = { fadeIn() },
+            exitTransition = { ExitTransition.None },
         ) {
-            composable(Screen.Register.NewIdentity.route) {
-                NewIdentityScreen(
-                    onNext = {
-                        coroutineScope.launch {
-                            mainViewModel.finishIntro()
-                            navigateWithPopUp(Screen.Passcode.route)
-                        }
-                    },
-                    onBack = { navController.popBackStack() }
-                )
+            composable(Screen.Intro.route) {
+                IntroScreen { simpleNavigate(it) }
             }
-            composable(Screen.Register.ImportIdentity.route) {
-                NewIdentityScreen(
-                    isImporting = true,
-                    onBack = { navController.popBackStack() },
-                    onNext = {
-                        coroutineScope.launch {
-                            mainViewModel.finishIntro()
-                            navigateWithPopUp(Screen.Passcode.route)
-                        }
-                    },
-                )
-            }
-        }
 
-        navigation(
-            startDestination = Screen.Passcode.EnablePasscode.route,
-            route = Screen.Passcode.route
-        ) {
-            composable(Screen.Passcode.EnablePasscode.route) {
-                EnablePasscodeScreen(
-                    onNext = { simpleNavigate(Screen.Passcode.AddPasscode.route) },
-                    onSkip = {
-                        mainViewModel.updatePasscodeState(SecurityCheckState.DISABLED)
-                        navigateWithSavedNextNavScreen(Screen.Main.route)
-                    }
-                )
-            }
-            composable(Screen.Passcode.AddPasscode.route) {
-                SetupPasscode(
-                    onPasscodeChange = {
-                        if (BiometricUtil.isSupported(context)) {
-                            navigateWithPopUp(Screen.EnableBiometrics.route)
-                        } else {
-                            mainViewModel.updateBiometricsState(SecurityCheckState.DISABLED)
-                            navigateWithPopUp(Screen.Main.route)
-                        }
-                    },
-                    onClose = {
-                        navController.popBackStack(
-                            Screen.Passcode.EnablePasscode.route, false
-                        )
-                    }
-                )
-            }
-        }
-
-        composable(Screen.NotificationsList.route) {
-            NotificationsScreen(onBack = { navController.popBackStack() })
-        }
-
-        composable(Screen.EnableBiometrics.route) {
-            EnableBiometricsScreen(
-                onNext = {
-                    navigateWithSavedNextNavScreen(Screen.Main.route)
-                },
-                onSkip = {
-                    navigateWithSavedNextNavScreen(Screen.Main.route)
+            navigation(
+                startDestination = Screen.Register.NewIdentity.route,
+                route = Screen.Register.route
+            ) {
+                composable(Screen.Register.NewIdentity.route) {
+                    NewIdentityScreen(
+                        onNext = {
+                            coroutineScope.launch {
+                                mainViewModel.finishIntro()
+                                navigateWithPopUp(Screen.Passcode.route)
+                            }
+                        },
+                        onBack = { navController.popBackStack() }
+                    )
                 }
-            )
-        }
-
-        composable(Screen.Lock.route) {
-            LockScreen(
-                onPass = { navigateWithSavedNextNavScreen(Screen.Main.route) }
-            )
-        }
-
-        //Scan Flow
-        composable(Screen.ScanPassport.ScanPassportSpecific.route) {
-            ScanPassportScreen(
-                onClose = {
-                    coroutineScope.launch {
-                        navController.popBackStack()
-                    }
-                },
-                onClaim = {
-                    coroutineScope.launch {
-                        navigateWithPopUp(Screen.Claim.Specific.route)
-                    }
-                }
-            )
-        }
-
-        composable(Screen.ScanPassport.ScanPassportPoints.route) {
-            ScanPassportScreen(
-                onClose = {
-                    coroutineScope.launch {
-                        navigateWithPopUp(Screen.Main.route)
-                    }
-                },
-                onClaim = {
-                    coroutineScope.launch {
-                        navigateWithPopUp(Screen.Claim.Reserve.route)
-                    }
-                }
-            )
-        }
-
-        composable(Screen.Claim.Specific.route) {
-            ClaimAirdropScreen {
-                navigateWithPopUp(Screen.Main.route)
-            }
-        }
-
-        composable(Screen.Claim.Reserve.route) {
-            VerifyPassportScreen {
-                navigateWithPopUp(Screen.Main.route)
-            }
-        }
-
-        navigation(
-            startDestination = Screen.Main.Home.route, route = Screen.Main.route
-        ) {
-            composable(Screen.Main.Home.route) {
-                AuthGuard(navigate = navigateWithPopUp) {
-                    HomeScreen()
-                }
-            }
-
-            composable(Screen.Main.Wallet.route) {
-                AuthGuard(navigate = navigateWithPopUp) {
-                    WalletScreen(navigate = { simpleNavigate(it) })
-                }
-            }
-            composable(Screen.Main.Wallet.Receive.route) {
-                AuthGuard(navigate = navigateWithPopUp) {
-                    WalletReceiveScreen(onBack = { navController.popBackStack() })
-                }
-            }
-            composable(Screen.Main.Wallet.Send.route) {
-                AuthGuard(navigate = navigateWithPopUp) {
-                    WalletSendScreen(onBack = { navController.popBackStack() })
+                composable(Screen.Register.ImportIdentity.route) {
+                    NewIdentityScreen(
+                        isImporting = true,
+                        onBack = { navController.popBackStack() },
+                        onNext = {
+                            coroutineScope.launch {
+                                mainViewModel.finishIntro()
+                                navigateWithPopUp(Screen.Passcode.route)
+                            }
+                        },
+                    )
                 }
             }
 
             navigation(
-                startDestination = Screen.Main.Rewards.RewardsMain.route,
-                route = Screen.Main.Rewards.route,
+                startDestination = Screen.Passcode.EnablePasscode.route,
+                route = Screen.Passcode.route
             ) {
-                composable(Screen.Main.Rewards.RewardsMain.route) {
-                    AuthGuard(navigate = navigateWithPopUp) {
-                        RewardsScreen(navigate = { simpleNavigate(it) })
-                    }
+                composable(Screen.Passcode.EnablePasscode.route) {
+                    EnablePasscodeScreen(
+                        onNext = { simpleNavigate(Screen.Passcode.AddPasscode.route) },
+                        onSkip = {
+                            mainViewModel.updatePasscodeState(SecurityCheckState.DISABLED)
+                            navigateWithSavedNextNavScreen(Screen.Main.route)
+                        }
+                    )
                 }
-                composable(Screen.Main.Rewards.RewardsClaim.route) {
-                    AuthGuard(navigate = navigateWithPopUp) {
-                        RewardsClaimScreen(onBack = { navController.popBackStack() })
-                    }
-                }
-                composable(
-                    Screen.Main.Rewards.RewardsEventsItem.route,
-                    arguments = listOf(navArgument("item_id") { type = NavType.StringType })
-                ) {
-                    AuthGuard(navigate = navigateWithPopUp) {
-                        RewardsEventItemScreen(onBack = { navController.popBackStack() })
-                    }
-                }
-            }
-
-            composable(Screen.Main.Profile.route) {
-                AuthGuard(navigate = navigateWithPopUp) {
-                    ProfileScreen(
-                        appIcon = appIcon,
-                        navigate = { simpleNavigate(it) })
-                }
-            }
-            composable(Screen.Main.Profile.AuthMethod.route) {
-                AuthGuard(navigate = navigateWithPopUp) {
-                    AuthMethodScreen(onBack = { navController.popBackStack() })
-                }
-            }
-            composable(Screen.Main.Profile.ExportKeys.route) {
-                AuthGuard(navigate = navigateWithPopUp) {
-                    ExportKeysScreen({ navController.popBackStack() })
-                }
-            }
-            composable(Screen.Main.Profile.Language.route) {
-                AuthGuard(navigate = navigateWithPopUp) {
-                    LanguageScreen(onLanguageChange = {
-                        LocaleUtil.updateLocale(context, it.localeTag)
-                    }, onBack = { navController.popBackStack() })
-                }
-            }
-            composable(Screen.Main.Profile.Theme.route) {
-                AuthGuard(navigate = navigateWithPopUp) {
-                    ThemeScreen(onBack = { navController.popBackStack() })
-                }
-            }
-            composable(Screen.Main.Profile.AppIcon.route) {
-                AuthGuard(navigate = navigateWithPopUp) {
-                    AppIconScreen(appIcon = appIcon, onAppIconChange = {
-                        appIcon = it
-                        AppIconUtil.setIcon(context, it)
-                    }, onBack = { navController.popBackStack() })
-                }
-            }
-            composable(Screen.Main.Profile.Terms.route) {
-                AuthGuard(navigate = navigateWithPopUp) {
-                    AppWebView(title = stringResource(R.string.terms_of_use),
-                        url = Constants.TERMS_URL,
-                        onBack = { navController.popBackStack() })
-                }
-            }
-            composable(Screen.Main.Profile.Privacy.route) {
-                AuthGuard(navigate = navigateWithPopUp) {
-                    AppWebView(title = stringResource(R.string.privacy_policy),
-                        url = Constants.PRIVACY_URL,
-                        onBack = { navController.popBackStack() })
-                }
-            }
-        }
-
-        composable(
-            route = Screen.Invitation.route,
-            deepLinks = listOf(
-                navDeepLink {
-                    uriPattern = "${BaseConfig.INVITATION_BASE_URL}/r/{code}"
-                    action = Intent.ACTION_VIEW
-                }
-            ),
-            arguments = listOf(
-                navArgument("code") {
-                    type = NavType.StringType
-                }
-            )
-        ) { entry ->
-            val code = entry.arguments?.getString("code")
-            AuthGuard(
-                init = {
-                    code?.let {
-                        savedNextNavScreen = Screen.Invitation.route.replace("{code}", code)
-                    } ?: run {
-                        savedNextNavScreen = Screen.Main.route
-                    }
-                },
-                navigate = navigateWithPopUp,
-            ) {
-                AcceptInvitation(
-                    code = code,
-                    onFinish = {
-                        mainViewModel.setModalVisibility(true)
-                        mainViewModel.setModalContent {
-                            CongratsInvitationModalContent(
-                                onClose = {
-                                    mainViewModel.setModalVisibility(false)
-                                }
+                composable(Screen.Passcode.AddPasscode.route) {
+                    SetupPasscode(
+                        onPasscodeChange = {
+                            if (BiometricUtil.isSupported(context)) {
+                                navigateWithPopUp(Screen.EnableBiometrics.route)
+                            } else {
+                                mainViewModel.updateBiometricsState(SecurityCheckState.DISABLED)
+                                navigateWithPopUp(Screen.Main.route)
+                            }
+                        },
+                        onClose = {
+                            navController.popBackStack(
+                                Screen.Passcode.EnablePasscode.route, false
                             )
                         }
+                    )
+                }
+            }
 
-                        navigateWithPopUp(Screen.Main.Home.route)
+            composable(Screen.NotificationsList.route) {
+                NotificationsScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable(Screen.EnableBiometrics.route) {
+                EnableBiometricsScreen(
+                    onNext = {
+                        navigateWithSavedNextNavScreen(Screen.Main.route)
                     },
-                    onError = { navigateWithPopUp(Screen.Main.Home.route) }
+                    onSkip = {
+                        navigateWithSavedNextNavScreen(Screen.Main.route)
+                    }
                 )
             }
-        }
 
-        composable(
-            route = Screen.ExtIntegrator.route,
-            deepLinks = listOf(
-                navDeepLink {
-                    uriPattern = "rarime://${Screen.ExtIntegrator.route}"
-                    action = Intent.ACTION_VIEW
-                },
-                navDeepLink {
-                    uriPattern =
-                        "android-app://androidx.navigation/rarime://${Screen.ExtIntegrator.route}"
-                    action = Intent.ACTION_VIEW
-                },
-            ),
-        ) { entry ->
+            composable(Screen.Lock.route) {
+                LockScreen(
+                    onPass = { navigateWithSavedNextNavScreen(Screen.Main.route) }
+                )
+            }
 
-            val context = LocalContext.current
-            val activity = context as? Activity
-            val dataUri = activity?.intent?.data
-
-            AuthGuard(
-                init = {
-                    dataUri?.let {
-                        savedNextNavScreen = it.toString()
-                    } ?: run {
-                        savedNextNavScreen = Screen.Main.route
+            //Scan Flow
+            composable(Screen.ScanPassport.ScanPassportSpecific.route) {
+                ScanPassportScreen(
+                    onClose = {
+                        coroutineScope.launch {
+                            navController.popBackStack()
+                        }
+                    },
+                    onClaim = {
+                        coroutineScope.launch {
+                            navigateWithPopUp(Screen.Claim.Specific.route)
+                        }
                     }
-                },
-                navigate = navigateWithPopUp,
+                )
+            }
+
+            composable(Screen.ScanPassport.ScanPassportPoints.route) {
+                ScanPassportScreen(
+                    onClose = {
+                        coroutineScope.launch {
+                            navigateWithPopUp(Screen.Main.route)
+                        }
+                    },
+                    onClaim = {
+                        coroutineScope.launch {
+                            navigateWithPopUp(Screen.Claim.Reserve.route)
+                        }
+                    }
+                )
+            }
+
+            composable(Screen.Claim.Specific.route) {
+                ClaimAirdropScreen {
+                    navigateWithPopUp(Screen.Main.route)
+                }
+            }
+
+            composable(Screen.Claim.Reserve.route) {
+                VerifyPassportScreen {
+                    navigateWithPopUp(Screen.Main.route)
+                }
+            }
+
+            navigation(
+                startDestination = Screen.Main.Home.route, route = Screen.Main.route
             ) {
-                LaunchedEffect(Unit) {
-                    navigateWithPopUp(Screen.Main.Home.route)
-                    mainViewModel.setExtIntDataURI(dataUri)
+                composable(Screen.Main.Home.route) {
+                    AuthGuard(navigate = navigateWithPopUp) {
+                        HomeScreen(
+                            navigate = simpleNavigate,
+                            sharedTransitionScope = this@SharedTransitionLayout
+                        )
+                    }
+                }
+
+                composable(Screen.Main.Wallet.route) {
+                    AuthGuard(navigate = navigateWithPopUp) {
+                        WalletScreen(navigate = { simpleNavigate(it) })
+                    }
+                }
+                composable(Screen.Main.Wallet.Receive.route) {
+                    AuthGuard(navigate = navigateWithPopUp) {
+                        WalletReceiveScreen(onBack = { navController.popBackStack() })
+                    }
+                }
+                composable(Screen.Main.Wallet.Send.route) {
+                    AuthGuard(navigate = navigateWithPopUp) {
+                        WalletSendScreen(onBack = { navController.popBackStack() })
+                    }
+                }
+
+                navigation(
+                    startDestination = Screen.Main.Rewards.RewardsMain.route,
+                    route = Screen.Main.Rewards.route,
+                ) {
+                    composable(Screen.Main.Rewards.RewardsMain.route) {
+                        AuthGuard(navigate = navigateWithPopUp) {
+                            RewardsScreen(navigate = { simpleNavigate(it) })
+                        }
+                    }
+                    composable(Screen.Main.Rewards.RewardsClaim.route) {
+                        AuthGuard(navigate = navigateWithPopUp) {
+                            RewardsClaimScreen(onBack = { navController.popBackStack() })
+                        }
+                    }
+                    composable(
+                        Screen.Main.Rewards.RewardsEventsItem.route,
+                        arguments = listOf(navArgument("item_id") { type = NavType.StringType })
+                    ) {
+                        AuthGuard(navigate = navigateWithPopUp) {
+                            RewardsEventItemScreen(onBack = { navController.popBackStack() })
+                        }
+                    }
+                }
+
+                composable(Screen.Main.Profile.route) {
+                    AuthGuard(navigate = navigateWithPopUp) {
+                        ProfileScreen(
+                            appIcon = appIcon,
+                            navigate = { simpleNavigate(it) })
+                    }
+                }
+                composable(Screen.Main.Profile.AuthMethod.route) {
+                    AuthGuard(navigate = navigateWithPopUp) {
+                        AuthMethodScreen(onBack = { navController.popBackStack() })
+                    }
+                }
+                composable(Screen.Main.Profile.ExportKeys.route) {
+                    AuthGuard(navigate = navigateWithPopUp) {
+                        ExportKeysScreen({ navController.popBackStack() })
+                    }
+                }
+                composable(Screen.Main.Profile.Language.route) {
+                    AuthGuard(navigate = navigateWithPopUp) {
+                        LanguageScreen(onLanguageChange = {
+                            LocaleUtil.updateLocale(context, it.localeTag)
+                        }, onBack = { navController.popBackStack() })
+                    }
+                }
+                composable(Screen.Main.Profile.Theme.route) {
+                    AuthGuard(navigate = navigateWithPopUp) {
+                        ThemeScreen(onBack = { navController.popBackStack() })
+                    }
+                }
+                composable(Screen.Main.Profile.AppIcon.route) {
+                    AuthGuard(navigate = navigateWithPopUp) {
+                        AppIconScreen(appIcon = appIcon, onAppIconChange = {
+                            appIcon = it
+                            AppIconUtil.setIcon(context, it)
+                        }, onBack = { navController.popBackStack() })
+                    }
+                }
+                composable(Screen.Main.Profile.Terms.route) {
+                    AuthGuard(navigate = navigateWithPopUp) {
+                        AppWebView(title = stringResource(R.string.terms_of_use),
+                            url = Constants.TERMS_URL,
+                            onBack = { navController.popBackStack() })
+                    }
+                }
+                composable(Screen.Main.Profile.Privacy.route) {
+                    AuthGuard(navigate = navigateWithPopUp) {
+                        AppWebView(title = stringResource(R.string.privacy_policy),
+                            url = Constants.PRIVACY_URL,
+                            onBack = { navController.popBackStack() })
+                    }
+                }
+            }
+
+            composable(
+                route = Screen.Invitation.route,
+                deepLinks = listOf(
+                    navDeepLink {
+                        uriPattern = "${BaseConfig.INVITATION_BASE_URL}/r/{code}"
+                        action = Intent.ACTION_VIEW
+                    }
+                ),
+                arguments = listOf(
+                    navArgument("code") {
+                        type = NavType.StringType
+                    }
+                )
+            ) { entry ->
+                val code = entry.arguments?.getString("code")
+                AuthGuard(
+                    init = {
+                        code?.let {
+                            savedNextNavScreen = Screen.Invitation.route.replace("{code}", code)
+                        } ?: run {
+                            savedNextNavScreen = Screen.Main.route
+                        }
+                    },
+                    navigate = navigateWithPopUp,
+                ) {
+                    AcceptInvitation(
+                        code = code,
+                        onFinish = {
+                            mainViewModel.setModalVisibility(true)
+                            mainViewModel.setModalContent {
+                                CongratsInvitationModalContent(
+                                    onClose = {
+                                        mainViewModel.setModalVisibility(false)
+                                    }
+                                )
+                            }
+
+                            navigateWithPopUp(Screen.Main.Home.route)
+                        },
+                        onError = { navigateWithPopUp(Screen.Main.Home.route) }
+                    )
+                }
+            }
+
+            composable(
+                route = Screen.ExtIntegrator.route,
+                deepLinks = listOf(
+                    navDeepLink {
+                        uriPattern = "rarime://${Screen.ExtIntegrator.route}"
+                        action = Intent.ACTION_VIEW
+                    },
+                    navDeepLink {
+                        uriPattern =
+                            "android-app://androidx.navigation/rarime://${Screen.ExtIntegrator.route}"
+                        action = Intent.ACTION_VIEW
+                    },
+                ),
+            ) { entry ->
+
+                val context = LocalContext.current
+                val activity = context as? Activity
+                val dataUri = activity?.intent?.data
+
+                AuthGuard(
+                    init = {
+                        dataUri?.let {
+                            savedNextNavScreen = it.toString()
+                        } ?: run {
+                            savedNextNavScreen = Screen.Main.route
+                        }
+                    },
+                    navigate = navigateWithPopUp,
+                ) {
+                    LaunchedEffect(Unit) {
+                        navigateWithPopUp(Screen.Main.Home.route)
+                        mainViewModel.setExtIntDataURI(dataUri)
+                    }
                 }
             }
         }

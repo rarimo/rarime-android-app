@@ -419,6 +419,17 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
+    external fun fisherface(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
     init {
         System.loadLibrary("rarime")
     }
@@ -458,7 +469,7 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         }
 
         if (res == 1) {
-            throw Exception("Error during zkp ${msg.decodeToString()}")
+            throw Exception("Error during zkp: code $res , ${msg.decodeToString()}")
         }
 
         val pubData = ByteArray(2 * 1024 * 1024)
