@@ -95,7 +95,7 @@ fun VerifyPassportScreen(
             mainViewModal.setModalVisibility(true)
             mainViewModal.setModalContent {
                 ErrorReservedPointsContent(
-                    onClose = { onSendError.invoke() },
+                    onClose = { onSendError.invoke(); mainViewModal.setModalVisibility(false) },
                     title = stringResource(R.string.reserve_error_header),
                     description = stringResource(R.string.reserve_error_description)
                 )
