@@ -6,22 +6,17 @@ import com.google.gson.Gson
 import com.rarilabs.rarime.api.cosmos.CosmosManager
 import com.rarilabs.rarime.api.erc20.Erc20Manager
 import com.rarilabs.rarime.api.points.PointsManager
-import com.rarilabs.rarime.data.RarimoChains
 import com.rarilabs.rarime.data.tokens.PointsToken
-import com.rarilabs.rarime.data.tokens.RarimoToken
 import com.rarilabs.rarime.data.tokens.Token
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
-import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.math.BigInteger
 import javax.inject.Inject
@@ -70,12 +65,12 @@ class WalletManager @Inject constructor(
     private fun getWalletAssets(): List<WalletAsset> {
         return dataStoreManager.readWalletAssets(
             listOf(
-                WalletAsset(
-                    identityManager.rarimoAddress(), RarimoToken(
-                        Constants.RARIMO_CHAINS[RarimoChains.Mainnet.chainId]!!, // FIXME: !!
-                        identityManager, cosmosManager, dataStoreManager
-                    )
-                ),
+//                WalletAsset(
+//                    identityManager.rarimoAddress(), RarimoToken(
+//                        Constants.RARIMO_CHAINS[RarimoChains.Mainnet.chainId]!!, // FIXME: !!
+//                        identityManager, cosmosManager, dataStoreManager
+//                    )
+//                ),
                 WalletAsset(
                     identityManager.getUserPointsNullifierHex(), PointsToken(
                         pointsManager = pointsManager

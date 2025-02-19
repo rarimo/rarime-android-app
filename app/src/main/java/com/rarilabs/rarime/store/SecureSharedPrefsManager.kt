@@ -83,4 +83,8 @@ interface SecureSharedPrefsManager {
 
     fun saveLightRegistrationData(lightRegistrationData: LightRegistrationData)
     fun getLightRegistrationData(): LightRegistrationData?
+
+
+    fun saveIsAlreadyReserved(isAlreadyReserved: Boolean)
+    fun getIsAlreadyReserved(): Boolean
 }

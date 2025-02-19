@@ -29,7 +29,6 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.components.SecondaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Constants
 
@@ -89,17 +88,17 @@ fun ReservedCongratsModalContent(onClose: () -> Unit) {
                     modifier = Modifier.fillMaxWidth(),
                     onClick = onClose
                 )
-                SecondaryButton(
-                    text = "Share Achievement",
-                    leftIcon = R.drawable.ic_share,
-                    size = ButtonSize.Large,
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        // TODO: implement more share ui
-                        shareAchievement(context, "Participate and get rewarded: https://rarime.com")
-                        onClose()
-                    }
-                )
+//                SecondaryButton(
+//                    text = "Share Achievement",
+//                    leftIcon = R.drawable.ic_share,
+//                    size = ButtonSize.Large,
+//                    modifier = Modifier.fillMaxWidth(),
+//                    onClick = {
+//                        // TODO: implement more share ui
+//                        shareAchievement(context, "Participate and get rewarded: https://rarime.com")
+//                        onClose()
+//                    }
+//                )
             }
         }
     }

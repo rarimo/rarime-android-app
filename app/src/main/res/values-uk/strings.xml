@@ -402,4 +402,12 @@
     <string name="scan_mrzstep_content_bottom_sheet_nfc_title">NFC Reader</string>
     <string name="scan_mrzstep_content_bottom_sheet_nfc_description">Place your Passport\/ID to the back of your phone and press continue</string>
     <string name="scan_mrzstep_content_bottom_sheet_nfc_btn">Let\'s scan</string>
+    <string name="maintenance_in_progress">Maintenance in Progress</string>
+    <string name="we_re_upgrading_for_a_better_experience_back_soon">We\'re upgrading for a better\nexperience. Back soon!</string>
+    <string name="already_reserved_points_header">Cannot Reserve Tokens</string>
+    <string name="already_reserved_points_body">This passport has already claimed tokens.</string>
+    <string name="passport_is_expired_error_header">Passport Expired</string>
+    <string name="passport_is_expired_error_description">You cannot claim tokens because this passport is expired.</string>
+    <string name="reserve_error_header">Reservation Failed</string>
+    <string name="reserve_error_description">An error occurred while reserving tokens. Please send feedback in the settings.</string>
 </resources>

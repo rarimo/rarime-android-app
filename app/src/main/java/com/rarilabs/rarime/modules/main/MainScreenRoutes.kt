@@ -214,9 +214,11 @@ fun MainScreenRoutes(
         }
 
         composable(Screen.Claim.Reserve.route) {
-            VerifyPassportScreen {
-                navigateWithPopUp(Screen.Main.route)
-            }
+            VerifyPassportScreen(
+                onSendError = { navigateWithPopUp(Screen.Main.Profile.route) },
+                onFinish = {
+                    navigateWithPopUp(Screen.Main.route)
+                })
         }
 
         navigation(

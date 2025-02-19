@@ -61,17 +61,6 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
-    external fun test(
-        circuitBuffer: ByteArray,
-        circuitSize: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
-        wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
-        errorMsg: ByteArray,
-        errorMsgMaxSize: Long
-    ): Int
-
     external fun registerIdentity125635576248NA(
         datFilePath: String,
         datFileLen: Long,
@@ -363,6 +352,114 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
+
+    external fun registerIdentity125636336248127444256(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+
+    external fun registerIdentity125636336560127444256(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+
+    external fun registerIdentity416033336216112963256(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+    external fun registerIdentity1125633336248NA(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+
+    external fun registerIdentity142563433664114805296(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+    external fun registerIdentity1551233336248NA(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+
+    external fun registerIdentity2016033736200NA(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+
+    external fun registerIdentity202563533672NA(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+
+    external fun registerIdentity2125635576232NA(
+        datFilePath: String,
+        datFileLen: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+
+
     external fun registerIdentityLight160(
         datFilePath: String,
         datFileLen: Long,
@@ -450,15 +547,15 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         )
 
         if (res == -2) {
-            throw Exception("file reading failure")
+            throw ZkpException("file reading failure")
         }
 
         if (res == 2) {
-            throw Exception("Not enough memory for zkp")
+            throw ZkpException("Not enough memory for zkp")
         }
 
         if (res == 1) {
-            throw Exception("Error during zkp ${msg.decodeToString()}")
+            throw ZkpException("Error during zkp ${msg.decodeToString()}")
         }
 
         val pubData = ByteArray(2 * 1024 * 1024)
@@ -490,23 +587,23 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         )
 
         if (verification == -2) {
-            throw Exception("Error during zkp: file reading failure")
+            throw ZkpException("Error during zkp: file reading failure")
         }
 
         if (verification == -1) {
-            throw Exception("Error during zkp: file opening failure")
+            throw ZkpException("Error during zkp: file opening failure")
         }
 
         if (verification == 2) {
-            throw Exception("Not enough memory for verification ${msg.decodeToString()}")
+            throw ZkpException("Not enough memory for verification ${msg.decodeToString()}")
         }
 
         if (verification == 3) {
-            throw Exception("Error during verification with code 3 ${msg.decodeToString()}")
+            throw ZkpException("Error during verification with code 3 ${msg.decodeToString()}")
         }
 
         if (verification == 1) {
-            throw Exception("Error during verification ${msg.decodeToString()}")
+            throw ZkpException("Error during verification ${msg.decodeToString()}")
         }
 
 
@@ -555,11 +652,11 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         )
 
         if (res == 2) {
-            throw Exception("Not enough memory for zkp")
+            throw ZkpException("Not enough memory for zkp")
         }
 
         if (res == 1) {
-            throw Exception("Error during zkp ${msg.decodeToString()}")
+            throw ZkpException("Error during zkp ${msg.decodeToString()}")
         }
 
         val pubData = ByteArray(2 * 1024 * 1024)
@@ -588,19 +685,19 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         )
 
         if (verification == -2) {
-            throw Exception("Error during zkp: Cant find file")
+            throw ZkpException("Error during zkp: Cant find file")
         }
 
         if (verification == 2) {
-            throw Exception("Not enough memory for verification ${msg.decodeToString()}")
+            throw ZkpException("Not enough memory for verification ${msg.decodeToString()}")
         }
 
         if (verification == 1) {
-            throw Exception("Error during verification ${msg.decodeToString()}")
+            throw ZkpException("Error during verification ${msg.decodeToString()}")
         }
 
         if (verification == 3) {
-            throw Exception("Error during verification with code 3 ${msg.decodeToString()}")
+            throw ZkpException("Error during verification with code 3 ${msg.decodeToString()}")
         }
 
         val proofDataZip = proofData.copyOfRange(0, proofLen[0].toInt())
@@ -658,3 +755,5 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         return stringArray.toList()
     }
 }
+
+class ZkpException(message: String) : Exception(message)

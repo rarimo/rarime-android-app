@@ -3,6 +3,7 @@ package com.rarilabs.rarime.api.points
 import com.rarilabs.rarime.api.points.models.ClaimEventBody
 import com.rarilabs.rarime.api.points.models.CreateBalanceBody
 import com.rarilabs.rarime.api.points.models.JoinRewardsProgramRequest
+import com.rarilabs.rarime.api.points.models.MaintenanceResponse
 import com.rarilabs.rarime.api.points.models.PointsBalanceBody
 import com.rarilabs.rarime.api.points.models.PointsEventBody
 import com.rarilabs.rarime.api.points.models.PointsEventsListBody
@@ -86,4 +87,7 @@ interface PointsAPI {/* BALANCE */
     suspend fun claimPointsByEvent(
         @Path("id") id: String, @Body payload: ClaimEventBody
     ): PointsEventBody
+
+    @GET("/integrations/rarime-points-svc/v1/public/maintenance")
+    suspend fun getMaintenance(): Response<MaintenanceResponse>
 }
