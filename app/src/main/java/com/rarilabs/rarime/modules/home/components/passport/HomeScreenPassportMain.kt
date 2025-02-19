@@ -112,7 +112,8 @@ fun HomeScreenPassportMainContent(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             passport.value?.let {
                 PassportCard(
@@ -127,30 +128,32 @@ fun HomeScreenPassportMainContent(
                 )
             }
 
-            if (pointsToken?.balanceDetails?.attributes?.is_verified == null || pointsToken?.balanceDetails?.attributes?.is_verified == false ) {
+            if (pointsToken?.balanceDetails?.attributes?.is_verified == null || pointsToken?.balanceDetails?.attributes?.is_verified == false) {
                 when (passportStatus) {
                     PassportStatus.ALLOWED -> {
-                        ActionCard(
-                            title = stringResource(R.string.reserve_tokens),
-                            description = stringResource(
-                                R.string.you_re_entitled_of_x_rmo,
-                                Constants.SCAN_PASSPORT_REWARD.toInt()
-                            ),
-                            leadingContent = {
-                                Image(
-                                    modifier = Modifier.size(42.dp),
-                                    painter = painterResource(id = R.drawable.reward_coin),
-                                    contentDescription = "decor",
-                                )
-                            },
-                            onClick = {
-                                if (pointsToken?.balanceDetails?.attributes?.created_at != null) {
-                                    navigate(Screen.Claim.Reserve.route)
-                                } else {
-                                    verifyPassportSheetState.show()
+                        if (!homeViewModel.getIsAlreadyReserved()) {
+                            ActionCard(
+                                title = stringResource(R.string.reserve_tokens),
+                                description = stringResource(
+                                    R.string.you_re_entitled_of_x_rmo,
+                                    Constants.SCAN_PASSPORT_REWARD.toInt()
+                                ),
+                                leadingContent = {
+                                    Image(
+                                        modifier = Modifier.size(42.dp),
+                                        painter = painterResource(id = R.drawable.reward_coin),
+                                        contentDescription = "decor",
+                                    )
+                                },
+                                onClick = {
+                                    if (pointsToken?.balanceDetails?.attributes?.created_at != null) {
+                                        navigate(Screen.Claim.Reserve.route)
+                                    } else {
+                                        verifyPassportSheetState.show()
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
 
                     PassportStatus.WAITLIST -> {}
@@ -177,7 +180,11 @@ fun HomeScreenPassportMainContent(
                 title = stringResource(id = R.string.app_name),
                 description = stringResource(R.string.learn_more_about_the_app),
                 leadingContent = {
-                    AppIcon(id = R.drawable.ic_info, size = 24.dp, tint = RarimeTheme.colors.textPrimary)
+                    AppIcon(
+                        id = R.drawable.ic_info,
+                        size = 24.dp,
+                        tint = RarimeTheme.colors.textPrimary
+                    )
                 },
                 variant = ActionCardVariants.Outlined,
                 onClick = {
@@ -203,6 +210,7 @@ fun HomeScreenPassportMainContent(
                         PassportStatus.WAITLIST -> {
                             reloadUserDetails()
                         }
+
                         else -> {
                             navigate(Screen.Claim.Reserve.route)
                         }

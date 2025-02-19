@@ -12,6 +12,7 @@ import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
+import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
@@ -28,7 +29,8 @@ class HomeViewModel @Inject constructor(
     private val airDropManager: AirDropManager,
     private val walletManager: WalletManager,
     private val notificationManager: NotificationManager,
-    private val registrationManager: RegistrationManager
+    private val registrationManager: RegistrationManager,
+    private val sharedPrefsManager: SecureSharedPrefsManager
 ) : AndroidViewModel(app) {
     val isAirDropClaimed = airDropManager.isAirDropClaimed
 
@@ -64,6 +66,10 @@ class HomeViewModel @Inject constructor(
 
     fun onPassportIdentifiersChange(passportIdentifiers: List<PassportIdentifier>) {
         passportManager.updatePassportIdentifiers(passportIdentifiers)
+    }
+
+    fun getIsAlreadyReserved(): Boolean {
+        return sharedPrefsManager.getIsAlreadyReserved()
     }
 
     suspend fun loadNotifications() {

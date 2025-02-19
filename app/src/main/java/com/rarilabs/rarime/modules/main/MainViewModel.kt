@@ -20,11 +20,12 @@ import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -32,6 +33,7 @@ enum class AppLoadingStates {
     LOADING,
     LOADED,
     LOAD_FAILED,
+    MAINTENANCE,
 }
 
 @HiltViewModel
@@ -71,6 +73,7 @@ class MainViewModel @Inject constructor(
     fun getIsPkInit(): Boolean {
         return identityManager.privateKeyBytes != null
     }
+
     var _snackbarContent = MutableStateFlow<SnackbarShowOptions?>(null)
         private set
     val snackbarContent: StateFlow<SnackbarShowOptions?>
@@ -89,66 +92,59 @@ class MainViewModel @Inject constructor(
         _extIntDataURI.value = tempUrl
     }
 
-    suspend fun initApp() {
+
+    suspend fun initApp() = coroutineScope {
+        // 1. Early checks
+        if (pointsManager.getMaintenanceStatus()) {
+            appLoadingState.value = AppLoadingStates.MAINTENANCE
+            return@coroutineScope
+        }
         if (identityManager.privateKey.value == null) {
             appLoadingState.value = AppLoadingStates.LOADED
-            return
+            return@coroutineScope
         }
 
+        // 2. Set loading state
         appLoadingState.value = AppLoadingStates.LOADING
 
-        try {
+        val clearLogsJob = launch {
             if (!isLogsDeleted.value) {
-                ErrorHandler.clearLogFile()
-                identityManager.updateIsLogsDeleted(true)
+                try {
+                    ErrorHandler.clearLogFile()
+                    identityManager.updateIsLogsDeleted(true)
+                } catch (e: Exception) {
+                    ErrorHandler.logError("MainViewModel", "Failed to clear logs", e)
+                }
             }
-        } catch (e: Exception) {
-            ErrorHandler.logError("MainViewModel", "Failed to clear logs", e)
         }
 
-        try {
-            tryLogin()
-
-            delay(500)
-
-            loadUserDetails()
-        } catch (e: Exception) {
-            appLoadingState.value = AppLoadingStates.LOAD_FAILED
-            ErrorHandler.logError("MainScreen", "Failed to init app", e)
+        val initJob = launch {
+            try {
+                tryLogin()
+                loadUserDetails()
+                appLoadingState.value = AppLoadingStates.LOADED
+            } catch (e: Exception) {
+                appLoadingState.value = AppLoadingStates.LOAD_FAILED
+                ErrorHandler.logError("MainScreen", "Failed to init app", e)
+            }
         }
 
-        appLoadingState.value = AppLoadingStates.LOADED
+        initJob.join()
+        clearLogsJob.join()
     }
 
-    suspend fun loadUserDetails() = coroutineScope {
-        val walletBalances = async {
-            try {
-                walletManager.loadBalances()
-            } catch (e: Exception) {
-                e.printStackTrace()
-                /* Handle exception */
-            }
-        }
-        val passportStatus = async {
-            try {
-                passportManager.loadPassportStatus()
-            } catch (e: Exception) {
-                /* Handle exception */
-                e.printStackTrace()
-            }
-        }
+    private suspend fun loadUserDetails() = coroutineScope {
+        val walletDeferred = async { walletManager.loadBalances() }
+        val passportDeferred = async { passportManager.loadPassportStatus() }
 
-        // Await for all the async operations to complete
-        walletBalances.await()
-        passportStatus.await()
+        awaitAll(walletDeferred, passportDeferred)
     }
 
-    suspend fun tryLogin() {
-        try {
-            authManager.login()
-        } catch (e: Exception) {
-            ErrorHandler.logError("MainViewModel", "Failed to login", e)
-        }
+    suspend fun tryLogin() = runCatching {
+        authManager.login()
+    }.onFailure { e ->
+        // Single point to handle the exception
+        ErrorHandler.logError("MainViewModel", "Failed to login", e)
     }
 
     fun setModalContent(content: @Composable () -> Unit?) {

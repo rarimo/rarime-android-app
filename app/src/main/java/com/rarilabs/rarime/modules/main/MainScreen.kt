@@ -40,6 +40,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
+import com.rarilabs.rarime.modules.maintenanceScreen.MaintenanceScreen
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.UiSnackbarDefault
@@ -89,6 +90,10 @@ fun MainScreen(
                 MainScreenContent(
                     navController = navController,
                 )
+            }
+
+            AppLoadingStates.MAINTENANCE -> {
+                MaintenanceScreen()
             }
         }
     }

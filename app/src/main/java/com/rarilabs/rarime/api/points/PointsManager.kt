@@ -77,6 +77,15 @@ class PointsManager @Inject constructor(
         }
     }
 
+
+    suspend fun getMaintenanceStatus(): Boolean {
+        return try {
+            pointsAPIManager.getMaintenanceStatus().data.attributes.maintenance
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun joinRewardProgram(eDocument: EDocument) {
 
