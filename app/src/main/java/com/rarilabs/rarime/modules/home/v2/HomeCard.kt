@@ -8,14 +8,12 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -29,9 +27,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.components.TransparentButton
+import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
@@ -84,48 +81,15 @@ fun HomeCard(
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column(modifier = Modifier.padding(top = 20.dp)) {
-                        with(sharedTransitionScope) {
-                            Text(
-                                modifier = Modifier
-                                    .sharedElement(
-                                        state = rememberSharedContentState(
-                                            "header-${id}"
-                                        ), animatedVisibilityScope = animatedContentScope
-                                    ),
-                                style = RarimeTheme.typography.h5,
-                                text = cardProperties.header
-                            )
-                        }
-                        with(sharedTransitionScope) {
-                            Text(
-                                modifier = Modifier
-                                    .sharedElement(
-                                        state = rememberSharedContentState(
-                                            "subTitle-${id}"
-                                        ), animatedVisibilityScope = animatedContentScope
-                                    ),
-                                style = RarimeTheme.typography.h4,
-                                text = cardProperties.subTitle,
+                    Spacer(modifier = Modifier.weight(1f))
+                    AppIcon(
+                        modifier = Modifier.padding(top = 20.dp, end = 20.dp),
+                        id = cardProperties.icon,
+                        size = 32.dp,
+                        tint = RarimeTheme.colors.textPrimary,
+                        alpha = 0.2f
+                    )
 
-                                )
-                        }
-                    }
-
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .width(72.dp)
-                            .height(72.dp)
-                            .background(RarimeTheme.colors.componentPrimary, CircleShape)
-                    ) {
-                        AppIcon(
-                            id = cardProperties.icon,
-                            size = 32.dp,
-                            tint = RarimeTheme.colors.textPrimary.also { it.alpha },
-                        )
-                    }
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -144,9 +108,53 @@ fun HomeCard(
                     )
                 }
 
-                Spacer(modifier = Modifier.weight(1f))
-
-                footer()
+                Spacer(modifier.weight(1f))
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier
+                            .padding(bottom = 24.dp, start = 24.dp, end = 24.dp)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(
+                            modifier = Modifier.weight(1f, fill = false)
+                        ) {
+                            with(sharedTransitionScope) {
+                                Text(
+                                    modifier = Modifier
+                                        .sharedElement(
+                                            state = rememberSharedContentState(
+                                                "header-${id}"
+                                            ), animatedVisibilityScope = animatedContentScope
+                                        ),
+                                    color = RarimeTheme.colors.textPrimary,
+                                    style = RarimeTheme.typography.h2,
+                                    text = cardProperties.header
+                                )
+                            }
+                            with(sharedTransitionScope) {
+                                Text(
+                                    modifier = Modifier
+                                        .sharedElement(
+                                            state = rememberSharedContentState(
+                                                "subTitle-${id}"
+                                            ), animatedVisibilityScope = animatedContentScope
+                                        ),
+                                    color = RarimeTheme.colors.textSecondary,
+                                    style = RarimeTheme.typography.subtitle2,
+                                    text = cardProperties.subTitle,
+                                )
+                            }
+                            footer()
+                        }
+                        AppIcon(
+                            id = R.drawable.ic_arrow_right_up_line,
+                            size = 24.dp,
+                            modifier = Modifier
+                                .align(Alignment.Bottom)
+                        )
+                    }
+                }
             }
         }
     }
@@ -175,15 +183,11 @@ private fun HomeCardPreview() {
         footer = {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp)
             ) {
-                TransparentButton(enabled = true,
-                    size = ButtonSize.Large,
+                PrimaryButton(
                     modifier = Modifier.fillMaxWidth(),
-                    leftIcon = R.drawable.ic_arrow_left,
-                    text = "Enabled",
-                    onClick = { })
+                    text = "Get Started",
+                    onClick = {})
             }
         },
         type = CardType.UNFORGETTABLE_WALLET,

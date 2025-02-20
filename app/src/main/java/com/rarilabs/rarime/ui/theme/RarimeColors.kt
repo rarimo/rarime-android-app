@@ -60,6 +60,7 @@ class RarimeColors(
 
     // background
     backgroundPrimary: Color,
+    backgroundContainer: Color,
     backgroundOpacity: Color,
     backgroundPure: Color,
 
@@ -141,6 +142,10 @@ class RarimeColors(
         internal set
     var backgroundPrimary by mutableStateOf(backgroundPrimary, structuralEqualityPolicy())
         internal set
+
+    var backgroundContainer by mutableStateOf(backgroundPrimary, structuralEqualityPolicy())
+        internal set
+
     var backgroundOpacity by mutableStateOf(backgroundOpacity, structuralEqualityPolicy())
         internal set
     var backgroundPure by mutableStateOf(backgroundPure, structuralEqualityPolicy())
@@ -196,6 +201,7 @@ class RarimeColors(
         baseWhite: Color = this.baseWhite,
         additionalLayerBorder: Color = this.additionalLayerBorder,
         additionalPureDark: Color = this.additionalPureDark,
+        backgroundContainer: Color = this.backgroundContainer
     ) = RarimeColors(
         primaryDarker = primaryDarker,
         primaryDark = primaryDark,
@@ -238,6 +244,7 @@ class RarimeColors(
         baseWhite = baseWhite,
         additionalLayerBorder = additionalLayerBorder,
         additionalPureDark = additionalPureDark,
+        backgroundContainer = backgroundContainer
     )
 
     fun updateColorsFrom(other: RarimeColors) {
@@ -276,6 +283,7 @@ class RarimeColors(
         this.componentSelected = other.componentSelected
         this.componentDisabled = other.componentDisabled
         this.backgroundPrimary = other.backgroundPrimary
+        this.backgroundContainer = other.backgroundContainer
         this.backgroundOpacity = other.backgroundOpacity
         this.backgroundPure = other.backgroundPure
         this.baseBlack = other.baseBlack
@@ -286,89 +294,129 @@ class RarimeColors(
 }
 
 fun darkColors() = RarimeColors(
+    // base
     baseBlack = Color(0xFF202020),
     baseWhite = Color(0xFFFFFFFF),
-    primaryDarker = Color(0xFFDDFE84),
-    primaryDark = Color(0xFFD5FD67),
-    primaryMain = Color(0xFFCDFD4A),
-    primaryLight = Color(0x1ACDFD4A),
-    primaryLighter = Color(0x0DCDFD4A),
-    secondaryDarker = Color(0xFF676767),
-    secondaryDark = Color(0xFF444444),
-    secondaryMain = Color(0xFF202020),
-    secondaryLight = Color(0xFF1B1B1B),
-    secondaryLighter = Color(0xFF111111),
-    successDarker = Color(0xFF78D9B6),
-    successDark = Color(0xFF58D0A4),
-    successMain = Color(0xFF6CF1C1),
-    successLight = Color(0x1A38C793),
-    successLighter = Color(0x0D38C793),
-    errorDarker = Color(0xFFE9657E),
-    errorDark = Color(0xFFE4405F),
-    errorMain = Color(0xFFF54667),
-    errorLight = Color(0x1ADF1C41),
-    errorLighter = Color(0x0DDF1C41),
-    warningDarker = Color(0xFFF5A570),
-    warningDark = Color(0xFFF3904E),
-    warningMain = Color(0xFFFDA366),
-    warningLight = Color(0x1AF17B2C),
-    warningLighter = Color(0x0DF17B2C),
+
+    // primary
+    primaryDarker = Color(0xFFFFFFFF),
+    primaryDark = Color(0xFFFFFFFF),
+    primaryMain = Color(0xFFFFFFFF),
+    primaryLight = Color(0x1FFFFFFF),
+    primaryLighter = Color(0x0FFFFFFF),
+
+    // secondary
+    secondaryDarker = Color(0xFFA8E152),
+    secondaryDark = Color(0xFF99D838),
+    secondaryMain = Color(0xFF8CCD28),
+    secondaryLight = Color(0x1F8CCD28),
+    secondaryLighter = Color(0x0F8CCD28),
+
+    // success
+    successDarker = Color(0xFF4AD07B),
+    successDark = Color(0xFF3DD073),
+    successMain = Color(0xFF37CF6F),
+    successLight = Color(0x1F37CF6F),
+    successLighter = Color(0x0F37CF6F),
+
+    // error
+    errorDarker = Color(0xFFEE6565),
+    errorDark = Color(0xFFE65454),
+    errorMain = Color(0xFFDA4343),
+    errorLight = Color(0x1FDA4343),
+    errorLighter = Color(0x0FDA4343),
+
+    // warning
+    warningDarker = Color(0xFFFBB239),
+    warningDark = Color(0xFFF3A728),
+    warningMain = Color(0xFFED9E19),
+    warningLight = Color(0x1FED9E19),
+    warningLighter = Color(0x0FED9E19),
+
+    // text
     textPrimary = Color(0xE5FFFFFF),
     textSecondary = Color(0x8FFFFFFF),
     textPlaceholder = Color(0x70FFFFFF),
     textDisabled = Color(0x47FFFFFF),
+
+    // component
     componentPrimary = Color(0x0DFFFFFF),
     componentHovered = Color(0x1AFFFFFF),
     componentPressed = Color(0x26FFFFFF),
     componentSelected = Color(0x0DFFFFFF),
     componentDisabled = Color(0x0DFFFFFF),
-    backgroundPrimary = Color(0xFF111111),
+
+    // background
+    backgroundPrimary = Color(0xFF0E0E0E),
+    backgroundContainer = Color(0xFF171717),
     backgroundOpacity = Color(0x0DFFFFFF),
-    backgroundPure = Color(0xFF272727),
+    backgroundPure = Color(0xFF0E0E0E),
+
+    // additional
     additionalLayerBorder = Color(0x0DFFFFFF),
     additionalPureDark = Color(0x1AFFFFFF),
 )
 
 fun lightColors() = RarimeColors(
+    // base
     baseBlack = Color(0xFF202020),
     baseWhite = Color(0xFFFFFFFF),
-    primaryDarker = Color(0xFF8BAC32),
-    primaryDark = Color(0xFFACD53E),
-    primaryMain = Color(0xFFCDFD4A),
-    primaryLight = Color(0xFFE5FEA1),
-    primaryLighter = Color(0xFFF5FFDB),
-    secondaryDarker = Color(0xFF0C0C0C),
-    secondaryDark = Color(0xFF161616),
-    secondaryMain = Color(0xFF202020),
-    secondaryLight = Color(0xFFD2D2D2),
-    secondaryLighter = Color(0xFFF4F4F4),
-    successDarker = Color(0xFF268764),
-    successDark = Color(0xFF2FA77B),
-    successMain = Color(0xFF38C793),
-    successLight = Color(0xFFC7EFE1),
-    successLighter = Color(0xFFEBF9F4),
-    errorDarker = Color(0xFF98132C),
-    errorDark = Color(0xFFBB1837),
-    errorMain = Color(0xFFDF1C41),
-    errorLight = Color(0xFFF9D2D9),
-    errorLighter = Color(0xFFFDEFF2),
-    warningDarker = Color(0xFFA4541E),
-    warningDark = Color(0xFFCA6725),
-    warningMain = Color(0xFFF17B2C),
-    warningLight = Color(0x1AF17B2C),
-    warningLighter = Color(0x0DF17B2C),
-    textPrimary = Color(0xFF202020),
-    textSecondary = Color(0x8F202020),
-    textPlaceholder = Color(0x70202020),
+
+    // primary
+    primaryDarker = Color(0xFF050505),
+    primaryDark = Color(0xFF111211),
+    primaryMain = Color(0xFF141614),
+    primaryLight = Color(0x1416141F),
+    primaryLighter = Color(0x1416140F),
+
+    // secondary
+    secondaryDarker = Color(0xFF4D7C0F),
+    secondaryDark = Color(0xFF65A30D),
+    secondaryMain = Color(0xFF84CC16),
+    secondaryLight = Color(0x1F84CC16),
+    secondaryLighter = Color(0x0F84CC16),
+
+    // success
+    successDarker = Color(0xFF15803D),
+    successDark = Color(0xFF16A34A),
+    successMain = Color(0xFF22C55E),
+    successLight = Color(0x1F22C55E),
+    successLighter = Color(0x0F22C55E),
+
+    // error
+    errorDarker = Color(0xFFB91C1C),
+    errorDark = Color(0xFFDC2626),
+    errorMain = Color(0xFFEF4444),
+    errorLight = Color(0x1FEF4444),
+    errorLighter = Color(0xFFEF4444),
+
+    // warning
+    warningDarker = Color(0xFFC09027),
+    warningDark = Color(0xFFE1AC3B),
+    warningMain = Color(0xFFF59E0B),
+    warningLight = Color(0x1FF59E0B),
+    warningLighter = Color(0x0FF59E0B),
+
+    // text
+    textPrimary = Color(0xFF141614),
+    textSecondary = Color(0x8F141614),
+    textPlaceholder = Color(0x70141614),
     textDisabled = Color(0x47202020),
-    componentPrimary = Color(0x0D202020),
-    componentHovered = Color(0x1A202020),
-    componentPressed = Color(0x26202020),
-    componentSelected = Color(0x0D202020),
-    componentDisabled = Color(0x0D202020),
-    backgroundPrimary = Color(0xFFF2F3F2),
+
+    // component
+    componentPrimary = Color(0x0D141614),
+    componentHovered = Color(0x1A141614),
+    componentPressed = Color(0x26141614),
+    componentSelected = Color(0x0D141614),
+    componentDisabled = Color(0x0D141614),
+
+    // background
+    backgroundPrimary = Color(0xFFFFFFFF),
+    backgroundContainer = Color(0x0D141614),
     backgroundOpacity = Color(0xB2FFFFFF),
-    backgroundPure = Color(0xFFFFFFFF),
+    backgroundPure = Color(0x0D141614),
+
+    // additional
     additionalLayerBorder = Color(0xFFFFFFFF),
     additionalPureDark = Color(0xFF262626),
 )

@@ -91,7 +91,7 @@ fun HomeScreen(
                 onCardClick = {},
                 footer = {
                     Column(
-                        modifier = Modifier.padding(24.dp)
+                        modifier = Modifier.padding(top = 24.dp)
                     ) {
                         Text("Hello World")
                     }
@@ -113,7 +113,7 @@ fun HomeScreen(
                 onCardClick = {},
                 footer = {
                     Column(
-                        modifier = Modifier.padding(24.dp)
+                        modifier = Modifier.padding(top = 24.dp)
                     ) {
                         Row(
                             Modifier
@@ -154,7 +154,7 @@ fun HomeScreen(
                     TransparentButton(
                         modifier
                             .fillMaxWidth()
-                            .padding(bottom = 12.dp, start = 12.dp, end = 12.dp),
+                            .padding(top = 24.dp),
                         onClick = {},
                         text = "Join early waitlist"
                     )
@@ -173,7 +173,7 @@ fun HomeScreen(
                     Modifier.padding(start = 20.dp, top = 26.dp, end = 20.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Hi Stranger", style = RarimeTheme.typography.h5)
+                    Text("Hi Stranger", style = RarimeTheme.typography.subtitle4)
                     Spacer(modifier = Modifier.weight(1f))
                     CircledBadgeWithCounter(
                         modifier = Modifier.clickable { },

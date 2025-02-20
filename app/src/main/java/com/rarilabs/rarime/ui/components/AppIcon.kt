@@ -23,13 +23,14 @@ fun AppIcon(
     @DrawableRes id: Int,
     size: Dp = 20.dp,
     description: String? = null,
-    tint: Color = LocalContentColor.current
+    tint: Color = LocalContentColor.current,
+    alpha: Float = 1f,
 ) {
     Icon(
         painter = painterResource(id),
         contentDescription = description,
         modifier = modifier.size(size),
-        tint = tint,
+        tint = tint.copy(alpha = alpha),
     )
 }
 

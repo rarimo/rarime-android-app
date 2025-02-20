@@ -26,10 +26,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
+import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
@@ -77,32 +80,7 @@ fun BaseDetailsScreen(
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(modifier = Modifier.padding(top = 20.dp)) {
-                with(sharedTransitionScope) {
-                    Text(
-                        style = RarimeTheme.typography.h5,
-                        text = properties.header,
-                        modifier = Modifier.sharedElement(
-                            state = rememberSharedContentState(
-                                "header-${properties.id}"
-                            ), animatedVisibilityScope = animatedContentScope
-                        )
-                    )
-                }
-                with(sharedTransitionScope) {
-                    Text(
-                        style = RarimeTheme.typography.h4,
-                        text = properties.subTitle,
-                        modifier = Modifier
-                            .sharedElement(
-                                state = rememberSharedContentState(
-                                    "subTitle-${properties.id}"
-                                ), animatedVisibilityScope = animatedContentScope
-                            ),
-                    )
-                }
-            }
-
+            Spacer(modifier = Modifier.weight(1f))
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -113,7 +91,7 @@ fun BaseDetailsScreen(
                     .clickable { onBack.invoke() }
             ) {
                 AppIcon(
-                    id = R.drawable.ic_arrow_left,
+                    id = R.drawable.ic_caret_right,
                     size = 32.dp,
                     tint = RarimeTheme.colors.textPrimary.also { it.alpha },
                 )
@@ -139,7 +117,38 @@ fun BaseDetailsScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        footer()
+        Column(modifier = Modifier.padding(top = 20.dp, start = 24.dp, end = 24.dp)) {
+            with(sharedTransitionScope) {
+                Text(
+                    style = RarimeTheme.typography.h1,
+                    text = properties.header,
+                    modifier = Modifier.sharedElement(
+                        state = rememberSharedContentState(
+                            "header-${properties.id}"
+                        ), animatedVisibilityScope = animatedContentScope
+                    )
+                )
+            }
+            with(sharedTransitionScope) {
+                Text(
+                    style = RarimeTheme.typography.subtitle1,
+                    text = properties.subTitle,
+                    modifier = Modifier
+                        .sharedElement(
+                            state = rememberSharedContentState(
+                                "subTitle-${properties.id}"
+                            ), animatedVisibilityScope = animatedContentScope
+                        ),
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+            footer()
+        }
+
     }
 }
 
@@ -167,7 +176,30 @@ private fun BaseDetailsScreenPreview() {
             properties = properties,
             sharedTransitionScope = state,
             animatedContentScope = anim,
-            footer = {},
+            footer = {
+                Text(
+                    style = RarimeTheme.typography.body3,
+                    color = RarimeTheme.colors.textSecondary,
+                    text = "Say goodbye to seed phrases! ZK Face Wallet leverages cutting-edge zero-knowledge (ZK) cryptography and biometric authentication to give you a seamless, secure, and self-sovereign crypto experience."
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+                TransparentButton(
+                    size = ButtonSize.Large,
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Join Waitlist",
+                    onClick = {})
+
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    style = RarimeTheme.typography.body5,
+                    color = RarimeTheme.colors.textSecondary,
+                    text = "49,421 other already joined",
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            },
             onBack = {}
         )
     }

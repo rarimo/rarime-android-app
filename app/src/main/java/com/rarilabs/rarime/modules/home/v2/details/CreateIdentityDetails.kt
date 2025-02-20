@@ -4,6 +4,9 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -11,8 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.components.PrimaryButton
+import com.rarilabs.rarime.ui.base.ButtonSize
+import com.rarilabs.rarime.ui.components.TransparentButton
+import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 
@@ -47,8 +53,20 @@ fun CreateIdentityDetails(
         onBack = onBack,
         footer = {
             Column {
-                Text("This app is where you privately store your digital identities, enabling you to go incognito across the web.")
-                PrimaryButton(text = "Lets start", onClick = {})
+                Text(
+                    style = RarimeTheme.typography.body3,
+                    color = RarimeTheme.colors.textSecondary,
+                    text = "This app is where you privately store your digital identities, enabling you to go incognito across the web."
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+                TransparentButton(
+                    size = ButtonSize.Large,
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Let’s Start",
+                    onClick = {})
+
+                Spacer(modifier = Modifier.height(16.dp))
             }
         },
     )
