@@ -66,6 +66,7 @@ class RarimeColors(
 
     // base
     baseBlack: Color,
+    baseBlackOp40: Color,
     baseWhite: Color,
 
     // additional
@@ -154,6 +155,8 @@ class RarimeColors(
         internal set
     var baseBlack by mutableStateOf(baseBlack, structuralEqualityPolicy())
         internal set
+    var baseBlackOp40 by mutableStateOf(baseBlackOp40, structuralEqualityPolicy())
+        internal set
     var baseWhite by mutableStateOf(baseWhite, structuralEqualityPolicy())
         internal set
     var additionalLayerBorder by mutableStateOf(additionalLayerBorder, structuralEqualityPolicy())
@@ -200,6 +203,7 @@ class RarimeColors(
         backgroundOpacity: Color = this.backgroundOpacity,
         backgroundPure: Color = this.backgroundPure,
         baseBlack: Color = this.baseBlack,
+        baseBlackOp40: Color = this.baseBlackOp40,
         baseWhite: Color = this.baseWhite,
         additionalLayerBorder: Color = this.additionalLayerBorder,
         additionalPureDark: Color = this.additionalPureDark,
@@ -243,6 +247,7 @@ class RarimeColors(
         backgroundOpacity = backgroundOpacity,
         backgroundPure = backgroundPure,
         baseBlack = baseBlack,
+        baseBlackOp40 = baseBlackOp40,
         baseWhite = baseWhite,
         additionalLayerBorder = additionalLayerBorder,
         additionalPureDark = additionalPureDark,
@@ -289,6 +294,7 @@ class RarimeColors(
         this.backgroundOpacity = other.backgroundOpacity
         this.backgroundPure = other.backgroundPure
         this.baseBlack = other.baseBlack
+        this.baseBlackOp40 = other.baseBlackOp40
         this.baseWhite = other.baseWhite
         this.additionalLayerBorder = other.additionalLayerBorder
         this.additionalPureDark = other.additionalPureDark
@@ -298,6 +304,7 @@ class RarimeColors(
 fun darkColors() = RarimeColors(
     // base
     baseBlack = Color(0xFF202020),
+    baseBlackOp40 = Color(0x14161466),
     baseWhite = Color(0xFFFFFFFF),
 
     // primary
@@ -362,6 +369,7 @@ fun darkColors() = RarimeColors(
 fun lightColors() = RarimeColors(
     // base
     baseBlack = Color(0xFF202020),
+    baseBlackOp40 = Color(0x14161466),
     baseWhite = Color(0xFFFFFFFF),
 
     // primary

@@ -140,8 +140,8 @@ fun HomeCard(
                                                 "subTitle-${id}"
                                             ), animatedVisibilityScope = animatedContentScope
                                         ),
-                                    color = RarimeTheme.colors.textSecondary,
-                                    style = RarimeTheme.typography.subtitle2,
+                                    color = RarimeTheme.colors.baseBlackOp40,
+                                    style = RarimeTheme.typography.additional2,
                                     text = cardProperties.subTitle,
                                 )
                             }
