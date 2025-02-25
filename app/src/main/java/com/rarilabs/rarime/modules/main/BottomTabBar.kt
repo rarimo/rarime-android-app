@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,7 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -64,13 +63,12 @@ fun BottomTabBar(currentRoute: String?, onRouteSelected: (String) -> Unit) {
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
-            horizontalArrangement = Arrangement.Center,
+            horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(vertical = 32.dp)
-                .background(RarimeTheme.colors.secondaryDark, CircleShape)
-                .padding(4.dp)
-                .height(48.dp)
+                .fillMaxWidth()
+                .background(RarimeTheme.colors.backgroundPrimary)
+                .padding(vertical = 12.dp)
         ) {
             BottomTab.entries.forEach { tab ->
                 TabItem(
@@ -90,15 +88,15 @@ private fun TabItem(
     onTabSelected: (BottomTab) -> Unit,
 ) {
     val animatedColor by animateColorAsState(
-        if (isSelected) RarimeTheme.colors.primaryMain else Color.Transparent,
+        if (isSelected) RarimeTheme.colors.componentPrimary else Color.Transparent,
         label = "animated_tab_bar_bg"
     )
 
     Column(
         modifier = Modifier
             .width(48.dp)
-            .height(48.dp)
-            .clip(CircleShape)
+            .height(40.dp)
+            .clip(RoundedCornerShape(13.dp))
             .background(animatedColor)
             .pointerInput(Unit) {
                 detectTapGestures {
@@ -110,8 +108,7 @@ private fun TabItem(
     ) {
         AppIcon(
             id = if (isSelected) tab.activeIcon else tab.icon,
-            tint = if (isSelected) RarimeTheme.colors.baseBlack else RarimeTheme.colors.baseWhite,
-            modifier = if (isSelected) Modifier else Modifier.alpha(0.5f)
+            tint = if (isSelected) RarimeTheme.colors.textPrimary else RarimeTheme.colors.textPlaceholder,
         )
     }
 }

@@ -6,6 +6,8 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.fadeIn
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -13,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
@@ -66,6 +69,7 @@ fun MainScreenRoutes(
     navController: NavHostController,
     simpleNavigate: (String) -> Unit,
     navigateWithPopUp: (String) -> Unit,
+    innerPadding: PaddingValues
 ) {
     val mainViewModel = LocalMainViewModel.current
     val context = LocalContext.current
@@ -84,6 +88,9 @@ fun MainScreenRoutes(
 
     SharedTransitionLayout {
         NavHost(
+            modifier = Modifier.padding(
+                innerPadding
+            ),
             navController = navController,
             startDestination = if (mainViewModel.getIsPkInit()) Screen.Main.route else Screen.Intro.route,
             enterTransition = { fadeIn() },
@@ -227,7 +234,9 @@ fun MainScreenRoutes(
                         HomeScreen(
                             navigate = simpleNavigate,
                             sharedTransitionScope = this@SharedTransitionLayout
-                        )
+                        ) {
+                            mainViewModel.setBottomBarVisibility(it)
+                        }
                     }
                 }
 

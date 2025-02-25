@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.modules.rewards.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,11 +54,19 @@ private fun RewardsEventItemInvitesCardContainer(
         RewardsEventItemInvitesCardContainerVariants.OUTLINED -> Color.Transparent
     }
 
+
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(16.dp))
             .background(boxBackground)
+            .then(
+                if (isCodeDisabled) Modifier.border(
+                    1.dp,
+                    RarimeTheme.colors.componentPrimary,
+                    RoundedCornerShape(16.dp)
+                ) else Modifier
+            )
     ) {
         Row(
             modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
@@ -74,12 +83,12 @@ private fun RewardsEventItemInvitesCardContainer(
                 Text(
                     textDecoration = if (isCodeDisabled) TextDecoration.LineThrough else null,
                     text = title,
-                    style = RarimeTheme.typography.subtitle4,
+                    style = if (isCodeDisabled) RarimeTheme.typography.subtitle6 else RarimeTheme.typography.h5,
                     color = RarimeTheme.colors.textPrimary,
                 )
                 Text(
                     text = description,
-                    style = RarimeTheme.typography.body3,
+                    style = RarimeTheme.typography.body4,
                     color = RarimeTheme.colors.textSecondary,
                 )
                 columnContent()
@@ -97,7 +106,7 @@ fun RewardsEventItemInvitesCard(
     pointsBalance: PointsBalanceData,
 ) {
     val context = LocalContext.current
-    
+
     val notActiveActionContent = @Composable {
         if (pointsBalance.attributes.is_verified == true) {
             RewardAmountPreview(
@@ -112,6 +121,7 @@ fun RewardsEventItemInvitesCard(
                 RewardsEventItemInvitesCardContainer(
                     title = code.id,
                     isCodeDisabled = true,
+                    variant = RewardsEventItemInvitesCardContainerVariants.OUTLINED,
                     description = stringResource(id = R.string.invite_status_rewarded_card_desc),
                     actionContent = {
                         notActiveActionContent()
@@ -122,6 +132,7 @@ fun RewardsEventItemInvitesCard(
             ReferralCodeStatuses.CONSUMED.value -> {
                 RewardsEventItemInvitesCardContainer(
                     title = code.id,
+                    variant = RewardsEventItemInvitesCardContainerVariants.OUTLINED,
                     isCodeDisabled = true,
                     description = stringResource(id = R.string.invite_status_consumed_card_desc),
                     actionContent = {
@@ -135,6 +146,7 @@ fun RewardsEventItemInvitesCard(
 
                 RewardsEventItemInvitesCardContainer(
                     title = code.id,
+
                     description = invitationUrl.replace("https://", ""),
                     actionContent = {
                         IconButton(
@@ -148,8 +160,8 @@ fun RewardsEventItemInvitesCard(
                     columnContent = {
                         Text(
                             text = stringResource(id = R.string.invite_status_active_card_desc),
-                            style = RarimeTheme.typography.body4,
-                            color = RarimeTheme.colors.successDark,
+                            style = RarimeTheme.typography.subtitle7,
+                            color = RarimeTheme.colors.successDarker,
                         )
                     }
                 )
@@ -158,6 +170,7 @@ fun RewardsEventItemInvitesCard(
             ReferralCodeStatuses.BANNED.value -> {
                 RewardsEventItemInvitesCardContainer(
                     title = code.id,
+                    variant = RewardsEventItemInvitesCardContainerVariants.OUTLINED,
                     isCodeDisabled = true,
                     description = stringResource(id = R.string.invite_status_banned_card_desc),
                     actionContent = {
@@ -169,6 +182,8 @@ fun RewardsEventItemInvitesCard(
             ReferralCodeStatuses.LIMITED.value -> {
                 RewardsEventItemInvitesCardContainer(
                     title = code.id,
+                    variant = RewardsEventItemInvitesCardContainerVariants.OUTLINED,
+
                     isCodeDisabled = true,
                     description = stringResource(id = R.string.invite_status_limited_card_desc),
                     actionContent = {
@@ -180,6 +195,8 @@ fun RewardsEventItemInvitesCard(
             ReferralCodeStatuses.AWAITING.value -> {
                 RewardsEventItemInvitesCardContainer(
                     title = code.id,
+                    variant = RewardsEventItemInvitesCardContainerVariants.OUTLINED,
+
                     isCodeDisabled = true,
                     description = stringResource(id = R.string.invite_status_awaiting_card_desc),
                     actionContent = {

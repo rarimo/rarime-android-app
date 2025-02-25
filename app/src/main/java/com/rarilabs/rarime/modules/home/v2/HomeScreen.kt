@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,7 +38,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.modules.home.v2.details.ClaimTokensScreen
 import com.rarilabs.rarime.modules.home.v2.details.CreateIdentityDetails
+import com.rarilabs.rarime.modules.home.v2.details.UnforgettableWalletScreen
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.CircledBadgeWithCounter
 import com.rarilabs.rarime.ui.components.TransparentButton
@@ -68,9 +71,14 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     sharedTransitionScope: SharedTransitionScope,
     navigate: (String) -> Unit,
+    setVisibilityOfBottomBar: (Boolean) -> Unit
 ) {
 
     var selectedPageId by remember { mutableStateOf<Int?>(null) }
+
+    LaunchedEffect(selectedPageId) {
+        setVisibilityOfBottomBar(selectedPageId == null)
+    }
 
     val cardContent = remember {
         listOf(
@@ -160,6 +168,24 @@ fun HomeScreen(
                     )
 
                 }
+            ),
+
+            CardContent(
+
+                type = CardType.CLAIM,
+                properties = CardProperties(
+                    header = "Claim",
+                    subTitle = "10 RMO",
+                    icon = R.drawable.ic_rarimo,
+                    image = R.drawable.claim_rmo_image,
+                    backgroundGradient = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFFDFFCC4), Color(0xFFF4F3F0)
+                        )
+                    )
+                ),
+                onCardClick = {},
+                footer = {}
             )
         )
     }
@@ -189,7 +215,7 @@ fun HomeScreen(
                 Column(modifier = Modifier.padding(start = 22.dp, end = 22.dp)) {
                     VerticalPager(
                         state = pagerState,
-                        contentPadding = PaddingValues(top = 63.dp, bottom = 100.dp)
+                        contentPadding = PaddingValues(top = 10.dp, bottom = 150.dp)
                     ) { page ->
                         val pageOffset =
                             (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
@@ -236,37 +262,47 @@ fun HomeScreen(
                 selectedPageId = null
             }
 
-            CreateIdentityDetails(
-                sharedTransitionScope = sharedTransitionScope,
-                animatedContentScope = this@AnimatedContent,
-                id = it,
-                onBack = { selectedPageId = null }
-            )
-//            when (cardContent[it].type) {
-//                CardType.YOUR_IDENTITY -> {
-//
-//                }
-//
-//                CardType.INVITE_OTHERS -> {
-//
-//                }
-//
-//                CardType.CLAIM -> {
-//
-//                }
-//
-//                CardType.UNFORGETTABLE_WALLET -> {
-//
-//                }
-//
-//                CardType.FREEDOMTOOL -> {
-//
-//                }
-//
-//                CardType.OTHER -> {
-//
-//                }
-//            }
+
+            when (cardContent[it].type) {
+                CardType.YOUR_IDENTITY -> {
+                    CreateIdentityDetails(
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedContentScope = this@AnimatedContent,
+                        id = it,
+                        onBack = { selectedPageId = null }
+                    )
+                }
+
+                CardType.INVITE_OTHERS -> {
+
+                }
+
+                CardType.CLAIM -> {
+                    ClaimTokensScreen(
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedContentScope = this@AnimatedContent,
+                        id = it,
+                        onBack = { selectedPageId = null }
+                    )
+                }
+
+                CardType.UNFORGETTABLE_WALLET -> {
+                    UnforgettableWalletScreen(
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedContentScope = this@AnimatedContent,
+                        id = it,
+                        onBack = { selectedPageId = null }
+                    )
+                }
+
+                CardType.FREEDOMTOOL -> {
+
+                }
+
+                CardType.OTHER -> {
+
+                }
+            }
         }
     }
 }
@@ -279,7 +315,8 @@ private fun HomeScreenPreview() {
         Surface {
             HomeScreen(
                 sharedTransitionScope = transform,
-                navigate = {}
+                navigate = {},
+                setVisibilityOfBottomBar = {}
             )
         }
     }

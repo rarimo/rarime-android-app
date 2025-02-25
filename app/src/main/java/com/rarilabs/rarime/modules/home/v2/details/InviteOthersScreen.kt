@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,37 +25,41 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.base.ButtonSize
+import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.components.TransparentButton
+import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 
-data class DetailsProperties(
-    val id: Int,
-    val header: String,
-    val subTitle: String,
-    val backgroundGradient: Brush,
-    val imageId: Int,
-)
-
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun BaseDetailsScreen(
+fun InviteOthersScreen(
     modifier: Modifier = Modifier,
-    properties: DetailsProperties,
-    footer: @Composable () -> Unit,
+    id: Int,
     onBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
+) {
 
-    ) {
+    val bottomSheetState = rememberAppSheetState()
+
+    val properties = DetailsProperties(
+        id = 1,
+        header = "Invite",
+        subTitle = "Others",
+        imageId = R.drawable.invite_groupe_image,
+        backgroundGradient = Brush.linearGradient(
+            colors = listOf(
+                Color(0xFFCBE7EC),
+                Color(0xFFF2F8EE)
+            )
+        )
+    )
 
     Column(
         with(sharedTransitionScope) {
@@ -117,39 +120,21 @@ fun BaseDetailsScreen(
         }
 
         Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.weight(1f))
 
-        Column(modifier = Modifier.padding(top = 20.dp, start = 24.dp, end = 24.dp)) {
-            with(sharedTransitionScope) {
-                Text(
-                    style = RarimeTheme.typography.h1,
-                    color = RarimeTheme.colors.textPrimary,
-                    text = properties.header,
-                    modifier = Modifier.sharedElement(
-                        state = rememberSharedContentState(
-                            "header-${properties.id}"
-                        ), animatedVisibilityScope = animatedContentScope
-                    )
-                )
-            }
-            with(sharedTransitionScope) {
-                Text(
-                    style = RarimeTheme.typography.additional1,
-                    text = properties.subTitle,
-                    color = RarimeTheme.colors.textSecondary,
-                    modifier = Modifier
-                        .sharedElement(
-                            state = rememberSharedContentState(
-                                "subTitle-${properties.id}"
-                            ), animatedVisibilityScope = animatedContentScope
-                        ),
-                )
-            }
-        }
 
-        Spacer(modifier = Modifier.height(24.dp))
 
-        Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-            footer()
+        AppBottomSheet(
+            state = bottomSheetState
+        ) {
+            InviteOthersContent(
+                modifier = Modifier
+                    .padding(top = 20.dp, start = 24.dp, end = 24.dp)
+                    .fillMaxSize(),
+                sharedTransitionScope = sharedTransitionScope,
+                animatedContentScope = animatedContentScope,
+                properties = properties,
+            )
         }
 
     }
@@ -159,51 +144,15 @@ fun BaseDetailsScreen(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
-private fun BaseDetailsScreenPreview() {
-
-    val properties = DetailsProperties(
-        id = 1,
-        header = "An Unforgettable",
-        subTitle = "Wallet",
-        imageId = R.drawable.no_more_seed_image,
-        backgroundGradient = Brush.linearGradient(
-            colors = listOf(
-                Color(0xFFF6F3D6),
-                Color(0xFFBCEB3D)
-            )
-        )
-    )
+private fun InviteOthersScreenPreview() {
 
     PrevireSharedAnimationProvider { state, anim ->
-        BaseDetailsScreen(
-            properties = properties,
+        InviteOthersScreen(
+            id = 0,
             sharedTransitionScope = state,
             animatedContentScope = anim,
-            footer = {
-                Text(
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.textSecondary,
-                    text = "Say goodbye to seed phrases! ZK Face Wallet leverages cutting-edge zero-knowledge (ZK) cryptography and biometric authentication to give you a seamless, secure, and self-sovereign crypto experience."
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-                TransparentButton(
-                    size = ButtonSize.Large,
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "Join Waitlist",
-                    onClick = {})
-
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    style = RarimeTheme.typography.body5,
-                    color = RarimeTheme.colors.textSecondary,
-                    text = "49,421 other already joined",
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-            },
             onBack = {}
         )
+
     }
 }

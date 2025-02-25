@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
@@ -34,9 +33,9 @@ fun TransparentButton(
         enabled = enabled,
         size = size,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0x1700000D),
+            containerColor = RarimeTheme.colors.componentPrimary,
             contentColor = RarimeTheme.colors.textPrimary,
-            disabledContainerColor = Color(0x3400000D),
+            disabledContainerColor = RarimeTheme.colors.componentDisabled,
             disabledContentColor = RarimeTheme.colors.textDisabled
         ),
         text = text,

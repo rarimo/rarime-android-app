@@ -248,6 +248,9 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.1")
     implementation("com.google.firebase:firebase-messaging:24.0.1")
 
+
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.31.0-alpha")
+
     // AppsFlyer
     implementation("com.appsflyer:af-android-sdk:6.15.1")
 }

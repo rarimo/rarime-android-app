@@ -278,6 +278,7 @@ fun MainScreenContent(
                 navController = navController,
                 simpleNavigate = { simpleNavigate(it) },
                 navigateWithPopUp = { navigateWithPopUp(it) },
+                innerPadding = innerPadding
             )
 
             if (isModalShown) {

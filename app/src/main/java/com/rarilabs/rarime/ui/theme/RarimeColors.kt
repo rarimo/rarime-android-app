@@ -71,7 +71,9 @@ class RarimeColors(
     // additional
     additionalLayerBorder: Color,
     additionalPureDark: Color,
-) {
+
+
+    ) {
     var primaryDarker by mutableStateOf(primaryDarker, structuralEqualityPolicy())
         internal set
     var primaryDark by mutableStateOf(primaryDark, structuralEqualityPolicy())

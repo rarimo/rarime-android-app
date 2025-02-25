@@ -191,7 +191,6 @@ private fun HomeCardPreview() {
             }
         },
         type = CardType.UNFORGETTABLE_WALLET,
-        //expandedFooter = {}
     )
 
     PrevireSharedAnimationProvider { state, anim ->

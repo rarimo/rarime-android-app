@@ -9,10 +9,17 @@ import androidx.compose.ui.unit.sp
 import com.rarilabs.rarime.R
 
 val interFontFamily = FontFamily(
-    Font(R.font.gilroy_regular, FontWeight.Normal),
-    Font(R.font.gilroy_medium, FontWeight.Medium),
-    Font(R.font.gilroy_semibold, FontWeight.SemiBold),
-    Font(R.font.gilroy_bold, FontWeight.Bold),
+    Font(R.font.inter_regular, FontWeight.Normal),
+    Font(R.font.inter_medium, FontWeight.Medium),
+    Font(R.font.inter_semibold, FontWeight.SemiBold),
+    Font(R.font.inter_bold, FontWeight.Bold),
+)
+
+val playfairFontFamily = FontFamily(
+    Font(R.font.playfair_regular, FontWeight.Normal),
+    Font(R.font.playfair_medium, FontWeight.Medium),
+    Font(R.font.playfair_semibold, FontWeight.SemiBold),
+    Font(R.font.playfair_bold, FontWeight.Bold),
 )
 
 data class RarimeTypography(
@@ -185,6 +192,20 @@ data class RarimeTypography(
         fontSize = 10.sp,
         lineHeight = 12.sp,
         letterSpacing = 0.4.sp,
+    ),
+
+    val additional1: TextStyle = TextStyle(
+        fontFamily = playfairFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 48.sp,
+        lineHeight = 56.sp,
+    ),
+
+    val additional2: TextStyle = TextStyle(
+        fontFamily = playfairFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 32.sp,
+        lineHeight = 36.sp,
     ),
 )
 
