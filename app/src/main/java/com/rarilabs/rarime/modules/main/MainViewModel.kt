@@ -36,6 +36,13 @@ enum class AppLoadingStates {
     MAINTENANCE,
 }
 
+enum class ScreenInsets {
+    TOP,
+    RIGHT,
+    BOTTOM,
+    LEFT,
+}
+
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val securityManager: SecurityManager,
@@ -65,6 +72,30 @@ class MainViewModel @Inject constructor(
         private set
     val modalContent: StateFlow<@Composable () -> Unit?>
         get() = _modalContent.asStateFlow()
+
+    var _screenInsets = MutableStateFlow<Map<ScreenInsets, Number>>(mapOf(
+        ScreenInsets.TOP to 0,
+        ScreenInsets.RIGHT to 0,
+        ScreenInsets.BOTTOM to 0,
+        ScreenInsets.LEFT to 0,
+    ))
+        private set
+    val screenInsets: StateFlow<Map<ScreenInsets, Number>>
+        get() = _screenInsets.asStateFlow()
+
+    fun setScreenInsets(
+        top: Number? = _screenInsets.value[ScreenInsets.TOP],
+        right: Number? = _screenInsets.value[ScreenInsets.RIGHT],
+        bottom: Number? = _screenInsets.value[ScreenInsets.BOTTOM],
+        left: Number? = _screenInsets.value[ScreenInsets.LEFT],
+    ) {
+        _screenInsets.value = mapOf(
+            ScreenInsets.TOP to (top ?: _screenInsets.value[ScreenInsets.TOP]!!),
+            ScreenInsets.RIGHT to (right ?: _screenInsets.value[ScreenInsets.RIGHT]!!),
+            ScreenInsets.BOTTOM to (bottom ?: _screenInsets.value[ScreenInsets.BOTTOM]!!),
+            ScreenInsets.LEFT to (left ?: _screenInsets.value[ScreenInsets.LEFT]!!),
+        )
+    }
 
     var colorScheme = settingsManager.colorScheme
     var isBottomBarShown = mutableStateOf(false)

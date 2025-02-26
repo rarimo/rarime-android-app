@@ -245,7 +245,12 @@ fun MainScreenContent(
                     }
                 }
             },
-        ) {
+        ) { innerPaddings ->
+            mainViewModel.setScreenInsets(
+                top = innerPaddings.calculateTopPadding().value,
+                bottom = innerPaddings.calculateBottomPadding().value
+            )
+
             ScreenBarsColor(
                 colorScheme = mainViewModel.colorScheme.value, route = currentRoute ?: ""
             )

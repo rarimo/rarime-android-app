@@ -60,7 +60,7 @@ fun BaseDetailsScreen(
 
     Column(
         with(sharedTransitionScope) {
-            modifier
+            Modifier
                 .background(properties.backgroundGradient)
                 .sharedBounds(
                     rememberSharedContentState(key = "${properties.id}-bound"),
@@ -73,6 +73,7 @@ fun BaseDetailsScreen(
                 .fillMaxSize()
                 .zIndex(123f)
                 .padding(top = 12.dp)
+                .then(modifier)
         }
     ) {
         Row(

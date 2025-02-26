@@ -1,32 +1,32 @@
 package com.rarilabs.rarime.modules.home.v2.details.votes
 
-import com.rarilabs.rarime.modules.home.v2.details.BaseDetailsScreen
-import com.rarilabs.rarime.modules.home.v2.details.DetailsProperties
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.modules.home.v2.details.BaseDetailsScreen
+import com.rarilabs.rarime.modules.home.v2.details.DetailsProperties
+import com.rarilabs.rarime.modules.main.LocalMainViewModel
+import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.TransparentButton
@@ -43,9 +43,11 @@ fun VotesScreen(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
+    val mainViewModel = LocalMainViewModel.current
+    val screenInsets by mainViewModel.screenInsets.collectAsState()
 
     val props = DetailsProperties(
-        id = 1,
+        id = id,
         header = "Freedomtool",
         subTitle = "Voting",
         imageId = R.drawable.freedomtool_bg,
@@ -58,16 +60,27 @@ fun VotesScreen(
     )
 
     BaseDetailsScreen(
+        modifier = modifier
+            .absolutePadding(
+                top = (screenInsets.get(ScreenInsets.TOP)?.toFloat() ?: 0f).dp,
+                bottom = (screenInsets.get(ScreenInsets.BOTTOM)?.toFloat() ?: 0f).dp,
+            ),
         properties = props,
         sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = animatedContentScope,
         onBack = onBack,
         footer = {
-            Text(
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.textSecondary,
-                text = "An identification and privacy solution that revolutionizes polling, surveying and election processes"
-            )
+            with(sharedTransitionScope) {
+                Text(
+                    modifier = Modifier.sharedElement(
+                        state = rememberSharedContentState("header-${props.id}"),
+                        animatedVisibilityScope = animatedContentScope
+                    ),
+                    style = RarimeTheme.typography.body3,
+                    color = RarimeTheme.colors.textSecondary,
+                    text = "An identification and privacy solution that revolutionizes polling, surveying and election processes"
+                )
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
