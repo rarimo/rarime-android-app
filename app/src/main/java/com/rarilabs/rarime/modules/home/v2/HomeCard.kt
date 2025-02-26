@@ -64,7 +64,13 @@ fun HomeCard(
 
     with(sharedTransitionScope) {
         Card(
-            modifier = modifier,
+            modifier = modifier.sharedBounds(
+                rememberSharedContentState(key = boundKey),
+                animatedVisibilityScope = animatedContentScope,
+                enter = fadeIn(),
+                exit = fadeOut(),
+                resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+            ),
             onClick = onCardClick,
             shape = RoundedCornerShape(32.dp)
         ) {
@@ -75,13 +81,7 @@ fun HomeCard(
                         rememberSharedContentState(backgroundKey),
                         animatedVisibilityScope = animatedContentScope
                     )
-                    .sharedBounds(
-                        rememberSharedContentState(key = boundKey),
-                        animatedVisibilityScope = animatedContentScope,
-                        enter = fadeIn(),
-                        exit = fadeOut(),
-                        resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
-                    )
+
                     .padding(top = 12.dp)
             ) {
                 Row(

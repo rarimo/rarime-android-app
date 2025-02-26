@@ -151,7 +151,7 @@ fun BaseDetailsScreen(
                             rememberSharedContentState(
                                 subTitleKey
                             ), animatedVisibilityScope = animatedContentScope
-                        ),
+                        ).skipToLookaheadSize(),
                 )
 
             }
