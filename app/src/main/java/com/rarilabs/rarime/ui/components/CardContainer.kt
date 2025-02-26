@@ -29,9 +29,9 @@ fun CardContainer(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(24.dp))
+            .clip(RoundedCornerShape(20.dp))
             .background(backgroundColor)
-            .padding(20.dp),
+            .padding(16.dp),
         content = content
     )
 }

@@ -4,12 +4,17 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
@@ -29,6 +34,8 @@ import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
+import com.rarilabs.rarime.ui.components.CardContainer
+import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
@@ -64,53 +71,61 @@ fun VotesScreen(
             .absolutePadding(
                 top = (screenInsets.get(ScreenInsets.TOP)?.toFloat() ?: 0f).dp,
                 bottom = (screenInsets.get(ScreenInsets.BOTTOM)?.toFloat() ?: 0f).dp,
-            ),
+            )
+            .verticalScroll(rememberScrollState()),
         properties = props,
         sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = animatedContentScope,
         onBack = onBack,
         footer = {
-            with(sharedTransitionScope) {
+            Column (
+                verticalArrangement = Arrangement.spacedBy(24.dp),
+            ) {
                 Text(
-                    modifier = Modifier.sharedElement(
-                        state = rememberSharedContentState("header-${props.id}"),
-                        animatedVisibilityScope = animatedContentScope
-                    ),
                     style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.textSecondary,
                     text = "An identification and privacy solution that revolutionizes polling, surveying and election processes"
                 )
-            }
 
-            Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-            Row (
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    modifier = Modifier
-                        .width(56.dp)
-                        .height(56.dp)
-                        .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)),
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = Color.Transparent,
-                        contentColor = RarimeTheme.colors.textPrimary,
-                        disabledContainerColor = RarimeTheme.colors.componentDisabled,
-                        disabledContentColor = RarimeTheme.colors.textDisabled
-                    ),
-                    onClick = {},
+                Row (
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    AppIcon(id = R.drawable.ic_plus)
+                    IconButton(
+                        modifier = Modifier
+                            .width(56.dp)
+                            .height(56.dp)
+                            .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)),
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = RarimeTheme.colors.textPrimary,
+                            disabledContainerColor = RarimeTheme.colors.componentDisabled,
+                            disabledContentColor = RarimeTheme.colors.textDisabled
+                        ),
+                        onClick = {},
+                    ) {
+                        AppIcon(id = R.drawable.ic_plus)
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    TransparentButton(
+                        modifier = Modifier.weight(1f).height(56.dp),
+                        size = ButtonSize.Large,
+                        text = "Scan a QR",
+                        onClick = {}
+                    )
                 }
 
-                Spacer(modifier = Modifier.width(16.dp))
-
-                TransparentButton(
-                    modifier = Modifier.weight(1f).height(56.dp),
-                    size = ButtonSize.Large,
-                    text = "Scan a QR",
-                    onClick = {}
+                HorizontalDivider(
+                    modifier = Modifier
+                        .background(RarimeTheme.colors.componentPrimary)
+                        .fillMaxWidth()
+                        .height(2.dp)
                 )
+
+                VoteResultsCard()
             }
         },
     )
@@ -121,7 +136,6 @@ fun VotesScreen(
 @Preview
 @Composable
 private fun VotesScreenPreview() {
-
     PrevireSharedAnimationProvider { state, anim ->
         VotesScreen(
             id = 0,
