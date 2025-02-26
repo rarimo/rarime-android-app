@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.structuralEqualityPolicy
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
 @Stable
@@ -73,6 +74,13 @@ class RarimeColors(
     additionalPureDark: Color,
 
 
+    // additional gradients
+    gradient1: Brush,
+    gradient2: Brush,
+    gradient3: Brush,
+    gradient4: Brush,
+    gradient5: Brush,
+    gradient6: Brush,
     ) {
     var primaryDarker by mutableStateOf(primaryDarker, structuralEqualityPolicy())
         internal set
@@ -161,6 +169,25 @@ class RarimeColors(
     var additionalPureDark by mutableStateOf(additionalPureDark, structuralEqualityPolicy())
         internal set
 
+
+    var gradient1 by mutableStateOf(gradient1, structuralEqualityPolicy())
+        internal set
+
+    var gradient2 by mutableStateOf(gradient2, structuralEqualityPolicy())
+        internal set
+
+    var gradient3 by mutableStateOf(gradient3, structuralEqualityPolicy())
+        internal set
+
+    var gradient4 by mutableStateOf(gradient4, structuralEqualityPolicy())
+        internal set
+
+    var gradient5 by mutableStateOf(gradient5, structuralEqualityPolicy())
+        internal set
+
+    var gradient6 by mutableStateOf(gradient6, structuralEqualityPolicy())
+        internal set
+
     fun copy(
         primaryDarker: Color = this.primaryDarker,
         primaryDark: Color = this.primaryDark,
@@ -203,7 +230,14 @@ class RarimeColors(
         baseWhite: Color = this.baseWhite,
         additionalLayerBorder: Color = this.additionalLayerBorder,
         additionalPureDark: Color = this.additionalPureDark,
-        backgroundContainer: Color = this.backgroundContainer
+        backgroundContainer: Color = this.backgroundContainer,
+        gradient1: Brush = this.gradient1,
+        gradient2: Brush = this.gradient2,
+        gradient3: Brush = this.gradient3,
+        gradient4: Brush = this.gradient4,
+        gradient5: Brush = this.gradient5,
+        gradient6: Brush = this.gradient6,
+
     ) = RarimeColors(
         primaryDarker = primaryDarker,
         primaryDark = primaryDark,
@@ -246,7 +280,13 @@ class RarimeColors(
         baseWhite = baseWhite,
         additionalLayerBorder = additionalLayerBorder,
         additionalPureDark = additionalPureDark,
-        backgroundContainer = backgroundContainer
+        backgroundContainer = backgroundContainer,
+        gradient1 = gradient1,
+        gradient2 = gradient2,
+        gradient3 = gradient3,
+        gradient4 = gradient4,
+        gradient5 = gradient5,
+        gradient6 = gradient6
     )
 
     fun updateColorsFrom(other: RarimeColors) {
@@ -357,6 +397,13 @@ fun darkColors() = RarimeColors(
     // additional
     additionalLayerBorder = Color(0x0DFFFFFF),
     additionalPureDark = Color(0x1AFFFFFF),
+    gradient1 = Brush.linearGradient(colors = listOf(Color(0xFF9AFE8A), Color(0xFF8AFECC))),
+    gradient2 = Brush.linearGradient(colors = listOf(Color(0xFFF2F8EE), Color(0xFFCBE7EC))),
+    gradient3 = Brush.linearGradient(colors = listOf(Color(0xFFDFFCC4), Color(0xFFF4F3F0))),
+    gradient4 = Brush.linearGradient(colors = listOf(Color(0xFFD3D1EF), Color(0xFFFCE3FC))),
+    gradient5 = Brush.linearGradient(colors = listOf(Color(0xFF80ED99), Color(0xFFD5FEC8))),
+    gradient6 = Brush.linearGradient(colors = listOf(Color(0xFF39CDA0), Color(0xFF45C45C)))
+
 )
 
 fun lightColors() = RarimeColors(
@@ -403,7 +450,7 @@ fun lightColors() = RarimeColors(
     textPrimary = Color(0xFF141614),
     textSecondary = Color(0x8F141614),
     textPlaceholder = Color(0x70141614),
-    textDisabled = Color(0x47202020),
+    textDisabled = Color(0x47141614),
 
     // component
     componentPrimary = Color(0x0D141614),
@@ -421,6 +468,12 @@ fun lightColors() = RarimeColors(
     // additional
     additionalLayerBorder = Color(0xFFFFFFFF),
     additionalPureDark = Color(0xFF262626),
+    gradient1 = Brush.linearGradient(colors = listOf(Color(0xFF9AFE8A), Color(0xFF8AFECC))),
+    gradient2 = Brush.linearGradient(colors = listOf(Color(0xFFF2F8EE), Color(0xFFCBE7EC))),
+    gradient3 = Brush.linearGradient(colors = listOf(Color(0xFFDFFCC4), Color(0xFFF4F3F0))),
+    gradient4 = Brush.linearGradient(colors = listOf(Color(0xFFD3D1EF), Color(0xFFFCE3FC))),
+    gradient5 = Brush.linearGradient(colors = listOf(Color(0xFF80ED99), Color(0xFFD5FEC8))),
+    gradient6 = Brush.linearGradient(colors = listOf(Color(0xFF39CDA0), Color(0xFF45C45C)))
 )
 
 val LocalColors = staticCompositionLocalOf { lightColors() }
