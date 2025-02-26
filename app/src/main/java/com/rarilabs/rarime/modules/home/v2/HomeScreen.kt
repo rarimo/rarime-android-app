@@ -83,7 +83,6 @@ fun HomeScreen(
 
     val cardContent = remember {
         listOf(
-
             CardContent(
                 type = CardType.UNFORGETTABLE_WALLET,
                 properties = CardProperties(

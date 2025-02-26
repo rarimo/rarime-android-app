@@ -64,13 +64,7 @@ fun HomeCard(
 
     with(sharedTransitionScope) {
         Card(
-            modifier = modifier.sharedBounds(
-                rememberSharedContentState(key = boundKey),
-                animatedVisibilityScope = animatedContentScope,
-                enter = fadeIn(),
-                exit = fadeOut(),
-                resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-            ),
+            modifier = modifier,
             onClick = onCardClick,
             shape = RoundedCornerShape(32.dp)
         ) {
@@ -80,6 +74,13 @@ fun HomeCard(
                     .sharedElement(
                         rememberSharedContentState(backgroundKey),
                         animatedVisibilityScope = animatedContentScope
+                    )
+                    .sharedBounds(
+                        rememberSharedContentState(key = boundKey),
+                        animatedVisibilityScope = animatedContentScope,
+                        enter = fadeIn(),
+                        exit = fadeOut(),
+                        resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
                     )
                     .padding(top = 12.dp)
             ) {
@@ -127,32 +128,31 @@ fun HomeCard(
                         Column(
                             modifier = Modifier.weight(1f, fill = false)
                         ) {
-                            with(sharedTransitionScope) {
-                                Text(
-                                    modifier = Modifier
-                                        .sharedElement(
-                                            state = rememberSharedContentState(
-                                                headerKey
-                                            ), animatedVisibilityScope = animatedContentScope
-                                        ),
-                                    color = RarimeTheme.colors.textPrimary,
-                                    style = RarimeTheme.typography.h2,
-                                    text = cardProperties.header
-                                )
-                            }
-                            with(sharedTransitionScope) {
-                                Text(
-                                    modifier = Modifier
-                                        .sharedElement(
-                                            state = rememberSharedContentState(
-                                                subTitleKey
-                                            ), animatedVisibilityScope = animatedContentScope
-                                        ),
-                                    color = RarimeTheme.colors.textSecondary,
-                                    style = RarimeTheme.typography.additional2,
-                                    text = cardProperties.subTitle,
-                                )
-                            }
+
+                            Text(
+                                modifier = Modifier
+                                    .sharedBounds(
+                                        rememberSharedContentState(
+                                            headerKey
+                                        ), animatedVisibilityScope = animatedContentScope
+                                    ),
+                                color = RarimeTheme.colors.textPrimary,
+                                style = RarimeTheme.typography.h2,
+                                text = cardProperties.header
+                            )
+
+                            Text(
+                                modifier = Modifier
+                                    .sharedBounds(
+                                        rememberSharedContentState(
+                                            subTitleKey
+                                        ), animatedVisibilityScope = animatedContentScope
+                                    ),
+                                color = RarimeTheme.colors.textSecondary,
+                                style = RarimeTheme.typography.additional2,
+                                text = cardProperties.subTitle,
+                            )
+
                             footer()
                         }
                         AppIcon(

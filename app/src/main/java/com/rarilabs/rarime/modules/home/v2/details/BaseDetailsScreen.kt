@@ -65,9 +65,9 @@ fun BaseDetailsScreen(
     val headerKey = remember(properties.id) { "header-${properties.id}" }
     val subTitleKey = remember(properties.id) { "subTitle-${properties.id}" }
 
+    with(sharedTransitionScope) {
+        Column(
 
-    Column(
-        with(sharedTransitionScope) {
             modifier
                 .background(properties.backgroundGradient)
                 .sharedElement(
@@ -80,40 +80,39 @@ fun BaseDetailsScreen(
                     animatedVisibilityScope = animatedContentScope,
                     enter = fadeIn(),
                     exit = fadeOut(),
-                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
                 )
                 .fillMaxSize()
                 .zIndex(123f)
                 .padding(top = 12.dp)
-        }
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(start = 24.dp, end = 12.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+
         ) {
-            Spacer(modifier = Modifier.weight(1f))
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
+            Row(
                 modifier = Modifier
-                    .width(40.dp)
-                    .height(40.dp)
-                    .background(RarimeTheme.colors.componentPrimary, CircleShape)
-                    .clickable { onBack.invoke() }
+                    .padding(start = 24.dp, end = 12.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                AppIcon(
-                    id = R.drawable.ic_close,
-                    size = 20.dp,
-                    tint = RarimeTheme.colors.textPrimary.also { it.alpha },
-                )
+                Spacer(modifier = Modifier.weight(1f))
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .width(40.dp)
+                        .height(40.dp)
+                        .background(RarimeTheme.colors.componentPrimary, CircleShape)
+                        .clickable { onBack.invoke() }
+                ) {
+                    AppIcon(
+                        id = R.drawable.ic_close,
+                        size = 20.dp,
+                        tint = RarimeTheme.colors.textPrimary.also { it.alpha },
+                    )
+                }
             }
-        }
 
-        Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f))
 
-        with(sharedTransitionScope) {
             Image(
                 painter = painterResource(properties.imageId),
                 contentDescription = null,
@@ -126,44 +125,44 @@ fun BaseDetailsScreen(
                     .fillMaxWidth(),
                 contentScale = ContentScale.FillWidth
             )
-        }
 
-        Spacer(modifier = Modifier.weight(1f))
 
-        Column(modifier = Modifier.padding(top = 20.dp, start = 24.dp, end = 24.dp)) {
-            with(sharedTransitionScope) {
+            Spacer(modifier = Modifier.weight(1f))
+
+            Column(modifier = Modifier.padding(top = 20.dp, start = 24.dp, end = 24.dp)) {
+
                 Text(
                     style = RarimeTheme.typography.h1,
                     color = RarimeTheme.colors.textPrimary,
                     text = properties.header,
-                    modifier = Modifier.sharedElement(
-                        state = rememberSharedContentState(
+                    modifier = Modifier.sharedBounds(
+                        rememberSharedContentState(
                             headerKey
                         ), animatedVisibilityScope = animatedContentScope
                     )
                 )
-            }
-            with(sharedTransitionScope) {
+
                 Text(
                     style = RarimeTheme.typography.additional1,
                     text = properties.subTitle,
                     color = RarimeTheme.colors.textSecondary,
                     modifier = Modifier
-                        .sharedElement(
-                            state = rememberSharedContentState(
+                        .sharedBounds(
+                            rememberSharedContentState(
                                 subTitleKey
                             ), animatedVisibilityScope = animatedContentScope
                         ),
                 )
+
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+                footer()
+            }
+
         }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-            footer()
-        }
-
     }
 }
 
@@ -172,7 +171,6 @@ fun BaseDetailsScreen(
 @Preview
 @Composable
 private fun BaseDetailsScreenPreview() {
-
 
 
     val properties = DetailsProperties(
