@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -58,101 +59,110 @@ fun BaseDetailsScreen(
 
     ) {
 
-    Column(
-        with(sharedTransitionScope) {
-            Modifier
+    val boundKey = remember(properties.id) { "${properties.id}-bound" }
+    val backgroundKey = remember(properties.id) { "background-${properties.id}" }
+    val imageKey = remember(properties.id) { "image-${properties.id}" }
+    val headerKey = remember(properties.id) { "header-${properties.id}" }
+    val subTitleKey = remember(properties.id) { "subTitle-${properties.id}" }
+
+    with(sharedTransitionScope) {
+        Column(
+
+            modifier
                 .background(properties.backgroundGradient)
+                .sharedElement(
+                    state = rememberSharedContentState(
+                        backgroundKey
+                    ), animatedVisibilityScope = animatedContentScope
+                )
                 .sharedBounds(
-                    rememberSharedContentState(key = "${properties.id}-bound"),
+                    rememberSharedContentState(key = boundKey),
                     animatedVisibilityScope = animatedContentScope,
                     enter = fadeIn(),
                     exit = fadeOut(),
-                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
                 )
-
                 .fillMaxSize()
                 .zIndex(123f)
                 .padding(top = 12.dp)
-                .then(modifier)
-        }
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(start = 24.dp, end = 12.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+
         ) {
-            Spacer(modifier = Modifier.weight(1f))
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
+            Row(
                 modifier = Modifier
-                    .width(40.dp)
-                    .height(40.dp)
-                    .background(RarimeTheme.colors.componentPrimary, CircleShape)
-                    .clickable { onBack.invoke() }
+                    .padding(start = 24.dp, end = 12.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                AppIcon(
-                    id = R.drawable.ic_close,
-                    size = 20.dp,
-                    tint = RarimeTheme.colors.textPrimary.also { it.alpha },
-                )
+                Spacer(modifier = Modifier.weight(1f))
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .width(40.dp)
+                        .height(40.dp)
+                        .background(RarimeTheme.colors.componentPrimary, CircleShape)
+                        .clickable { onBack.invoke() }
+                ) {
+                    AppIcon(
+                        id = R.drawable.ic_close,
+                        size = 20.dp,
+                        tint = RarimeTheme.colors.textPrimary.also { it.alpha },
+                    )
+                }
             }
-        }
 
-        Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f))
 
-        with(sharedTransitionScope) {
             Image(
                 painter = painterResource(properties.imageId),
                 contentDescription = null,
                 modifier = Modifier
                     .sharedElement(
                         state = rememberSharedContentState(
-                            "image-${properties.id}"
+                            imageKey
                         ), animatedVisibilityScope = animatedContentScope
                     )
                     .fillMaxWidth(),
                 contentScale = ContentScale.FillWidth
             )
-        }
 
-        Spacer(modifier = Modifier.weight(1f))
 
-        Column(modifier = Modifier.padding(top = 20.dp, start = 24.dp, end = 24.dp)) {
-            with(sharedTransitionScope) {
+            Spacer(modifier = Modifier.weight(1f))
+
+            Column(modifier = Modifier.padding(top = 20.dp, start = 24.dp, end = 24.dp)) {
+
                 Text(
                     style = RarimeTheme.typography.h1,
                     color = RarimeTheme.colors.textPrimary,
                     text = properties.header,
-                    modifier = Modifier.sharedElement(
-                        state = rememberSharedContentState(
-                            "header-${properties.id}"
+                    modifier = Modifier.sharedBounds(
+                        rememberSharedContentState(
+                            headerKey
                         ), animatedVisibilityScope = animatedContentScope
                     )
                 )
-            }
-            with(sharedTransitionScope) {
+
                 Text(
                     style = RarimeTheme.typography.additional1,
                     text = properties.subTitle,
                     color = RarimeTheme.colors.textSecondary,
                     modifier = Modifier
-                        .sharedElement(
-                            state = rememberSharedContentState(
-                                "subTitle-${properties.id}"
+                        .sharedBounds(
+                            rememberSharedContentState(
+                                subTitleKey
                             ), animatedVisibilityScope = animatedContentScope
-                        ),
+                        ).skipToLookaheadSize(),
                 )
+
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+                footer()
+            }
+
         }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-            footer()
-        }
-
     }
 }
 
@@ -161,6 +171,7 @@ fun BaseDetailsScreen(
 @Preview
 @Composable
 private fun BaseDetailsScreenPreview() {
+
 
     val properties = DetailsProperties(
         id = 1,

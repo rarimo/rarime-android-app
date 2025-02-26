@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.VerticalPager
@@ -24,7 +23,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,11 +41,11 @@ import androidx.compose.ui.util.lerp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.v2.details.ClaimTokensScreen
 import com.rarilabs.rarime.modules.home.v2.details.CreateIdentityDetails
+import com.rarilabs.rarime.modules.home.v2.details.InviteOthersScreen
 import com.rarilabs.rarime.modules.home.v2.details.UnforgettableWalletScreen
 import com.rarilabs.rarime.modules.home.v2.details.votes.VotesScreen
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.CircledBadgeWithCounter
-import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.components.VerticalDivider
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
@@ -84,7 +85,25 @@ fun HomeScreen(
     val cardContent = remember {
         listOf(
             CardContent(
+                type = CardType.UNFORGETTABLE_WALLET,
+                properties = CardProperties(
+                    header = "An Unforgettable",
+                    subTitle = "Wallet",
+                    icon = R.drawable.ic_rarime,
+                    image = R.drawable.no_more_seed_image,
+                    backgroundGradient = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFFFCE3FC),
+                            Color(0xFFD3D1EF)
+                        )
+                    )
+                ),
+                onCardClick = {},
+                footer = {
+                }
+            ),
 
+            CardContent(
                 type = CardType.YOUR_IDENTITY,
                 properties = CardProperties(
                     header = "Your Device",
@@ -144,32 +163,7 @@ fun HomeScreen(
                     }
                 }
             ),
-            CardContent(
-                type = CardType.UNFORGETTABLE_WALLET,
-                properties = CardProperties(
-                    header = "An Unforgettable",
-                    subTitle = "Wallet",
-                    icon = R.drawable.ic_rarime,
-                    image = R.drawable.no_more_seed_image,
-                    backgroundGradient = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFFF6F3D6),
-                            Color(0xFFBCEB3D)
-                        )
-                    )
-                ),
-                onCardClick = {},
-                footer = {
-                    TransparentButton(
-                        modifier
-                            .fillMaxWidth()
-                            .padding(top = 24.dp),
-                        onClick = {},
-                        text = "Join early waitlist"
-                    )
 
-                }
-            ),
             CardContent(
                 type = CardType.FREEDOMTOOL,
                 properties = CardProperties(
@@ -188,7 +182,6 @@ fun HomeScreen(
             ),
 
             CardContent(
-
                 type = CardType.CLAIM,
                 properties = CardProperties(
                     header = "Claim",
@@ -235,40 +228,47 @@ fun HomeScreen(
                         contentPadding = PaddingValues(top = 10.dp, bottom = 150.dp)
                     ) { page ->
                         val pageOffset =
-                            (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
+                            remember(pagerState.currentPage, pagerState.currentPageOffsetFraction) {
+                                derivedStateOf {
+                                    (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
+                                }
+                            }.value
 
                         val absoluteOffset = abs(pageOffset).coerceIn(0f, 1f)
                         val targetScale = lerp(0.8f, 1f, 1f - absoluteOffset)
 
 
-                        val scale by animateFloatAsState(
-                            targetValue = targetScale,
-                            animationSpec = spring(
-                                dampingRatio = 0.5f,
-                                stiffness = 300f
-                            )
-                        )
-
-                        HomeCard(
-                            modifier = Modifier
-                                .graphicsLayer {
-                                    scaleX = scale
-                                    scaleY = scale
-                                },
-                            cardProperties = cardContent[page].properties,
-                            footer = cardContent[page].footer,
-                            sharedTransitionScope = sharedTransitionScope,
-                            animatedContentScope = this@AnimatedContent,
-                            id = page,
-                            onCardClick = {
-                                Log.i(
-                                    "CardClick", page.toString()
+                        key(page) {
+                            val scale by animateFloatAsState(
+                                targetValue = targetScale,
+                                animationSpec = spring(
+                                    dampingRatio = 0.5f,
+                                    stiffness = 300f
                                 )
-                                cardContent[page].onCardClick; selectedPageId = page
-                            }
-                        )
-                    }
+                            )
 
+                            HomeCard(
+                                modifier = Modifier
+                                    .graphicsLayer {
+                                        scaleX = scale
+                                        scaleY = scale
+                                        // Add alpha for smoother transitions
+                                        alpha = lerp(0.8f, 1f, 1f - absoluteOffset)
+                                    },
+                                cardProperties = cardContent[page].properties,
+                                footer = cardContent[page].footer,
+                                sharedTransitionScope = sharedTransitionScope,
+                                animatedContentScope = this@AnimatedContent,
+                                id = page,
+                                onCardClick = {
+                                    Log.i(
+                                        "CardClick", page.toString()
+                                    )
+                                    cardContent[page].onCardClick; selectedPageId = page
+                                }
+                            )
+                        }
+                    }
                 }
             }
         } else {
@@ -291,7 +291,12 @@ fun HomeScreen(
                 }
 
                 CardType.INVITE_OTHERS -> {
-
+                    InviteOthersScreen(
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedContentScope = this@AnimatedContent,
+                        id = it,
+                        onBack = { selectedPageId = null }
+                    )
                 }
 
                 CardType.CLAIM -> {
