@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -58,18 +59,29 @@ fun BaseDetailsScreen(
 
     ) {
 
+    val boundKey = remember(properties.id) { "${properties.id}-bound" }
+    val backgroundKey = remember(properties.id) { "background-${properties.id}" }
+    val imageKey = remember(properties.id) { "image-${properties.id}" }
+    val headerKey = remember(properties.id) { "header-${properties.id}" }
+    val subTitleKey = remember(properties.id) { "subTitle-${properties.id}" }
+
+
     Column(
         with(sharedTransitionScope) {
             modifier
                 .background(properties.backgroundGradient)
+                .sharedElement(
+                    state = rememberSharedContentState(
+                        backgroundKey
+                    ), animatedVisibilityScope = animatedContentScope
+                )
                 .sharedBounds(
-                    rememberSharedContentState(key = "${properties.id}-bound"),
+                    rememberSharedContentState(key = boundKey),
                     animatedVisibilityScope = animatedContentScope,
                     enter = fadeIn(),
                     exit = fadeOut(),
                     resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                 )
-
                 .fillMaxSize()
                 .zIndex(123f)
                 .padding(top = 12.dp)
@@ -108,7 +120,7 @@ fun BaseDetailsScreen(
                 modifier = Modifier
                     .sharedElement(
                         state = rememberSharedContentState(
-                            "image-${properties.id}"
+                            imageKey
                         ), animatedVisibilityScope = animatedContentScope
                     )
                     .fillMaxWidth(),
@@ -126,7 +138,7 @@ fun BaseDetailsScreen(
                     text = properties.header,
                     modifier = Modifier.sharedElement(
                         state = rememberSharedContentState(
-                            "header-${properties.id}"
+                            headerKey
                         ), animatedVisibilityScope = animatedContentScope
                     )
                 )
@@ -139,7 +151,7 @@ fun BaseDetailsScreen(
                     modifier = Modifier
                         .sharedElement(
                             state = rememberSharedContentState(
-                                "subTitle-${properties.id}"
+                                subTitleKey
                             ), animatedVisibilityScope = animatedContentScope
                         ),
                 )
@@ -160,6 +172,8 @@ fun BaseDetailsScreen(
 @Preview
 @Composable
 private fun BaseDetailsScreenPreview() {
+
+
 
     val properties = DetailsProperties(
         id = 1,

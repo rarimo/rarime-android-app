@@ -32,7 +32,7 @@ fun UnforgettableWalletScreen(
 ) {
 
     val props = DetailsProperties(
-        id = 1,
+        id = id,
         header = "An Unforgettable",
         subTitle = "Wallet",
         imageId = R.drawable.no_more_seed_image,

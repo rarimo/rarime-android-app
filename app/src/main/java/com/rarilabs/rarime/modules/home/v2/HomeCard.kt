@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -54,10 +55,17 @@ fun HomeCard(
     onCardClick: () -> Unit,
 ) {
 
+    val boundKey = remember(id) { "$id-bound" }
+    val backgroundKey = remember(id) { "background-$id" }
+    val imageKey = remember(id) { "image-$id" }
+    val headerKey = remember(id) { "header-$id" }
+    val subTitleKey = remember(id) { "subTitle-$id" }
+
+
     with(sharedTransitionScope) {
         Card(
             modifier = modifier.sharedBounds(
-                rememberSharedContentState(key = "$id-bound"),
+                rememberSharedContentState(key = boundKey),
                 animatedVisibilityScope = animatedContentScope,
                 enter = fadeIn(),
                 exit = fadeOut(),
@@ -70,7 +78,7 @@ fun HomeCard(
                 Modifier
                     .background(cardProperties.backgroundGradient)
                     .sharedElement(
-                        rememberSharedContentState("baackground-${id}"),
+                        rememberSharedContentState(backgroundKey),
                         animatedVisibilityScope = animatedContentScope
                     )
                     .padding(top = 12.dp)
@@ -100,7 +108,7 @@ fun HomeCard(
                         modifier = Modifier
                             .sharedElement(
                                 state = rememberSharedContentState(
-                                    "image-${id}"
+                                    imageKey
                                 ), animatedVisibilityScope = animatedContentScope
                             )
                             .fillMaxWidth(),
@@ -124,7 +132,7 @@ fun HomeCard(
                                     modifier = Modifier
                                         .sharedElement(
                                             state = rememberSharedContentState(
-                                                "header-${id}"
+                                                headerKey
                                             ), animatedVisibilityScope = animatedContentScope
                                         ),
                                     color = RarimeTheme.colors.textPrimary,
@@ -137,11 +145,11 @@ fun HomeCard(
                                     modifier = Modifier
                                         .sharedElement(
                                             state = rememberSharedContentState(
-                                                "subTitle-${id}"
+                                                subTitleKey
                                             ), animatedVisibilityScope = animatedContentScope
                                         ),
                                     color = RarimeTheme.colors.textSecondary,
-                                    style = RarimeTheme.typography.subtitle2,
+                                    style = RarimeTheme.typography.additional2,
                                     text = cardProperties.subTitle,
                                 )
                             }
