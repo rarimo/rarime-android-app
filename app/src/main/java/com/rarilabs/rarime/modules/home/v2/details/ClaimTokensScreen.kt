@@ -34,7 +34,7 @@ fun ClaimTokensScreen(
 ) {
 
     val props = DetailsProperties(
-        id = 1,
+        id = id,
         header = "Claim",
         subTitle = "10 RMO",
         imageId = R.drawable.claim_rmo_image,

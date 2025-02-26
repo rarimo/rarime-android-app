@@ -79,14 +79,12 @@ fun InviteOthersContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
-
     val rewardPerInvite = pointsBalance.attributes.referral_codes?.size?.let {
         CONST_MOCKED_EVENTS_LIST[0].attributes.meta.static.reward.div(it)
     } ?: 0L
 
     Column(
         modifier = modifier
-            .padding(top = 20.dp, start = 24.dp, end = 24.dp)
             .fillMaxSize()
     ) {
         with(sharedTransitionScope) {

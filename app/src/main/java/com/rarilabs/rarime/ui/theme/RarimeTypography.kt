@@ -203,8 +203,8 @@ data class RarimeTypography(
 
     val additional2: TextStyle = TextStyle(
         fontFamily = playfairFontFamily,
-        fontWeight = FontWeight.Normal,
-        fontSize = 32.sp,
+        fontWeight = FontWeight.Bold,
+        fontSize = 40.sp,
         lineHeight = 36.sp,
     ),
 )
