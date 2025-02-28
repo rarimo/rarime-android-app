@@ -185,7 +185,7 @@ fun HomeScreen(
 
     val pagerState = rememberPagerState(pageCount = { cardContent.size })
 
-    AnimatedContent(selectedPageId, label = "asd") { it ->
+    AnimatedContent(selectedPageId, label = "content") { it ->
         if (it == null) {
             Column(modifier = modifier.fillMaxSize()) {
                 Row(
