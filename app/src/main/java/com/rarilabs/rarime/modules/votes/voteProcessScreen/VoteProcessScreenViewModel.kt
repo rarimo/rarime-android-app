@@ -2,6 +2,8 @@ package com.rarilabs.rarime.modules.votes.voteProcessScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rarilabs.rarime.modules.votes.VoteData
+import com.rarilabs.rarime.modules.votes.VoteOption
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,21 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-data class VoteData(
-    val title: String,
-    val description: String,
-    val durationMillis: Long,
-    val participantsCount: Int,
-    val options: List<VoteOption>,
-    val endDate: Long
-)
-
-data class VoteOption(
-    val id: String,
-    val title: String,
-    val votedCount: Double
-)
 
 @HiltViewModel
 class VoteProcessScreenViewModel @Inject constructor() : ViewModel() {

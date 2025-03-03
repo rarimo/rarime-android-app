@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,12 +23,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.AppIcon
+import com.rarilabs.rarime.ui.components.AppSkeleton
 import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun VoteResultsCard() {
+fun VoteResultsCard(
+    voteData: VoteData,
+) {
     CardContainer(
         backgroundColor = RarimeTheme.colors.backgroundPrimary
     ) {
@@ -37,7 +42,7 @@ fun VoteResultsCard() {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Usa election 2024",
+                    text = voteData.title,
                     style = RarimeTheme.typography.h4,
                     color = RarimeTheme.colors.textPrimary
                 )
@@ -51,7 +56,7 @@ fun VoteResultsCard() {
                     ) {
                         AppIcon(id = R.drawable.ic_timer_line)
                         Text(
-                            text = "1 days",
+                            text = "${voteData.durationMillis / (1000 * 60 * 60)} hours",
                             style = RarimeTheme.typography.subtitle7,
                             color = RarimeTheme.colors.textSecondary
                         )
@@ -63,7 +68,7 @@ fun VoteResultsCard() {
                     ) {
                         AppIcon(id = R.drawable.ic_group_line)
                         Text(
-                            text = "1 days",
+                            text = voteData.participantsCount.toString(),
                             style = RarimeTheme.typography.subtitle7,
                             color = RarimeTheme.colors.textSecondary
                         )
@@ -79,11 +84,11 @@ fun VoteResultsCard() {
             )
 
             VoteResultsCardStatistics(
-                options = listOf(
-                    mapOf("Donald Trump" to 45.0),
-                    mapOf("Joe Biden" to 35.0),
-                    mapOf("Kanye West" to 20.0),
-                )
+                options = voteData.options.map {
+                    mapOf(
+                        it.title to it.votedCount
+                    )
+                }
             )
         }
     }
@@ -164,8 +169,185 @@ fun VoteResultsCardStatistics(
     }
 }
 
+@Composable
+fun VotesLoadingSkeleton() {
+    CardContainer(
+        backgroundColor = RarimeTheme.colors.backgroundPrimary
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Title skeleton
+                AppSkeleton(
+                    modifier = Modifier
+                        .height(24.dp)
+                        .fillMaxWidth(0.7f)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(RarimeTheme.colors.componentDisabled)
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    // Duration skeleton
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        // Icon placeholder
+                        AppSkeleton(
+                            modifier = Modifier
+                                .size(16.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(RarimeTheme.colors.componentDisabled)
+                        )
+                        // Text placeholder
+                        AppSkeleton(
+                            modifier = Modifier
+                                .height(16.dp)
+                                .width(50.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(RarimeTheme.colors.componentDisabled)
+                        )
+                    }
+
+                    // Participants skeleton
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        // Icon placeholder
+                        AppSkeleton(
+                            modifier = Modifier
+                                .size(16.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(RarimeTheme.colors.componentDisabled)
+                        )
+                        // Text placeholder
+                        AppSkeleton(
+                            modifier = Modifier
+                                .height(16.dp)
+                                .width(30.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(RarimeTheme.colors.componentDisabled)
+                        )
+                    }
+                }
+            }
+
+            HorizontalDivider(
+                modifier = Modifier
+                    .background(RarimeTheme.colors.componentPrimary)
+                    .fillMaxWidth()
+                    .height(1.dp)
+            )
+
+            // Statistics skeleton
+            Column(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .border(1.dp, RarimeTheme.colors.componentPrimary, RoundedCornerShape(16.dp))
+            ) {
+                // Create 3 skeleton option rows
+                repeat(3) { index ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                    ) {
+                        // Progress bar background
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .fillMaxWidth(index * 0.3f + 0.2f)
+                                .background(RarimeTheme.colors.componentDisabled.copy(alpha = 0.3f))
+                        )
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(vertical = 8.dp, horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            // Option title placeholder
+                            Box(
+                                modifier = Modifier
+                                    .height(16.dp)
+                                    .width(80.dp)
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .background(RarimeTheme.colors.componentDisabled)
+                            )
+
+                            // Option values placeholder
+                            Column(
+                                horizontalAlignment = Alignment.End
+                            ) {
+                                AppSkeleton(
+                                    modifier = Modifier
+                                        .height(14.dp)
+                                        .width(40.dp)
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(RarimeTheme.colors.componentDisabled)
+                                )
+                                AppSkeleton(
+                                    modifier = Modifier
+                                        .height(12.dp)
+                                        .width(30.dp)
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(RarimeTheme.colors.componentDisabled)
+                                        .padding(top = 4.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 fun VoteResultsCardPreview() {
-    VoteResultsCard()
+    VoteResultsCard(
+        voteData = VoteData(
+            title = "Sample Vote",
+            description = "This is a sample vote for preview purposes",
+            durationMillis = 86400000,
+            participantsCount = 150,
+            options = listOf(
+                VoteOption("1", "Lorem", 100.0),
+                VoteOption("2", "Ipsum", 200.0),
+                VoteOption("3", "Dolor", 300.0),
+                VoteOption("4", "Sit", 400.0),
+                VoteOption("5", "Amet", 500.0),
+                VoteOption("6", "Consectetur", 600.0),
+                VoteOption("7", "Adipiscing", 700.0),
+                VoteOption("8", "Elit", 800.0),
+                VoteOption("9", "Sed", 900.0),
+                VoteOption("10", "Do", 1000.0),
+                VoteOption("11", "Eiusmod", 1100.0),
+                VoteOption("12", "Tempor", 1200.0),
+                VoteOption("13", "Incididunt", 1300.0),
+                VoteOption("14", "Labore", 1400.0),
+                VoteOption("15", "Et", 1500.0),
+                VoteOption("16", "Dolore", 1600.0),
+                VoteOption("17", "Magna", 1700.0),
+                VoteOption("18", "Aliqua", 1800.0),
+                VoteOption("19", "Ut", 1900.0),
+                VoteOption("20", "Enim", 2000.0),
+            ),
+            endDate = (1741092332000).toLong()
+        )
+    )
+}
+
+@Preview
+@Composable
+fun VotesLoadingSkeletonPreview() {
+    VotesLoadingSkeleton()
 }

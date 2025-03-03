@@ -38,7 +38,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
-import com.rarilabs.rarime.modules.votes.VoteResultsCard
+import com.rarilabs.rarime.modules.votes.VoteData
+import com.rarilabs.rarime.modules.votes.VoteOption
 import com.rarilabs.rarime.modules.votes.VoteResultsCardStatistics
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon

@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.v2.details.BaseDetailsScreen
 import com.rarilabs.rarime.modules.home.v2.details.DetailsProperties
@@ -58,9 +59,16 @@ fun VotesScreen(
     onBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
+    viewModel: VotesScreenViewModel = hiltViewModel()
 ) {
     val mainViewModel = LocalMainViewModel.current
     val screenInsets by mainViewModel.screenInsets.collectAsState()
+
+    val activeVotes by viewModel.activeVotes.collectAsState()
+    val activeVotesLoading by viewModel.isLoadingActive.collectAsState()
+
+    val historyVotes by viewModel.historyVotes.collectAsState()
+    val historyVotesLoading by viewModel.isLoadingHistory.collectAsState()
 
     val props = DetailsProperties(
         id = id,
@@ -84,7 +92,12 @@ fun VotesScreen(
             ScreenInsets.BOTTOM to screenInsets.get(ScreenInsets.BOTTOM)
         ),
         sharedTransitionScope = sharedTransitionScope,
-        animatedContentScope = animatedContentScope
+        animatedContentScope = animatedContentScope,
+
+        activeVotes = activeVotes,
+        activeVotesLoading = activeVotesLoading,
+        historyVotes = historyVotes,
+        historyVotesLoading = historyVotesLoading,
     )
 }
 
@@ -97,6 +110,11 @@ fun VotesScreenContent(
     screenInsets: Map<ScreenInsets, Number?>,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
+
+    activeVotes: List<VoteData>,
+    activeVotesLoading: Boolean,
+    historyVotes: List<VoteData>,
+    historyVotesLoading: Boolean,
 ) {
     val pagerState = rememberPagerState(
         pageCount = { 2 },
@@ -213,8 +231,17 @@ fun VotesScreenContent(
                         verticalAlignment = Alignment.Top,
                     ) { page ->
                         when (page) {
-                            0 -> ActiveVotesList()
-                            1 -> HistoryVotesList()
+                            0 -> if (activeVotesLoading)
+                                VotesLoadingSkeleton()
+                            else ActiveVotesList(
+                                votes = activeVotes
+                            )
+
+                            1 -> if (historyVotesLoading)
+                                VotesLoadingSkeleton()
+                            else HistoryVotesList(
+                                votes = historyVotes
+                            )
                         }
                     }
                 }
@@ -224,19 +251,28 @@ fun VotesScreenContent(
 }
 
 @Composable
-fun ActiveVotesList() {
+fun ActiveVotesList(
+    votes: List<VoteData>
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        VoteResultsCard()
-        VoteResultsCard()
+        votes.forEach {
+            VoteResultsCard(it)
+        }
     }
 }
 
 @Composable
-fun HistoryVotesList() {
-    Column {
-        VoteResultsCard()
+fun HistoryVotesList(
+    votes: List<VoteData>
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        votes.forEach {
+            VoteResultsCard(it)
+        }
     }
 }
 
@@ -263,6 +299,36 @@ private fun VotesScreenPreview() {
             screenInsets = mapOf(ScreenInsets.TOP to 12, ScreenInsets.BOTTOM to 12),
             sharedTransitionScope = state,
             animatedContentScope = anim,
+            activeVotes = listOf(
+                VoteData(
+                    title = "Protocol Update Proposal",
+                    description = "Vote on the proposed update to the network protocol",
+                    durationMillis = 86400000 * 3, // 3 days
+                    participantsCount = 320,
+                    options = listOf(
+                        VoteOption("1", "Approve", 180.0),
+                        VoteOption("2", "Reject", 87.0),
+                        VoteOption("3", "Abstain", 53.0)
+                    ),
+                    endDate = System.currentTimeMillis() + 86400000 * 3
+                )
+            ),
+            activeVotesLoading = false,
+            historyVotes = listOf(
+                VoteData(
+                    title = "Treasury Allocation",
+                    description = "Vote on allocating treasury funds for development",
+                    durationMillis = 86400000 * 7, // 7 days
+                    participantsCount = 412,
+                    options = listOf(
+                        VoteOption("1", "Approve", 205.0),
+                        VoteOption("2", "Reject", 102.0),
+                        VoteOption("3", "Abstain", 105.0)
+                    ),
+                    endDate = System.currentTimeMillis() + 86400000 * 5
+                )
+            ),
+            historyVotesLoading = false,
         )
     }
 }
