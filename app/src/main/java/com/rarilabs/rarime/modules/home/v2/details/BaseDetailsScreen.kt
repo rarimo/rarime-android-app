@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -67,8 +68,7 @@ fun BaseDetailsScreen(
 
     with(sharedTransitionScope) {
         Column(
-
-            modifier
+            modifier = Modifier
                 .background(properties.backgroundGradient)
                 .sharedElement(
                     state = rememberSharedContentState(
@@ -85,6 +85,7 @@ fun BaseDetailsScreen(
                 .fillMaxSize()
                 .zIndex(123f)
                 .padding(top = 12.dp)
+                .then(modifier)
 
         ) {
             Row(

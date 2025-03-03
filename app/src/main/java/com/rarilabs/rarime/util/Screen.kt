@@ -30,6 +30,7 @@ sealed class Screen(val route: String) {
 
     data object Main : Screen("main") {
         data object Home : Screen("home")
+        data object Vote : Screen("vote/{vote_id}")
         data object Wallet : Screen("wallet") {
             data object Receive : Screen("receive")
             data object Send : Screen("send")

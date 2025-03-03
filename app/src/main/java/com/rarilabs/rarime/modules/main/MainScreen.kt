@@ -245,7 +245,12 @@ fun MainScreenContent(
                     }
                 }
             },
-        ) { innerPadding ->
+        ) { innerPaddings ->
+            mainViewModel.setScreenInsets(
+                top = innerPaddings.calculateTopPadding().value,
+                bottom = innerPaddings.calculateBottomPadding().value
+            )
+
             ScreenBarsColor(
                 colorScheme = mainViewModel.colorScheme.value, route = currentRoute ?: ""
             )
@@ -278,7 +283,6 @@ fun MainScreenContent(
                 navController = navController,
                 simpleNavigate = { simpleNavigate(it) },
                 navigateWithPopUp = { navigateWithPopUp(it) },
-                innerPadding = innerPadding
             )
 
             if (isModalShown) {
