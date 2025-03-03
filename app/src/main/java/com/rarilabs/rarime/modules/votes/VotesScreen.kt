@@ -51,7 +51,6 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import kotlinx.coroutines.launch
 
-
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun VotesScreen(

@@ -78,29 +78,31 @@ fun VoteResultsCard() {
                     .height(1.dp)
             )
 
-            VoteResultsCardStatistics()
+            VoteResultsCardStatistics(
+                options = listOf(
+                    mapOf("Donald Trump" to 45.0),
+                    mapOf("Joe Biden" to 35.0),
+                    mapOf("Kanye West" to 20.0),
+                )
+            )
         }
     }
 }
 
 @Composable
-fun VoteResultsCardStatistics() {
-    val arrayOfMaps = arrayOf(
-        mapOf("Donald Trump" to 45),
-        mapOf("Joe Biden" to 35),
-        mapOf("Kanye West" to 20),
-    )
+fun VoteResultsCardStatistics(
+    options: List<Map<String, Double>>,
+) {
+    val totalVotes = options.sumOf { it.values.first() }
 
-    val totalVotes = arrayOfMaps.sumOf { it.values.first() }
-
-    fun getPercentageOfOverallVotes(amount: Number): Number {
-        val percentage = (amount.toFloat() / totalVotes.toFloat()) * 100
+    fun getPercentageOfOverallVotes(amount: Double): Double {
+        val percentage = (amount.toFloat() / totalVotes.toFloat()) * 100.0
 
         return percentage
     }
 
     fun getIsLargestOption(amount: Number): Boolean {
-        val largestOption = arrayOfMaps.maxByOrNull { it.values.first() }
+        val largestOption = options.maxByOrNull { it.values.first() }
 
         return largestOption?.values?.first() == amount
     }
@@ -110,7 +112,7 @@ fun VoteResultsCardStatistics() {
             .clip(RoundedCornerShape(16.dp))
             .border(1.dp, RarimeTheme.colors.componentPrimary, RoundedCornerShape(16.dp))
     ) {
-        arrayOfMaps.forEach {
+        options.forEach {
             Box (
                 modifier = Modifier
                     .fillMaxWidth()
@@ -146,7 +148,7 @@ fun VoteResultsCardStatistics() {
                         horizontalAlignment = Alignment.End
                     ) {
                         Text(
-                            text = "${percentage.toInt()}%",
+                            text = "%.2f%%".format(percentage),
                             color = RarimeTheme.colors.textPrimary,
                             style = RarimeTheme.typography.subtitle6
                         )

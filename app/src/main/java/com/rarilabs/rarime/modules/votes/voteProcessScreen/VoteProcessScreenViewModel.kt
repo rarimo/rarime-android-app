@@ -15,12 +15,14 @@ data class VoteData(
     val description: String,
     val durationMillis: Long,
     val participantsCount: Int,
-    val options: List<VoteOption>
+    val options: List<VoteOption>,
+    val endDate: Long
 )
 
 data class VoteOption(
     val id: String,
-    val title: String
+    val title: String,
+    val votedCount: Double
 )
 
 @HiltViewModel
@@ -42,10 +44,11 @@ class VoteProcessScreenViewModel @Inject constructor() : ViewModel() {
                 durationMillis = 86400000, // 24 hours
                 participantsCount = 150,
                 options = listOf(
-                    VoteOption("1", "Yes"),
-                    VoteOption("2", "No"),
-                    VoteOption("3", "Abstain")
-                )
+                    VoteOption("1", "Yes", 255.0),
+                    VoteOption("2", "No", 144.0),
+                    VoteOption("3", "Abstain", 64.0)
+                ),
+                endDate = System.currentTimeMillis() + 86400000
             )
             _isLoading.value = false
         }

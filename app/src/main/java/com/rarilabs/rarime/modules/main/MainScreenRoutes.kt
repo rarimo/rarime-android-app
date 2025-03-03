@@ -46,6 +46,7 @@ import com.rarilabs.rarime.modules.security.EnableBiometricsScreen
 import com.rarilabs.rarime.modules.security.EnablePasscodeScreen
 import com.rarilabs.rarime.modules.security.LockScreen
 import com.rarilabs.rarime.modules.security.SetupPasscode
+import com.rarilabs.rarime.modules.votes.voteProcessScreen.VoteProcessScreen
 import com.rarilabs.rarime.modules.wallet.WalletReceiveScreen
 import com.rarilabs.rarime.modules.wallet.WalletScreen
 import com.rarilabs.rarime.modules.wallet.WalletSendScreen
@@ -230,6 +231,29 @@ fun MainScreenRoutes(
                         ) {
                             mainViewModel.setBottomBarVisibility(it)
                         }
+                    }
+                }
+
+                composable(
+                    Screen.Main.Vote.route,
+                    arguments = listOf(navArgument("vote_id") { type = NavType.StringType }),
+                    deepLinks = listOf(
+                        navDeepLink {
+                            // TODO: rename INVITATION_BASE_URL?
+                            uriPattern = "${BaseConfig.INVITATION_BASE_URL}/vote/{vote_id}"
+                            action = Intent.ACTION_VIEW
+                        }
+                    )
+                ) { backStackEntry ->
+                    val voteId = backStackEntry.arguments?.getString("vote_id")
+
+                    voteId?.let {
+                        VoteProcessScreen(
+                            voteId = voteId,
+                            onBackClick = { navController.popBackStack() }
+                        )
+                    } ?: run {
+                        navigateWithPopUp(Screen.Main.Home.route)
                     }
                 }
 
