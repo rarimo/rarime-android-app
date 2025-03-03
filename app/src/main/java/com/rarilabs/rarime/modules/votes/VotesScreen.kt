@@ -1,4 +1,4 @@
-package com.rarilabs.rarime.modules.home.v2.details.votes
+package com.rarilabs.rarime.modules.votes
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -55,7 +55,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun VotesScreen(
-    modifier: Modifier = Modifier,
     id: Int,
     onBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,

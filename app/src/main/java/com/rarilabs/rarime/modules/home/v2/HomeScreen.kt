@@ -43,7 +43,7 @@ import com.rarilabs.rarime.modules.home.v2.details.ClaimTokensScreen
 import com.rarilabs.rarime.modules.home.v2.details.CreateIdentityDetails
 import com.rarilabs.rarime.modules.home.v2.details.InviteOthersScreen
 import com.rarilabs.rarime.modules.home.v2.details.UnforgettableWalletScreen
-import com.rarilabs.rarime.modules.home.v2.details.votes.VotesScreen
+import com.rarilabs.rarime.modules.votes.VotesScreen
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.CircledBadgeWithCounter
 import com.rarilabs.rarime.ui.components.VerticalDivider

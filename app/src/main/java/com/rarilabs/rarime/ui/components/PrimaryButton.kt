@@ -37,7 +37,7 @@ fun PrimaryButton(
         size = size,
         colors = ButtonDefaults.buttonColors(
             containerColor = RarimeTheme.colors.primaryMain,
-            contentColor = RarimeTheme.colors.baseBlack,
+            contentColor = RarimeTheme.colors.baseWhite,
             disabledContainerColor = RarimeTheme.colors.componentDisabled,
             disabledContentColor = RarimeTheme.colors.textDisabled
         ),
