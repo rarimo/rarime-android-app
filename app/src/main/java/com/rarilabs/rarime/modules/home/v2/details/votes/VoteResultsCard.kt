@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.modules.home.v2.details.votes
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -75,7 +76,7 @@ fun VoteResultsCard() {
                 modifier = Modifier
                     .background(RarimeTheme.colors.componentPrimary)
                     .fillMaxWidth()
-                    .height(2.dp)
+                    .height(1.dp)
             )
 
             VoteResultsCardStatistics()
@@ -108,6 +109,7 @@ fun VoteResultsCardStatistics() {
     Column (
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
+            .border(1.dp, RarimeTheme.colors.componentPrimary, RoundedCornerShape(16.dp))
     ) {
         arrayOfMaps.forEach {
             Box (
