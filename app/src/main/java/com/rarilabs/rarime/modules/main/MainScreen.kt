@@ -262,20 +262,23 @@ fun MainScreenContent(
 
             key(extIntDataURI?.second) {
                 extIntDataURI?.first?.let { uri ->
-                    ExtIntActionPreview(dataUri = uri, onSuccess = { deeplink ->
-                        if (!deeplink.isNullOrEmpty()) {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deeplink))
-                            try {
-                                context.startActivity(intent)
-                            } catch (e: ActivityNotFoundException) {
-                                Toast.makeText(
-                                    context,
-                                    "No app available to open this link.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                    ExtIntActionPreview(
+                        dataUri = uri,
+                        onCancel = { navigateWithPopUp(Screen.Main.Home.route) },
+                        onSuccess = { deeplink ->
+                            if (!deeplink.isNullOrEmpty()) {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deeplink))
+                                try {
+                                    context.startActivity(intent)
+                                } catch (e: ActivityNotFoundException) {
+                                    Toast.makeText(
+                                        context,
+                                        "No app available to open this link.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
-                        }
-                    })
+                        })
                 }
             }
 

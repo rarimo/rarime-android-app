@@ -54,6 +54,7 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
+import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -63,6 +64,7 @@ fun VotesScreen(
     onBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
+    navigate: (String) -> Unit,
     viewModel: VotesScreenViewModel = hiltViewModel()
 ) {
     val mainViewModel = LocalMainViewModel.current
@@ -110,7 +112,12 @@ fun VotesScreen(
             )
         },
         onProposalScanned = {
-            mainViewModel.setExtIntDataURI(Uri.parse(it))
+            val uri = Uri.parse(it)
+            val proposalId = uri.getQueryParameter("proposal_id")
+                ?: throw Exception("Proposal ID not found")
+
+            navigate(Screen.Main.Vote.route.replace("{vote_id}", proposalId))
+            mainViewModel.setExtIntDataURI(uri)
         }
     )
 }

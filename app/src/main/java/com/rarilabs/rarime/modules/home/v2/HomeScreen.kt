@@ -322,7 +322,8 @@ fun HomeScreen(
                         sharedTransitionScope = sharedTransitionScope,
                         animatedContentScope = this@AnimatedContent,
                         id = it,
-                        onBack = { selectedPageId = null }
+                        onBack = { selectedPageId = null },
+                        navigate = navigate
                     )
                 }
 

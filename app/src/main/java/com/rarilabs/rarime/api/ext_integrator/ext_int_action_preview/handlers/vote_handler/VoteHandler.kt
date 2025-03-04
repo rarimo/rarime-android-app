@@ -23,6 +23,7 @@ import com.rarilabs.rarime.ui.components.SnackbarSeverity
 import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.util.ErrorHandler
+import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -53,12 +54,11 @@ fun VoteHandler(
                 )
             }
 
-//            // TODO: implement me
-//            val redirect = async { onSuccess.invoke("") }
+            val redirect = async { onSuccess.invoke(Screen.Main.Home.route) }
 
             awaitAll(
                 snackBar,
-//                redirect
+                redirect
             )
         }
 
