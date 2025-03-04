@@ -75,4 +75,16 @@ class ExtIntegratorApiManager @Inject constructor(
             }
         }
     }
+
+    suspend fun queryIpfsData(url: String): String {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = extIntegratorAPI.queryIpfsData(url)
+
+                Gson().toJson(response)
+            } catch (e: Exception) {
+                throw Exception(e.toString())
+            }
+        }
+    }
 }

@@ -38,8 +38,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
+import com.rarilabs.rarime.modules.votes.QuestionAnswerVariant
 import com.rarilabs.rarime.modules.votes.VoteData
-import com.rarilabs.rarime.modules.votes.VoteOption
+import com.rarilabs.rarime.modules.votes.VoteQuestion
 import com.rarilabs.rarime.modules.votes.VoteResultsCardStatistics
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
@@ -72,7 +73,7 @@ fun VoteProcessScreen(
         voteData = voteData,
         isLoading = isLoading,
         onBackClick = onBackClick,
-        onVote = { optionId -> optionId?.let { viewModel.vote(it) } }
+        onVote = { viewModel.vote(it) }
     )
 }
 
@@ -82,9 +83,9 @@ fun VoteProcessScreenContent(
     voteData: VoteData? = null,
     isLoading: Boolean = false,
     onBackClick: () -> Unit = {},
-    onVote: (String?) -> Unit = {}
+    onVote: (Map<String, String>) -> Unit = {}
 ) {
-    var selectedOption by remember { mutableStateOf<String?>(null) }
+    var selectedOptionPerQuestion by remember { mutableStateOf<Map<String, String>?>(emptyMap()) }
 
     val isVoteEnded = voteData?.endDate?.let { it < System.currentTimeMillis() } ?: false
 
@@ -178,14 +179,17 @@ fun VoteProcessScreenContent(
 
             if (isVoteEnded) {
                 Column (
-                    modifier = Modifier.verticalScroll(rememberScrollState())
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    VoteResultsCardStatistics(
-                        options = voteData.options
-                            .sortedByDescending { it.votedCount }
-                            .map { option -> mapOf(option.title to option.votedCount)
-                        }
-                    )
+                    voteData.questions.forEachIndexed { index, question ->
+                        VoteResultsCardStatistics(
+                            variants = question.variants
+                                .sortedByDescending { it.votedCount }
+                                .map { option -> mapOf(option.title to option.votedCount)
+                                }
+                        )
+                    }
                 }
             } else {
                 // Options
@@ -204,52 +208,75 @@ fun VoteProcessScreenContent(
                         .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    voteData.options.forEachIndexed { index, option ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp)
-                                .clip(RoundedCornerShape(16.dp))
-                                .clickable(
-                                    interactionSource = remember { MutableInteractionSource() },
-                                    indication = rememberRipple(bounded = true)
-                                ) { selectedOption = option.id }
-                                .background(
-                                    if (selectedOption === option.id) Color.Transparent
-                                    else RarimeTheme.colors.componentPrimary
-                                )
-                                .border(
-                                    1.dp,
-                                    if (selectedOption === option.id) RarimeTheme.colors.textPrimary
-                                    else Color.Transparent,
-                                    RoundedCornerShape(16.dp)
-                                )
-                                .padding(vertical = 16.dp, horizontal = 16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    voteData.questions.forEachIndexed { questionIndex, question ->
+                        Column (
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            if (selectedOption === option.id) {
-                                AppIcon(
-                                    id = R.drawable.ic_check,
-                                    tint = RarimeTheme.colors.textPrimary
-                                )
-                            } else {
-                                Text(
-                                    text = (index + 1).toString(),
-                                    style = RarimeTheme.typography.buttonMedium,
-                                    color = RarimeTheme.colors.textPrimary,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
-
-                            VerticalDivider()
-
                             Text(
-                                text = option.title,
-                                style = RarimeTheme.typography.buttonMedium,
+                                text = question.title,
                                 color = RarimeTheme.colors.textPrimary,
-                                textAlign = TextAlign.Center
+                                style = RarimeTheme.typography.h5
                             )
+
+                            question.variants.forEachIndexed { variantIndex, variant ->
+                                val isActive = selectedOptionPerQuestion?.get(question.id) === variant.id
+
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(48.dp)
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .clickable(
+                                            interactionSource = remember { MutableInteractionSource() },
+                                            indication = rememberRipple(bounded = true)
+                                        ) {
+                                            // TODO: check for duplicates
+                                            selectedOptionPerQuestion = selectedOptionPerQuestion?.plus(
+                                                mapOf(question.id to variant.id)
+                                            )
+                                        }
+                                        .background(
+                                            if (isActive) Color.Transparent
+                                            else RarimeTheme.colors.componentPrimary
+                                        )
+                                        .border(
+                                            1.dp,
+                                            if (isActive) RarimeTheme.colors.textPrimary
+                                            else Color.Transparent,
+                                            RoundedCornerShape(16.dp)
+                                        )
+                                        .padding(vertical = 16.dp, horizontal = 16.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                                ) {
+                                    if (isActive) {
+                                        AppIcon(
+                                            id = R.drawable.ic_check,
+                                            tint = RarimeTheme.colors.textPrimary
+                                        )
+                                    } else {
+                                        Text(
+                                            text = (variantIndex + 1).toString(),
+                                            style = RarimeTheme.typography.buttonMedium,
+                                            color = RarimeTheme.colors.textPrimary,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+
+                                    VerticalDivider()
+
+                                    Text(
+                                        text = variant.title,
+                                        style = RarimeTheme.typography.buttonMedium,
+                                        color = RarimeTheme.colors.textPrimary,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+                        }
+
+                        if (questionIndex < voteData.questions.size - 1) {
+                            Spacer(modifier = Modifier.height(16.dp))
                         }
                     }
                 }
@@ -261,7 +288,7 @@ fun VoteProcessScreenContent(
                     text = "Submit",
                     size = ButtonSize.Large,
                     onClick = {
-                        onVote(selectedOption)
+                        selectedOptionPerQuestion?.let { onVote(it) }
                     }
                 )
             }
@@ -299,29 +326,41 @@ fun VoteProcessScreenContentPreview() {
                 description = "This is a sample vote for preview purposes",
                 durationMillis = 86400000,
                 participantsCount = 150,
-                options = listOf(
-                    VoteOption("1", "Lorem", 100.0),
-                    VoteOption("2", "Ipsum", 200.0),
-                    VoteOption("3", "Dolor", 300.0),
-                    VoteOption("4", "Sit", 400.0),
-                    VoteOption("5", "Amet", 500.0),
-                    VoteOption("6", "Consectetur", 600.0),
-                    VoteOption("7", "Adipiscing", 700.0),
-                    VoteOption("8", "Elit", 800.0),
-                    VoteOption("9", "Sed", 900.0),
-                    VoteOption("10", "Do", 1000.0),
-                    VoteOption("11", "Eiusmod", 1100.0),
-                    VoteOption("12", "Tempor", 1200.0),
-                    VoteOption("13", "Incididunt", 1300.0),
-                    VoteOption("14", "Labore", 1400.0),
-                    VoteOption("15", "Et", 1500.0),
-                    VoteOption("16", "Dolore", 1600.0),
-                    VoteOption("17", "Magna", 1700.0),
-                    VoteOption("18", "Aliqua", 1800.0),
-                    VoteOption("19", "Ut", 1900.0),
-                    VoteOption("20", "Enim", 2000.0),
+                questions = listOf(
+                    VoteQuestion(
+                        "1",
+                        "Question 1",
+                        listOf(
+                            QuestionAnswerVariant("1", "Lorem", 100.0),
+                            QuestionAnswerVariant("2", "Ipsum", 200.0),
+                            QuestionAnswerVariant("3", "Dolor", 300.0),
+                            QuestionAnswerVariant("4", "Sit", 400.0),
+                            QuestionAnswerVariant("5", "Amet", 500.0),
+                            QuestionAnswerVariant("6", "Consectetur", 600.0),
+                            QuestionAnswerVariant("7", "Adipiscing", 700.0),
+                            QuestionAnswerVariant("8", "Elit", 800.0),
+                            QuestionAnswerVariant("9", "Sed", 900.0),
+                        ),
+                    ),
+                    VoteQuestion(
+                        "2",
+                        "Question 2",
+                        listOf(
+                            QuestionAnswerVariant("10", "Do", 1000.0),
+                            QuestionAnswerVariant("11", "Eiusmod", 1100.0),
+                            QuestionAnswerVariant("12", "Tempor", 1200.0),
+                            QuestionAnswerVariant("13", "Incididunt", 1300.0),
+                            QuestionAnswerVariant("14", "Labore", 1400.0),
+                            QuestionAnswerVariant("15", "Et", 1500.0),
+                            QuestionAnswerVariant("16", "Dolore", 1600.0),
+                            QuestionAnswerVariant("17", "Magna", 1700.0),
+                            QuestionAnswerVariant("18", "Aliqua", 1800.0),
+                            QuestionAnswerVariant("19", "Ut", 1900.0),
+                            QuestionAnswerVariant("20", "Enim", 2000.0),
+                        )
+                    ),
                 ),
-                endDate = (1741092332000).toLong()
+                endDate = (1741188748000).toLong()
             )
         )
     }

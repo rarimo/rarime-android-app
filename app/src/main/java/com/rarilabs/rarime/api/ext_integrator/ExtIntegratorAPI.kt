@@ -24,4 +24,7 @@ interface ExtIntegratorAPI {
 
     @GET
     suspend fun queryProofData(@Url url: String): QueryProofGenResponse
+
+    @GET
+    suspend fun queryIpfsData(@Url url: String): Any
 }
