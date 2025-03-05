@@ -66,6 +66,8 @@ fun VoteHandler(
 
     fun onFailHandler(e: Exception) {
         scope.launch {
+            ErrorHandler.logError("VoteHandler", "onFailHandler", e)
+
             mainViewModel.showSnackbar(
                 options = getSnackbarDefaultShowOptions(
                     severity = SnackbarSeverity.Error,
@@ -108,7 +110,7 @@ fun VoteHandler(
         onVote = {
             scope.launch {
                 try {
-                    viewModel.vote(it)
+                    viewModel.vote(context, it)
                     onSuccessHandler()
                 } catch (error: Exception) {
                     onFailHandler(error)

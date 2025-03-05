@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,10 +55,12 @@ fun ExtIntActionPreview(
             }
 
             ExtIntegratorActions.Vote.value -> {
-                val proposalId = dataUri?.getQueryParameter("proposal_id")
-                    ?: throw Exception("Proposal ID not found")
+                LaunchedEffect(Unit) {
+                    val proposalId = dataUri?.getQueryParameter("proposal_id")
+                        ?: throw Exception("Proposal ID not found")
 
-                navigate(Screen.Main.Vote.route.replace("{vote_id}", proposalId))
+                    navigate(Screen.Main.Vote.route.replace("{vote_id}", proposalId))
+                }
 
                 VoteHandler(
                     queryParams = queryParams,

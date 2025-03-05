@@ -20,6 +20,7 @@ import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
+import com.rarilabs.rarime.util.Screen
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -30,6 +31,7 @@ fun CreateIdentityDetails(
     onBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
+    navigate: (String) -> Unit = {}
 ) {
 
     val props = remember {
@@ -64,7 +66,10 @@ fun CreateIdentityDetails(
                     size = ButtonSize.Large,
                     modifier = Modifier.fillMaxWidth(),
                     text = "Let’s Start",
-                    onClick = {})
+                    onClick = {
+                        navigate(Screen.ScanPassport.ScanPassportPoints.route)
+                    }
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
             }
