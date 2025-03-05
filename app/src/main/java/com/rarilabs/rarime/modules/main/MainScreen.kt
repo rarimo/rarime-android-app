@@ -263,11 +263,16 @@ fun MainScreenContent(
             key(extIntDataURI?.second) {
                 extIntDataURI?.first?.let { uri ->
                     ExtIntActionPreview(
+                        navigate = navigateWithPopUp,
                         dataUri = uri,
-                        onCancel = { navigateWithPopUp(Screen.Main.Home.route) },
-                        onSuccess = { deeplink ->
-                            if (!deeplink.isNullOrEmpty()) {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deeplink))
+                        onCancel = {
+                            navigateWithPopUp(Screen.Main.Home.route)
+                            mainViewModel.setExtIntDataURI(null)
+                        },
+                        onSuccess = { extDestination, localDestination ->
+                            if (!extDestination.isNullOrEmpty()) {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(extDestination))
+
                                 try {
                                     context.startActivity(intent)
                                 } catch (e: ActivityNotFoundException) {
@@ -278,6 +283,12 @@ fun MainScreenContent(
                                     ).show()
                                 }
                             }
+
+                            if (!localDestination.isNullOrEmpty()) {
+                                navigateWithPopUp(localDestination)
+                            }
+
+                            mainViewModel.setExtIntDataURI(null)
                         })
                 }
             }

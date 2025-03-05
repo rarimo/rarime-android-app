@@ -14,12 +14,14 @@ import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.li
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.vote_handler.VoteHandler
 import com.rarilabs.rarime.api.ext_integrator.models.ExtIntegratorActions
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.Screen
 
 @Composable
 fun ExtIntActionPreview(
     dataUri: Uri?,
+    navigate: (String) -> Unit,
     onCancel: () -> Unit = {},
-    onSuccess: (destination: String?) -> Unit = {},
+    onSuccess: (extDestination: String?, localDestination: String?) -> Unit = { extDestination, localDestination ->},
     onError: () -> Unit = {}
 ) {
     val queryParams = remember {
@@ -37,7 +39,7 @@ fun ExtIntActionPreview(
                 ExtIntQueryProofHandler(
                     queryParams = queryParams,
                     onCancel = onCancel,
-                    onSuccess = { destination -> onSuccess(destination) },
+                    onSuccess = { destination -> onSuccess(destination, null) },
                     onFail = { onError() }
                 )
             }
@@ -46,16 +48,21 @@ fun ExtIntActionPreview(
                 LightProofHandler(
                     queryParams = queryParams,
                     onCancel = onCancel,
-                    onSuccess = { destination -> onSuccess(destination) },
+                    onSuccess = { destination -> onSuccess(destination, null) },
                     onFail = { onError() }
                 )
             }
 
             ExtIntegratorActions.Vote.value -> {
+                val proposalId = dataUri?.getQueryParameter("proposal_id")
+                    ?: throw Exception("Proposal ID not found")
+
+                navigate(Screen.Main.Vote.route.replace("{vote_id}", proposalId))
+
                 VoteHandler(
                     queryParams = queryParams,
                     onCancel = onCancel,
-                    onSuccess = { destination -> onSuccess(destination) },
+                    onSuccess = { destination -> onSuccess(null, destination) },
                     onFail = { onError() }
                 )
             }

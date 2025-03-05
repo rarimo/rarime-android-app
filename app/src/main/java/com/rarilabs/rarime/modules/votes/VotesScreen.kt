@@ -113,10 +113,7 @@ fun VotesScreen(
         },
         onProposalScanned = {
             val uri = Uri.parse(it)
-            val proposalId = uri.getQueryParameter("proposal_id")
-                ?: throw Exception("Proposal ID not found")
 
-            navigate(Screen.Main.Vote.route.replace("{vote_id}", proposalId))
             mainViewModel.setExtIntDataURI(uri)
         }
     )
