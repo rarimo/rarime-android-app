@@ -23,7 +23,7 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 @Composable
 fun CardContainer(
     modifier: Modifier = Modifier,
-    backgroundColor: Color = RarimeTheme.colors.backgroundOpacity,
+    backgroundColor: Color = RarimeTheme.colors.backgroundBlur,
     content: @Composable BoxScope.() -> Unit = {},
 ) {
     Box(

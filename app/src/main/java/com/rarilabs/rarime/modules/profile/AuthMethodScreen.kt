@@ -97,7 +97,7 @@ private fun AuthMethodItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .background(RarimeTheme.colors.backgroundOpacity, RoundedCornerShape(12.dp))
+            .background(RarimeTheme.colors.backgroundBlur, RoundedCornerShape(12.dp))
             .padding(16.dp),
     ) {
         Row(
