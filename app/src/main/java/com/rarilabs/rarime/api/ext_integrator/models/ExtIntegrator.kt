@@ -9,6 +9,7 @@ enum class ExtIntegratorActions(val value: String) {
     Authorize("authorize"),
     QueryProofGen("proof-request"),
     LightVerification("light-verification"),
+    Vote("voting"),
 }
 
 @JsonClass(generateAdapter = true)

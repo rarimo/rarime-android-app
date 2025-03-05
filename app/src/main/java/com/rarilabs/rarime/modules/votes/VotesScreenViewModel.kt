@@ -9,19 +9,27 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+data class QuestionAnswerVariant(
+    val id: String,
+    val title: String,
+
+    val votedCount: Double
+)
+
+data class VoteQuestion(
+    val id: String,
+    val title: String,
+
+    val variants: List<QuestionAnswerVariant>,
+)
+
 data class VoteData(
     val title: String,
     val description: String,
     val durationMillis: Long,
     val participantsCount: Int,
-    val options: List<VoteOption>,
+    val questions: List<VoteQuestion>,
     val endDate: Long
-)
-
-data class VoteOption(
-    val id: String,
-    val title: String,
-    val votedCount: Double
 )
 
 class VotesScreenViewModel @Inject constructor(): ViewModel() {
@@ -55,10 +63,28 @@ class VotesScreenViewModel @Inject constructor(): ViewModel() {
                     description = "Vote on the proposed update to the network protocol",
                     durationMillis = 86400000 * 3, // 3 days
                     participantsCount = 320,
-                    options = listOf(
-                        VoteOption("1", "Approve", 180.0),
-                        VoteOption("2", "Reject", 87.0),
-                        VoteOption("3", "Abstain", 53.0)
+                    questions = listOf(
+                        VoteQuestion(
+                            "1",
+                            "Question 1",
+                            variants = listOf(
+                                QuestionAnswerVariant(
+                                    "1",
+                                    "Yes",
+                                    100.0,
+                                ),
+                                QuestionAnswerVariant(
+                                    "2",
+                                    "No",
+                                    144.0,
+                                ),
+                                QuestionAnswerVariant(
+                                    "3",
+                                    "Abstain",
+                                    64.0,
+                                ),
+                            ),
+                        ),
                     ),
                     endDate = System.currentTimeMillis() + 86400000 * 2 // Ends in 2 days
                 ),
@@ -67,10 +93,28 @@ class VotesScreenViewModel @Inject constructor(): ViewModel() {
                     description = "Vote on allocating treasury funds for development",
                     durationMillis = 86400000 * 7, // 7 days
                     participantsCount = 412,
-                    options = listOf(
-                        VoteOption("1", "Approve", 205.0),
-                        VoteOption("2", "Reject", 102.0),
-                        VoteOption("3", "Abstain", 105.0)
+                    questions = listOf(
+                        VoteQuestion(
+                            "1",
+                            "Question 1",
+                            variants = listOf(
+                                QuestionAnswerVariant(
+                                    "1",
+                                    "Yes",
+                                    100.0,
+                                ),
+                                QuestionAnswerVariant(
+                                    "2",
+                                    "No",
+                                    144.0,
+                                ),
+                                QuestionAnswerVariant(
+                                    "3",
+                                    "Abstain",
+                                    64.0,
+                                ),
+                            ),
+                        )
                     ),
                     endDate = System.currentTimeMillis() + 86400000 * 5 // Ends in 5 days
                 )
@@ -90,10 +134,28 @@ class VotesScreenViewModel @Inject constructor(): ViewModel() {
                     description = "Vote on proposed changes to governance structure",
                     durationMillis = 86400000 * 5, // 5 days (already ended)
                     participantsCount = 275,
-                    options = listOf(
-                        VoteOption("1", "Approve", 145.0),
-                        VoteOption("2", "Reject", 110.0),
-                        VoteOption("3", "Abstain", 20.0)
+                    questions = listOf(
+                        VoteQuestion(
+                            "1",
+                            "Question 1",
+                            variants = listOf(
+                                QuestionAnswerVariant(
+                                    "1",
+                                    "Yes",
+                                    100.0,
+                                ),
+                                QuestionAnswerVariant(
+                                    "2",
+                                    "No",
+                                    144.0,
+                                ),
+                                QuestionAnswerVariant(
+                                    "3",
+                                    "Abstain",
+                                    64.0,
+                                ),
+                            ),
+                        )
                     ),
                     endDate = System.currentTimeMillis() - 86400000 * 2 // Ended 2 days ago
                 ),
@@ -102,10 +164,28 @@ class VotesScreenViewModel @Inject constructor(): ViewModel() {
                     description = "Vote on proposed changes to transaction fee structure",
                     durationMillis = 86400000 * 4, // 4 days (already ended)
                     participantsCount = 390,
-                    options = listOf(
-                        VoteOption("1", "Approve", 250.0),
-                        VoteOption("2", "Reject", 130.0),
-                        VoteOption("3", "Abstain", 10.0)
+                    questions = listOf(
+                        VoteQuestion(
+                            "1",
+                            "Question 1",
+                            variants = listOf(
+                                QuestionAnswerVariant(
+                                    "1",
+                                    "Yes",
+                                    100.0,
+                                ),
+                                QuestionAnswerVariant(
+                                    "2",
+                                    "No",
+                                    144.0,
+                                ),
+                                QuestionAnswerVariant(
+                                    "3",
+                                    "Abstain",
+                                    64.0,
+                                ),
+                            ),
+                        )
                     ),
                     endDate = System.currentTimeMillis() - 86400000 * 7 // Ended 7 days ago
                 )

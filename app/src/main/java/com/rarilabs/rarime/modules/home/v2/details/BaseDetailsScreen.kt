@@ -57,9 +57,7 @@ fun BaseDetailsScreen(
     onBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
-
-    ) {
-
+) {
     val boundKey = remember(properties.id) { "${properties.id}-bound" }
     val backgroundKey = remember(properties.id) { "background-${properties.id}" }
     val imageKey = remember(properties.id) { "image-${properties.id}" }

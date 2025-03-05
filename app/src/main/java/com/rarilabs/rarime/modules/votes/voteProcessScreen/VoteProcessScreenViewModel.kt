@@ -2,8 +2,9 @@ package com.rarilabs.rarime.modules.votes.voteProcessScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rarilabs.rarime.modules.votes.QuestionAnswerVariant
 import com.rarilabs.rarime.modules.votes.VoteData
-import com.rarilabs.rarime.modules.votes.VoteOption
+import com.rarilabs.rarime.modules.votes.VoteQuestion
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,10 +31,49 @@ class VoteProcessScreenViewModel @Inject constructor() : ViewModel() {
                 description = "This is a vote about proposal #$voteId",
                 durationMillis = 86400000, // 24 hours
                 participantsCount = 150,
-                options = listOf(
-                    VoteOption("1", "Yes", 255.0),
-                    VoteOption("2", "No", 144.0),
-                    VoteOption("3", "Abstain", 64.0)
+                questions = listOf(
+                    VoteQuestion(
+                        "1",
+                        "Question 1",
+                        variants = listOf(
+                            QuestionAnswerVariant(
+                                "1",
+                                "Yes",
+                                100.0,
+                            ),
+                            QuestionAnswerVariant(
+                                "2",
+                                "No",
+                                144.0,
+                            ),
+                            QuestionAnswerVariant(
+                                "3",
+                                "Abstain",
+                                64.0,
+                            ),
+                        ),
+                    ),
+                    VoteQuestion(
+                        "2",
+                        "Question 2",
+                        variants = listOf(
+                            QuestionAnswerVariant(
+                                "1",
+                                "Yes",
+                                100.0,
+                            ),
+                            QuestionAnswerVariant(
+                                "2",
+                                "No",
+                                144.0,
+                            ),
+                            QuestionAnswerVariant(
+                                "3",
+                                "Abstain",
+                                64.0,
+                            ),
+                        ),
+                    ),
                 ),
                 endDate = System.currentTimeMillis() + 86400000
             )
@@ -41,7 +81,7 @@ class VoteProcessScreenViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun vote(voteOptionId: String) {
+    fun vote(voteOptionId: Map<String, String>) {
         // TODO: implement me
     }
 }
