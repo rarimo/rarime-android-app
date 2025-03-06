@@ -55,6 +55,7 @@ fun PasscodeField(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
     ) {
+        Spacer(modifier = Modifier.weight(1f))
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -75,8 +76,8 @@ fun PasscodeField(
                     .background(RarimeTheme.colors.errorLight)
                     .padding(vertical = 12.dp, horizontal = 60.dp)
             )
-            Spacer(modifier = Modifier.height(32.dp))
         }
+        Spacer(modifier = Modifier.weight(1f))
         PasscodeKeyboard(
             value = state.text,
             action = action,
@@ -129,7 +130,7 @@ private fun PasscodeKeyboard(
                     ) {
                         Text(
                             text = number.toString(),
-                            style = RarimeTheme.typography.subtitle2,
+                            style = RarimeTheme.typography.subtitle3,
                             color = RarimeTheme.colors.textPrimary
                         )
                     }
@@ -146,7 +147,7 @@ private fun PasscodeKeyboard(
             ) {
                 Text(
                     text = "0",
-                    style = RarimeTheme.typography.subtitle2,
+                    style = RarimeTheme.typography.subtitle3,
                     color = RarimeTheme.colors.textPrimary
                 )
             }
