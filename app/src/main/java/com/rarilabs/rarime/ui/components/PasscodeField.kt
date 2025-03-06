@@ -130,7 +130,7 @@ private fun PasscodeKeyboard(
                     ) {
                         Text(
                             text = number.toString(),
-                            style = RarimeTheme.typography.subtitle3,
+                            style = RarimeTheme.typography.subtitle4,
                             color = RarimeTheme.colors.textPrimary
                         )
                     }
@@ -147,7 +147,7 @@ private fun PasscodeKeyboard(
             ) {
                 Text(
                     text = "0",
-                    style = RarimeTheme.typography.subtitle3,
+                    style = RarimeTheme.typography.subtitle4,
                     color = RarimeTheme.colors.textPrimary
                 )
             }
