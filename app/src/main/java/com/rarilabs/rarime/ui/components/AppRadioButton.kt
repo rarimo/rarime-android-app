@@ -34,7 +34,7 @@ fun AppRadioButton(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .background(RarimeTheme.colors.backgroundOpacity, RoundedCornerShape(12.dp))
+            .background(RarimeTheme.colors.backgroundBlur, RoundedCornerShape(12.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,

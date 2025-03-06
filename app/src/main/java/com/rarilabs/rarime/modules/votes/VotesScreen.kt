@@ -251,7 +251,7 @@ fun VotesScreenContent(
                                         text = title.uppercase(),
                                         style = RarimeTheme.typography.overline2,
                                         color = if (pagerState.currentPage == index)
-                                            RarimeTheme.colors.baseBlack else RarimeTheme.colors.baseBlackOp40,
+                                            RarimeTheme.colors.baseBlack else RarimeTheme.colors.baseBlack.copy(0.4f),
                                     )
                                 }
                             }

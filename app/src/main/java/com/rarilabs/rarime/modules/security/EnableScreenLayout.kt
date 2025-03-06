@@ -50,21 +50,21 @@ fun EnableScreenLayout(
         ) {
             Box(
                 modifier = Modifier
-                    .background(RarimeTheme.colors.primaryLighter, CircleShape)
+                    .background(RarimeTheme.colors.componentPrimary, CircleShape)
                     .padding(42.dp),
             ) {
                 AppIcon(id = icon, size = 72.dp, tint = RarimeTheme.colors.primaryDarker)
             }
             Text(
                 text = title,
-                style = RarimeTheme.typography.h4,
+                style = RarimeTheme.typography.h2,
                 color = RarimeTheme.colors.textPrimary,
                 modifier = Modifier.padding(top = 64.dp),
                 textAlign = TextAlign.Center
             )
             Text(
                 text = text,
-                style = RarimeTheme.typography.body3,
+                style = RarimeTheme.typography.body4,
                 color = RarimeTheme.colors.textSecondary,
                 modifier = Modifier.padding(top = 12.dp),
                 textAlign = TextAlign.Center

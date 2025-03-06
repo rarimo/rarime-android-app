@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,7 +41,7 @@ fun PasscodeScreenLayout(
     enabled: Boolean = true,
     onClose: (() -> Unit)? = null,
     iconId: Int = R.drawable.ic_user,
-    iconColors: Pair<Color, Color> = RarimeTheme.colors.primaryMain to RarimeTheme.colors.baseBlack,
+    iconColors: Pair<Color, Color> = RarimeTheme.colors.componentPrimary to RarimeTheme.colors.textPrimary,
     action: @Composable () -> Unit = {}
 ) {
     Box(
@@ -58,32 +59,8 @@ fun PasscodeScreenLayout(
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .absoluteOffset(x = 0.dp, y = 48.dp)
-                    .clip(CircleShape)
-                    .width(96.dp)
-                    .size(96.dp)
-                    .background(RarimeTheme.colors.backgroundPure)
-                    .padding(10.dp)
-                    .zIndex(1f),
-                contentAlignment = Alignment.Center,
-            ) {
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .fillMaxSize()
-                        .background(iconColors.first),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    AppIcon(
-                        id = iconId,
-                        size = 28.dp,
-                        tint = iconColors.second
-                    )
-                }
-            }
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
@@ -95,12 +72,11 @@ fun PasscodeScreenLayout(
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxSize()
                 ) {
                     Text(
                         text = title,
-                        style = RarimeTheme.typography.h4,
+                        style = RarimeTheme.typography.h2,
                         color = RarimeTheme.colors.textPrimary,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -113,10 +89,11 @@ fun PasscodeScreenLayout(
                         color = RarimeTheme.colors.textSecondary,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .fillMaxWidth(0.75f)
                             .padding(bottom = 28.dp)
                     )
                     PasscodeField(
+                        modifier = Modifier.weight(1f),
                         state = passcodeState,
                         enabled = enabled,
                         action = action,
@@ -133,6 +110,18 @@ fun PasscodeScreenLayout(
 private fun PasscodeScreenLayoutPreview() {
     PasscodeScreenLayout(
         title = "Enter Passcode",
+        passcodeState = rememberAppTextFieldState("", ""),
+        onPasscodeFilled = {},
+        onClose = {}
+    )
+}
+
+@Preview
+@Composable
+private fun PasscodeScreenLayoutPreview2() {
+    PasscodeScreenLayout(
+        title = "Enter Passcode",
+        subtitle = "Lorem ipsum dolor sit amet consectetur adipiscing elit",
         passcodeState = rememberAppTextFieldState("", "Asdf"),
         onPasscodeFilled = {},
         onClose = {}

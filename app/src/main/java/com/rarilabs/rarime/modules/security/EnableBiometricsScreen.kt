@@ -12,9 +12,7 @@ import com.rarilabs.rarime.util.BiometricUtil
 fun EnableBiometricsScreen(onNext: () -> Unit, onSkip: () -> Unit, viewModel: BiometricViewModel = hiltViewModel()) {
     val context = LocalContext.current
 
-    EnableScreenLayout(title = stringResource(R.string.enable_biometrics_title),
-        text = stringResource(R.string.enable_biometrics_text),
-        icon = R.drawable.ic_fingerprint,
+    EnableBiometricsScreenContent(
         onEnable = {
             BiometricUtil.authenticate(context = context,
                 title = context.getString(R.string.biometric_authentication_title),
@@ -23,11 +21,28 @@ fun EnableBiometricsScreen(onNext: () -> Unit, onSkip: () -> Unit, viewModel: Bi
                 onSuccess = { viewModel.enableBiometric();onNext.invoke() },
                 onError = {})
         },
-        onSkip = { viewModel.skipBiometric(); onSkip.invoke() })
+        onSkip = {
+            viewModel.skipBiometric(); onSkip.invoke()
+        }
+    )
+}
+
+@Composable
+fun EnableBiometricsScreenContent(
+    onEnable: () -> Unit,
+    onSkip: () -> Unit
+) {
+    EnableScreenLayout(title = stringResource(R.string.enable_biometrics_title),
+        text = stringResource(R.string.enable_biometrics_text),
+        icon = R.drawable.ic_fingerprint,
+        onEnable = {
+            onEnable.invoke()
+        },
+        onSkip = { onSkip.invoke() })
 }
 
 @Preview
 @Composable
 private fun EnableBiometricsScreenPreview() {
-    EnableBiometricsScreen(onNext = {}, onSkip = {})
+    EnableBiometricsScreenContent(onEnable = {}, onSkip = {})
 }

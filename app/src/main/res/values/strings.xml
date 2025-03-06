@@ -272,16 +272,18 @@
 
     <string name="field_type_date_picker_placeholder">Select date</string>
 
-    <string name="create_identity_selector_title">Authorisation</string>
-    <string name="create_identity_selector_subtitle">Choose a preferred method</string>
-    <string name="create_identity_selector_option_1">Create a new profile</string>
+    <string name="create_identity_selector_title">Get Started</string>
+    <string name="create_identity_selector_subtitle">Select an authorization method</string>
+    <string name="create_identity_selector_option_1">Create a new identity</string>
+    <string name="create_identity_selector_option_1_subtitle">Generate new keys</string>
     <string name="create_identity_selector_option_2">Re-activate old profile</string>
+    <string name="create_identity_selector_option_2_subtitle">Uses pregenerated keys or iCloud</string>
 
     <string name="create_identity_continue_btn">Start</string>
     <string name="create_identity_import_title">Import keys</string>
     <string name="create_identity_import_placeholder">Your private key</string>
     <string name="create_identity_import_btn">Continue</string>
-    <string name="create_identity_title">Your keys</string>
+    <string name="create_identity_title">Your Private key</string>
     <string name="create_identity_copy_btn">Copy to clipboard</string>
     <string name="create_identity_copied_msg">Copied</string>
     <string name="create_identity_warning">Please store the private key safely and do not share it with anyone. If you lose this key, you will not be able to recover the account and will lose access forever.</string>
@@ -377,9 +379,9 @@
     <string name="drive_restore_description">You can restore account using your Google Drive backup or Private Key</string>
     <string name="drive_continue_without_backup">Back up using a key</string>
 
-    <string name="dreive_title_restore_your_account">Restore your\naccount</string>
+    <string name="dreive_title_restore_your_account">Restore your account</string>
     <string name="drive_back_up_to_google_drive">Back up with Google Drive</string>
-    <string name="drive_title_back_up_your_account">Back up your\naccount</string>
+    <string name="drive_title_back_up_your_account">Back up your account</string>
     <string name="restore_using_key">Restore using a key</string>
 
     <string name="drive_backup_description">Your account is not backed up. If you lose your device, you will lose access to your account</string>
