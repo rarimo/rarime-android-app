@@ -6,8 +6,6 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.fadeIn
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -15,7 +13,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
@@ -49,6 +46,7 @@ import com.rarilabs.rarime.modules.security.EnableBiometricsScreen
 import com.rarilabs.rarime.modules.security.EnablePasscodeScreen
 import com.rarilabs.rarime.modules.security.LockScreen
 import com.rarilabs.rarime.modules.security.SetupPasscode
+import com.rarilabs.rarime.modules.votes.voteProcessScreen.VoteProcessScreen
 import com.rarilabs.rarime.modules.wallet.WalletReceiveScreen
 import com.rarilabs.rarime.modules.wallet.WalletScreen
 import com.rarilabs.rarime.modules.wallet.WalletSendScreen
@@ -69,7 +67,6 @@ fun MainScreenRoutes(
     navController: NavHostController,
     simpleNavigate: (String) -> Unit,
     navigateWithPopUp: (String) -> Unit,
-    innerPadding: PaddingValues
 ) {
     val mainViewModel = LocalMainViewModel.current
     val context = LocalContext.current
@@ -88,9 +85,6 @@ fun MainScreenRoutes(
 
     SharedTransitionLayout {
         NavHost(
-            modifier = Modifier.padding(
-                innerPadding
-            ),
             navController = navController,
             startDestination = if (mainViewModel.getIsPkInit()) Screen.Main.route else Screen.Intro.route,
             enterTransition = { fadeIn() },
@@ -240,6 +234,22 @@ fun MainScreenRoutes(
                     }
                 }
 
+                composable(
+                    Screen.Main.Vote.route,
+                    arguments = listOf(navArgument("vote_id") { type = NavType.StringType }),
+                ) { backStackEntry ->
+                    val voteId = backStackEntry.arguments?.getString("vote_id")
+
+                    voteId?.let {
+                        VoteProcessScreen(
+                            voteId = voteId,
+                            onBackClick = { navController.popBackStack() }
+                        )
+                    } ?: run {
+                        navigateWithPopUp(Screen.Main.Home.route)
+                    }
+                }
+
                 composable(Screen.Main.Wallet.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
                         WalletScreen(navigate = { simpleNavigate(it) })
@@ -335,12 +345,6 @@ fun MainScreenRoutes(
 
             composable(
                 route = Screen.Invitation.route,
-                deepLinks = listOf(
-                    navDeepLink {
-                        uriPattern = "${BaseConfig.INVITATION_BASE_URL}/r/{code}"
-                        action = Intent.ACTION_VIEW
-                    }
-                ),
                 arguments = listOf(
                     navArgument("code") {
                         type = NavType.StringType
@@ -407,7 +411,6 @@ fun MainScreenRoutes(
                     navigate = navigateWithPopUp,
                 ) {
                     LaunchedEffect(Unit) {
-                        navigateWithPopUp(Screen.Main.Home.route)
                         mainViewModel.setExtIntDataURI(dataUri)
                     }
                 }

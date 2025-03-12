@@ -43,6 +43,7 @@ import com.rarilabs.rarime.modules.home.v2.details.ClaimTokensScreen
 import com.rarilabs.rarime.modules.home.v2.details.CreateIdentityDetails
 import com.rarilabs.rarime.modules.home.v2.details.InviteOthersScreen
 import com.rarilabs.rarime.modules.home.v2.details.UnforgettableWalletScreen
+import com.rarilabs.rarime.modules.votes.VotesScreen
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.CircledBadgeWithCounter
 import com.rarilabs.rarime.ui.components.VerticalDivider
@@ -63,7 +64,7 @@ data class CardContent(
     val type: CardType,
     val properties: CardProperties,
     val onCardClick: () -> Unit = {},
-    val footer: @Composable () -> Unit
+    val footer: @Composable () -> Unit = {},
 )
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -163,6 +164,22 @@ fun HomeScreen(
                 }
             ),
 
+            CardContent(
+                type = CardType.FREEDOMTOOL,
+                properties = CardProperties(
+                    header = "Freedomtool",
+                    subTitle = "Voting",
+                    icon = R.drawable.ic_check_unframed,
+                    image = R.drawable.freedomtool_bg,
+                    backgroundGradient = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFFD5FEC8),
+                            Color(0xFF80ed99)
+                        )
+                    )
+                ),
+                onCardClick = {},
+            ),
 
             CardContent(
                 type = CardType.CLAIM,
@@ -192,7 +209,7 @@ fun HomeScreen(
                     Modifier.padding(start = 20.dp, top = 26.dp, end = 20.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Hi Stranger", style = RarimeTheme.typography.subtitle4)
+                    Text("Hi Stranger", style = RarimeTheme.typography.subtitle4, color = RarimeTheme.colors.textPrimary)
                     Spacer(modifier = Modifier.weight(1f))
                     CircledBadgeWithCounter(
                         modifier = Modifier.clickable { },
@@ -269,7 +286,8 @@ fun HomeScreen(
                         sharedTransitionScope = sharedTransitionScope,
                         animatedContentScope = this@AnimatedContent,
                         id = it,
-                        onBack = { selectedPageId = null }
+                        onBack = { selectedPageId = null },
+                        navigate = navigate
                     )
                 }
 
@@ -301,11 +319,16 @@ fun HomeScreen(
                 }
 
                 CardType.FREEDOMTOOL -> {
-
+                    VotesScreen(
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedContentScope = this@AnimatedContent,
+                        id = it,
+                        onBack = { selectedPageId = null },
+                        navigate = navigate
+                    )
                 }
 
                 CardType.OTHER -> {
-
                 }
             }
         }

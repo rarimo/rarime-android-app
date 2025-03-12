@@ -245,7 +245,12 @@ fun MainScreenContent(
                     }
                 }
             },
-        ) { innerPadding ->
+        ) { innerPaddings ->
+            mainViewModel.setScreenInsets(
+                top = innerPaddings.calculateTopPadding().value,
+                bottom = innerPaddings.calculateBottomPadding().value
+            )
+
             ScreenBarsColor(
                 colorScheme = mainViewModel.colorScheme.value, route = currentRoute ?: ""
             )
@@ -257,20 +262,34 @@ fun MainScreenContent(
 
             key(extIntDataURI?.second) {
                 extIntDataURI?.first?.let { uri ->
-                    ExtIntActionPreview(dataUri = uri, onSuccess = { deeplink ->
-                        if (!deeplink.isNullOrEmpty()) {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deeplink))
-                            try {
-                                context.startActivity(intent)
-                            } catch (e: ActivityNotFoundException) {
-                                Toast.makeText(
-                                    context,
-                                    "No app available to open this link.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                    ExtIntActionPreview(
+                        navigate = navigateWithPopUp,
+                        dataUri = uri,
+                        onCancel = {
+                            navigateWithPopUp(Screen.Main.Home.route)
+                            mainViewModel.setExtIntDataURI(null)
+                        },
+                        onSuccess = { extDestination, localDestination ->
+                            if (!extDestination.isNullOrEmpty()) {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(extDestination))
+
+                                try {
+                                    context.startActivity(intent)
+                                } catch (e: ActivityNotFoundException) {
+                                    Toast.makeText(
+                                        context,
+                                        "No app available to open this link.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
-                        }
-                    })
+
+                            if (!localDestination.isNullOrEmpty()) {
+                                navigateWithPopUp(localDestination)
+                            }
+
+                            mainViewModel.setExtIntDataURI(null)
+                        })
                 }
             }
 
@@ -278,7 +297,6 @@ fun MainScreenContent(
                 navController = navController,
                 simpleNavigate = { simpleNavigate(it) },
                 navigateWithPopUp = { navigateWithPopUp(it) },
-                innerPadding = innerPadding
             )
 
             if (isModalShown) {

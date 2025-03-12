@@ -77,14 +77,14 @@ fun RestoreScreen(
         CircledBadge(
             iconId = R.drawable.ic_backup,
             contentSize = 80,
-            containerSize = 120,
-            contentColor = RarimeTheme.colors.baseBlack,
-            containerColor = RarimeTheme.colors.primaryMain
+            containerSize = 160,
+            contentColor = RarimeTheme.colors.textPrimary,
+            containerColor = RarimeTheme.colors.componentPrimary
         )
         Spacer(modifier = Modifier.height(32.dp))
         Text(
             stringResource(R.string.dreive_title_restore_your_account),
-            style = RarimeTheme.typography.h4,
+            style = RarimeTheme.typography.h2,
             color = RarimeTheme.colors.textPrimary,
             textAlign = TextAlign.Center
         )
@@ -114,14 +114,14 @@ fun RestoreScreen(
                     if (signInAccount == null) signIn.invoke() else onDriveRestore.invoke()
                 })
             TertiaryButton(
-                text = stringResource(R.string.restore_using_key).uppercase(),
+                text = stringResource(R.string.restore_using_key),
                 enabled = isDriveButtonEnabled,
                 size = ButtonSize.Large,
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { onManualRestore.invoke() }
             )
         }
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(48.dp))
     }
 
 }
@@ -176,15 +176,15 @@ fun BackUpScreen(
         CircledBadge(
             iconId = R.drawable.ic_backup,
             contentSize = 80,
-            containerSize = 120,
-            contentColor = RarimeTheme.colors.baseBlack,
-            containerColor = RarimeTheme.colors.primaryMain
+            containerSize = 160,
+            contentColor = RarimeTheme.colors.textPrimary,
+            containerColor = RarimeTheme.colors.componentPrimary
         )
 
         Spacer(modifier = Modifier.height(32.dp))
         Text(
             stringResource(R.string.drive_title_back_up_your_account),
-            style = RarimeTheme.typography.h4,
+            style = RarimeTheme.typography.h2,
             color = RarimeTheme.colors.textPrimary,
             textAlign = TextAlign.Center
         )
@@ -213,14 +213,14 @@ fun BackUpScreen(
                     if (signInAccount == null) signIn.invoke() else onDriveBackup.invoke(privateKey)
                 })
             TertiaryButton(
-                text = stringResource(R.string.drive_continue_without_backup).uppercase(),
+                text = stringResource(R.string.drive_continue_without_backup),
                 enabled = isDriveButtonEnabled,
                 size = ButtonSize.Large,
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { onManualBackup.invoke() }
             )
         }
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(48.dp))
     }
 
 }

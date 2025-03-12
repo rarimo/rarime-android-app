@@ -6,19 +6,23 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.ext_int_query_proof_handler.ExtIntQueryProofHandler
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.light_proof_handler.LightProofHandler
+import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.vote_handler.VoteHandler
 import com.rarilabs.rarime.api.ext_integrator.models.ExtIntegratorActions
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.Screen
 
 @Composable
 fun ExtIntActionPreview(
     dataUri: Uri?,
+    navigate: (String) -> Unit,
     onCancel: () -> Unit = {},
-    onSuccess: (destination: String?) -> Unit = {},
+    onSuccess: (extDestination: String?, localDestination: String?) -> Unit = { extDestination, localDestination ->},
     onError: () -> Unit = {}
 ) {
     val queryParams = remember {
@@ -36,7 +40,7 @@ fun ExtIntActionPreview(
                 ExtIntQueryProofHandler(
                     queryParams = queryParams,
                     onCancel = onCancel,
-                    onSuccess = { destination -> onSuccess(destination) },
+                    onSuccess = { destination -> onSuccess(destination, null) },
                     onFail = { onError() }
                 )
             }
@@ -45,7 +49,23 @@ fun ExtIntActionPreview(
                 LightProofHandler(
                     queryParams = queryParams,
                     onCancel = onCancel,
-                    onSuccess = { destination -> onSuccess(destination) },
+                    onSuccess = { destination -> onSuccess(destination, null) },
+                    onFail = { onError() }
+                )
+            }
+
+            ExtIntegratorActions.Vote.value -> {
+                LaunchedEffect(Unit) {
+                    val proposalId = dataUri?.getQueryParameter("proposal_id")
+                        ?: throw Exception("Proposal ID not found")
+
+                    navigate(Screen.Main.Vote.route.replace("{vote_id}", proposalId))
+                }
+
+                VoteHandler(
+                    queryParams = queryParams,
+                    onCancel = onCancel,
+                    onSuccess = { destination -> onSuccess(null, destination) },
                     onFail = { onError() }
                 )
             }

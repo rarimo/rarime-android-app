@@ -36,10 +36,10 @@ fun PrimaryButton(
         enabled = enabled,
         size = size,
         colors = ButtonDefaults.buttonColors(
-            containerColor = RarimeTheme.colors.primaryMain,
-            contentColor = RarimeTheme.colors.baseBlack,
+            containerColor = RarimeTheme.colors.textPrimary,
+            contentColor = RarimeTheme.colors.invertedLight,
             disabledContainerColor = RarimeTheme.colors.componentDisabled,
-            disabledContentColor = RarimeTheme.colors.textDisabled
+            disabledContentColor = RarimeTheme.colors.invertedLight.copy(alpha = 0.75f)
         ),
         text = text,
         leftIcon = leftIcon,
@@ -48,7 +48,9 @@ fun PrimaryButton(
     )
 }
 
-@Preview(showBackground = true)
+@Preview(
+    showBackground = true
+)
 @Composable
 private fun PrimaryButtonPreview() {
     Column(
