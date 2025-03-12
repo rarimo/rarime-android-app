@@ -83,22 +83,24 @@ fun VoteResultsCard(
                     .height(1.dp)
             )
 
-            VoteResultsCardStatistics(
-                options = voteData.options.map {
-                    mapOf(
-                        it.title to it.votedCount
-                    )
-                }
-            )
+            voteData.questions.forEach { question ->
+                VoteResultsCardStatistics(
+                    variants = question.variants.map {
+                        mapOf(
+                            it.title to it.votedCount
+                        )
+                    }
+                )
+            }
         }
     }
 }
 
 @Composable
 fun VoteResultsCardStatistics(
-    options: List<Map<String, Double>>,
+    variants: List<Map<String, Double>>,
 ) {
-    val totalVotes = options.sumOf { it.values.first() }
+    val totalVotes = variants.sumOf { it.values.first() }
 
     fun getPercentageOfOverallVotes(amount: Double): Double {
         val percentage = (amount.toFloat() / totalVotes.toFloat()) * 100.0
@@ -107,7 +109,7 @@ fun VoteResultsCardStatistics(
     }
 
     fun getIsLargestOption(amount: Number): Boolean {
-        val largestOption = options.maxByOrNull { it.values.first() }
+        val largestOption = variants.maxByOrNull { it.values.first() }
 
         return largestOption?.values?.first() == amount
     }
@@ -117,7 +119,7 @@ fun VoteResultsCardStatistics(
             .clip(RoundedCornerShape(16.dp))
             .border(1.dp, RarimeTheme.colors.componentPrimary, RoundedCornerShape(16.dp))
     ) {
-        options.forEach {
+        variants.forEach {
             Box (
                 modifier = Modifier
                     .fillMaxWidth()
@@ -319,27 +321,39 @@ fun VoteResultsCardPreview() {
             description = "This is a sample vote for preview purposes",
             durationMillis = 86400000,
             participantsCount = 150,
-            options = listOf(
-                VoteOption("1", "Lorem", 100.0),
-                VoteOption("2", "Ipsum", 200.0),
-                VoteOption("3", "Dolor", 300.0),
-                VoteOption("4", "Sit", 400.0),
-                VoteOption("5", "Amet", 500.0),
-                VoteOption("6", "Consectetur", 600.0),
-                VoteOption("7", "Adipiscing", 700.0),
-                VoteOption("8", "Elit", 800.0),
-                VoteOption("9", "Sed", 900.0),
-                VoteOption("10", "Do", 1000.0),
-                VoteOption("11", "Eiusmod", 1100.0),
-                VoteOption("12", "Tempor", 1200.0),
-                VoteOption("13", "Incididunt", 1300.0),
-                VoteOption("14", "Labore", 1400.0),
-                VoteOption("15", "Et", 1500.0),
-                VoteOption("16", "Dolore", 1600.0),
-                VoteOption("17", "Magna", 1700.0),
-                VoteOption("18", "Aliqua", 1800.0),
-                VoteOption("19", "Ut", 1900.0),
-                VoteOption("20", "Enim", 2000.0),
+            questions = listOf(
+                VoteQuestion(
+                    "1",
+                    "Question 1",
+                    listOf(
+                        QuestionAnswerVariant("1", "Lorem", 100.0),
+                        QuestionAnswerVariant("2", "Ipsum", 200.0),
+                        QuestionAnswerVariant("3", "Dolor", 300.0),
+                        QuestionAnswerVariant("4", "Sit", 400.0),
+                        QuestionAnswerVariant("5", "Amet", 500.0),
+                        QuestionAnswerVariant("6", "Consectetur", 600.0),
+                        QuestionAnswerVariant("7", "Adipiscing", 700.0),
+                        QuestionAnswerVariant("8", "Elit", 800.0),
+                        QuestionAnswerVariant("9", "Sed", 900.0),
+                    ),
+                ),
+                VoteQuestion(
+                    "2",
+                    "Question 2",
+                    listOf(
+                        QuestionAnswerVariant("10", "Do", 1000.0),
+                        QuestionAnswerVariant("11", "Eiusmod", 1100.0),
+                        QuestionAnswerVariant("12", "Tempor", 1200.0),
+                        QuestionAnswerVariant("13", "Incididunt", 1300.0),
+                        QuestionAnswerVariant("14", "Labore", 1400.0),
+                        QuestionAnswerVariant("15", "Et", 1500.0),
+                        QuestionAnswerVariant("16", "Dolore", 1600.0),
+                        QuestionAnswerVariant("17", "Magna", 1700.0),
+                        QuestionAnswerVariant("18", "Aliqua", 1800.0),
+                        QuestionAnswerVariant("19", "Ut", 1900.0),
+                        QuestionAnswerVariant("20", "Enim", 2000.0),
+                    )
+                ),
             ),
             endDate = (1741092332000).toLong()
         )

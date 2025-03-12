@@ -237,13 +237,6 @@ fun MainScreenRoutes(
                 composable(
                     Screen.Main.Vote.route,
                     arguments = listOf(navArgument("vote_id") { type = NavType.StringType }),
-                    deepLinks = listOf(
-                        navDeepLink {
-                            // TODO: rename INVITATION_BASE_URL?
-                            uriPattern = "${BaseConfig.INVITATION_BASE_URL}/vote/{vote_id}"
-                            action = Intent.ACTION_VIEW
-                        }
-                    )
                 ) { backStackEntry ->
                     val voteId = backStackEntry.arguments?.getString("vote_id")
 
@@ -352,12 +345,6 @@ fun MainScreenRoutes(
 
             composable(
                 route = Screen.Invitation.route,
-                deepLinks = listOf(
-                    navDeepLink {
-                        uriPattern = "${BaseConfig.INVITATION_BASE_URL}/r/{code}"
-                        action = Intent.ACTION_VIEW
-                    }
-                ),
                 arguments = listOf(
                     navArgument("code") {
                         type = NavType.StringType
@@ -424,7 +411,6 @@ fun MainScreenRoutes(
                     navigate = navigateWithPopUp,
                 ) {
                     LaunchedEffect(Unit) {
-                        navigateWithPopUp(Screen.Main.Home.route)
                         mainViewModel.setExtIntDataURI(dataUri)
                     }
                 }

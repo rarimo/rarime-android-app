@@ -46,7 +46,7 @@ fun IdentityCard(modifier: Modifier = Modifier) {
     }
 
     LaunchedEffect(Unit) {
-        val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.frame_427320874)
+        val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.passport)
 
         BackgroundRemover().removeBackground(bitmap) {
             val removedBackendBitmap = it?.asImageBitmap()
