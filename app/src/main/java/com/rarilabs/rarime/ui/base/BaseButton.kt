@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -33,7 +34,7 @@ enum class ButtonSize {
     fun height(): Dp = when (this) {
         Small -> 24.dp
         Medium -> 40.dp
-        Large -> 48.dp
+        Large -> 56.dp
     }
 
     fun padding(): PaddingValues = when (this) {
@@ -73,6 +74,7 @@ fun BaseButton(
         modifier = modifier
             .height(size.height())
             .defaultMinSize(minWidth = 96.dp, minHeight = size.height()),
+        shape = RoundedCornerShape(20.dp),
         enabled = enabled,
         colors = colors,
     ) {

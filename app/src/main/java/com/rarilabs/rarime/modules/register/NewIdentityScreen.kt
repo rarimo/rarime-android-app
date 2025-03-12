@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -40,11 +42,13 @@ import com.google.api.services.drive.DriveScopes
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.points.InvitationUsedException
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
+import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppTextField
 import com.rarilabs.rarime.ui.components.AppTextFieldState
 import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.CircledBadge
+import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.InfoAlert
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.PrimaryTextButton
@@ -70,6 +74,7 @@ fun NewIdentityScreen(
 
     val context = LocalContext.current
     val mainViewModel = LocalMainViewModel.current
+    val screenInsets by mainViewModel.screenInsets.collectAsState()
     val savedPrivateKey by newIdentityViewModel.savedPrivateKey.collectAsState()
     var isSubmitting by remember { mutableStateOf(false) }
     val privateKey by remember {
@@ -263,10 +268,9 @@ fun NewIdentityScreen(
             handleInitPK = { scope.launch { handleInitPK(it) } },
             isSubmitting = isSubmitting,
             invitationCodeState = invitationCodeState,
+            screenInsets = screenInsets
         )
     }
-
-
 }
 
 private suspend fun handleSignInResult(
@@ -291,6 +295,7 @@ fun NewIdentityScreenContent(
     isImporting: Boolean = false,
     isSubmitting: Boolean = false,
     invitationCodeState: AppTextFieldState,
+    screenInsets: Map<ScreenInsets, Number>,
     privateKey: String,
     handleInitPK: (pk: String) -> Unit,
 ) {
@@ -330,117 +335,114 @@ fun NewIdentityScreenContent(
         handleInitPK(pkToSave)
     }
 
-
-
-    IdentityStepLayout(
-        onBack = onBack,
-        title = "",
-        nextButton = {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(24.dp),
-            ) {
-                PrimaryButton(modifier = Modifier.fillMaxWidth(),
-                    size = ButtonSize.Large,
-                    text = stringResource(
-                        if (isImporting) R.string.create_identity_import_btn
-                        else R.string.create_identity_continue_btn
-                    ),
-                    enabled = !isSubmitting,
-                    onClick = { initPrivateKey() }
-                )
-            }
-        }
+    Column (
+        modifier = Modifier.fillMaxSize()
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            CircledBadge(
-                contentSize = 80,
-                containerSize = 120,
-                painter = painterResource(
-                    id = R.drawable.ic_key
-                ),
-            )
-            Text(
-                text = if (isImporting) {
-                    stringResource(R.string.create_identity_import_title)
-                } else {
-                    stringResource(R.string.create_identity_title)
-                },
-                style = RarimeTheme.typography.h4,
-                color = RarimeTheme.colors.textPrimary
-            )
-        }
+        Spacer(
+            modifier = Modifier.height((screenInsets.get(ScreenInsets.TOP)?.toFloat() ?: 0f).dp)
+        )
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Column(modifier = Modifier.fillMaxWidth()) {
-            CardContainer {
-                if (isImporting) {
-                    AppTextField(
+        IdentityStepLayout(
+            onBack = onBack,
+            title = if (isImporting) {
+                stringResource(R.string.create_identity_import_title)
+            } else {
+                stringResource(R.string.create_identity_title)
+            },
+            nextButton = {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(24.dp),
+                ) {
+                    PrimaryButton(modifier = Modifier.fillMaxWidth(),
+                        size = ButtonSize.Large,
+                        text = stringResource(
+                            if (isImporting) R.string.create_identity_import_btn
+                            else R.string.create_identity_continue_btn
+                        ),
                         enabled = !isSubmitting,
-                        state = privateKeyFieldState,
-                        placeholder = stringResource(R.string.create_identity_import_placeholder)
+                        onClick = { initPrivateKey() }
                     )
-                } else {
-                    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                        Text(
-                            text = privateKey,
-                            style = RarimeTheme.typography.body3,
-                            color = RarimeTheme.colors.textPrimary,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(
-                                    RarimeTheme.colors.componentPrimary,
-                                    RoundedCornerShape(8.dp)
-                                )
-                                .padding(vertical = 14.dp, horizontal = 16.dp)
+                }
+            }
+        ) {
+            Column(
+                modifier = Modifier.absolutePadding(top = 24.dp, left = 16.dp, right = 16.dp)
+            ) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    if (isImporting) {
+                        AppTextField(
+                            enabled = !isSubmitting,
+                            state = privateKeyFieldState,
+                            placeholder = stringResource(R.string.create_identity_import_placeholder)
                         )
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            PrimaryTextButton(
-                                size = ButtonSize.Large,
-                                leftIcon = if (isCopied) R.drawable.ic_check else R.drawable.ic_copy_simple,
-                                text = (if (isCopied) {
-                                    stringResource(R.string.create_identity_copied_msg)
-                                } else {
-                                    stringResource(R.string.create_identity_copy_btn)
-                                }).uppercase(),
-                                onClick = {
-                                    clipboardManager.setText(AnnotatedString(privateKey))
-                                    isCopied = true
-                                })
+                    } else {
+                        Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                            Text(
+                                text = privateKey,
+                                style = RarimeTheme.typography.body3,
+                                color = RarimeTheme.colors.textPrimary,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        RarimeTheme.colors.componentPrimary,
+                                        RoundedCornerShape(8.dp)
+                                    )
+                                    .padding(vertical = 14.dp, horizontal = 16.dp)
+                            )
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                PrimaryTextButton(
+                                    size = ButtonSize.Medium,
+                                    leftIcon = if (isCopied) R.drawable.ic_check else R.drawable.ic_copy_simple,
+                                    text = (if (isCopied) {
+                                        stringResource(R.string.create_identity_copied_msg)
+                                    } else {
+                                        stringResource(R.string.create_identity_copy_btn)
+                                    }),
+                                    onClick = {
+                                        clipboardManager.setText(AnnotatedString(privateKey))
+                                        isCopied = true
+                                    })
+                            }
                         }
+                    }
+
+                    if (!isImporting) {
+                        Spacer(modifier = Modifier.height(24.dp))
+                        HorizontalDivider()
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        InfoAlert(text = stringResource(R.string.create_identity_warning))
                     }
                 }
             }
-
-            if (!isImporting) {
-                Spacer(modifier = Modifier.height(8.dp))
-                InfoAlert(text = stringResource(R.string.create_identity_warning))
-            }
         }
-    }
 
+
+        Spacer(
+            modifier = Modifier.height((screenInsets.get(ScreenInsets.BOTTOM)?.toFloat() ?: 0f).dp)
+        )
+    }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun NewIdentityScreenContentPreview() {
     NewIdentityScreenContent(
         onBack = {},
         privateKey = "324523h423grewadisabudbawiudawwafa",
         handleInitPK = {},
-        invitationCodeState = rememberAppTextFieldState(initialText = "")
+        invitationCodeState = rememberAppTextFieldState(initialText = ""),
+        screenInsets = mapOf(
+            ScreenInsets.TOP to 0,
+            ScreenInsets.BOTTOM to 0
+        )
     )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun NewIdentityScreenContentImportingPreview() {
     NewIdentityScreenContent(
@@ -448,6 +450,10 @@ private fun NewIdentityScreenContentImportingPreview() {
         isImporting = true,
         privateKey = "324523h423grewadisabudbawiudawwafa",
         handleInitPK = {},
-        invitationCodeState = rememberAppTextFieldState(initialText = "")
+        invitationCodeState = rememberAppTextFieldState(initialText = ""),
+        screenInsets = mapOf(
+            ScreenInsets.TOP to 0,
+            ScreenInsets.BOTTOM to 0
+        )
     )
 }

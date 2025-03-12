@@ -32,6 +32,13 @@ class RarimeColors(
     successLight: Color,
     successLighter: Color,
 
+    // info
+    infoDarker: Color,
+    infoDark: Color,
+    infoMain: Color,
+    infoLight: Color,
+    infoLighter: Color,
+
     // error
     errorDarker: Color,
     errorDark: Color,
@@ -62,20 +69,20 @@ class RarimeColors(
     // background
     backgroundPrimary: Color,
     backgroundContainer: Color,
-    backgroundOpacity: Color,
+    backgroundBlur: Color,
+    backgroundSurface1: Color,
+    backgroundSurface2: Color,
     backgroundPure: Color,
 
     // base
     baseBlack: Color,
-    baseBlackOp40: Color,
     baseWhite: Color,
 
+    // inverted
+    invertedDark: Color,
+    invertedLight: Color,
+
     // additional
-    additionalLayerBorder: Color,
-    additionalPureDark: Color,
-
-
-    // additional gradients
     gradient1: Brush,
     gradient2: Brush,
     gradient3: Brush,
@@ -112,6 +119,16 @@ class RarimeColors(
     var successLight by mutableStateOf(successLight, structuralEqualityPolicy())
         internal set
     var successLighter by mutableStateOf(successLighter, structuralEqualityPolicy())
+        internal set
+    var infoDarker by mutableStateOf(infoDarker, structuralEqualityPolicy())
+        internal set
+    var infoDark by mutableStateOf(infoDark, structuralEqualityPolicy())
+        internal set
+    var infoMain by mutableStateOf(infoMain, structuralEqualityPolicy())
+        internal set
+    var infoLight by mutableStateOf(infoLight, structuralEqualityPolicy())
+        internal set
+    var infoLighter by mutableStateOf(infoLighter, structuralEqualityPolicy())
         internal set
     var errorDarker by mutableStateOf(errorDarker, structuralEqualityPolicy())
         internal set
@@ -153,26 +170,24 @@ class RarimeColors(
         internal set
     var backgroundPrimary by mutableStateOf(backgroundPrimary, structuralEqualityPolicy())
         internal set
-
-    var backgroundContainer by mutableStateOf(backgroundPrimary, structuralEqualityPolicy())
+    var backgroundBlur by mutableStateOf(backgroundBlur, structuralEqualityPolicy())
         internal set
-
-    var backgroundOpacity by mutableStateOf(backgroundOpacity, structuralEqualityPolicy())
+    var backgroundSurface1 by mutableStateOf(backgroundSurface1, structuralEqualityPolicy())
+        internal set
+    var backgroundSurface2 by mutableStateOf(backgroundSurface2, structuralEqualityPolicy())
+        internal set
+    var backgroundContainer by mutableStateOf(backgroundPrimary, structuralEqualityPolicy())
         internal set
     var backgroundPure by mutableStateOf(backgroundPure, structuralEqualityPolicy())
         internal set
     var baseBlack by mutableStateOf(baseBlack, structuralEqualityPolicy())
         internal set
-    var baseBlackOp40 by mutableStateOf(baseBlackOp40, structuralEqualityPolicy())
-        internal set
     var baseWhite by mutableStateOf(baseWhite, structuralEqualityPolicy())
         internal set
-    var additionalLayerBorder by mutableStateOf(additionalLayerBorder, structuralEqualityPolicy())
+    var invertedDark by mutableStateOf(invertedDark, structuralEqualityPolicy())
         internal set
-    var additionalPureDark by mutableStateOf(additionalPureDark, structuralEqualityPolicy())
+    var invertedLight by mutableStateOf(invertedLight, structuralEqualityPolicy())
         internal set
-
-
     var gradient1 by mutableStateOf(gradient1, structuralEqualityPolicy())
         internal set
 
@@ -207,6 +222,11 @@ class RarimeColors(
         successMain: Color = this.successMain,
         successLight: Color = this.successLight,
         successLighter: Color = this.successLighter,
+        infoDarker: Color = this.infoDarker,
+        infoDark: Color = this.infoDark,
+        infoMain: Color = this.infoMain,
+        infoLight: Color = this.infoLight,
+        infoLighter: Color = this.infoLighter,
         errorDarker: Color = this.errorDarker,
         errorDark: Color = this.errorDark,
         errorMain: Color = this.errorMain,
@@ -227,13 +247,9 @@ class RarimeColors(
         componentSelected: Color = this.componentSelected,
         componentDisabled: Color = this.componentDisabled,
         backgroundPrimary: Color = this.backgroundPrimary,
-        backgroundOpacity: Color = this.backgroundOpacity,
         backgroundPure: Color = this.backgroundPure,
         baseBlack: Color = this.baseBlack,
-        baseBlackOp40: Color = this.baseBlackOp40,
         baseWhite: Color = this.baseWhite,
-        additionalLayerBorder: Color = this.additionalLayerBorder,
-        additionalPureDark: Color = this.additionalPureDark,
         backgroundContainer: Color = this.backgroundContainer,
         gradient1: Brush = this.gradient1,
         gradient2: Brush = this.gradient2,
@@ -258,6 +274,11 @@ class RarimeColors(
         successMain = successMain,
         successLight = successLight,
         successLighter = successLighter,
+        infoDarker = infoDarker,
+        infoDark = infoDark,
+        infoMain = infoMain,
+        infoLight = infoLight,
+        infoLighter = infoLighter,
         errorDarker = errorDarker,
         errorDark = errorDark,
         errorMain = errorMain,
@@ -278,13 +299,14 @@ class RarimeColors(
         componentSelected = componentSelected,
         componentDisabled = componentDisabled,
         backgroundPrimary = backgroundPrimary,
-        backgroundOpacity = backgroundOpacity,
+        backgroundBlur = backgroundBlur,
+        backgroundSurface1 = backgroundSurface1,
+        backgroundSurface2 = backgroundSurface2,
         backgroundPure = backgroundPure,
         baseBlack = baseBlack,
-        baseBlackOp40 = baseBlackOp40,
         baseWhite = baseWhite,
-        additionalLayerBorder = additionalLayerBorder,
-        additionalPureDark = additionalPureDark,
+        invertedDark = invertedDark,
+        invertedLight = invertedLight,
         backgroundContainer = backgroundContainer,
         gradient1 = gradient1,
         gradient2 = gradient2,
@@ -331,22 +353,13 @@ class RarimeColors(
         this.componentDisabled = other.componentDisabled
         this.backgroundPrimary = other.backgroundPrimary
         this.backgroundContainer = other.backgroundContainer
-        this.backgroundOpacity = other.backgroundOpacity
         this.backgroundPure = other.backgroundPure
         this.baseBlack = other.baseBlack
-        this.baseBlackOp40 = other.baseBlackOp40
         this.baseWhite = other.baseWhite
-        this.additionalLayerBorder = other.additionalLayerBorder
-        this.additionalPureDark = other.additionalPureDark
     }
 }
 
 fun darkColors() = RarimeColors(
-    // base
-    baseBlack = Color(0xFF202020),
-    baseBlackOp40 = Color(0x14161466),
-    baseWhite = Color(0xFFFFFFFF),
-
     // primary
     primaryDarker = Color(0xFFFFFFFF),
     primaryDark = Color(0xFFFFFFFF),
@@ -367,6 +380,13 @@ fun darkColors() = RarimeColors(
     successMain = Color(0xFF37CF6F),
     successLight = Color(0x1F37CF6F),
     successLighter = Color(0x0F37CF6F),
+
+    // info
+    infoDarker = Color(0xFF5D97F5),
+    infoDark = Color(0xFF4788F1),
+    infoMain = Color(0xFF367BEC),
+    infoLight = Color(0x1F367BEC),
+    infoLighter = Color(0x0F367BEC),
 
     // error
     errorDarker = Color(0xFFEE6565),
@@ -398,27 +418,29 @@ fun darkColors() = RarimeColors(
     // background
     backgroundPrimary = Color(0xFF0E0E0E),
     backgroundContainer = Color(0xFF171717),
-    backgroundOpacity = Color(0x0DFFFFFF),
+    backgroundBlur = Color(0xE50E0E0E),
     backgroundPure = Color(0xFF0E0E0E),
+    backgroundSurface1 = Color(0xFF272827),
+    backgroundSurface2 = Color(0xFF3F403F),
+
+    // base
+    baseBlack = Color(0xFF202020),
+    baseWhite = Color(0xFFFFFFFF),
+
+    // inverted
+    invertedDark = Color(0xFFF3F6F2),
+    invertedLight = Color(0xFF141614),
 
     // additional
-    additionalLayerBorder = Color(0x0DFFFFFF),
-    additionalPureDark = Color(0x1AFFFFFF),
     gradient1 = Brush.linearGradient(colors = listOf(Color(0xFF9AFE8A), Color(0xFF8AFECC))),
     gradient2 = Brush.linearGradient(colors = listOf(Color(0xFFF2F8EE), Color(0xFFCBE7EC))),
     gradient3 = Brush.linearGradient(colors = listOf(Color(0xFFDFFCC4), Color(0xFFF4F3F0))),
     gradient4 = Brush.linearGradient(colors = listOf(Color(0xFFD3D1EF), Color(0xFFFCE3FC))),
     gradient5 = Brush.linearGradient(colors = listOf(Color(0xFF80ED99), Color(0xFFD5FEC8))),
     gradient6 = Brush.linearGradient(colors = listOf(Color(0xFF39CDA0), Color(0xFF45C45C)))
-
 )
 
 fun lightColors() = RarimeColors(
-    // base
-    baseBlack = Color(0xFF202020),
-    baseBlackOp40 = Color(0x14161466),
-    baseWhite = Color(0xFFFFFFFF),
-
     // primary
     primaryDarker = Color(0xFF050505),
     primaryDark = Color(0xFF111211),
@@ -439,6 +461,13 @@ fun lightColors() = RarimeColors(
     successMain = Color(0xFF22C55E),
     successLight = Color(0x1F22C55E),
     successLighter = Color(0x0F22C55E),
+
+    // info
+    infoDarker = Color(0xFF1D4ED8),
+    infoDark = Color(0xFF2563EB),
+    infoMain = Color(0xFF3B82F6),
+    infoLight = Color(0x1F3B82F6),
+    infoLighter = Color(0x0F3B82F6),
 
     // error
     errorDarker = Color(0xFFB91C1C),
@@ -469,19 +498,27 @@ fun lightColors() = RarimeColors(
 
     // background
     backgroundPrimary = Color(0xFFFFFFFF),
-    backgroundContainer = Color(0x0D141614),
-    backgroundOpacity = Color(0xB2FFFFFF),
-    backgroundPure = Color(0x0D141614),
+    backgroundContainer = Color(0xFFFFFFFF),
+    backgroundBlur = Color(0xE5FFFFFF),
+    backgroundPure = Color(0xFFFFFFFF),
+    backgroundSurface1 = Color(0xFFFFFFFF),
+    backgroundSurface2 = Color(0xFFFFFFFF),
+
+    // base
+    baseBlack = Color(0xFF141614),
+    baseWhite = Color(0xFFFFFFFF),
+
+    // inverted
+    invertedDark = Color(0xFF141614),
+    invertedLight = Color(0xFFFFFFFF),
 
     // additional
-    additionalLayerBorder = Color(0xFFFFFFFF),
-    additionalPureDark = Color(0xFF262626),
     gradient1 = Brush.linearGradient(colors = listOf(Color(0xFF9AFE8A), Color(0xFF8AFECC))),
     gradient2 = Brush.linearGradient(colors = listOf(Color(0xFFF2F8EE), Color(0xFFCBE7EC))),
     gradient3 = Brush.linearGradient(colors = listOf(Color(0xFFDFFCC4), Color(0xFFF4F3F0))),
     gradient4 = Brush.linearGradient(colors = listOf(Color(0xFFD3D1EF), Color(0xFFFCE3FC))),
     gradient5 = Brush.linearGradient(colors = listOf(Color(0xFF80ED99), Color(0xFFD5FEC8))),
-    gradient6 = Brush.linearGradient(colors = listOf(Color(0xFF39CDA0), Color(0xFF45C45C)))
+    gradient6 = Brush.linearGradient(colors = listOf(Color(0xFF39CDA0), Color(0xFF45C45C))),
 )
 
 val LocalColors = staticCompositionLocalOf { lightColors() }

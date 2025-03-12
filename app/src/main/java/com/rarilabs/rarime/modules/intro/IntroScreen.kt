@@ -2,7 +2,6 @@ package com.rarilabs.rarime.modules.intro
 
 import androidx.annotation.RawRes
 import androidx.annotation.StringRes
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppAnimation
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.HorizontalDivider
@@ -72,9 +72,6 @@ private enum class IntroStep(
     )
 }
 
-
-
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun IntroScreen(
     navigate: (String) -> Unit
@@ -87,7 +84,7 @@ fun IntroScreen(
             IntroStep.Rewards
         )
     }
-    val stepState = rememberPagerState(pageCount = { introSteps.size })
+    val stepState = rememberPagerState(pageCount = { 1 })
     val coroutineScope = rememberCoroutineScope()
 
     val sheetState = rememberAppSheetState()
@@ -96,24 +93,14 @@ fun IntroScreen(
 
     Surface(color = RarimeTheme.colors.backgroundPrimary) {
         Column(
-            verticalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.spacedBy(48.dp),
             modifier = Modifier
                 .fillMaxHeight()
                 .verticalScroll(rememberScrollState())
         ) {
-            Column {
-                SecondaryTextButton(
-                    text = stringResource(R.string.skip_btn),
-                    modifier = Modifier
-                        .padding(top = 20.dp, bottom = 10.dp, end = 24.dp)
-                        .align(Alignment.End)
-                        .alpha(if (isLastStep) 0f else 1f),
-                    onClick = {
-                        coroutineScope.launch {
-                            stepState.animateScrollToPage(introSteps.size - 1)
-                        }
-                    },
-                )
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 HorizontalPager(
                     state = stepState,
                     verticalAlignment = Alignment.Top,
@@ -122,61 +109,41 @@ fun IntroScreen(
                 }
             }
             Column(
-                modifier = Modifier
-                    .padding(horizontal = 24.dp)
-                    .padding(top = 24.dp, bottom = 24.dp),
+                modifier = Modifier.padding(horizontal = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                HorizontalDivider()
-
-                if (isLastStep) {
-                    PrimaryButton(
-                        text = stringResource(R.string.create_account_btn),
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = { sheetState.show() }
-                    )
-                } else {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        StepIndicator(
-                            itemsCount = introSteps.size,
-                            selectedIndex = stepState.currentPage
-                        )
-                        PrimaryButton(
-                            text = stringResource(R.string.next_btn),
-                            rightIcon = R.drawable.ic_arrow_right,
-                            onClick = {
-                                coroutineScope.launch {
-                                    stepState.animateScrollToPage(stepState.currentPage + 1)
-                                }
-                            }
-                        )
-                    }
-                }
+                PrimaryButton(
+                    text = stringResource(R.string.create_account_btn),
+                    size = ButtonSize.Large,
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { sheetState.show() }
+                )
+                Spacer(modifier = Modifier.height(32.dp))
             }
         }
     }
 
     AppBottomSheet(state = sheetState) {
-        CreateIdentityVariantsSelector(listOf(
-            IdentityVariant(
-                title = stringResource(id = R.string.create_identity_selector_option_1),
-                icon = R.drawable.ic_user_plus,
-                onSelect = {
-                    navigate(Screen.Register.NewIdentity.route)
-                }
-            ),
-            IdentityVariant(
-                title = stringResource(id = R.string.create_identity_selector_option_2),
-                icon = R.drawable.ic_share_1,
-                onSelect = {
-                    navigate(Screen.Register.ImportIdentity.route)
-                }
-            ),
-        ))
+        CreateIdentityVariantsSelector(
+            listOf(
+                IdentityVariant(
+                    title = stringResource(id = R.string.create_identity_selector_option_1),
+                    subtitle = stringResource(id = R.string.create_identity_selector_option_1_subtitle),
+                    icon = R.drawable.ic_user_plus,
+                    onSelect = {
+                        navigate(Screen.Register.NewIdentity.route)
+                    }
+                ),
+                IdentityVariant(
+                    title = stringResource(id = R.string.create_identity_selector_option_2),
+                    subtitle = stringResource(id = R.string.create_identity_selector_option_2_subtitle),
+                    icon = R.drawable.ic_share_1,
+                    onSelect = {
+                        navigate(Screen.Register.ImportIdentity.route)
+                    }
+                ),
+            )
+        )
     }
 }
 
@@ -186,7 +153,7 @@ private fun StepView(step: IntroStep) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(390.dp)
+                .weight(1f)
         ) {
             AppAnimation(
                 id = step.animation,
@@ -195,7 +162,6 @@ private fun StepView(step: IntroStep) {
                     .size(step.animationWidth.dp)
             )
         }
-        Spacer(modifier = Modifier.height(40.dp))
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.padding(horizontal = 24.dp)
@@ -203,12 +169,12 @@ private fun StepView(step: IntroStep) {
 
             Text(
                 text = stringResource(step.title),
-                style = RarimeTheme.typography.h4,
+                style = RarimeTheme.typography.h3,
                 color = RarimeTheme.colors.textPrimary
             )
             Text(
                 text = stringResource(step.text),
-                style = RarimeTheme.typography.body2,
+                style = RarimeTheme.typography.body3,
                 color = RarimeTheme.colors.textSecondary
             )
         }
