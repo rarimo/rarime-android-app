@@ -31,8 +31,8 @@ android {
         minSdk = 27
         targetSdk = 34
 
-        versionCode = 71
-        versionName = "2.1.20"
+        versionCode = 74
+        versionName = "2.1.23-internal"
 
         externalNativeBuild {
             cmake {
@@ -189,6 +189,7 @@ dependencies {
     implementation("net.sf.scuba:scuba-sc-android:0.0.20")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation(files("libs/Identity.aar"))
+    implementation(files("libs/lib-release.aar"))
 
     // QR Code
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
@@ -246,6 +247,4 @@ dependencies {
 
     // AppsFlyer
     implementation("com.appsflyer:af-android-sdk:6.15.1")
-
-
 }

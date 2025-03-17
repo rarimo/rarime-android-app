@@ -9,13 +9,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.rarilabs.rarime.RustLibDemo
+//import com.rarilabs.rarime.RustLibDemo
 import com.rarilabs.rarime.modules.home.components.no_passport.HomeScreenNoPassportMain
 import com.rarilabs.rarime.modules.home.components.passport.HomeScreenPassportMain
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 val LocalHomeViewModel = compositionLocalOf<HomeViewModel> { error("No HomeViewModel provided") }
 
@@ -26,6 +31,8 @@ fun HomeScreen(
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val isShowPassport by homeViewModel.isShowPassport.collectAsState()
+
+    val context = LocalContext.current
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         val notificationPermission = rememberPermissionState(
@@ -46,7 +53,9 @@ fun HomeScreen(
             }
 
             try {
-
+                withContext(Dispatchers.Default) {
+                    RustLibDemo.test(context)
+                }
             } catch (e: Exception) {
                 Log.e("Exep", "xd", e)
             }
