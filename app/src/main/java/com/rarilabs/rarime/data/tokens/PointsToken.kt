@@ -35,7 +35,7 @@ class PointsToken @Inject constructor(
             balanceDetails = pointsManager.getPointsBalance()?.data
 
             if (balanceDetails?.attributes?.amount == null) {
-                pointsManager.createPointsBalance(Keys.joinProgram)
+                pointsManager.createPointsBalance(Keys.genesisReferralCode)
             }
 
             return balanceDetails?.attributes?.amount?.let { BigInteger.valueOf(it) }
