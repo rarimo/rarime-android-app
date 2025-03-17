@@ -99,7 +99,7 @@ interface IConfig {
 /* TESTNET */
 object TestNetConfig : IConfig {
     override val RELAYER_URL = "https://api.orgs.app.stage.rarime.com"
-    override val EVM_RPC_URL = "https://l2.rarimo.com"
+    override val EVM_RPC_URL = "https://rpc.evm.node1.mainnet-beta.rarimo.com"
     override val COSMOS_RPC_URL = "https://rpc-api.node1.mainnet-beta.rarimo.com"
     override val EVM_SERVICE_URL =
         "https://api.orgs.app.stage.rarime.com/integrations/evm-airdrop-svc-glo/"
@@ -117,11 +117,11 @@ object TestNetConfig : IConfig {
     override val EVM_STABLE_COIN_RPC = "https://ethereum-sepolia-rpc.publicnode.com"
     override val STABLE_COIN_ADDRESS = "0xbd03f0fC994fd1015eAdc37c943055330e238Ad9"
 
-    override val REGISTER_CONTRACT_ADDRESS = "0xFA1D6c3e0AE1d705847f02F97c0b49AD66734e1b"
-    override val CERTIFICATES_SMT_CONTRACT_ADDRESS = "0xf76C8B7e9d3362032Ecf6eCb96872EbE367ACCd6"
-    override val REGISTRATION_SMT_CONTRACT_ADDRESS = "0xdaA88Fc5396D91b5Cc61BF9826bddfd7f2E59856"
-    override val STATE_KEEPER_CONTRACT_ADDRESS = "0x3E41C1Ef64aF4D6E144D37EbBB9d5b5419357138"
-    override val REGISTRATION_SIMPLE_CONTRACT_ADRRESS = "0x44eA79d068CF43f4Bb086058ed3067b7D393e139"
+    override val REGISTER_CONTRACT_ADDRESS = "0x1b0F076c8800c457CE734BA85aC8569284DD640A"
+    override val CERTIFICATES_SMT_CONTRACT_ADDRESS = "0xb393B0F444fC849bC61E3285C6c38b1052520007"
+    override val REGISTRATION_SMT_CONTRACT_ADDRESS = "0xc1534912902BBe8C54626e2D69288C76a843bc0E"
+    override val STATE_KEEPER_CONTRACT_ADDRESS = "0x0Ca8340633e0D728db012D59bD543fD80dDabFC9"
+    override val REGISTRATION_SIMPLE_CONTRACT_ADRRESS = "0xa2e2Cbbd0BAa74FE1bb4b61B12D420072806FFe0"
     override val POINTS_SVC_SELECTOR = "23073"
     override val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP = 1715688000L
 
@@ -236,7 +236,7 @@ object TestNetConfig : IConfig {
 // Mainnet
 object MainnetConfig : IConfig {
     override val RELAYER_URL = "https://api.app.rarime.com"
-    override val EVM_RPC_URL = "https://rpc.evm.mainnet.rarimo.com"
+    override val EVM_RPC_URL = "https://l2.rarimo.com"
     override val COSMOS_RPC_URL = "https://rpc-api.mainnet.rarimo.com"
     override val EVM_SERVICE_URL =
         "https://api.orgs.app.rarime.com/integrations/evm-airdrop-svc-glo/"
@@ -253,12 +253,12 @@ object MainnetConfig : IConfig {
     override val MASTER_CERTIFICATES_BUCKETNAME = "rarimo-temp"
     override val EVM_STABLE_COIN_RPC = "https://ethereum-sepolia-rpc.publicnode.com"
 
-    override val REGISTER_CONTRACT_ADDRESS = "0xC0B09085Fa2ad3A8BbF96494B8d5cd10702FE20d"
+    override val REGISTER_CONTRACT_ADDRESS = "0x11BB4B14AA6e4b836580F3DBBa741dD89423B971"
     override val STABLE_COIN_ADDRESS = "0xbd03f0fC994fd1015eAdc37c943055330e238Ad9"
-    override val CERTIFICATES_SMT_CONTRACT_ADDRESS = "0xcc54b12a18f2C575CA97991046090f43C3070aA0"
-    override val REGISTRATION_SMT_CONTRACT_ADDRESS = "0xA25a197d26Cad659A8fFf7F268cA4F9e0283de03"
-    override val STATE_KEEPER_CONTRACT_ADDRESS = "0x7d4E8Da1d10f8Db46C52414175d4003ab0Aef506"
-    override val REGISTRATION_SIMPLE_CONTRACT_ADRRESS = "0x2159582f31A59Da783F775E2c95FbA59B58281Ec"
+    override val CERTIFICATES_SMT_CONTRACT_ADDRESS = "0xA8b350d699632569D5351B20ffC1b31202AcEDD8"
+    override val REGISTRATION_SMT_CONTRACT_ADDRESS = "0x479F84502Db545FA8d2275372E0582425204A879"
+    override val STATE_KEEPER_CONTRACT_ADDRESS = "0x61aa5b68D811884dA4FEC2De4a7AA0464df166E1"
+    override val REGISTRATION_SIMPLE_CONTRACT_ADRRESS = "0x497D6957729d3a39D43843BD27E6cbD12310F273"
 
     override val POINTS_SVC_SELECTOR = "23073"
     override val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP = 1715688000L

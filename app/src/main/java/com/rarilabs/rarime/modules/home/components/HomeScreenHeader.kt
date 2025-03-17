@@ -15,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -26,7 +25,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.data.tokens.PreviewerToken
 import com.rarilabs.rarime.manager.WalletAsset
@@ -84,6 +82,7 @@ fun HomeScreenHeader(
             onScan = { onCompletion(it) }
         )
     }
+
 
     HomeScreenHeaderContent(
         walletAsset = walletAsset,
@@ -156,6 +155,7 @@ fun HomeScreenHeaderContent(
                     color = RarimeTheme.colors.textPrimary
                 )
             }
+
 
             Spacer(modifier = Modifier.weight(1f))
 
