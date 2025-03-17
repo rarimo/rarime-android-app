@@ -128,12 +128,32 @@ class PointsManager @Inject constructor(
             throw Exception("user nullifier is null")
         }
 
-        val response = pointsAPIManager.getPointsBalance(
-            userNullifierHex, "Bearer ${authManager.accessToken.value!!}", mapOf(
-                "rank" to "true",
-                "referral_codes" to "true",
+
+        val response = try {
+            val balance = pointsAPIManager.getPointsBalance(
+                userNullifierHex, "Bearer ${authManager.accessToken.value!!}", mapOf(
+                    "rank" to "true",
+                    "referral_codes" to "true",
+                )
             )
-        )
+
+            if (balance == null) {
+                createPointsBalance(
+                    secureSharedPrefsManager.getDeferredReferralCode() ?: Keys.genesisReferralCode
+                )
+                pointsAPIManager.getPointsBalance(
+                    userNullifierHex, "Bearer ${authManager.accessToken.value!!}", mapOf(
+                        "rank" to "true",
+                        "referral_codes" to "true",
+                    )
+                )
+            } else {
+                balance
+            }
+
+        } catch (e: Exception) {
+            null
+        }
 
         return response
     }

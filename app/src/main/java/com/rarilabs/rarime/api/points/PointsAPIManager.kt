@@ -60,17 +60,24 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
     suspend fun getPointsBalance(
         userNullifierHex: String, authorization: String, queryParams: Map<String, String>
     ): PointsBalanceBody? {
-        try {
-            val response = jsonApiPointsSvcManager.getPointsBalance(
-                userNullifierHex,
-                authorization,
-                queryParams,
-            )
 
-            return response
-        } catch (e: HttpException) {
+        val response = jsonApiPointsSvcManager.getPointsBalance(
+            userNullifierHex,
+            authorization,
+            queryParams,
+        )
+
+        if (response.isSuccessful) {
+            return response.body()
+        }
+
+        if (response.code() == 404) {
             return null
         }
+
+
+        throw InternalServerError(response.message())
+
     }
 
     suspend fun verifyPassport(
@@ -213,5 +220,5 @@ class PointsAPIManager @Inject constructor(private val jsonApiPointsSvcManager: 
     }
 }
 
-
+class InternalServerError(message: String) : Exception("Internal server Error: $message")
 class ConflictException(message: String) : Exception("ConflictException: $message")

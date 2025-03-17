@@ -31,8 +31,8 @@ android {
         minSdk = 27
         targetSdk = 34
 
-        versionCode = 60
-        versionName = "2.1.10"
+        versionCode = 71
+        versionName = "2.1.20"
 
         externalNativeBuild {
             cmake {
@@ -219,7 +219,6 @@ dependencies {
 
     implementation("com.google.android.play:app-update:2.1.0")
     implementation("com.google.android.play:app-update-ktx:2.1.0")
-
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 
     //Room
@@ -253,4 +252,6 @@ dependencies {
 
     // AppsFlyer
     implementation("com.appsflyer:af-android-sdk:6.15.1")
+
+
 }
