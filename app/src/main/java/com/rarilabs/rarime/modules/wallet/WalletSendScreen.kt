@@ -117,7 +117,6 @@ private fun WalletSendScreenContent(
     val confirmationSheetState = rememberAppSheetState()
 
     WalletRouteLayout(
-        headerModifier = Modifier.padding(horizontal = 20.dp),
         title = stringResource(R.string.wallet_send_title, selectedWalletAsset.token.symbol),
         description = stringResource(
             R.string.wallet_send_description, selectedWalletAsset.token.symbol
@@ -125,9 +124,10 @@ private fun WalletSendScreenContent(
         onBack = onBack
     ) {
         Column(
-            verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxSize()
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxSize()
         ) {
-            CardContainer(modifier = Modifier.padding(horizontal = 20.dp)) {
+            CardContainer {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                     AppTextField(
                         state = addressState,
@@ -154,12 +154,12 @@ private fun WalletSendScreenContent(
                             ) {
                                 Text(
                                     text = stringResource(R.string.available_hint),
-                                    style = RarimeTheme.typography.body4,
+                                    style = RarimeTheme.typography.body5,
                                     color = RarimeTheme.colors.textSecondary
                                 )
                                 Text(
                                     text = "${selectedWalletAsset.humanBalance()} ${selectedWalletAsset.token.symbol}",
-                                    style = RarimeTheme.typography.body4,
+                                    style = RarimeTheme.typography.body5,
                                     color = RarimeTheme.colors.textPrimary
                                 )
                             }
@@ -194,12 +194,12 @@ private fun WalletSendScreenContent(
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(
                         text = stringResource(R.string.receiver_gets),
-                        style = RarimeTheme.typography.body3,
+                        style = RarimeTheme.typography.body4,
                         color = RarimeTheme.colors.textSecondary
                     )
                     Text(
                         text = "${NumberUtil.formatAmount(humanAmountState.text.toDoubleOrNull() ?: 0.0)} ${selectedWalletAsset.token.symbol}",
-                        style = RarimeTheme.typography.subtitle3,
+                        style = RarimeTheme.typography.subtitle5,
                         color = RarimeTheme.colors.textPrimary
                     )
                 }
@@ -210,7 +210,7 @@ private fun WalletSendScreenContent(
                     onClick = {
                         confirmationSheetState.show()
                     },
-                    enabled = addressState.text.isNotEmpty() && humanAmountState.text.isNotEmpty() && !isSubmitting
+                    enabled = true
                 )
             }
         }

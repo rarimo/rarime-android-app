@@ -39,7 +39,7 @@ fun PrimaryButton(
             containerColor = RarimeTheme.colors.textPrimary,
             contentColor = RarimeTheme.colors.invertedLight,
             disabledContainerColor = RarimeTheme.colors.componentDisabled,
-            disabledContentColor = RarimeTheme.colors.invertedLight.copy(alpha = 0.75f)
+            disabledContentColor = RarimeTheme.colors.textDisabled
         ),
         text = text,
         leftIcon = leftIcon,
@@ -86,7 +86,7 @@ private fun PrimaryButtonPreview() {
             Text(
                 text = "Custom content",
                 color = RarimeTheme.colors.errorDark,
-                style = RarimeTheme.typography.subtitle3
+                style = RarimeTheme.typography.subtitle5
             )
         }
     }

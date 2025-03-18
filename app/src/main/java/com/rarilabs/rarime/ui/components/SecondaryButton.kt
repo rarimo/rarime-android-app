@@ -84,7 +84,7 @@ private fun SecondaryButtonPreview() {
             Text(
                 text = "Custom content",
                 color = RarimeTheme.colors.errorDark,
-                style = RarimeTheme.typography.subtitle3
+                style = RarimeTheme.typography.subtitle5
             )
         }
     }

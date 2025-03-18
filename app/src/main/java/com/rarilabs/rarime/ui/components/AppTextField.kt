@@ -107,7 +107,7 @@ fun AppTextField(
         if (label.isNotEmpty()) {
             Text(
                 text = label,
-                style = RarimeTheme.typography.subtitle4,
+                style = RarimeTheme.typography.subtitle6,
                 color = if (enabled) RarimeTheme.colors.textPrimary else RarimeTheme.colors.textDisabled
             )
         }
@@ -120,12 +120,12 @@ fun AppTextField(
             placeholder = {
                 Text(
                     text = placeholder,
-                    style = RarimeTheme.typography.body3,
+                    style = RarimeTheme.typography.body4,
                 )
             },
             enabled = enabled,
             isError = state.isError,
-            textStyle = RarimeTheme.typography.body3,
+            textStyle = RarimeTheme.typography.body4,
             singleLine = true,
             trailingIcon = trailingItem,
             colors = TextFieldDefaults.colors(

@@ -35,6 +35,7 @@ import com.rarilabs.rarime.modules.wallet.components.WalletTransactionsList
 import com.rarilabs.rarime.modules.wallet.view_model.WalletViewModel
 import com.rarilabs.rarime.modules.wallet.walletTokens.WalletTokensList
 import com.rarilabs.rarime.ui.base.ButtonIconSize
+import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.DropdownOption
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.SecondaryIconButton
@@ -51,7 +52,6 @@ fun WalletScreen(
     walletViewModel: WalletViewModel = hiltViewModel(),
 ) {
     val mainViewModel = LocalMainViewModel.current
-    val configuration = LocalConfiguration.current
 
     val userAssets by walletViewModel.walletAssets.collectAsState()
     val selectedUserAsset by walletViewModel.selectedWalletAsset.collectAsState()
@@ -69,153 +69,150 @@ fun WalletScreen(
         walletViewModel.updateBalances()
     }
 
-    BottomSheetScaffold (
-        sheetPeekHeight = 275.dp,
-        scaffoldState = scaffoldState,
-        sheetContainerColor = RarimeTheme.colors.backgroundPure,
-        sheetContent = {
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(RarimeTheme.colors.backgroundPrimary)
+            .verticalScroll(rememberScrollState())
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(40.dp),
+            modifier = Modifier
+                .padding(vertical = 20.dp, horizontal = 12.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.wallet_title),
+                style = RarimeTheme.typography.subtitle4,
+                color = RarimeTheme.colors.textPrimary,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+
             Column(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .absolutePadding(left = 20.dp, right = 20.dp, bottom = 20.dp)
-                    .height((configuration.screenHeightDp * 0.75).dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Text(
+                    text = stringResource(R.string.available_rmo),
+                    style = RarimeTheme.typography.body4,
+                    color = RarimeTheme.colors.textSecondary
+                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = NumberUtil.formatAmount(selectedUserAsset.humanBalance()),
+                        style = RarimeTheme.typography.h4,
+                        color = RarimeTheme.colors.textPrimary
+                    )
+
+                    // TODO: rollback at next releases
+                    if (userAssets.size > 1) {
+                        TextDropdown(
+                            value = selectedUserAsset.token.symbol,
+                            options = userAssets.map {
+                                DropdownOption(
+                                    label = it.token.symbol,
+                                    value = it.token.symbol
+                                )
+                            },
+                            onChange = { symb ->
+                                run {
+                                    val asset = userAssets.find { it.token.symbol == symb }
+                                    ErrorHandler.logDebug("onChange: walletViewModel:", symb)
+                                    ErrorHandler.logDebug(
+                                        "onChange: asset:",
+                                        asset?.token?.symbol ?: "nope"
+                                    )
+
+                                    asset?.let { newAsset ->
+                                        walletViewModel.updateSelectedWalletAsset(
+                                            newAsset
+                                        )
+                                    }
+                                }
+                            }
+                        )
+                    } else {
+                        Text(
+                            text = selectedUserAsset.token.symbol,
+                            style = RarimeTheme.typography.overline2,
+                            color = RarimeTheme.colors.textPrimary
+                        )
+                    }
+                }
+                Text(
+                    text = "---",
+                    style = RarimeTheme.typography.caption2,
+                    color = RarimeTheme.colors.textSecondary,
+                )
+            }
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        SecondaryIconButton(
+                            size = ButtonIconSize.Large,
+                            icon = R.drawable.ic_arrow_down,
+                            onClick = { navigate(Screen.Main.Wallet.Receive.route) }
+                        )
+                        Text(
+                            text = stringResource(R.string.receive_btn),
+                            color = RarimeTheme.colors.textSecondary,
+                            style = RarimeTheme.typography.buttonSmall
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(32.dp))
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        SecondaryIconButton(
+                            size = ButtonIconSize.Large,
+                            icon = R.drawable.ic_arrow_up,
+                            onClick = { navigate(Screen.Main.Wallet.Send.route) }
+                        )
+                        Text(
+                            text = stringResource(R.string.send_btn),
+                            color = RarimeTheme.colors.textSecondary,
+                            style = RarimeTheme.typography.buttonSmall
+                        )
+                    }
+                }
+                HorizontalDivider()
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 20.dp)
+        ) {
+            WalletTokensList(walletViewModel)
+        }
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            modifier = Modifier.padding(horizontal = 12.dp)
+        ) {
+            HorizontalDivider()
+            CardContainer {
                 WalletTransactionsList(
                     modifier = Modifier.fillMaxSize(),
                     transactions = selectedUserAsset.transactions.value,
                     walletAsset = selectedUserAsset
                 )
             }
-        },
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(RarimeTheme.colors.backgroundPrimary)
-                .verticalScroll(rememberScrollState())
-        ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(40.dp),
-                modifier = Modifier
-                    .padding(vertical = 20.dp, horizontal = 12.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.wallet_title),
-                    style = RarimeTheme.typography.subtitle2,
-                    color = RarimeTheme.colors.textPrimary,
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
-
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = stringResource(R.string.available_rmo),
-                        style = RarimeTheme.typography.body3,
-                        color = RarimeTheme.colors.textSecondary
-                    )
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = NumberUtil.formatAmount(selectedUserAsset.humanBalance()),
-                            style = RarimeTheme.typography.h4,
-                            color = RarimeTheme.colors.textPrimary
-                        )
-
-                        // TODO: rollback at next releases
-                        if (userAssets.size > 1) {
-                            TextDropdown(
-                                value = selectedUserAsset.token.symbol,
-                                options = userAssets.map {
-                                    DropdownOption(
-                                        label = it.token.symbol,
-                                        value = it.token.symbol
-                                    )
-                                },
-                                onChange = { symb ->
-                                    run {
-                                        val asset = userAssets.find { it.token.symbol == symb }
-                                        ErrorHandler.logDebug("onChange: walletViewModel:", symb)
-                                        ErrorHandler.logDebug("onChange: asset:", asset?.token?.symbol ?: "nope")
-
-                                        asset?.let { newAsset -> walletViewModel.updateSelectedWalletAsset(newAsset) }
-                                    }
-                                }
-                            )
-                        } else {
-                            Text(
-                                text = selectedUserAsset.token.symbol,
-                                style = RarimeTheme.typography.overline2,
-                                color = RarimeTheme.colors.textPrimary
-                            )
-                        }
-                    }
-                    Text(
-                        text = "---",
-                        style = RarimeTheme.typography.caption2,
-                        color = RarimeTheme.colors.textSecondary,
-                    )
-                }
-
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(20.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Column (
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            SecondaryIconButton(
-                                size = ButtonIconSize.Large,
-                                icon = R.drawable.ic_arrow_down,
-                                onClick = { navigate(Screen.Main.Wallet.Receive.route) }
-                            )
-                            Text(
-                                text = stringResource(R.string.receive_btn),
-                                color = RarimeTheme.colors.textSecondary,
-                                style = RarimeTheme.typography.buttonSmall
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(32.dp))
-                        Column (
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            SecondaryIconButton(
-                                size = ButtonIconSize.Large,
-                                icon = R.drawable.ic_arrow_up,
-                                onClick = { navigate(Screen.Main.Wallet.Send.route) }
-                            )
-                            Text(
-                                text = stringResource(R.string.send_btn),
-                                color = RarimeTheme.colors.textSecondary,
-                                style = RarimeTheme.typography.buttonSmall
-                            )
-                        }
-                    }
-                    HorizontalDivider()
-                }
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        vertical = 20.dp
-                    )
-            ) {
-                WalletTokensList(walletViewModel)
-            }
-
-            Spacer(modifier = Modifier.height(275.dp))
         }
     }
 }
