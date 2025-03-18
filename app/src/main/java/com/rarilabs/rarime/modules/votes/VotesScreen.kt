@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -54,7 +53,6 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
-import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -64,11 +62,11 @@ fun VotesScreen(
     onBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
+    innerPaddings: Map<ScreenInsets, Number>,
     navigate: (String) -> Unit,
     viewModel: VotesScreenViewModel = hiltViewModel()
 ) {
     val mainViewModel = LocalMainViewModel.current
-    val screenInsets by mainViewModel.screenInsets.collectAsState()
 
     val activeVotes by viewModel.activeVotes.collectAsState()
     val activeVotesLoading by viewModel.isLoadingActive.collectAsState()
@@ -93,10 +91,6 @@ fun VotesScreen(
         modifier = Modifier,
         props = props,
         onBack = onBack,
-        screenInsets = mapOf(
-            ScreenInsets.TOP to screenInsets.get(ScreenInsets.TOP),
-            ScreenInsets.BOTTOM to screenInsets.get(ScreenInsets.BOTTOM)
-        ),
         sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = animatedContentScope,
 
@@ -111,6 +105,7 @@ fun VotesScreen(
                 onScan = { onScanCb.invoke(it) }
             )
         },
+        innerPaddings = innerPaddings,
         onProposalScanned = {
             val uri = Uri.parse(it)
 
@@ -125,9 +120,9 @@ fun VotesScreenContent(
     modifier: Modifier = Modifier,
     props: DetailsProperties,
     onBack: () -> Unit,
-    screenInsets: Map<ScreenInsets, Number?>,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
+    innerPaddings: Map<ScreenInsets, Number>,
 
     activeVotes: List<VoteData>,
     activeVotesLoading: Boolean,
@@ -156,11 +151,8 @@ fun VotesScreenContent(
         )
     } else {
         BaseDetailsScreen(
+            innerPaddings = innerPaddings,
             modifier = modifier
-                .absolutePadding(
-                    top = (screenInsets.get(ScreenInsets.TOP)?.toFloat() ?: 0f).dp,
-                    bottom = (screenInsets.get(ScreenInsets.BOTTOM)?.toFloat() ?: 0f).dp,
-                )
                 .verticalScroll(rememberScrollState()),
             properties = props,
             sharedTransitionScope = sharedTransitionScope,
@@ -219,7 +211,7 @@ fun VotesScreenContent(
                             .height(2.dp)
                     )
 
-                    Column() {
+                    Column {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                         ) {
@@ -331,7 +323,6 @@ private fun VotesScreenPreview() {
                 )
             ),
             onBack = {},
-            screenInsets = mapOf(ScreenInsets.TOP to 12, ScreenInsets.BOTTOM to 12),
             sharedTransitionScope = state,
             animatedContentScope = anim,
             activeVotes = listOf(
@@ -478,6 +469,7 @@ private fun VotesScreenPreview() {
             ),
             historyVotesLoading = false,
             onProposalScanned = {},
+            innerPaddings = mapOf(ScreenInsets.TOP to 23, ScreenInsets.BOTTOM to 12),
         )
     }
 }
