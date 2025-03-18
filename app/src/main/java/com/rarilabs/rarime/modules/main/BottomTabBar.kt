@@ -35,6 +35,7 @@ enum class BottomTab(
     @DrawableRes val icon: Int,
     @DrawableRes val activeIcon: Int
 ) {
+
     Home(
         Screen.Main.Home.route,
         R.drawable.ic_house_simple,
