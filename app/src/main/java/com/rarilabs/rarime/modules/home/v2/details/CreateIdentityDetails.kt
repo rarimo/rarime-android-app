@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -29,6 +30,7 @@ fun CreateIdentityDetails(
     modifier: Modifier = Modifier,
     id: Int,
     onBack: () -> Unit,
+    innerPaddings: Map<ScreenInsets, Number>,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
     navigate: (String) -> Unit = {}
@@ -50,6 +52,7 @@ fun CreateIdentityDetails(
 
     BaseDetailsScreen(
         properties = props,
+        innerPaddings = innerPaddings,
         sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = animatedContentScope,
         onBack = onBack,
@@ -88,6 +91,7 @@ private fun CreateIdentityDetailsPreview() {
             id = 0,
             sharedTransitionScope = state,
             animatedContentScope = anim,
+            innerPaddings = mapOf(ScreenInsets.TOP to 23, ScreenInsets.BOTTOM to 12),
             onBack = {})
 
     }

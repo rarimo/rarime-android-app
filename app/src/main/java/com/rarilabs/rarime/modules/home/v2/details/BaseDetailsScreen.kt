@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.TransparentButton
@@ -55,6 +55,7 @@ fun BaseDetailsScreen(
     properties: DetailsProperties,
     footer: @Composable () -> Unit,
     onBack: () -> Unit,
+    innerPaddings: Map<ScreenInsets, Number>,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
@@ -82,7 +83,10 @@ fun BaseDetailsScreen(
                 )
                 .fillMaxSize()
                 .zIndex(123f)
-                .padding(top = 12.dp)
+                .padding(
+                    top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp + 12.dp,
+                    bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp
+                )
                 .then(modifier)
 
         ) {
@@ -150,7 +154,8 @@ fun BaseDetailsScreen(
                             rememberSharedContentState(
                                 subTitleKey
                             ), animatedVisibilityScope = animatedContentScope
-                        ).skipToLookaheadSize(),
+                        )
+                        .skipToLookaheadSize(),
                 )
 
             }
@@ -214,7 +219,8 @@ private fun BaseDetailsScreenPreview() {
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             },
-            onBack = {}
+            onBack = {},
+            innerPaddings = mapOf(ScreenInsets.TOP to 23, ScreenInsets.BOTTOM to 12)
         )
     }
 }

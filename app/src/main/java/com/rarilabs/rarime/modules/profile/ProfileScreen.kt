@@ -10,11 +10,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -86,7 +84,6 @@ fun ProfileScreen(
         appIcon = appIcon,
         onFeedbackConfirm = {
             val decryptedFile = viewModel.getDecryptedFeedbackFile()
-
             launcher.launch(SendEmailUtil.sendEmail(decryptedFile, context))
         },
         onClearConfirm = {
@@ -134,7 +131,9 @@ fun ProfileScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column(
-                modifier = Modifier.background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)).padding(16.dp)
+                modifier = Modifier
+                    .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp))
+                    .padding(16.dp)
             ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -160,7 +159,9 @@ fun ProfileScreenContent(
                 }
             }
             Column(
-                modifier = Modifier.background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)).padding(16.dp)
+                modifier = Modifier
+                    .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp))
+                    .padding(16.dp)
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                     ProfileRow(iconId = R.drawable.ic_user_focus,
@@ -172,7 +173,9 @@ fun ProfileScreenContent(
                 }
             }
             Column(
-                modifier = Modifier.background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)).padding(16.dp)
+                modifier = Modifier
+                    .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp))
+                    .padding(16.dp)
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
 //                    ProfileRow(
@@ -225,7 +228,9 @@ fun ProfileScreenContent(
             }
 
             Column(
-                modifier = Modifier.background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)).padding(16.dp)
+                modifier = Modifier
+                    .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp))
+                    .padding(16.dp)
             ) {
                 var isDeleteAccountDialogShown by remember { mutableStateOf(false) }
 
@@ -247,7 +252,7 @@ fun ProfileScreenContent(
                         subtitle = stringResource(R.string.delete_profile_desc),
                         onConfirm = {
                             scope.launch {
-                                onFeedbackConfirm.invoke()
+                                onClearConfirm.invoke()
                             }
                         },
                         onCancel = { isDeleteAccountDialogShown = false },
@@ -348,8 +353,8 @@ private fun ProfileScreenPreview() {
         rarimoAddress = "0x000000000000",
         passportImage = null,
         screenInsets = mapOf(
-            ScreenInsets.TOP to 0,
-            ScreenInsets.BOTTOM to 0
+            ScreenInsets.TOP to 10,
+            ScreenInsets.BOTTOM to 10
         ),
         navigate = {},
         colorScheme = AppColorScheme.LIGHT,

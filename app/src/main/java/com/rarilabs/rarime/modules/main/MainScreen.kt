@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.main
 
+
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -14,6 +15,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -230,6 +232,7 @@ fun MainScreenContent(
             bottomBar = {
                 if (mainViewModel.isBottomBarShown.value) {
                     BottomTabBar(
+                        modifier = Modifier.navigationBarsPadding(),
                         currentRoute = currentRoute,
                         onRouteSelected = { navigateWithPopUp(it) }
                     )
@@ -240,7 +243,8 @@ fun MainScreenContent(
                 SnackbarHost(hostState = snackbarHostState) {
                     snackbarContent?.let { snackContent ->
                         Column(modifier = Modifier.padding(horizontal = 20.dp)) {
-                            UiSnackbarDefault(snackContent)
+
+                        UiSnackbarDefault(snackContent)
                         }
                     }
                 }
