@@ -41,7 +41,6 @@ fun HomeScreen(
                 if (!notificationPermission.status.isGranted) {
                     Log.i("Not granted notification", "Nice")
                     notificationPermission.launchPermissionRequest()
-
                 } else {
                     Log.i("Already granted notification", "Nice")
                 }

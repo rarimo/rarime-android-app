@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.points.models.PointsBalanceData
+import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.rewards.components.RewardsEventItemInvitesCard
 import com.rarilabs.rarime.modules.rewards.view_models.CONST_MOCKED_EVENTS_LIST
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
@@ -28,6 +29,7 @@ fun InviteOthersScreen(
     modifier: Modifier = Modifier,
     id: Int,
     onBack: () -> Unit,
+    innerPaddings: Map<ScreenInsets, Number>,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
@@ -55,6 +57,7 @@ fun InviteOthersScreen(
         sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = animatedContentScope,
         onBack = onBack,
+        innerPaddings = innerPaddings,
         footer = {
             Column(
                 modifier = Modifier
@@ -91,7 +94,8 @@ private fun InviteOthersScreenPreview() {
             id = 0,
             sharedTransitionScope = state,
             animatedContentScope = anim,
-            onBack = {}
+            onBack = {},
+            innerPaddings = mapOf(ScreenInsets.TOP to 23, ScreenInsets.BOTTOM to 12),
         )
 
     }

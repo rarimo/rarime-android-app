@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.modules.home.v2
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -14,8 +13,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +24,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -43,6 +45,8 @@ import com.rarilabs.rarime.modules.home.v2.details.ClaimTokensScreen
 import com.rarilabs.rarime.modules.home.v2.details.CreateIdentityDetails
 import com.rarilabs.rarime.modules.home.v2.details.InviteOthersScreen
 import com.rarilabs.rarime.modules.home.v2.details.UnforgettableWalletScreen
+import com.rarilabs.rarime.modules.main.LocalMainViewModel
+import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.votes.VotesScreen
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.CircledBadgeWithCounter
@@ -67,6 +71,7 @@ data class CardContent(
     val footer: @Composable () -> Unit = {},
 )
 
+
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HomeScreen(
@@ -74,6 +79,27 @@ fun HomeScreen(
     sharedTransitionScope: SharedTransitionScope,
     navigate: (String) -> Unit,
     setVisibilityOfBottomBar: (Boolean) -> Unit
+) {
+
+    val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
+
+    HomeScreenContent(
+        modifier,
+        sharedTransitionScope,
+        navigate,
+        setVisibilityOfBottomBar,
+        innerPaddings
+    )
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+fun HomeScreenContent(
+    modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
+    navigate: (String) -> Unit,
+    setVisibilityOfBottomBar: (Boolean) -> Unit,
+    innerPaddings: Map<ScreenInsets, Number>
 ) {
 
     var selectedPageId by remember { mutableStateOf<Int?>(null) }
@@ -84,6 +110,23 @@ fun HomeScreen(
 
     val cardContent = remember {
         listOf(
+
+            CardContent(
+                type = CardType.FREEDOMTOOL,
+                properties = CardProperties(
+                    header = "Freedomtool",
+                    subTitle = "Voting",
+                    icon = R.drawable.ic_check_unframed,
+                    image = R.drawable.freedomtool_bg,
+                    backgroundGradient = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFFD5FEC8),
+                            Color(0xFF80ed99)
+                        )
+                    )
+                ),
+                onCardClick = {},
+            ),
             CardContent(
                 type = CardType.UNFORGETTABLE_WALLET,
                 properties = CardProperties(
@@ -165,23 +208,6 @@ fun HomeScreen(
             ),
 
             CardContent(
-                type = CardType.FREEDOMTOOL,
-                properties = CardProperties(
-                    header = "Freedomtool",
-                    subTitle = "Voting",
-                    icon = R.drawable.ic_check_unframed,
-                    image = R.drawable.freedomtool_bg,
-                    backgroundGradient = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFFD5FEC8),
-                            Color(0xFF80ed99)
-                        )
-                    )
-                ),
-                onCardClick = {},
-            ),
-
-            CardContent(
                 type = CardType.CLAIM,
                 properties = CardProperties(
                     header = "Claim",
@@ -204,12 +230,23 @@ fun HomeScreen(
 
     AnimatedContent(selectedPageId, label = "content") { it ->
         if (it == null) {
-            Column(modifier = modifier.fillMaxSize()) {
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(
+                        bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp,
+                        top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp
+                    )
+            ) {
                 Row(
-                    Modifier.padding(start = 20.dp, top = 26.dp, end = 20.dp),
+                    Modifier.padding(start = 20.dp, end = 20.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Hi Stranger", style = RarimeTheme.typography.subtitle4, color = RarimeTheme.colors.textPrimary)
+                    Text(
+                        "Hi Stranger",
+                        style = RarimeTheme.typography.subtitle4,
+                        color = RarimeTheme.colors.textPrimary
+                    )
                     Spacer(modifier = Modifier.weight(1f))
                     CircledBadgeWithCounter(
                         modifier = Modifier.clickable { },
@@ -222,60 +259,80 @@ fun HomeScreen(
                     )
                 }
 
-                Column(modifier = Modifier.padding(start = 22.dp, end = 22.dp)) {
-                    VerticalPager(
-                        state = pagerState,
-                        contentPadding = PaddingValues(top = 10.dp, bottom = 150.dp)
-                    ) { page ->
-                        val pageOffset =
-                            remember(pagerState.currentPage, pagerState.currentPageOffsetFraction) {
-                                derivedStateOf {
-                                    (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
-                                }
-                            }.value
+                Column {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Spacer(modifier = Modifier.width(16.dp))
 
-                        val absoluteOffset = abs(pageOffset).coerceIn(0f, 1f)
-                        val targetScale = lerp(0.8f, 1f, 1f - absoluteOffset)
+                        VerticalPager(
+                            modifier = Modifier.weight(1f), // <-- Added this
+                            state = pagerState,
+                            contentPadding = PaddingValues(top = 10.dp, bottom = 150.dp)
+                        ) { page ->
+                            val pageOffset =
+                                remember(
+                                    pagerState.currentPage,
+                                    pagerState.currentPageOffsetFraction
+                                ) {
+                                    derivedStateOf {
+                                        (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
+                                    }
+                                }.value
+
+                            val absoluteOffset = abs(pageOffset).coerceIn(0f, 1f)
+                            val targetScale = lerp(0.8f, 1f, 1f - absoluteOffset)
 
 
-                        key(page) {
-                            val scale by animateFloatAsState(
-                                targetValue = targetScale,
-                                animationSpec = spring(
-                                    dampingRatio = 0.5f,
-                                    stiffness = 300f
-                                )
-                            )
-
-                            HomeCard(
-                                modifier = Modifier
-                                    .graphicsLayer {
-                                        scaleX = scale
-                                        scaleY = scale
-                                        // Add alpha for smoother transitions
-                                        alpha = lerp(0.8f, 1f, 1f - absoluteOffset)
-                                    },
-                                cardProperties = cardContent[page].properties,
-                                footer = cardContent[page].footer,
-                                sharedTransitionScope = sharedTransitionScope,
-                                animatedContentScope = this@AnimatedContent,
-                                id = page,
-                                onCardClick = {
-                                    Log.i(
-                                        "CardClick", page.toString()
+                            key(page) {
+                                val scale by animateFloatAsState(
+                                    targetValue = targetScale,
+                                    animationSpec = spring(
+                                        dampingRatio = 0.5f,
+                                        stiffness = 300f
                                     )
-                                    cardContent[page].onCardClick; selectedPageId = page
-                                }
-                            )
+                                )
+
+                                HomeCard(
+                                    modifier = Modifier
+                                        .graphicsLayer {
+                                            scaleX = scale
+                                            scaleY = scale
+                                            alpha = lerp(0.8f, 1f, 1f - absoluteOffset)
+                                        },
+                                    cardProperties = cardContent[page].properties,
+                                    footer = cardContent[page].footer,
+                                    sharedTransitionScope = sharedTransitionScope,
+                                    animatedContentScope = this@AnimatedContent,
+                                    id = page,
+                                    onCardClick = {
+                                        cardContent[page].onCardClick; selectedPageId = page
+                                    }
+                                )
+                            }
                         }
+
+
+
+                        VerticalPageIndicator(
+                            numberOfPages = pagerState.pageCount,
+                            selectedPage = pagerState.currentPage,
+                            modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+                            defaultRadius = 6.dp,
+                            selectedColor = RarimeTheme.colors.primaryMain,
+                            defaultColor = RarimeTheme.colors.primaryLight,
+                            selectedLength = 16.dp,
+                            space = 8.dp
+                        )
+
                     }
+
                 }
             }
         } else {
             BackHandler {
-                Log.i(
-                    "CardClick", selectedPageId.toString()
-                )
                 selectedPageId = null
             }
 
@@ -287,7 +344,8 @@ fun HomeScreen(
                         animatedContentScope = this@AnimatedContent,
                         id = it,
                         onBack = { selectedPageId = null },
-                        navigate = navigate
+                        navigate = navigate,
+                        innerPaddings = innerPaddings
                     )
                 }
 
@@ -296,7 +354,8 @@ fun HomeScreen(
                         sharedTransitionScope = sharedTransitionScope,
                         animatedContentScope = this@AnimatedContent,
                         id = it,
-                        onBack = { selectedPageId = null }
+                        onBack = { selectedPageId = null },
+                        innerPaddings = innerPaddings
                     )
                 }
 
@@ -305,7 +364,8 @@ fun HomeScreen(
                         sharedTransitionScope = sharedTransitionScope,
                         animatedContentScope = this@AnimatedContent,
                         id = it,
-                        onBack = { selectedPageId = null }
+                        onBack = { selectedPageId = null },
+                        innerPaddings = innerPaddings
                     )
                 }
 
@@ -314,7 +374,8 @@ fun HomeScreen(
                         sharedTransitionScope = sharedTransitionScope,
                         animatedContentScope = this@AnimatedContent,
                         id = it,
-                        onBack = { selectedPageId = null }
+                        onBack = { selectedPageId = null },
+                        innerPaddings = innerPaddings
                     )
                 }
 
@@ -324,11 +385,13 @@ fun HomeScreen(
                         animatedContentScope = this@AnimatedContent,
                         id = it,
                         onBack = { selectedPageId = null },
-                        navigate = navigate
+                        navigate = navigate,
+                        innerPaddings = innerPaddings
                     )
                 }
 
                 CardType.OTHER -> {
+
                 }
             }
         }
@@ -341,10 +404,11 @@ fun HomeScreen(
 private fun HomeScreenPreview() {
     PrevireSharedAnimationProvider { transform, animated ->
         Surface {
-            HomeScreen(
+            HomeScreenContent(
                 sharedTransitionScope = transform,
                 navigate = {},
-                setVisibilityOfBottomBar = {}
+                setVisibilityOfBottomBar = {},
+                innerPaddings = mapOf(ScreenInsets.TOP to 40, ScreenInsets.BOTTOM to 40)
             )
         }
     }

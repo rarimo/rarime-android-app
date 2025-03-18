@@ -58,9 +58,13 @@ enum class BottomTab(
 }
 
 @Composable
-fun BottomTabBar(currentRoute: String?, onRouteSelected: (String) -> Unit) {
+fun BottomTabBar(
+    modifier: Modifier = Modifier,
+    currentRoute: String?,
+    onRouteSelected: (String) -> Unit
+) {
     Box(
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,

@@ -22,7 +22,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.modules.home.v2.HomeScreen
@@ -76,7 +75,6 @@ fun MainScreenRoutes(
 
     fun navigateWithSavedNextNavScreen(route: String) {
         savedNextNavScreen?.let {
-            navigateWithPopUp(it)
             savedNextNavScreen = null
         } ?: run {
             navigateWithPopUp(route)
@@ -329,7 +327,8 @@ fun MainScreenRoutes(
                 }
                 composable(Screen.Main.Profile.Terms.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
-                        AppWebView(title = stringResource(R.string.terms_of_use),
+
+                    AppWebView(title = stringResource(R.string.terms_of_use),
                             url = Constants.TERMS_URL,
                             onBack = { navController.popBackStack() })
                     }

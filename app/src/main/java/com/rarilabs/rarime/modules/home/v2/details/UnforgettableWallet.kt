@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -27,6 +28,7 @@ fun UnforgettableWalletScreen(
     modifier: Modifier = Modifier,
     id: Int,
     onBack: () -> Unit,
+    innerPaddings: Map<ScreenInsets, Number>,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
@@ -49,6 +51,7 @@ fun UnforgettableWalletScreen(
         sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = animatedContentScope,
         onBack = onBack,
+        innerPaddings = innerPaddings,
         footer = {
             Text(
                 style = RarimeTheme.typography.body3,
@@ -87,7 +90,8 @@ private fun UnforgettableWalletScreenPreview() {
             id = 0,
             sharedTransitionScope = state,
             animatedContentScope = anim,
-            onBack = {}
+            onBack = {},
+            innerPaddings = mapOf(ScreenInsets.TOP to 23, ScreenInsets.BOTTOM to 12),
         )
 
     }

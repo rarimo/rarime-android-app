@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -28,6 +29,7 @@ import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 fun ClaimTokensScreen(
     modifier: Modifier = Modifier,
     id: Int,
+    innerPaddings: Map<ScreenInsets, Number>,
     onBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
@@ -51,6 +53,7 @@ fun ClaimTokensScreen(
         sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = animatedContentScope,
         onBack = onBack,
+        innerPaddings = innerPaddings,
         footer = {
             Text(
                 style = RarimeTheme.typography.body3,
@@ -89,7 +92,8 @@ private fun ClaimTokensScreenPreview() {
             id = 0,
             sharedTransitionScope = state,
             animatedContentScope = anim,
-            onBack = {}
+            onBack = {},
+            innerPaddings = mapOf(ScreenInsets.TOP to 23, ScreenInsets.BOTTOM to 12),
         )
 
     }
