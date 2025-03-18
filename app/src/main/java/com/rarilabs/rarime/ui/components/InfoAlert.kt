@@ -32,7 +32,7 @@ fun InfoAlert(
         AppIcon(id = R.drawable.ic_info, tint = RarimeTheme.colors.warningDarker)
         Text(
             text = text,
-            style = RarimeTheme.typography.body4,
+            style = RarimeTheme.typography.body5,
             color = RarimeTheme.colors.warningDarker,
             modifier = Modifier.weight(1f)
         )

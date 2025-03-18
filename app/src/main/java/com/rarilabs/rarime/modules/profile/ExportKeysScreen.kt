@@ -185,7 +185,7 @@ fun ExportKeysContent(
                 privateKey.let {
                     Text(
                         text = it,
-                        style = RarimeTheme.typography.body3,
+                        style = RarimeTheme.typography.body4,
                         color = RarimeTheme.colors.textPrimary,
                         modifier = Modifier
                             .background(

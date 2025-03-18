@@ -113,8 +113,7 @@ fun HomeCard(
                         AppIcon(
                             id = cardProperties.icon,
                             size = 48.dp,
-                            tint = RarimeTheme.colors.textPrimary,
-                            alpha = 1f
+                            tint = RarimeTheme.colors.textPrimary
                         )
                     }
 

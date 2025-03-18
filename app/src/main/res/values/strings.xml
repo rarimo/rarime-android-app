@@ -245,7 +245,7 @@
     <string name="invite_status_limited_card_desc">Used • Rewards limit reached</string>
     <string name="invite_status_awaiting_card_desc">Used • Scan your passport</string>
 
-    <string name="delete_profile_title">Are you sure?</string>
+    <string name="delete_profile_title">Delete your account?</string>
     <string name="delete_profile_desc">This action is irreversible and will delete all your data</string>
     <string name="delete_profile_confirm_btn">Yes</string>
     <string name="delete_profile_cancel_btn">No</string>
@@ -411,5 +411,6 @@
     <string name="passport_is_expired_error_description">You cannot claim tokens because this passport is expired.</string>
     <string name="reserve_error_header">Reservation Failed</string>
     <string name="reserve_error_description">An error occurred while reserving tokens. Please send feedback in the settings.</string>
+    <string name="give_us_feedback">Give us Feedback</string>
 
 </resources>
