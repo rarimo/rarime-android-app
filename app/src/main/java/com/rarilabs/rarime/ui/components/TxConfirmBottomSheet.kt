@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
@@ -35,12 +36,12 @@ fun TxConfirmBottomSheet(
         isHeaderEnabled = false
     ) { hide ->
         TxConfirmBottomSheetContent(
-            hide = { hide{} },
+            hide = { hide {} },
             onCancel = {
-                hide{ onCancel() }
+                hide { onCancel() }
             },
             onConfirm = {
-                hide{ onConfirm() }
+                hide { onConfirm() }
             },
             totalDetails = totalDetails,
         )
@@ -69,7 +70,7 @@ private fun TxConfirmBottomSheetContent(
         ) {
             Text(
                 text = "Review Transaction",
-                style = RarimeTheme.typography.h6,
+                style = RarimeTheme.typography.h4,
                 color = RarimeTheme.colors.textPrimary
             )
 
@@ -80,7 +81,7 @@ private fun TxConfirmBottomSheetContent(
 
         HorizontalDivider()
 
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
@@ -99,13 +100,13 @@ private fun TxConfirmBottomSheetContent(
                     ) {
                         Text(
                             text = key,
-                            style = RarimeTheme.typography.body3,
+                            style = RarimeTheme.typography.body4,
                             color = RarimeTheme.colors.textPrimary
                         )
 
                         Text(
                             text = value,
-                            style = RarimeTheme.typography.subtitle4,
+                            style = RarimeTheme.typography.subtitle6,
                             color = RarimeTheme.colors.textPrimary
                         )
                     }
@@ -119,18 +120,20 @@ private fun TxConfirmBottomSheetContent(
             ) {
                 PrimaryButton(
                     text = "Confirm",
+                    size = ButtonSize.Large,
                     modifier = Modifier.fillMaxWidth(),
                     onClick = onConfirm
                 )
 
                 TextButton(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
                     onClick = onCancel
                 ) {
                     Text(
                         text = "Cancel",
-                        style = RarimeTheme.typography.buttonMedium,
+                        style = RarimeTheme.typography.buttonLarge,
                         color = RarimeTheme.colors.errorDark
                     )
                 }

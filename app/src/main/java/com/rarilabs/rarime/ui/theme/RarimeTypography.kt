@@ -76,45 +76,45 @@ data class RarimeTypography(
     ),
     val subtitle1: TextStyle = TextStyle(
         fontFamily = interFontFamily,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Medium,
         fontSize = 48.sp,
         lineHeight = 52.sp,
     ),
     val subtitle2: TextStyle = TextStyle(
         fontFamily = interFontFamily,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Medium,
         fontSize = 40.sp,
         lineHeight = 44.sp,
     ),
     val subtitle3: TextStyle = TextStyle(
         fontFamily = interFontFamily,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Medium,
         fontSize = 32.sp,
         lineHeight = 36.sp,
     ),
     val subtitle4: TextStyle = TextStyle(
         fontFamily = interFontFamily,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Medium,
         fontSize = 20.sp,
         lineHeight = 24.sp,
     ),
     val subtitle5: TextStyle = TextStyle(
         fontFamily = interFontFamily,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Medium,
         fontSize = 16.sp,
         lineHeight = 22.sp,
     ),
 
     val subtitle6: TextStyle = TextStyle(
         fontFamily = interFontFamily,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
         lineHeight = 20.sp,
     ),
 
     val subtitle7: TextStyle = TextStyle(
         fontFamily = interFontFamily,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
         lineHeight = 18.sp,
     ),

@@ -134,7 +134,7 @@
     <string name="scan_qr_description">Place QR code within the frame to scan</string>
     <string name="wallet_receive_title">Receive %1$s</string>
     <string name="wallet_receive_description">You can use the QR code or the wallet address to deposit the %1$s token to your account</string>
-    <string name="deposit_address_lbl">Your Rarimo Address</string>
+    <string name="deposit_address_lbl">Your Address</string>
     <string name="address_lbl">Address</string>
     <string name="amount_lbl">Amount</string>
     <string name="amount_placeholder">Enter amount in %1$s</string>

@@ -33,7 +33,7 @@ fun WalletTransactionsList(
     ) {
         Text(
             text = stringResource(R.string.transactions_title),
-            style = RarimeTheme.typography.subtitle3,
+            style = RarimeTheme.typography.subtitle5,
             color = RarimeTheme.colors.textPrimary
         )
 
@@ -42,7 +42,7 @@ fun WalletTransactionsList(
         if (transactions.isEmpty()) {
             Text(
                 text = stringResource(R.string.no_transactions_msg),
-                style = RarimeTheme.typography.body3,
+                style = RarimeTheme.typography.body4,
                 color = RarimeTheme.colors.textSecondary
             )
         } else {

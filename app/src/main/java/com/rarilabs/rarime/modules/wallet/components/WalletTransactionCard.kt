@@ -54,12 +54,12 @@ fun WalletTransactionCard(
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
                     text = stringResource(transaction.titleId),
-                    style = RarimeTheme.typography.subtitle4,
+                    style = RarimeTheme.typography.subtitle6,
                     color = RarimeTheme.colors.textPrimary
                 )
                 Text(
                     text = DateUtil.formatDate(transaction.date),
-                    style = RarimeTheme.typography.body4,
+                    style = RarimeTheme.typography.body5,
                     color = RarimeTheme.colors.textSecondary
                 )
             }
@@ -67,7 +67,7 @@ fun WalletTransactionCard(
 
         Text(
             text = "${amountSign}${NumberUtil.formatAmount(txHumanAmount)} ${asset.token.symbol}",
-            style = RarimeTheme.typography.subtitle5,
+            style = RarimeTheme.typography.subtitle7,
             color = if (transaction.state == TransactionState.INCOMING) {
                 RarimeTheme.colors.successMain
             } else {
