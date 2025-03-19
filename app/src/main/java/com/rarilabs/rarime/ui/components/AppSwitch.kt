@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,12 +48,11 @@ fun AppSwitch(
     val animatedOffset = remember { Animatable(xOffset) }
     val alpha = if (enabled) 1f else 0.8f
 
-    val animatedBgColor by animateColorAsState(
-        targetValue =
-        if (checked) RarimeTheme.colors.primaryDark
-        else RarimeTheme.colors.componentPrimary,
-        label = ""
-    )
+    val backgroundModifier = if (checked) {
+        Modifier.background(RarimeTheme.colors.gradient6, CircleShape)
+    } else {
+        Modifier.background(RarimeTheme.colors.componentPrimary, CircleShape)
+    }
 
     LaunchedEffect(checked) {
         if (animatedOffset.targetValue != xOffset) {
@@ -68,7 +68,7 @@ fun AppSwitch(
             .height(24.dp)
             .width(40.dp)
             .alpha(alpha)
-            .background(animatedBgColor, CircleShape)
+            .then(backgroundModifier)
             .padding(2.dp)
             .clickable(interactionSource = interactionSource, indication = null) {
                 if (enabled) {
@@ -95,12 +95,12 @@ private fun AppSwitchPreview() {
         modifier = Modifier.padding(12.dp, 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             AppSwitch(checked = isChecked, onCheckedChange = { isChecked = it })
             Text(
                 text = "Regular",
                 modifier = Modifier.padding(8.dp, 0.dp),
-                style = RarimeTheme.typography.subtitle4,
+                style = RarimeTheme.typography.subtitle6,
             )
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -112,7 +112,7 @@ private fun AppSwitchPreview() {
             Text(
                 text = "Disabled",
                 modifier = Modifier.padding(8.dp, 0.dp),
-                style = RarimeTheme.typography.subtitle4,
+                style = RarimeTheme.typography.subtitle6,
                 color = RarimeTheme.colors.textDisabled
             )
         }

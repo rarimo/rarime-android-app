@@ -173,10 +173,10 @@ private fun ReadEDocStepContent(
                             ) {
                                 Text(
                                     text = stringResource(R.string.nfc_reader_hint_1),
-                                    style = RarimeTheme.typography.body3,
+                                    style = RarimeTheme.typography.body4,
                                     color = RarimeTheme.colors.textSecondary,
                                     modifier = Modifier.width(250.dp),
-                                    textAlign = TextAlign.Left
+                                    textAlign = TextAlign.Center
                                 )
                             }
                         }
@@ -184,7 +184,7 @@ private fun ReadEDocStepContent(
                         ScanNFCState.SCANNING -> {
 //                            Text(
 //                                text = stringResource(R.string.nfc_reader_scanning),
-//                                style = RarimeTheme.typography.body3,
+//                                style = RarimeTheme.typography.body4,
 //                                color = RarimeTheme.colors.textSecondary,
 //                                modifier = Modifier.width(250.dp),
 //                                textAlign = TextAlign.Center

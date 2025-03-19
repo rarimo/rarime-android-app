@@ -56,7 +56,7 @@ fun UiPrivacyCheckbox(
         AppCheckbox(state = termsAcceptedState, enabled = enabled)
         ClickableText(
             text = termsAnnotation,
-            style = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary),
+            style = RarimeTheme.typography.body5.copy(color = RarimeTheme.colors.textSecondary),
             onClick = {
                 termsAnnotation
                     .getStringAnnotations("URL", it, it)

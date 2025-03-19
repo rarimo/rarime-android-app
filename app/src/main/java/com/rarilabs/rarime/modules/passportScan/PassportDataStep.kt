@@ -91,7 +91,7 @@ private fun PassportDataStepContent(
                             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Text(
                                     text = eDocument.personDetails!!.name.toString() + " " + eDocument.personDetails!!.surname,
-                                    style = RarimeTheme.typography.subtitle3,
+                                    style = RarimeTheme.typography.subtitle5,
                                     color = RarimeTheme.colors.textPrimary
                                 )
                                 Text(
@@ -100,7 +100,7 @@ private fun PassportDataStepContent(
                                             eDocument.personDetails!!.birthDate!!
                                         )
                                     }",
-                                    style = RarimeTheme.typography.body3,
+                                    style = RarimeTheme.typography.body4,
                                     color = RarimeTheme.colors.textSecondary
                                 )
                             }
@@ -118,7 +118,7 @@ private fun PassportDataStepContent(
                             ) {
                                 Text(
                                     text = stringResource(R.string.must_data),
-                                    style = RarimeTheme.typography.subtitle3,
+                                    style = RarimeTheme.typography.subtitle5,
                                     color = RarimeTheme.colors.textPrimary
                                 )
                                 if (!isUnsupported) {
@@ -174,12 +174,12 @@ private fun MustDataRow(title: String, value: String) {
     ) {
         Text(
             text = title,
-            style = RarimeTheme.typography.body3,
+            style = RarimeTheme.typography.body4,
             color = RarimeTheme.colors.textPrimary
         )
         Text(
             text = value,
-            style = RarimeTheme.typography.subtitle4,
+            style = RarimeTheme.typography.subtitle6,
             color = RarimeTheme.colors.textPrimary
         )
     }

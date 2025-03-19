@@ -100,7 +100,7 @@ fun ClaimAirdropScreen(
                 ) {
                     Text(
                         text = "🇺🇦",
-                        style = RarimeTheme.typography.h5,
+                        style = RarimeTheme.typography.h3,
                         color = RarimeTheme.colors.textPrimary,
                     )
                 }
@@ -117,12 +117,12 @@ fun ClaimAirdropScreen(
                     text = stringResource(
                         R.string.claim_tokens_title, Constants.AIRDROP_REWARD.toInt()
                     ),
-                    style = RarimeTheme.typography.h6,
+                    style = RarimeTheme.typography.h4,
                     color = RarimeTheme.colors.textPrimary,
                 )
                 Text(
                     text = stringResource(R.string.claim_tokens_description),
-                    style = RarimeTheme.typography.body3,
+                    style = RarimeTheme.typography.body4,
                     textAlign = TextAlign.Center,
                     color = RarimeTheme.colors.textSecondary,
                 )

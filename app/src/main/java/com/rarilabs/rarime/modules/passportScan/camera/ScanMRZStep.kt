@@ -87,7 +87,7 @@ fun ScanMRZStep(onNext: (MRZInfo) -> Unit, onClose: () -> Unit) {
                     ) {
                         Text(
                             text = stringResource(id = R.string.scan_mrzstep_permission_denied),
-                            style = RarimeTheme.typography.h6,
+                            style = RarimeTheme.typography.h4,
                             color = RarimeTheme.colors.textPrimary,
                             textAlign = TextAlign.Center
                         )
@@ -120,7 +120,7 @@ private fun ScanMRZStepContent(
             cameraContent()
             Text(
                 text = stringResource(R.string.scan_your_passport_hint),
-                style = RarimeTheme.typography.body3,
+                style = RarimeTheme.typography.body4,
                 color = RarimeTheme.colors.textSecondary,
                 modifier = Modifier.width(250.dp),
                 textAlign = TextAlign.Center
@@ -206,7 +206,7 @@ private fun ManualInputForm(
         ) {
             Text(
                 text = stringResource(id = R.string.scan_mrzstep_manual_input_title),
-                style = RarimeTheme.typography.h6,
+                style = RarimeTheme.typography.h4,
                 color = RarimeTheme.colors.textPrimary,
             )
 
@@ -227,7 +227,7 @@ private fun ManualInputForm(
         ) {
             Text(
                 text = stringResource(id = R.string.scan_mrzstep_manual_input_subtitle),
-                style = RarimeTheme.typography.subtitle4,
+                style = RarimeTheme.typography.subtitle6,
                 color = RarimeTheme.colors.textSecondary,
             )
 
@@ -271,7 +271,7 @@ private fun ScanMRZStepPreview() {
             ) {
                 Text(
                     text = stringResource(id = R.string.scan_mrzstep_permission_denied),
-                    style = RarimeTheme.typography.h6,
+                    style = RarimeTheme.typography.h4,
                     color = RarimeTheme.colors.textPrimary,
                     textAlign = TextAlign.Center
                 )

@@ -31,7 +31,7 @@ fun RewardChip(reward: Int, isActive: Boolean = false) {
     ) {
         Text(
             text = "+$reward",
-            style = RarimeTheme.typography.subtitle5,
+            style = RarimeTheme.typography.subtitle7,
             color = contentColor,
         )
         AppIcon(

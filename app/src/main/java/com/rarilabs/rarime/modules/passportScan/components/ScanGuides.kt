@@ -171,14 +171,14 @@ fun ScanGuides(
         Spacer(modifier = Modifier.height(40.dp))
         Text(
             text = title,
-            style = RarimeTheme.typography.h5,
+            style = RarimeTheme.typography.h4,
             color = RarimeTheme.colors.textPrimary,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = desc,
-            style = RarimeTheme.typography.body2,
+            style = RarimeTheme.typography.body3,
             color = RarimeTheme.colors.textSecondary,
             textAlign = TextAlign.Center
         )

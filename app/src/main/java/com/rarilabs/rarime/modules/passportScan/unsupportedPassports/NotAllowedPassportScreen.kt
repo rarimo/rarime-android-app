@@ -51,12 +51,12 @@ fun NotAllowedPassportScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .size(72.dp)
-                    .background(RarimeTheme.colors.backgroundPure, CircleShape)
+                    .background(RarimeTheme.colors.componentPrimary, CircleShape)
                     .border(2.dp, RarimeTheme.colors.backgroundPrimary, CircleShape)
             ) {
                 Text(
                     text = Country.fromISOCode(eDocument.personDetails!!.nationality)!!.flag,
-                    style = RarimeTheme.typography.h5,
+                    style = RarimeTheme.typography.h3,
                     color = RarimeTheme.colors.textPrimary,
                 )
             }
@@ -73,12 +73,12 @@ fun NotAllowedPassportScreen(
                     text = stringResource(
                         R.string.unsupported_country_title
                     ),
-                    style = RarimeTheme.typography.h6,
+                    style = RarimeTheme.typography.h4,
                     color = RarimeTheme.colors.textPrimary,
                 )
                 Text(
                     text = Country.fromISOCode(eDocument.personDetails!!.nationality)!!.localizedName,
-                    style = RarimeTheme.typography.body3,
+                    style = RarimeTheme.typography.body4,
                     textAlign = TextAlign.Center,
                     color = RarimeTheme.colors.textSecondary,
                 )
@@ -94,7 +94,7 @@ fun NotAllowedPassportScreen(
                 Text(
                     text = stringResource(id = R.string.unsupported_country_description),
                     color = RarimeTheme.colors.textPrimary,
-                    style = RarimeTheme.typography.body3
+                    style = RarimeTheme.typography.body4
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             }
