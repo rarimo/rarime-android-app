@@ -25,7 +25,7 @@ fun ZkIdentityScreen(modifier: Modifier = Modifier, navigate: (String) -> Unit) 
 }
 
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun ZkIdentityScreenPreview() {
     ZkIdentityScreen {}

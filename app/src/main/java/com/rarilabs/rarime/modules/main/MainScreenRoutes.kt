@@ -49,6 +49,7 @@ import com.rarilabs.rarime.modules.votes.voteProcessScreen.VoteProcessScreen
 import com.rarilabs.rarime.modules.wallet.WalletReceiveScreen
 import com.rarilabs.rarime.modules.wallet.WalletScreen
 import com.rarilabs.rarime.modules.wallet.WalletSendScreen
+import com.rarilabs.rarime.modules.you.ZkIdentityPohScreen
 import com.rarilabs.rarime.modules.you.ZkIdentityScreen
 import com.rarilabs.rarime.ui.components.AppWebView
 import com.rarilabs.rarime.ui.components.CongratsInvitationModalContent
@@ -213,10 +214,11 @@ fun MainScreenRoutes(
             }
 
             composable(Screen.Claim.Reserve.route) {
-                VerifyPassportScreen (
+                VerifyPassportScreen(
                     onSendError = { navigateWithPopUp(Screen.Main.Profile.route) },
-                onFinish = {navigateWithPopUp(Screen.Main.route)
-                })
+                    onFinish = {
+                        navigateWithPopUp(Screen.Main.route)
+                    })
             }
 
             navigation(
@@ -236,6 +238,12 @@ fun MainScreenRoutes(
                 composable(Screen.Main.Identity.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
                         ZkIdentityScreen(navigate = simpleNavigate)
+                    }
+                }
+
+                composable(Screen.Main.Identity.Poh.route) {
+                    AuthGuard(navigate = navigateWithPopUp) {
+                        ZkIdentityPohScreen(navigate = navigateWithPopUp)
                     }
                 }
 
@@ -353,7 +361,8 @@ fun MainScreenRoutes(
                 composable(Screen.Main.Profile.Terms.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
                         ScreenInsetsContainer {
-                            AppWebView(title = stringResource(R.string.terms_of_use),
+                            AppWebView(
+                                title = stringResource(R.string.terms_of_use),
                                 url = Constants.TERMS_URL,
                                 onBack = { navController.popBackStack() })
                         }
@@ -362,7 +371,8 @@ fun MainScreenRoutes(
                 composable(Screen.Main.Profile.Privacy.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
                         ScreenInsetsContainer {
-                            AppWebView(title = stringResource(R.string.privacy_policy),
+                            AppWebView(
+                                title = stringResource(R.string.privacy_policy),
                                 url = Constants.PRIVACY_URL,
                                 onBack = { navController.popBackStack() })
                         }
