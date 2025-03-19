@@ -89,7 +89,6 @@ android {
         create("debug_testnet") {
             initWith(getByName("debug"))
             buildConfigField("Boolean", "isTestnet", "true")
-            signingConfig = signingConfigs.getByName("debug")
         }
         create("release_testnet") {
             initWith(getByName("release"))

@@ -419,4 +419,14 @@
     <string name="zk_liveness_poh_list_item_2">No need for trusted third parties</string>
     <string name="zk_liveness_poh_list_item_3">What happens here, stays here!</string>
     <string name="zk_liveness_poh_btn">Let\'s start</string>
+
+
+    <string name="zk_identity_no_passport_title_1">Your</string>
+    <string name="zk_identity_no_passport_title_2">ZK Identity</string>
+    <string name="zk_identity_no_passport_list_caption">Select IdentityType</string>
+    <string name="zk_identity_no_passport_list_item_1">Passport</string>
+    <string name="zk_identity_no_passport_list_item_2">ZK Liveness (PoH Killer)</string>
+    <string name="zk_identity_no_passport_list_item_3">Driver License</string>
+    <string name="zk_identity_no_passport_list_item_4">Driver License</string>
+    <string name="zk_identity_no_passport_list_item_5">Driver License</string>
 </resources>
