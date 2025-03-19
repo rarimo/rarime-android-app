@@ -38,15 +38,14 @@ fun EnableScreenLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary)
-            .padding(vertical = 24.dp)
+            .padding(top = 72.dp, bottom = 16.dp)
+            .padding(horizontal = 20.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .padding(top = 56.dp)
-                .padding(horizontal = 20.dp)
         ) {
             Box(
                 modifier = Modifier
@@ -70,13 +69,11 @@ fun EnableScreenLayout(
                 textAlign = TextAlign.Center
             )
         }
-        HorizontalDivider()
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp)
-                .padding(horizontal = 20.dp)
         ) {
             PrimaryButton(
                 text = stringResource(R.string.enable_btn),

@@ -38,7 +38,7 @@ fun AppWebView(url: String, title: String, onBack: () -> Unit) {
             )
             Text(
                 text = title,
-                style = RarimeTheme.typography.subtitle4,
+                style = RarimeTheme.typography.subtitle6,
                 color = RarimeTheme.colors.textPrimary,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()

@@ -2,28 +2,23 @@ package com.rarilabs.rarime.modules.intro
 
 import androidx.annotation.RawRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,14 +26,10 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppAnimation
 import com.rarilabs.rarime.ui.components.AppBottomSheet
-import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.components.SecondaryTextButton
-import com.rarilabs.rarime.ui.components.StepIndicator
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Screen
-import kotlinx.coroutines.launch
 
 private enum class IntroStep(
     @StringRes val title: Int,
@@ -85,65 +76,58 @@ fun IntroScreen(
         )
     }
     val stepState = rememberPagerState(pageCount = { 1 })
-    val coroutineScope = rememberCoroutineScope()
-
     val sheetState = rememberAppSheetState()
 
-    val isLastStep = stepState.currentPage == introSteps.size - 1
-
-    Surface(color = RarimeTheme.colors.backgroundPrimary) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(48.dp),
-            modifier = Modifier
-                .fillMaxHeight()
-                .verticalScroll(rememberScrollState())
-        ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                HorizontalPager(
-                    state = stepState,
-                    verticalAlignment = Alignment.Top,
-                ) { page ->
-                    StepView(introSteps[page])
-                }
-            }
-            Column(
-                modifier = Modifier.padding(horizontal = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
-            ) {
-                PrimaryButton(
-                    text = stringResource(R.string.create_account_btn),
-                    size = ButtonSize.Large,
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { sheetState.show() }
-                )
-                Spacer(modifier = Modifier.height(32.dp))
+    Column(
+        verticalArrangement = Arrangement.spacedBy(48.dp),
+        modifier = Modifier
+            .fillMaxHeight()
+            .background(RarimeTheme.colors.backgroundPrimary)
+            .padding(bottom = 20.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            HorizontalPager(
+                state = stepState,
+                verticalAlignment = Alignment.Top,
+            ) { page ->
+                StepView(introSteps[page])
             }
         }
-    }
-
-    AppBottomSheet(state = sheetState) {
-        CreateIdentityVariantsSelector(
-            listOf(
-                IdentityVariant(
-                    title = stringResource(id = R.string.create_identity_selector_option_1),
-                    subtitle = stringResource(id = R.string.create_identity_selector_option_1_subtitle),
-                    icon = R.drawable.ic_user_plus,
-                    onSelect = {
-                        navigate(Screen.Register.NewIdentity.route)
-                    }
-                ),
-                IdentityVariant(
-                    title = stringResource(id = R.string.create_identity_selector_option_2),
-                    subtitle = stringResource(id = R.string.create_identity_selector_option_2_subtitle),
-                    icon = R.drawable.ic_share_1,
-                    onSelect = {
-                        navigate(Screen.Register.ImportIdentity.route)
-                    }
-                ),
+        Column(
+            modifier = Modifier.padding(horizontal = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            PrimaryButton(
+                text = stringResource(R.string.create_account_btn),
+                size = ButtonSize.Large,
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { sheetState.show() }
             )
-        )
+        }
+
+        AppBottomSheet(state = sheetState) {
+            CreateIdentityVariantsSelector(
+                listOf(
+                    IdentityVariant(
+                        title = stringResource(id = R.string.create_identity_selector_option_1),
+                        subtitle = stringResource(id = R.string.create_identity_selector_option_1_subtitle),
+                        icon = R.drawable.ic_user_plus,
+                        onSelect = {
+                            navigate(Screen.Register.NewIdentity.route)
+                        }
+                    ),
+                    IdentityVariant(
+                        title = stringResource(id = R.string.create_identity_selector_option_2),
+                        subtitle = stringResource(id = R.string.create_identity_selector_option_2_subtitle),
+                        icon = R.drawable.ic_share_1,
+                        onSelect = {
+                            navigate(Screen.Register.ImportIdentity.route)
+                        }
+                    ),
+                )
+            )
+        }
     }
 }
 
@@ -169,7 +153,7 @@ private fun StepView(step: IntroStep) {
 
             Text(
                 text = stringResource(step.title),
-                style = RarimeTheme.typography.h3,
+                style = RarimeTheme.typography.h2,
                 color = RarimeTheme.colors.textPrimary
             )
             Text(

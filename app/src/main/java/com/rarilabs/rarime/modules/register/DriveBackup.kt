@@ -101,7 +101,8 @@ fun DriveBackup(
             Text(
                 textAlign = TextAlign.Center,
                 text = stringResource(R.string.google_drive_backup_title),
-                style = RarimeTheme.typography.h4
+                style = RarimeTheme.typography.h4,
+                color = RarimeTheme.colors.textPrimary
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
