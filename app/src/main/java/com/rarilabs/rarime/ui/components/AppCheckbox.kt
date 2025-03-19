@@ -56,13 +56,11 @@ fun AppCheckbox(
 
     val colors = RarimeTheme.colors
 
-    val targetColor by remember(state.checked) {
-        derivedStateOf {
-            if (state.checked) colors.primaryDark else colors.componentPrimary
-        }
+    val backgroundModifier = if (state.checked) {
+        Modifier.background(colors.gradient6, RoundedCornerShape(4.dp))
+    } else {
+        Modifier.background(colors.componentPrimary, RoundedCornerShape(4.dp))
     }
-
-    val animatedBgColor by animateColorAsState(targetValue = targetColor, label = "")
 
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -74,7 +72,7 @@ fun AppCheckbox(
     }
 
     Box(modifier = modifier
-        .background(animatedBgColor, RoundedCornerShape(4.dp))
+        .then(backgroundModifier)
         .border(1.dp, colors.componentPrimary, RoundedCornerShape(4.dp))
         .padding(2.dp)
         .clickable(interactionSource = interactionSource,
@@ -85,7 +83,7 @@ fun AppCheckbox(
         AppIcon(
             id = R.drawable.ic_check,
             size = 16.dp,
-            tint = if (state.checked) colors.baseBlack else Color.Transparent,
+            tint = if (state.checked) colors.invertedLight else Color.Transparent,
         )
     }
 }

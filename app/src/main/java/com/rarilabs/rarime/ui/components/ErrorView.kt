@@ -26,12 +26,12 @@ fun ErrorView(
         ) {
             Text(
                 text = title,
-                style = RarimeTheme.typography.h4,
+                style = RarimeTheme.typography.h2,
                 color = RarimeTheme.colors.textPrimary
             )
             Text(
                 text = subtitle,
-                style = RarimeTheme.typography.subtitle2,
+                style = RarimeTheme.typography.subtitle4,
                 color = RarimeTheme.colors.textSecondary
             )
         }

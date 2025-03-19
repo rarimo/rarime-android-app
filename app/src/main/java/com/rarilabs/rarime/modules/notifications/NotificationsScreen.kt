@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
@@ -107,38 +108,48 @@ fun NotificationScreenContent(
             horizontalArrangement = Arrangement.SpaceBetween
 
         ) {
-            IconButton(onClick = { onBack.invoke() }) {
-                AppIcon(
-                    id = R.drawable.ic_arrow_left,
-                    modifier = Modifier.width(20.dp),
-                    tint = RarimeTheme.colors.textPrimary
-                )
-            }
             Text(
                 text = "Notifications",
                 style = RarimeTheme.typography.subtitle4,
                 color = RarimeTheme.colors.textPrimary
             )
 
-            if (BuildConfig.isTestnet) {
-                IconButton(onClick = {
-                    scope.launch {
-                        addNotification.invoke(
-                            NotificationEntityData(
-                                header = "RMO listed on Binance",
-                                description = "It is a long established fact that a reader will be distracted by the readable",
-                                date = "1723466049",
-                                isActive = true,
-                                type = null,
-                                data = null
+            Row {
+                if (BuildConfig.isTestnet) {
+                    IconButton(onClick = {
+                        scope.launch {
+                            addNotification.invoke(
+                                NotificationEntityData(
+                                    header = "RMO listed on Binance",
+                                    description = "It is a long established fact that a reader will be distracted by the readable",
+                                    date = "1723466049",
+                                    isActive = true,
+                                    type = null,
+                                    data = null
+                                )
                             )
+                        }
+                    }) {
+                        AppIcon(
+                            id = R.drawable.ic_plus,
+                            size = 40.dp,
+                            modifier = Modifier
+                                .background(RarimeTheme.colors.componentPrimary, CircleShape)
+                                .padding(10.dp),
+                            tint = RarimeTheme.colors.textPrimary
                         )
                     }
-                }) {
-                    AppIcon(id = R.drawable.ic_plus, modifier = Modifier.width(20.dp))
                 }
-            } else {
-                Spacer(modifier = Modifier.width(40.dp))
+                IconButton(onClick = { onBack.invoke() }) {
+                    AppIcon(
+                        id = R.drawable.ic_close,
+                        size = 40.dp,
+                        modifier = Modifier
+                            .background(RarimeTheme.colors.componentPrimary, CircleShape)
+                            .padding(10.dp),
+                        tint = RarimeTheme.colors.textPrimary
+                    )
+                }
             }
         }
 
@@ -237,7 +248,7 @@ fun NotificationItem(
             ) {
                 Text(
                     text = currentItem.header,
-                    style = RarimeTheme.typography.body3,
+                    style = RarimeTheme.typography.subtitle6,
                     color = RarimeTheme.colors.textPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -276,7 +287,7 @@ fun NotificationItem(
                 text = currentItem.description,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                style = RarimeTheme.typography.body3,
+                style = RarimeTheme.typography.body4,
                 color = RarimeTheme.colors.textSecondary
             )
 

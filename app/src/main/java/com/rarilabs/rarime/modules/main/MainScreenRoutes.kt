@@ -257,17 +257,23 @@ fun MainScreenRoutes(
 
                 composable(Screen.Main.Wallet.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
-                        WalletScreen(navigate = { simpleNavigate(it) })
+                        ScreenInsetsContainer {
+                            WalletScreen(navigate = { simpleNavigate(it) })
+                        }
                     }
                 }
                 composable(Screen.Main.Wallet.Receive.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
-                        WalletReceiveScreen(onBack = { navController.popBackStack() })
+                        ScreenInsetsContainer {
+                            WalletReceiveScreen(onBack = { navController.popBackStack() })
+                        }
                     }
                 }
                 composable(Screen.Main.Wallet.Send.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
-                        WalletSendScreen(onBack = { navController.popBackStack() })
+                        ScreenInsetsContainer {
+                            WalletSendScreen(onBack = { navController.popBackStack() })
+                        }
                     }
                 }
 

@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.google.gson.Gson
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
+import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
@@ -62,7 +63,7 @@ fun GetInTouchScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
@@ -77,13 +78,13 @@ fun GetInTouchScreen(
             Spacer(modifier = Modifier.height(32.dp))
             Text(
                 text = stringResource(id = R.string.get_in_touch_title),
-                style = RarimeTheme.typography.subtitle2,
+                style = RarimeTheme.typography.subtitle4,
                 color = RarimeTheme.colors.textPrimary,
             )
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = stringResource(id = R.string.get_in_touch_subtitle),
-                style = RarimeTheme.typography.body3,
+                style = RarimeTheme.typography.body4,
                 color = RarimeTheme.colors.textSecondary,
                 textAlign = TextAlign.Center
             )
@@ -98,6 +99,7 @@ fun GetInTouchScreen(
         ) {
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
+                size = ButtonSize.Large,
                 text = stringResource(id = R.string.get_in_touch_confirm),
                 rightIcon = R.drawable.ic_arrow_right,
                 onClick = { getInTouch() }
@@ -109,7 +111,7 @@ fun GetInTouchScreen(
             ) {
                 Text(
                     text = stringResource(id = R.string.get_in_touch_cancel),
-                    style = RarimeTheme.typography.buttonMedium,
+                    style = RarimeTheme.typography.buttonLarge,
                     color = RarimeTheme.colors.textPrimary,
                 )
             }

@@ -49,7 +49,7 @@ fun ScanPassportLayout(
             ) {
                 Text(
                     text = stringResource(R.string.step_indicator, step, totalSteps),
-                    style = RarimeTheme.typography.body3,
+                    style = RarimeTheme.typography.body4,
                     color = RarimeTheme.colors.textSecondary
                 )
                 PrimaryTextButton(leftIcon = R.drawable.ic_close, onClick = onClose)
@@ -57,12 +57,12 @@ fun ScanPassportLayout(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
                     text = title,
-                    style = RarimeTheme.typography.subtitle2,
+                    style = RarimeTheme.typography.subtitle4,
                     color = RarimeTheme.colors.textPrimary
                 )
                 Text(
                     text = text,
-                    style = RarimeTheme.typography.body3,
+                    style = RarimeTheme.typography.body4,
                     color = RarimeTheme.colors.textSecondary
                 )
             }

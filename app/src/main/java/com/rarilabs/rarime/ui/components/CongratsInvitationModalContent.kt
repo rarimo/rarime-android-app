@@ -62,12 +62,12 @@ fun CongratsInvitationModalContent(
             ) {
                 Text(
                     text = stringResource(R.string.congrats_accept_invite_title),
-                    style = RarimeTheme.typography.h6,
+                    style = RarimeTheme.typography.h4,
                     color = RarimeTheme.colors.textPrimary
                 )
                 Text(
                     text = stringResource(R.string.congrats_accept_invite_subtitle),
-                    style = RarimeTheme.typography.body2,
+                    style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.textSecondary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.width(240.dp)

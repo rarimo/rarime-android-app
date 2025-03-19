@@ -210,7 +210,7 @@ private fun WalletSendScreenContent(
                     onClick = {
                         confirmationSheetState.show()
                     },
-                    enabled = true
+                    enabled = addressState.text.isNotEmpty() && humanAmountState.text.isNotEmpty() && !isSubmitting
                 )
             }
         }

@@ -210,7 +210,7 @@ private fun GenerateProofStepContent(
                         downloadProgress.toString()
                     ),
                     color = RarimeTheme.colors.textSecondary,
-                    style = RarimeTheme.typography.body3
+                    style = RarimeTheme.typography.body4
                 )
             }
         }
@@ -267,14 +267,14 @@ private fun GeneralProcessingStatus(status: ProcessingStatus) {
     ) {
         Text(
             text = title,
-            style = RarimeTheme.typography.h6,
+            style = RarimeTheme.typography.h4,
             color = RarimeTheme.colors.textPrimary,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
         Text(
             text = text,
-            style = RarimeTheme.typography.body3,
+            style = RarimeTheme.typography.body4,
             color = RarimeTheme.colors.textSecondary,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
@@ -298,7 +298,7 @@ private fun ProcessingItem(item: PassportProofState, status: ProcessingStatus) {
     ) {
         Text(
             text = label,
-            style = RarimeTheme.typography.body3,
+            style = RarimeTheme.typography.body4,
             color = RarimeTheme.colors.textPrimary
         )
         ProcessingChip(status = status)

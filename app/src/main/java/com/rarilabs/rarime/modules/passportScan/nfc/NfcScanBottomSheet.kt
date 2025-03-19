@@ -62,13 +62,15 @@ fun NfcScanBottomSheet(
             ) {
             Text(
                 text = "Ready to Scan",
-                style = RarimeTheme.typography.subtitle1,
-                color = RarimeTheme.colors.textSecondary,
+                style = RarimeTheme.typography.h3,
+                color = RarimeTheme.colors.textPrimary,
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = currentStepDescription[currentStep]!!,
+                style = RarimeTheme.typography.body3,
+                color = RarimeTheme.colors.textSecondary,
                 textAlign = TextAlign.Center
             )
 

@@ -107,7 +107,7 @@ fun HeaderSection(onClose: () -> Unit) {
 fun NotificationHeader(text: String) {
     Text(
         text = text,
-        style = RarimeTheme.typography.h6,
+        style = RarimeTheme.typography.h4,
         color = RarimeTheme.colors.textPrimary
     )
 }
@@ -120,7 +120,7 @@ fun NotificationTimestamp(timestamp: String, context: Context) {
     }
     Text(
         text = "${DateUtil.getDurationString(DateUtil.duration(timeStr), context)} ${stringResource(id = R.string.time_ago)}",
-        style = RarimeTheme.typography.body2,
+        style = RarimeTheme.typography.body3,
         color = RarimeTheme.colors.textSecondary
     )
 }
@@ -129,7 +129,7 @@ fun NotificationTimestamp(timestamp: String, context: Context) {
 fun NotificationDescription(text: String) {
     Text(
         text = text,
-        style = RarimeTheme.typography.body3,
+        style = RarimeTheme.typography.body4,
         color = RarimeTheme.colors.textSecondary
     )
 }

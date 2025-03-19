@@ -34,7 +34,7 @@ fun AlertModalContent(
         AppIcon(
             id = R.drawable.ic_check,
             size = 24.dp,
-            tint = RarimeTheme.colors.baseBlack,
+            tint = RarimeTheme.colors.invertedLight,
             modifier = Modifier
                 .background(RarimeTheme.colors.primaryMain, CircleShape)
                 .padding(28.dp)
@@ -43,7 +43,7 @@ fun AlertModalContent(
     title: String,
     subtitle: String,
     buttonText: String,
-    buttonColor: Color = RarimeTheme.colors.baseBlack,
+    buttonColor: Color = RarimeTheme.colors.invertedLight,
     buttonBg: Color = RarimeTheme.colors.primaryMain
 ) {
     Box(
@@ -75,12 +75,12 @@ fun AlertModalContent(
             ) {
                 Text(
                     text = title,
-                    style = RarimeTheme.typography.h6,
+                    style = RarimeTheme.typography.h4,
                     color = RarimeTheme.colors.textPrimary
                 )
                 Text(
                     text = subtitle,
-                    style = RarimeTheme.typography.body2,
+                    style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.textSecondary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.width(240.dp)
