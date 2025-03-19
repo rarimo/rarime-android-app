@@ -413,4 +413,10 @@
     <string name="reserve_error_description">An error occurred while reserving tokens. Please send feedback in the settings.</string>
     <string name="give_us_feedback">Give us Feedback</string>
 
+
+    <string name="zk_liveness_poh_title">ZK Liveness</string>
+    <string name="zk_liveness_poh_list_item_1">Only your camera and device should attest to your identity</string>
+    <string name="zk_liveness_poh_list_item_2">No need for trusted third parties</string>
+    <string name="zk_liveness_poh_list_item_3">What happens here, stays here!</string>
+    <string name="zk_liveness_poh_btn">Let\'s start</string>
 </resources>

@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,12 +20,14 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.Screen
 
 @Composable
 fun ZkIdentityNoPassport(modifier: Modifier = Modifier, navigate: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(start = 20.dp, end = 20.dp, top = 70.dp)
             .then(modifier)
     ) {
@@ -50,20 +54,22 @@ fun ZkIdentityNoPassport(modifier: Modifier = Modifier, navigate: (String) -> Un
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             IdentityCardTypeItem(
-                imageId = R.drawable.ic_rarimo,
+                imageId = R.drawable.ic_passport_line,
                 name = "Passport",
                 isActive = true,
-                onClick = {}
+                onClick = {
+                }
             )
 
             HorizontalDivider()
 
 
             IdentityCardTypeItem(
-                imageId = R.drawable.ic_rarimo,
-                name = "POH",
+                imageId = R.drawable.ic_body_scan_fill,
+                name = "ZK Liveness (PoH Killer)",
                 isActive = true,
                 onClick = {
+                    navigate(Screen.Main.Identity.Poh.route)
                 }
             )
 
@@ -98,9 +104,7 @@ fun ZkIdentityNoPassport(modifier: Modifier = Modifier, navigate: (String) -> Un
             )
 
         }
-
-        Spacer(Modifier.height(24.dp))
-
+        Spacer(Modifier.height(130.dp))
     }
 }
 
