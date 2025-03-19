@@ -46,19 +46,19 @@ val tempPointsBalances = PointsBalanceData(
             ),
             ReferralCode(
                 id = "QrisPfszkps_2",
-                status = ReferralCodeStatuses.AWAITING.value,
+                status = ReferralCodeStatuses.ACTIVE.value,
             ),
             ReferralCode(
                 id = "QrisPfszkps_3",
-                status = ReferralCodeStatuses.CONSUMED.value
+                status = ReferralCodeStatuses.ACTIVE.value
             ),
             ReferralCode(
                 id = "QrisPfszkps_4",
-                status = ReferralCodeStatuses.BANNED.value
+                status = ReferralCodeStatuses.ACTIVE.value
             ),
             ReferralCode(
                 id = "QrisPfszkps_5",
-                status = ReferralCodeStatuses.LIMITED.value
+                status = ReferralCodeStatuses.ACTIVE.value
             ),
 //                    ReferralCode(
 //                        id = "QrisPfszkps_6",
@@ -123,7 +123,7 @@ fun InviteOthersContent(
         )
 
         Column(
-            modifier = Modifier.padding(top = 24.dp),
+            modifier = Modifier.padding(top = 24.dp, bottom = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             pointsBalance.attributes.referral_codes?.forEach {

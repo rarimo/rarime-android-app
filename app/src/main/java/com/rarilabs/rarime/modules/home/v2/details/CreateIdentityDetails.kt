@@ -70,7 +70,7 @@ fun CreateIdentityDetails(
                     modifier = Modifier.fillMaxWidth(),
                     text = "Let’s Start",
                     onClick = {
-                        navigate(Screen.ScanPassport.ScanPassportPoints.route)
+                        navigate(Screen.Main.Identity.route)
                     }
                 )
 

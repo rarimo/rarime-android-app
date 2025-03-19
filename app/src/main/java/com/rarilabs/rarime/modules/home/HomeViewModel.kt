@@ -32,7 +32,6 @@ class HomeViewModel @Inject constructor(
     private val registrationManager: RegistrationManager,
     private val sharedPrefsManager: SecureSharedPrefsManager
 ) : AndroidViewModel(app) {
-    val isAirDropClaimed = airDropManager.isAirDropClaimed
 
     val notReadNotifications = notificationManager.notificationList
 
