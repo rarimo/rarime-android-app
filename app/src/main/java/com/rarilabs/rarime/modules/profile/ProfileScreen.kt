@@ -10,7 +10,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,10 +17,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,8 +37,6 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.data.enums.AppIcon
 import com.rarilabs.rarime.data.enums.toLocalizedString
-import com.rarilabs.rarime.modules.main.LocalMainViewModel
-import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.ConfirmationDialog
 import com.rarilabs.rarime.ui.components.PassportImage
@@ -56,9 +51,6 @@ fun ProfileScreen(
     appIcon: AppIcon, navigate: (String) -> Unit, viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val mainViewModel = LocalMainViewModel.current
-    val screenInsets by mainViewModel.screenInsets.collectAsState()
-
     var isFeedbackDialogShown by remember { mutableStateOf(false) }
 
     val launcher = rememberLauncherForActivityResult(
@@ -72,13 +64,11 @@ fun ProfileScreen(
         viewModel.getImage()
     }
 
-    //val language by viewModel.language
     val colorScheme by viewModel.colorScheme
 
     ProfileScreenContent(
         rarimoAddress = WalletUtil.formatAddress(viewModel.rarimoAddress),
         passportImage = image,
-        screenInsets = screenInsets,
         navigate = navigate,
         colorScheme = colorScheme,
         appIcon = appIcon,
@@ -97,7 +87,6 @@ fun ProfileScreenContent(
     appIcon: AppIcon,
     rarimoAddress: String,
     passportImage: Bitmap?,
-    screenInsets: Map<ScreenInsets, Number>,
     navigate: (String) -> Unit,
     colorScheme: AppColorScheme,
     onFeedbackConfirm: suspend () -> Unit = {},
@@ -105,24 +94,17 @@ fun ProfileScreenContent(
 ) {
     val scope = rememberCoroutineScope()
 
-    var isFeedbackDialogShown by remember { mutableStateOf(false) }
-
     Column(
         verticalArrangement = Arrangement.spacedBy(20.dp),
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .background(RarimeTheme.colors.backgroundPrimary)
-            .absolutePadding(
-                top = (screenInsets.get(ScreenInsets.TOP)?.toFloat() ?: 0f).dp,
-                bottom = (screenInsets.get(ScreenInsets.BOTTOM)?.toFloat() ?: 0f).dp,
-                left = 8.dp,
-                right = 8.dp
-            )
+            .padding(20.dp)
     ) {
         Text(
             text = stringResource(R.string.profile),
-            style = RarimeTheme.typography.subtitle3,
+            style = RarimeTheme.typography.subtitle4,
             color = RarimeTheme.colors.textPrimary,
         )
 
@@ -133,7 +115,7 @@ fun ProfileScreenContent(
             Column(
                 modifier = Modifier
                     .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp))
-                    .padding(16.dp)
+                    .padding(20.dp)
             ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -143,7 +125,7 @@ fun ProfileScreenContent(
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
                             text = stringResource(R.string.account),
-                            style = RarimeTheme.typography.h4,
+                            style = RarimeTheme.typography.buttonLarge,
                             color = RarimeTheme.colors.textPrimary
                         )
                         Text(
@@ -178,12 +160,6 @@ fun ProfileScreenContent(
                     .padding(16.dp)
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-//                    ProfileRow(
-//                        iconId = R.drawable.ic_globe_simple,
-//                        title = stringResource(R.string.language),
-//                        value = language.toLocalizedString(),
-//                        onClick = { navigate(Screen.Main.Profile.Language.route) }
-//                    )
                     ProfileRow(iconId = R.drawable.ic_sun,
                         title = stringResource(R.string.theme),
                         value = colorScheme.toLocalizedString(),
@@ -199,32 +175,15 @@ fun ProfileScreenContent(
                         title = stringResource(R.string.terms_of_use),
                         onClick = { navigate(Screen.Main.Profile.Terms.route) })
                     ProfileRow(
-                        iconId = R.drawable.ic_warning,
-                        title = "Send us feedback",
-                        onClick = { isFeedbackDialogShown = true },
-                        contentColors = getProfileRowContentColors(trailingIcon = Color.Transparent),
+                        iconId = R.drawable.ic_chat,
+                        title = stringResource(R.string.give_us_feedback),
+                        onClick = {
+                            scope.launch {
+                                onFeedbackConfirm.invoke()
+                            }
+                        }
                     )
                 }
-            }
-
-            if (isFeedbackDialogShown) {
-                ConfirmationDialog(
-                    iconId = R.drawable.ic_warning,
-                    iconContainerColor = RarimeTheme.colors.warningLight,
-                    confirmButtonColors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = RarimeTheme.colors.textPrimary
-                    ),
-                    title = stringResource(R.string.send_us_feedback),
-                    subtitle = stringResource(R.string.send_us_feedback_body),
-                    onConfirm = {
-                        scope.launch {
-                            onFeedbackConfirm.invoke()
-                        }
-                    },
-                    onCancel = { isFeedbackDialogShown = false },
-                    cancelButtonText = stringResource(id = R.string.delete_profile_cancel_btn),
-                    confirmButtonText = stringResource(id = R.string.delete_profile_confirm_btn),
-                )
             }
 
             Column(
@@ -239,9 +198,10 @@ fun ProfileScreenContent(
                     title = "Delete account",
                     onClick = { isDeleteAccountDialogShown = true },
                     contentColors = getProfileRowContentColors(
-                        leadingIcon = RarimeTheme.colors.errorDarker,
-                        title = RarimeTheme.colors.errorDarker,
-                        value = RarimeTheme.colors.errorDarker,
+                        leadingIcon = RarimeTheme.colors.errorMain,
+                        leadingIconBg = RarimeTheme.colors.errorLighter,
+                        title = RarimeTheme.colors.errorMain,
+                        value = RarimeTheme.colors.errorMain,
                         trailingIcon = Color.Transparent,
                     ),
                 )
@@ -263,8 +223,8 @@ fun ProfileScreenContent(
             }
             Text(
                 text = stringResource(R.string.app_version, BuildConfig.VERSION_NAME),
-                style = RarimeTheme.typography.body4,
-                color = RarimeTheme.colors.textDisabled
+                style = RarimeTheme.typography.body5,
+                color = RarimeTheme.colors.textPlaceholder
             )
         }
     }
@@ -272,6 +232,7 @@ fun ProfileScreenContent(
 
 data class ProfileRowContentColors(
     val leadingIcon: Color,
+    val leadingIconBg: Color,
     val title: Color,
     val value: Color,
     val trailingIcon: Color,
@@ -280,12 +241,14 @@ data class ProfileRowContentColors(
 @Composable
 fun getProfileRowContentColors(
     leadingIcon: Color = RarimeTheme.colors.textPrimary,
+    leadingIconBg: Color = RarimeTheme.colors.componentPrimary,
     title: Color = RarimeTheme.colors.textPrimary,
     value: Color = RarimeTheme.colors.textSecondary,
     trailingIcon: Color = RarimeTheme.colors.textSecondary,
 ): ProfileRowContentColors {
     return ProfileRowContentColors(
         leadingIcon = leadingIcon,
+        leadingIconBg = leadingIconBg,
         title = title,
         value = value,
         trailingIcon = trailingIcon,
@@ -321,11 +284,13 @@ private fun ProfileRow(
                 size = 20.dp,
                 tint = contentColors.leadingIcon,
                 modifier = Modifier
-                    .background(RarimeTheme.colors.componentPrimary, CircleShape)
+                    .background(contentColors.leadingIconBg, CircleShape)
                     .padding(6.dp)
             )
             Text(
-                text = title, style = RarimeTheme.typography.h6, color = contentColors.title
+                text = title,
+                style = RarimeTheme.typography.buttonMedium,
+                color = contentColors.title
             )
         }
         Row(
@@ -338,8 +303,8 @@ private fun ProfileRow(
                 color = contentColors.value
             )
             AppIcon(
-                id = R.drawable.ic_caret_right,
-                size = 16.dp,
+                id = R.drawable.ic_arrow_right_s_line,
+                size = 20.dp,
                 tint = contentColors.trailingIcon,
             )
         }
@@ -352,10 +317,6 @@ private fun ProfileScreenPreview() {
     ProfileScreenContent(
         rarimoAddress = "0x000000000000",
         passportImage = null,
-        screenInsets = mapOf(
-            ScreenInsets.TOP to 10,
-            ScreenInsets.BOTTOM to 10
-        ),
         navigate = {},
         colorScheme = AppColorScheme.LIGHT,
         appIcon = AppIcon.BLACK_AND_WHITE,

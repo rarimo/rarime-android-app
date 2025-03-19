@@ -3,6 +3,7 @@ package com.rarilabs.rarime.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
@@ -46,14 +47,14 @@ fun ConfirmationDialog(
         icon = {
             Box (
                 modifier = Modifier
-                    .size(80.dp)
+                    .size(64.dp)
                     .clip(CircleShape)
                     .background(iconContainerColor),
                 contentAlignment = Alignment.Center
             ) {
                 AppIcon(
                     id = iconId,
-                    size = 40.dp,
+                    size = 32.dp,
                     tint = RarimeTheme.colors.errorDarker
                 )
             }
@@ -61,16 +62,17 @@ fun ConfirmationDialog(
         title = {
             Text(
                 text = title,
-                style = RarimeTheme.typography.subtitle2,
-                color = RarimeTheme.colors.textPrimary
+                style = RarimeTheme.typography.subtitle4,
+                color = RarimeTheme.colors.textPrimary,
+                textAlign = TextAlign.Center
             )
         },
         text = {
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = subtitle,
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.textPrimary,
+                style = RarimeTheme.typography.body4,
+                color = RarimeTheme.colors.textSecondary,
                 textAlign = TextAlign.Center
             )
         },
@@ -84,14 +86,11 @@ fun ConfirmationDialog(
             }
         },
         dismissButton = {
-            OutlinedButton(
+            SecondaryTextButton(
+                modifier = Modifier.padding(12.dp),
+                text = cancelButtonText,
                 onClick = onCancel,
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = RarimeTheme.colors.textPrimary
-                ),
-            ) {
-                Text(text = cancelButtonText)
-            }
+            )
         }
     )
 }

@@ -290,54 +290,69 @@ fun MainScreenRoutes(
 
                 composable(Screen.Main.Profile.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
-                        ProfileScreen(
-                            appIcon = appIcon,
-                            navigate = { simpleNavigate(it) })
+                        ScreenInsetsContainer {
+                            ProfileScreen(
+                                appIcon = appIcon,
+                                navigate = { simpleNavigate(it) })
+                        }
                     }
                 }
                 composable(Screen.Main.Profile.AuthMethod.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
-                        AuthMethodScreen(onBack = { navController.popBackStack() })
+                        ScreenInsetsContainer {
+                            AuthMethodScreen(onBack = { navController.popBackStack() })
+                        }
                     }
                 }
                 composable(Screen.Main.Profile.ExportKeys.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
-                        ExportKeysScreen({ navController.popBackStack() })
+                        ScreenInsetsContainer {
+                            ExportKeysScreen({ navController.popBackStack() })
+                        }
                     }
                 }
                 composable(Screen.Main.Profile.Language.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
-                        LanguageScreen(onLanguageChange = {
-                            LocaleUtil.updateLocale(context, it.localeTag)
-                        }, onBack = { navController.popBackStack() })
+                        ScreenInsetsContainer {
+                            LanguageScreen(onLanguageChange = {
+                                LocaleUtil.updateLocale(context, it.localeTag)
+                            }, onBack = { navController.popBackStack() })
+                        }
                     }
                 }
                 composable(Screen.Main.Profile.Theme.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
-                        ThemeScreen(onBack = { navController.popBackStack() })
+                        ScreenInsetsContainer {
+                            ThemeScreen(onBack = { navController.popBackStack() })
+                        }
                     }
                 }
                 composable(Screen.Main.Profile.AppIcon.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
-                        AppIconScreen(appIcon = appIcon, onAppIconChange = {
-                            appIcon = it
-                            AppIconUtil.setIcon(context, it)
-                        }, onBack = { navController.popBackStack() })
+                        ScreenInsetsContainer {
+                            AppIconScreen(appIcon = appIcon, onAppIconChange = {
+                                appIcon = it
+                                AppIconUtil.setIcon(context, it)
+                            }, onBack = { navController.popBackStack() })
+                        }
                     }
                 }
                 composable(Screen.Main.Profile.Terms.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
-
-                    AppWebView(title = stringResource(R.string.terms_of_use),
-                            url = Constants.TERMS_URL,
-                            onBack = { navController.popBackStack() })
+                        ScreenInsetsContainer {
+                            AppWebView(title = stringResource(R.string.terms_of_use),
+                                url = Constants.TERMS_URL,
+                                onBack = { navController.popBackStack() })
+                        }
                     }
                 }
                 composable(Screen.Main.Profile.Privacy.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
-                        AppWebView(title = stringResource(R.string.privacy_policy),
-                            url = Constants.PRIVACY_URL,
-                            onBack = { navController.popBackStack() })
+                        ScreenInsetsContainer {
+                            AppWebView(title = stringResource(R.string.privacy_policy),
+                                url = Constants.PRIVACY_URL,
+                                onBack = { navController.popBackStack() })
+                        }
                     }
                 }
             }

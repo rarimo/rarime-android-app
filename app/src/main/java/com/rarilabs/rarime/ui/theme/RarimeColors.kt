@@ -474,7 +474,7 @@ fun lightColors() = RarimeColors(
     errorDark = Color(0xFFDC2626),
     errorMain = Color(0xFFEF4444),
     errorLight = Color(0x1FEF4444),
-    errorLighter = Color(0xFFEF4444),
+    errorLighter = Color(0x0FEF4444),
 
     // warning
     warningDarker = Color(0xFFC09027),
