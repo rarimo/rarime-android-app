@@ -35,20 +35,26 @@ enum class BottomTab(
     @DrawableRes val icon: Int,
     @DrawableRes val activeIcon: Int
 ) {
+
     Home(
         Screen.Main.Home.route,
         R.drawable.ic_house_simple,
         R.drawable.ic_house_simple_fill
     ),
+    Identity(
+        Screen.Main.Identity.route,
+        R.drawable.ic_passport,
+        R.drawable.ic_passport_fill
+    ),
+    QrScan(
+        Screen.Main.QrScan.route,
+        R.drawable.ic_qr_scan,
+        R.drawable.ic_qr_scan
+    ),
     Wallet(
         Screen.Main.Wallet.route,
         R.drawable.ic_wallet,
         R.drawable.ic_wallet_filled
-    ),
-    Rewards(
-        Screen.Main.Rewards.RewardsMain.route,
-        R.drawable.ic_airdrop,
-        R.drawable.ic_airdrop
     ),
     Profile(
         Screen.Main.Profile.route,

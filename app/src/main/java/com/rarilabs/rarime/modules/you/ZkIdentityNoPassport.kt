@@ -20,7 +20,7 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun ZkIdentityNoPassport(modifier: Modifier = Modifier) {
+fun ZkIdentityNoPassport(modifier: Modifier = Modifier, navigate: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -61,9 +61,10 @@ fun ZkIdentityNoPassport(modifier: Modifier = Modifier) {
 
             IdentityCardTypeItem(
                 imageId = R.drawable.ic_rarimo,
-                name = "ID Card",
+                name = "POH",
                 isActive = true,
-                onClick = {}
+                onClick = {
+                }
             )
 
             HorizontalDivider()
@@ -108,6 +109,6 @@ fun ZkIdentityNoPassport(modifier: Modifier = Modifier) {
 @Composable
 private fun ZkIdentityNoPassportPreview() {
     Surface {
-        ZkIdentityNoPassport()
+        ZkIdentityNoPassport {}
     }
 }

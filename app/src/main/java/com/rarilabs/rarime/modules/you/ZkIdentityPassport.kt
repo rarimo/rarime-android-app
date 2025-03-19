@@ -21,7 +21,7 @@ import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun ZkIdentityPassport(modifier: Modifier = Modifier) {
+fun ZkIdentityPassport(modifier: Modifier = Modifier, navigate: (String) -> Unit) {
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
@@ -57,6 +57,6 @@ fun ZkIdentityPassport(modifier: Modifier = Modifier) {
 @Composable
 private fun ZkIdentityPassportPreview() {
     Surface {
-        ZkIdentityPassport()
+        ZkIdentityPassport {}
     }
 }

@@ -3,7 +3,6 @@ package com.rarilabs.rarime.util
 sealed class Screen(val route: String) {
     data object Intro : Screen("intro")
     data object ScanPassport : Screen("scan_passport")  {
-
         data object ScanPassportSpecific : Screen("scan_passport_specific")
         data object ScanPassportPoints: Screen("scan_passport_points")
     }
@@ -35,7 +34,8 @@ sealed class Screen(val route: String) {
             data object Receive : Screen("receive")
             data object Send : Screen("send")
         }
-
+        data object Identity : Screen("identity")
+        data object QrScan : Screen("qr_scan")
         data object Rewards : Screen("rewards") {
             data object RewardsMain : Screen("rewards_main")
 

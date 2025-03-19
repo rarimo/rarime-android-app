@@ -59,7 +59,8 @@ val mainRoutes = listOf(
     Screen.Main.Home.route,
     Screen.Main.Rewards.RewardsMain.route,
     Screen.Main.Wallet.route,
-    Screen.Main.Profile.route
+    Screen.Main.Profile.route,
+    Screen.Main.Identity.route
 )
 
 val LocalMainViewModel = compositionLocalOf<MainViewModel> { error("No MainViewModel provided") }
@@ -158,6 +159,7 @@ fun MainScreenContent(
     val mainViewModel = LocalMainViewModel.current
     val context = LocalContext.current
 
+
     // Collect states using 'by' to avoid accessing .value
     val passportStatus by mainViewModel.passportStatus.collectAsState()
     val isModalShown by mainViewModel.isModalShown.collectAsState()
@@ -222,8 +224,6 @@ fun MainScreenContent(
                     launchSingleTop = true
                 }
             }
-
-
         }
     }
 

@@ -49,6 +49,7 @@ import com.rarilabs.rarime.modules.votes.voteProcessScreen.VoteProcessScreen
 import com.rarilabs.rarime.modules.wallet.WalletReceiveScreen
 import com.rarilabs.rarime.modules.wallet.WalletScreen
 import com.rarilabs.rarime.modules.wallet.WalletSendScreen
+import com.rarilabs.rarime.modules.you.ZkIdentityScreen
 import com.rarilabs.rarime.ui.components.AppWebView
 import com.rarilabs.rarime.ui.components.CongratsInvitationModalContent
 import com.rarilabs.rarime.util.AppIconUtil
@@ -229,6 +230,12 @@ fun MainScreenRoutes(
                         ) {
                             mainViewModel.setBottomBarVisibility(it)
                         }
+                    }
+                }
+
+                composable(Screen.Main.Identity.route) {
+                    AuthGuard(navigate = navigateWithPopUp) {
+                        ZkIdentityScreen(navigate = simpleNavigate)
                     }
                 }
 
