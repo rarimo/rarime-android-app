@@ -49,7 +49,7 @@ import com.rarilabs.rarime.modules.votes.voteProcessScreen.VoteProcessScreen
 import com.rarilabs.rarime.modules.wallet.WalletReceiveScreen
 import com.rarilabs.rarime.modules.wallet.WalletScreen
 import com.rarilabs.rarime.modules.wallet.WalletSendScreen
-import com.rarilabs.rarime.modules.you.ZkIdentityPohScreen
+import com.rarilabs.rarime.modules.you.ZkLivenessScreen
 import com.rarilabs.rarime.modules.you.ZkIdentityScreen
 import com.rarilabs.rarime.ui.components.AppWebView
 import com.rarilabs.rarime.ui.components.CongratsInvitationModalContent
@@ -241,9 +241,9 @@ fun MainScreenRoutes(
                     }
                 }
 
-                composable(Screen.Main.Identity.Poh.route) {
+                composable(Screen.Main.Identity.ZkLiveness.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
-                        ZkIdentityPohScreen(navigate = navigateWithPopUp)
+                        ZkLivenessScreen(navigate = navigateWithPopUp)
                     }
                 }
 

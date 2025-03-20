@@ -34,16 +34,16 @@ import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun ZkIdentityPohScreen(modifier: Modifier = Modifier, navigate: (String) -> Unit) {
+fun ZkLivenessScreen(modifier: Modifier = Modifier, navigate: (String) -> Unit) {
     val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
 
-    ZkIdentityPohScreenContent(
+    ZkLivenessScreenContent(
         innerPaddings = innerPaddings, navigate = navigate, modifier = modifier
     )
 }
 
 @Composable
-private fun ZkIdentityPohScreenContent(
+private fun ZkLivenessScreenContent(
     // TODO: Implement navigate
     navigate: (String) -> Unit,
     innerPaddings: Map<ScreenInsets, Number>,
@@ -68,7 +68,7 @@ private fun ZkIdentityPohScreenContent(
         PrimaryButton(
             modifier = Modifier.fillMaxWidth(),
             size = ButtonSize.Large,
-            text = stringResource(R.string.zk_liveness_poh_btn),
+            text = stringResource(R.string.zk_liveness_btn),
             onClick = { TODO("Implement onClick handler") },
         )
         Spacer(modifier = Modifier.height(24.dp))
@@ -85,7 +85,7 @@ private fun LivenessTitle(modifier: Modifier = Modifier) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = stringResource(R.string.zk_liveness_poh_title), style = RarimeTheme.typography.h2
+            text = stringResource(R.string.zk_liveness_title), style = RarimeTheme.typography.h2
         )
     }
 }
@@ -98,13 +98,13 @@ private fun LivenessList(modifier: Modifier = Modifier) {
         modifier = modifier,
     ) {
         LivenessRow(
-            iconId = R.drawable.ic_smartphone_line, labelId = R.string.zk_liveness_poh_list_item_1
+            iconId = R.drawable.ic_smartphone_line, labelId = R.string.zk_liveness_list_item_1
         )
         LivenessRow(
-            iconId = R.drawable.ic_stack_line, labelId = R.string.zk_liveness_poh_list_item_2
+            iconId = R.drawable.ic_stack_line, labelId = R.string.zk_liveness_list_item_2
         )
         LivenessRow(
-            iconId = R.drawable.ic_shield_check, labelId = R.string.zk_liveness_poh_list_item_3
+            iconId = R.drawable.ic_shield_check, labelId = R.string.zk_liveness_list_item_3
         )
     }
 }
@@ -142,8 +142,8 @@ private fun LivenessIcon(@DrawableRes iconId: Int, containerSize: Dp, iconSize: 
 
 @Preview(showBackground = true)
 @Composable
-private fun ZkIdentityPohScreenPreview() {
-    ZkIdentityPohScreenContent(
+private fun ZkLivenessScreenPreview() {
+    ZkLivenessScreenContent(
         navigate = {}, innerPaddings = mapOf(ScreenInsets.TOP to 40, ScreenInsets.BOTTOM to 40)
     )
 }
