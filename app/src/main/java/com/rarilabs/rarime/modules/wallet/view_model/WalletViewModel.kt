@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.modules.wallet.view_model
 
 import androidx.lifecycle.ViewModel
-import com.rarilabs.rarime.data.tokens.RarimoToken
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.manager.WalletManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,8 +13,10 @@ import javax.inject.Inject
 class WalletViewModel @Inject constructor(
     private val walletManager: WalletManager,
 ) : ViewModel() {
-    var _walletAssets = MutableStateFlow(walletManager.walletAssets.value.filter { it.token is RarimoToken })
-        private set
+    private var _walletAssets = MutableStateFlow(
+        walletManager.walletAssets.value
+        //.filter { it.token is RarimoToken }
+    )
 
     val walletAssets: StateFlow<List<WalletAsset>>
         get() = _walletAssets.asStateFlow()

@@ -5,15 +5,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
@@ -22,14 +19,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.data.tokens.PreviewerToken
+import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.wallet.components.WalletTransactionsList
 import com.rarilabs.rarime.modules.wallet.view_model.WalletViewModel
@@ -69,7 +68,23 @@ fun WalletScreen(
         walletViewModel.updateBalances()
     }
 
+    WalletScreenContainer(
+        selectedUserAsset = selectedUserAsset,
+        userAssets = userAssets,
+        updateSelectedWalletAsset = walletViewModel::updateSelectedWalletAsset,
+        navigate = navigate
+    )
 
+}
+
+@Composable
+fun WalletScreenContainer(
+    modifier: Modifier = Modifier,
+    selectedUserAsset: WalletAsset,
+    userAssets: List<WalletAsset>,
+    updateSelectedWalletAsset: (WalletAsset) -> Unit,
+    navigate: (String) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -128,7 +143,7 @@ fun WalletScreen(
                                     )
 
                                     asset?.let { newAsset ->
-                                        walletViewModel.updateSelectedWalletAsset(
+                                        updateSelectedWalletAsset(
                                             newAsset
                                         )
                                     }
@@ -198,7 +213,7 @@ fun WalletScreen(
                 .fillMaxWidth()
                 .padding(vertical = 20.dp)
         ) {
-            WalletTokensList(walletViewModel)
+            WalletTokensList(userAssets, selectedUserAsset)
         }
 
         Column(
@@ -220,25 +235,26 @@ fun WalletScreen(
 @Preview
 @Composable
 private fun WalletScreenPreview() {
-    WalletScreen(
-//        balance = 100.0,
-//        transactions = listOf(
-//            Transaction(
-//                id = 2,
-//                iconId = R.drawable.ic_arrow_up,
-//                titleId = R.string.send_btn,
-//                date = Date(),
-//                amount = 100.0,
-//                state = TransactionState.OUTGOING
-//            ),
-//            Transaction(
-//                id = 1,
-//                iconId = R.drawable.ic_airdrop,
-//                titleId = R.string.airdrop_tx_title,
-//                date = Date(),
-//                amount = 100.0,
-//                state = TransactionState.INCOMING
-//            )
-//        ),
-        navigate = {})
+
+    var selectedAsset = remember {
+        WalletAsset(
+            "0xaddress",
+            PreviewerToken("tokenAddress")
+        )
+    }
+    WalletScreenContainer(
+        selectedUserAsset = selectedAsset,
+        userAssets = listOf(
+            WalletAsset(
+                "0xaddress",
+                PreviewerToken("tokenAddress")
+            ),
+            WalletAsset(
+                "0xaddress",
+                PreviewerToken("tokenAddress", symbol = "USD")
+            ),
+        ),
+        updateSelectedWalletAsset = { selectedAsset = it },
+        navigate = {}
+    )
 }
