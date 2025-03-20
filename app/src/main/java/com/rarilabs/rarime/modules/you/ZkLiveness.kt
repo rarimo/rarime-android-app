@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,16 +33,16 @@ import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun ZkLivenessScreen(modifier: Modifier = Modifier, navigate: (String) -> Unit) {
+fun ZkLiveness(modifier: Modifier = Modifier, navigate: (String) -> Unit) {
     val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
 
-    ZkLivenessScreenContent(
+    ZkLivenessContent(
         innerPaddings = innerPaddings, navigate = navigate, modifier = modifier
     )
 }
 
 @Composable
-private fun ZkLivenessScreenContent(
+private fun ZkLivenessContent(
     // TODO: Implement navigate
     navigate: (String) -> Unit,
     innerPaddings: Map<ScreenInsets, Number>,
@@ -51,11 +50,9 @@ private fun ZkLivenessScreenContent(
 ) {
     Column(
         verticalArrangement = Arrangement.Bottom, modifier = modifier
-            .fillMaxSize()
             .padding(
                 start = 20.dp,
                 end = 20.dp,
-                bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp,
                 top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp
             )
             .then(modifier)
@@ -71,7 +68,6 @@ private fun ZkLivenessScreenContent(
             text = stringResource(R.string.zk_liveness_btn),
             onClick = { TODO("Implement onClick handler") },
         )
-        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
@@ -142,8 +138,8 @@ private fun LivenessIcon(@DrawableRes iconId: Int, containerSize: Dp, iconSize: 
 
 @Preview(showBackground = true)
 @Composable
-private fun ZkLivenessScreenPreview() {
-    ZkLivenessScreenContent(
+private fun ZkLivenessPreview() {
+    ZkLivenessContent(
         navigate = {}, innerPaddings = mapOf(ScreenInsets.TOP to 40, ScreenInsets.BOTTOM to 40)
     )
 }
