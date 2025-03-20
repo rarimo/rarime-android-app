@@ -30,7 +30,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,7 +58,6 @@ import com.rarilabs.rarime.ui.components.VerticalDivider
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
-import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 enum class CardType {
@@ -84,24 +82,20 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
 
-    val scope = rememberCoroutineScope()
     val pointsBalance by viewModel.pointsToken.collectAsState()
     val pointsEvent by viewModel.pointsEventData.collectAsState()
 
     val currentPointsBalance = pointsBalance?.balanceDetails?.attributes?.amount
     val firstReferralCode = remember(pointsBalance) {
-        pointsBalance?.balanceDetails?.attributes?.referral_codes?.filter { it.status == ReferralCodeStatuses.ACTIVE.value }
-            ?.first()?.id
+        pointsBalance?.balanceDetails?.attributes?.referral_codes?.first { it.status == ReferralCodeStatuses.ACTIVE.value }?.id
     }
 
 
     LaunchedEffect(Unit) {
-        scope.launch {
-            try {
-                viewModel.loadPointsEvent()
-            } catch (e: Exception) {
-                ErrorHandler.logError("RewardsEventItemScreen", "Error loading points event", e)
-            }
+        try {
+            viewModel.initHomeData()
+        } catch (e: Exception) {
+            ErrorHandler.logError("RewardsEventItemScreen", "Error loading points event", e)
         }
     }
 
@@ -248,7 +242,7 @@ fun HomeScreenContent(
 
     val pagerState = rememberPagerState(pageCount = { cardContent.size })
 
-    AnimatedContent(selectedPageId, label = "content") { it ->
+    AnimatedContent(selectedPageId, label = "content") {
         if (it == null) {
             Column(
                 modifier = modifier
@@ -387,7 +381,9 @@ fun HomeScreenContent(
                         animatedContentScope = this@AnimatedContent,
                         id = it,
                         onBack = { selectedPageId = null },
-                        innerPaddings = innerPaddings
+                        innerPaddings = innerPaddings,
+                        currentPointsBalance = currentPointsBalance
+                            ?: throw IllegalStateException("currentPointsBalance is Null but card was displayed")
                     )
                 }
 
@@ -424,7 +420,7 @@ fun HomeScreenContent(
 @Preview
 @Composable
 private fun HomeScreenPreview() {
-    PrevireSharedAnimationProvider { transform, animated ->
+    PrevireSharedAnimationProvider { transform, _ ->
         Surface {
             HomeScreenContent(
                 sharedTransitionScope = transform,
