@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RadialGradient
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,9 +32,9 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
-sealed class IdentityScreenType {
-    data object None : IdentityScreenType()
-    data object Liveness : IdentityScreenType()
+enum class IdentityScreenType {
+    NONE,
+    LIVENESS,
 }
 
 data class IdentityItemData(
@@ -47,54 +48,58 @@ data class IdentityItemData(
 fun ZkIdentityNoPassport(modifier: Modifier = Modifier, navigate: (String) -> Unit) {
     val guideSheetState = rememberAppSheetState(false)
     val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
-    var currentScreen by remember { mutableStateOf<IdentityScreenType>(IdentityScreenType.None) }
+    var currentScreen by remember { mutableStateOf(IdentityScreenType.NONE) }
 
     AppBottomSheet(
         state = guideSheetState,
     ) {
         when (currentScreen) {
-            is IdentityScreenType.None -> {}
-            is IdentityScreenType.Liveness -> ZkLiveness(navigate = navigate)
+            IdentityScreenType.NONE -> {}
+            IdentityScreenType.LIVENESS -> ZkLiveness(navigate = navigate)
             //  TODO: Implement other sheets
-            else -> error("Unknown IdentityScreenType: $currentScreen")
         }
     }
 
-    val identityItems = listOf(
-        IdentityItemData(
-            imageId = R.drawable.ic_passport_line,
-            nameResId = R.string.zk_identity_no_passport_list_item_1,
-            isActive = true,
-            onClick = {}
-        ),
-        IdentityItemData(
-            imageId = R.drawable.ic_body_scan_fill,
-            nameResId = R.string.zk_identity_no_passport_list_item_2,
-            isActive = true,
-            onClick = {
-                currentScreen = IdentityScreenType.Liveness
-                guideSheetState.show()
-            }
-        ),
-        IdentityItemData(
-            imageId = R.drawable.ic_rarimo,
-            nameResId = R.string.zk_identity_no_passport_list_item_3,
-            isActive = false,
-            onClick = {}
-        ),
-        IdentityItemData(
-            imageId = R.drawable.ic_rarimo,
-            nameResId = R.string.zk_identity_no_passport_list_item_4,
-            isActive = false,
-            onClick = {}
-        ),
-        IdentityItemData(
-            imageId = R.drawable.ic_rarimo,
-            nameResId = R.string.zk_identity_no_passport_list_item_5,
-            isActive = false,
-            onClick = {}
+
+    RadialGradient()
+
+    val identityItems = remember {
+        listOf(
+            IdentityItemData(
+                imageId = R.drawable.ic_passport_line,
+                nameResId = R.string.zk_identity_no_passport_list_item_1,
+                isActive = true,
+                onClick = {}
+            ),
+            IdentityItemData(
+                imageId = R.drawable.ic_body_scan_fill,
+                nameResId = R.string.zk_identity_no_passport_list_item_2,
+                isActive = true,
+                onClick = {
+                    currentScreen = IdentityScreenType.LIVENESS
+                    guideSheetState.show()
+                }
+            ),
+            IdentityItemData(
+                imageId = R.drawable.ic_rarimo,
+                nameResId = R.string.zk_identity_no_passport_list_item_3,
+                isActive = false,
+                onClick = {}
+            ),
+            IdentityItemData(
+                imageId = R.drawable.ic_rarimo,
+                nameResId = R.string.zk_identity_no_passport_list_item_4,
+                isActive = false,
+                onClick = {}
+            ),
+            IdentityItemData(
+                imageId = R.drawable.ic_rarimo,
+                nameResId = R.string.zk_identity_no_passport_list_item_5,
+                isActive = false,
+                onClick = {}
+            )
         )
-    )
+    }
 
     Column(
         modifier = Modifier
