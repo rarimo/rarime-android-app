@@ -28,7 +28,7 @@ fun IdentityStepLayout(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 24.dp)
+            .padding(top = 20.dp)
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             PrimaryTextButton(leftIcon = R.drawable.ic_caret_left, onClick = onBack)
@@ -47,7 +47,7 @@ fun IdentityStepLayout(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
-                .padding(top = 16.dp, bottom = 32.dp)
+                .padding(top = 16.dp, bottom = 20.dp)
         ) {
             nextButton()
         }

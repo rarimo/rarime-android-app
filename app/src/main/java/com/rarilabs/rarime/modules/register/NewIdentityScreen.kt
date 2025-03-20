@@ -23,11 +23,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,12 +40,9 @@ import com.google.api.services.drive.DriveScopes
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.points.InvitationUsedException
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
-import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppTextField
 import com.rarilabs.rarime.ui.components.AppTextFieldState
-import com.rarilabs.rarime.ui.components.CardContainer
-import com.rarilabs.rarime.ui.components.CircledBadge
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.InfoAlert
 import com.rarilabs.rarime.ui.components.PrimaryButton
@@ -74,7 +69,6 @@ fun NewIdentityScreen(
 
     val context = LocalContext.current
     val mainViewModel = LocalMainViewModel.current
-    val screenInsets by mainViewModel.screenInsets.collectAsState()
     val savedPrivateKey by newIdentityViewModel.savedPrivateKey.collectAsState()
     var isSubmitting by remember { mutableStateOf(false) }
     val privateKey by remember {
@@ -127,7 +121,7 @@ fun NewIdentityScreen(
 
 
     fun savePrivateKey(pk: String) {
-        newIdentityViewModel.identityManager.savePrivateKey(pk);
+        newIdentityViewModel.identityManager.savePrivateKey(pk)
     }
 
     fun finishOnboarding(code: String) {
@@ -267,8 +261,7 @@ fun NewIdentityScreen(
             isImporting = isImporting,
             handleInitPK = { scope.launch { handleInitPK(it) } },
             isSubmitting = isSubmitting,
-            invitationCodeState = invitationCodeState,
-            screenInsets = screenInsets
+            invitationCodeState = invitationCodeState
         )
     }
 }
@@ -295,12 +288,10 @@ fun NewIdentityScreenContent(
     isImporting: Boolean = false,
     isSubmitting: Boolean = false,
     invitationCodeState: AppTextFieldState,
-    screenInsets: Map<ScreenInsets, Number>,
     privateKey: String,
     handleInitPK: (pk: String) -> Unit,
 ) {
     val privateKeyFieldState = rememberAppTextFieldState(initialText = "")
-
 
     val clipboardManager = LocalClipboardManager.current
     var isCopied by remember { mutableStateOf(false) }
@@ -335,13 +326,7 @@ fun NewIdentityScreenContent(
         handleInitPK(pkToSave)
     }
 
-    Column (
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Spacer(
-            modifier = Modifier.height((screenInsets.get(ScreenInsets.TOP)?.toFloat() ?: 0f).dp)
-        )
-
+    Column(modifier = Modifier.fillMaxSize()) {
         IdentityStepLayout(
             onBack = onBack,
             title = if (isImporting) {
@@ -355,10 +340,12 @@ fun NewIdentityScreenContent(
                 ) {
                     PrimaryButton(modifier = Modifier.fillMaxWidth(),
                         size = ButtonSize.Large,
-                        text = stringResource(
-                            if (isImporting) R.string.create_identity_import_btn
-                            else R.string.create_identity_continue_btn
-                        ),
+                        text = if (isSubmitting) {
+                            stringResource(R.string.create_identity_creating_btn)
+                        } else {
+                            stringResource(R.string.create_identity_continue_btn)
+                        },
+                        rightIcon = if (isSubmitting) null else R.drawable.ic_arrow_right,
                         enabled = !isSubmitting,
                         onClick = { initPrivateKey() }
                     )
@@ -419,11 +406,6 @@ fun NewIdentityScreenContent(
                 }
             }
         }
-
-
-        Spacer(
-            modifier = Modifier.height((screenInsets.get(ScreenInsets.BOTTOM)?.toFloat() ?: 0f).dp)
-        )
     }
 }
 
@@ -434,11 +416,7 @@ private fun NewIdentityScreenContentPreview() {
         onBack = {},
         privateKey = "324523h423grewadisabudbawiudawwafa",
         handleInitPK = {},
-        invitationCodeState = rememberAppTextFieldState(initialText = ""),
-        screenInsets = mapOf(
-            ScreenInsets.TOP to 0,
-            ScreenInsets.BOTTOM to 0
-        )
+        invitationCodeState = rememberAppTextFieldState(initialText = "")
     )
 }
 
@@ -450,10 +428,6 @@ private fun NewIdentityScreenContentImportingPreview() {
         isImporting = true,
         privateKey = "324523h423grewadisabudbawiudawwafa",
         handleInitPK = {},
-        invitationCodeState = rememberAppTextFieldState(initialText = ""),
-        screenInsets = mapOf(
-            ScreenInsets.TOP to 0,
-            ScreenInsets.BOTTOM to 0
-        )
+        invitationCodeState = rememberAppTextFieldState(initialText = "")
     )
 }

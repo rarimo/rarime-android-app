@@ -176,13 +176,9 @@ fun HomeScreenContent(
                             Color(0xFF9AFE8A), Color(0xFF8AFECC)
                         )
                     )
-                ), onCardClick = {}, footer = {
-                    Column(
-                        modifier = Modifier.padding(top = 24.dp)
-                    ) {
-                        Text("Hello World")
-                    }
-                }),
+                ),
+                onCardClick = {},
+            ),
             CardContent(
                 type = CardType.INVITE_OTHERS, properties = CardProperties(
                     header = "Invite",

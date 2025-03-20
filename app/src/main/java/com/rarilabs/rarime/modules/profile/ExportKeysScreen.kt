@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -175,58 +173,57 @@ fun ExportKeysContent(
     signIn: () -> Unit,
     backUp: () -> Unit,
     delete: () -> Unit
-
 ) {
     ProfileRouteLayout(
         title = stringResource(R.string.export_keys), onBack = onBack
     ) {
-        CardContainer(Modifier.verticalScroll(rememberScrollState())) {
-            Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                privateKey.let {
-                    Text(
-                        text = it,
-                        style = RarimeTheme.typography.body4,
-                        color = RarimeTheme.colors.textPrimary,
-                        modifier = Modifier
-                            .background(
-                                RarimeTheme.colors.componentPrimary, RoundedCornerShape(8.dp)
-                            )
-                            .padding(vertical = 14.dp, horizontal = 16.dp)
-                    )
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        PrimaryTextButton(leftIcon = if (isCopied) R.drawable.ic_check else R.drawable.ic_copy_simple,
-                            text = if (isCopied) {
-                                stringResource(R.string.copied_text)
-                            } else {
-                                stringResource(R.string.copy_to_clipboard_btn)
-                            },
-                            onClick = {
-                                setTextToClipBoard(AnnotatedString(it))
-                                setIsCopied(true)
-                            })
+        Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+            CardContainer {
+                Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                    privateKey.let {
+                        Text(
+                            text = it,
+                            style = RarimeTheme.typography.body4,
+                            color = RarimeTheme.colors.textPrimary,
+                            modifier = Modifier
+                                .background(
+                                    RarimeTheme.colors.componentPrimary, RoundedCornerShape(8.dp)
+                                )
+                                .padding(vertical = 14.dp, horizontal = 16.dp)
+                        )
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            PrimaryTextButton(leftIcon = if (isCopied) R.drawable.ic_check else R.drawable.ic_copy_simple,
+                                text = if (isCopied) {
+                                    stringResource(R.string.copied_text)
+                                } else {
+                                    stringResource(R.string.copy_to_clipboard_btn)
+                                },
+                                onClick = {
+                                    setTextToClipBoard(AnnotatedString(it))
+                                    setIsCopied(true)
+                                })
+                        }
+                        HorizontalDivider()
+                        InfoAlert(text = stringResource(R.string.create_identity_warning))
                     }
-                    HorizontalDivider()
-                    InfoAlert(text = stringResource(R.string.create_identity_warning))
                 }
             }
+
+            if (isInit) {
+                DriveBackup(
+                    state = driveState,
+                    backUp = backUp,
+                    delete = delete,
+                    sigIn = signIn,
+                    isDriveButtonEnabled = isDriveButtonEnabled
+                )
+            } else {
+                DriveBackupSkeleton()
+            }
         }
-
-        if (isInit) {
-            DriveBackup(
-                state = driveState,
-                backUp = backUp,
-                delete = delete,
-                sigIn = signIn,
-                isDriveButtonEnabled = isDriveButtonEnabled
-            )
-        } else {
-            DriveBackupSkeleton()
-        }
-
-
     }
 }
 

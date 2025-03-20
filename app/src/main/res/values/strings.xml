@@ -71,7 +71,7 @@
     <string name="nfc_reader_error">Scan again</string>
 
     <string name="beta_launch">Beta launch</string>
-    <string name="create_account_btn">Create account</string>
+    <string name="create_account_btn">Create Account</string>
     <string name="what_is_rarime_title">What is RariMe?</string>
     <string name="settings_title">Settings</string>
     <string name="card_visual">CARD VISUAL</string>
@@ -279,7 +279,8 @@
     <string name="create_identity_selector_option_2">Re-activate old profile</string>
     <string name="create_identity_selector_option_2_subtitle">Uses pregenerated keys or iCloud</string>
 
-    <string name="create_identity_continue_btn">Start</string>
+    <string name="create_identity_continue_btn">Continue</string>
+    <string name="create_identity_creating_btn">Creating...</string>
     <string name="create_identity_import_title">Import keys</string>
     <string name="create_identity_import_placeholder">Your private key</string>
     <string name="create_identity_import_btn">Continue</string>
@@ -374,15 +375,14 @@
     <string name="drive_error_cant_back_up_your_private_key">Failed to back up, try again later</string>
 
     <string name="drive_loading">Loading...</string>
-    <string name="drive_sign_in_to_google_drive">Sign in to Google Drive</string>
     <string name="drive_restore_using_google_drive">Restore using Google Drive</string>
-    <string name="drive_restore_description">You can restore account using your Google Drive backup or Private Key</string>
-    <string name="drive_continue_without_backup">Back up using a key</string>
+    <string name="drive_restore_description">You can restore account using your Google Drive backup or private key</string>
+    <string name="drive_continue_without_backup">Back up manually</string>
 
-    <string name="dreive_title_restore_your_account">Restore your account</string>
+    <string name="drive_title_restore_your_account">Restore your account</string>
     <string name="drive_back_up_to_google_drive">Back up with Google Drive</string>
     <string name="drive_title_back_up_your_account">Back up your account</string>
-    <string name="restore_using_key">Restore using a key</string>
+    <string name="restore_using_key">Restore manually</string>
 
     <string name="drive_backup_description">Your account is not backed up. If you lose your device, you will lose access to your account</string>
     <string name="passport_already_registered_no_dg15_title">You have already registered</string>

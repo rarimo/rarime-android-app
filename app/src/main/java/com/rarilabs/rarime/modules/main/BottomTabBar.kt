@@ -35,7 +35,6 @@ enum class BottomTab(
     @DrawableRes val icon: Int,
     @DrawableRes val activeIcon: Int
 ) {
-
     Home(
         Screen.Main.Home.route,
         R.drawable.ic_house_simple,
@@ -59,7 +58,7 @@ enum class BottomTab(
     Profile(
         Screen.Main.Profile.route,
         R.drawable.ic_user,
-        R.drawable.ic_user
+        R.drawable.ic_user_fill
     )
 }
 
@@ -73,7 +72,7 @@ fun BottomTabBar(
         modifier = modifier.fillMaxWidth()
     ) {
         Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()

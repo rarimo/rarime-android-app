@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -44,8 +45,6 @@ fun RestoreScreen(
     fun resolveButtonMessage(): String {
         return if (!isDriveButtonEnabled) {
             context.getString(R.string.drive_loading)
-        } else if (signInAccount == null) {
-            context.getString(R.string.drive_sign_in_to_google_drive)
         } else {
             context.getString(R.string.drive_restore_using_google_drive)
         }
@@ -54,26 +53,28 @@ fun RestoreScreen(
     Column(
         modifier = modifier
             .background(RarimeTheme.colors.backgroundPrimary)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(top = 20.dp, bottom = 16.dp)
+            .padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp)
-        ) {
-            IconButton(onClick = { onBack.invoke() }, enabled = isDriveButtonEnabled) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            IconButton(
+                modifier = Modifier.size(20.dp),
+                onClick = { onBack.invoke() },
+                enabled = isDriveButtonEnabled
+            ) {
                 AppIcon(
                     id = R.drawable.ic_arrow_left,
-                    modifier = Modifier.width(20.dp),
+                    size = 20.dp,
                     tint = RarimeTheme.colors.textPrimary
                 )
             }
         }
 
 
-        Spacer(modifier = Modifier.height(80.dp))
+        Spacer(modifier = Modifier.height(40.dp))
         CircledBadge(
             iconId = R.drawable.ic_backup,
             contentSize = 80,
@@ -83,7 +84,7 @@ fun RestoreScreen(
         )
         Spacer(modifier = Modifier.height(32.dp))
         Text(
-            stringResource(R.string.dreive_title_restore_your_account),
+            stringResource(R.string.drive_title_restore_your_account),
             style = RarimeTheme.typography.h2,
             color = RarimeTheme.colors.textPrimary,
             textAlign = TextAlign.Center
@@ -93,17 +94,13 @@ fun RestoreScreen(
         Text(
             stringResource(R.string.drive_restore_description),
             style = RarimeTheme.typography.body3,
-            color = RarimeTheme.colors.textPrimary,
+            color = RarimeTheme.colors.textSecondary,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 34.dp)
         )
         Spacer(modifier = Modifier.weight(1f))
         Column(
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
@@ -121,7 +118,6 @@ fun RestoreScreen(
                 onClick = { onManualRestore.invoke() }
             )
         }
-        Spacer(modifier = Modifier.height(48.dp))
     }
 
 }
@@ -144,8 +140,6 @@ fun BackUpScreen(
     fun resolveButtonMessage(): String {
         return if (!isDriveButtonEnabled) {
             context.getString(R.string.drive_loading)
-        } else if (signInAccount == null) {
-            context.getString(R.string.drive_sign_in_to_google_drive)
         } else {
             context.getString(R.string.drive_back_up_to_google_drive)
         }
@@ -154,25 +148,27 @@ fun BackUpScreen(
     Column(
         modifier = modifier
             .background(RarimeTheme.colors.backgroundPrimary)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(top = 20.dp, bottom = 16.dp)
+            .padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp)
-        ) {
-            IconButton(onClick = { onBack.invoke() }, enabled = isDriveButtonEnabled) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            IconButton(
+                modifier = Modifier.size(20.dp),
+                onClick = { onBack.invoke() },
+                enabled = isDriveButtonEnabled
+            ) {
                 AppIcon(
                     id = R.drawable.ic_arrow_left,
-                    modifier = Modifier.width(20.dp),
+                    size = 20.dp,
                     tint = RarimeTheme.colors.textPrimary
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(80.dp))
+        Spacer(modifier = Modifier.height(40.dp))
         CircledBadge(
             iconId = R.drawable.ic_backup,
             contentSize = 80,
@@ -194,15 +190,11 @@ fun BackUpScreen(
             style = RarimeTheme.typography.body3,
             color = RarimeTheme.colors.textSecondary,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 34.dp)
         )
         Spacer(modifier = Modifier.weight(1f))
         Column(
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
@@ -220,7 +212,6 @@ fun BackUpScreen(
                 onClick = { onManualBackup.invoke() }
             )
         }
-        Spacer(modifier = Modifier.height(48.dp))
     }
 
 }
