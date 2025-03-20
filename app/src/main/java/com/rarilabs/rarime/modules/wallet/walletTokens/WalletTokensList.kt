@@ -13,9 +13,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -26,9 +25,9 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.modules.wallet.view_model.WalletViewModel
+import com.rarilabs.rarime.data.tokens.PreviewerToken
+import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.ui.components.StepIndicator
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -37,14 +36,12 @@ import kotlinx.coroutines.launch
 
 // TODO: md just listof tokens?
 @Composable
-fun WalletTokensList(walletViewModel: WalletViewModel) {
-    val userAssets by walletViewModel.walletAssets.collectAsState()
-    val selectedUserAsset by walletViewModel.selectedWalletAsset.collectAsState()
+fun WalletTokensList(userAssets: List<WalletAsset>, selectedUserAsset: WalletAsset) {
 
     val configuration = LocalConfiguration.current
 
     var selectedIndex by remember {
-        mutableStateOf(0)
+        mutableIntStateOf(0)
     }
     val scrollState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -82,10 +79,10 @@ fun WalletTokensList(walletViewModel: WalletViewModel) {
             }
     }
 
-    Column (
+    Column(
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
-        Row (
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
@@ -113,10 +110,10 @@ fun WalletTokensList(walletViewModel: WalletViewModel) {
             )
         }
 
-        Row (
+        Row(
             modifier = Modifier.fillMaxWidth(),
         ) {
-            LazyRow (
+            LazyRow(
                 state = scrollState,
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(start = 20.dp, end = 20.dp)
@@ -131,13 +128,35 @@ fun WalletTokensList(walletViewModel: WalletViewModel) {
 
 @Preview
 @Composable
-private fun WalletTokensListPreview(walletViewModel: WalletViewModel = hiltViewModel()) {
+private fun WalletTokensListPreview() {
+
+    val selectedAsset = remember {
+        WalletAsset(
+            "0xaddress",
+            PreviewerToken("tokenAddress")
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(RarimeTheme.colors.backgroundPrimary)
             .padding(20.dp)
     ) {
-        WalletTokensList(walletViewModel)
+
+
+        WalletTokensList(
+            selectedUserAsset = selectedAsset,
+            userAssets = listOf(
+                WalletAsset(
+                    "0xaddress",
+                    PreviewerToken("tokenAddress")
+                ),
+                WalletAsset(
+                    "0xaddress",
+                    PreviewerToken("tokenAddress", symbol = "USD")
+                ),
+            ),
+        )
     }
 }
