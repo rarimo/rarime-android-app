@@ -228,10 +228,9 @@ fun MainScreenRoutes(
                     AuthGuard(navigate = navigateWithPopUp) {
                         HomeScreen(
                             navigate = simpleNavigate,
-                            sharedTransitionScope = this@SharedTransitionLayout
-                        ) {
-                            mainViewModel.setBottomBarVisibility(it)
-                        }
+                            sharedTransitionScope = this@SharedTransitionLayout,
+                            setVisibilityOfBottomBar = { mainViewModel.setBottomBarVisibility(it) }
+                        )
                     }
                 }
 

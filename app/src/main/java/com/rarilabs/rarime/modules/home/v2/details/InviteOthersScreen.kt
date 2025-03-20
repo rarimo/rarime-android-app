@@ -3,13 +3,13 @@ package com.rarilabs.rarime.modules.home.v2.details
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.points.models.PointsBalanceData
+import com.rarilabs.rarime.api.points.models.PointsEventData
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.rewards.components.RewardsEventItemInvitesCard
 import com.rarilabs.rarime.modules.rewards.view_models.CONST_MOCKED_EVENTS_LIST
@@ -32,12 +33,17 @@ fun InviteOthersScreen(
     innerPaddings: Map<ScreenInsets, Number>,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
+    pointsEvent: PointsEventData?,
+    pointsBalance: PointsBalanceData?,
 ) {
-    val pointsBalance: PointsBalanceData = tempPointsBalances
 
-    val rewardPerInvite = pointsBalance.attributes.referral_codes?.size?.let {
-        CONST_MOCKED_EVENTS_LIST[0].attributes.meta.static.reward.div(it)
-    } ?: 0L
+    val rewardPerInvite = remember {
+        pointsBalance?.attributes?.referral_codes?.size?.let {
+            pointsEvent?.attributes?.meta?.static?.reward?.div(
+                it
+            )
+        } ?: 0
+    }
 
     val properties = DetailsProperties(
         id = id,
@@ -60,18 +66,12 @@ fun InviteOthersScreen(
         innerPaddings = innerPaddings,
         footer = {
             Column(
-                modifier = Modifier
+                modifier = modifier
                     .padding(top = 24.dp)
-                    .scrollable(
-                        orientation = Orientation.Vertical,
-                        state = rememberScrollableState { delta ->
-                            val newValue = delta + 1
-                            newValue.coerceIn(0f, 1f)
-                        }
-                    ),
+                    .verticalScroll(state = rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                pointsBalance.attributes.referral_codes?.forEach {
+                pointsBalance?.attributes?.referral_codes?.forEach {
                     RewardsEventItemInvitesCard(
                         code = it,
                         rewardAmount = rewardPerInvite,
@@ -96,6 +96,8 @@ private fun InviteOthersScreenPreview() {
             animatedContentScope = anim,
             onBack = {},
             innerPaddings = mapOf(ScreenInsets.TOP to 23, ScreenInsets.BOTTOM to 12),
+            pointsBalance = tempPointsBalances,
+            pointsEvent = CONST_MOCKED_EVENTS_LIST[0]
         )
 
     }
