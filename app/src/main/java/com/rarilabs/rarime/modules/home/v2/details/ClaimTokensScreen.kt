@@ -33,12 +33,13 @@ fun ClaimTokensScreen(
     onBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
+    currentPointsBalance: Long
 ) {
 
     val props = DetailsProperties(
         id = id,
         header = "Claim",
-        subTitle = "10 RMO",
+        subTitle = "$currentPointsBalance RMO",
         imageId = R.drawable.claim_rmo_image,
         backgroundGradient = Brush.linearGradient(
             colors = listOf(
@@ -94,6 +95,7 @@ private fun ClaimTokensScreenPreview() {
             animatedContentScope = anim,
             onBack = {},
             innerPaddings = mapOf(ScreenInsets.TOP to 23, ScreenInsets.BOTTOM to 12),
+            currentPointsBalance = 100
         )
 
     }

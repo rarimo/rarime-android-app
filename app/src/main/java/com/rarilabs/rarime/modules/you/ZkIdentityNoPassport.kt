@@ -44,7 +44,7 @@ fun ZkIdentityNoPassport(modifier: Modifier = Modifier, navigate: (String) -> Un
             imageId = R.drawable.ic_body_scan_fill,
             nameResId = R.string.zk_identity_no_passport_list_item_2,
             isActive = true,
-            onClick = { navigate(Screen.Main.Identity.Poh.route) }
+            onClick = { navigate(Screen.Main.Identity.ZkLiveness.route) }
         ),
         IdentityItemData(
             imageId = R.drawable.ic_rarimo,

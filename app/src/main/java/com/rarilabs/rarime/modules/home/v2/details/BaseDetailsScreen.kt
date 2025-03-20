@@ -162,7 +162,10 @@ fun BaseDetailsScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 24.dp, vertical = 8.dp)
+            ) {
                 footer()
             }
 

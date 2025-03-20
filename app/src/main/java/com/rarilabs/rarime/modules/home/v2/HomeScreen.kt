@@ -40,7 +40,11 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.points.models.PointsBalanceData
+import com.rarilabs.rarime.api.points.models.PointsEventData
+import com.rarilabs.rarime.api.points.models.ReferralCodeStatuses
 import com.rarilabs.rarime.modules.home.v2.details.ClaimTokensScreen
 import com.rarilabs.rarime.modules.home.v2.details.CreateIdentityDetails
 import com.rarilabs.rarime.modules.home.v2.details.InviteOthersScreen
@@ -52,16 +56,12 @@ import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.CircledBadgeWithCounter
 import com.rarilabs.rarime.ui.components.VerticalDivider
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import kotlin.math.abs
 
 enum class CardType {
-    YOUR_IDENTITY,
-    INVITE_OTHERS,
-    CLAIM,
-    UNFORGETTABLE_WALLET,
-    FREEDOMTOOL,
-    OTHER
+    YOUR_IDENTITY, INVITE_OTHERS, CLAIM, UNFORGETTABLE_WALLET, FREEDOMTOOL, OTHER
 }
 
 data class CardContent(
@@ -78,8 +78,26 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     sharedTransitionScope: SharedTransitionScope,
     navigate: (String) -> Unit,
-    setVisibilityOfBottomBar: (Boolean) -> Unit
+    setVisibilityOfBottomBar: (Boolean) -> Unit,
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
+
+    val pointsBalance by viewModel.pointsToken.collectAsState()
+    val pointsEvent by viewModel.pointsEventData.collectAsState()
+
+    val currentPointsBalance = pointsBalance?.balanceDetails?.attributes?.amount
+    val firstReferralCode = remember(pointsBalance) {
+        pointsBalance?.balanceDetails?.attributes?.referral_codes?.first { it.status == ReferralCodeStatuses.ACTIVE.value }?.id
+    }
+
+
+    LaunchedEffect(Unit) {
+        try {
+            viewModel.initHomeData()
+        } catch (e: Exception) {
+            ErrorHandler.logError("RewardsEventItemScreen", "Error loading points event", e)
+        }
+    }
 
     val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
 
@@ -88,7 +106,11 @@ fun HomeScreen(
         sharedTransitionScope,
         navigate,
         setVisibilityOfBottomBar,
-        innerPaddings
+        innerPaddings,
+        pointsEvent = pointsEvent,
+        pointsBalance = pointsBalance?.balanceDetails,
+        firstReferralCode = firstReferralCode,
+        currentPointsBalance = currentPointsBalance
     )
 }
 
@@ -99,7 +121,11 @@ fun HomeScreenContent(
     sharedTransitionScope: SharedTransitionScope,
     navigate: (String) -> Unit,
     setVisibilityOfBottomBar: (Boolean) -> Unit,
-    innerPaddings: Map<ScreenInsets, Number>
+    innerPaddings: Map<ScreenInsets, Number>,
+    pointsEvent: PointsEventData?,
+    pointsBalance: PointsBalanceData?,
+    firstReferralCode: String?,
+    currentPointsBalance: Long?
 ) {
 
     var selectedPageId by remember { mutableStateOf<Int?>(null) }
@@ -109,7 +135,7 @@ fun HomeScreenContent(
     }
 
     val cardContent = remember {
-        listOf(
+        mutableListOf(
 
             CardContent(
                 type = CardType.FREEDOMTOOL,
@@ -120,35 +146,27 @@ fun HomeScreenContent(
                     image = R.drawable.freedomtool_bg,
                     backgroundGradient = Brush.linearGradient(
                         colors = listOf(
-                            Color(0xFFD5FEC8),
-                            Color(0xFF80ed99)
+                            Color(0xFFD5FEC8), Color(0xFF80ed99)
                         )
                     )
                 ),
                 onCardClick = {},
             ),
             CardContent(
-                type = CardType.UNFORGETTABLE_WALLET,
-                properties = CardProperties(
+                type = CardType.UNFORGETTABLE_WALLET, properties = CardProperties(
                     header = "An Unforgettable",
                     subTitle = "Wallet",
                     icon = R.drawable.ic_rarime,
                     image = R.drawable.no_more_seed_image,
                     backgroundGradient = Brush.linearGradient(
                         colors = listOf(
-                            Color(0xFFFCE3FC),
-                            Color(0xFFD3D1EF)
+                            Color(0xFFFCE3FC), Color(0xFFD3D1EF)
                         )
                     )
-                ),
-                onCardClick = {},
-                footer = {
-                }
-            ),
+                ), onCardClick = {}, footer = {}),
 
             CardContent(
-                type = CardType.YOUR_IDENTITY,
-                properties = CardProperties(
+                type = CardType.YOUR_IDENTITY, properties = CardProperties(
                     header = "Your Device",
                     subTitle = "Your Identity",
                     icon = R.drawable.ic_rarime,
@@ -162,8 +180,7 @@ fun HomeScreenContent(
                 onCardClick = {},
             ),
             CardContent(
-                type = CardType.INVITE_OTHERS,
-                properties = CardProperties(
+                type = CardType.INVITE_OTHERS, properties = CardProperties(
                     header = "Invite",
                     subTitle = "Others",
                     icon = R.drawable.ic_rarimo,
@@ -173,55 +190,55 @@ fun HomeScreenContent(
                             Color(0xFFCBE7EC), Color(0xFFF2F8EE)
                         )
                     )
-                ),
-                onCardClick = {},
-                footer = {
+                ), onCardClick = {}, footer = {
                     Column(
                         modifier = Modifier.padding(top = 24.dp)
                     ) {
-                        Row(
-                            Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(RarimeTheme.colors.baseWhite)
-                                .padding(vertical = 8.dp, horizontal = 16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(text = "149250-1596", style = RarimeTheme.typography.h5)
-                            VerticalDivider(
-                                modifier = Modifier
-                                    .height(24.dp)
-                                    .padding(horizontal = 16.dp)
-                            )
-                            AppIcon(id = R.drawable.ic_copy_simple)
+                        if (firstReferralCode != null) {
+                            Row(
+                                Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(RarimeTheme.colors.baseWhite)
+                                    .padding(vertical = 8.dp, horizontal = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(text = firstReferralCode, style = RarimeTheme.typography.h5)
+                                VerticalDivider(
+                                    modifier = Modifier
+                                        .height(24.dp)
+                                        .padding(horizontal = 16.dp)
+                                )
+                                AppIcon(id = R.drawable.ic_copy_simple)
+                            }
                         }
+
                         Spacer(Modifier.height(20.dp))
                         Text(text = "*Nothing leaves thi devise")
                     }
-                }
-            ),
-
-            CardContent(
-                type = CardType.CLAIM,
-                properties = CardProperties(
-                    header = "Claim",
-                    subTitle = "10 RMO",
-                    icon = R.drawable.ic_rarimo,
-                    image = R.drawable.claim_rmo_image,
-                    backgroundGradient = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFFDFFCC4), Color(0xFFF4F3F0)
-                        )
-                    )
-                ),
-                onCardClick = {},
-                footer = {}
-            )
-        )
+                }),
+        ).also {
+            if (currentPointsBalance != null && currentPointsBalance != 0L) {
+                it.add(
+                    CardContent(
+                        type = CardType.CLAIM, properties = CardProperties(
+                            header = "Claim",
+                            subTitle = ("""$currentPointsBalance RMO"""),
+                            icon = R.drawable.ic_rarimo,
+                            image = R.drawable.claim_rmo_image,
+                            backgroundGradient = Brush.linearGradient(
+                                colors = listOf(
+                                    Color(0xFFDFFCC4), Color(0xFFF4F3F0)
+                                )
+                            )
+                        ), onCardClick = {}, footer = {})
+                )
+            }
+        }
     }
 
     val pagerState = rememberPagerState(pageCount = { cardContent.size })
 
-    AnimatedContent(selectedPageId, label = "content") { it ->
+    AnimatedContent(selectedPageId, label = "content") {
         if (it == null) {
             Column(
                 modifier = modifier
@@ -232,20 +249,29 @@ fun HomeScreenContent(
                     )
             ) {
                 Row(
-                    Modifier.padding(start = 20.dp, end = 20.dp),
+                    Modifier.padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        "Hi Stranger",
-                        style = RarimeTheme.typography.subtitle4,
-                        color = RarimeTheme.colors.textPrimary
-                    )
+                    Row {
+                        Text(
+                            "Hi",
+                            style = RarimeTheme.typography.subtitle4,
+                            color = RarimeTheme.colors.textSecondary
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            "Stranger",
+                            style = RarimeTheme.typography.subtitle4,
+                            color = RarimeTheme.colors.textPrimary
+                        )
+                    }
+
                     Spacer(modifier = Modifier.weight(1f))
                     CircledBadgeWithCounter(
                         modifier = Modifier.clickable { },
                         iconId = R.drawable.ic_bell,
                         containerSize = 40,
-                        containerColor = RarimeTheme.colors.backgroundPrimary,
+                        containerColor = RarimeTheme.colors.componentPrimary,
                         contentSize = 20,
                         badgeSize = 16,
                         contentColor = RarimeTheme.colors.textPrimary
@@ -254,8 +280,7 @@ fun HomeScreenContent(
 
                 Column {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Spacer(modifier = Modifier.width(16.dp))
@@ -263,17 +288,15 @@ fun HomeScreenContent(
                         VerticalPager(
                             modifier = Modifier.weight(1f), // <-- Added this
                             state = pagerState,
-                            contentPadding = PaddingValues(top = 10.dp, bottom = 150.dp)
+                            contentPadding = PaddingValues(top = 42.dp, bottom = 95.dp)
                         ) { page ->
-                            val pageOffset =
-                                remember(
-                                    pagerState.currentPage,
-                                    pagerState.currentPageOffsetFraction
-                                ) {
-                                    derivedStateOf {
-                                        (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
-                                    }
-                                }.value
+                            val pageOffset = remember(
+                                pagerState.currentPage, pagerState.currentPageOffsetFraction
+                            ) {
+                                derivedStateOf {
+                                    (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
+                                }
+                            }.value
 
                             val absoluteOffset = abs(pageOffset).coerceIn(0f, 1f)
                             val targetScale = lerp(0.8f, 1f, 1f - absoluteOffset)
@@ -281,20 +304,17 @@ fun HomeScreenContent(
 
                             key(page) {
                                 val scale by animateFloatAsState(
-                                    targetValue = targetScale,
-                                    animationSpec = spring(
-                                        dampingRatio = 0.5f,
-                                        stiffness = 300f
+                                    targetValue = targetScale, animationSpec = spring(
+                                        dampingRatio = 0.5f, stiffness = 300f
                                     )
                                 )
 
                                 HomeCard(
-                                    modifier = Modifier
-                                        .graphicsLayer {
-                                            scaleX = scale
-                                            scaleY = scale
-                                            alpha = lerp(0.8f, 1f, 1f - absoluteOffset)
-                                        },
+                                    modifier = Modifier.graphicsLayer {
+                                        scaleX = scale
+                                        scaleY = scale
+                                        alpha = lerp(0.8f, 1f, 1f - absoluteOffset)
+                                    },
                                     cardProperties = cardContent[page].properties,
                                     footer = cardContent[page].footer,
                                     sharedTransitionScope = sharedTransitionScope,
@@ -302,12 +322,9 @@ fun HomeScreenContent(
                                     id = page,
                                     onCardClick = {
                                         cardContent[page].onCardClick; selectedPageId = page
-                                    }
-                                )
+                                    })
                             }
                         }
-
-
 
                         VerticalPageIndicator(
                             numberOfPages = pagerState.pageCount,
@@ -348,7 +365,9 @@ fun HomeScreenContent(
                         animatedContentScope = this@AnimatedContent,
                         id = it,
                         onBack = { selectedPageId = null },
-                        innerPaddings = innerPaddings
+                        innerPaddings = innerPaddings,
+                        pointsBalance = pointsBalance,
+                        pointsEvent = pointsEvent,
                     )
                 }
 
@@ -358,7 +377,9 @@ fun HomeScreenContent(
                         animatedContentScope = this@AnimatedContent,
                         id = it,
                         onBack = { selectedPageId = null },
-                        innerPaddings = innerPaddings
+                        innerPaddings = innerPaddings,
+                        currentPointsBalance = currentPointsBalance
+                            ?: throw IllegalStateException("currentPointsBalance is Null but card was displayed")
                     )
                 }
 
@@ -395,13 +416,17 @@ fun HomeScreenContent(
 @Preview
 @Composable
 private fun HomeScreenPreview() {
-    PrevireSharedAnimationProvider { transform, animated ->
+    PrevireSharedAnimationProvider { transform, _ ->
         Surface {
             HomeScreenContent(
                 sharedTransitionScope = transform,
                 navigate = {},
                 setVisibilityOfBottomBar = {},
-                innerPaddings = mapOf(ScreenInsets.TOP to 40, ScreenInsets.BOTTOM to 40)
+                innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
+                pointsEvent = null,
+                pointsBalance = null,
+                firstReferralCode = "",
+                currentPointsBalance = 2323.toLong()
             )
         }
     }

@@ -35,7 +35,7 @@ sealed class Screen(val route: String) {
             data object Send : Screen("send")
         }
         data object Identity : Screen("identity"){
-            data object Poh: Screen("liveness")
+            data object ZkLiveness: Screen("zk_liveness")
         }
         data object QrScan : Screen("qr_scan")
         data object Rewards : Screen("rewards") {
