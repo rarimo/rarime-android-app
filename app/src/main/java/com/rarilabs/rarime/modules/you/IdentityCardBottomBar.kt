@@ -78,7 +78,7 @@ fun IdentityCardBottomBarContentInfo(modifier: Modifier = Modifier) {
 @Composable
 fun IdentityCardBottomBar(
     modifier: Modifier = Modifier,
-    state: IdentityCardBottomBarState = IdentityCardBottomBarState.INFO
+    state: IdentityCardBottomBarState = IdentityCardBottomBarState.INFO,
 ) {
     Card(shape = RoundedCornerShape(16.dp)) {
         Row(
@@ -91,10 +91,9 @@ fun IdentityCardBottomBar(
             verticalAlignment = Alignment.CenterVertically
 
         ) {
-
             when (state) {
                 IdentityCardBottomBarState.LOADING -> IdentityCardBottomBarContentLoading(progress = 20)
-                IdentityCardBottomBarState.ERROR ->IdentityCardBottomBarContentError()
+                IdentityCardBottomBarState.ERROR -> IdentityCardBottomBarContentError()
                 IdentityCardBottomBarState.INFO -> IdentityCardBottomBarContentInfo()
             }
 

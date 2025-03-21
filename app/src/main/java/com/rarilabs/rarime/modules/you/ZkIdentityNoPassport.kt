@@ -13,7 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,9 +23,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.modules.main.LocalMainViewModel
-import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
@@ -44,10 +43,26 @@ data class IdentityItemData(
     val onClick: () -> Unit
 )
 
+
 @Composable
-fun ZkIdentityNoPassport(modifier: Modifier = Modifier, navigate: (String) -> Unit) {
+fun ZkIdentityNoPassport(
+    modifier: Modifier = Modifier,
+    navigate: (String) -> Unit,
+    viewModel: ZkIdentityNoPassportViewModel = hiltViewModel()
+) {
+
+    LaunchedEffect(Unit) {
+        viewModel.startHardTask()
+
+    }
+
+    ZkIdentityNoPassportContent(modifier, navigate)
+}
+
+
+@Composable
+fun ZkIdentityNoPassportContent(modifier: Modifier = Modifier, navigate: (String) -> Unit) {
     val guideSheetState = rememberAppSheetState(false)
-    val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
     var currentScreen by remember { mutableStateOf(IdentityScreenType.NONE) }
 
     AppBottomSheet(
@@ -56,7 +71,6 @@ fun ZkIdentityNoPassport(modifier: Modifier = Modifier, navigate: (String) -> Un
         when (currentScreen) {
             IdentityScreenType.NONE -> {}
             IdentityScreenType.LIVENESS -> ZkLiveness(navigate = navigate)
-            //  TODO: Implement other sheets
         }
     }
 
@@ -107,8 +121,6 @@ fun ZkIdentityNoPassport(modifier: Modifier = Modifier, navigate: (String) -> Un
             .padding(
                 start = 20.dp,
                 end = 20.dp,
-                bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp,
-                top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp + 70.dp
             )
             .then(modifier)
     ) {
@@ -163,6 +175,6 @@ fun IdentityList(items: List<IdentityItemData>) {
 @Composable
 private fun ZkIdentityNoPassportPreview() {
     Surface {
-        ZkIdentityNoPassport {}
+        ZkIdentityNoPassportContent {}
     }
 }

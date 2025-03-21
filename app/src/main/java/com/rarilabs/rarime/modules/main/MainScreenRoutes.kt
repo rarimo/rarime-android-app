@@ -251,8 +251,10 @@ fun MainScreenRoutes(
                 }
 
                 composable(Screen.Main.Identity.route) {
-                    AuthGuard(navigate = navigateWithPopUp) {
-                        ZkIdentityScreen(navigate = simpleNavigate)
+                    ScreenInsetsContainer {
+                        AuthGuard(navigate = navigateWithPopUp) {
+                            ZkIdentityScreen(navigate = simpleNavigate)
+                        }
                     }
                 }
 
