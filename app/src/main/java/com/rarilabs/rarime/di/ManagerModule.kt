@@ -28,6 +28,7 @@ import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
 import com.rarilabs.rarime.manager.NotificationManager
 import com.rarilabs.rarime.manager.PassportManager
+import com.rarilabs.rarime.manager.ProofGenerationManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.manager.SecurityManager
 import com.rarilabs.rarime.manager.SettingsManager
@@ -237,9 +238,27 @@ class APIModule {
     @Singleton
     fun providePassportManager(
         dataStoreManager: SecureSharedPrefsManager,
-        rarimoContractManager: RarimoContractManager,
         identityManager: IdentityManager
-    ): PassportManager = PassportManager(dataStoreManager, rarimoContractManager, identityManager)
+    ): PassportManager = PassportManager(dataStoreManager, identityManager)
+
+
+    @Provides
+    @Singleton
+    fun provideProofGenerationManager(
+        @ApplicationContext context: Context,
+        identityManager: IdentityManager,
+        registrationManager: RegistrationManager,
+        rarimoContractManager: RarimoContractManager,
+        pointsManager: PointsManager
+    ): ProofGenerationManager =
+        ProofGenerationManager(
+            context,
+            identityManager,
+            registrationManager,
+            rarimoContractManager,
+            pointsManager
+        )
+
 
     @Provides
     @Singleton
@@ -352,9 +371,10 @@ class APIModule {
     @Provides
     @Singleton
     fun provideIdentityManager(
-        dataStoreManager: SecureSharedPrefsManager
+        dataStoreManager: SecureSharedPrefsManager,
+        rarimoContractManager: RarimoContractManager
     ): IdentityManager {
-        return IdentityManager(dataStoreManager)
+        return IdentityManager(dataStoreManager, rarimoContractManager)
     }
 
     @Provides

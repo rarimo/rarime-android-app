@@ -7,10 +7,4 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ZkIdentityNoPassportViewModel @Inject constructor(val passportManager: PassportManager) :
-    ViewModel() {
-
-    fun startHardTask() {
-        passportManager.startHeavyTask()
-    }
-
-}
+    ViewModel()

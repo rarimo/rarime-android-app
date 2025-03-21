@@ -8,14 +8,11 @@ import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.Constants
-import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.data.ZkProof
 import identity.Identity
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.withContext
 import org.web3j.utils.Numeric
 import java.math.BigInteger
 import javax.inject.Inject
@@ -24,8 +21,7 @@ import javax.inject.Singleton
 @Singleton
 class PassportManager @Inject constructor(
     private val dataStoreManager: SecureSharedPrefsManager,
-    private val rarimoContractManager: RarimoContractManager,
-    private val identityManager: IdentityManager,
+    private val identityManager: IdentityManager
 ) {
     private var _passport = MutableStateFlow(dataStoreManager.readEDocument())
 
@@ -84,37 +80,6 @@ class PassportManager @Inject constructor(
         _passport.value = passport
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
-    suspend fun getPassportActiveIdentity(): String? {
-
-        try {
-            val passportInfoKey: String? = if (passport.value?.dg15?.isEmpty() == true) {
-                identityManager.registrationProof.value?.pub_signals?.get(1)
-            } else {
-                identityManager.registrationProof.value?.pub_signals?.get(0)
-            }
-
-            var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
-
-            if (passportInfoKeyBytes.size != 32) {
-                passportInfoKeyBytes = passportInfoKeyBytes.copyOf(32)
-            }
-
-
-            val stateKeeperContract = rarimoContractManager.getStateKeeper()
-
-            val passportInfoRaw = withContext(Dispatchers.IO) {
-                stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()
-            }
-
-            return passportInfoRaw.component1().activeIdentity.toHexString()
-        } catch (e: Exception) {
-            ErrorHandler.logError("getPassportActiveIdentity", e.message.toString(), e)
-            return null
-        }
-
-    }
-
     suspend fun loadPassportStatus() {
         if (passport.value == null) {
             return
@@ -128,24 +93,22 @@ class PassportManager @Inject constructor(
         var isIdentityCreated = false
 
         try {
-            val activeIdentity = getPassportActiveIdentity()
+            val activeIdentity = identityManager.getPassportActiveIdentity(passport.value!!)
 
-            isIdentityCreated = activeIdentity != null && activeIdentity.isNotEmpty()
+            isIdentityCreated = !activeIdentity.isNullOrEmpty()
         } catch (e: Exception) {
+
         }
 
         if (isInWaitlist) {
             updatePassportStatus(PassportStatus.WAITLIST)
-
             return
         }
 
         if (isIdentityCreated) {
             updatePassportStatus(if (isUnsupported) PassportStatus.NOT_ALLOWED else PassportStatus.ALLOWED)
-
             return
         }
-
         updatePassportStatus(if (isUnsupported) PassportStatus.WAITLIST_NOT_ALLOWED else PassportStatus.WAITLIST)
     }
 

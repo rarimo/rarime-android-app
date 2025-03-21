@@ -13,7 +13,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,14 +24,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.modules.passportScan.ScanPassportScreen
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
-import com.rarilabs.rarime.util.Screen
 
 enum class IdentityScreenType {
     NONE,
+    PASSPORT,
     LIVENESS,
 }
 
@@ -50,12 +50,6 @@ fun ZkIdentityNoPassport(
     navigate: (String) -> Unit,
     viewModel: ZkIdentityNoPassportViewModel = hiltViewModel()
 ) {
-
-    LaunchedEffect(Unit) {
-        viewModel.startHardTask()
-
-    }
-
     ZkIdentityNoPassportContent(modifier, navigate)
 }
 
@@ -69,7 +63,14 @@ fun ZkIdentityNoPassportContent(modifier: Modifier = Modifier, navigate: (String
         state = guideSheetState,
     ) {
         when (currentScreen) {
-            IdentityScreenType.NONE -> {}
+            IdentityScreenType.PASSPORT -> {
+                ScanPassportScreen(onClose = {}, onClaim = {})
+            }
+
+            IdentityScreenType.NONE -> {
+
+            }
+
             IdentityScreenType.LIVENESS -> ZkLiveness(navigate = navigate)
         }
     }
@@ -81,7 +82,8 @@ fun ZkIdentityNoPassportContent(modifier: Modifier = Modifier, navigate: (String
                 nameResId = R.string.zk_identity_no_passport_list_item_1,
                 isActive = true,
                 onClick = {
-                    navigate(Screen.ScanPassport.ScanPassportSpecific.route)
+                    currentScreen = IdentityScreenType.PASSPORT
+                    guideSheetState.show()
                 }
             ),
             IdentityItemData(
