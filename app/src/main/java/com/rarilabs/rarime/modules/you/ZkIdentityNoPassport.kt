@@ -52,7 +52,7 @@ fun ZkIdentityNoPassport(
 ) {
 
     LaunchedEffect(Unit) {
-        viewModel.startHardTask()
+//        viewModel.startHardTask()
 
     }
 

@@ -9,8 +9,8 @@ import javax.inject.Inject
 class ZkIdentityNoPassportViewModel @Inject constructor(val passportManager: PassportManager) :
     ViewModel() {
 
-    fun startHardTask() {
-        passportManager.startHeavyTask()
-    }
+//    fun startHardTask() {
+//        passportManager.startHeavyTask()
+//    }
 
 }

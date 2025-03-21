@@ -31,7 +31,6 @@ fun ZkIdentityPassport(modifier: Modifier = Modifier, navigate: (String) -> Unit
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-
                 "YOU",
                 style = RarimeTheme.typography.subtitle4,
                 color = RarimeTheme.colors.textPrimary
@@ -48,8 +47,6 @@ fun ZkIdentityPassport(modifier: Modifier = Modifier, navigate: (String) -> Unit
         Column(Modifier.padding(start = 12.dp, end = 12.dp, top = 20.dp)) {
             IdentityCard()
         }
-
-
     }
 }
 
