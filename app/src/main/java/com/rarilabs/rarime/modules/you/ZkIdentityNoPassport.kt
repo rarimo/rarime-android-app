@@ -30,6 +30,7 @@ import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.Screen
 
 enum class IdentityScreenType {
     NONE,
@@ -65,7 +66,9 @@ fun ZkIdentityNoPassport(modifier: Modifier = Modifier, navigate: (String) -> Un
                 imageId = R.drawable.ic_passport_line,
                 nameResId = R.string.zk_identity_no_passport_list_item_1,
                 isActive = true,
-                onClick = {}
+                onClick = {
+                    navigate(Screen.ScanPassport.ScanPassportSpecific.route)
+                }
             ),
             IdentityItemData(
                 imageId = R.drawable.ic_body_scan_fill,

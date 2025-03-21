@@ -27,8 +27,8 @@ class PassportManager @Inject constructor(
     private val rarimoContractManager: RarimoContractManager,
     private val identityManager: IdentityManager,
 ) {
-    var _passport = MutableStateFlow(dataStoreManager.readEDocument())
-        private set
+    private var _passport = MutableStateFlow(dataStoreManager.readEDocument())
+
     val passport: StateFlow<EDocument?>
         get() = _passport.asStateFlow()
 

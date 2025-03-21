@@ -8,11 +8,6 @@ import androidx.compose.ui.tooling.preview.Preview
 @Composable
 fun ZkIdentityScreen(modifier: Modifier = Modifier, navigate: (String) -> Unit) {
 
-    /*
-    * TODO: Same logic like in card
-    */
-
-    //TODO: Get scan passport Status
     val isScanned = remember { false }
 
     if (isScanned) {
@@ -20,7 +15,6 @@ fun ZkIdentityScreen(modifier: Modifier = Modifier, navigate: (String) -> Unit) 
     } else {
         ZkIdentityNoPassport(navigate = navigate)
     }
-
 
 }
 

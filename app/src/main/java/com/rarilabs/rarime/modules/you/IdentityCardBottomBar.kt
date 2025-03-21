@@ -24,8 +24,62 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
+
+enum class IdentityCardBottomBarState(string: String) {
+    LOADING(""),
+    ERROR(""),
+    INFO("")
+}
+
 @Composable
-fun IdentityCardBottomBar(modifier: Modifier = Modifier) {
+fun IdentityCardBottomBarContentLoading(modifier: Modifier = Modifier, progress: Int) {
+    //Progress bar
+}
+
+@Composable
+fun IdentityCardBottomBarContentError(modifier: Modifier = Modifier, ) {
+    //Error
+}
+
+
+@Composable
+fun IdentityCardBottomBarContentInfo(modifier: Modifier = Modifier) {
+    Column {
+        Text("#")
+        Spacer(modifier = Modifier.height(4.dp))
+        Text("13B294029491")
+    }
+
+    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        AppIcon(
+            id =
+                R.drawable.ic_eye_slash,
+            modifier = Modifier
+                .padding(8.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = { })
+        )
+
+
+        AppIcon(
+            id = R.drawable.ic_dots_three_outline,
+            modifier = Modifier
+                .padding(8.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = { })
+        )
+    }
+}
+
+@Composable
+fun IdentityCardBottomBar(
+    modifier: Modifier = Modifier,
+    state: IdentityCardBottomBarState = IdentityCardBottomBarState.INFO
+) {
     Card(shape = RoundedCornerShape(16.dp)) {
         Row(
             modifier = Modifier
@@ -37,39 +91,17 @@ fun IdentityCardBottomBar(modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.CenterVertically
 
         ) {
-            Column {
-                Text("#")
-                Spacer(modifier = Modifier.height(4.dp))
-                Text("13B294029491")
+
+            when (state) {
+                IdentityCardBottomBarState.LOADING -> IdentityCardBottomBarContentLoading(progress = 20)
+                IdentityCardBottomBarState.ERROR ->IdentityCardBottomBarContentError()
+                IdentityCardBottomBarState.INFO -> IdentityCardBottomBarContentInfo()
             }
-
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                AppIcon(
-                    id =
-                    R.drawable.ic_eye_slash,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .clickable(interactionSource = remember { MutableInteractionSource() },
-                            indication = null,
-                            onClick = { })
-                )
-
-
-                AppIcon(
-                    id = R.drawable.ic_dots_three_outline,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .clickable(interactionSource = remember { MutableInteractionSource() },
-                            indication = null,
-                            onClick = { })
-                )
-            }
-
 
         }
     }
-
 }
+
 
 @Preview
 @Composable
