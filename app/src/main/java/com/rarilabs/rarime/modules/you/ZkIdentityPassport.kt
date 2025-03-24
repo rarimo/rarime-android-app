@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
@@ -31,7 +32,10 @@ import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun ZkIdentityPassport(navigate: (String) -> Unit) {
+fun ZkIdentityPassport(
+    navigate: (String) -> Unit,
+    vm: ZkIdentityScreenViewModel = hiltViewModel()
+) {
 
     val homeViewModel = LocalZkIdentityScreenViewModel.current
 

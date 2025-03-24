@@ -6,6 +6,7 @@ import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.manager.PassportManager
+import com.rarilabs.rarime.manager.ProofGenerationManager
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +18,7 @@ class ZkIdentityScreenViewModel @Inject constructor(
     private val passportManager: PassportManager,
     private val registrationManager: RegistrationManager,
     private val sharedPrefsManager: SecureSharedPrefsManager,
+    private val proofGenerationManager: ProofGenerationManager,
 ) : AndroidViewModel(app) {
 
     val isShowPassport = passportManager.isShowPassport
