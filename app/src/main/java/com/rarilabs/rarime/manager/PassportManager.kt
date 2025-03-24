@@ -84,12 +84,19 @@ class PassportManager @Inject constructor(
         if (passport.value == null) {
             return
         }
+
+        if (dataStoreManager.readRegistrationProof() == null) {
+            updatePassportStatus(PassportStatus.UNREGISTERED)
+            return
+        }
+
         _isShowPassport.value = true
 
         val isInWaitlist = dataStoreManager.readIsInWaitlist()
 
         val isUnsupported =
             Constants.NOT_ALLOWED_COUNTRIES.contains(passport.value!!.personDetails?.nationality)
+
         var isIdentityCreated = false
 
         try {

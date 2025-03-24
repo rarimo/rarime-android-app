@@ -14,8 +14,10 @@ import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.registration.PassportAlreadyRegisteredByOtherPK
 import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.modules.passportScan.CircuitUseCase
+import com.rarilabs.rarime.modules.passportScan.ConnectionError
 import com.rarilabs.rarime.modules.passportScan.DownloadCircuitError
 import com.rarilabs.rarime.modules.passportScan.DownloadRequest
+import com.rarilabs.rarime.modules.passportScan.UnpackingError
 import com.rarilabs.rarime.modules.passportScan.models.CryptoUtilsPassport
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.RegisterIdentityInputs
@@ -32,7 +34,10 @@ import com.rarilabs.rarime.util.generateLightRegistrationProofByCircuitType
 import com.rarilabs.rarime.util.generateRegistrationProofByCircuitType
 import com.rarilabs.rarime.util.toBits
 import identity.X509Util
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,10 +51,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 enum class PassportProofState(val value: Int) {
-    READING_DATA(0),
-    APPLYING_ZERO_KNOWLEDGE(1),
-    CREATING_CONFIDENTIAL_PROFILE(2),
-    FINALIZING(3)
+    READING_DATA(0), APPLYING_ZERO_KNOWLEDGE(1), CREATING_CONFIDENTIAL_PROFILE(2), FINALIZING(3)
 }
 
 @Singleton
@@ -60,27 +62,31 @@ class ProofGenerationManager @Inject constructor(
     private val rarimoContractManager: RarimoContractManager,
     private val pointsManager: PointsManager,
 ) {
+
+    private val managerScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
     // State that can be observed by other components (e.g. view models).
-    private val _state =
-        MutableStateFlow(PassportProofState.READING_DATA)
+    private val _state = MutableStateFlow(PassportProofState.READING_DATA)
     val state: StateFlow<PassportProofState> get() = _state.asStateFlow()
-    private val _downloadProgress = MutableStateFlow(0)
+    val _downoadPprogress = MutableStateFlow(0)
+    private var currentRegistration: kotlinx.coroutines.Deferred<ZkProof>? = null
 
     //Download for circuits
-    val downloadProgress: StateFlow<Int> = _downloadProgress.asStateFlow()
+    val downoadPprogress: StateFlow<Int> = _downoadPprogress.asStateFlow()
+
+    private var _proofError: MutableStateFlow<Exception?> = MutableStateFlow(null)
+
+    val proofError: StateFlow<Exception?> get() = _proofError.asStateFlow()
 
     private val TAG = ProofGenerationManager::class.java.simpleName
     private val second = 1000L
     private val privateKeyBytes = identityManager.privateKeyBytes
 
     fun resetState() {
-        _state.value =
-            PassportProofState.READING_DATA
+        _state.value = PassportProofState.READING_DATA
     }
 
-    /**
-     * Join the rewards program using the provided EDocument.
-     */
+
     suspend fun joinRewardProgram(eDocument: EDocument) {
         try {
             pointsManager.joinRewardProgram(eDocument)
@@ -90,20 +96,18 @@ class ProofGenerationManager @Inject constructor(
         }
     }
 
-    /**
-     * Registers a certificate using the data from the provided EDocument.
-     */
     private suspend fun registerCertificate(eDocument: EDocument) {
         try {
             val sodStream = eDocument.sod!!.decodeHexString().inputStream()
             val sodFile = SODFileOwn(sodStream)
-            val x509Util = X509Util() // Adjust import if needed
+            val x509Util = X509Util()
 
             val slaveCertificate = SecurityUtil.convertToPEM(sodFile.docSigningCertificate)
             val certificatesSMTAddress = BaseConfig.CERTIFICATES_SMT_CONTRACT_ADDRESS
             val certificatesSMTContract =
                 rarimoContractManager.getPoseidonSMT(certificatesSMTAddress)
             val icao = readICAO(application.applicationContext)
+
             val slaveCertificateIndex = x509Util.getSlaveCertificateIndex(
                 slaveCertificate.toByteArray(), icao
             )
@@ -115,19 +119,18 @@ class ProofGenerationManager @Inject constructor(
                 ErrorHandler.logDebug(TAG, "Passport certificate is already registered")
                 return
             }
-            val callDataBuilder = identity.CallDataBuilder() // Adjust import if needed
+            val callDataBuilder = identity.CallDataBuilder()
             val callData = callDataBuilder.buildRegisterCertificateCalldata(
                 icao, slaveCertificate.toByteArray()
             )
+
             val response = withContext(Dispatchers.IO) {
                 registrationManager.relayerRegister(
-                    callData.calldata,
-                    BaseConfig.REGISTER_CONTRACT_ADDRESS
+                    callData.calldata, BaseConfig.REGISTER_CONTRACT_ADDRESS
                 )
             }
             ErrorHandler.logDebug(
-                TAG,
-                "Passport certificate EVM Tx Hash ${response.data.attributes.tx_hash}"
+                TAG, "Passport certificate EVM Tx Hash ${response.data.attributes.tx_hash}"
             )
 
             val res =
@@ -141,13 +144,9 @@ class ProofGenerationManager @Inject constructor(
         }
     }
 
-    /**
-     * Registers by document. Generates proof and registers using full registration logic.
-     */
-    suspend fun registerByDocument(eDocument: EDocument): ZkProof {
+    private suspend fun registerByDocument(eDocument: EDocument): ZkProof {
         try {
-            _state.value =
-                PassportProofState.READING_DATA
+            _state.value = PassportProofState.READING_DATA
             val circuitType = getCircuitType(eDocument)
             registrationManager.setCircuitData(circuitType)
             val circuitName = getCircuitName(circuitType)
@@ -157,7 +156,7 @@ class ProofGenerationManager @Inject constructor(
             val circuitUseCase = CircuitUseCase(application)
             val filePaths = withContext(Dispatchers.Default) {
                 circuitUseCase.download(circuitData) { progress, visibility ->
-                    _downloadProgress.value = progress
+                    _downoadPprogress.value = progress
                 }
             } ?: throw DownloadCircuitError()
 
@@ -176,8 +175,7 @@ class ProofGenerationManager @Inject constructor(
 
             Log.i("Registration proof", GsonBuilder().setPrettyPrinting().create().toJson(proof))
             registrationManager.setRegistrationProof(proof)
-            _state.value =
-                PassportProofState.APPLYING_ZERO_KNOWLEDGE
+            _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
 
             // Get passport info
             val passportInfo = try {
@@ -189,8 +187,7 @@ class ProofGenerationManager @Inject constructor(
 
             val ZERO_BYTES32 = ByteArray(32) { 0 }
             val currentIdentityKey = identityManager.getProfiler().publicKeyHash
-            _state.value =
-                PassportProofState.CREATING_CONFIDENTIAL_PROFILE
+            _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
 
             passportInfo?.let {
                 if (it.component1()?.activeIdentity?.toHexString() == currentIdentityKey.toHexString()) {
@@ -204,8 +201,7 @@ class ProofGenerationManager @Inject constructor(
                         circuitName
                     )
                     delay(second)
-                    _state.value =
-                        PassportProofState.FINALIZING
+                    _state.value = PassportProofState.FINALIZING
                     delay(second)
                 } else {
                     throw PassportAlreadyRegisteredByOtherPK()
@@ -219,8 +215,7 @@ class ProofGenerationManager @Inject constructor(
                     circuitName
                 )
                 delay(second)
-                _state.value =
-                    PassportProofState.FINALIZING
+                _state.value = PassportProofState.FINALIZING
                 delay(second)
             }
             delay(second)
@@ -231,15 +226,10 @@ class ProofGenerationManager @Inject constructor(
         }
     }
 
-    /**
-     * Performs light registration.
-     */
-    suspend fun lightRegistration(eDocument: EDocument): ZkProof {
+    private suspend fun lightRegistration(eDocument: EDocument): ZkProof {
         try {
-            if (privateKeyBytes == null)
-                throw IllegalStateException("privateKeyBytes is null")
-            _state.value =
-                PassportProofState.READING_DATA
+            if (privateKeyBytes == null) throw IllegalStateException("privateKeyBytes is null")
+            _state.value = PassportProofState.READING_DATA
 
             val registerIdentityCircuitName = eDocument.getRegisterIdentityLightCircuitName()
             ErrorHandler.logDebug(TAG, "registerIdentityCircuitName: $registerIdentityCircuitName")
@@ -247,28 +237,23 @@ class ProofGenerationManager @Inject constructor(
                 ?: throw IllegalStateException("Circuit $registerIdentityCircuitName is not supported")
 
             delay(second * 2)
-            _state.value =
-                PassportProofState.APPLYING_ZERO_KNOWLEDGE
+            _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
 
             // Download circuit files
             val filePaths = withContext(Dispatchers.Default) {
                 CircuitUseCase(application).download(registeredCircuitData) { progress, visibility ->
-                    _downloadProgress.value = progress
+                    _downoadPprogress.value = progress
                 }
             } ?: throw DownloadCircuitError()
 
             delay(second * 2)
             val lightProof = withContext(Dispatchers.Default) {
                 generateLightRegistrationProof(
-                    filePaths,
-                    eDocument,
-                    privateKeyBytes,
-                    registeredCircuitData
+                    filePaths, eDocument, privateKeyBytes, registeredCircuitData
                 )
             }
             delay(second * 2)
-            _state.value =
-                PassportProofState.CREATING_CONFIDENTIAL_PROFILE
+            _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
 
             val registerResponse = registrationManager.lightRegistration(eDocument, lightProof)
             val profile = identityManager.getProfiler()
@@ -276,9 +261,7 @@ class ProofGenerationManager @Inject constructor(
 
             val passportInfoKey = withContext(Dispatchers.IO) {
                 registrationManager.getPassportInfo(
-                    eDocument,
-                    lightProof,
-                    registerResponse.data.attributes
+                    eDocument, lightProof, registerResponse.data.attributes
                 )!!.component1()
             }
             if (passportInfoKey.activeIdentity.contentEquals(currentIdentityKey)) {
@@ -288,8 +271,7 @@ class ProofGenerationManager @Inject constructor(
                 return lightProof
             }
             delay(second * 2)
-            _state.value =
-                PassportProofState.FINALIZING
+            _state.value = PassportProofState.FINALIZING
             val res = withContext(Dispatchers.IO) {
                 registrationManager.lightRegisterRelayer(lightProof, registerResponse)
             }
@@ -304,27 +286,88 @@ class ProofGenerationManager @Inject constructor(
         }
     }
 
-    /**
-     * Use-case function that performs default registration.
-     * If any error occurs during the full registration process,
-     * it falls back to light registration.
-     */
-    suspend fun performRegistration(eDocument: EDocument): ZkProof {
-        try {
-            // First, attempt default registration.
-            registerCertificate(eDocument)
-            val proof = registerByDocument(eDocument)
-            return proof
-        } catch (e: PassportAlreadyRegisteredByOtherPK) {
-            ErrorHandler.logError(TAG, "Passport already registered", e)
-            throw e
-        } catch (e: Exception) {
-            ErrorHandler.logError(TAG, "Default registration failed, trying light registration", e)
-            return lightRegistration(eDocument)
-        }
-    }
 
-    // ----- PRIVATE HELPER FUNCTIONS -----
+    suspend fun performRegistration(eDocument: EDocument): ZkProof =
+        withContext(managerScope.coroutineContext) {
+            // If a registration is already in progress, return its result.
+            currentRegistration?.let { ongoing ->
+                if (ongoing.isActive) {
+                    return@withContext ongoing.await()
+                }
+            }
+
+            currentRegistration = managerScope.async {
+                try {
+                    registerCertificate(eDocument)
+                    val proof = registerByDocument(eDocument)
+                    identityManager.setRegistrationProof(proof)
+                    proof
+                } catch (e: Exception) {
+                    when (e) {
+                        is PassportAlreadyRegisteredByOtherPK -> {
+                            ErrorHandler.logError(TAG, "Passport already registered", e)
+                            _proofError.value = e
+                            throw e
+                        }
+
+                        is ConnectionError, is UnpackingError -> {
+                            resetState()
+                            ErrorHandler.logError(
+                                TAG,
+                                "Error during default registration: ${e::class.simpleName}",
+                                e
+                            )
+                            _proofError.value = e
+                            throw e
+                        }
+
+                        else -> {
+                            ErrorHandler.logError(
+                                TAG,
+                                "Default registration failed, trying light registration",
+                                e
+                            )
+                            try {
+                                val lightProof = lightRegistration(eDocument)
+                                identityManager.setRegistrationProof(lightProof)
+                                lightProof
+                            } catch (e2: Exception) {
+                                when (e2) {
+                                    is PassportAlreadyRegisteredByOtherPK -> {
+                                        ErrorHandler.logError(
+                                            TAG,
+                                            "Passport already registered during light registration",
+                                            e2
+                                        )
+                                        _proofError.value = e2
+                                        throw e2
+                                    }
+
+                                    is ConnectionError, is UnpackingError -> {
+                                        resetState()
+                                        ErrorHandler.logError(
+                                            TAG,
+                                            "Connection/Unpacking error during light registration",
+                                            e2
+                                        )
+                                        _proofError.value = e2
+                                        throw e2
+                                    }
+
+                                    else -> {
+                                        ErrorHandler.logError(TAG, "Light registration failed", e2)
+                                        _proofError.value = e2
+                                        throw e2
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            currentRegistration!!.await()
+        }
 
     private suspend fun generateRegisterIdentityProof(
         eDocument: EDocument,
@@ -360,9 +403,7 @@ class ProofGenerationManager @Inject constructor(
             registerIdentityCircuitType.buildName()
         } catch (e: Exception) {
             ErrorHandler.logError(
-                TAG,
-                "Cannot get circuit name from registerIdentityCircuitType",
-                e
+                TAG, "Cannot get circuit name from registerIdentityCircuitType", e
             )
             ErrorHandler.logError(TAG, Gson().toJson(registerIdentityCircuitType))
             throw e
@@ -393,8 +434,7 @@ class ProofGenerationManager @Inject constructor(
             Numeric.hexStringToByteArray(eDocument.dg1), 1, smartChunkingToBlockSize.toLong()
         )
         return RegisterIdentityLightInputs(
-            skIdentity = Numeric.toHexString(privateKey),
-            dg1 = dg1Chunks
+            skIdentity = Numeric.toHexString(privateKey), dg1 = dg1Chunks
         )
     }
 
@@ -478,8 +518,7 @@ class ProofGenerationManager @Inject constructor(
             dg1 = dg1Chunks,
             dg15 = dg15,
             slaveMerkleRoot = (BigInteger(proof.root)).toString(),
-            slaveMerkleInclusionBranches = proof.siblings.map { BigInteger(it).toString() }
-        )
+            slaveMerkleInclusionBranches = proof.siblings.map { BigInteger(it).toString() })
         registrationManager.setMasterCertProof(proof)
         return gson.toJson(inputs).toByteArray()
     }

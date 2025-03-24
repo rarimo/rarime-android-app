@@ -139,6 +139,7 @@ class NotificationService :
                 PassportStatus.WAITLIST -> UserStatus.WAITLIST
                 PassportStatus.NOT_ALLOWED -> UserStatus.VERIFIED
                 PassportStatus.WAITLIST_NOT_ALLOWED -> UserStatus.WAITLIST
+                PassportStatus.UNREGISTERED -> UserStatus.UNSCANNED
             }
 
             if (!userStatus.contains(currentUserStatusString)) {
