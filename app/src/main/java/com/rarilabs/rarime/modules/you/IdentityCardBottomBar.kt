@@ -31,11 +31,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.manager.PassportProofState
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
@@ -44,14 +46,10 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
-enum class IdentityCardBottomBarState(string: String) {
-    LOADING(""), ERROR(""), INFO("")
-}
-
 val stageDurations = mapOf(
-    PassportProofState.READING_DATA to 2_000,
-    PassportProofState.APPLYING_ZERO_KNOWLEDGE to 18_000,
-    PassportProofState.CREATING_CONFIDENTIAL_PROFILE to 8_000,
+    PassportProofState.READING_DATA to 15_000,
+    PassportProofState.APPLYING_ZERO_KNOWLEDGE to 15_000,
+    PassportProofState.CREATING_CONFIDENTIAL_PROFILE to 15_000,
     PassportProofState.FINALIZING to 2_000
 )
 
@@ -82,23 +80,19 @@ fun getProgressForStage(
 }
 
 fun getInitialStageProgress(
-    stageDurations: Map<PassportProofState, Int>,
-    stage: PassportProofState
+    stageDurations: Map<PassportProofState, Int>, stage: PassportProofState
 ): Float {
     return when (stage) {
         PassportProofState.APPLYING_ZERO_KNOWLEDGE -> getProgressForStage(
-            stageDurations,
-            PassportProofState.READING_DATA
+            stageDurations, PassportProofState.READING_DATA
         )
 
         PassportProofState.CREATING_CONFIDENTIAL_PROFILE -> getProgressForStage(
-            stageDurations,
-            PassportProofState.APPLYING_ZERO_KNOWLEDGE
+            stageDurations, PassportProofState.APPLYING_ZERO_KNOWLEDGE
         )
 
         PassportProofState.FINALIZING -> getProgressForStage(
-            stageDurations,
-            PassportProofState.CREATING_CONFIDENTIAL_PROFILE
+            stageDurations, PassportProofState.CREATING_CONFIDENTIAL_PROFILE
         )
 
         else -> 0f
@@ -110,7 +104,7 @@ suspend fun updateProgressWithTimedDelay(
     startProgress: Float,
     endProgress: Float,
     duration: Int,
-    step: Int = 10,
+    step: Int = 20,
     updateProgress: (Float) -> Unit,
 ) {
     val progressDuration = duration.toFloat()
@@ -176,7 +170,6 @@ fun IdentityCardBottomBarContentLoading(
                         stageDurations, PassportProofState.APPLYING_ZERO_KNOWLEDGE
                     ),
                     duration,
-                    step = 20
                 ) { progressValue ->
                     progress = progressValue
                 }
@@ -186,8 +179,7 @@ fun IdentityCardBottomBarContentLoading(
                 updateProgressWithTimedDelay(
                     getProgressForStage(
                         stageDurations, PassportProofState.APPLYING_ZERO_KNOWLEDGE
-                    ),
-                    getProgressForStage(
+                    ), getProgressForStage(
                         stageDurations, PassportProofState.CREATING_CONFIDENTIAL_PROFILE
                     ),
                     duration
@@ -200,8 +192,7 @@ fun IdentityCardBottomBarContentLoading(
                 updateProgressWithTimedDelay(
                     getProgressForStage(
                         stageDurations, PassportProofState.APPLYING_ZERO_KNOWLEDGE
-                    ),
-                    getProgressForStage(
+                    ), getProgressForStage(
                         stageDurations, PassportProofState.FINALIZING
                     ),
                     duration
@@ -223,12 +214,10 @@ fun IdentityCardBottomBarContentLoading(
             verticalAlignment = Alignment.CenterVertically
         ) {
             UiLinearProgressBar(
-                percentage = animatedProgress,
-                trackColors = listOf(
+                percentage = animatedProgress, trackColors = listOf(
                     RarimeTheme.colors.secondaryMain,
                     RarimeTheme.colors.secondaryMain,
-                ),
-                backgroundModifier = Modifier
+                ), backgroundModifier = Modifier
                     .background(
                         RarimeTheme.colors.componentPrimary, CircleShape
                     )
@@ -236,10 +225,10 @@ fun IdentityCardBottomBarContentLoading(
             )
             Text(
                 when (stage) {
-                    PassportProofState.READING_DATA -> "Downloading"
-                    PassportProofState.APPLYING_ZERO_KNOWLEDGE -> "Applying ZK"
-                    PassportProofState.CREATING_CONFIDENTIAL_PROFILE -> "Creating"
-                    PassportProofState.FINALIZING -> "Finishing"
+                    PassportProofState.READING_DATA -> stringResource(R.string.downloading)
+                    PassportProofState.APPLYING_ZERO_KNOWLEDGE -> stringResource(R.string.applying_zk)
+                    PassportProofState.CREATING_CONFIDENTIAL_PROFILE -> stringResource(R.string.creating)
+                    PassportProofState.FINALIZING -> stringResource(R.string.finishing)
                 },
                 style = RarimeTheme.typography.subtitle6,
                 color = RarimeTheme.colors.textSecondary,
@@ -248,7 +237,7 @@ fun IdentityCardBottomBarContentLoading(
             )
         }
         Text(
-            "Please don’t close application",
+            stringResource(R.string.please_don_t_close_application),
             style = RarimeTheme.typography.body5,
             color = RarimeTheme.colors.textSecondary
         )
@@ -256,7 +245,11 @@ fun IdentityCardBottomBarContentLoading(
 }
 
 @Composable
-fun IdentityCardBottomBarContentError(modifier: Modifier = Modifier) {
+fun IdentityCardBottomBarContentError(
+    reason: String,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(14.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -266,17 +259,17 @@ fun IdentityCardBottomBarContentError(modifier: Modifier = Modifier) {
             AppIcon(
                 id = R.drawable.ic_information_line,
                 size = 20.dp,
-                description = "Error",
+                description = stringResource(R.string.error),
                 tint = RarimeTheme.colors.errorDark,
             )
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
-                    "Unknown error",
+                    reason,
                     style = RarimeTheme.typography.subtitle6,
                     color = RarimeTheme.colors.errorDark
                 )
                 Text(
-                    "Please try again",
+                    stringResource(R.string.please_try_again),
                     style = RarimeTheme.typography.body5,
                     color = RarimeTheme.colors.textSecondary
                 )
@@ -285,9 +278,10 @@ fun IdentityCardBottomBarContentError(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.weight(1f))
         PrimaryButton(
             modifier = Modifier.clip(RoundedCornerShape(20.dp)),
-            text = "Retry",
+            text = stringResource(R.string.retry),
             leftIcon = R.drawable.ic_restart_line,
-            onClick = { TODO() })
+            onClick = onRetry,
+        )
     }
 }
 
@@ -306,8 +300,7 @@ fun IdentityCardBottomBarContentInfo(modifier: Modifier = Modifier) {
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
-                    onClick = { }
-                )
+                    onClick = { })
         )
 
 
@@ -317,18 +310,14 @@ fun IdentityCardBottomBarContentInfo(modifier: Modifier = Modifier) {
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
-                    onClick = { }
-                )
+                    onClick = { })
         )
     }
 }
 
 @Composable
 fun IdentityCardBottomBar(
-    modifier: Modifier = Modifier,
-    // TODO: Replace state with ViewModel
-    state: IdentityCardBottomBarState = IdentityCardBottomBarState.INFO,
-    viewModel: IdentityCardBottomBarViewModel = viewModel()
+    modifier: Modifier = Modifier, viewModel: IdentityCardBottomBarViewModel = hiltViewModel()
 ) {
     val bottomBarUiState by viewModel.uiState.collectAsState()
 
@@ -343,12 +332,17 @@ fun IdentityCardBottomBar(
             verticalAlignment = Alignment.CenterVertically
 
         ) {
-            when (state) {
-                IdentityCardBottomBarState.LOADING -> IdentityCardBottomBarContentLoading(
-                    stage = bottomBarUiState.state,
+            if (bottomBarUiState.proofError !== null) {
+                IdentityCardBottomBarContentError(
+                    reason = bottomBarUiState.proofError?.message
+                        ?: stringResource(R.string.unknown_error),
+                    onRetry = { viewModel.retryRegistration() }
                 )
-                IdentityCardBottomBarState.ERROR -> IdentityCardBottomBarContentError()
-                IdentityCardBottomBarState.INFO -> IdentityCardBottomBarContentInfo()
+            } else if (bottomBarUiState.passportStatus == PassportStatus.UNREGISTERED) {
+                IdentityCardBottomBarContentLoading(stage = bottomBarUiState.loadingState)
+            } else {
+                // TODO: Pass real data
+                IdentityCardBottomBarContentInfo()
             }
         }
     }

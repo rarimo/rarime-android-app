@@ -173,7 +173,6 @@ fun IdentityCard(
     }
 }
 
-
 @Preview
 @Composable
 private fun IdentityCardPreview() {

@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +31,7 @@ import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.PersonDetails
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.ErrorHandler
 
 @Composable
 fun ZkIdentityPassport(
@@ -46,7 +48,17 @@ fun ZkIdentityPassport(
     val isIncognito by homeViewModel.isIncognito
     val passportStatus by homeViewModel.passportStatus.collectAsState()
 
-
+    LaunchedEffect(Unit) {
+        try {
+            if (passportStatus == PassportStatus.UNREGISTERED) {
+                homeViewModel.performRegistration(passport!!)
+            }
+        } catch (error: Exception) {
+            ErrorHandler.logError(
+                "Passport registration", error.message ?: "Registration error", error
+            )
+        }
+    }
 
     ZkIdentityPassportContent(
         passport = passport!!,
@@ -59,7 +71,6 @@ fun ZkIdentityPassport(
         onIncognitoChange = homeViewModel::onIncognitoChange
     )
 }
-
 
 @Composable
 fun ZkIdentityPassportContent(
@@ -112,7 +123,6 @@ fun ZkIdentityPassportContent(
 @Preview
 @Composable
 private fun ZkIdentityPassportPreview() {
-
     var isIncognito by remember { mutableStateOf(false) }
     var look by remember { mutableStateOf(PassportCardLook.BLACK) }
     var identifiers by remember {
@@ -143,7 +153,5 @@ private fun ZkIdentityPassportPreview() {
             onIncognitoChange = { isIncognito = it },
             passportStatus = PassportStatus.NOT_ALLOWED,
             onIdentifiersChange = { identifiers = it })
-
-
     }
 }
