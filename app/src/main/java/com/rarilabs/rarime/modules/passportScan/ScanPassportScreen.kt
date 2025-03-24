@@ -141,7 +141,8 @@ fun ScanPassportScreen(
                 ReadEDocStep(
                     onNext = {
                         scanPassportScreenViewModel.setPassportTEMP(it)
-                        state = ScanPassportState.PASSPORT_DATA
+                        scanPassportScreenViewModel.savePassport()
+                        onClose.invoke()
                     },
                     onClose = {
                         onClose.invoke()

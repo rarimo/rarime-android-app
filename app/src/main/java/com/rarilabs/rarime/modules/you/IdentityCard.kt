@@ -1,8 +1,8 @@
 package com.rarilabs.rarime.modules.you
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,30 +27,59 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.data.enums.PassportCardLook
+import com.rarilabs.rarime.data.enums.PassportIdentifier
+import com.rarilabs.rarime.data.enums.PassportStatus
+import com.rarilabs.rarime.modules.passportScan.calculateAgeFromBirthDate
+import com.rarilabs.rarime.modules.passportScan.models.EDocument
+import com.rarilabs.rarime.modules.passportScan.models.PersonDetails
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.BackgroundRemover
 
 @Composable
-fun IdentityCard(modifier: Modifier = Modifier) {
+fun IdentityCard(
+    modifier: Modifier = Modifier,
+    passport: EDocument,
+    look: PassportCardLook,
+    identifiers: List<PassportIdentifier>,
+    isIncognito: Boolean,
+    passportStatus: PassportStatus,
+    onLookChange: (PassportCardLook) -> Unit,
+    onIncognitoChange: (Boolean) -> Unit,
+    onIdentifiersChange: (List<PassportIdentifier>) -> Unit
+) {
 
     val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
+
+    var isPressing by remember { mutableStateOf(false) }
+
+
+    val isInfoHidden = isIncognito && !isPressing
 
     var faceImage: ImageBitmap? by remember {
         mutableStateOf(null)
     }
 
     LaunchedEffect(Unit) {
-        val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.passport)
 
-        BackgroundRemover().removeBackground(bitmap) {
-            val removedBackendBitmap = it?.asImageBitmap()
-            faceImage = removedBackendBitmap
+        val bitmap = passport.personDetails?.getPortraitImage()
+
+        bitmap?.let {
+            BackgroundRemover().removeBackground(it) { image ->
+                val removedBackendBitmap = image?.asImageBitmap()
+                faceImage = removedBackendBitmap
+            }
         }
 
     }
@@ -69,12 +98,20 @@ fun IdentityCard(modifier: Modifier = Modifier) {
                     painterResource(id = R.drawable.card_bg2),
                     contentScale = ContentScale.FillHeight
                 )
+                .pointerInput(Unit) {
+                    detectTapGestures(onPress = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        isPressing = true
+                        tryAwaitRelease()
+                        isPressing = false
+                    })
+                }
         ) {
             Box(
                 modifier = Modifier
                     .align(Alignment.End)
                     .padding(top = 16.dp, end = 14.dp)
-                    .clip(RoundedCornerShape(106.dp)) // ????
+                    .clip(RoundedCornerShape(106.dp))
                     .background(RarimeTheme.colors.componentPrimary)
             ) {
                 Text(
@@ -88,13 +125,13 @@ fun IdentityCard(modifier: Modifier = Modifier) {
 
             Text(
                 modifier = Modifier.padding(start = 24.dp),
-                text = "Alex",
+                text = if (isInfoHidden) "•••••" else passport.personDetails!!.name!!,
                 style = RarimeTheme.typography.h2,
                 color = RarimeTheme.colors.textPrimary
             )
             Text(
                 modifier = Modifier.padding(start = 24.dp),
-                text = "Koghuashvili",
+                text = if (isInfoHidden) "•••••" else passport.personDetails!!.surname!!,
                 style = RarimeTheme.typography.additional2,
                 color = RarimeTheme.colors.textPlaceholder
             )
@@ -106,13 +143,15 @@ fun IdentityCard(modifier: Modifier = Modifier) {
             ) {
                 Text(
                     modifier = Modifier.padding(start = 24.dp, top = 6.dp),
-                    text = "24 years old",
+                    text = if (isInfoHidden) "••••••••••••" else stringResource(
+                        R.string.years_old, calculateAgeFromBirthDate(
+                            passport.personDetails!!.birthDate!!
+                        )
+                    ),
+
                     style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.textSecondary,
                 )
-
-                //Image(bitmap = faceImage ?: ImageBitmap(1,1), contentDescription = null)
-
 
                 Image(
                     modifier = Modifier
@@ -138,5 +177,34 @@ fun IdentityCard(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun IdentityCardPreview() {
-    IdentityCard()
+
+    var isIncognito by remember { mutableStateOf(false) }
+    var look by remember { mutableStateOf(PassportCardLook.BLACK) }
+    var identifiers by remember {
+        mutableStateOf(
+            listOf(
+                PassportIdentifier.NATIONALITY, PassportIdentifier.DOCUMENT_ID
+            )
+        )
+    }
+
+    IdentityCard(
+        passport = EDocument(
+            personDetails = PersonDetails(
+                name = "John",
+                surname = "Doe",
+                birthDate = "01.01.1996",
+                expiryDate = "01.01.2025",
+                nationality = "USA",
+                serialNumber = "123456789",
+                faceImageInfo = null
+            )
+        ),
+        look = look,
+        identifiers = identifiers,
+        isIncognito = isIncognito,
+        onLookChange = { look = it },
+        onIncognitoChange = { isIncognito = it },
+        passportStatus = PassportStatus.NOT_ALLOWED,
+        onIdentifiersChange = { identifiers = it })
 }
