@@ -64,10 +64,10 @@ class ProofGenerationManager @Inject constructor(
     private val _state =
         MutableStateFlow(PassportProofState.READING_DATA)
     val state: StateFlow<PassportProofState> get() = _state.asStateFlow()
-    val _downoadPprogress = MutableStateFlow(0)
+    private val _downloadProgress = MutableStateFlow(0)
 
     //Download for circuits
-    val downoadPprogress: StateFlow<Int> = _downoadPprogress.asStateFlow()
+    val downloadProgress: StateFlow<Int> = _downloadProgress.asStateFlow()
 
     private val TAG = ProofGenerationManager::class.java.simpleName
     private val second = 1000L
@@ -157,7 +157,7 @@ class ProofGenerationManager @Inject constructor(
             val circuitUseCase = CircuitUseCase(application)
             val filePaths = withContext(Dispatchers.Default) {
                 circuitUseCase.download(circuitData) { progress, visibility ->
-                    _downoadPprogress.value = progress
+                    _downloadProgress.value = progress
                 }
             } ?: throw DownloadCircuitError()
 
@@ -253,7 +253,7 @@ class ProofGenerationManager @Inject constructor(
             // Download circuit files
             val filePaths = withContext(Dispatchers.Default) {
                 CircuitUseCase(application).download(registeredCircuitData) { progress, visibility ->
-                    _downoadPprogress.value = progress
+                    _downloadProgress.value = progress
                 }
             } ?: throw DownloadCircuitError()
 
