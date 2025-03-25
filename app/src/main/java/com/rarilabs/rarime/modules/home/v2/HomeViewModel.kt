@@ -37,6 +37,8 @@ class HomeViewModel @Inject constructor(
 
     private var _pointsEventData = MutableStateFlow<PointsEventData?>(null)
 
+    val notifications = notificationManager.notificationList
+
     val pointsEventData: StateFlow<PointsEventData?>
         get() = _pointsEventData.asStateFlow()
 

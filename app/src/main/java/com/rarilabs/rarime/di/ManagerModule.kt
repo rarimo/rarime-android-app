@@ -249,12 +249,14 @@ class APIModule {
         identityManager: IdentityManager,
         registrationManager: RegistrationManager,
         rarimoContractManager: RarimoContractManager,
+        passportManager: PassportManager,
         pointsManager: PointsManager
     ): ProofGenerationManager =
         ProofGenerationManager(
             context,
             identityManager,
             registrationManager,
+            passportManager,
             rarimoContractManager,
             pointsManager
         )

@@ -22,7 +22,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -35,10 +34,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.registration.PassportAlreadyRegisteredByOtherPK
+import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.manager.PassportProofState
+import com.rarilabs.rarime.modules.passportScan.DownloadCircuitError
+import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.UiLinearProgressBar
@@ -244,19 +246,70 @@ fun IdentityCardBottomBarContentLoading(
     }
 }
 
+
+data class ErrorIdentityBottomBardData(
+    val header: String,
+    val hint: String,
+    val buttonText: String,
+    val onButtonClick: (() -> Unit)?,
+    val onIconHintClick: (() -> Unit)
+)
+
+
 @Composable
 fun IdentityCardBottomBarContentError(
-    reason: String,
+    reason: Exception,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    val errorData = remember {
+        when (reason) {
+            is DownloadCircuitError -> {
+                ErrorIdentityBottomBardData(
+                    header = "Connection Error",
+                    hint = "Try again",
+                    buttonText = "Retry",
+                    onButtonClick = { onRetry.invoke() },
+                    onIconHintClick = {}
+                )
+            }
+
+            is PassportAlreadyRegisteredByOtherPK -> {
+                ErrorIdentityBottomBardData(
+                    header = "Connection Error",
+                    hint = "Try again",
+                    buttonText = "Retry",
+                    onButtonClick = null,
+                    onIconHintClick = {}
+                )
+            }
+
+            else -> {
+                ErrorIdentityBottomBardData(
+                    header = "Unknown error",
+                    hint = "Try again later",
+                    buttonText = "Retry",
+                    onButtonClick = { onRetry.invoke() },
+                    onIconHintClick = {}
+                )
+            }
+        }
+    }
+
     Row(
         horizontalArrangement = Arrangement.spacedBy(14.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.fillMaxWidth()
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             AppIcon(
+                modifier = Modifier.clickable {
+
+                },
                 id = R.drawable.ic_information_line,
                 size = 20.dp,
                 description = stringResource(R.string.error),
@@ -264,33 +317,43 @@ fun IdentityCardBottomBarContentError(
             )
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
-                    reason,
+                    errorData.header,
                     style = RarimeTheme.typography.subtitle6,
                     color = RarimeTheme.colors.errorDark
                 )
                 Text(
-                    stringResource(R.string.please_try_again),
+                    errorData.hint,
                     style = RarimeTheme.typography.body5,
                     color = RarimeTheme.colors.textSecondary
                 )
             }
         }
         Spacer(modifier = Modifier.weight(1f))
-        PrimaryButton(
-            modifier = Modifier.clip(RoundedCornerShape(20.dp)),
-            text = stringResource(R.string.retry),
-            leftIcon = R.drawable.ic_restart_line,
-            onClick = onRetry,
-        )
+
+        if (errorData.onButtonClick != null) {
+            PrimaryButton(
+                modifier = Modifier.clip(RoundedCornerShape(20.dp)),
+                text = errorData.buttonText,
+                leftIcon = R.drawable.ic_restart_line,
+                onClick = errorData.onButtonClick,
+            )
+        }
+
     }
 }
 
 @Composable
-fun IdentityCardBottomBarContentInfo(modifier: Modifier = Modifier) {
+fun IdentityCardBottomBarContentInfo(
+    modifier: Modifier = Modifier,
+    eDocument: EDocument,
+    onIncognitoChange: (Boolean) -> Unit,
+    onIdentifiersChange: (List<PassportIdentifier>) -> Unit,
+    isIncognito: Boolean
+) {
     Column(modifier) {
         Text("#")
         Spacer(modifier = Modifier.height(4.dp))
-        Text("13B294029491")
+        Text(eDocument.personDetails?.serialNumber ?: "")
     }
 
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -300,7 +363,7 @@ fun IdentityCardBottomBarContentInfo(modifier: Modifier = Modifier) {
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
-                    onClick = { })
+                    onClick = { onIncognitoChange(!isIncognito) })
         )
 
 
@@ -317,9 +380,14 @@ fun IdentityCardBottomBarContentInfo(modifier: Modifier = Modifier) {
 
 @Composable
 fun IdentityCardBottomBar(
-    modifier: Modifier = Modifier, viewModel: IdentityCardBottomBarViewModel = hiltViewModel()
+    modifier: Modifier = Modifier,
+    eDocument: EDocument,
+    registrationStatus: IdentityCardBottomBarUiState,
+    retryRegistration: () -> Unit,
+    onIncognitoChange: (Boolean) -> Unit,
+    onIdentifiersChange: (List<PassportIdentifier>) -> Unit,
+    isIncognito: Boolean
 ) {
-    val bottomBarUiState by viewModel.uiState.collectAsState()
 
     Card(shape = RoundedCornerShape(16.dp)) {
         Row(
@@ -332,17 +400,20 @@ fun IdentityCardBottomBar(
             verticalAlignment = Alignment.CenterVertically
 
         ) {
-            if (bottomBarUiState.proofError !== null) {
+            if (registrationStatus.proofError !== null) {
                 IdentityCardBottomBarContentError(
-                    reason = bottomBarUiState.proofError?.message
-                        ?: stringResource(R.string.unknown_error),
-                    onRetry = { viewModel.retryRegistration() }
+                    reason = registrationStatus.proofError,
+                    onRetry = { retryRegistration() }
                 )
-            } else if (bottomBarUiState.passportStatus == PassportStatus.UNREGISTERED) {
-                IdentityCardBottomBarContentLoading(stage = bottomBarUiState.loadingState)
+            } else if (registrationStatus.passportStatus == PassportStatus.UNREGISTERED) {
+                IdentityCardBottomBarContentLoading(stage = registrationStatus.loadingState)
             } else {
-                // TODO: Pass real data
-                IdentityCardBottomBarContentInfo()
+                IdentityCardBottomBarContentInfo(
+                    eDocument = eDocument,
+                    onIncognitoChange = onIncognitoChange,
+                    onIdentifiersChange = onIdentifiersChange,
+                    isIncognito = isIncognito
+                )
             }
         }
     }
@@ -352,9 +423,53 @@ fun IdentityCardBottomBar(
 @Preview
 @Composable
 private fun IdentityCardBottomBarPreview() {
+
+    val registrationStatus = IdentityCardBottomBarUiState()
     Surface {
-        IdentityCardBottomBarContentLoading(
-            stage = PassportProofState.APPLYING_ZERO_KNOWLEDGE,
+        IdentityCardBottomBar(
+            eDocument = EDocument(),
+            registrationStatus = registrationStatus,
+            onIncognitoChange = {},
+            onIdentifiersChange = {},
+            retryRegistration = {},
+            isIncognito = false
+        )
+    }
+}
+
+
+@Preview
+@Composable
+private fun IdentityCardInfoBottomBarPreview() {
+    val registrationStatus = IdentityCardBottomBarUiState(proofError = Exception())
+    Surface {
+        IdentityCardBottomBar(
+            eDocument = EDocument(),
+            registrationStatus = registrationStatus,
+            onIncognitoChange = {},
+            onIdentifiersChange = {},
+            retryRegistration = {},
+            isIncognito = false
+        )
+    }
+}
+
+
+@Preview
+@Composable
+private fun IdentityCardLoadingBottomBarPreview() {
+    val registrationStatus = IdentityCardBottomBarUiState(
+        proofError = null,
+        passportStatus = PassportStatus.UNREGISTERED
+    )
+    Surface {
+        IdentityCardBottomBar(
+            eDocument = EDocument(),
+            registrationStatus = registrationStatus,
+            onIncognitoChange = {},
+            onIdentifiersChange = {},
+            retryRegistration = {},
+            isIncognito = false
         )
     }
 }

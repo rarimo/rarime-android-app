@@ -165,7 +165,9 @@ fun MainScreenRoutes(
             }
 
             composable(Screen.NotificationsList.route) {
-                NotificationsScreen(onBack = { navController.popBackStack() })
+                ScreenInsetsContainer {
+                    NotificationsScreen(onBack = { navController.popBackStack() })
+                }
             }
 
             composable(Screen.EnableBiometrics.route) {
@@ -244,6 +246,7 @@ fun MainScreenRoutes(
                     AuthGuard(navigate = simpleNavigate) {
                         HomeScreen(
                             navigate = simpleNavigate,
+                            navigateWithPopUp = navigateWithPopUp,
                             sharedTransitionScope = this@SharedTransitionLayout,
                             setVisibilityOfBottomBar = { mainViewModel.setBottomBarVisibility(it) }
                         )

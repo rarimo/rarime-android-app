@@ -13,16 +13,16 @@ import com.rarilabs.rarime.BuildConfig
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.registration.PassportAlreadyRegisteredByOtherPK
 import com.rarilabs.rarime.api.registration.RegistrationManager
+import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.modules.passportScan.CircuitUseCase
-import com.rarilabs.rarime.modules.passportScan.ConnectionError
 import com.rarilabs.rarime.modules.passportScan.DownloadCircuitError
 import com.rarilabs.rarime.modules.passportScan.DownloadRequest
-import com.rarilabs.rarime.modules.passportScan.UnpackingError
 import com.rarilabs.rarime.modules.passportScan.models.CryptoUtilsPassport
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.RegisterIdentityInputs
 import com.rarilabs.rarime.modules.passportScan.models.RegisterIdentityLightInputs
 import com.rarilabs.rarime.modules.passportScan.nfc.SODFileOwn
+import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.SecurityUtil
 import com.rarilabs.rarime.util.ZKPUseCase
@@ -59,6 +59,7 @@ class ProofGenerationManager @Inject constructor(
     private val application: Context,
     private val identityManager: IdentityManager,
     private val registrationManager: RegistrationManager,
+    private val passportManager: PassportManager,
     private val rarimoContractManager: RarimoContractManager,
     private val pointsManager: PointsManager,
 ) {
@@ -301,8 +302,16 @@ class ProofGenerationManager @Inject constructor(
                 try {
                     resetState()
                     registerCertificate(eDocument)
+
                     val proof = registerByDocument(eDocument)
                     identityManager.setRegistrationProof(proof)
+
+                    if (!NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
+                        passportManager.updatePassportStatus(PassportStatus.ALLOWED)
+                    } else {
+                        passportManager.updatePassportStatus(PassportStatus.NOT_ALLOWED)
+                    }
+
                     proof
                 } catch (e: Exception) {
                     when (e) {
@@ -312,7 +321,7 @@ class ProofGenerationManager @Inject constructor(
                             throw e
                         }
 
-                        is ConnectionError, is UnpackingError -> {
+                        is DownloadCircuitError -> {
                             resetState()
                             ErrorHandler.logError(
                                 TAG,
@@ -332,6 +341,13 @@ class ProofGenerationManager @Inject constructor(
                             try {
                                 val lightProof = lightRegistration(eDocument)
                                 identityManager.setRegistrationProof(lightProof)
+
+                                if (!NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
+                                    passportManager.updatePassportStatus(PassportStatus.ALLOWED)
+                                } else {
+                                    passportManager.updatePassportStatus(PassportStatus.NOT_ALLOWED)
+                                }
+
                                 lightProof
                             } catch (e2: Exception) {
                                 when (e2) {
@@ -345,7 +361,7 @@ class ProofGenerationManager @Inject constructor(
                                         throw e2
                                     }
 
-                                    is ConnectionError, is UnpackingError -> {
+                                    is DownloadCircuitError -> {
                                         resetState()
                                         ErrorHandler.logError(
                                             TAG,
@@ -357,6 +373,11 @@ class ProofGenerationManager @Inject constructor(
                                     }
 
                                     else -> {
+                                        if (!NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
+                                            passportManager.updatePassportStatus(PassportStatus.WAITLIST)
+                                        } else {
+                                            passportManager.updatePassportStatus(PassportStatus.WAITLIST_NOT_ALLOWED)
+                                        }
                                         ErrorHandler.logError(TAG, "Light registration failed", e2)
                                         _proofError.value = e2
                                         throw e2

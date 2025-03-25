@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.you
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
@@ -36,7 +36,6 @@ import com.rarilabs.rarime.util.ErrorHandler
 @Composable
 fun ZkIdentityPassport(
     navigate: (String) -> Unit,
-    vm: ZkIdentityScreenViewModel = hiltViewModel()
 ) {
 
     val homeViewModel = LocalZkIdentityScreenViewModel.current
@@ -48,15 +47,23 @@ fun ZkIdentityPassport(
     val isIncognito by homeViewModel.isIncognito
     val passportStatus by homeViewModel.passportStatus.collectAsState()
 
+    val registrationStatus by homeViewModel.uiState.collectAsState()
+
+    val retryRegistration = homeViewModel::retryRegistration
+
+    val updatePassportStatus = homeViewModel.updatePassportStatus
+
     LaunchedEffect(Unit) {
-        try {
-            if (passportStatus == PassportStatus.UNREGISTERED) {
+        Log.i("Status", passportStatus.name)
+        if (passportStatus == PassportStatus.UNREGISTERED) {
+            try {
                 homeViewModel.performRegistration(passport!!)
+            } catch (error: Exception) {
+                ErrorHandler.logError(
+                    "Passport registration", error.message ?: "Registration error", error
+                )
             }
-        } catch (error: Exception) {
-            ErrorHandler.logError(
-                "Passport registration", error.message ?: "Registration error", error
-            )
+
         }
     }
 
@@ -68,7 +75,9 @@ fun ZkIdentityPassport(
         passportStatus = passportStatus,
         onLookChange = homeViewModel::onPassportCardLookChange,
         onIdentifiersChange = homeViewModel::onPassportIdentifiersChange,
-        onIncognitoChange = homeViewModel::onIncognitoChange
+        onIncognitoChange = homeViewModel::onIncognitoChange,
+        registrationStatus = registrationStatus,
+        retryRegistration = retryRegistration,
     )
 }
 
@@ -81,7 +90,9 @@ fun ZkIdentityPassportContent(
     passportStatus: PassportStatus,
     onLookChange: (PassportCardLook) -> Unit,
     onIncognitoChange: (Boolean) -> Unit,
-    onIdentifiersChange: (List<PassportIdentifier>) -> Unit
+    onIdentifiersChange: (List<PassportIdentifier>) -> Unit,
+    registrationStatus: IdentityCardBottomBarUiState,
+    retryRegistration: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
@@ -114,7 +125,9 @@ fun ZkIdentityPassportContent(
                 onLookChange = onLookChange,
                 onIncognitoChange = onIncognitoChange,
                 passportStatus = passportStatus,
-                onIdentifiersChange = onIdentifiersChange
+                onIdentifiersChange = onIdentifiersChange,
+                registrationStatus = registrationStatus,
+                retryRegistration = retryRegistration
             )
         }
     }
@@ -151,6 +164,8 @@ private fun ZkIdentityPassportPreview() {
             isIncognito = isIncognito,
             onLookChange = { look = it },
             onIncognitoChange = { isIncognito = it },
+            registrationStatus = IdentityCardBottomBarUiState(),
+            retryRegistration = {},
             passportStatus = PassportStatus.NOT_ALLOWED,
             onIdentifiersChange = { identifiers = it })
     }

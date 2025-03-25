@@ -3,6 +3,11 @@ package com.rarilabs.rarime.modules.home.v2
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
@@ -22,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -65,26 +71,41 @@ fun HomeCard(
         Card(
             modifier = modifier
                 .fillMaxSize()
+                // Ensure the card always stays rounded during transitions.
+                .clip(RoundedCornerShape(32.dp))
+                // Smooth out size changes during transition.
+                .animateContentSize(
+                    animationSpec = spring(dampingRatio = 0.8f, stiffness = 180f)
+                )
                 .sharedBounds(
                     rememberSharedContentState(key = boundKey),
                     animatedVisibilityScope = animatedContentScope,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
+                    enter = fadeIn(
+                        animationSpec = tween(durationMillis = 400, easing = LinearOutSlowInEasing)
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(durationMillis = 400, easing = FastOutLinearInEasing)
+                    ),
                     resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
                 ),
             onClick = onCardClick,
             shape = RoundedCornerShape(32.dp)
         ) {
-            Box(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(32.dp))
+            ) {
 
                 Box(
                     modifier = Modifier
                         .matchParentSize()
-                        .sharedElement(
+                        .background(cardProperties.backgroundGradient)
+                        .sharedBounds(
                             rememberSharedContentState(backgroundKey),
                             animatedVisibilityScope = animatedContentScope
                         )
-                        .background(cardProperties.backgroundGradient)
+
                 )
                 Image(
                     painter = painterResource(cardProperties.image),
@@ -94,7 +115,8 @@ fun HomeCard(
                         .sharedElement(
                             rememberSharedContentState(imageKey),
                             animatedVisibilityScope = animatedContentScope
-                        ),
+                        )
+                        .clip(RoundedCornerShape(32.dp)),
                     contentScale = ContentScale.Fit
                 )
 

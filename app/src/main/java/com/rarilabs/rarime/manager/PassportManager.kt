@@ -53,7 +53,7 @@ class PassportManager @Inject constructor(
         return _passport.value?.personDetails?.nationality
     }
 
-    private fun updatePassportStatus(status: PassportStatus) {
+    fun updatePassportStatus(status: PassportStatus) {
         _passportStatus.value = status
         dataStoreManager.savePassportStatus(status)
     }

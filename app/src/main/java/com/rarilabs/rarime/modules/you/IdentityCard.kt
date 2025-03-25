@@ -1,5 +1,7 @@
 package com.rarilabs.rarime.modules.you
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -17,6 +19,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +28,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -56,34 +61,41 @@ fun IdentityCard(
     passportStatus: PassportStatus,
     onLookChange: (PassportCardLook) -> Unit,
     onIncognitoChange: (Boolean) -> Unit,
-    onIdentifiersChange: (List<PassportIdentifier>) -> Unit
+    onIdentifiersChange: (List<PassportIdentifier>) -> Unit,
+    registrationStatus: IdentityCardBottomBarUiState,
+    retryRegistration: () -> Unit
 ) {
-
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
 
     var isPressing by remember { mutableStateOf(false) }
+    // Derived state ensures this value updates only when its dependencies change.
+    val isInfoHidden by remember { derivedStateOf { isIncognito && !isPressing } }
 
-
-    val isInfoHidden = isIncognito && !isPressing
-
-    var faceImage: ImageBitmap? by remember {
-        mutableStateOf(null)
+    // Animated saturation based on registration status.
+    val targetSaturation =
+        if (registrationStatus.passportStatus == PassportStatus.UNREGISTERED) 0f else 1f
+    val animatedSaturation by animateFloatAsState(
+        targetValue = targetSaturation,
+        animationSpec = tween(durationMillis = 500)
+    )
+    // Recompute the color matrix only when animatedSaturation changes.
+    val colorMatrix = remember(animatedSaturation) {
+        ColorMatrix().apply { setToSaturation(animatedSaturation) }
+    }.also {
+        it.setToSaturation(animatedSaturation)
     }
 
-    LaunchedEffect(Unit) {
+    var faceImage: ImageBitmap? by remember { mutableStateOf(null) }
 
-        val bitmap = passport.personDetails?.getPortraitImage()
-
-        bitmap?.let {
-            BackgroundRemover().removeBackground(it) { image ->
-                val removedBackendBitmap = image?.asImageBitmap()
-                faceImage = removedBackendBitmap
+    // Use LaunchedEffect keyed to personDetails so it re-runs when portrait changes.
+    LaunchedEffect(passport.personDetails) {
+        passport.personDetails?.getPortraitImage()?.let { bitmap ->
+            BackgroundRemover().removeBackground(bitmap) { image ->
+                faceImage = image?.asImageBitmap()
             }
         }
-
     }
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -160,13 +172,23 @@ fun IdentityCard(
                         .padding(end = 8.dp),
                     contentScale = ContentScale.FillHeight,
                     bitmap = faceImage ?: ImageBitmap(1, 1),
-                    contentDescription = null
+                    contentDescription = null,
+                    colorFilter = ColorFilter.colorMatrix(colorMatrix)
                 )
+
+
             }
 
 
             Box(Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)) {
-                IdentityCardBottomBar()
+                IdentityCardBottomBar(
+                    registrationStatus = registrationStatus,
+                    retryRegistration = retryRegistration,
+                    eDocument = passport,
+                    onIncognitoChange = onIncognitoChange,
+                    onIdentifiersChange = onIdentifiersChange,
+                    isIncognito = isIncognito
+                )
             }
 
         }
@@ -205,5 +227,7 @@ private fun IdentityCardPreview() {
         onLookChange = { look = it },
         onIncognitoChange = { isIncognito = it },
         passportStatus = PassportStatus.NOT_ALLOWED,
+        registrationStatus = IdentityCardBottomBarUiState(),
+        retryRegistration = {},
         onIdentifiersChange = { identifiers = it })
 }

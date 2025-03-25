@@ -6,7 +6,6 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,12 +13,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -52,12 +48,12 @@ import com.rarilabs.rarime.modules.home.v2.details.UnforgettableWalletScreen
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.votes.VotesScreen
-import com.rarilabs.rarime.ui.components.AppIcon
+import com.rarilabs.rarime.store.room.notifications.models.NotificationEntityData
 import com.rarilabs.rarime.ui.components.CircledBadgeWithCounter
-import com.rarilabs.rarime.ui.components.VerticalDivider
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
+import com.rarilabs.rarime.util.Screen
 import kotlin.math.abs
 
 enum class CardType {
@@ -78,6 +74,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     sharedTransitionScope: SharedTransitionScope,
     navigate: (String) -> Unit,
+    navigateWithPopUp: (String) -> Unit,
     setVisibilityOfBottomBar: (Boolean) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -85,6 +82,11 @@ fun HomeScreen(
     val pointsBalance by viewModel.pointsToken.collectAsState()
     val pointsEvent by viewModel.pointsEventData.collectAsState()
 
+    val notifications: List<NotificationEntityData> by viewModel.notifications.collectAsState()
+
+    val notificationsCount by remember(notifications) {
+        derivedStateOf { notifications.count { it.isActive } }
+    }
     val currentPointsBalance = pointsBalance?.balanceDetails?.attributes?.amount
     val firstReferralCode = remember(pointsBalance) {
         pointsBalance?.balanceDetails?.attributes?.referral_codes?.first { it.status == ReferralCodeStatuses.ACTIVE.value }?.id
@@ -105,12 +107,14 @@ fun HomeScreen(
         modifier,
         sharedTransitionScope,
         navigate,
+        navigateWithPopUp,
         setVisibilityOfBottomBar,
         innerPaddings,
         pointsEvent = pointsEvent,
         pointsBalance = pointsBalance?.balanceDetails,
         firstReferralCode = firstReferralCode,
-        currentPointsBalance = currentPointsBalance
+        currentPointsBalance = currentPointsBalance,
+        notificationsCount = notificationsCount
     )
 }
 
@@ -120,12 +124,14 @@ fun HomeScreenContent(
     modifier: Modifier = Modifier,
     sharedTransitionScope: SharedTransitionScope,
     navigate: (String) -> Unit,
+    navigateWithPopUp: (String) -> Unit,
     setVisibilityOfBottomBar: (Boolean) -> Unit,
     innerPaddings: Map<ScreenInsets, Number>,
     pointsEvent: PointsEventData?,
     pointsBalance: PointsBalanceData?,
     firstReferralCode: String?,
-    currentPointsBalance: Long?
+    currentPointsBalance: Long?,
+    notificationsCount: Int
 ) {
 
     var selectedPageId by remember { mutableStateOf<Int?>(null) }
@@ -136,37 +142,38 @@ fun HomeScreenContent(
 
     val cardContent = remember {
         mutableListOf(
+//
+//            CardContent(
+//                type = CardType.FREEDOMTOOL,
+//                properties = CardProperties(
+//                    header = "Freedomtool",
+//                    subTitle = "Voting",
+//                    icon = R.drawable.ic_check_unframed,
+//                    image = R.drawable.freedomtool_bg,
+//                    backgroundGradient = Brush.linearGradient(
+//                        colors = listOf(
+//                            Color(0xFFD5FEC8), Color(0xFF80ed99)
+//                        )
+//                    )
+//                ),
+//                onCardClick = {},
+//            ),
+//            CardContent(
+//                type = CardType.UNFORGETTABLE_WALLET, properties = CardProperties(
+//                    header = "An Unforgettable",
+//                    subTitle = "Wallet",
+//                    icon = R.drawable.ic_rarime,
+//                    image = R.drawable.no_more_seed_image,
+//                    backgroundGradient = Brush.linearGradient(
+//                        colors = listOf(
+//                            Color(0xFFFCE3FC), Color(0xFFD3D1EF)
+//                        )
+//                    )
+//                ), onCardClick = {}, footer = {}),
 
             CardContent(
-                type = CardType.FREEDOMTOOL,
+                type = CardType.YOUR_IDENTITY,
                 properties = CardProperties(
-                    header = "Freedomtool",
-                    subTitle = "Voting",
-                    icon = R.drawable.ic_check_unframed,
-                    image = R.drawable.freedomtool_bg,
-                    backgroundGradient = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFFD5FEC8), Color(0xFF80ed99)
-                        )
-                    )
-                ),
-                onCardClick = {},
-            ),
-            CardContent(
-                type = CardType.UNFORGETTABLE_WALLET, properties = CardProperties(
-                    header = "An Unforgettable",
-                    subTitle = "Wallet",
-                    icon = R.drawable.ic_rarime,
-                    image = R.drawable.no_more_seed_image,
-                    backgroundGradient = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFFFCE3FC), Color(0xFFD3D1EF)
-                        )
-                    )
-                ), onCardClick = {}, footer = {}),
-
-            CardContent(
-                type = CardType.YOUR_IDENTITY, properties = CardProperties(
                     header = "Your Device",
                     subTitle = "Your Identity",
                     icon = R.drawable.ic_rarime,
@@ -179,61 +186,62 @@ fun HomeScreenContent(
                 ),
                 onCardClick = {},
             ),
-            CardContent(
-                type = CardType.INVITE_OTHERS, properties = CardProperties(
-                    header = "Invite",
-                    subTitle = "Others",
-                    icon = R.drawable.ic_rarimo,
-                    image = R.drawable.invite_groupe_image,
-                    backgroundGradient = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFFCBE7EC), Color(0xFFF2F8EE)
-                        )
-                    )
-                ), onCardClick = {}, footer = {
-                    Column(
-                        modifier = Modifier.padding(top = 24.dp)
-                    ) {
-                        if (firstReferralCode != null) {
-                            Row(
-                                Modifier
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(RarimeTheme.colors.baseWhite)
-                                    .padding(vertical = 8.dp, horizontal = 16.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(text = firstReferralCode, style = RarimeTheme.typography.h5)
-                                VerticalDivider(
-                                    modifier = Modifier
-                                        .height(24.dp)
-                                        .padding(horizontal = 16.dp)
-                                )
-                                AppIcon(id = R.drawable.ic_copy_simple)
-                            }
-                        }
-
-                        Spacer(Modifier.height(20.dp))
-                        Text(text = "*Nothing leaves thi devise")
-                    }
-                }),
-        ).also {
-            if (currentPointsBalance != null && currentPointsBalance != 0L) {
-                it.add(
-                    CardContent(
-                        type = CardType.CLAIM, properties = CardProperties(
-                            header = "Claim",
-                            subTitle = ("""$currentPointsBalance RMO"""),
-                            icon = R.drawable.ic_rarimo,
-                            image = R.drawable.claim_rmo_image,
-                            backgroundGradient = Brush.linearGradient(
-                                colors = listOf(
-                                    Color(0xFFDFFCC4), Color(0xFFF4F3F0)
-                                )
-                            )
-                        ), onCardClick = {}, footer = {})
-                )
-            }
-        }
+//            CardContent(
+//                type = CardType.INVITE_OTHERS, properties = CardProperties(
+//                    header = "Invite",
+//                    subTitle = "Others",
+//                    icon = R.drawable.ic_rarimo,
+//                    image = R.drawable.invite_groupe_image,
+//                    backgroundGradient = Brush.linearGradient(
+//                        colors = listOf(
+//                            Color(0xFFCBE7EC), Color(0xFFF2F8EE)
+//                        )
+//                    )
+//                ), onCardClick = {}, footer = {
+//                    Column(
+//                        modifier = Modifier.padding(top = 24.dp)
+//                    ) {
+//                        if (firstReferralCode != null) {
+//                            Row(
+//                                Modifier
+//                                    .clip(RoundedCornerShape(8.dp))
+//                                    .background(RarimeTheme.colors.baseWhite)
+//                                    .padding(vertical = 8.dp, horizontal = 16.dp),
+//                                verticalAlignment = Alignment.CenterVertically
+//                            ) {
+//                                Text(text = firstReferralCode, style = RarimeTheme.typography.h5)
+//                                VerticalDivider(
+//                                    modifier = Modifier
+//                                        .height(24.dp)
+//                                        .padding(horizontal = 16.dp)
+//                                )
+//                                AppIcon(id = R.drawable.ic_copy_simple)
+//                            }
+//                        }
+//
+//                        Spacer(Modifier.height(20.dp))
+//                        Text(text = "*Nothing leaves thi devise")
+//                    }
+//                }),
+//        ).also {
+//            if (currentPointsBalance != null && currentPointsBalance != 0L) {
+//                it.add(
+//                    CardContent(
+//                        type = CardType.CLAIM, properties = CardProperties(
+//                            header = "Claim",
+//                            subTitle = ("""$currentPointsBalance RMO"""),
+//                            icon = R.drawable.ic_rarimo,
+//                            image = R.drawable.claim_rmo_image,
+//                            backgroundGradient = Brush.linearGradient(
+//                                colors = listOf(
+//                                    Color(0xFFDFFCC4), Color(0xFFF4F3F0)
+//                                )
+//                            )
+//                        ), onCardClick = {}, footer = {})
+//                )
+//            }
+//        }
+        )
     }
 
     val pagerState = rememberPagerState(pageCount = { cardContent.size })
@@ -268,12 +276,13 @@ fun HomeScreenContent(
 
                     Spacer(modifier = Modifier.weight(1f))
                     CircledBadgeWithCounter(
-                        modifier = Modifier.clickable { },
+                        modifier = Modifier.clickable { navigate(Screen.NotificationsList.route) },
                         iconId = R.drawable.ic_bell,
                         containerSize = 40,
                         containerColor = RarimeTheme.colors.componentPrimary,
                         contentSize = 20,
                         badgeSize = 16,
+                        count = notificationsCount,
                         contentColor = RarimeTheme.colors.textPrimary
                     )
                 }
@@ -354,7 +363,10 @@ fun HomeScreenContent(
                         animatedContentScope = this@AnimatedContent,
                         id = it,
                         onBack = { selectedPageId = null },
-                        navigate = navigate,
+                        navigate = { route ->
+                            navigateWithPopUp(route)
+                            setVisibilityOfBottomBar(true)
+                        },
                         innerPaddings = innerPaddings
                     )
                 }
@@ -421,12 +433,14 @@ private fun HomeScreenPreview() {
             HomeScreenContent(
                 sharedTransitionScope = transform,
                 navigate = {},
+                navigateWithPopUp = {},
                 setVisibilityOfBottomBar = {},
                 innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
                 pointsEvent = null,
                 pointsBalance = null,
                 firstReferralCode = "",
-                currentPointsBalance = 2323.toLong()
+                currentPointsBalance = 2323.toLong(),
+                notificationsCount = 2
             )
         }
     }

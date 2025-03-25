@@ -43,7 +43,6 @@ fun ZkLiveness(modifier: Modifier = Modifier, navigate: (String) -> Unit) {
 
 @Composable
 private fun ZkLivenessContent(
-    // TODO: Implement navigate
     navigate: (String) -> Unit,
     innerPaddings: Map<ScreenInsets, Number>,
     modifier: Modifier = Modifier
@@ -66,7 +65,7 @@ private fun ZkLivenessContent(
             modifier = Modifier.fillMaxWidth(),
             size = ButtonSize.Large,
             text = stringResource(R.string.zk_liveness_btn),
-            onClick = { TODO("Implement onClick handler") },
+            onClick = { },
         )
     }
 }
