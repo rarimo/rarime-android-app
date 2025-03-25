@@ -68,11 +68,11 @@ class ProofGenerationManager @Inject constructor(
     // State that can be observed by other components (e.g. view models).
     private val _state = MutableStateFlow(PassportProofState.READING_DATA)
     val state: StateFlow<PassportProofState> get() = _state.asStateFlow()
-    val _downoadPprogress = MutableStateFlow(0)
+    private val _downloadProgress = MutableStateFlow(0)
     private var currentRegistration: kotlinx.coroutines.Deferred<ZkProof>? = null
 
     //Download for circuits
-    val downoadPprogress: StateFlow<Int> = _downoadPprogress.asStateFlow()
+    val downloadProgress: StateFlow<Int> = _downloadProgress.asStateFlow()
 
     private var _proofError: MutableStateFlow<Exception?> = MutableStateFlow(null)
 
@@ -82,8 +82,9 @@ class ProofGenerationManager @Inject constructor(
     private val second = 1000L
     private val privateKeyBytes = identityManager.privateKeyBytes
 
-    fun resetState() {
+    private fun resetState() {
         _state.value = PassportProofState.READING_DATA
+        _proofError.value = null
     }
 
 
@@ -156,10 +157,11 @@ class ProofGenerationManager @Inject constructor(
             val circuitUseCase = CircuitUseCase(application)
             val filePaths = withContext(Dispatchers.Default) {
                 circuitUseCase.download(circuitData) { progress, visibility ->
-                    _downoadPprogress.value = progress
+                    _downloadProgress.value = progress
                 }
             } ?: throw DownloadCircuitError()
 
+            _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
             // Proof generation
             val proof =
                 generateRegisterIdentityProof(eDocument, circuitData, filePaths, circuitType)
@@ -175,7 +177,6 @@ class ProofGenerationManager @Inject constructor(
 
             Log.i("Registration proof", GsonBuilder().setPrettyPrinting().create().toJson(proof))
             registrationManager.setRegistrationProof(proof)
-            _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
 
             // Get passport info
             val passportInfo = try {
@@ -242,7 +243,7 @@ class ProofGenerationManager @Inject constructor(
             // Download circuit files
             val filePaths = withContext(Dispatchers.Default) {
                 CircuitUseCase(application).download(registeredCircuitData) { progress, visibility ->
-                    _downoadPprogress.value = progress
+                    _downloadProgress.value = progress
                 }
             } ?: throw DownloadCircuitError()
 
@@ -298,6 +299,7 @@ class ProofGenerationManager @Inject constructor(
 
             currentRegistration = managerScope.async {
                 try {
+                    resetState()
                     registerCertificate(eDocument)
                     val proof = registerByDocument(eDocument)
                     identityManager.setRegistrationProof(proof)

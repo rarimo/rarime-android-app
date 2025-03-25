@@ -429,4 +429,13 @@
     <string name="zk_identity_no_passport_list_item_3">Driver License</string>
     <string name="zk_identity_no_passport_list_item_4">Driver License</string>
     <string name="zk_identity_no_passport_list_item_5">Driver License</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="error">Error</string>
+    <string name="retry">Retry</string>
+    <string name="please_try_again">Please try again</string>
+    <string name="please_don_t_close_application">Please don’t close application</string>
+    <string name="downloading">Downloading</string>
+    <string name="applying_zk">Applying ZK</string>
+    <string name="creating">Creating</string>
+    <string name="finishing">Finishing</string>
 </resources>

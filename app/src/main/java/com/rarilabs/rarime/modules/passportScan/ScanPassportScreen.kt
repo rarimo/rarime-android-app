@@ -23,7 +23,6 @@ import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.ScanPassportScreenViewModel
 import com.rarilabs.rarime.modules.passportScan.nfc.ReadEDocStep
 import com.rarilabs.rarime.modules.passportScan.nfc.RevocationStep
-import com.rarilabs.rarime.modules.passportScan.proof.GenerateProofStep
 import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.NotAllowedPassportScreen
 import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.WaitlistPassportScreen
 import com.rarilabs.rarime.ui.components.ConfirmationDialog
@@ -168,36 +167,7 @@ fun ScanPassportScreen(
                 )
             }
 
-            ScanPassportState.GENERATE_PROOF -> {
-                GenerateProofStep(
-                    onClose = {
-                        scanPassportScreenViewModel.saveRegistrationProof(it)
-                        scanPassportScreenViewModel.savePassport()
-
-                        // we allow to "not_allowed" country citizens generate an incognito ID,
-                        // so we need to double check here, cuz we use same component.
-                        if (!NOT_ALLOWED_COUNTRIES.contains(eDoc?.personDetails?.nationality)) {
-                            if (isAlreadyVerified) {
-                                onClose.invoke()
-                            } else {
-                                state = ScanPassportState.FINISH_PASSPORT_FLOW
-                            }
-                        } else {
-                            onClose.invoke()
-                        }
-                    },
-                    eDocument = eDoc ?: throw IllegalStateException("No Document"),
-                    onError = { e, regProof ->
-                        ErrorHandler.logError("GenerateProofStep", "Error", e)
-                        regProof?.let {
-                            scanPassportScreenViewModel.saveRegistrationProof(it)
-                        }
-
-                        state = ScanPassportState.UNSUPPORTED_PASSPORT
-                    },
-                    onAlreadyRegistered = { handleRegisteredPassportException(it) },
-                )
-            }
+            ScanPassportState.GENERATE_PROOF -> {}
 
             ScanPassportState.NOT_ALLOWED_PASSPORT -> {
                 NotAllowedPassportScreen(

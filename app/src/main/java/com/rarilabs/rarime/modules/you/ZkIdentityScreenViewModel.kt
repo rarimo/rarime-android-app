@@ -29,6 +29,8 @@ class ZkIdentityScreenViewModel @Inject constructor(
 
     val passportStatus = passportManager.passportStatus
 
+    val performRegistration = proofGenerationManager::performRegistration
+
     fun onPassportCardLookChange(passportCardLook: PassportCardLook) {
         passportManager.updatePassportCardLook(passportCardLook)
     }
@@ -48,5 +50,4 @@ class ZkIdentityScreenViewModel @Inject constructor(
     fun getIsAlreadyReserved(): Boolean {
         return sharedPrefsManager.getIsAlreadyReserved()
     }
-
 }
