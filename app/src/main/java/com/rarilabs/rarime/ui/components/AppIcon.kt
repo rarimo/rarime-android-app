@@ -53,7 +53,8 @@ fun AppIconWithGradient(
                     drawContent()
                     drawRect(gradient, blendMode = BlendMode.SrcAtop)
                 }
-            },
+            }
+            .size(size),
         painter = painterResource(id),
         contentDescription = null,
     )
