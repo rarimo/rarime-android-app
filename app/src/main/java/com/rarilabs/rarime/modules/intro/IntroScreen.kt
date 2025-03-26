@@ -16,10 +16,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
@@ -67,7 +68,7 @@ private enum class IntroStep(
 fun IntroScreen(
     navigate: (String) -> Unit
 ) {
-    val introSteps = remember {
+    val introSteps = rememberSaveable {
         listOf(
             IntroStep.Welcome,
             IntroStep.Identity,
@@ -147,19 +148,21 @@ private fun StepView(step: IntroStep) {
             )
         }
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.padding(horizontal = 24.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(horizontal = 24.dp).fillMaxWidth()
         ) {
-
-            Text(
-                text = stringResource(step.title),
-                style = RarimeTheme.typography.h2,
-                color = RarimeTheme.colors.textPrimary
-            )
             Text(
                 text = stringResource(step.text),
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.textSecondary
+                style = RarimeTheme.typography.subtitle4,
+                color = RarimeTheme.colors.textSecondary,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = stringResource(step.title),
+                style = RarimeTheme.typography.h1,
+                color = RarimeTheme.colors.textPrimary,
+                textAlign = TextAlign.Center
             )
         }
     }

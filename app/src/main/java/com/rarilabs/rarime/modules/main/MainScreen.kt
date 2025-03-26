@@ -45,6 +45,7 @@ import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActio
 import com.rarilabs.rarime.modules.maintenanceScreen.MaintenanceScreen
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
+import com.rarilabs.rarime.ui.components.AppIconWithGradient
 import com.rarilabs.rarime.ui.components.UiSnackbarDefault
 import com.rarilabs.rarime.ui.components.enter_program.EnterProgramFlow
 import com.rarilabs.rarime.ui.components.enter_program.UNSPECIFIED_PASSPORT_STEPS
@@ -129,12 +130,11 @@ fun AppLoadingScreen() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        AppIcon(
+        AppIconWithGradient(
             modifier = Modifier
                 .scale(animatedScale),
             id = R.drawable.ic_rarime,
             size = 140.dp,
-            tint = RarimeTheme.colors.textPrimary
         )
     }
 }
@@ -244,7 +244,7 @@ fun MainScreenContent(
                     snackbarContent?.let { snackContent ->
                         Column(modifier = Modifier.padding(horizontal = 20.dp)) {
 
-                        UiSnackbarDefault(snackContent)
+                            UiSnackbarDefault(snackContent)
                         }
                     }
                 }
