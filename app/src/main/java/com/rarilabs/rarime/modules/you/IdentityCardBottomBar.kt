@@ -6,7 +6,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,12 +37,18 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.registration.PassportAlreadyRegisteredByOtherPK
 import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.enums.PassportStatus
+import com.rarilabs.rarime.data.enums.toLocalizedValue
 import com.rarilabs.rarime.manager.PassportProofState
 import com.rarilabs.rarime.modules.passportScan.DownloadCircuitError
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
+import com.rarilabs.rarime.modules.passportScan.models.PersonDetails
+import com.rarilabs.rarime.ui.base.ButtonIconSize
 import com.rarilabs.rarime.ui.components.AppIcon
+import com.rarilabs.rarime.ui.components.AppSheetState
 import com.rarilabs.rarime.ui.components.PrimaryButton
+import com.rarilabs.rarime.ui.components.SecondaryIconButton
 import com.rarilabs.rarime.ui.components.UiLinearProgressBar
+import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import kotlinx.coroutines.delay
 import kotlin.random.Random
@@ -346,34 +351,37 @@ fun IdentityCardBottomBarContentError(
 fun IdentityCardBottomBarContentInfo(
     modifier: Modifier = Modifier,
     eDocument: EDocument,
+    identifier: PassportIdentifier,
     onIncognitoChange: (Boolean) -> Unit,
-    onIdentifiersChange: (List<PassportIdentifier>) -> Unit,
-    isIncognito: Boolean
+    isIncognito: Boolean,
+    settingsSheetState: AppSheetState
 ) {
     Column(modifier) {
-        Text("#")
+        Text(
+            text = "#",
+            style = RarimeTheme.typography.subtitle6,
+            color = RarimeTheme.colors.textSecondary
+        )
         Spacer(modifier = Modifier.height(4.dp))
-        Text(eDocument.personDetails?.serialNumber ?: "")
+        Text(
+            text = if (isIncognito) "••••••••••••••••••" else identifier.toLocalizedValue(eDocument),
+            style = RarimeTheme.typography.subtitle5,
+            color = RarimeTheme.colors.textPrimary
+        )
     }
 
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-        AppIcon(
-            id = R.drawable.ic_eye_slash, modifier = Modifier
-                .padding(8.dp)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = { onIncognitoChange(!isIncognito) })
+        SecondaryIconButton(
+            size = ButtonIconSize.Medium,
+            icon = if (isIncognito) R.drawable.ic_eye_slash else R.drawable.ic_eye,
+            onClick = { onIncognitoChange(!isIncognito) }
         )
 
 
-        AppIcon(
-            id = R.drawable.ic_dots_three_outline, modifier = Modifier
-                .padding(8.dp)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = { })
+        SecondaryIconButton(
+            size = ButtonIconSize.Medium,
+            icon = R.drawable.ic_info,
+            onClick = { settingsSheetState.show() }
         )
     }
 }
@@ -382,11 +390,12 @@ fun IdentityCardBottomBarContentInfo(
 fun IdentityCardBottomBar(
     modifier: Modifier = Modifier,
     eDocument: EDocument,
+    identifier: PassportIdentifier,
     registrationStatus: IdentityCardBottomBarUiState,
     retryRegistration: () -> Unit,
     onIncognitoChange: (Boolean) -> Unit,
-    onIdentifiersChange: (List<PassportIdentifier>) -> Unit,
-    isIncognito: Boolean
+    isIncognito: Boolean,
+    settingsSheetState: AppSheetState
 ) {
 
     Card(shape = RoundedCornerShape(16.dp)) {
@@ -410,9 +419,10 @@ fun IdentityCardBottomBar(
             } else {
                 IdentityCardBottomBarContentInfo(
                     eDocument = eDocument,
+                    identifier = identifier,
                     onIncognitoChange = onIncognitoChange,
-                    onIdentifiersChange = onIdentifiersChange,
-                    isIncognito = isIncognito
+                    isIncognito = isIncognito,
+                    settingsSheetState = settingsSheetState
                 )
             }
         }
@@ -427,12 +437,23 @@ private fun IdentityCardBottomBarPreview() {
     val registrationStatus = IdentityCardBottomBarUiState()
     Surface {
         IdentityCardBottomBar(
-            eDocument = EDocument(),
+            eDocument = EDocument(
+                personDetails = PersonDetails(
+                    name = "John",
+                    surname = "Doe",
+                    birthDate = "01.01.1996",
+                    expiryDate = "01.01.2025",
+                    nationality = "USA",
+                    serialNumber = "123456789",
+                    faceImageInfo = null
+                )
+            ),
             registrationStatus = registrationStatus,
             onIncognitoChange = {},
-            onIdentifiersChange = {},
             retryRegistration = {},
-            isIncognito = false
+            isIncognito = false,
+            settingsSheetState = rememberAppSheetState(),
+            identifier = PassportIdentifier.BIRTH_DATE
         )
     }
 }
@@ -444,12 +465,24 @@ private fun IdentityCardInfoBottomBarPreview() {
     val registrationStatus = IdentityCardBottomBarUiState(proofError = Exception())
     Surface {
         IdentityCardBottomBar(
-            eDocument = EDocument(),
+            eDocument = EDocument(
+                personDetails = PersonDetails(
+                    name = "John",
+                    surname = "Doe",
+                    birthDate = "01.01.1996",
+                    expiryDate = "01.01.2025",
+                    nationality = "USA",
+                    serialNumber = "123456789",
+                    faceImageInfo = null
+                )
+            ),
             registrationStatus = registrationStatus,
             onIncognitoChange = {},
-            onIdentifiersChange = {},
             retryRegistration = {},
-            isIncognito = false
+            isIncognito = false,
+            settingsSheetState = rememberAppSheetState(),
+            identifier = PassportIdentifier.BIRTH_DATE
+
         )
     }
 }
@@ -464,12 +497,23 @@ private fun IdentityCardLoadingBottomBarPreview() {
     )
     Surface {
         IdentityCardBottomBar(
-            eDocument = EDocument(),
+            eDocument = EDocument(
+                personDetails = PersonDetails(
+                    name = "John",
+                    surname = "Doe",
+                    birthDate = "01.01.1996",
+                    expiryDate = "01.01.2025",
+                    nationality = "USA",
+                    serialNumber = "123456789",
+                    faceImageInfo = null
+                )
+            ),
             registrationStatus = registrationStatus,
             onIncognitoChange = {},
-            onIdentifiersChange = {},
             retryRegistration = {},
-            isIncognito = false
+            isIncognito = false,
+            settingsSheetState = rememberAppSheetState(),
+            identifier = PassportIdentifier.BIRTH_DATE
         )
     }
 }

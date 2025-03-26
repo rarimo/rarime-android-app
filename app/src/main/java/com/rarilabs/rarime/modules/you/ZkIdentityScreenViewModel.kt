@@ -3,12 +3,10 @@ package com.rarilabs.rarime.modules.you
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.ProofGenerationManager
-import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +19,6 @@ import javax.inject.Inject
 class ZkIdentityScreenViewModel @Inject constructor(
     private val app: Application,
     private val passportManager: PassportManager,
-    private val registrationManager: RegistrationManager,
     private val sharedPrefsManager: SecureSharedPrefsManager,
     private val proofGenerationManager: ProofGenerationManager,
 ) : AndroidViewModel(app) {
@@ -35,8 +32,6 @@ class ZkIdentityScreenViewModel @Inject constructor(
     val passportStatus = passportManager.passportStatus
 
     val performRegistration = proofGenerationManager::performRegistration
-
-    val updatePassportStatus = passportManager::updatePassportStatus
 
     private val _uiState = MutableStateFlow(IdentityCardBottomBarUiState())
     val uiState: StateFlow<IdentityCardBottomBarUiState> = _uiState.asStateFlow()
@@ -79,12 +74,8 @@ class ZkIdentityScreenViewModel @Inject constructor(
     fun onIncognitoChange(isIncognito: Boolean) {
         passportManager.updateIsIncognitoMode(isIncognito)
     }
-
-    fun setTempEDocument(eDocument: EDocument) {
-        registrationManager.setEDocument(eDocument)
-    }
-
-    fun onPassportIdentifiersChange(passportIdentifiers: List<PassportIdentifier>) {
+    fun onPassportIdentifiersChange(passportIdentifier: PassportIdentifier) {
+        val passportIdentifiers = listOf(passportIdentifier)
         passportManager.updatePassportIdentifiers(passportIdentifiers)
     }
 

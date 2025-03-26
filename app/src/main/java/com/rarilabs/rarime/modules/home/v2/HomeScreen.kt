@@ -1,5 +1,8 @@
 package com.rarilabs.rarime.modules.home.v2
 
+import android.Manifest
+import android.os.Build
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -37,6 +40,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.points.models.PointsBalanceData
 import com.rarilabs.rarime.api.points.models.PointsEventData
@@ -68,7 +74,7 @@ data class CardContent(
 )
 
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -90,6 +96,32 @@ fun HomeScreen(
     val currentPointsBalance = pointsBalance?.balanceDetails?.attributes?.amount
     val firstReferralCode = remember(pointsBalance) {
         pointsBalance?.balanceDetails?.attributes?.referral_codes?.first { it.status == ReferralCodeStatuses.ACTIVE.value }?.id
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val notificationPermission = rememberPermissionState(
+            permission = Manifest.permission.POST_NOTIFICATIONS
+        )
+
+
+        LaunchedEffect(Unit) {
+            try {
+                if (!notificationPermission.status.isGranted) {
+                    Log.i("Not granted notification", "Nice")
+                    notificationPermission.launchPermissionRequest()
+                } else {
+                    Log.i("Already granted notification", "Nice")
+                }
+            } catch (e: Exception) {
+                Log.e(e.toString(), e.stackTraceToString(), e)
+            }
+
+            try {
+
+            } catch (e: Exception) {
+                Log.e("Exep", "xd", e)
+            }
+        }
     }
 
 

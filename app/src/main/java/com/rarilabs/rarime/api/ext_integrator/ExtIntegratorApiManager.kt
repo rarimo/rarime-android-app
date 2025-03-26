@@ -124,7 +124,7 @@ class ExtIntegratorApiManager @Inject constructor(
         if (eDocument == null) return
 
         val passportInfoKey = passportManager.getPassportInfoKey(
-            eDocument!!,
+            eDocument,
             identityManager.registrationProof.value!!
         )
 
@@ -142,10 +142,10 @@ class ExtIntegratorApiManager @Inject constructor(
 
         val lightProofData = sharedPreferences.getLightRegistrationData()
 
-
         val registrationSmtContract = contractManager.getPoseidonSMT(
             BaseConfig.REGISTRATION_SMT_CONTRACT_ADDRESS
         )
+
         val passportInfoKey: String =
             if (lightProofData != null) {
                 if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {

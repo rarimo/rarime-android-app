@@ -44,6 +44,8 @@ import identity.Identity
 import identity.Profile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.web3j.utils.Numeric
+import java.math.BigInteger
 import javax.inject.Inject
 
 class PointsManager @Inject constructor(
@@ -159,10 +161,12 @@ class PointsManager @Inject constructor(
     }
 
     private suspend fun generateVerifyPassportQueryProof(
-        registrationProof: ZkProof, eDocument: EDocument, privateKey: ByteArray
+        eDocument: EDocument, privateKey: ByteArray
     ): ZkProof {
         val assetContext: Context = context.createPackageContext("com.rarilabs.rarime", 0)
         val assetManager = assetContext.assets
+
+        val lightProofData = secureSharedPrefsManager.getLightRegistrationData()
 
         val zkp = ZKPUseCase(context, assetManager)
 
@@ -172,14 +176,25 @@ class PointsManager @Inject constructor(
             BaseConfig.REGISTRATION_SMT_CONTRACT_ADDRESS
         )
 
-        val passportInfoKey: String = if (eDocument.dg15.isNullOrEmpty()) {
-            registrationProof.pub_signals[1]
-        } else {
-            registrationProof.pub_signals[0]
-        }
+        val passportInfoKey: String =
+            if (lightProofData != null) {
+                if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {
+                    BigInteger(Numeric.hexStringToByteArray(lightProofData.passport_hash)).toString()
+                } else {
+                    BigInteger(Numeric.hexStringToByteArray(lightProofData.public_key)).toString()
+                }
+            } else {
+                if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {
+                    identityManager.registrationProof.value!!.pub_signals[1] //lightProofData.passport_hash
+                } else {
+                    identityManager.registrationProof.value!!.pub_signals[0] //lightProofData.public_key
+                }
+            }
 
         val proofIndex = Identity.calculateProofIndex(
-            passportInfoKey, registrationProof.pub_signals[3]
+            passportInfoKey,
+            if (lightProofData == null) identityManager.registrationProof.value!!.pub_signals[3]
+            else identityManager.registrationProof.value!!.pub_signals[2]
         )
 
         var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
@@ -242,7 +257,6 @@ class PointsManager @Inject constructor(
         }
 
         val eDocument = passportManager.passport.value!!
-        val registrationProof = identityManager.registrationProof.value!!
 
         val anonymousId = Identity.calculateAnonymousID(
             eDocument.dg1!!.decodeHexString(), BaseConfig.POINTS_SVC_ID
@@ -256,7 +270,7 @@ class PointsManager @Inject constructor(
 
         withContext(Dispatchers.Default) {
             val zkProof = generateVerifyPassportQueryProof(
-                registrationProof, eDocument, identityManager.privateKeyBytes!!
+                eDocument, identityManager.privateKeyBytes!!
             )
 
 

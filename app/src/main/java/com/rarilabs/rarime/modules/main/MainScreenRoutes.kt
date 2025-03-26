@@ -15,6 +15,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.net.toUri
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -37,6 +38,7 @@ import com.rarilabs.rarime.modules.profile.ExportKeysScreen
 import com.rarilabs.rarime.modules.profile.LanguageScreen
 import com.rarilabs.rarime.modules.profile.ProfileScreen
 import com.rarilabs.rarime.modules.profile.ThemeScreen
+import com.rarilabs.rarime.modules.qr.ScanQrScreen
 import com.rarilabs.rarime.modules.register.NewIdentityScreen
 import com.rarilabs.rarime.modules.rewards.RewardsClaimScreen
 import com.rarilabs.rarime.modules.rewards.RewardsScreen
@@ -258,6 +260,17 @@ fun MainScreenRoutes(
                         AuthGuard(navigate = navigateWithPopUp) {
                             ZkIdentityScreen(navigate = simpleNavigate)
                         }
+                    }
+                }
+
+                composable(Screen.Main.QrScan.route) {
+                    ScreenInsetsContainer {
+                        ScanQrScreen(onBack = {
+                            navController.popBackStack()
+                        }, onScan = {
+                            val uri = it.toUri()
+                            mainViewModel.setExtIntDataURI(uri)
+                        })
                     }
                 }
 
