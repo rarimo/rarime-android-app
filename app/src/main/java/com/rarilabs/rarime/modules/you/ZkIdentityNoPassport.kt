@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -19,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -143,7 +145,7 @@ fun ZkIdentityNoPassportContent(modifier: Modifier = Modifier, navigate: (String
             modifier = Modifier.padding(bottom = 16.dp),
             text = stringResource(R.string.zk_identity_no_passport_list_caption),
             style = RarimeTheme.typography.body3,
-            color = RarimeTheme.colors.textPrimary
+            color = RarimeTheme.colors.textSecondary
         )
 
         IdentityList(items = identityItems)
@@ -154,10 +156,9 @@ fun ZkIdentityNoPassportContent(modifier: Modifier = Modifier, navigate: (String
 fun IdentityList(items: List<IdentityItemData>) {
     Column(
         modifier = Modifier
+            .fillMaxWidth()
             .clip(RoundedCornerShape(24.dp))
-            .border(1.dp, RarimeTheme.colors.componentPrimary, RoundedCornerShape(24.dp))
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .border(1.dp, RarimeTheme.colors.componentPrimary, RoundedCornerShape(24.dp)),
     ) {
         items.forEachIndexed { index, item ->
             IdentityCardTypeItem(
@@ -167,7 +168,10 @@ fun IdentityList(items: List<IdentityItemData>) {
                 onClick = item.onClick
             )
             if (index < items.lastIndex) {
-                HorizontalDivider()
+                HorizontalDivider(
+                    color = RarimeTheme.colors.componentPrimary,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
             }
         }
     }

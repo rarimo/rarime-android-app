@@ -6,7 +6,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,6 +29,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppAnimation
 import com.rarilabs.rarime.ui.components.AppBottomSheet
+import com.rarilabs.rarime.ui.components.AppLogo
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -77,7 +80,6 @@ fun IntroScreen(
         )
     }
     val stepState = rememberPagerState(pageCount = { 1 })
-    val sheetState = rememberAppSheetState()
 
     Column(
         verticalArrangement = Arrangement.spacedBy(48.dp),
@@ -99,28 +101,17 @@ fun IntroScreen(
             modifier = Modifier.padding(horizontal = 24.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            PrimaryButton(
-                text = stringResource(R.string.create_account_btn),
-                size = ButtonSize.Large,
-                modifier = Modifier.fillMaxWidth(),
-                onClick = { sheetState.show() }
-            )
-        }
-
-        AppBottomSheet(state = sheetState) {
-            CreateIdentityVariantsSelector(
+            AuthorizationMethodsList(
                 listOf(
-                    IdentityVariant(
+                    AuthorizationMethod(
                         title = stringResource(id = R.string.create_identity_selector_option_1),
-                        subtitle = stringResource(id = R.string.create_identity_selector_option_1_subtitle),
-                        icon = R.drawable.ic_user_plus,
+                        icon = R.drawable.ic_plus,
                         onSelect = {
                             navigate(Screen.Register.NewIdentity.route)
                         }
                     ),
-                    IdentityVariant(
+                    AuthorizationMethod(
                         title = stringResource(id = R.string.create_identity_selector_option_2),
-                        subtitle = stringResource(id = R.string.create_identity_selector_option_2_subtitle),
                         icon = R.drawable.ic_share_1,
                         onSelect = {
                             navigate(Screen.Register.ImportIdentity.route)
@@ -138,32 +129,35 @@ private fun StepView(step: IntroStep) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
+                .weight(1f),
+            contentAlignment = Alignment.Center
         ) {
-            AppAnimation(
-                id = step.animation,
+            Column(
+                verticalArrangement = Arrangement.spacedBy(30.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .align(Alignment.Center)
-                    .size(step.animationWidth.dp)
-            )
-        }
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 24.dp).fillMaxWidth()
-        ) {
-            Text(
-                text = stringResource(step.text),
-                style = RarimeTheme.typography.subtitle4,
-                color = RarimeTheme.colors.textSecondary,
-                textAlign = TextAlign.Center
-            )
-            Text(
-                text = stringResource(step.title),
-                style = RarimeTheme.typography.h1,
-                color = RarimeTheme.colors.textPrimary,
-                textAlign = TextAlign.Center
-            )
+                    .padding(horizontal = 24.dp)
+                    .fillMaxWidth()
+            ) {
+                AppLogo()
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = stringResource(step.text),
+                        style = RarimeTheme.typography.subtitle4,
+                        color = RarimeTheme.colors.textSecondary,
+                        textAlign = TextAlign.Center
+                    )
+                    Text(
+                        text = stringResource(step.title),
+                        style = RarimeTheme.typography.h1,
+                        color = RarimeTheme.colors.textPrimary,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
         }
     }
 }

@@ -275,9 +275,7 @@
     <string name="create_identity_selector_title">Get Started</string>
     <string name="create_identity_selector_subtitle">Select an authorization method</string>
     <string name="create_identity_selector_option_1">Create a new identity</string>
-    <string name="create_identity_selector_option_1_subtitle">Generate new keys</string>
     <string name="create_identity_selector_option_2">Re-activate old profile</string>
-    <string name="create_identity_selector_option_2_subtitle">Uses pregenerated keys or iCloud</string>
 
     <string name="create_identity_continue_btn">Continue</string>
     <string name="create_identity_creating_btn">Creating...</string>
@@ -438,4 +436,5 @@
     <string name="applying_zk">Applying ZK</string>
     <string name="creating">Creating</string>
     <string name="finishing">Finishing</string>
+    <string name="select_icon_description">Select icon</string>
 </resources>

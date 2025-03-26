@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -132,7 +134,15 @@ fun BaseDetailsScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Column(modifier = Modifier.padding(top = 20.dp, start = 24.dp, end = 24.dp)) {
+            Column(
+                modifier = Modifier
+                    .padding(
+                        top = 20.dp,
+                        start = 24.dp,
+                        end = 24.dp
+                    )
+                    .verticalScroll(rememberScrollState())
+            ) {
 
                 Text(
                     style = RarimeTheme.typography.h1,
@@ -158,15 +168,9 @@ fun BaseDetailsScreen(
                         .skipToLookaheadSize(),
                 )
 
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 24.dp, vertical = 8.dp)
-            ) {
+                Spacer(modifier = Modifier.height(24.dp))
                 footer()
+                Spacer(modifier = Modifier.height(24.dp))
             }
 
         }
