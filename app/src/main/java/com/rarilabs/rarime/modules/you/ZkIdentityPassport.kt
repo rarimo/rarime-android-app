@@ -100,7 +100,7 @@ fun ZkIdentityPassportContent(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 20.dp)
+                .padding(top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp)
                 .padding(horizontal = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
