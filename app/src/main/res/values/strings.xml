@@ -424,9 +424,9 @@
     <string name="zk_identity_no_passport_list_caption">Select IdentityType</string>
     <string name="zk_identity_no_passport_list_item_1">Passport</string>
     <string name="zk_identity_no_passport_list_item_2">ZK Liveness (PoH Killer)</string>
-    <string name="zk_identity_no_passport_list_item_3">Driver License</string>
-    <string name="zk_identity_no_passport_list_item_4">Driver License</string>
-    <string name="zk_identity_no_passport_list_item_5">Driver License</string>
+    <string name="zk_identity_no_passport_list_item_3">ID Card</string>
+    <string name="zk_identity_no_passport_list_item_4">X Verified Badge</string>
+    <string name="zk_identity_no_passport_list_item_5">Proof of employment</string>
     <string name="unknown_error">Unknown error</string>
     <string name="error">Error</string>
     <string name="retry">Retry</string>
