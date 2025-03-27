@@ -9,7 +9,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -33,6 +37,29 @@ fun AppIcon(
     )
 }
 
+@Composable
+fun AppIconWithGradient(
+    modifier: Modifier = Modifier,
+    @DrawableRes id: Int,
+    size: Dp = 20.dp,
+    description: String? = null,
+    gradient: Brush = RarimeTheme.colors.gradient1
+) {
+    Icon(
+        modifier = Modifier
+            .graphicsLayer(alpha = 0.99f)
+            .drawWithCache {
+                onDrawWithContent {
+                    drawContent()
+                    drawRect(gradient, blendMode = BlendMode.SrcAtop)
+                }
+            }
+            .size(size),
+        painter = painterResource(id),
+        contentDescription = null,
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun AppIconPreview() {
@@ -43,5 +70,11 @@ private fun AppIconPreview() {
         AppIcon(id = R.drawable.ic_bell_fill)
         AppIcon(id = R.drawable.ic_qr_code, size = 24.dp)
         AppIcon(id = R.drawable.ic_cardholder, size = 32.dp, tint = RarimeTheme.colors.errorMain)
+
+        AppIconWithGradient(
+            id = R.drawable.ic_rarime,
+            size = 32.dp,
+            gradient = RarimeTheme.colors.gradient1
+        )
     }
 }

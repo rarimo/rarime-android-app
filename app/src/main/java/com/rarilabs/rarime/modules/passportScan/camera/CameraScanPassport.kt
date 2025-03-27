@@ -89,7 +89,6 @@ fun CameraScanPassport(modifier: Modifier, onMrzDetected: (mrz: MRZInfo) -> Unit
         ) {
             AndroidView(
                 factory = { previewView }, modifier = Modifier
-                    //.fillMaxWidth()
                     .zIndex(1f)
             )
 

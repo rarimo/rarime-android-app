@@ -27,6 +27,8 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.enums.PassportStatus
+import com.rarilabs.rarime.modules.main.LocalMainViewModel
+import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.PersonDetails
 import com.rarilabs.rarime.ui.components.AppIcon
@@ -39,7 +41,7 @@ fun ZkIdentityPassport(
 ) {
 
     val homeViewModel = LocalZkIdentityScreenViewModel.current
-
+    val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
     val passport by homeViewModel.passport.collectAsState()
 
     val passportCardLook by homeViewModel.passportCardLook
@@ -50,7 +52,6 @@ fun ZkIdentityPassport(
     val registrationStatus by homeViewModel.uiState.collectAsState()
 
     val retryRegistration = homeViewModel::retryRegistration
-
 
     LaunchedEffect(Unit) {
         Log.i("Status", passportStatus.name)
@@ -73,10 +74,11 @@ fun ZkIdentityPassport(
         isIncognito = isIncognito,
         passportStatus = passportStatus,
         onLookChange = homeViewModel::onPassportCardLookChange,
-        onIdentifierChange = homeViewModel::onPassportIdentifiersChange,
         onIncognitoChange = homeViewModel::onIncognitoChange,
+        onIdentifierChange = homeViewModel::onPassportIdentifiersChange,
         registrationStatus = registrationStatus,
         retryRegistration = retryRegistration,
+        innerPaddings = innerPaddings,
     )
 }
 
@@ -92,12 +94,14 @@ fun ZkIdentityPassportContent(
     onIdentifierChange: (PassportIdentifier) -> Unit,
     registrationStatus: IdentityCardBottomBarUiState,
     retryRegistration: () -> Unit,
+    innerPaddings: Map<ScreenInsets, Number>
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp, top = 20.dp),
+                .padding(top = 20.dp)
+                .padding(horizontal = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -140,10 +144,10 @@ private fun ZkIdentityPassportPreview() {
     var identifiers by remember {
         mutableStateOf(
             PassportIdentifier.NATIONALITY
-
         )
     }
     Surface {
+
         ZkIdentityPassportContent(
             passport = EDocument(
                 personDetails = PersonDetails(
@@ -164,6 +168,8 @@ private fun ZkIdentityPassportPreview() {
             registrationStatus = IdentityCardBottomBarUiState(),
             retryRegistration = {},
             passportStatus = PassportStatus.NOT_ALLOWED,
-            onIdentifierChange = { identifiers = it })
+            innerPaddings = mapOf(ScreenInsets.TOP to 23, ScreenInsets.BOTTOM to 12),
+            onIdentifierChange = { identifiers = it }
+        )
     }
 }

@@ -28,6 +28,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.ButtonSize
+import com.rarilabs.rarime.ui.components.AppBackgroundGradient
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -47,6 +48,7 @@ private fun ZkLivenessContent(
     innerPaddings: Map<ScreenInsets, Number>,
     modifier: Modifier = Modifier
 ) {
+    AppBackgroundGradient()
     Column(
         verticalArrangement = Arrangement.Bottom, modifier = modifier
             .padding(
