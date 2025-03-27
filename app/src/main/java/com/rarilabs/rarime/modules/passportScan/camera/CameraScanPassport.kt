@@ -2,9 +2,12 @@ package com.rarilabs.rarime.modules.passportScan.camera
 
 import android.content.Context
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.UseCaseGroup
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,7 +31,6 @@ import androidx.lifecycle.LifecycleOwner
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.AppAnimation
 import org.jmrtd.lds.icao.MRZInfo
-import androidx.camera.core.ImageAnalysis as ImageAnalysis1
 
 @Composable
 fun CameraScanPassport(modifier: Modifier, onMrzDetected: (mrz: MRZInfo) -> Unit) {
@@ -52,7 +54,7 @@ fun CameraScanPassport(modifier: Modifier, onMrzDetected: (mrz: MRZInfo) -> Unit
                 setSurfaceProvider(previewView.surfaceProvider)
             }
 
-        val imageAnalysisUseCase = ImageAnalysis1.Builder()
+        val imageAnalysisUseCase = ImageAnalysis.Builder()
             .setResolutionSelector(
                 ResolutionSelector.Builder()
                     .setAspectRatioStrategy(
@@ -82,12 +84,11 @@ fun CameraScanPassport(modifier: Modifier, onMrzDetected: (mrz: MRZInfo) -> Unit
 
     Column {
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .clipToBounds()
         ) {
             AndroidView(
-                factory = { previewView },
-                modifier = Modifier
+                factory = { previewView }, modifier = Modifier
                     .zIndex(1f)
             )
 
@@ -108,4 +109,40 @@ fun CameraScanPassport(modifier: Modifier, onMrzDetected: (mrz: MRZInfo) -> Unit
 @Composable
 private fun CameraScanPassportPreview() {
     CameraScanPassport(Modifier) {}
+}
+
+private fun startTextRecognition(
+    context: Context,
+    cameraController: LifecycleCameraController,
+    lifecycleOwner: LifecycleOwner,
+    previewView: PreviewView,
+    onDetectedTextUpdated: (MRZInfo) -> Unit
+) {
+
+    val resolutionSelector = ResolutionSelector.Builder()
+        .setAspectRatioStrategy(
+            AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY,
+        )
+        .build()
+
+    val previewUseCase = androidx.camera.core.Preview.Builder()
+        .setResolutionSelector(resolutionSelector)
+        .build()
+
+    val imageAnalysisUseCase = ImageAnalysis.Builder()
+        .setResolutionSelector(resolutionSelector)
+        .build().also {
+            it.setAnalyzer(
+                ContextCompat.getMainExecutor(context),
+                TextRecognitionAnalyzer(onDetectedTextUpdated = onDetectedTextUpdated)
+            )
+        }
+
+    val useCaseGroup = UseCaseGroup.Builder()
+        .addUseCase(previewUseCase)
+        .addUseCase(imageAnalysisUseCase)
+        .build()
+
+    cameraController.bindToLifecycle(lifecycleOwner)
+    previewView.controller = cameraController
 }
