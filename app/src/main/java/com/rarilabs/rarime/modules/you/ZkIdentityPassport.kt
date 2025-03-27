@@ -53,8 +53,6 @@ fun ZkIdentityPassport(
 
     val retryRegistration = homeViewModel::retryRegistration
 
-    val updatePassportStatus = homeViewModel.updatePassportStatus
-
     LaunchedEffect(Unit) {
         Log.i("Status", passportStatus.name)
         if (passportStatus == PassportStatus.UNREGISTERED) {
@@ -72,15 +70,15 @@ fun ZkIdentityPassport(
     ZkIdentityPassportContent(
         passport = passport!!,
         look = passportCardLook,
-        identifiers = passportIdentifiers,
+        selectedIdentifier = passportIdentifiers.first(),
         isIncognito = isIncognito,
         passportStatus = passportStatus,
         onLookChange = homeViewModel::onPassportCardLookChange,
-        onIdentifiersChange = homeViewModel::onPassportIdentifiersChange,
         onIncognitoChange = homeViewModel::onIncognitoChange,
+        onIdentifierChange = homeViewModel::onPassportIdentifiersChange,
         registrationStatus = registrationStatus,
         retryRegistration = retryRegistration,
-        innerPaddings = innerPaddings
+        innerPaddings = innerPaddings,
     )
 }
 
@@ -88,12 +86,12 @@ fun ZkIdentityPassport(
 fun ZkIdentityPassportContent(
     passport: EDocument,
     look: PassportCardLook,
-    identifiers: List<PassportIdentifier>,
+    selectedIdentifier: PassportIdentifier,
     isIncognito: Boolean,
     passportStatus: PassportStatus,
     onLookChange: (PassportCardLook) -> Unit,
     onIncognitoChange: (Boolean) -> Unit,
-    onIdentifiersChange: (List<PassportIdentifier>) -> Unit,
+    onIdentifierChange: (PassportIdentifier) -> Unit,
     registrationStatus: IdentityCardBottomBarUiState,
     retryRegistration: () -> Unit,
     innerPaddings: Map<ScreenInsets, Number>
@@ -126,11 +124,11 @@ fun ZkIdentityPassportContent(
                 passport = passport,
                 isIncognito = isIncognito,
                 look = look,
-                identifiers = identifiers,
+                identifier = selectedIdentifier,
                 onLookChange = onLookChange,
                 onIncognitoChange = onIncognitoChange,
                 passportStatus = passportStatus,
-                onIdentifiersChange = onIdentifiersChange,
+                onIdentifierChange = onIdentifierChange,
                 registrationStatus = registrationStatus,
                 retryRegistration = retryRegistration
             )
@@ -145,9 +143,7 @@ private fun ZkIdentityPassportPreview() {
     var look by remember { mutableStateOf(PassportCardLook.BLACK) }
     var identifiers by remember {
         mutableStateOf(
-            listOf(
-                PassportIdentifier.NATIONALITY, PassportIdentifier.DOCUMENT_ID
-            )
+            PassportIdentifier.NATIONALITY
         )
     }
     Surface {
@@ -165,15 +161,15 @@ private fun ZkIdentityPassportPreview() {
                 )
             ),
             look = look,
-            identifiers = identifiers,
+            selectedIdentifier = identifiers,
             isIncognito = isIncognito,
             onLookChange = { look = it },
             onIncognitoChange = { isIncognito = it },
             registrationStatus = IdentityCardBottomBarUiState(),
             retryRegistration = {},
             passportStatus = PassportStatus.NOT_ALLOWED,
-            onIdentifiersChange = { identifiers = it },
-            innerPaddings = mapOf(ScreenInsets.TOP to 23, ScreenInsets.BOTTOM to 12)
+            innerPaddings = mapOf(ScreenInsets.TOP to 23, ScreenInsets.BOTTOM to 12),
+            onIdentifierChange = { identifiers = it }
         )
     }
 }

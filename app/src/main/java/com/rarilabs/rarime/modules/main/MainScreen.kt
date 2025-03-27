@@ -203,7 +203,8 @@ fun MainScreenContent(
                     BottomTabBar(
                         modifier = Modifier.navigationBarsPadding(),
                         currentRoute = currentRoute,
-                        onRouteSelected = { navigateWithPopUp(it) }
+                        onRouteSelected = { navigateWithPopUp(it) },
+                        onQrCodeRouteSelected = { mainViewModel }
                     )
                 }
             },
