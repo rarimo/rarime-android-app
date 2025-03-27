@@ -27,6 +27,8 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.enums.PassportStatus
+import com.rarilabs.rarime.modules.main.LocalMainViewModel
+import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.PersonDetails
 import com.rarilabs.rarime.ui.components.AppIcon
@@ -39,7 +41,7 @@ fun ZkIdentityPassport(
 ) {
 
     val homeViewModel = LocalZkIdentityScreenViewModel.current
-
+    val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
     val passport by homeViewModel.passport.collectAsState()
 
     val passportCardLook by homeViewModel.passportCardLook
@@ -78,6 +80,7 @@ fun ZkIdentityPassport(
         onIncognitoChange = homeViewModel::onIncognitoChange,
         registrationStatus = registrationStatus,
         retryRegistration = retryRegistration,
+        innerPaddings = innerPaddings
     )
 }
 
@@ -93,12 +96,14 @@ fun ZkIdentityPassportContent(
     onIdentifiersChange: (List<PassportIdentifier>) -> Unit,
     registrationStatus: IdentityCardBottomBarUiState,
     retryRegistration: () -> Unit,
+    innerPaddings: Map<ScreenInsets, Number>
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp, top = 20.dp),
+                .padding(top = 20.dp)
+                .padding(horizontal = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -167,6 +172,8 @@ private fun ZkIdentityPassportPreview() {
             registrationStatus = IdentityCardBottomBarUiState(),
             retryRegistration = {},
             passportStatus = PassportStatus.NOT_ALLOWED,
-            onIdentifiersChange = { identifiers = it })
+            onIdentifiersChange = { identifiers = it },
+            innerPaddings = mapOf(ScreenInsets.TOP to 23, ScreenInsets.BOTTOM to 12)
+        )
     }
 }
