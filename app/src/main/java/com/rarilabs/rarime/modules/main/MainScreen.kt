@@ -32,12 +32,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
 import com.rarilabs.rarime.modules.maintenanceScreen.MaintenanceScreen
+import com.rarilabs.rarime.modules.qr.ScanQrScreen
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppLogo
@@ -141,6 +143,7 @@ fun MainScreenContent(
     val extIntDataURI by mainViewModel.extIntDataURI.collectAsState()
 
     val enterProgramSheetState = rememberAppSheetState()
+    val qrCodeState = rememberAppSheetState()
 
     // Use remember to cache navBackStackEntry and currentRoute
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -161,6 +164,7 @@ fun MainScreenContent(
     // Use rememberUpdatedState for pointsToken and enterProgramSheetState
     val pointsTokenState = rememberUpdatedState(pointsToken)
     val enterProgramSheetStateState = rememberUpdatedState(enterProgramSheetState)
+    val qrCodeSheetState = rememberUpdatedState(qrCodeState)
 
     // Define navigation functions using remember to prevent recomposition
     val simpleNavigate = remember(navController) {
@@ -186,6 +190,11 @@ fun MainScreenContent(
                         launchSingleTop = true
                     }
                 }
+            } else if (
+                route == Screen.Main.QrScan.route
+            ) {
+                val currentQrCodeSheetState = qrCodeSheetState.value
+                currentQrCodeSheetState.show()
             } else {
                 navController.navigate(route) {
                     popUpTo(navController.graph.id) { inclusive = true }
@@ -277,6 +286,23 @@ fun MainScreenContent(
                 Dialog(onDismissRequest = { mainViewModel.setModalVisibility(false) }) {
                     modalContent()
                 }
+            }
+
+            AppBottomSheet(
+                state = qrCodeState,
+                fullScreen = true,
+                isHeaderEnabled = false
+            ) {
+                ScanQrScreen(
+                    onBack = {
+                        qrCodeState.hide()
+                    },
+                    onScan = {
+                        val uri = it.toUri()
+                        qrCodeState.hide()
+                        mainViewModel.setExtIntDataURI(uri)
+                    }
+                )
             }
 
             AppBottomSheet(
