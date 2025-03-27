@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
+import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
@@ -38,7 +39,6 @@ import com.rarilabs.rarime.ui.components.AppSheetState
 import com.rarilabs.rarime.ui.components.AppSkeleton
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.SnackbarSeverity
-import com.rarilabs.rarime.ui.components.TertiaryButton
 import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -63,7 +63,7 @@ fun ExtIntQueryProofHandler(
 
     var isSubmitting by remember { mutableStateOf(false) }
     var isLoaded by remember { mutableStateOf(false) }
-
+    val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
     val sheetState = rememberAppSheetState(true)
 
     LaunchedEffect(Unit) {
@@ -150,7 +150,8 @@ fun ExtIntQueryProofHandler(
         isSubmitting = isSubmitting,
         sheetState = sheetState,
         handleAccept = { handleAccept() },
-        onCancel = { onCancel.invoke() }
+        onCancel = { onCancel.invoke() },
+        innerPaddings = innerPaddings
     )
 }
 
@@ -160,8 +161,9 @@ private fun ExtIntQueryProofHandlerContent(
     isSubmitting: Boolean,
     sheetState: AppSheetState,
     handleAccept: () -> Unit = {},
-    onCancel: () -> Unit = {}
-) {
+    onCancel: () -> Unit = {},
+    innerPaddings: Map<ScreenInsets, Number>,
+    ) {
     AppBottomSheet(
         state = sheetState,
         isHeaderEnabled = false,
@@ -173,10 +175,9 @@ private fun ExtIntQueryProofHandlerContent(
                     top = 24.dp,
                     start = 24.dp,
                     end = 24.dp,
-                    bottom = 16.dp
                 )
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -184,7 +185,7 @@ private fun ExtIntQueryProofHandlerContent(
             ) {
                 Text(
                     text = stringResource(id = R.string.query_proof_sheet_title),
-                    style = RarimeTheme.typography.h6,
+                    style = RarimeTheme.typography.h4,
                     color = RarimeTheme.colors.textPrimary,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
@@ -224,28 +225,15 @@ private fun ExtIntQueryProofHandlerContent(
                 }
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f).height(50.dp))
 
-            Column(
+            PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                PrimaryButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "Accept",
-                    size = ButtonSize.Large,
-                    enabled = !isSubmitting,
-                    onClick = { handleAccept() }
-                )
-
-                TertiaryButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "Cancel",
-                    size = ButtonSize.Large,
-                    enabled = !isSubmitting,
-                    onClick = { onCancel.invoke() }
-                )
-            }
+                text = "Accept",
+                size = ButtonSize.Large,
+                enabled = !isSubmitting,
+                onClick = { handleAccept() }
+            )
         }
     }
 }
@@ -265,14 +253,14 @@ fun ExtIntActionPreviewRow(
     ) {
         Text(
             text = key,
-            style = RarimeTheme.typography.body3,
-            color = RarimeTheme.colors.textPrimary,
+            style = RarimeTheme.typography.body4,
+            color = RarimeTheme.colors.textSecondary,
             textAlign = TextAlign.End,
         )
         Spacer(modifier = Modifier.width(12.dp))
         Text(
             text = value,
-            style = RarimeTheme.typography.subtitle4,
+            style = RarimeTheme.typography.subtitle5,
             color = RarimeTheme.colors.textPrimary,
             textAlign = TextAlign.End
         )
@@ -291,6 +279,7 @@ private fun ExtIntQueryProofHandlerContentPreview() {
         isSubmitting = false,
         sheetState = rememberAppSheetState(true),
         handleAccept = { },
-        onCancel = { }
+        onCancel = { },
+        innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
     )
 }

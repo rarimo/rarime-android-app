@@ -48,7 +48,8 @@ enum class IdentityScreenType {
 }
 
 data class IdentityItemData(
-    val imageId: Int,
+    val iconId: Int,
+    val iconSize: Int,
     val nameResId: Int,
     val isActive: Boolean,
     val onClick: () -> Unit
@@ -90,51 +91,50 @@ fun ZkIdentityNoPassport(
     val identityItems = remember {
         mutableListOf(
             IdentityItemData(
-                imageId = R.drawable.ic_passport_line,
+                iconId = R.drawable.ic_passport_line,
                 nameResId = R.string.zk_identity_no_passport_list_item_1,
                 isActive = true,
+                iconSize = 24,
                 onClick = {
                     navigate(Screen.ScanPassport.ScanPassportPoints.route)
                 }
             ),
             IdentityItemData(
-                imageId = R.drawable.ic_body_scan_fill,
+                iconId = R.drawable.ic_body_scan_fill,
                 nameResId = R.string.zk_identity_no_passport_list_item_2,
                 isActive = true,
+                iconSize = 24,
                 onClick = {
                     currentScreen = IdentityScreenType.LIVENESS
                     sheetState.show()
                 }
             ),
             IdentityItemData(
-                imageId = R.drawable.ic_rarimo,
+                iconId = R.drawable.ic_identification_card,
                 nameResId = R.string.zk_identity_no_passport_list_item_3,
                 isActive = false,
+                iconSize = 24,
                 onClick = {}
             ),
             IdentityItemData(
-                imageId = R.drawable.ic_rarimo,
+                iconId = R.drawable.ic_twitter_x_fill,
                 nameResId = R.string.zk_identity_no_passport_list_item_4,
                 isActive = false,
+                iconSize = 20,
                 onClick = {}
             ),
-            IdentityItemData(
-                imageId = R.drawable.ic_rarimo,
-                nameResId = R.string.zk_identity_no_passport_list_item_5,
-                isActive = false,
-                onClick = {}
-            )
         ).also {
             if (BuildConfig.isTestnet) {
                 it.add(
                     IdentityItemData(
-                    imageId = R.drawable.ic_passport_fill,
-                    nameResId = R.string.from_json_test_only,
-                    isActive = true,
-                    onClick = {
-                        filePicker.launch("application/json")
-                    }
-                ))
+                        iconId = R.drawable.ic_passport_fill,
+                        nameResId = R.string.from_json_test_only,
+                        isActive = true,
+                        iconSize = 24,
+                        onClick = {
+                            filePicker.launch("application/json")
+                        }
+                    ))
             }
         }
     }
@@ -217,7 +217,8 @@ fun IdentityList(items: List<IdentityItemData>) {
     ) {
         items.forEachIndexed { index, item ->
             IdentityCardTypeItem(
-                imageId = item.imageId,
+                iconId = item.iconId,
+                iconSize = item.iconSize,
                 name = stringResource(item.nameResId),
                 isActive = item.isActive,
                 onClick = item.onClick
@@ -238,7 +239,8 @@ private fun ZkIdentityNoPassportPreview() {
     val mockNavigate: (String) -> Unit = {}
     val mockIdentityItems = listOf(
         IdentityItemData(
-            imageId = R.drawable.ic_passport_line,
+            iconId = R.drawable.ic_passport_line,
+            iconSize = 24,
             nameResId = R.string.zk_identity_no_passport_list_item_1,
             isActive = true,
             onClick = {}

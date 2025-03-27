@@ -31,7 +31,8 @@ import androidx.compose.foundation.clickable
 fun IdentityCardTypeItem(
     modifier: Modifier = Modifier,
     isActive: Boolean,
-    imageId: Int,
+    iconId: Int,
+    iconSize: Int = 24,
     name: String,
     onClick: () -> Unit
 ) {
@@ -70,11 +71,11 @@ fun IdentityCardTypeItem(
             contentAlignment = Alignment.Center
         ) {
             AppIcon(
-                id = imageId,
+                id = iconId,
                 tint = if (isActive) RarimeTheme.colors.baseBlack else RarimeTheme.colors.textDisabled.copy(
                     alpha = 0.28f
                 ),
-                size = 24.dp,
+                size = iconSize.dp,
             )
         }
 
@@ -109,14 +110,14 @@ private fun IdentityCardTypeItemPreview() {
         Column {
             IdentityCardTypeItem(
                 isActive = true,
-                imageId = R.drawable.ic_rarimo,
+                iconId = R.drawable.ic_rarimo,
                 name = "Identity Card",
                 onClick = {}
             )
             Spacer(Modifier.height(16.dp))
             IdentityCardTypeItem(
                 isActive = false,
-                imageId = R.drawable.ic_rarimo,
+                iconId = R.drawable.ic_rarimo,
                 name = "Identity Card",
                 onClick = {}
             )
