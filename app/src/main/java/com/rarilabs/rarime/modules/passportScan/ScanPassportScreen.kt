@@ -62,7 +62,6 @@ fun ScanPassportScreen(
     LaunchedEffect(Unit) {
         if (initialEDocument != null) {
             scanPassportScreenViewModel.setPassportTEMP(initialEDocument)
-            state = ScanPassportState.PASSPORT_DATA
         }
     }
 

@@ -288,6 +288,9 @@ class ProofGenerationManager @Inject constructor(
         }
     }
 
+    fun setAlreadyRegisteredByOtherPK() {
+        _proofError.value = PassportAlreadyRegisteredByOtherPK()
+    }
 
     suspend fun performRegistration(eDocument: EDocument): ZkProof =
         withContext(managerScope.coroutineContext) {
@@ -318,6 +321,7 @@ class ProofGenerationManager @Inject constructor(
                         is PassportAlreadyRegisteredByOtherPK -> {
                             ErrorHandler.logError(TAG, "Passport already registered", e)
                             _proofError.value = e
+                            passportManager.updatePassportStatus(PassportStatus.ALREADY_REGISTERED_BY_OTHER_PK)
                             throw e
                         }
 
@@ -357,6 +361,7 @@ class ProofGenerationManager @Inject constructor(
                                             "Passport already registered during light registration",
                                             e2
                                         )
+                                        passportManager.updatePassportStatus(PassportStatus.ALREADY_REGISTERED_BY_OTHER_PK)
                                         _proofError.value = e2
                                         throw e2
                                     }

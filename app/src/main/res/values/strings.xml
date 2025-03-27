@@ -437,4 +437,5 @@
     <string name="creating">Creating</string>
     <string name="finishing">Finishing</string>
     <string name="select_icon_description">Select icon</string>
+    <string name="from_json_test_only">FROM JSON (TEST ONLY)</string>
 </resources>

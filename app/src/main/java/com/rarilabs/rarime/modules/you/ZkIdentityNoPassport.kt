@@ -1,8 +1,8 @@
 package com.rarilabs.rarime.modules.you
 
-import androidx.compose.foundation.background
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,14 +21,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.rarilabs.rarime.BuildConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
@@ -39,6 +37,9 @@ import com.rarilabs.rarime.ui.components.AppSheetState
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.GetCustomContents
+import com.rarilabs.rarime.util.ParseEDocumentFromJson
+import com.rarilabs.rarime.util.Screen
 
 enum class IdentityScreenType {
     NONE,
@@ -62,15 +63,38 @@ fun ZkIdentityNoPassport(
     var currentScreen by remember { mutableStateOf(IdentityScreenType.NONE) }
     val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
 
+
+    val context = LocalContext.current
+
+    val filePicker =
+        rememberLauncherForActivityResult(
+            contract = GetCustomContents(isMultiple = false),
+            onResult = { uris ->
+                try {
+                    if (uris.isEmpty()) {
+                        return@rememberLauncherForActivityResult
+                    }
+
+                    val uri = uris.first()
+
+                    val eDocument =
+                        ParseEDocumentFromJson().parseEDocument(uri, context)
+
+                    viewModel.setJsonEDocument(eDocument)
+                    navigate(Screen.ScanPassport.ScanPassportPoints.route)
+                } catch (e: Exception) {
+                    Log.e("ScanPassportScreen", "Failed to read file", e)
+                }
+            })
+
     val identityItems = remember {
-        listOf(
+        mutableListOf(
             IdentityItemData(
                 imageId = R.drawable.ic_passport_line,
                 nameResId = R.string.zk_identity_no_passport_list_item_1,
                 isActive = true,
                 onClick = {
-                    currentScreen = IdentityScreenType.PASSPORT
-                    sheetState.show()
+                    navigate(Screen.ScanPassport.ScanPassportPoints.route)
                 }
             ),
             IdentityItemData(
@@ -100,7 +124,19 @@ fun ZkIdentityNoPassport(
                 isActive = false,
                 onClick = {}
             )
-        )
+        ).also {
+            if (BuildConfig.isTestnet) {
+                it.add(
+                    1, IdentityItemData(
+                    imageId = R.drawable.ic_passport_fill,
+                    nameResId = R.string.from_json_test_only,
+                    isActive = true,
+                    onClick = {
+                        filePicker.launch("application/json")
+                    }
+                ))
+            }
+        }
     }
 
     ZkIdentityNoPassportContent(
@@ -119,6 +155,7 @@ fun ZkIdentityNoPassport(
             IdentityScreenType.PASSPORT -> {
                 ScanPassportScreen(onClose = {}, onClaim = {})
             }
+
             IdentityScreenType.NONE -> {}
             IdentityScreenType.LIVENESS -> ZkLiveness(navigate = navigate)
         }

@@ -214,7 +214,7 @@ fun MainScreenRoutes(
                 ScanPassportScreen(
                     onClose = {
                         coroutineScope.launch {
-                            navigateWithPopUp(Screen.Main.route)
+                            navigateWithPopUp(Screen.Main.Identity.route)
                         }
                     },
                     onClaim = {

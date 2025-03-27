@@ -32,6 +32,7 @@ class ZkIdentityScreenViewModel @Inject constructor(
     val passportStatus = passportManager.passportStatus
 
     val performRegistration = proofGenerationManager::performRegistration
+    val setAlreadyRegisteredByOtherPK = proofGenerationManager::setAlreadyRegisteredByOtherPK
 
     private val _uiState = MutableStateFlow(IdentityCardBottomBarUiState())
     val uiState: StateFlow<IdentityCardBottomBarUiState> = _uiState.asStateFlow()

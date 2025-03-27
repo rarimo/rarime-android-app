@@ -51,6 +51,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "DEFERRED_REFERRAL_CODE" to "DEFERRED_REFERRAL_CODE",
         "LIGHT_REGISTRATION_DATA" to "LIGHT_REGISTRATION_DATA",
         "ALREADY_RESERVED" to "ALREADY_RESERVED",
+        "PASSPORT_STATUS" to "PASSPORT_STATUS"
     )
 
     private val PREFS_FILE_NAME = "sharedPrefFile12"

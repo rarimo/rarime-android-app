@@ -63,7 +63,8 @@ fun ZkIdentityPassport(
                     "Passport registration", error.message ?: "Registration error", error
                 )
             }
-
+        } else if (passportStatus == PassportStatus.ALREADY_REGISTERED_BY_OTHER_PK) {
+            homeViewModel.setAlreadyRegisteredByOtherPK()
         }
     }
 

@@ -40,7 +40,7 @@ class PassportManager @Inject constructor(
     var passportIdentifiers = mutableStateOf(dataStoreManager.readPassportIdentifiers())
         private set
 
-    private var _passportStatus = MutableStateFlow(PassportStatus.UNSCANNED)
+    private var _passportStatus = MutableStateFlow(dataStoreManager.readPassportStatus())
     val passportStatus: StateFlow<PassportStatus>
         get() = _passportStatus.asStateFlow()
 
@@ -84,6 +84,9 @@ class PassportManager @Inject constructor(
         if (passport.value == null) {
             return
         }
+
+        if (dataStoreManager.readPassportStatus() == PassportStatus.ALREADY_REGISTERED_BY_OTHER_PK)
+            return
 
         if (dataStoreManager.readRegistrationProof() == null) {
             updatePassportStatus(PassportStatus.UNREGISTERED)
