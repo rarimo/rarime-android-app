@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -62,7 +60,7 @@ fun CreateIdentityDetails(
             Column {
                 Text(
                     style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.textSecondary,
+                    color = RarimeTheme.colors.baseBlack.copy(alpha = 0.5f),
                     text = "This app is where you privately store your digital identities, enabling you to go incognito across the web."
                 )
 

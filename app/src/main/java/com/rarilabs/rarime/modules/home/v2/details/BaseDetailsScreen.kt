@@ -113,7 +113,14 @@ fun BaseDetailsScreen(
                     AppIcon(
                         id = R.drawable.ic_close,
                         size = 20.dp,
-                        tint = RarimeTheme.colors.textPrimary.also { it.alpha },
+                        tint = RarimeTheme.colors.baseBlack,
+                        modifier = Modifier
+                            .background(
+                                color = RarimeTheme.colors.baseBlack.copy(
+                                    alpha = 0.05f
+                                )
+                            )
+                            .padding(10.dp)
                     )
                 }
             }
@@ -149,7 +156,7 @@ fun BaseDetailsScreen(
 
                 Text(
                     style = RarimeTheme.typography.h1,
-                    color = RarimeTheme.colors.textPrimary,
+                    color = RarimeTheme.colors.baseBlack,
                     text = properties.header,
                     modifier = Modifier.sharedBounds(
                         rememberSharedContentState(
@@ -161,7 +168,7 @@ fun BaseDetailsScreen(
                 Text(
                     style = RarimeTheme.typography.additional1,
                     text = properties.subTitle,
-                    color = RarimeTheme.colors.textSecondary,
+                    color = RarimeTheme.colors.baseBlack.copy(alpha = 0.4f),
                     modifier = Modifier
                         .sharedBounds(
                             rememberSharedContentState(

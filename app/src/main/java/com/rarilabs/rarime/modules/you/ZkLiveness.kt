@@ -82,7 +82,9 @@ private fun LivenessTitle(modifier: Modifier = Modifier) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = stringResource(R.string.zk_liveness_title), style = RarimeTheme.typography.h2
+            text = stringResource(R.string.zk_liveness_title),
+            style = RarimeTheme.typography.h2,
+            color = RarimeTheme.colors.textPrimary
         )
     }
 }
@@ -116,7 +118,11 @@ private fun LivenessRow(
         modifier = modifier.fillMaxWidth()
     ) {
         LivenessIcon(iconId = iconId, containerSize = 40.dp, iconSize = 24.dp)
-        Text(text = stringResource(labelId), style = RarimeTheme.typography.body3)
+        Text(
+            text = stringResource(labelId),
+            style = RarimeTheme.typography.body3,
+            color = RarimeTheme.colors.textPrimary
+        )
     }
 }
 
@@ -130,7 +136,7 @@ private fun LivenessIcon(@DrawableRes iconId: Int, containerSize: Dp, iconSize: 
     ) {
         AppIcon(
             id = iconId,
-            tint = RarimeTheme.colors.textPrimary,
+            tint = RarimeTheme.colors.baseBlack,
             size = iconSize,
         )
     }
