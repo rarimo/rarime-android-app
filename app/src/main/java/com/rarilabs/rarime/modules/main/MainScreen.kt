@@ -103,7 +103,8 @@ fun MainScreen(
 @Composable
 fun AppLoadingScreen() {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         AppLogo()

@@ -68,7 +68,7 @@ fun AuthorizationMethodsList(
                             ),
                         contentAlignment = Alignment.Center,
                     ) {
-                        AppIcon(id = item.icon, tint = RarimeTheme.colors.textPrimary)
+                        AppIcon(id = item.icon, tint = RarimeTheme.colors.baseBlack)
                     }
 
                     Text(
