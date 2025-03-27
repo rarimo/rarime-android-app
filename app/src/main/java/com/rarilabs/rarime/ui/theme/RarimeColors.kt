@@ -257,6 +257,8 @@ class RarimeColors(
         gradient4: Brush = this.gradient4,
         gradient5: Brush = this.gradient5,
         gradient6: Brush = this.gradient6,
+        invertedDark: Color = this.invertedDark,
+        invertedLight: Color = this.invertedLight
 
         ) = RarimeColors(
         primaryDarker = primaryDarker,
@@ -356,6 +358,8 @@ class RarimeColors(
         this.backgroundPure = other.backgroundPure
         this.baseBlack = other.baseBlack
         this.baseWhite = other.baseWhite
+        this.invertedDark = other.invertedDark
+        this.invertedLight = other.invertedLight
     }
 }
 
