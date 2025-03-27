@@ -71,7 +71,7 @@ fun IdentityCardTypeItem(
         ) {
             AppIcon(
                 id = imageId,
-                tint = if (isActive) RarimeTheme.colors.textPrimary else RarimeTheme.colors.textDisabled.copy(
+                tint = if (isActive) RarimeTheme.colors.baseBlack else RarimeTheme.colors.textDisabled.copy(
                     alpha = 0.28f
                 ),
                 size = 24.dp,

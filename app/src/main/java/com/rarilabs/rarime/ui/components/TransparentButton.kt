@@ -36,8 +36,8 @@ fun TransparentButton(
         enabled = enabled,
         size = size,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent,
-            contentColor = RarimeTheme.colors.textPrimary,
+            containerColor = RarimeTheme.colors.baseBlack.copy(alpha = 0.05f),
+            contentColor = RarimeTheme.colors.baseBlack,
             disabledContainerColor = Color.Transparent,
             disabledContentColor = RarimeTheme.colors.textDisabled
         ),

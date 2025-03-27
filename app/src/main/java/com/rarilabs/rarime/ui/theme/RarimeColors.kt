@@ -89,7 +89,7 @@ class RarimeColors(
     gradient4: Brush,
     gradient5: Brush,
     gradient6: Brush,
-    ) {
+) {
     var primaryDarker by mutableStateOf(primaryDarker, structuralEqualityPolicy())
         internal set
     var primaryDark by mutableStateOf(primaryDark, structuralEqualityPolicy())
@@ -258,7 +258,7 @@ class RarimeColors(
         gradient5: Brush = this.gradient5,
         gradient6: Brush = this.gradient6,
 
-    ) = RarimeColors(
+        ) = RarimeColors(
         primaryDarker = primaryDarker,
         primaryDark = primaryDark,
         primaryMain = primaryMain,
