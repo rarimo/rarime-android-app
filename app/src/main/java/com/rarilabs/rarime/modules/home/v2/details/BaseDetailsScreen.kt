@@ -134,6 +134,7 @@ fun BaseDetailsScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
+            // TODO: Recheck scroll for voting screen
             Column(
                 modifier = Modifier
                     .padding(
