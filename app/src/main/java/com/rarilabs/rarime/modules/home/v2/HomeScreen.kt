@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -53,6 +54,7 @@ import com.rarilabs.rarime.modules.home.v2.details.InviteOthersScreen
 import com.rarilabs.rarime.modules.home.v2.details.UnforgettableWalletScreen
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
+import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.votes.VotesScreen
 import com.rarilabs.rarime.store.room.notifications.models.NotificationEntityData
 import com.rarilabs.rarime.ui.components.CircledBadgeWithCounter
@@ -87,6 +89,8 @@ fun HomeScreen(
 
     val pointsBalance by viewModel.pointsToken.collectAsState()
     val pointsEvent by viewModel.pointsEventData.collectAsState()
+
+    val passport by viewModel.passport.collectAsState()
 
     val notifications: List<NotificationEntityData> by viewModel.notifications.collectAsState()
 
@@ -146,7 +150,8 @@ fun HomeScreen(
         pointsBalance = pointsBalance?.balanceDetails,
         firstReferralCode = firstReferralCode,
         currentPointsBalance = currentPointsBalance,
-        notificationsCount = notificationsCount
+        notificationsCount = notificationsCount,
+        passport = passport,
     )
 }
 
@@ -163,7 +168,8 @@ fun HomeScreenContent(
     pointsBalance: PointsBalanceData?,
     firstReferralCode: String?,
     currentPointsBalance: Long?,
-    notificationsCount: Int
+    notificationsCount: Int,
+    passport: EDocument?
 ) {
 
     var selectedPageId by remember { mutableStateOf<Int?>(null) }
@@ -294,13 +300,14 @@ fun HomeScreenContent(
                 ) {
                     Row {
                         Text(
-                            "Hi",
+                            stringResource(R.string.hi),
                             style = RarimeTheme.typography.subtitle4,
                             color = RarimeTheme.colors.textSecondary
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            "Stranger",
+                            text = passport?.personDetails?.name
+                                ?: stringResource(R.string.stranger),
                             style = RarimeTheme.typography.subtitle4,
                             color = RarimeTheme.colors.textPrimary
                         )
@@ -472,7 +479,8 @@ private fun HomeScreenPreview() {
                 pointsBalance = null,
                 firstReferralCode = "",
                 currentPointsBalance = 2323.toLong(),
-                notificationsCount = 2
+                notificationsCount = 2,
+                passport = null
             )
         }
     }

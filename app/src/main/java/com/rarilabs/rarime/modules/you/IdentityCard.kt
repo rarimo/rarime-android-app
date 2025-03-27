@@ -176,7 +176,7 @@ fun IdentityCard(
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 2.dp, horizontal = 8.dp),
-                        text = "ID CARD",
+                        text = stringResource(R.string.passport).uppercase(),
                         color = RarimeTheme.colors.textPrimary,
                         style = RarimeTheme.typography.overline2
                     )
@@ -245,7 +245,7 @@ fun IdentityCard(
                         identifier = identifier,
                         eDocument = passport,
                         onIncognitoChange = onIncognitoChange,
-                        isIncognito = isIncognito,
+                        isIncognito = isInfoHidden,
                         settingsSheetState = settingsSheetState,
                         revokeSheetState = revokeSheetState
                     )

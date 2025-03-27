@@ -35,6 +35,8 @@ class HomeViewModel @Inject constructor(
 
     val pointsToken = walletManager.pointsToken
 
+    val passport = passportManager.passport
+
     private var _pointsEventData = MutableStateFlow<PointsEventData?>(null)
 
     val notifications = notificationManager.notificationList

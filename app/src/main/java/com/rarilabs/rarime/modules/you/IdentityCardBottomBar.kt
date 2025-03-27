@@ -39,7 +39,10 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.registration.PassportAlreadyRegisteredByOtherPK
 import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.enums.PassportStatus
+import com.rarilabs.rarime.data.enums.toLocalizedTitle
 import com.rarilabs.rarime.data.enums.toLocalizedValue
+import com.rarilabs.rarime.data.enums.toTitleStub
+import com.rarilabs.rarime.data.enums.toValueStub
 import com.rarilabs.rarime.manager.PassportProofState
 import com.rarilabs.rarime.modules.passportScan.DownloadCircuitError
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
@@ -387,13 +390,15 @@ fun IdentityCardBottomBarContentInfo(
 ) {
     Column(modifier) {
         Text(
-            text = "#",
+            text = if (isIncognito) identifier.toTitleStub() else identifier.toLocalizedTitle(),
             style = RarimeTheme.typography.subtitle6,
             color = RarimeTheme.colors.textSecondary
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = if (isIncognito) "••••••••••••••••••" else identifier.toLocalizedValue(eDocument),
+            text = if (isIncognito) identifier.toValueStub() else identifier.toLocalizedValue(
+                eDocument
+            ),
             style = RarimeTheme.typography.subtitle5,
             color = RarimeTheme.colors.textPrimary
         )
@@ -408,7 +413,7 @@ fun IdentityCardBottomBarContentInfo(
 
         SecondaryIconButton(
             size = ButtonIconSize.Medium,
-            icon = R.drawable.ic_info,
+            icon = R.drawable.ic_dots_three_outline,
             onClick = { settingsSheetState.show() })
     }
 }

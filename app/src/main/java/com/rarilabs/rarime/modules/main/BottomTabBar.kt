@@ -50,11 +50,12 @@ enum class BottomTab(
         R.drawable.ic_qr_scan,
         R.drawable.ic_qr_scan
     ),
-    Wallet(
-        Screen.Main.Wallet.route,
-        R.drawable.ic_wallet,
-        R.drawable.ic_wallet_filled
-    ),
+
+    //    Wallet(
+//        Screen.Main.Wallet.route,
+//        R.drawable.ic_wallet,
+//        R.drawable.ic_wallet_filled
+//    ),
     Profile(
         Screen.Main.Profile.route,
         R.drawable.ic_user,

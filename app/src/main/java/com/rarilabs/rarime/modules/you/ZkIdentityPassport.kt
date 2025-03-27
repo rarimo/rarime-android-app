@@ -1,14 +1,12 @@
 package com.rarilabs.rarime.modules.you
 
 import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
@@ -31,7 +29,6 @@ import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.PersonDetails
-import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
 
@@ -107,17 +104,17 @@ fun ZkIdentityPassportContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                "YOU",
+                text = stringResource(R.string.you),
                 style = RarimeTheme.typography.subtitle4,
                 color = RarimeTheme.colors.textPrimary
             )
-            Column(
-                Modifier
-                    .clip(RoundedCornerShape(100.dp))
-                    .background(RarimeTheme.colors.componentPrimary)
-            ) {
-                AppIcon(modifier = Modifier.padding(10.dp), id = R.drawable.ic_plus)
-            }
+//            Column(
+//                Modifier
+//                    .clip(RoundedCornerShape(100.dp))
+//                    .background(RarimeTheme.colors.componentPrimary)
+//            ) {
+//                AppIcon(modifier = Modifier.padding(10.dp), id = R.drawable.ic_plus)
+//            }
         }
 
         Column(Modifier.padding(start = 12.dp, end = 12.dp, top = 20.dp)) {
