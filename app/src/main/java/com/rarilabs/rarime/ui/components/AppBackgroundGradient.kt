@@ -18,7 +18,7 @@ fun AppBackgroundGradient(
     colors: List<Color> = listOf(
         Color(0x66A5E87D),
         Color(0x6695F1CD),
-        Color(0x66FFFFFF),
+        Color.Transparent,
         Color.Transparent
     ),
     center: Offset = Offset(1000f, 100f),
