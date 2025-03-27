@@ -81,7 +81,7 @@ fun ZkIdentityNoPassport(
                         ParseEDocumentFromJson().parseEDocument(uri, context)
 
                     viewModel.setJsonEDocument(eDocument)
-                    navigate(Screen.ScanPassport.ScanPassportPoints.route)
+                    //navigate(Screen.ScanPassport.ScanPassportPoints.route)
                 } catch (e: Exception) {
                     Log.e("ScanPassportScreen", "Failed to read file", e)
                 }
@@ -127,7 +127,7 @@ fun ZkIdentityNoPassport(
         ).also {
             if (BuildConfig.isTestnet) {
                 it.add(
-                    1, IdentityItemData(
+                    IdentityItemData(
                     imageId = R.drawable.ic_passport_fill,
                     nameResId = R.string.from_json_test_only,
                     isActive = true,

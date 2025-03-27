@@ -201,9 +201,10 @@ class APIModule {
     fun provideRegistrationManager(
         registrationAPIManager: RegistrationAPIManager,
         rarimoContractManager: RarimoContractManager,
-        passportManager: PassportManager
+        passportManager: PassportManager,
+        identityManager: IdentityManager
     ): RegistrationManager = RegistrationManager(
-        registrationAPIManager, rarimoContractManager, passportManager
+        registrationAPIManager, rarimoContractManager, passportManager, identityManager
     )
 
     @Provides

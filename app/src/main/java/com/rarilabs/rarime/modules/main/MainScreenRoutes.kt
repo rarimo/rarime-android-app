@@ -211,18 +211,20 @@ fun MainScreenRoutes(
             }
 
             composable(Screen.ScanPassport.ScanPassportPoints.route) {
-                ScanPassportScreen(
-                    onClose = {
-                        coroutineScope.launch {
-                            navigateWithPopUp(Screen.Main.Identity.route)
+                ScreenInsetsContainer {
+                    ScanPassportScreen(
+                        onClose = {
+                            coroutineScope.launch {
+                                navigateWithPopUp(Screen.Main.Identity.route)
+                            }
+                        },
+                        onClaim = {
+                            coroutineScope.launch {
+                                navigateWithPopUp(Screen.Claim.Reserve.route)
+                            }
                         }
-                    },
-                    onClaim = {
-                        coroutineScope.launch {
-                            navigateWithPopUp(Screen.Claim.Reserve.route)
-                        }
-                    }
-                )
+                    )
+                }
             }
 
             composable(Screen.Claim.Specific.route) {

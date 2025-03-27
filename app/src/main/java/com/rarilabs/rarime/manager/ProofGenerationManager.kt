@@ -206,6 +206,7 @@ class ProofGenerationManager @Inject constructor(
                     _state.value = PassportProofState.FINALIZING
                     delay(second)
                 } else {
+                    registrationManager.setRegistrationProof(proof)
                     throw PassportAlreadyRegisteredByOtherPK()
                 }
             } ?: run {

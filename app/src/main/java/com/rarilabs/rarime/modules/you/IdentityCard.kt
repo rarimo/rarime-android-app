@@ -60,6 +60,7 @@ import com.rarilabs.rarime.data.enums.toLocalizedValue
 import com.rarilabs.rarime.modules.passportScan.calculateAgeFromBirthDate
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.PersonDetails
+import com.rarilabs.rarime.modules.passportScan.nfc.RevocationStep
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppSheetState
@@ -67,6 +68,9 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.BackgroundRemover
+import com.rarilabs.rarime.util.DateUtil
+import net.sf.scuba.data.Gender
+import org.jmrtd.lds.icao.MRZInfo
 
 @Composable
 fun IdentityCard(
@@ -86,6 +90,7 @@ fun IdentityCard(
     val haptic = LocalHapticFeedback.current
 
     val settingsSheetState = rememberAppSheetState()
+    val revokeSheetState = rememberAppSheetState()
 
 
     var isPressing by remember { mutableStateOf(false) }
@@ -96,7 +101,12 @@ fun IdentityCard(
 
     // Animated saturation based on registration status.
     val targetSaturation =
-        if (registrationStatus.passportStatus == PassportStatus.UNREGISTERED) 0f else 1f
+        if (
+            registrationStatus.passportStatus == PassportStatus.UNREGISTERED ||
+            registrationStatus.passportStatus == PassportStatus.ALREADY_REGISTERED_BY_OTHER_PK
+        )
+            0f
+        else 1f
     val animatedSaturation by animateFloatAsState(
         targetValue = targetSaturation,
         animationSpec = tween(durationMillis = 500)
@@ -110,7 +120,6 @@ fun IdentityCard(
 
     var faceImage: ImageBitmap? by remember { mutableStateOf(null) }
 
-    // Use LaunchedEffect keyed to personDetails so it re-runs when portrait changes.
     LaunchedEffect(passport.personDetails) {
         passport.personDetails?.getPortraitImage()?.let { bitmap ->
             BackgroundRemover().removeBackground(bitmap) { image ->
@@ -118,126 +127,166 @@ fun IdentityCard(
             }
         }
     }
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = RarimeTheme.colors.backgroundPrimary)
-            .then(modifier)
-    ) {
 
-        Column(
-            modifier
-                .fillMaxWidth()
-                .paint(
-                    painterResource(id = look.getBackgroundImage()),
-                    contentScale = ContentScale.FillHeight
-                )
-                .pointerInput(Unit) {
-                    detectTapGestures(onPress = {
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        isPressing = true
-                        tryAwaitRelease()
-                        isPressing = false
-                    })
-                }
+    Column(verticalArrangement = Arrangement.spacedBy((-43).dp)) {
+
+        if (
+            listOf(
+                PassportStatus.WAITLIST,
+                PassportStatus.NOT_ALLOWED,
+                PassportStatus.WAITLIST_NOT_ALLOWED
+            ).contains(passportStatus)
         ) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(top = 16.dp, end = 14.dp)
-                    .clip(RoundedCornerShape(106.dp))
-                    .background(RarimeTheme.colors.componentPrimary)
-            ) {
-                Text(
-                    modifier = Modifier.padding(vertical = 2.dp, horizontal = 8.dp),
-                    text = "ID CARD",
-                    color = RarimeTheme.colors.textPrimary,
-                    style = RarimeTheme.typography.overline2
-                )
-            }
-
-
-            Text(
-                modifier = Modifier.padding(start = 24.dp),
-                text = if (isInfoHidden) "•••••" else passport.personDetails!!.name!!,
-                style = RarimeTheme.typography.h2,
-                color = RarimeTheme.colors.textPrimary
+            StatusCard(
+                modifier = Modifier.padding(
+                    top = 20.dp
+                ), passportStatus
             )
-            Text(
-                modifier = Modifier.padding(start = 24.dp),
-                text = if (isInfoHidden) "•••••" else passport.personDetails!!.surname!!,
-                style = RarimeTheme.typography.additional2,
-                color = RarimeTheme.colors.textPlaceholder
-            )
-            Spacer(Modifier.height(10.dp))
+        }
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = RarimeTheme.colors.backgroundPrimary)
+                .then(modifier)
+        ) {
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+            Column(
+
+                modifier
+                    .fillMaxWidth()
+                    .paint(
+                        painterResource(id = look.getBackgroundImage()),
+                        contentScale = ContentScale.FillHeight
+                    )
+                    .pointerInput(Unit) {
+                        detectTapGestures(onPress = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            isPressing = true
+                            tryAwaitRelease()
+                            isPressing = false
+                        })
+                    }
             ) {
-                Text(
-                    modifier = Modifier.padding(start = 24.dp, top = 6.dp),
-                    text = if (isInfoHidden) "••••••••••••" else stringResource(
-                        R.string.years_old, calculateAgeFromBirthDate(
-                            passport.personDetails!!.birthDate!!
-                        )
-                    ),
-
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.textSecondary,
-                )
-
                 Box(
-                    contentAlignment = Alignment.BottomEnd,
                     modifier = Modifier
-                        .height(200.dp)
-                        .padding(end = 16.dp)
-                        .blur(
-                            radius = if (isInfoHidden) 54.dp else 0.dp,
-                            edgeTreatment = BlurredEdgeTreatment.Unbounded
-                        )
+                        .align(Alignment.End)
+                        .padding(top = 16.dp, end = 14.dp)
+                        .clip(RoundedCornerShape(106.dp))
+                        .background(RarimeTheme.colors.componentPrimary)
                 ) {
-                    Image(
-                        alignment = Alignment.BottomEnd,
-                        modifier = Modifier
-                            .height(200.dp),
-                        contentScale = ContentScale.FillHeight,
-                        bitmap = faceImage ?: ImageBitmap(1, 1),
-                        contentDescription = null,
-                        colorFilter = ColorFilter.colorMatrix(colorMatrix)
+                    Text(
+                        modifier = Modifier.padding(vertical = 2.dp, horizontal = 8.dp),
+                        text = "ID CARD",
+                        color = RarimeTheme.colors.textPrimary,
+                        style = RarimeTheme.typography.overline2
                     )
                 }
 
 
-            }
-
-
-            Box(Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)) {
-                IdentityCardBottomBar(
-                    registrationStatus = registrationStatus,
-                    retryRegistration = retryRegistration,
-                    identifier = identifier,
-                    eDocument = passport,
-                    onIncognitoChange = onIncognitoChange,
-                    isIncognito = isIncognito,
-                    settingsSheetState = settingsSheetState
+                Text(
+                    modifier = Modifier.padding(start = 24.dp),
+                    text = if (isInfoHidden) "•••••" else passport.personDetails!!.name!!,
+                    style = RarimeTheme.typography.h2,
+                    color = RarimeTheme.colors.textPrimary
                 )
-            }
-
-
-            AppBottomSheet(state = settingsSheetState) {
-                PassportCardSettings(
-                    look = look,
-                    identifiers = identifier,
-                    onLookChange = onLookChange,
-                    onIdentifiersChange = onIdentifierChange,
-                    settingAppBottomSheetState = settingsSheetState,
-                    eDocument = passport
+                Text(
+                    modifier = Modifier.padding(start = 24.dp),
+                    text = if (isInfoHidden) "•••••" else passport.personDetails!!.surname!!,
+                    style = RarimeTheme.typography.additional2,
+                    color = RarimeTheme.colors.textPlaceholder
                 )
-            }
+                Spacer(Modifier.height(10.dp))
 
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        modifier = Modifier.padding(start = 24.dp, top = 6.dp),
+                        text = if (isInfoHidden) "••••••••••••" else stringResource(
+                            R.string.years_old, calculateAgeFromBirthDate(
+                                passport.personDetails!!.birthDate!!
+                            )
+                        ),
+
+                        style = RarimeTheme.typography.body3,
+                        color = RarimeTheme.colors.textSecondary,
+                    )
+
+                    Box(
+                        contentAlignment = Alignment.BottomEnd,
+                        modifier = Modifier
+                            .height(200.dp)
+                            .padding(end = 16.dp)
+                            .blur(
+                                radius = if (isInfoHidden) 54.dp else 0.dp,
+                                edgeTreatment = BlurredEdgeTreatment.Unbounded
+                            )
+                    ) {
+                        Image(
+                            alignment = Alignment.BottomEnd,
+                            modifier = Modifier
+                                .height(200.dp),
+                            contentScale = ContentScale.FillHeight,
+                            bitmap = faceImage ?: ImageBitmap(1, 1),
+                            contentDescription = null,
+                            colorFilter = ColorFilter.colorMatrix(colorMatrix)
+                        )
+                    }
+
+
+                }
+
+
+                Box(Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)) {
+                    IdentityCardBottomBar(
+                        registrationStatus = registrationStatus,
+                        retryRegistration = retryRegistration,
+                        identifier = identifier,
+                        eDocument = passport,
+                        onIncognitoChange = onIncognitoChange,
+                        isIncognito = isIncognito,
+                        settingsSheetState = settingsSheetState,
+                        revokeSheetState = revokeSheetState
+                    )
+                }
+
+                AppBottomSheet(state = revokeSheetState) {
+                    RevocationStep(
+                        mrzData = MRZInfo(
+                            "P",
+                            "NNN",
+                            "",
+                            "",
+                            passport.personDetails!!.serialNumber!!,
+                            passport.personDetails!!.nationality!!,
+                            DateUtil.convertToMrzDate(passport.personDetails?.birthDate),
+                            Gender.UNSPECIFIED,
+                            DateUtil.convertToMrzDate(passport.personDetails?.expiryDate),
+                            ""
+                        ),
+                        onClose = { revokeSheetState.hide() },
+                        onNext = { revokeSheetState.hide() },
+                        onError = { revokeSheetState.hide() }
+                    )
+                }
+
+                AppBottomSheet(state = settingsSheetState) {
+                    PassportCardSettings(
+                        look = look,
+                        identifiers = identifier,
+                        onLookChange = onLookChange,
+                        onIdentifiersChange = onIdentifierChange,
+                        settingAppBottomSheetState = settingsSheetState,
+                        eDocument = passport
+                    )
+                }
+
+            }
         }
     }
+
+
 }
 
 
@@ -343,19 +392,6 @@ private fun PassportIdentifiersPicker(
                         onIdentifierChange(identifier)
                     }
                 )
-
-//                AppSwitch(
-//                    checked = isSelected,
-//                    enabled = identifiers.size < Constants.MAX_PASSPORT_IDENTIFIERS || isSelected,
-//                    onCheckedChange = {
-//                        val newIdentifiers = if (isSelected) {
-//                            identifiers.filter { it != identifier }
-//                        } else {
-//                            identifiers + listOf(identifier)
-//                        }
-//                        onIdentifiersChange(newIdentifiers.sortedBy { it.order })
-//                    },
-//                )
             }
         }
     }

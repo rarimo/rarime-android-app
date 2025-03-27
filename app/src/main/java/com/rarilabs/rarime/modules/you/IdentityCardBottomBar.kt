@@ -34,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.rarilabs.rarime.BuildConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.registration.PassportAlreadyRegisteredByOtherPK
 import com.rarilabs.rarime.data.enums.PassportIdentifier
@@ -265,7 +266,10 @@ data class ErrorIdentityBottomBardData(
 
 @Composable
 fun IdentityCardBottomBarContentError(
-    reason: Exception, onRetry: () -> Unit, modifier: Modifier = Modifier
+    reason: Exception,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier,
+    revokeSheetState: AppSheetState
 ) {
 
     var infoModalState by remember { mutableStateOf(false) }
@@ -286,12 +290,20 @@ fun IdentityCardBottomBarContentError(
             is PassportAlreadyRegisteredByOtherPK -> {
                 ErrorIdentityBottomBardData(
                     header = "Already Registered",
-                    hint = "Try to find previous pk",
+                    hint = "Try to find previous pk".plus(
+                        if (BuildConfig.isTestnet) {
+                            "TESTER REVOKE"
+                        } else {
+                            ""
+                        }
+                    ),
                     buttonText = "",
                     onButtonClick = null,
                     infoHeader = "Passport already in use",
-                    infoDescription = "This passport is already registered with another identity. Please try to find the private key that was previously used with this passport.",
-                    infoConfirmCLick = { infoModalState = false })
+                    infoDescription = if (!BuildConfig.isTestnet) "This passport is already registered with another identity. Please try to find the private key that was previously used with this passport." else "PresConfirmTo Revoke",
+                    infoConfirmCLick = {
+                        infoModalState = false; if (BuildConfig.isTestnet) revokeSheetState.show()
+                    })
             }
 
             else -> {
@@ -410,7 +422,8 @@ fun IdentityCardBottomBar(
     retryRegistration: () -> Unit,
     onIncognitoChange: (Boolean) -> Unit,
     isIncognito: Boolean,
-    settingsSheetState: AppSheetState
+    settingsSheetState: AppSheetState,
+    revokeSheetState: AppSheetState
 ) {
     Card(shape = RoundedCornerShape(16.dp)) {
         Row(
@@ -425,7 +438,10 @@ fun IdentityCardBottomBar(
         ) {
             if (registrationStatus.proofError !== null) {
                 IdentityCardBottomBarContentError(
-                    reason = registrationStatus.proofError, onRetry = { retryRegistration() })
+                    reason = registrationStatus.proofError,
+                    onRetry = { retryRegistration() },
+                    revokeSheetState = revokeSheetState
+                )
             } else if (registrationStatus.passportStatus == PassportStatus.UNREGISTERED) {
                 IdentityCardBottomBarContentLoading(stage = registrationStatus.loadingState)
             } else {
@@ -465,7 +481,8 @@ private fun IdentityCardBottomBarPreview() {
             retryRegistration = {},
             isIncognito = false,
             settingsSheetState = rememberAppSheetState(),
-            identifier = PassportIdentifier.BIRTH_DATE
+            identifier = PassportIdentifier.BIRTH_DATE,
+            revokeSheetState = rememberAppSheetState()
         )
     }
 }
@@ -493,7 +510,8 @@ private fun IdentityCardInfoBottomBarPreview() {
             retryRegistration = {},
             isIncognito = false,
             settingsSheetState = rememberAppSheetState(),
-            identifier = PassportIdentifier.BIRTH_DATE
+            identifier = PassportIdentifier.BIRTH_DATE,
+            revokeSheetState = rememberAppSheetState()
 
         )
     }
@@ -524,7 +542,8 @@ private fun IdentityCardLoadingBottomBarPreview() {
             retryRegistration = {},
             isIncognito = false,
             settingsSheetState = rememberAppSheetState(),
-            identifier = PassportIdentifier.BIRTH_DATE
+            identifier = PassportIdentifier.BIRTH_DATE,
+            revokeSheetState = rememberAppSheetState()
         )
     }
 }
