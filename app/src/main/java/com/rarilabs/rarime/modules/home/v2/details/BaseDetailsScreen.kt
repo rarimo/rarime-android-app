@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -104,6 +105,7 @@ fun BaseDetailsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .width(40.dp)
+                        .clip(CircleShape)
                         .height(40.dp)
                         .background(RarimeTheme.colors.componentPrimary, CircleShape)
                         .clickable { onBack.invoke() }
