@@ -442,4 +442,9 @@
     <string name="you">You</string>
     <string name="hi">Hi</string>
     <string name="stranger">Stranger</string>
+    <string name="no_passport_error">First, scan your passport.</string>
+    <string name="no_active_identity">No active identity. Please register first.</string>
+    <string name="reserved">Reserved</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="rmo">RMO</string>
 </resources>

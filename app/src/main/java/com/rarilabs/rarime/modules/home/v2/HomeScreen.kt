@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -86,6 +87,7 @@ fun HomeScreen(
     setVisibilityOfBottomBar: (Boolean) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
+
 
     val pointsBalance by viewModel.pointsToken.collectAsState()
     val pointsEvent by viewModel.pointsEventData.collectAsState()
@@ -173,6 +175,7 @@ fun HomeScreenContent(
 ) {
 
     var selectedPageId by remember { mutableStateOf<Int?>(null) }
+    val context = LocalContext.current
 
     LaunchedEffect(selectedPageId) {
         setVisibilityOfBottomBar(selectedPageId == null)
@@ -224,6 +227,30 @@ fun HomeScreenContent(
                 ),
                 onCardClick = {},
             ),
+
+            CardContent(
+                type = CardType.CLAIM, properties = CardProperties(
+                    header = if (currentPointsBalance != null && currentPointsBalance != 0L) context.getString(
+                        R.string.reserved
+                    ) else context.getString(
+                        R.string.upcoming
+                    ),
+                    subTitle = if (currentPointsBalance != null && currentPointsBalance != 0L) ("$currentPointsBalance " + context.getString(
+                        R.string.rmo
+                    )) else context.getString(
+                        R.string.rmo
+                    ),
+                    icon = R.drawable.ic_rarimo,
+                    image = R.drawable.claim_rmo_image,
+                    backgroundGradient = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFFDFFCC4), Color(0xFFF4F3F0)
+                        )
+                    )
+                ), onCardClick = {}, footer = {})
+        )
+
+
 //            CardContent(
 //                type = CardType.INVITE_OTHERS, properties = CardProperties(
 //                    header = "Invite",
@@ -279,7 +306,7 @@ fun HomeScreenContent(
 //                )
 //            }
 //        }
-        )
+        //)
     }
 
     val pagerState = rememberPagerState(pageCount = { cardContent.size })
@@ -430,7 +457,6 @@ fun HomeScreenContent(
                         onBack = { selectedPageId = null },
                         innerPaddings = innerPaddings,
                         currentPointsBalance = currentPointsBalance
-                            ?: throw IllegalStateException("currentPointsBalance is Null but card was displayed")
                     )
                 }
 

@@ -245,7 +245,7 @@ fun IdentityCard(
                         identifier = identifier,
                         eDocument = passport,
                         onIncognitoChange = onIncognitoChange,
-                        isIncognito = isIncognito,
+                        isIncognito = isInfoHidden,
                         settingsSheetState = settingsSheetState,
                         revokeSheetState = revokeSheetState
                     )

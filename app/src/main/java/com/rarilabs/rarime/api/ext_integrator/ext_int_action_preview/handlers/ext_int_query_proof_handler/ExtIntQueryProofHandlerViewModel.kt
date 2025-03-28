@@ -4,12 +4,13 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorApiManager
+import com.rarilabs.rarime.api.ext_integrator.models.NoActiveIdentity
+import com.rarilabs.rarime.api.ext_integrator.models.NoPassport
 import com.rarilabs.rarime.api.ext_integrator.models.QueryProofGenResponse
+import com.rarilabs.rarime.api.ext_integrator.models.YourCitizenshipDoesNotMeetTheRequirements
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
-import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.modules.passportScan.calculateAgeFromBirthDate
-import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.Country
 import com.rarilabs.rarime.util.DateUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,9 +26,7 @@ import javax.inject.Inject
 class ExtIntQueryProofHandlerViewModel @Inject constructor(
     private val extIntegratorApiManager: ExtIntegratorApiManager,
     private val passportManager: PassportManager,
-    private val contractManager: RarimoContractManager,
-    private val identityManager: IdentityManager,
-    private val sharedPreferences: SecureSharedPrefsManager
+    private val identityManager: IdentityManager
 ) : ViewModel() {
     private var _queryProofParametersRequest = MutableStateFlow<QueryProofGenResponse?>(null)
     val queryProofParametersRequest: StateFlow<QueryProofGenResponse?>
@@ -37,7 +36,10 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
     val fieldsParams: StateFlow<Map<String, String>>
         get() = _fieldsParams.asStateFlow()
 
+
     suspend fun loadDetails(proofParamsUrl: String, redirectUrl: String?) {
+
+
         _queryProofParametersRequest.value = withContext(Dispatchers.IO) {
             extIntegratorApiManager.queryProofData(proofParamsUrl)
         }
@@ -60,11 +62,22 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
                     0
                 }
 
+            val birthDate = passportManager.passport.value?.personDetails?.birthDate
+                ?: throw Exception("Birth date is null")
+            val age = calculateAgeFromBirthDate(birthDate)
+
             if (age_lower_bound_years > 0) {
                 tempMap.set(
                     "Age", "${age_lower_bound_years}+"
                 )
             }
+
+
+            if (age_lower_bound_years > 0 && age_lower_bound_years > age) {
+                throw YourCitizenshipDoesNotMeetTheRequirements()
+            }
+
+
         } catch (e: Exception) {
             Log.e("age_lower_bound_years", e.message, e)
         }
@@ -95,6 +108,13 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
                     ""
                 }
 
+            val citizenship = passportManager.passport.value?.personDetails?.issuerAuthority
+                ?: throw Exception("Citizenship is null")
+
+            if (nationality != citizenship) {
+                throw YourCitizenshipDoesNotMeetTheRequirements()
+            }
+
             if (nationality.isNotEmpty()) {
                 tempMap.set(
                     "Nationality", nationality
@@ -114,7 +134,18 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
     }
 
     suspend fun generateQueryProof(context: Context) {
-        val queryProof = extIntegratorApiManager.generateQueryProof(context, queryProofParametersRequest.value!!) ?: return
+
+        if (passportManager.passport.value == null) {
+            throw NoPassport()
+        }
+
+        if (identityManager.registrationProof.value == null) {
+            throw NoActiveIdentity()
+        }
+
+        val queryProof =
+            extIntegratorApiManager.generateQueryProof(context, queryProofParametersRequest.value!!)
+                ?: return
 
         extIntegratorApiManager.queryProofCallback(
             queryProofParametersRequest.value!!.data.attributes.callback_url,

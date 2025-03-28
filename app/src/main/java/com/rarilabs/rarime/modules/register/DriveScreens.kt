@@ -45,6 +45,8 @@ fun RestoreScreen(
     fun resolveButtonMessage(): String {
         return if (!isDriveButtonEnabled) {
             context.getString(R.string.drive_loading)
+        } else if (signInAccount == null) {
+            context.getString(R.string.google_drive_backup_sign_in)
         } else {
             context.getString(R.string.drive_restore_using_google_drive)
         }
@@ -143,6 +145,8 @@ fun BackUpScreen(
     fun resolveButtonMessage(): String {
         return if (!isDriveButtonEnabled) {
             context.getString(R.string.drive_loading)
+        } else if (signInAccount == null) {
+            context.getString(R.string.google_drive_backup_sign_in)
         } else {
             context.getString(R.string.drive_back_up_to_google_drive)
         }

@@ -1,8 +1,8 @@
 package com.rarilabs.rarime.modules.main
 
 import android.net.Uri
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -69,12 +69,14 @@ class MainViewModel @Inject constructor(
     val modalContent: StateFlow<@Composable () -> Unit?>
         get() = _modalContent.asStateFlow()
 
-    var _screenInsets = MutableStateFlow<Map<ScreenInsets, Number>>(mapOf(
-        ScreenInsets.TOP to 0,
-        ScreenInsets.RIGHT to 0,
-        ScreenInsets.BOTTOM to 0,
-        ScreenInsets.LEFT to 0,
-    ))
+    var _screenInsets = MutableStateFlow<Map<ScreenInsets, Number>>(
+        mapOf(
+            ScreenInsets.TOP to 0,
+            ScreenInsets.RIGHT to 0,
+            ScreenInsets.BOTTOM to 0,
+            ScreenInsets.LEFT to 0,
+        )
+    )
         private set
     val screenInsets: StateFlow<Map<ScreenInsets, Number>>
         get() = _screenInsets.asStateFlow()
@@ -190,20 +192,16 @@ class MainViewModel @Inject constructor(
 
     suspend fun showSnackbar(options: SnackbarShowOptions) {
         _snackbarContent.value = options
-        val result = _snackbarHostState.value.showSnackbar(
-            message = "",
-            duration = options.duration,
+
+        kotlinx.coroutines.delay(
+            when (options.duration) {
+                SnackbarDuration.Short -> 2000
+                SnackbarDuration.Long -> 4000
+                SnackbarDuration.Indefinite -> Long.MAX_VALUE
+            }
         )
 
-        when (result) {
-            SnackbarResult.Dismissed -> {
-                clearSnackbarOptions()
-            }
-
-            SnackbarResult.ActionPerformed -> {
-                clearSnackbarOptions()
-            }
-        }
+        clearSnackbarOptions()
     }
 
     fun clearSnackbarOptions() {
