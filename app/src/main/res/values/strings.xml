@@ -358,7 +358,7 @@
     <string name="notifications_no_active_balance">No active balance</string>
     <string name="default_notification_channel_id">notifications</string>
 
-    <string name="google_drive_backup_title">Google drive backup</string>
+    <string name="google_drive_backup_title">Google Drive backup</string>
     <string name="google_drive_backup_backed_up">Your account is backed up with Google Drive. If you lose your device, you can recover your account.</string>
     <string name="google_drive_backup_delete_btn">Delete Backup</string>
     <string name="google_drive_backup_not_backed_up">Your account is not backed up. If you lose your device, you will lose access to your account.</string>
@@ -421,9 +421,9 @@
 
     <string name="zk_identity_no_passport_title_1">Your</string>
     <string name="zk_identity_no_passport_title_2">ZK Identity</string>
-    <string name="zk_identity_no_passport_list_caption">Select IdentityType</string>
+    <string name="zk_identity_no_passport_list_caption">Select Identity Type</string>
     <string name="zk_identity_no_passport_list_item_1">Passport</string>
-    <string name="zk_identity_no_passport_list_item_2">ZK Liveness (PoH Killer)</string>
+    <string name="zk_identity_no_passport_list_item_2">ZK Liveness</string>
     <string name="zk_identity_no_passport_list_item_3">ID Card</string>
     <string name="zk_identity_no_passport_list_item_4">X Verified Badge</string>
     <string name="zk_identity_no_passport_list_item_5">Proof of employment</string>

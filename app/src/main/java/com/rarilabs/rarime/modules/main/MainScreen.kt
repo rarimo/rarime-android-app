@@ -29,6 +29,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -42,7 +43,6 @@ import com.rarilabs.rarime.modules.maintenanceScreen.MaintenanceScreen
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.components.AppLogo
 import com.rarilabs.rarime.ui.components.UiSnackbarDefault
 import com.rarilabs.rarime.ui.components.enter_program.EnterProgramFlow
 import com.rarilabs.rarime.ui.components.enter_program.UNSPECIFIED_PASSPORT_STEPS
@@ -107,7 +107,12 @@ fun AppLoadingScreen() {
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        AppLogo()
+        AppIcon(
+            modifier = Modifier,
+            id = R.drawable.ic_rarime,
+            size = 140.dp,
+            tint = RarimeTheme.colors.textPrimary
+        )
     }
 }
 
@@ -290,6 +295,7 @@ fun MainScreenContent(
             }
 
             AppBottomSheet(
+                shape = RectangleShape,
                 state = qrCodeState,
                 fullScreen = true,
                 isHeaderEnabled = false
