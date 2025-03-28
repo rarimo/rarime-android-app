@@ -152,10 +152,10 @@ fun NewIdentityScreen(
                     ?: throw IllegalStateException("No private key found")
 
                 savePrivateKey(pk)
-
-                delay(1000)
-                mainViewModel.tryLogin()
-                delay(1000)
+//
+//                delay(1000)
+//                mainViewModel.tryLogin()
+//                delay(1000)
 
                 if (invitationCodeState.text.isEmpty()) {
                     finishOnboarding("")
@@ -188,9 +188,9 @@ fun NewIdentityScreen(
                 newIdentityViewModel.backupPrivateKey(driveService, pk)
 
 
-                delay(1000)
-                mainViewModel.tryLogin()
-                delay(1000)
+//                delay(1000)
+//                mainViewModel.tryLogin()
+//                delay(1000)
 
                 if (invitationCodeState.text.isEmpty()) {
                     finishOnboarding("")
@@ -213,9 +213,9 @@ fun NewIdentityScreen(
             savePrivateKey(pk)
         }
 
-        delay(1000)
-        mainViewModel.tryLogin()
-        delay(1000)
+//        delay(1000)
+//        mainViewModel.tryLogin()
+//        delay(1000)
 
         if (invitationCodeState.text.isEmpty()) {
             finishOnboarding("")

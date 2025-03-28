@@ -9,9 +9,6 @@ import com.rarilabs.rarime.api.auth.AuthManager
 import com.rarilabs.rarime.api.points.models.BaseEvents
 import com.rarilabs.rarime.api.points.models.ClaimEventBody
 import com.rarilabs.rarime.api.points.models.ClaimEventData
-import com.rarilabs.rarime.api.points.models.CreateBalanceAttributes
-import com.rarilabs.rarime.api.points.models.CreateBalanceBody
-import com.rarilabs.rarime.api.points.models.CreateBalanceData
 import com.rarilabs.rarime.api.points.models.JoinRewardsProgramRequest
 import com.rarilabs.rarime.api.points.models.JoinRewardsProgramRequestAttributes
 import com.rarilabs.rarime.api.points.models.JoinRewardsProgramRequestData
@@ -58,25 +55,25 @@ class PointsManager @Inject constructor(
     private val secureSharedPrefsManager: SecureSharedPrefsManager
 ) {
     suspend fun createPointsBalance(referralCode: String?) {
-        val userNullifierHex = identityManager.getUserPointsNullifierHex()
-
-        if (userNullifierHex.isEmpty()) {
-            throw Exception("user nullifier is null")
-        }
-
-        withContext(Dispatchers.IO) {
-            pointsAPIManager.createPointsBalance(
-                CreateBalanceBody(
-                    data = CreateBalanceData(
-                        id = userNullifierHex,
-                        type = "create_balance",
-                        attributes = CreateBalanceAttributes(
-                            referredBy = if (referralCode.isNullOrEmpty()) null else referralCode
-                        )
-                    )
-                ), "Bearer ${authManager.accessToken.value!!}"
-            )
-        }
+//        val userNullifierHex = identityManager.getUserPointsNullifierHex()
+//
+//        if (userNullifierHex.isEmpty()) {
+//            throw Exception("user nullifier is null")
+//        }
+//
+//        withContext(Dispatchers.IO) {
+//            pointsAPIManager.createPointsBalance(
+//                CreateBalanceBody(
+//                    data = CreateBalanceData(
+//                        id = userNullifierHex,
+//                        type = "create_balance",
+//                        attributes = CreateBalanceAttributes(
+//                            referredBy = if (referralCode.isNullOrEmpty()) null else referralCode
+//                        )
+//                    )
+//                ), "Bearer ${authManager.accessToken.value!!}"
+//            )
+//        }
     }
 
 

@@ -18,15 +18,11 @@ import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.ui.components.SnackbarShowOptions
 import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 enum class AppLoadingStates {
@@ -125,6 +121,8 @@ class MainViewModel @Inject constructor(
 
 
     suspend fun initApp() = coroutineScope {
+
+        appLoadingState.value = AppLoadingStates.LOADING
         // 1. Early checks
         if (pointsManager.getMaintenanceStatus()) {
             appLoadingState.value = AppLoadingStates.MAINTENANCE
@@ -136,7 +134,6 @@ class MainViewModel @Inject constructor(
         }
 
         // 2. Set loading state
-        appLoadingState.value = AppLoadingStates.LOADING
 
         val clearLogsJob = launch {
             if (!isLogsDeleted.value) {
@@ -149,34 +146,35 @@ class MainViewModel @Inject constructor(
             }
         }
 
-        val initJob = launch {
-            try {
-                tryLogin()
-                loadUserDetails()
-                appLoadingState.value = AppLoadingStates.LOADED
-            } catch (e: Exception) {
-                appLoadingState.value = AppLoadingStates.LOAD_FAILED
-                ErrorHandler.logError("MainScreen", "Failed to init app", e)
-            }
-        }
+//        val initJob = launch {
+//            try {
+//                tryLogin()
+//                loadUserDetails()
+//                appLoadingState.value = AppLoadingStates.LOADED
+//            } catch (e: Exception) {
+//                appLoadingState.value = AppLoadingStates.LOAD_FAILED
+//                ErrorHandler.logError("MainScreen", "Failed to init app", e)
+//            }
+//        }
 
-        initJob.join()
+//        initJob.join()
         clearLogsJob.join()
+        appLoadingState.value = AppLoadingStates.LOADED
     }
 
-    private suspend fun loadUserDetails() = coroutineScope {
-        val walletDeferred = async { walletManager.loadBalances() }
-        val passportDeferred = async { passportManager.loadPassportStatus() }
+//    private suspend fun loadUserDetails() = coroutineScope {
+//        val walletDeferred = async { walletManager.loadBalances() }
+//        val passportDeferred = async { passportManager.loadPassportStatus() }
+//
+//        awaitAll(walletDeferred, passportDeferred)
+//    }
 
-        awaitAll(walletDeferred, passportDeferred)
-    }
-
-    suspend fun tryLogin() = runCatching {
-        authManager.login()
-    }.onFailure { e ->
-        // Single point to handle the exception
-        ErrorHandler.logError("MainViewModel", "Failed to login", e)
-    }
+//    suspend fun tryLogin() = runCatching {
+//        authManager.login()
+//    }.onFailure { e ->
+//        // Single point to handle the exception
+//        ErrorHandler.logError("MainViewModel", "Failed to login", e)
+//    }
 
     fun setModalContent(content: @Composable () -> Unit?) {
         _modalContent.value = content
@@ -213,10 +211,10 @@ class MainViewModel @Inject constructor(
     }
 
     suspend fun finishIntro() {
-        withContext(Dispatchers.IO) {
-            tryLogin()
-            loadUserDetails()
-        }
+//        withContext(Dispatchers.IO) {
+//            tryLogin()
+//            loadUserDetails()
+//        }
     }
 
     suspend fun acceptInvitation(code: String) {

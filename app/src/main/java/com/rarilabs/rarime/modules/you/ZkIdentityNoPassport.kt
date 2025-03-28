@@ -102,7 +102,7 @@ fun ZkIdentityNoPassport(
             IdentityItemData(
                 iconId = R.drawable.ic_body_scan_fill,
                 nameResId = R.string.zk_identity_no_passport_list_item_2,
-                isActive = true,
+                isActive = false,
                 iconSize = 24,
                 onClick = {
                     currentScreen = IdentityScreenType.LIVENESS
