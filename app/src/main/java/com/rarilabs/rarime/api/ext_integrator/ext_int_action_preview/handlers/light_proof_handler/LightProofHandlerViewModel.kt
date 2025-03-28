@@ -43,7 +43,7 @@ class LightProofHandlerViewModel @Inject constructor(
     val requestMinimumAge: StateFlow<Int>
         get() = _requestMinimumAge.asStateFlow()
 
-    private val _requestCitizenship = MutableStateFlow<String>("")
+    private val _requestCitizenship = MutableStateFlow("")
     val requestCitizenship: StateFlow<String>
         get() = _requestCitizenship.asStateFlow()
 

@@ -34,7 +34,6 @@ import org.jmrtd.lds.icao.MRZInfo
 @Composable
 fun RevocationStep(
     mrzData: MRZInfo,
-
     onNext: () -> Unit,
     onClose: () -> Unit,
     onError: () -> Unit,

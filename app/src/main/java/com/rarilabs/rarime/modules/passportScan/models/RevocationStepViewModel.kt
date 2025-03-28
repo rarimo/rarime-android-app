@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
+import com.rarilabs.rarime.manager.ProofGenerationManager
 import com.rarilabs.rarime.modules.passportScan.nfc.NfcUseCase
 import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,6 +19,7 @@ class RevocationStepViewModel @Inject constructor(
     private val nfcManager: NfcManager,
     private val identityManager: IdentityManager,
     private val registrationManager: RegistrationManager,
+    private val proofGenerationManager: ProofGenerationManager
 ) : ViewModel() {
     val revocationCallData = registrationManager.revocationCallData
 

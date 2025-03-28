@@ -165,7 +165,9 @@ fun MainScreenRoutes(
             }
 
             composable(Screen.NotificationsList.route) {
-                NotificationsScreen(onBack = { navController.popBackStack() })
+                ScreenInsetsContainer {
+                    NotificationsScreen(onBack = { navController.popBackStack() })
+                }
             }
 
             composable(Screen.EnableBiometrics.route) {
@@ -191,33 +193,38 @@ fun MainScreenRoutes(
 
             //Scan Flow
             composable(Screen.ScanPassport.ScanPassportSpecific.route) {
-                ScanPassportScreen(
-                    onClose = {
-                        coroutineScope.launch {
-                            navController.popBackStack()
+                ScreenInsetsContainer {
+
+                    ScanPassportScreen(
+                        onClose = {
+                            coroutineScope.launch {
+                                navController.popBackStack()
+                            }
+                        },
+                        onClaim = {
+                            coroutineScope.launch {
+                                navigateWithPopUp(Screen.Claim.Specific.route)
+                            }
                         }
-                    },
-                    onClaim = {
-                        coroutineScope.launch {
-                            navigateWithPopUp(Screen.Claim.Specific.route)
-                        }
-                    }
-                )
+                    )
+                }
             }
 
             composable(Screen.ScanPassport.ScanPassportPoints.route) {
-                ScanPassportScreen(
-                    onClose = {
-                        coroutineScope.launch {
-                            navigateWithPopUp(Screen.Main.route)
+                ScreenInsetsContainer {
+                    ScanPassportScreen(
+                        onClose = {
+                            coroutineScope.launch {
+                                navigateWithPopUp(Screen.Main.Identity.route)
+                            }
+                        },
+                        onClaim = {
+                            coroutineScope.launch {
+                                navigateWithPopUp(Screen.Claim.Reserve.route)
+                            }
                         }
-                    },
-                    onClaim = {
-                        coroutineScope.launch {
-                            navigateWithPopUp(Screen.Claim.Reserve.route)
-                        }
-                    }
-                )
+                    )
+                }
             }
 
             composable(Screen.Claim.Specific.route) {
@@ -241,6 +248,7 @@ fun MainScreenRoutes(
                     AuthGuard(navigate = simpleNavigate) {
                         HomeScreen(
                             navigate = simpleNavigate,
+                            navigateWithPopUp = navigateWithPopUp,
                             sharedTransitionScope = this@SharedTransitionLayout,
                             setVisibilityOfBottomBar = { mainViewModel.setBottomBarVisibility(it) }
                         )

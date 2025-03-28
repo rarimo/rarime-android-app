@@ -50,11 +50,12 @@ enum class BottomTab(
         R.drawable.ic_qr_scan,
         R.drawable.ic_qr_scan
     ),
-    Wallet(
-        Screen.Main.Wallet.route,
-        R.drawable.ic_wallet,
-        R.drawable.ic_wallet_filled
-    ),
+
+    //    Wallet(
+//        Screen.Main.Wallet.route,
+//        R.drawable.ic_wallet,
+//        R.drawable.ic_wallet_filled
+//    ),
     Profile(
         Screen.Main.Profile.route,
         R.drawable.ic_user,
@@ -66,7 +67,8 @@ enum class BottomTab(
 fun BottomTabBar(
     modifier: Modifier = Modifier,
     currentRoute: String?,
-    onRouteSelected: (String) -> Unit
+    onRouteSelected: (String) -> Unit,
+    onQrCodeRouteSelected: (String) -> Unit
 ) {
     Box(
         modifier = modifier.fillMaxWidth()
@@ -83,7 +85,8 @@ fun BottomTabBar(
                 TabItem(
                     tab = tab,
                     isSelected = currentRoute == tab.route,
-                    onTabSelected = { onRouteSelected(it.route) }
+                    onTabSelected = { onRouteSelected(it.route) },
+                    onQrCodeRouteSelected = { onQrCodeRouteSelected(it.route) }
                 )
             }
         }
@@ -95,6 +98,7 @@ private fun TabItem(
     tab: BottomTab,
     isSelected: Boolean,
     onTabSelected: (BottomTab) -> Unit,
+    onQrCodeRouteSelected: (BottomTab) -> Unit
 ) {
     val animatedColor by animateColorAsState(
         if (isSelected) RarimeTheme.colors.componentPrimary else Color.Transparent,
@@ -109,6 +113,9 @@ private fun TabItem(
             .background(animatedColor)
             .pointerInput(Unit) {
                 detectTapGestures {
+                    if (tab.route == Screen.Main.QrScan.route) {
+                        onQrCodeRouteSelected(tab)
+                    }
                     onTabSelected(tab)
                 }
             },
@@ -129,5 +136,5 @@ private fun BottomTabBarPreview() {
     BottomTabBar(
         currentRoute = selectedTab.route,
         onRouteSelected = { route -> selectedTab = BottomTab.entries.first { it.route == route } }
-    )
+    ) {}
 }

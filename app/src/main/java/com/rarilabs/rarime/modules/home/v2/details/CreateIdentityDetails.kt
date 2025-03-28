@@ -60,7 +60,7 @@ fun CreateIdentityDetails(
             Column {
                 Text(
                     style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.textSecondary,
+                    color = RarimeTheme.colors.baseBlack.copy(alpha = 0.5f),
                     text = "This app is where you privately store your digital identities, enabling you to go incognito across the web."
                 )
 
@@ -92,7 +92,7 @@ private fun CreateIdentityDetailsPreview() {
             sharedTransitionScope = state,
             animatedContentScope = anim,
             innerPaddings = mapOf(ScreenInsets.TOP to 23, ScreenInsets.BOTTOM to 12),
-            onBack = {})
-
+            onBack = {}
+        )
     }
 }

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">RariMe</string>
-    <string name="intro_step_1_title">Welcome</string>
-    <string name="intro_step_1_text">This app is where you privately store your digital identities, enabling you to go incognito across the web.</string>
+    <string name="intro_step_1_title">RariMe</string>
+    <string name="intro_step_1_text">Welcome to</string>
     <string name="intro_step_2_title">Go Incognito</string>
     <string name="intro_step_2_text">RariMe ensures your history, reputation and actions are not lost, and remain under your control.</string>
     <string name="intro_step_3_title">Proofs</string>
@@ -275,9 +275,7 @@
     <string name="create_identity_selector_title">Get Started</string>
     <string name="create_identity_selector_subtitle">Select an authorization method</string>
     <string name="create_identity_selector_option_1">Create a new identity</string>
-    <string name="create_identity_selector_option_1_subtitle">Generate new keys</string>
     <string name="create_identity_selector_option_2">Re-activate old profile</string>
-    <string name="create_identity_selector_option_2_subtitle">Uses pregenerated keys or iCloud</string>
 
     <string name="create_identity_continue_btn">Continue</string>
     <string name="create_identity_creating_btn">Creating...</string>
@@ -426,7 +424,22 @@
     <string name="zk_identity_no_passport_list_caption">Select IdentityType</string>
     <string name="zk_identity_no_passport_list_item_1">Passport</string>
     <string name="zk_identity_no_passport_list_item_2">ZK Liveness (PoH Killer)</string>
-    <string name="zk_identity_no_passport_list_item_3">Driver License</string>
-    <string name="zk_identity_no_passport_list_item_4">Driver License</string>
-    <string name="zk_identity_no_passport_list_item_5">Driver License</string>
+    <string name="zk_identity_no_passport_list_item_3">ID Card</string>
+    <string name="zk_identity_no_passport_list_item_4">X Verified Badge</string>
+    <string name="zk_identity_no_passport_list_item_5">Proof of employment</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="error">Error</string>
+    <string name="retry">Retry</string>
+    <string name="please_try_again">Please try again</string>
+    <string name="please_don_t_close_application">Please don’t close application</string>
+    <string name="downloading">Downloading</string>
+    <string name="applying_zk">Applying ZK</string>
+    <string name="creating">Creating</string>
+    <string name="finishing">Finishing</string>
+    <string name="select_icon_description">Select icon</string>
+    <string name="from_json_test_only">FROM JSON (TEST ONLY)</string>
+    <string name="passport">passport</string>
+    <string name="you">You</string>
+    <string name="hi">Hi</string>
+    <string name="stranger">Stranger</string>
 </resources>

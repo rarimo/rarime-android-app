@@ -28,6 +28,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.ButtonSize
+import com.rarilabs.rarime.ui.components.AppBackgroundGradient
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -43,11 +44,11 @@ fun ZkLiveness(modifier: Modifier = Modifier, navigate: (String) -> Unit) {
 
 @Composable
 private fun ZkLivenessContent(
-    // TODO: Implement navigate
     navigate: (String) -> Unit,
     innerPaddings: Map<ScreenInsets, Number>,
     modifier: Modifier = Modifier
 ) {
+    AppBackgroundGradient()
     Column(
         verticalArrangement = Arrangement.Bottom, modifier = modifier
             .padding(
@@ -66,7 +67,7 @@ private fun ZkLivenessContent(
             modifier = Modifier.fillMaxWidth(),
             size = ButtonSize.Large,
             text = stringResource(R.string.zk_liveness_btn),
-            onClick = { TODO("Implement onClick handler") },
+            onClick = { },
         )
     }
 }
@@ -81,7 +82,9 @@ private fun LivenessTitle(modifier: Modifier = Modifier) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = stringResource(R.string.zk_liveness_title), style = RarimeTheme.typography.h2
+            text = stringResource(R.string.zk_liveness_title),
+            style = RarimeTheme.typography.h2,
+            color = RarimeTheme.colors.textPrimary
         )
     }
 }
@@ -115,7 +118,11 @@ private fun LivenessRow(
         modifier = modifier.fillMaxWidth()
     ) {
         LivenessIcon(iconId = iconId, containerSize = 40.dp, iconSize = 24.dp)
-        Text(text = stringResource(labelId), style = RarimeTheme.typography.body3)
+        Text(
+            text = stringResource(labelId),
+            style = RarimeTheme.typography.body3,
+            color = RarimeTheme.colors.textPrimary
+        )
     }
 }
 
@@ -129,7 +136,7 @@ private fun LivenessIcon(@DrawableRes iconId: Int, containerSize: Dp, iconSize: 
     ) {
         AppIcon(
             id = iconId,
-            tint = RarimeTheme.colors.textPrimary,
+            tint = RarimeTheme.colors.baseBlack,
             size = iconSize,
         )
     }

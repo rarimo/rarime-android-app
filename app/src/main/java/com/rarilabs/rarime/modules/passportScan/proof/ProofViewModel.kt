@@ -83,7 +83,6 @@ class ProofViewModel @Inject constructor(
 
     suspend fun joinRewardProgram(eDocument: EDocument) {
         val res = pointsManager.joinRewardProgram(eDocument)
-        res
     }
 
     private var _progress = MutableStateFlow(0)

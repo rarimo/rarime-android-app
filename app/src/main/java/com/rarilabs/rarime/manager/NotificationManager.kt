@@ -15,9 +15,11 @@ class NotificationManager @Inject constructor(
 ) {
     private val _notificationsList = MutableStateFlow<List<NotificationEntityData>>(emptyList())
 
-
     val notificationList: StateFlow<List<NotificationEntityData>>
-        get() = _notificationsList.asStateFlow()
+        get() {
+            loadNotificationsSync()
+            return _notificationsList.asStateFlow()
+        }
 
     suspend fun readNotifications(notificationEntityData: NotificationEntityData) {
         if (notificationEntityData.isActive) {
@@ -74,7 +76,7 @@ class NotificationManager @Inject constructor(
         }
     }
 
-    fun loadNotificationsSync() {
+    private fun loadNotificationsSync() {
         runBlocking {
             _notificationsList.value = notificationsRepository.getAllNotifications()
         }

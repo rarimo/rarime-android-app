@@ -89,7 +89,7 @@ class RarimeColors(
     gradient4: Brush,
     gradient5: Brush,
     gradient6: Brush,
-    ) {
+) {
     var primaryDarker by mutableStateOf(primaryDarker, structuralEqualityPolicy())
         internal set
     var primaryDark by mutableStateOf(primaryDark, structuralEqualityPolicy())
@@ -257,8 +257,10 @@ class RarimeColors(
         gradient4: Brush = this.gradient4,
         gradient5: Brush = this.gradient5,
         gradient6: Brush = this.gradient6,
+        invertedDark: Color = this.invertedDark,
+        invertedLight: Color = this.invertedLight
 
-    ) = RarimeColors(
+        ) = RarimeColors(
         primaryDarker = primaryDarker,
         primaryDark = primaryDark,
         primaryMain = primaryMain,
@@ -356,6 +358,8 @@ class RarimeColors(
         this.backgroundPure = other.backgroundPure
         this.baseBlack = other.baseBlack
         this.baseWhite = other.baseWhite
+        this.invertedDark = other.invertedDark
+        this.invertedLight = other.invertedLight
     }
 }
 

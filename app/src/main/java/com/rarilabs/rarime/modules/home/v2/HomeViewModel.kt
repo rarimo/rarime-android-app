@@ -13,8 +13,6 @@ import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,17 +33,21 @@ class HomeViewModel @Inject constructor(
 
     val pointsToken = walletManager.pointsToken
 
+    val passport = passportManager.passport
+
     private var _pointsEventData = MutableStateFlow<PointsEventData?>(null)
+
+    val notifications = notificationManager.notificationList
 
     val pointsEventData: StateFlow<PointsEventData?>
         get() = _pointsEventData.asStateFlow()
 
 
     suspend fun initHomeData() = withContext(Dispatchers.IO) {
-        coroutineScope {
-            val pointsDeferred = async { loadPointsEvent() }
-            pointsDeferred.await()
-        }
+//        coroutineScope {
+//            val pointsDeferred = async { loadPointsEvent() }
+//            pointsDeferred.await()
+//        }
     }
 
     suspend fun loadPointsEvent() {

@@ -1,32 +1,32 @@
 package com.rarilabs.rarime.modules.you
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+
+val LocalZkIdentityScreenViewModel =
+    compositionLocalOf<ZkIdentityScreenViewModel> { error("No ZkIdentityScreenViewModel provided") }
+
 
 @Composable
-fun ZkIdentityScreen(modifier: Modifier = Modifier, navigate: (String) -> Unit) {
+fun ZkIdentityScreen(
+    modifier: Modifier = Modifier,
+    navigate: (String) -> Unit,
+    zkIdentityScreenViewModel: ZkIdentityScreenViewModel = hiltViewModel()
+) {
 
-    /*
-    * TODO: Same logic like in card
-    */
+    val passport by zkIdentityScreenViewModel.passport.collectAsState()
 
-    //TODO: Get scan passport Status
-    val isScanned = remember { false }
-
-    if (isScanned) {
-        ZkIdentityPassport(navigate = navigate)
-    } else {
-        ZkIdentityNoPassport(navigate = navigate)
+    CompositionLocalProvider(LocalZkIdentityScreenViewModel provides zkIdentityScreenViewModel) {
+        if (passport != null) {
+            ZkIdentityPassport(navigate = navigate)
+        } else {
+            ZkIdentityNoPassport(navigate = navigate)
+        }
     }
 
-
-}
-
-
-@Preview(showBackground = true)
-@Composable
-private fun ZkIdentityScreenPreview() {
-    ZkIdentityScreen {}
 }

@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.modules.votes
 
-import android.net.Uri
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -40,6 +39,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.v2.details.BaseDetailsScreen
@@ -107,7 +107,7 @@ fun VotesScreen(
         },
         innerPaddings = innerPaddings,
         onProposalScanned = {
-            val uri = Uri.parse(it)
+            val uri = it.toUri()
 
             mainViewModel.setExtIntDataURI(uri)
         }

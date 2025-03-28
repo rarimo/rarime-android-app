@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.api.registration.models.LightRegistrationData
+import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.WalletManager
@@ -50,6 +51,7 @@ class ScanPassportScreenViewModel @Inject constructor(
     fun savePassport() {
         registrationManager.eDocument.value?.let {
             passportManager.setPassport(eDocument.value)
+            passportManager.updatePassportStatus(status = PassportStatus.UNREGISTERED)
         }
     }
 

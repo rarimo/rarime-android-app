@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.ui.components
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -28,15 +30,15 @@ fun UiLinearProgressBar(
         RarimeTheme.colors.primaryMain
     ),
 ) {
-
-    Box (
-        modifier = backgroundModifier
+    Box(
+        modifier = Modifier
             .fillMaxWidth()
             .height(8.dp)
             .background(backgroundColor)
+            .then(backgroundModifier)
     ) {
-        Box (
-            modifier = trackModifier
+        Box(
+            modifier = Modifier
                 .fillMaxHeight()
                 .clip(RoundedCornerShape(100.dp))
                 .background(
@@ -45,6 +47,7 @@ fun UiLinearProgressBar(
                     )
                 )
                 .fillMaxWidth(percentage)
+                .then(trackModifier)
         )
     }
 }

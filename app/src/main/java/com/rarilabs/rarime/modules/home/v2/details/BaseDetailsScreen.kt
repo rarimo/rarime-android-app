@@ -17,12 +17,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -102,6 +105,7 @@ fun BaseDetailsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .width(40.dp)
+                        .clip(CircleShape)
                         .height(40.dp)
                         .background(RarimeTheme.colors.componentPrimary, CircleShape)
                         .clickable { onBack.invoke() }
@@ -109,7 +113,14 @@ fun BaseDetailsScreen(
                     AppIcon(
                         id = R.drawable.ic_close,
                         size = 20.dp,
-                        tint = RarimeTheme.colors.textPrimary.also { it.alpha },
+                        tint = RarimeTheme.colors.baseBlack,
+                        modifier = Modifier
+                            .background(
+                                color = RarimeTheme.colors.baseBlack.copy(
+                                    alpha = 0.05f
+                                )
+                            )
+                            .padding(10.dp)
                     )
                 }
             }
@@ -132,11 +143,20 @@ fun BaseDetailsScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Column(modifier = Modifier.padding(top = 20.dp, start = 24.dp, end = 24.dp)) {
+            // TODO: Recheck scroll for voting screen
+            Column(
+                modifier = Modifier
+                    .padding(
+                        top = 20.dp,
+                        start = 24.dp,
+                        end = 24.dp
+                    )
+                    .verticalScroll(rememberScrollState())
+            ) {
 
                 Text(
                     style = RarimeTheme.typography.h1,
-                    color = RarimeTheme.colors.textPrimary,
+                    color = RarimeTheme.colors.baseBlack,
                     text = properties.header,
                     modifier = Modifier.sharedBounds(
                         rememberSharedContentState(
@@ -148,7 +168,7 @@ fun BaseDetailsScreen(
                 Text(
                     style = RarimeTheme.typography.additional1,
                     text = properties.subTitle,
-                    color = RarimeTheme.colors.textSecondary,
+                    color = RarimeTheme.colors.baseBlack.copy(alpha = 0.4f),
                     modifier = Modifier
                         .sharedBounds(
                             rememberSharedContentState(
@@ -158,15 +178,9 @@ fun BaseDetailsScreen(
                         .skipToLookaheadSize(),
                 )
 
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 24.dp, vertical = 8.dp)
-            ) {
+                Spacer(modifier = Modifier.height(24.dp))
                 footer()
+                Spacer(modifier = Modifier.height(24.dp))
             }
 
         }
