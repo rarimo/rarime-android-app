@@ -23,6 +23,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -66,6 +67,7 @@ fun AppBottomSheet(
     modifier: Modifier = Modifier,
     state: AppSheetState = rememberAppSheetState(false),
     fullScreen: Boolean = false,
+    shape: Shape = BottomSheetDefaults.ExpandedShape,
     isHeaderEnabled: Boolean = true,
     scrimColor: Color = BottomSheetDefaults.ScrimColor,
     content: @Composable (HideSheetFn) -> Unit
@@ -87,6 +89,7 @@ fun AppBottomSheet(
         ModalBottomSheet(
             modifier = modifier,
             sheetState = modalState,
+            shape = shape,
             dragHandle = null,
             containerColor = RarimeTheme.colors.backgroundPure,
             onDismissRequest = { state.hide() },

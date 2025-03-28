@@ -29,6 +29,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -290,6 +291,7 @@ fun MainScreenContent(
             }
 
             AppBottomSheet(
+                shape = RectangleShape,
                 state = qrCodeState,
                 fullScreen = true,
                 isHeaderEnabled = false

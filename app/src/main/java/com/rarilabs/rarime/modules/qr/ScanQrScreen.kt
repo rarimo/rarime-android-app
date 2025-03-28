@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.RoundRect
@@ -43,9 +44,8 @@ fun ScanQrScreen(onBack: () -> Unit, onScan: (String) -> Unit) {
 
 @Composable
 fun ScanQrScreenContent(onBack: () -> Unit, onScan: (String) -> Unit) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().clipToBounds()) {
         ScanQrProcessor(
-            modifier = Modifier.zIndex(1f),
             onCompletion = onScan
         )
         Box(modifier = Modifier
