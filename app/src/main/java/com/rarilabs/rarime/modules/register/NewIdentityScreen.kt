@@ -154,7 +154,7 @@ fun NewIdentityScreen(
                 savePrivateKey(pk)
 //
 //                delay(1000)
-//                mainViewModel.tryLogin()
+                //             mainViewModel.tryLogin()
 //                delay(1000)
 
                 if (invitationCodeState.text.isEmpty()) {
@@ -338,7 +338,8 @@ fun NewIdentityScreenContent(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(24.dp),
                 ) {
-                    PrimaryButton(modifier = Modifier.fillMaxWidth(),
+                    PrimaryButton(
+                        modifier = Modifier.fillMaxWidth(),
                         size = ButtonSize.Large,
                         text = if (isSubmitting) {
                             stringResource(R.string.create_identity_creating_btn)

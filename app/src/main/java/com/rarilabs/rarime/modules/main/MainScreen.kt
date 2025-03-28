@@ -12,10 +12,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -184,7 +185,6 @@ fun MainScreenContent(
                 if (currentPointsToken?.balanceDetails?.attributes == null) {
                     currentEnterProgramSheetState.show()
                 } else {
-                    //TODO: should be return from here
                     navController.navigate(route) {
                         popUpTo(navController.graph.id) { inclusive = true }
                         restoreState = true
@@ -220,11 +220,25 @@ fun MainScreenContent(
             },
 
             snackbarHost = {
-                SnackbarHost(hostState = snackbarHostState) {
-                    snackbarContent?.let { snackContent ->
-                        Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                // Замість SnackbarHost, просто показуй кастомний snackbar
+                snackbarContent?.let { snackContent ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp)
+                    ) {
+                        UiSnackbarDefault(snackContent)
 
-                            UiSnackbarDefault(snackContent)
+                        // Автоматичне зникнення
+                        LaunchedEffect(snackContent) {
+                            kotlinx.coroutines.delay(
+                                when (snackContent.duration) {
+                                    SnackbarDuration.Short -> 2000
+                                    SnackbarDuration.Long -> 4000
+                                    SnackbarDuration.Indefinite -> Long.MAX_VALUE
+                                }
+                            )
+                            mainViewModel.clearSnackbarOptions()
                         }
                     }
                 }
