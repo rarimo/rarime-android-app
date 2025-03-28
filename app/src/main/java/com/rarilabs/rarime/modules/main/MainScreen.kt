@@ -43,7 +43,6 @@ import com.rarilabs.rarime.modules.maintenanceScreen.MaintenanceScreen
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.components.AppLogo
 import com.rarilabs.rarime.ui.components.UiSnackbarDefault
 import com.rarilabs.rarime.ui.components.enter_program.EnterProgramFlow
 import com.rarilabs.rarime.ui.components.enter_program.UNSPECIFIED_PASSPORT_STEPS
@@ -108,7 +107,12 @@ fun AppLoadingScreen() {
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        AppLogo()
+        AppIcon(
+            modifier = Modifier,
+            id = R.drawable.ic_rarime,
+            size = 140.dp,
+            tint = RarimeTheme.colors.textPrimary
+        )
     }
 }
 
