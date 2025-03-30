@@ -3,17 +3,13 @@ package com.rarilabs.rarime.manager
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.Gson
-import com.rarilabs.rarime.BuildConfig
 import com.rarilabs.rarime.api.cosmos.CosmosManager
 import com.rarilabs.rarime.api.erc20.Erc20Manager
 import com.rarilabs.rarime.api.points.PointsManager
-import com.rarilabs.rarime.data.RarimoChains
 import com.rarilabs.rarime.data.tokens.PointsToken
-import com.rarilabs.rarime.data.tokens.RarimoToken
 import com.rarilabs.rarime.data.tokens.Token
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
-import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -69,17 +65,17 @@ class WalletManager @Inject constructor(
     private fun getWalletAssets(): List<WalletAsset> {
         return dataStoreManager.readWalletAssets(
             listOf(
-                WalletAsset(
-                    identityManager.rarimoAddress(), RarimoToken(
-                        chainInfo = if (BuildConfig.isTestnet) Constants.RARIMO_CHAINS[RarimoChains.MainnetBeta.chainId]!! else Constants.RARIMO_CHAINS[RarimoChains.Mainnet.chainId]!!,
-                        identityManager, cosmosManager, dataStoreManager
-                    )
-                ),
 //                WalletAsset(
-//                    identityManager.getUserPointsNullifierHex(), PointsToken(
-//                        pointsManager = pointsManager
+//                    identityManager.rarimoAddress(), RarimoToken(
+//                        chainInfo = if (BuildConfig.isTestnet) Constants.RARIMO_CHAINS[RarimoChains.MainnetBeta.chainId]!! else Constants.RARIMO_CHAINS[RarimoChains.Mainnet.chainId]!!,
+//                        identityManager, cosmosManager, dataStoreManager
 //                    )
 //                ),
+                WalletAsset(
+                    identityManager.getUserPointsNullifierHex(), PointsToken(
+                        pointsManager = pointsManager
+                    )
+                ),
 //                WalletAsset(
 //                    identityManager.evmAddress(),
 //                    Erc20Token(

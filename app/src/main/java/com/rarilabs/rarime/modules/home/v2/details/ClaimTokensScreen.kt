@@ -117,8 +117,9 @@ fun TermsAndConditionsText() {
     ClickableText(
         modifier = Modifier.fillMaxWidth(),
         text = termsAnnotation,
+
         style = RarimeTheme.typography.body5.copy(
-            color = RarimeTheme.colors.textSecondary,
+            color = RarimeTheme.colors.baseBlack.copy(alpha = 0.5f),
             textAlign = TextAlign.Center
         ),
         onClick = {

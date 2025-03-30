@@ -48,6 +48,7 @@ class HomeViewModel @Inject constructor(
     suspend fun initHomeData() = withContext(Dispatchers.IO) {
         coroutineScope {
             try {
+                walletManager.loadBalances()
                 val pointsDeferred = async { loadPointsEvent() }
                 pointsDeferred.await()
             } catch (e: Exception) {
