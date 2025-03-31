@@ -101,7 +101,7 @@ fun HomeScreen(
     }
     val currentPointsBalance = pointsBalance?.balanceDetails?.attributes?.amount
     val firstReferralCode = remember(pointsBalance) {
-        pointsBalance?.balanceDetails?.attributes?.referral_codes?.first { it.status == ReferralCodeStatuses.ACTIVE.value }?.id
+        pointsBalance?.balanceDetails?.attributes?.referral_codes?.firstOrNull { it.status == ReferralCodeStatuses.ACTIVE.value }?.id
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
