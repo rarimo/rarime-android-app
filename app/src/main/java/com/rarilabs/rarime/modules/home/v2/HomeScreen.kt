@@ -184,21 +184,21 @@ fun HomeScreenContent(
     val cardContent = remember {
         mutableListOf(
 //
-//            CardContent(
-//                type = CardType.FREEDOMTOOL,
-//                properties = CardProperties(
-//                    header = "Freedomtool",
-//                    subTitle = "Voting",
-//                    icon = R.drawable.ic_check_unframed,
-//                    image = R.drawable.freedomtool_bg,
-//                    backgroundGradient = Brush.linearGradient(
-//                        colors = listOf(
-//                            Color(0xFFD5FEC8), Color(0xFF80ed99)
-//                        )
-//                    )
-//                ),
-//                onCardClick = {},
-//            ),
+            CardContent(
+                type = CardType.FREEDOMTOOL,
+                properties = CardProperties(
+                    header = "Freedomtool",
+                    subTitle = "Voting",
+                    icon = R.drawable.ic_check_unframed,
+                    image = R.drawable.freedomtool_bg,
+                    backgroundGradient = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFFD5FEC8), Color(0xFF80ed99)
+                        )
+                    )
+                ),
+                onCardClick = {},
+            ),
 //            CardContent(
 //                type = CardType.UNFORGETTABLE_WALLET, properties = CardProperties(
 //                    header = "An Unforgettable",

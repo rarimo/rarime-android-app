@@ -18,9 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -93,12 +91,10 @@ fun VotesScreen(
         onBack = onBack,
         sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = animatedContentScope,
-
         activeVotes = activeVotes,
         activeVotesLoading = activeVotesLoading,
         historyVotes = historyVotes,
         historyVotesLoading = historyVotesLoading,
-
         qrCodeScanner = { onBackCb, onScanCb ->
             ScanQrScreen(
                 onBack = { onBackCb.invoke() },
@@ -123,12 +119,10 @@ fun VotesScreenContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
     innerPaddings: Map<ScreenInsets, Number>,
-
     activeVotes: List<VoteData>,
     activeVotesLoading: Boolean,
     historyVotes: List<VoteData>,
     historyVotesLoading: Boolean,
-
     qrCodeScanner: @Composable (onBackCb: () -> Unit, onScanCb: (String) -> Unit) -> Unit = { _, _ -> },
     onProposalScanned: (String) -> Unit,
 ) {
@@ -152,8 +146,7 @@ fun VotesScreenContent(
     } else {
         BaseDetailsScreen(
             innerPaddings = innerPaddings,
-            modifier = modifier
-                .verticalScroll(rememberScrollState()),
+            modifier = modifier,
             properties = props,
             sharedTransitionScope = sharedTransitionScope,
             animatedContentScope = animatedContentScope,

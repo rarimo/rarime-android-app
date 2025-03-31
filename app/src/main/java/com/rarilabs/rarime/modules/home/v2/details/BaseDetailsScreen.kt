@@ -86,6 +86,7 @@ fun BaseDetailsScreen(
                 )
                 .fillMaxSize()
                 .zIndex(123f)
+                .verticalScroll(rememberScrollState())
                 .padding(
                     top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp + 12.dp,
                     bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp
@@ -151,7 +152,6 @@ fun BaseDetailsScreen(
                         start = 24.dp,
                         end = 24.dp
                     )
-                    .verticalScroll(rememberScrollState())
             ) {
 
                 Text(

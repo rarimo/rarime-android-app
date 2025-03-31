@@ -12,7 +12,6 @@ import javax.inject.Inject
 data class QuestionAnswerVariant(
     val id: String,
     val title: String,
-
     val votedCount: Double
 )
 
