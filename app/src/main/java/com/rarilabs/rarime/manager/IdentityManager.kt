@@ -2,14 +2,18 @@ package com.rarilabs.rarime.manager
 
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.registration.models.LightRegistrationData
+import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.data.ZkProof
 import com.rarilabs.rarime.util.decodeHexString
 import identity.Identity
 import identity.Profile
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.withContext
 import org.web3j.crypto.Credentials
 import java.math.BigInteger
 import javax.inject.Inject
@@ -18,8 +22,10 @@ import javax.inject.Singleton
 @Singleton
 @OptIn(ExperimentalStdlibApi::class)
 class IdentityManager @Inject constructor(
-    private val dataStoreManager: SecureSharedPrefsManager
-) {
+    private val dataStoreManager: SecureSharedPrefsManager,
+    private val rarimoContractManager: RarimoContractManager,
+
+    ) {
     private val _privateKey = MutableStateFlow(dataStoreManager.readPrivateKey())
     val privateKey: StateFlow<String?>
         get() = _privateKey.asStateFlow()
@@ -104,6 +110,38 @@ class IdentityManager @Inject constructor(
     fun savePrivateKey(pk: String) {
         _privateKey.value = pk
         dataStoreManager.savePrivateKey(pk)
+    }
+
+
+    @OptIn(ExperimentalStdlibApi::class)
+    suspend fun getPassportActiveIdentity(eDocument: EDocument): String? {
+
+        try {
+            val passportInfoKey: String? = if (eDocument.dg15?.isEmpty() == true) {
+                registrationProof.value?.pub_signals?.get(1)
+            } else {
+                registrationProof.value?.pub_signals?.get(0)
+            }
+
+            var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
+
+            if (passportInfoKeyBytes.size != 32) {
+                passportInfoKeyBytes = passportInfoKeyBytes.copyOf(32)
+            }
+
+
+            val stateKeeperContract = rarimoContractManager.getStateKeeper()
+
+            val passportInfoRaw = withContext(Dispatchers.IO) {
+                stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()
+            }
+
+            return passportInfoRaw.component1().activeIdentity.toHexString()
+        } catch (e: Exception) {
+            ErrorHandler.logError("getPassportActiveIdentity", e.message.toString(), e)
+            return null
+        }
+
     }
 
 

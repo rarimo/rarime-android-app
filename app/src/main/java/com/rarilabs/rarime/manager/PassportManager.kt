@@ -8,14 +8,11 @@ import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.Constants
-import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.data.ZkProof
 import identity.Identity
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.withContext
 import org.web3j.utils.Numeric
 import java.math.BigInteger
 import javax.inject.Inject
@@ -24,11 +21,10 @@ import javax.inject.Singleton
 @Singleton
 class PassportManager @Inject constructor(
     private val dataStoreManager: SecureSharedPrefsManager,
-    private val rarimoContractManager: RarimoContractManager,
-    private val identityManager: IdentityManager,
+    private val identityManager: IdentityManager
 ) {
-    var _passport = MutableStateFlow(dataStoreManager.readEDocument())
-        private set
+    private var _passport = MutableStateFlow(dataStoreManager.readEDocument())
+
     val passport: StateFlow<EDocument?>
         get() = _passport.asStateFlow()
 
@@ -44,7 +40,7 @@ class PassportManager @Inject constructor(
     var passportIdentifiers = mutableStateOf(dataStoreManager.readPassportIdentifiers())
         private set
 
-    private var _passportStatus = MutableStateFlow(PassportStatus.UNSCANNED)
+    private var _passportStatus = MutableStateFlow(dataStoreManager.readPassportStatus())
     val passportStatus: StateFlow<PassportStatus>
         get() = _passportStatus.asStateFlow()
 
@@ -57,7 +53,7 @@ class PassportManager @Inject constructor(
         return _passport.value?.personDetails?.nationality
     }
 
-    private fun updatePassportStatus(status: PassportStatus) {
+    fun updatePassportStatus(status: PassportStatus) {
         _passportStatus.value = status
         dataStoreManager.savePassportStatus(status)
     }
@@ -84,68 +80,45 @@ class PassportManager @Inject constructor(
         _passport.value = passport
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
-    suspend fun getPassportActiveIdentity(): String? {
-
-        try {
-            val passportInfoKey: String? = if (passport.value?.dg15?.isEmpty() == true) {
-                identityManager.registrationProof.value?.pub_signals?.get(1)
-            } else {
-                identityManager.registrationProof.value?.pub_signals?.get(0)
-            }
-
-            var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
-
-            if (passportInfoKeyBytes.size != 32) {
-                passportInfoKeyBytes = passportInfoKeyBytes.copyOf(32)
-            }
-
-
-            val stateKeeperContract = rarimoContractManager.getStateKeeper()
-
-            val passportInfoRaw = withContext(Dispatchers.IO) {
-                stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()
-            }
-
-            return passportInfoRaw.component1().activeIdentity.toHexString()
-        } catch (e: Exception) {
-            ErrorHandler.logError("getPassportActiveIdentity", e.message.toString(), e)
-            return null
-        }
-
-    }
-
     suspend fun loadPassportStatus() {
         if (passport.value == null) {
             return
         }
+
+        if (dataStoreManager.readPassportStatus() == PassportStatus.ALREADY_REGISTERED_BY_OTHER_PK)
+            return
+
+        if (dataStoreManager.readRegistrationProof() == null) {
+            updatePassportStatus(PassportStatus.UNREGISTERED)
+            return
+        }
+
         _isShowPassport.value = true
 
         val isInWaitlist = dataStoreManager.readIsInWaitlist()
 
         val isUnsupported =
             Constants.NOT_ALLOWED_COUNTRIES.contains(passport.value!!.personDetails?.nationality)
+
         var isIdentityCreated = false
 
         try {
-            val activeIdentity = getPassportActiveIdentity()
+            val activeIdentity = identityManager.getPassportActiveIdentity(passport.value!!)
 
-            isIdentityCreated = activeIdentity != null && activeIdentity.isNotEmpty()
+            isIdentityCreated = !activeIdentity.isNullOrEmpty()
         } catch (e: Exception) {
+
         }
 
         if (isInWaitlist) {
             updatePassportStatus(PassportStatus.WAITLIST)
-
             return
         }
 
         if (isIdentityCreated) {
             updatePassportStatus(if (isUnsupported) PassportStatus.NOT_ALLOWED else PassportStatus.ALLOWED)
-
             return
         }
-
         updatePassportStatus(if (isUnsupported) PassportStatus.WAITLIST_NOT_ALLOWED else PassportStatus.WAITLIST)
     }
 

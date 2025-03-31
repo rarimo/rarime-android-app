@@ -8,9 +8,12 @@ import com.rarilabs.rarime.api.registration.models.LightRegistrationData
 import com.rarilabs.rarime.api.registration.models.VerifySodResponse
 import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
 import com.rarilabs.rarime.contracts.rarimo.StateKeeper
+import com.rarilabs.rarime.data.enums.PassportStatus
+import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
+import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.data.ZkProof
 import com.rarilabs.rarime.util.decodeHexString
@@ -29,7 +32,8 @@ import javax.inject.Inject
 class RegistrationManager @Inject constructor(
     private val registrationAPIManager: RegistrationAPIManager,
     private val rarimoContractManager: RarimoContractManager,
-    private val passportManager: PassportManager
+    private val passportManager: PassportManager,
+    private val identityManager: IdentityManager
 ) {
     private var _masterCertProof = MutableStateFlow<Proof?>(null)
     val masterCertProof: StateFlow<Proof?>
@@ -291,6 +295,15 @@ class RegistrationManager @Inject constructor(
                 true,
                 getCircuitData()!!.buildName()
             )
+
+            identityManager.setRegistrationProof(registrationProof.value)
+
+            if (!NOT_ALLOWED_COUNTRIES.contains(eDocument.value!!.personDetails?.nationality)) {
+                passportManager.updatePassportStatus(PassportStatus.ALLOWED)
+            } else {
+                passportManager.updatePassportStatus(PassportStatus.NOT_ALLOWED)
+            }
+
         } catch (e: Exception) {
             ErrorHandler.logError("RevocationStepViewModel", "Error: $e", e)
             throw e

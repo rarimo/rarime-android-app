@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.structuralEqualityPolicy
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
 @Stable
@@ -30,6 +31,13 @@ class RarimeColors(
     successMain: Color,
     successLight: Color,
     successLighter: Color,
+
+    // info
+    infoDarker: Color,
+    infoDark: Color,
+    infoMain: Color,
+    infoLight: Color,
+    infoLighter: Color,
 
     // error
     errorDarker: Color,
@@ -60,16 +68,27 @@ class RarimeColors(
 
     // background
     backgroundPrimary: Color,
-    backgroundOpacity: Color,
+    backgroundContainer: Color,
+    backgroundBlur: Color,
+    backgroundSurface1: Color,
+    backgroundSurface2: Color,
     backgroundPure: Color,
 
     // base
     baseBlack: Color,
     baseWhite: Color,
 
+    // inverted
+    invertedDark: Color,
+    invertedLight: Color,
+
     // additional
-    additionalLayerBorder: Color,
-    additionalPureDark: Color,
+    gradient1: Brush,
+    gradient2: Brush,
+    gradient3: Brush,
+    gradient4: Brush,
+    gradient5: Brush,
+    gradient6: Brush,
 ) {
     var primaryDarker by mutableStateOf(primaryDarker, structuralEqualityPolicy())
         internal set
@@ -100,6 +119,16 @@ class RarimeColors(
     var successLight by mutableStateOf(successLight, structuralEqualityPolicy())
         internal set
     var successLighter by mutableStateOf(successLighter, structuralEqualityPolicy())
+        internal set
+    var infoDarker by mutableStateOf(infoDarker, structuralEqualityPolicy())
+        internal set
+    var infoDark by mutableStateOf(infoDark, structuralEqualityPolicy())
+        internal set
+    var infoMain by mutableStateOf(infoMain, structuralEqualityPolicy())
+        internal set
+    var infoLight by mutableStateOf(infoLight, structuralEqualityPolicy())
+        internal set
+    var infoLighter by mutableStateOf(infoLighter, structuralEqualityPolicy())
         internal set
     var errorDarker by mutableStateOf(errorDarker, structuralEqualityPolicy())
         internal set
@@ -141,7 +170,13 @@ class RarimeColors(
         internal set
     var backgroundPrimary by mutableStateOf(backgroundPrimary, structuralEqualityPolicy())
         internal set
-    var backgroundOpacity by mutableStateOf(backgroundOpacity, structuralEqualityPolicy())
+    var backgroundBlur by mutableStateOf(backgroundBlur, structuralEqualityPolicy())
+        internal set
+    var backgroundSurface1 by mutableStateOf(backgroundSurface1, structuralEqualityPolicy())
+        internal set
+    var backgroundSurface2 by mutableStateOf(backgroundSurface2, structuralEqualityPolicy())
+        internal set
+    var backgroundContainer by mutableStateOf(backgroundPrimary, structuralEqualityPolicy())
         internal set
     var backgroundPure by mutableStateOf(backgroundPure, structuralEqualityPolicy())
         internal set
@@ -149,9 +184,26 @@ class RarimeColors(
         internal set
     var baseWhite by mutableStateOf(baseWhite, structuralEqualityPolicy())
         internal set
-    var additionalLayerBorder by mutableStateOf(additionalLayerBorder, structuralEqualityPolicy())
+    var invertedDark by mutableStateOf(invertedDark, structuralEqualityPolicy())
         internal set
-    var additionalPureDark by mutableStateOf(additionalPureDark, structuralEqualityPolicy())
+    var invertedLight by mutableStateOf(invertedLight, structuralEqualityPolicy())
+        internal set
+    var gradient1 by mutableStateOf(gradient1, structuralEqualityPolicy())
+        internal set
+
+    var gradient2 by mutableStateOf(gradient2, structuralEqualityPolicy())
+        internal set
+
+    var gradient3 by mutableStateOf(gradient3, structuralEqualityPolicy())
+        internal set
+
+    var gradient4 by mutableStateOf(gradient4, structuralEqualityPolicy())
+        internal set
+
+    var gradient5 by mutableStateOf(gradient5, structuralEqualityPolicy())
+        internal set
+
+    var gradient6 by mutableStateOf(gradient6, structuralEqualityPolicy())
         internal set
 
     fun copy(
@@ -170,6 +222,11 @@ class RarimeColors(
         successMain: Color = this.successMain,
         successLight: Color = this.successLight,
         successLighter: Color = this.successLighter,
+        infoDarker: Color = this.infoDarker,
+        infoDark: Color = this.infoDark,
+        infoMain: Color = this.infoMain,
+        infoLight: Color = this.infoLight,
+        infoLighter: Color = this.infoLighter,
         errorDarker: Color = this.errorDarker,
         errorDark: Color = this.errorDark,
         errorMain: Color = this.errorMain,
@@ -190,13 +247,20 @@ class RarimeColors(
         componentSelected: Color = this.componentSelected,
         componentDisabled: Color = this.componentDisabled,
         backgroundPrimary: Color = this.backgroundPrimary,
-        backgroundOpacity: Color = this.backgroundOpacity,
         backgroundPure: Color = this.backgroundPure,
         baseBlack: Color = this.baseBlack,
         baseWhite: Color = this.baseWhite,
-        additionalLayerBorder: Color = this.additionalLayerBorder,
-        additionalPureDark: Color = this.additionalPureDark,
-    ) = RarimeColors(
+        backgroundContainer: Color = this.backgroundContainer,
+        gradient1: Brush = this.gradient1,
+        gradient2: Brush = this.gradient2,
+        gradient3: Brush = this.gradient3,
+        gradient4: Brush = this.gradient4,
+        gradient5: Brush = this.gradient5,
+        gradient6: Brush = this.gradient6,
+        invertedDark: Color = this.invertedDark,
+        invertedLight: Color = this.invertedLight
+
+        ) = RarimeColors(
         primaryDarker = primaryDarker,
         primaryDark = primaryDark,
         primaryMain = primaryMain,
@@ -212,6 +276,11 @@ class RarimeColors(
         successMain = successMain,
         successLight = successLight,
         successLighter = successLighter,
+        infoDarker = infoDarker,
+        infoDark = infoDark,
+        infoMain = infoMain,
+        infoLight = infoLight,
+        infoLighter = infoLighter,
         errorDarker = errorDarker,
         errorDark = errorDark,
         errorMain = errorMain,
@@ -232,12 +301,21 @@ class RarimeColors(
         componentSelected = componentSelected,
         componentDisabled = componentDisabled,
         backgroundPrimary = backgroundPrimary,
-        backgroundOpacity = backgroundOpacity,
+        backgroundBlur = backgroundBlur,
+        backgroundSurface1 = backgroundSurface1,
+        backgroundSurface2 = backgroundSurface2,
         backgroundPure = backgroundPure,
         baseBlack = baseBlack,
         baseWhite = baseWhite,
-        additionalLayerBorder = additionalLayerBorder,
-        additionalPureDark = additionalPureDark,
+        invertedDark = invertedDark,
+        invertedLight = invertedLight,
+        backgroundContainer = backgroundContainer,
+        gradient1 = gradient1,
+        gradient2 = gradient2,
+        gradient3 = gradient3,
+        gradient4 = gradient4,
+        gradient5 = gradient5,
+        gradient6 = gradient6
     )
 
     fun updateColorsFrom(other: RarimeColors) {
@@ -276,101 +354,175 @@ class RarimeColors(
         this.componentSelected = other.componentSelected
         this.componentDisabled = other.componentDisabled
         this.backgroundPrimary = other.backgroundPrimary
-        this.backgroundOpacity = other.backgroundOpacity
+        this.backgroundContainer = other.backgroundContainer
         this.backgroundPure = other.backgroundPure
         this.baseBlack = other.baseBlack
         this.baseWhite = other.baseWhite
-        this.additionalLayerBorder = other.additionalLayerBorder
-        this.additionalPureDark = other.additionalPureDark
+        this.invertedDark = other.invertedDark
+        this.invertedLight = other.invertedLight
     }
 }
 
 fun darkColors() = RarimeColors(
-    baseBlack = Color(0xFF202020),
-    baseWhite = Color(0xFFFFFFFF),
-    primaryDarker = Color(0xFFDDFE84),
-    primaryDark = Color(0xFFD5FD67),
-    primaryMain = Color(0xFFCDFD4A),
-    primaryLight = Color(0x1ACDFD4A),
-    primaryLighter = Color(0x0DCDFD4A),
-    secondaryDarker = Color(0xFF676767),
-    secondaryDark = Color(0xFF444444),
-    secondaryMain = Color(0xFF202020),
-    secondaryLight = Color(0xFF1B1B1B),
-    secondaryLighter = Color(0xFF111111),
-    successDarker = Color(0xFF78D9B6),
-    successDark = Color(0xFF58D0A4),
-    successMain = Color(0xFF6CF1C1),
-    successLight = Color(0x1A38C793),
-    successLighter = Color(0x0D38C793),
-    errorDarker = Color(0xFFE9657E),
-    errorDark = Color(0xFFE4405F),
-    errorMain = Color(0xFFF54667),
-    errorLight = Color(0x1ADF1C41),
-    errorLighter = Color(0x0DDF1C41),
-    warningDarker = Color(0xFFF5A570),
-    warningDark = Color(0xFFF3904E),
-    warningMain = Color(0xFFFDA366),
-    warningLight = Color(0x1AF17B2C),
-    warningLighter = Color(0x0DF17B2C),
+    // primary
+    primaryDarker = Color(0xFFFFFFFF),
+    primaryDark = Color(0xFFFFFFFF),
+    primaryMain = Color(0xFFFFFFFF),
+    primaryLight = Color(0x1FFFFFFF),
+    primaryLighter = Color(0x0FFFFFFF),
+
+    // secondary
+    secondaryDarker = Color(0xFFA8E152),
+    secondaryDark = Color(0xFF99D838),
+    secondaryMain = Color(0xFF8CCD28),
+    secondaryLight = Color(0x1F8CCD28),
+    secondaryLighter = Color(0x0F8CCD28),
+
+    // success
+    successDarker = Color(0xFF4AD07B),
+    successDark = Color(0xFF3DD073),
+    successMain = Color(0xFF37CF6F),
+    successLight = Color(0x1F37CF6F),
+    successLighter = Color(0x0F37CF6F),
+
+    // info
+    infoDarker = Color(0xFF5D97F5),
+    infoDark = Color(0xFF4788F1),
+    infoMain = Color(0xFF367BEC),
+    infoLight = Color(0x1F367BEC),
+    infoLighter = Color(0x0F367BEC),
+
+    // error
+    errorDarker = Color(0xFFEE6565),
+    errorDark = Color(0xFFE65454),
+    errorMain = Color(0xFFDA4343),
+    errorLight = Color(0x1FDA4343),
+    errorLighter = Color(0x0FDA4343),
+
+    // warning
+    warningDarker = Color(0xFFFBB239),
+    warningDark = Color(0xFFF3A728),
+    warningMain = Color(0xFFED9E19),
+    warningLight = Color(0x1FED9E19),
+    warningLighter = Color(0x0FED9E19),
+
+    // text
     textPrimary = Color(0xE5FFFFFF),
     textSecondary = Color(0x8FFFFFFF),
     textPlaceholder = Color(0x70FFFFFF),
     textDisabled = Color(0x47FFFFFF),
+
+    // component
     componentPrimary = Color(0x0DFFFFFF),
     componentHovered = Color(0x1AFFFFFF),
     componentPressed = Color(0x26FFFFFF),
     componentSelected = Color(0x0DFFFFFF),
     componentDisabled = Color(0x0DFFFFFF),
-    backgroundPrimary = Color(0xFF111111),
-    backgroundOpacity = Color(0x0DFFFFFF),
-    backgroundPure = Color(0xFF272727),
-    additionalLayerBorder = Color(0x0DFFFFFF),
-    additionalPureDark = Color(0x1AFFFFFF),
+
+    // background
+    backgroundPrimary = Color(0xFF0E0E0E),
+    backgroundContainer = Color(0xFF171717),
+    backgroundBlur = Color(0xE50E0E0E),
+    backgroundPure = Color(0xFF0E0E0E),
+    backgroundSurface1 = Color(0xFF272827),
+    backgroundSurface2 = Color(0xFF3F403F),
+
+    // base
+    baseBlack = Color(0xFF202020),
+    baseWhite = Color(0xFFFFFFFF),
+
+    // inverted
+    invertedDark = Color(0xFFF3F6F2),
+    invertedLight = Color(0xFF141614),
+
+    // additional
+    gradient1 = Brush.linearGradient(colors = listOf(Color(0xFF9AFE8A), Color(0xFF8AFECC))),
+    gradient2 = Brush.linearGradient(colors = listOf(Color(0xFFF2F8EE), Color(0xFFCBE7EC))),
+    gradient3 = Brush.linearGradient(colors = listOf(Color(0xFFDFFCC4), Color(0xFFF4F3F0))),
+    gradient4 = Brush.linearGradient(colors = listOf(Color(0xFFD3D1EF), Color(0xFFFCE3FC))),
+    gradient5 = Brush.linearGradient(colors = listOf(Color(0xFF80ED99), Color(0xFFD5FEC8))),
+    gradient6 = Brush.linearGradient(colors = listOf(Color(0xFF39CDA0), Color(0xFF45C45C)))
 )
 
 fun lightColors() = RarimeColors(
-    baseBlack = Color(0xFF202020),
-    baseWhite = Color(0xFFFFFFFF),
-    primaryDarker = Color(0xFF8BAC32),
-    primaryDark = Color(0xFFACD53E),
-    primaryMain = Color(0xFFCDFD4A),
-    primaryLight = Color(0xFFE5FEA1),
-    primaryLighter = Color(0xFFF5FFDB),
-    secondaryDarker = Color(0xFF0C0C0C),
-    secondaryDark = Color(0xFF161616),
-    secondaryMain = Color(0xFF202020),
-    secondaryLight = Color(0xFFD2D2D2),
-    secondaryLighter = Color(0xFFF4F4F4),
-    successDarker = Color(0xFF268764),
-    successDark = Color(0xFF2FA77B),
-    successMain = Color(0xFF38C793),
-    successLight = Color(0xFFC7EFE1),
-    successLighter = Color(0xFFEBF9F4),
-    errorDarker = Color(0xFF98132C),
-    errorDark = Color(0xFFBB1837),
-    errorMain = Color(0xFFDF1C41),
-    errorLight = Color(0xFFF9D2D9),
-    errorLighter = Color(0xFFFDEFF2),
-    warningDarker = Color(0xFFA4541E),
-    warningDark = Color(0xFFCA6725),
-    warningMain = Color(0xFFF17B2C),
-    warningLight = Color(0x1AF17B2C),
-    warningLighter = Color(0x0DF17B2C),
-    textPrimary = Color(0xFF202020),
-    textSecondary = Color(0x8F202020),
-    textPlaceholder = Color(0x70202020),
-    textDisabled = Color(0x47202020),
-    componentPrimary = Color(0x0D202020),
-    componentHovered = Color(0x1A202020),
-    componentPressed = Color(0x26202020),
-    componentSelected = Color(0x0D202020),
-    componentDisabled = Color(0x0D202020),
-    backgroundPrimary = Color(0xFFF2F3F2),
-    backgroundOpacity = Color(0xB2FFFFFF),
+    // primary
+    primaryDarker = Color(0xFF050505),
+    primaryDark = Color(0xFF111211),
+    primaryMain = Color(0xFF141614),
+    primaryLight = Color(0x1416141F),
+    primaryLighter = Color(0x1416140F),
+
+    // secondary
+    secondaryDarker = Color(0xFF4D7C0F),
+    secondaryDark = Color(0xFF65A30D),
+    secondaryMain = Color(0xFF84CC16),
+    secondaryLight = Color(0x1F84CC16),
+    secondaryLighter = Color(0x0F84CC16),
+
+    // success
+    successDarker = Color(0xFF15803D),
+    successDark = Color(0xFF16A34A),
+    successMain = Color(0xFF22C55E),
+    successLight = Color(0x1F22C55E),
+    successLighter = Color(0x0F22C55E),
+
+    // info
+    infoDarker = Color(0xFF1D4ED8),
+    infoDark = Color(0xFF2563EB),
+    infoMain = Color(0xFF3B82F6),
+    infoLight = Color(0x1F3B82F6),
+    infoLighter = Color(0x0F3B82F6),
+
+    // error
+    errorDarker = Color(0xFFB91C1C),
+    errorDark = Color(0xFFDC2626),
+    errorMain = Color(0xFFEF4444),
+    errorLight = Color(0x1FEF4444),
+    errorLighter = Color(0x0FEF4444),
+
+    // warning
+    warningDarker = Color(0xFFC09027),
+    warningDark = Color(0xFFE1AC3B),
+    warningMain = Color(0xFFF59E0B),
+    warningLight = Color(0x1FF59E0B),
+    warningLighter = Color(0x0FF59E0B),
+
+    // text
+    textPrimary = Color(0xFF141614),
+    textSecondary = Color(0x8F141614),
+    textPlaceholder = Color(0x70141614),
+    textDisabled = Color(0x47141614),
+
+    // component
+    componentPrimary = Color(0x0D141614),
+    componentHovered = Color(0x1A141614),
+    componentPressed = Color(0x26141614),
+    componentSelected = Color(0x0D141614),
+    componentDisabled = Color(0x0D141614),
+
+    // background
+    backgroundPrimary = Color(0xFFFFFFFF),
+    backgroundContainer = Color(0xFFFFFFFF),
+    backgroundBlur = Color(0xE5FFFFFF),
     backgroundPure = Color(0xFFFFFFFF),
-    additionalLayerBorder = Color(0xFFFFFFFF),
-    additionalPureDark = Color(0xFF262626),
+    backgroundSurface1 = Color(0xFFFFFFFF),
+    backgroundSurface2 = Color(0xFFFFFFFF),
+
+    // base
+    baseBlack = Color(0xFF141614),
+    baseWhite = Color(0xFFFFFFFF),
+
+    // inverted
+    invertedDark = Color(0xFF141614),
+    invertedLight = Color(0xFFFFFFFF),
+
+    // additional
+    gradient1 = Brush.linearGradient(colors = listOf(Color(0xFF9AFE8A), Color(0xFF8AFECC))),
+    gradient2 = Brush.linearGradient(colors = listOf(Color(0xFFF2F8EE), Color(0xFFCBE7EC))),
+    gradient3 = Brush.linearGradient(colors = listOf(Color(0xFFDFFCC4), Color(0xFFF4F3F0))),
+    gradient4 = Brush.linearGradient(colors = listOf(Color(0xFFD3D1EF), Color(0xFFFCE3FC))),
+    gradient5 = Brush.linearGradient(colors = listOf(Color(0xFF80ED99), Color(0xFFD5FEC8))),
+    gradient6 = Brush.linearGradient(colors = listOf(Color(0xFF39CDA0), Color(0xFF45C45C))),
 )
 
 val LocalColors = staticCompositionLocalOf { lightColors() }

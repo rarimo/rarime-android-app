@@ -9,12 +9,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -45,7 +46,7 @@ fun RestoreScreen(
         return if (!isDriveButtonEnabled) {
             context.getString(R.string.drive_loading)
         } else if (signInAccount == null) {
-            context.getString(R.string.drive_sign_in_to_google_drive)
+            context.getString(R.string.google_drive_backup_sign_in)
         } else {
             context.getString(R.string.drive_restore_using_google_drive)
         }
@@ -54,37 +55,42 @@ fun RestoreScreen(
     Column(
         modifier = modifier
             .background(RarimeTheme.colors.backgroundPrimary)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(top = 10.dp, bottom = 16.dp)
+            .padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp)
-        ) {
-            IconButton(onClick = { onBack.invoke() }, enabled = isDriveButtonEnabled) {
-                AppIcon(
-                    id = R.drawable.ic_arrow_left,
-                    modifier = Modifier.width(20.dp),
-                    tint = RarimeTheme.colors.textPrimary
-                )
-            }
+        Row(modifier = Modifier.fillMaxWidth()) {
+            IconButton(
+                modifier = Modifier
+                    .clip(CircleShape),
+                onClick = { onBack.invoke() },
+                enabled = isDriveButtonEnabled,
+                content = {
+                    AppIcon(
+                        modifier = Modifier.padding(10.dp),
+                        id = R.drawable.ic_arrow_left,
+                        size = 20.dp,
+                        tint = RarimeTheme.colors.textPrimary
+                    )
+                }
+            )
         }
 
 
-        Spacer(modifier = Modifier.height(80.dp))
+        Spacer(modifier = Modifier.height(40.dp))
         CircledBadge(
             iconId = R.drawable.ic_backup,
             contentSize = 80,
-            containerSize = 120,
-            contentColor = RarimeTheme.colors.baseBlack,
-            containerColor = RarimeTheme.colors.primaryMain
+            containerSize = 160,
+            contentColor = RarimeTheme.colors.textPrimary,
+            containerColor = RarimeTheme.colors.componentPrimary
         )
         Spacer(modifier = Modifier.height(32.dp))
         Text(
-            stringResource(R.string.dreive_title_restore_your_account),
-            style = RarimeTheme.typography.h4,
+            stringResource(R.string.drive_title_restore_your_account),
+            style = RarimeTheme.typography.h2,
             color = RarimeTheme.colors.textPrimary,
             textAlign = TextAlign.Center
         )
@@ -93,17 +99,13 @@ fun RestoreScreen(
         Text(
             stringResource(R.string.drive_restore_description),
             style = RarimeTheme.typography.body3,
-            color = RarimeTheme.colors.textPrimary,
+            color = RarimeTheme.colors.textSecondary,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 34.dp)
         )
         Spacer(modifier = Modifier.weight(1f))
         Column(
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
@@ -114,14 +116,13 @@ fun RestoreScreen(
                     if (signInAccount == null) signIn.invoke() else onDriveRestore.invoke()
                 })
             TertiaryButton(
-                text = stringResource(R.string.restore_using_key).uppercase(),
+                text = stringResource(R.string.restore_using_key),
                 enabled = isDriveButtonEnabled,
                 size = ButtonSize.Large,
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { onManualRestore.invoke() }
             )
         }
-        Spacer(modifier = Modifier.height(12.dp))
     }
 
 }
@@ -145,7 +146,7 @@ fun BackUpScreen(
         return if (!isDriveButtonEnabled) {
             context.getString(R.string.drive_loading)
         } else if (signInAccount == null) {
-            context.getString(R.string.drive_sign_in_to_google_drive)
+            context.getString(R.string.google_drive_backup_sign_in)
         } else {
             context.getString(R.string.drive_back_up_to_google_drive)
         }
@@ -154,37 +155,42 @@ fun BackUpScreen(
     Column(
         modifier = modifier
             .background(RarimeTheme.colors.backgroundPrimary)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(top = 10.dp, bottom = 16.dp)
+            .padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp)
-        ) {
-            IconButton(onClick = { onBack.invoke() }, enabled = isDriveButtonEnabled) {
-                AppIcon(
-                    id = R.drawable.ic_arrow_left,
-                    modifier = Modifier.width(20.dp),
-                    tint = RarimeTheme.colors.textPrimary
-                )
-            }
+        Row(modifier = Modifier.fillMaxWidth()) {
+            IconButton(
+                modifier = Modifier
+                    .clip(CircleShape),
+                onClick = { onBack.invoke() },
+                enabled = isDriveButtonEnabled,
+                content = {
+                    AppIcon(
+                        modifier = Modifier.padding(10.dp),
+                        id = R.drawable.ic_arrow_left,
+                        size = 20.dp,
+                        tint = RarimeTheme.colors.textPrimary
+                    )
+                }
+            )
         }
 
-        Spacer(modifier = Modifier.height(80.dp))
+        Spacer(modifier = Modifier.height(40.dp))
         CircledBadge(
             iconId = R.drawable.ic_backup,
             contentSize = 80,
-            containerSize = 120,
-            contentColor = RarimeTheme.colors.baseBlack,
-            containerColor = RarimeTheme.colors.primaryMain
+            containerSize = 160,
+            contentColor = RarimeTheme.colors.textPrimary,
+            containerColor = RarimeTheme.colors.componentPrimary
         )
 
         Spacer(modifier = Modifier.height(32.dp))
         Text(
             stringResource(R.string.drive_title_back_up_your_account),
-            style = RarimeTheme.typography.h4,
+            style = RarimeTheme.typography.h2,
             color = RarimeTheme.colors.textPrimary,
             textAlign = TextAlign.Center
         )
@@ -194,15 +200,11 @@ fun BackUpScreen(
             style = RarimeTheme.typography.body3,
             color = RarimeTheme.colors.textSecondary,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 34.dp)
         )
         Spacer(modifier = Modifier.weight(1f))
         Column(
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
@@ -213,14 +215,13 @@ fun BackUpScreen(
                     if (signInAccount == null) signIn.invoke() else onDriveBackup.invoke(privateKey)
                 })
             TertiaryButton(
-                text = stringResource(R.string.drive_continue_without_backup).uppercase(),
+                text = stringResource(R.string.drive_continue_without_backup),
                 enabled = isDriveButtonEnabled,
                 size = ButtonSize.Large,
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { onManualBackup.invoke() }
             )
         }
-        Spacer(modifier = Modifier.height(12.dp))
     }
 
 }

@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,26 +27,30 @@ fun ProfileRouteLayout(
     content: @Composable () -> Unit
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(32.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
         modifier = Modifier
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary)
             .padding(20.dp)
     ) {
-        Box(modifier = Modifier) {
+        Box {
             PrimaryTextButton(
                 leftIcon = R.drawable.ic_caret_left,
                 onClick = onBack
             )
             Text(
                 text = title,
-                style = RarimeTheme.typography.subtitle4,
+                style = RarimeTheme.typography.subtitle6,
                 color = RarimeTheme.colors.textPrimary,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 1.dp)
             )
         }
-        content()
+        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            content()
+        }
     }
 }
 

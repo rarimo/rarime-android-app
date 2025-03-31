@@ -555,7 +555,7 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         }
 
         if (res == 1) {
-            throw ZkpException("Error during zkp ${msg.decodeToString()}")
+            throw ZkpException("Error during zkp: code $res , ${msg.decodeToString()}")
         }
 
         val pubData = ByteArray(2 * 1024 * 1024)

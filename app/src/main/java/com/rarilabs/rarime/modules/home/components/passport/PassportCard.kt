@@ -86,6 +86,8 @@ fun PassportCard(
         if (
             listOf(
                 PassportStatus.WAITLIST,
+                PassportStatus.NOT_ALLOWED,
+                PassportStatus.WAITLIST_NOT_ALLOWED
             ).contains(passportStatus)
         ) {
             StatusCard(modifier = Modifier.padding(top = 20.dp), passportStatus)
@@ -129,7 +131,8 @@ fun PassportCard(
                                         .copy(alpha = 0.05f), CircleShape
                                 )
                                 .padding(8.dp)
-                                .clickable(interactionSource = remember { MutableInteractionSource() },
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
                                     indication = null,
                                     onClick = { onIncognitoChange(!isIncognito) })
                         )
@@ -143,7 +146,8 @@ fun PassportCard(
                                         .copy(alpha = 0.05f), CircleShape
                                 )
                                 .padding(8.dp)
-                                .clickable(interactionSource = remember { MutableInteractionSource() },
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
                                     indication = null,
                                     onClick = { settingsSheetState.show() })
                         )

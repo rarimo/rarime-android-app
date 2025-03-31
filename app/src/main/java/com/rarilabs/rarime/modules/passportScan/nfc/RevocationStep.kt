@@ -34,7 +34,6 @@ import org.jmrtd.lds.icao.MRZInfo
 @Composable
 fun RevocationStep(
     mrzData: MRZInfo,
-
     onNext: () -> Unit,
     onClose: () -> Unit,
     onError: () -> Unit,
@@ -100,7 +99,7 @@ fun RevocationStep(
                     ScanNFCState.NOT_SCANNING -> {
                         Text(
                             text = stringResource(R.string.nfc_reader_hint),
-                            style = RarimeTheme.typography.body3,
+                            style = RarimeTheme.typography.body4,
                             color = RarimeTheme.colors.textSecondary,
                             modifier = Modifier.width(250.dp),
                             textAlign = TextAlign.Center
@@ -110,7 +109,7 @@ fun RevocationStep(
                     ScanNFCState.SCANNING -> {
                         Text(
                             text = stringResource(R.string.nfc_reader_scanning),
-                            style = RarimeTheme.typography.body3,
+                            style = RarimeTheme.typography.body4,
                             color = RarimeTheme.colors.textSecondary,
                             modifier = Modifier.width(250.dp),
                             textAlign = TextAlign.Center
@@ -120,7 +119,7 @@ fun RevocationStep(
                     ScanNFCState.SCANNED -> {
                         Text(
                             text = stringResource(R.string.nfc_reader_revoke),
-                            style = RarimeTheme.typography.body3,
+                            style = RarimeTheme.typography.body4,
                             color = RarimeTheme.colors.textSecondary,
                             modifier = Modifier.width(250.dp),
                             textAlign = TextAlign.Center

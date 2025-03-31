@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.modules.home
 
 import android.app.Application
-import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import com.rarilabs.rarime.api.airdrop.AirDropManager
 import com.rarilabs.rarime.api.registration.RegistrationManager
@@ -15,7 +14,6 @@ import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ErrorHandler
-import com.rarilabs.rarime.util.ZKPUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -34,7 +32,6 @@ class HomeViewModel @Inject constructor(
     private val registrationManager: RegistrationManager,
     private val sharedPrefsManager: SecureSharedPrefsManager
 ) : AndroidViewModel(app) {
-    val isAirDropClaimed = airDropManager.isAirDropClaimed
 
     val notReadNotifications = notificationManager.notificationList
 
@@ -82,6 +79,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+
     suspend fun loadUserDetails() = coroutineScope {
         val passportStatus = async {
             try {
@@ -103,23 +101,43 @@ class HomeViewModel @Inject constructor(
         walletBalances.await()
     }
 
-    suspend fun generateTestProof() {
-        val assetContext: Context = (app as Context).createPackageContext("com.rarilabs.rarime", 0)
-        val assetManager = assetContext.assets
-
-        val inputs = """
-
-        """.trimIndent()
-
-        val zkp = ZKPUseCase(app as Context, assetManager)
-//        val res= withContext(Dispatchers.Default) {
-//            zkp.generateZKP(
-//                "circuit_register_test.zkey",
-//                R.raw.registeridentity_2_256_3_6_336_264_21_2448_6_2008,
-//                inputs.toByteArray(),
-//                ZkpUtil::test
+//    suspend fun generateTestProof() {
+//        val assetContext: Context = (app as Context).createPackageContext("com.rarilabs.rarime", 0)
+//        val assetManager = assetContext.assets
+//
+//
+//        val dir = "${app.filesDir}/circuitName"
+//
+//        val zkeyPath = "$dir/"
+//        val datPath = "$dir/"
+//
+//        val zkeyFile = File(zkeyPath)
+//        val datFile = File(datPath)
+//
+//
+//        val zkfilePath = zkeyFile.absolutePath
+//        val zkeyFileLen = zkeyFile.length()
+//        val datFilePath = datFile.absolutePath
+//        val datFileLen = datFile.length()
+//        val inputs = """
+//
+//        """.trimIndent()
+//
+//        val customDispatcher = Executors.newFixedThreadPool(1) { runnable ->
+//            Thread(null, runnable, "LargeStackThread", 100 * 1024 * 1024) // 100 MB stack size
+//        }.asCoroutineDispatcher()
+//
+//        val zkp = ZKPUseCase(app as Context, assetManager)
+//        val res = withContext(customDispatcher) {
+//            zkp.generateRegisterZKP(
+//                zkeyFilePath = zkfilePath,
+//                zkeyFileLen = zkeyFileLen,
+//                datFilePath = datFilePath,
+//                datFileLen = datFileLen,
+//                inputs = inputs.toByteArray(),
+//                proofFunction =
 //            )
 //        }
-//        Log.e("Res", res.toString())
-    }
+//        Log.e("Res", Gson().toJson(res))
+//    }
 }

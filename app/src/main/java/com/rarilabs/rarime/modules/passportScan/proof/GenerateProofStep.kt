@@ -137,7 +137,7 @@ fun GenerateProofStep(
         }
     }
 
-    fun getItemStatus(item: PassportProofState): ProcessingStatus {
+    fun getItemStatus(item: com.rarilabs.rarime.manager.PassportProofState): ProcessingStatus {
         val isSuccess =
             processingStatus == ProcessingStatus.SUCCESS || (currentState?.value
                 ?: 0) + 1 > item.value
@@ -170,7 +170,7 @@ fun GenerateProofStep(
 @Composable
 private fun GenerateProofStepContent(
     processingStatus: ProcessingStatus,
-    getItemStatus: (item: PassportProofState) -> ProcessingStatus,
+    getItemStatus: (item: com.rarilabs.rarime.manager.PassportProofState) -> ProcessingStatus,
     downloadProgress: Int,
     downloadProgressVisibility: Boolean
 ) {
@@ -195,7 +195,7 @@ private fun GenerateProofStepContent(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    PassportProofState.entries.forEach { item ->
+                    com.rarilabs.rarime.manager.PassportProofState.entries.forEach { item ->
                         ProcessingItem(
                             item = item, status = getItemStatus(item)
                         )
@@ -210,7 +210,7 @@ private fun GenerateProofStepContent(
                         downloadProgress.toString()
                     ),
                     color = RarimeTheme.colors.textSecondary,
-                    style = RarimeTheme.typography.body3
+                    style = RarimeTheme.typography.body4
                 )
             }
         }
@@ -267,14 +267,14 @@ private fun GeneralProcessingStatus(status: ProcessingStatus) {
     ) {
         Text(
             text = title,
-            style = RarimeTheme.typography.h6,
+            style = RarimeTheme.typography.h4,
             color = RarimeTheme.colors.textPrimary,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
         Text(
             text = text,
-            style = RarimeTheme.typography.body3,
+            style = RarimeTheme.typography.body4,
             color = RarimeTheme.colors.textSecondary,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
@@ -283,12 +283,18 @@ private fun GeneralProcessingStatus(status: ProcessingStatus) {
 }
 
 @Composable
-private fun ProcessingItem(item: PassportProofState, status: ProcessingStatus) {
+private fun ProcessingItem(
+    item: com.rarilabs.rarime.manager.PassportProofState,
+    status: ProcessingStatus
+) {
     val label = when (item) {
-        PassportProofState.READING_DATA -> stringResource(R.string.reading_data_step)
-        PassportProofState.APPLYING_ZERO_KNOWLEDGE -> stringResource(R.string.applying_zero_knowledge_step)
-        PassportProofState.CREATING_CONFIDENTIAL_PROFILE -> stringResource(R.string.creating_confidential_profile_step)
-        PassportProofState.FINALIZING -> stringResource(R.string.finalizing_step)
+        com.rarilabs.rarime.manager.PassportProofState.READING_DATA -> stringResource(R.string.reading_data_step)
+        com.rarilabs.rarime.manager.PassportProofState.APPLYING_ZERO_KNOWLEDGE -> stringResource(R.string.applying_zero_knowledge_step)
+        com.rarilabs.rarime.manager.PassportProofState.CREATING_CONFIDENTIAL_PROFILE -> stringResource(
+            R.string.creating_confidential_profile_step
+        )
+
+        com.rarilabs.rarime.manager.PassportProofState.FINALIZING -> stringResource(R.string.finalizing_step)
     }
 
     Row(
@@ -298,7 +304,7 @@ private fun ProcessingItem(item: PassportProofState, status: ProcessingStatus) {
     ) {
         Text(
             text = label,
-            style = RarimeTheme.typography.body3,
+            style = RarimeTheme.typography.body4,
             color = RarimeTheme.colors.textPrimary
         )
         ProcessingChip(status = status)

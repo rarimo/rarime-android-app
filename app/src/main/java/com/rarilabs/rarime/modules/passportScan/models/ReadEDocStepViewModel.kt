@@ -2,6 +2,7 @@ package com.rarilabs.rarime.modules.passportScan.models
 
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
@@ -29,7 +30,7 @@ class ReadEDocStepViewModel @Inject constructor(
     val state = nfcManager.state
 
     val resetState = nfcManager::resetState
-    private val _currentNfcScanStep = MutableStateFlow<NfcScanStep>(NfcScanStep.PREPARING)
+    private val _currentNfcScanStep = MutableStateFlow(NfcScanStep.PREPARING)
 
     val currentNfcScanStep: StateFlow<NfcScanStep>
         get() = _currentNfcScanStep.asStateFlow()
@@ -50,6 +51,11 @@ class ReadEDocStepViewModel @Inject constructor(
         if (passportNumber == null || passportNumber.isEmpty() || expirationDate == null || expirationDate.isEmpty() || birthDate == null || birthDate.isEmpty()) {
             throw Exception("ReadNFCStepViewModel: Invalid Passport mrzInfo: $passportNumber $expirationDate $birthDate")
         }
+
+        Log.i(
+            "MRZ DATA",
+            "ReadNFCStepViewModel: Invalid Passport mrzInfo: $passportNumber $expirationDate $birthDate\""
+        )
 
         val isoDep = IsoDep.get(tag)
         isoDep.timeout = 5000

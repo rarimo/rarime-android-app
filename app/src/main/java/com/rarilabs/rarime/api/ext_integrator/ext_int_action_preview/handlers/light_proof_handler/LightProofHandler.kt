@@ -9,6 +9,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.components.HandlerPreviewerLayout
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.components.HandlerPreviewerLayoutTexts
+import com.rarilabs.rarime.api.ext_integrator.models.NoPassport
+import com.rarilabs.rarime.api.ext_integrator.models.YourAgeDoesNotMeetTheRequirements
+import com.rarilabs.rarime.api.ext_integrator.models.YourCitizenshipDoesNotMeetTheRequirements
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.ui.components.SnackbarSeverity
 import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
@@ -55,6 +58,7 @@ fun LightProofHandler(
             val message = when (e) {
                 is YourAgeDoesNotMeetTheRequirements -> context.getString(R.string.light_verification_error_age)
                 is YourCitizenshipDoesNotMeetTheRequirements -> context.getString(R.string.light_verification_error_citizenship)
+                is NoPassport -> context.getString(R.string.no_passport_error)
                 else -> context.getString(R.string.light_verification_error_subtitle)
             }
 

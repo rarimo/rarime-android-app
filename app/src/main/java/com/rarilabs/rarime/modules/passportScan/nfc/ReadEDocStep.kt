@@ -24,7 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.manager.ScanNFCState
@@ -122,9 +121,7 @@ private fun ReadEDocStepContent(
     hintType: SpecificPassportGuide
 ) {
     val scanSheetState = rememberAppSheetState(showSheet = false)
-    fun getNfcAnimation(): Int {
-        return R.raw.anim_passport_nfc
-    }
+
 
     AppBottomSheet(state = scanSheetState) {
         NfcScanBottomSheet(
@@ -143,7 +140,6 @@ private fun ReadEDocStepContent(
         onClose = { handleScanPassportLayoutClose() }
     ) {
         Column(
-            verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxSize()
         ) {
             Column(
@@ -155,15 +151,13 @@ private fun ReadEDocStepContent(
             ) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(64.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     AppAnimation(
                         modifier = Modifier
-                            .size(240.dp)
-                            .scale(1.5f)
-                            .zIndex(2f),
-                        id = getNfcAnimation(),
+                            .scale(1.4f)
+                            .size(240.dp),
+                        id = R.raw.anim_passport_nfc,
                     )
 
                     when (state) {
@@ -173,10 +167,10 @@ private fun ReadEDocStepContent(
                             ) {
                                 Text(
                                     text = stringResource(R.string.nfc_reader_hint_1),
-                                    style = RarimeTheme.typography.body3,
+                                    style = RarimeTheme.typography.body4,
                                     color = RarimeTheme.colors.textSecondary,
                                     modifier = Modifier.width(250.dp),
-                                    textAlign = TextAlign.Left
+                                    textAlign = TextAlign.Center
                                 )
                             }
                         }
@@ -184,7 +178,7 @@ private fun ReadEDocStepContent(
                         ScanNFCState.SCANNING -> {
 //                            Text(
 //                                text = stringResource(R.string.nfc_reader_scanning),
-//                                style = RarimeTheme.typography.body3,
+//                                style = RarimeTheme.typography.body4,
 //                                color = RarimeTheme.colors.textSecondary,
 //                                modifier = Modifier.width(250.dp),
 //                                textAlign = TextAlign.Center

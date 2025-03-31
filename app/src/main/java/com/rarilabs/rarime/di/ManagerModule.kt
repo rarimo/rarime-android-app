@@ -28,6 +28,7 @@ import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
 import com.rarilabs.rarime.manager.NotificationManager
 import com.rarilabs.rarime.manager.PassportManager
+import com.rarilabs.rarime.manager.ProofGenerationManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.manager.SecurityManager
 import com.rarilabs.rarime.manager.SettingsManager
@@ -180,17 +181,30 @@ class APIModule {
 
     @Provides
     @Singleton
-    fun provideExtIntegratorAPIManager(@Named("EXT_INTEGRATOR") retrofit: Retrofit): ExtIntegratorApiManager =
-        ExtIntegratorApiManager(retrofit.create(ExtIntegratorAPI::class.java))
+    fun provideExtIntegratorAPIManager(
+        @Named("EXT_INTEGRATOR") retrofit: Retrofit,
+        contractManager: RarimoContractManager,
+        sharedPreferences: SecureSharedPrefsManager,
+        passportManager: PassportManager,
+        identityManager: IdentityManager,
+    ): ExtIntegratorApiManager =
+        ExtIntegratorApiManager(
+            retrofit.create(ExtIntegratorAPI::class.java),
+            contractManager,
+            sharedPreferences,
+            passportManager,
+            identityManager,
+        )
 
     @Provides
     @Singleton
     fun provideRegistrationManager(
         registrationAPIManager: RegistrationAPIManager,
         rarimoContractManager: RarimoContractManager,
-        passportManager: PassportManager
+        passportManager: PassportManager,
+        identityManager: IdentityManager
     ): RegistrationManager = RegistrationManager(
-        registrationAPIManager, rarimoContractManager, passportManager
+        registrationAPIManager, rarimoContractManager, passportManager, identityManager
     )
 
     @Provides
@@ -225,9 +239,29 @@ class APIModule {
     @Singleton
     fun providePassportManager(
         dataStoreManager: SecureSharedPrefsManager,
-        rarimoContractManager: RarimoContractManager,
         identityManager: IdentityManager
-    ): PassportManager = PassportManager(dataStoreManager, rarimoContractManager, identityManager)
+    ): PassportManager = PassportManager(dataStoreManager, identityManager)
+
+
+    @Provides
+    @Singleton
+    fun provideProofGenerationManager(
+        @ApplicationContext context: Context,
+        identityManager: IdentityManager,
+        registrationManager: RegistrationManager,
+        rarimoContractManager: RarimoContractManager,
+        passportManager: PassportManager,
+        pointsManager: PointsManager
+    ): ProofGenerationManager =
+        ProofGenerationManager(
+            context,
+            identityManager,
+            registrationManager,
+            passportManager,
+            rarimoContractManager,
+            pointsManager
+        )
+
 
     @Provides
     @Singleton
@@ -340,9 +374,10 @@ class APIModule {
     @Provides
     @Singleton
     fun provideIdentityManager(
-        dataStoreManager: SecureSharedPrefsManager
+        dataStoreManager: SecureSharedPrefsManager,
+        rarimoContractManager: RarimoContractManager
     ): IdentityManager {
-        return IdentityManager(dataStoreManager)
+        return IdentityManager(dataStoreManager, rarimoContractManager)
     }
 
     @Provides

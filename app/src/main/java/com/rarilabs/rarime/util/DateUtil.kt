@@ -89,6 +89,11 @@ object DateUtil {
             ?: return ""
         return formatDate(date, DateFormatType.DMY)
     }
+    fun convertToMrzDate(date: String?): String {
+        val formatter = SimpleDateFormat(DateFormatType.DMY.pattern, Locale.US)
+        val parsedDate = stringToDate(date, formatter) ?: return ""
+        return formatDate(parsedDate, DateFormatType.MRZ)
+    }
 
     fun formatDate(date: Date, formatType: DateFormatType = DateFormatType.DEFAULT): String {
         return SimpleDateFormat(formatType.pattern, Locale.US).format(date)

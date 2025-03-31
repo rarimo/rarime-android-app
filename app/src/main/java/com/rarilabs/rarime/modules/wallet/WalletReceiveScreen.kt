@@ -68,16 +68,11 @@ fun WalletReceiveScreenContent(
     }
 
     WalletRouteLayout(
-        headerModifier = Modifier.padding(horizontal = 20.dp),
         title = stringResource(R.string.wallet_receive_title, selectedWalletAsset.token.symbol),
         description = stringResource(R.string.wallet_receive_description, selectedWalletAsset.token.symbol),
         onBack = onBack
     ) {
-        CardContainer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-        ) {
+        CardContainer(modifier = Modifier.fillMaxWidth()) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -111,7 +106,7 @@ fun WalletReceiveScreenContent(
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
                         text = stringResource(R.string.deposit_address_lbl),
-                        style = RarimeTheme.typography.subtitle4,
+                        style = RarimeTheme.typography.subtitle6,
                         color = RarimeTheme.colors.textPrimary
                     )
                     Row(
@@ -126,7 +121,7 @@ fun WalletReceiveScreenContent(
                     ) {
                         Text(
                             text = selectedWalletAsset.userAddress,
-                            style = RarimeTheme.typography.body3,
+                            style = RarimeTheme.typography.body4,
                             color = RarimeTheme.colors.textPrimary,
                             modifier = Modifier.weight(1f),
                         )
@@ -150,8 +145,8 @@ private fun WalletReceiveScreenPreview() {
     WalletReceiveScreenContent(
         onBack = {},
         selectedWalletAsset = WalletAsset(
-            userAddress = "",
-            token = PreviewerToken("RAR", "RARARARA", "RAR", 18, )
+            userAddress = "rarimo1000000000000000000000000000000000",
+            token = PreviewerToken("RMO", "RARARARA", "RMO", 18, )
         )
     )
 }

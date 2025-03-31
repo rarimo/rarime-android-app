@@ -5,7 +5,10 @@ import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorApiManager
+import com.rarilabs.rarime.api.ext_integrator.models.NoPassport
 import com.rarilabs.rarime.api.ext_integrator.models.QueryProofGenResponse
+import com.rarilabs.rarime.api.ext_integrator.models.YourAgeDoesNotMeetTheRequirements
+import com.rarilabs.rarime.api.ext_integrator.models.YourCitizenshipDoesNotMeetTheRequirements
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RarimoContractManager
@@ -23,10 +26,6 @@ import java.math.BigInteger
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import javax.inject.Inject
-
-class YourAgeDoesNotMeetTheRequirements : Exception()
-class YourCitizenshipDoesNotMeetTheRequirements : Exception()
-
 @HiltViewModel
 class LightProofHandlerViewModel @Inject constructor(
     private val extIntegratorApiManager: ExtIntegratorApiManager,
@@ -34,7 +33,6 @@ class LightProofHandlerViewModel @Inject constructor(
     private val contractManager: RarimoContractManager,
     private val identityManager: IdentityManager,
 ) : ViewModel() {
-    //TODO: Remove MutableStateFlow if it isn’t used in the UI
     private var _queryProofParametersRequest = MutableStateFlow<QueryProofGenResponse?>(null)
     val queryProofParametersRequest: StateFlow<QueryProofGenResponse?>
         get() = _queryProofParametersRequest.asStateFlow()
@@ -43,7 +41,7 @@ class LightProofHandlerViewModel @Inject constructor(
     val requestMinimumAge: StateFlow<Int>
         get() = _requestMinimumAge.asStateFlow()
 
-    private val _requestCitizenship = MutableStateFlow<String>("")
+    private val _requestCitizenship = MutableStateFlow("")
     val requestCitizenship: StateFlow<String>
         get() = _requestCitizenship.asStateFlow()
 
@@ -224,6 +222,11 @@ class LightProofHandlerViewModel @Inject constructor(
     }
 
     suspend fun loadDetails(proofParamsUrl: String, redirectUrl: String?): Map<String, String> {
+
+        if (passportManager.passport.value == null) {
+            throw NoPassport()
+        }
+
         _queryProofParametersRequest.value = extIntegratorApiManager.queryProofData(proofParamsUrl)
 
         val tempMap = mutableMapOf<String, String>()

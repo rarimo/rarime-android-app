@@ -1,13 +1,11 @@
 package com.rarilabs.rarime.modules.rewards.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,23 +24,18 @@ fun RewardAmountPreview(
 ) {
     Box(
         modifier = modifier
-            .border(
-                width = 1.dp,
-                color = RarimeTheme.colors.textSecondary,
-                shape = RoundedCornerShape(100.dp),
-            )
             .padding(vertical = 2.dp, horizontal = 8.dp)
     ) {
         Row (
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(2.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(
                 text = "+${amount}",
                 style = RarimeTheme.typography.subtitle5,
                 color = RarimeTheme.colors.textSecondary,
             )
-            AppIcon(id = tokenIconId, size = 14.dp, tint = RarimeTheme.colors.textSecondary)
+            AppIcon(id = tokenIconId, size = 14.dp, tint = RarimeTheme.colors.componentPrimary)
         }
     }
 }

@@ -7,8 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
@@ -23,6 +22,8 @@ import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -66,7 +67,9 @@ fun AppBottomSheet(
     modifier: Modifier = Modifier,
     state: AppSheetState = rememberAppSheetState(false),
     fullScreen: Boolean = false,
+    shape: Shape = BottomSheetDefaults.ExpandedShape,
     isHeaderEnabled: Boolean = true,
+    scrimColor: Color = BottomSheetDefaults.ScrimColor,
     content: @Composable (HideSheetFn) -> Unit
 ) {
     val modalState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -86,9 +89,11 @@ fun AppBottomSheet(
         ModalBottomSheet(
             modifier = modifier,
             sheetState = modalState,
+            shape = shape,
             dragHandle = null,
             containerColor = RarimeTheme.colors.backgroundPure,
-            onDismissRequest = { state.hide() }
+            onDismissRequest = { state.hide() },
+            scrimColor = scrimColor
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 if (isHeaderEnabled) {
@@ -107,7 +112,7 @@ fun AppBottomSheet(
                 Box(
                     modifier = (if (fullScreen) Modifier.height(configuration.screenHeightDp.dp) else Modifier)
                         .fillMaxWidth()
-                        .padding(bottom = 32.dp)
+                        .padding(bottom = 24.dp)
                 ) {
                     content { cb -> hide(cb) }
                 }

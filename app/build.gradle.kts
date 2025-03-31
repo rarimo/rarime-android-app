@@ -31,8 +31,8 @@ android {
         minSdk = 27
         targetSdk = 34
 
-        versionCode = 77
-        versionName = "2.1.26"
+        versionCode = 81
+        versionName = "2.1.30"
 
         externalNativeBuild {
             cmake {
@@ -138,6 +138,9 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
 //    implementation("moe.banana:moshi-jsonapi:master-SNAPSHOT")
 
+    implementation("androidx.compose.animation:animation:1.7.8")
+
+
     implementation("com.github.jeziellago:compose-markdown:0.5.0")
     implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("io.coil-kt:coil-gif:2.6.0")
@@ -216,6 +219,7 @@ dependencies {
 
     implementation("com.google.android.play:app-update:2.1.0")
     implementation("com.google.android.play:app-update-ktx:2.1.0")
+
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 
     //Room
@@ -243,6 +247,9 @@ dependencies {
     implementation("androidx.hilt:hilt-work:1.0.0") // ?
     implementation("androidx.work:work-runtime-ktx:2.9.1")
     implementation("com.google.firebase:firebase-messaging:24.0.1")
+
+
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.31.0-alpha")
 
     // AppsFlyer
     implementation("com.appsflyer:af-android-sdk:6.15.1")

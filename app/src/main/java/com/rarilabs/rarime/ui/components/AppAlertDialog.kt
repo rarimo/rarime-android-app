@@ -25,14 +25,14 @@ fun AppAlertDialog(
         title = {
             Text(
                 text = title,
-                style = RarimeTheme.typography.subtitle2,
+                style = RarimeTheme.typography.subtitle4,
                 color = RarimeTheme.colors.textPrimary,
             )
         },
         text = {
             Text(
                 text = text,
-                style = RarimeTheme.typography.body3,
+                style = RarimeTheme.typography.body4,
                 color = RarimeTheme.colors.textSecondary,
             )
         },

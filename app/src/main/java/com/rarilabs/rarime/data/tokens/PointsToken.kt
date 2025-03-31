@@ -21,7 +21,7 @@ class PointsToken @Inject constructor(
 
     override suspend fun loadDetails() {
         name = "Reserved RMO"
-        symbol = "RRMO"
+        symbol = "RESERVED"
         decimals = 0
 
         try {

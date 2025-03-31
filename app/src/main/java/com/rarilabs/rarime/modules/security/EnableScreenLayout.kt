@@ -38,45 +38,42 @@ fun EnableScreenLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary)
-            .padding(vertical = 24.dp)
+            .padding(top = 72.dp, bottom = 16.dp)
+            .padding(horizontal = 20.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .padding(top = 56.dp)
-                .padding(horizontal = 20.dp)
         ) {
             Box(
                 modifier = Modifier
-                    .background(RarimeTheme.colors.primaryLighter, CircleShape)
+                    .background(RarimeTheme.colors.componentPrimary, CircleShape)
                     .padding(42.dp),
             ) {
                 AppIcon(id = icon, size = 72.dp, tint = RarimeTheme.colors.primaryDarker)
             }
             Text(
                 text = title,
-                style = RarimeTheme.typography.h4,
+                style = RarimeTheme.typography.h2,
                 color = RarimeTheme.colors.textPrimary,
                 modifier = Modifier.padding(top = 64.dp),
                 textAlign = TextAlign.Center
             )
             Text(
                 text = text,
-                style = RarimeTheme.typography.body3,
+                style = RarimeTheme.typography.body4,
                 color = RarimeTheme.colors.textSecondary,
                 modifier = Modifier.padding(top = 12.dp),
                 textAlign = TextAlign.Center
             )
         }
-        HorizontalDivider()
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp)
-                .padding(horizontal = 20.dp)
         ) {
             PrimaryButton(
                 text = stringResource(R.string.enable_btn),

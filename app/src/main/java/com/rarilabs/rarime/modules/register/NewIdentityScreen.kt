@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,11 +23,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,8 +43,7 @@ import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppTextField
 import com.rarilabs.rarime.ui.components.AppTextFieldState
-import com.rarilabs.rarime.ui.components.CardContainer
-import com.rarilabs.rarime.ui.components.CircledBadge
+import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.InfoAlert
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.PrimaryTextButton
@@ -122,7 +121,7 @@ fun NewIdentityScreen(
 
 
     fun savePrivateKey(pk: String) {
-        newIdentityViewModel.identityManager.savePrivateKey(pk);
+        newIdentityViewModel.identityManager.savePrivateKey(pk)
     }
 
     fun finishOnboarding(code: String) {
@@ -153,10 +152,7 @@ fun NewIdentityScreen(
                     ?: throw IllegalStateException("No private key found")
 
                 savePrivateKey(pk)
-
-                delay(1000)
                 mainViewModel.tryLogin()
-                delay(1000)
 
                 if (invitationCodeState.text.isEmpty()) {
                     finishOnboarding("")
@@ -189,9 +185,7 @@ fun NewIdentityScreen(
                 newIdentityViewModel.backupPrivateKey(driveService, pk)
 
 
-                delay(1000)
                 mainViewModel.tryLogin()
-                delay(1000)
 
                 if (invitationCodeState.text.isEmpty()) {
                     finishOnboarding("")
@@ -214,9 +208,9 @@ fun NewIdentityScreen(
             savePrivateKey(pk)
         }
 
-        delay(1000)
+        //delay(1000)
         mainViewModel.tryLogin()
-        delay(1000)
+        //fidelay(1000)
 
         if (invitationCodeState.text.isEmpty()) {
             finishOnboarding("")
@@ -262,11 +256,9 @@ fun NewIdentityScreen(
             isImporting = isImporting,
             handleInitPK = { scope.launch { handleInitPK(it) } },
             isSubmitting = isSubmitting,
-            invitationCodeState = invitationCodeState,
+            invitationCodeState = invitationCodeState
         )
     }
-
-
 }
 
 private suspend fun handleSignInResult(
@@ -295,7 +287,6 @@ fun NewIdentityScreenContent(
     handleInitPK: (pk: String) -> Unit,
 ) {
     val privateKeyFieldState = rememberAppTextFieldState(initialText = "")
-
 
     val clipboardManager = LocalClipboardManager.current
     var isCopied by remember { mutableStateOf(false) }
@@ -330,106 +321,91 @@ fun NewIdentityScreenContent(
         handleInitPK(pkToSave)
     }
 
-
-
-    IdentityStepLayout(
-        onBack = onBack,
-        title = "",
-        nextButton = {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(24.dp),
-            ) {
-                PrimaryButton(modifier = Modifier.fillMaxWidth(),
-                    size = ButtonSize.Large,
-                    text = stringResource(
-                        if (isImporting) R.string.create_identity_import_btn
-                        else R.string.create_identity_continue_btn
-                    ),
-                    enabled = !isSubmitting,
-                    onClick = { initPrivateKey() }
-                )
-            }
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            CircledBadge(
-                contentSize = 80,
-                containerSize = 120,
-                painter = painterResource(
-                    id = R.drawable.ic_key
-                ),
-            )
-            Text(
-                text = if (isImporting) {
-                    stringResource(R.string.create_identity_import_title)
-                } else {
-                    stringResource(R.string.create_identity_title)
-                },
-                style = RarimeTheme.typography.h4,
-                color = RarimeTheme.colors.textPrimary
-            )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Column(modifier = Modifier.fillMaxWidth()) {
-            CardContainer {
-                if (isImporting) {
-                    AppTextField(
+    Column(modifier = Modifier.fillMaxSize()) {
+        IdentityStepLayout(
+            onBack = onBack,
+            title = if (isImporting) {
+                stringResource(R.string.create_identity_import_title)
+            } else {
+                stringResource(R.string.create_identity_title)
+            },
+            nextButton = {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(24.dp),
+                ) {
+                    PrimaryButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        size = ButtonSize.Large,
+                        text = if (isSubmitting) {
+                            stringResource(R.string.create_identity_creating_btn)
+                        } else {
+                            stringResource(R.string.create_identity_continue_btn)
+                        },
+                        rightIcon = if (isSubmitting) null else R.drawable.ic_arrow_right,
                         enabled = !isSubmitting,
-                        state = privateKeyFieldState,
-                        placeholder = stringResource(R.string.create_identity_import_placeholder)
+                        onClick = { initPrivateKey() }
                     )
-                } else {
-                    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                        Text(
-                            text = privateKey,
-                            style = RarimeTheme.typography.body3,
-                            color = RarimeTheme.colors.textPrimary,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(
-                                    RarimeTheme.colors.componentPrimary,
-                                    RoundedCornerShape(8.dp)
-                                )
-                                .padding(vertical = 14.dp, horizontal = 16.dp)
+                }
+            }
+        ) {
+            Column(
+                modifier = Modifier.absolutePadding(top = 24.dp, left = 16.dp, right = 16.dp)
+            ) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    if (isImporting) {
+                        AppTextField(
+                            enabled = !isSubmitting,
+                            state = privateKeyFieldState,
+                            placeholder = stringResource(R.string.create_identity_import_placeholder)
                         )
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            PrimaryTextButton(
-                                size = ButtonSize.Large,
-                                leftIcon = if (isCopied) R.drawable.ic_check else R.drawable.ic_copy_simple,
-                                text = (if (isCopied) {
-                                    stringResource(R.string.create_identity_copied_msg)
-                                } else {
-                                    stringResource(R.string.create_identity_copy_btn)
-                                }).uppercase(),
-                                onClick = {
-                                    clipboardManager.setText(AnnotatedString(privateKey))
-                                    isCopied = true
-                                })
+                    } else {
+                        Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                            Text(
+                                text = privateKey,
+                                style = RarimeTheme.typography.body3,
+                                color = RarimeTheme.colors.textPrimary,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        RarimeTheme.colors.componentPrimary,
+                                        RoundedCornerShape(8.dp)
+                                    )
+                                    .padding(vertical = 14.dp, horizontal = 16.dp)
+                            )
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                PrimaryTextButton(
+                                    size = ButtonSize.Medium,
+                                    leftIcon = if (isCopied) R.drawable.ic_check else R.drawable.ic_copy_simple,
+                                    text = (if (isCopied) {
+                                        stringResource(R.string.create_identity_copied_msg)
+                                    } else {
+                                        stringResource(R.string.create_identity_copy_btn)
+                                    }),
+                                    onClick = {
+                                        clipboardManager.setText(AnnotatedString(privateKey))
+                                        isCopied = true
+                                    })
+                            }
                         }
+                    }
+
+                    if (!isImporting) {
+                        Spacer(modifier = Modifier.height(24.dp))
+                        HorizontalDivider()
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        InfoAlert(text = stringResource(R.string.create_identity_warning))
                     }
                 }
             }
-
-            if (!isImporting) {
-                Spacer(modifier = Modifier.height(8.dp))
-                InfoAlert(text = stringResource(R.string.create_identity_warning))
-            }
         }
     }
-
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun NewIdentityScreenContentPreview() {
     NewIdentityScreenContent(
@@ -440,7 +416,7 @@ private fun NewIdentityScreenContentPreview() {
     )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun NewIdentityScreenContentImportingPreview() {
     NewIdentityScreenContent(

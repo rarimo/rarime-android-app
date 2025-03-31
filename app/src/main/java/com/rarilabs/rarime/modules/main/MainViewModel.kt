@@ -1,8 +1,8 @@
 package com.rarilabs.rarime.modules.main
 
 import android.net.Uri
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -18,7 +18,6 @@ import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.ui.components.SnackbarShowOptions
 import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -26,7 +25,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 enum class AppLoadingStates {
@@ -34,6 +32,13 @@ enum class AppLoadingStates {
     LOADED,
     LOAD_FAILED,
     MAINTENANCE,
+}
+
+enum class ScreenInsets {
+    TOP,
+    RIGHT,
+    BOTTOM,
+    LEFT,
 }
 
 @HiltViewModel
@@ -66,6 +71,32 @@ class MainViewModel @Inject constructor(
     val modalContent: StateFlow<@Composable () -> Unit?>
         get() = _modalContent.asStateFlow()
 
+    var _screenInsets = MutableStateFlow<Map<ScreenInsets, Number>>(
+        mapOf(
+            ScreenInsets.TOP to 0,
+            ScreenInsets.RIGHT to 0,
+            ScreenInsets.BOTTOM to 0,
+            ScreenInsets.LEFT to 0,
+        )
+    )
+        private set
+    val screenInsets: StateFlow<Map<ScreenInsets, Number>>
+        get() = _screenInsets.asStateFlow()
+
+    fun setScreenInsets(
+        top: Number? = _screenInsets.value[ScreenInsets.TOP],
+        right: Number? = _screenInsets.value[ScreenInsets.RIGHT],
+        bottom: Number? = _screenInsets.value[ScreenInsets.BOTTOM],
+        left: Number? = _screenInsets.value[ScreenInsets.LEFT],
+    ) {
+        _screenInsets.value = mapOf(
+            ScreenInsets.TOP to (top ?: _screenInsets.value[ScreenInsets.TOP]!!),
+            ScreenInsets.RIGHT to (right ?: _screenInsets.value[ScreenInsets.RIGHT]!!),
+            ScreenInsets.BOTTOM to (bottom ?: _screenInsets.value[ScreenInsets.BOTTOM]!!),
+            ScreenInsets.LEFT to (left ?: _screenInsets.value[ScreenInsets.LEFT]!!),
+        )
+    }
+
     var colorScheme = settingsManager.colorScheme
     var isBottomBarShown = mutableStateOf(false)
         private set
@@ -94,6 +125,8 @@ class MainViewModel @Inject constructor(
 
 
     suspend fun initApp() = coroutineScope {
+
+        appLoadingState.value = AppLoadingStates.LOADING
         // 1. Early checks
         if (pointsManager.getMaintenanceStatus()) {
             appLoadingState.value = AppLoadingStates.MAINTENANCE
@@ -105,7 +138,6 @@ class MainViewModel @Inject constructor(
         }
 
         // 2. Set loading state
-        appLoadingState.value = AppLoadingStates.LOADING
 
         val clearLogsJob = launch {
             if (!isLogsDeleted.value) {
@@ -131,6 +163,7 @@ class MainViewModel @Inject constructor(
 
         initJob.join()
         clearLogsJob.join()
+        appLoadingState.value = AppLoadingStates.LOADED
     }
 
     private suspend fun loadUserDetails() = coroutineScope {
@@ -161,20 +194,16 @@ class MainViewModel @Inject constructor(
 
     suspend fun showSnackbar(options: SnackbarShowOptions) {
         _snackbarContent.value = options
-        val result = _snackbarHostState.value.showSnackbar(
-            message = "",
-            duration = options.duration,
+
+        kotlinx.coroutines.delay(
+            when (options.duration) {
+                SnackbarDuration.Short -> 2000
+                SnackbarDuration.Long -> 4000
+                SnackbarDuration.Indefinite -> Long.MAX_VALUE
+            }
         )
 
-        when (result) {
-            SnackbarResult.Dismissed -> {
-                clearSnackbarOptions()
-            }
-
-            SnackbarResult.ActionPerformed -> {
-                clearSnackbarOptions()
-            }
-        }
+        clearSnackbarOptions()
     }
 
     fun clearSnackbarOptions() {
@@ -182,10 +211,10 @@ class MainViewModel @Inject constructor(
     }
 
     suspend fun finishIntro() {
-        withContext(Dispatchers.IO) {
-            tryLogin()
-            loadUserDetails()
-        }
+//        withContext(Dispatchers.IO) {
+//            tryLogin()
+//            loadUserDetails()
+//        }
     }
 
     suspend fun acceptInvitation(code: String) {

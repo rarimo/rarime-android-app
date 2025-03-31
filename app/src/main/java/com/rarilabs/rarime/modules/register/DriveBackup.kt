@@ -101,18 +101,19 @@ fun DriveBackup(
             Text(
                 textAlign = TextAlign.Center,
                 text = stringResource(R.string.google_drive_backup_title),
-                style = RarimeTheme.typography.h5
+                style = RarimeTheme.typography.h4,
+                color = RarimeTheme.colors.textPrimary
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = contentDescription.description,
                 textAlign = TextAlign.Center,
-                style = RarimeTheme.typography.body3,
+                style = RarimeTheme.typography.body4,
                 color = RarimeTheme.colors.textSecondary,
             )
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             HorizontalDivider()
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             when (state) {
                 DriveState.BACKED_UP -> {
@@ -192,9 +193,9 @@ fun DriveBackupSkeleton(modifier: Modifier = Modifier) {
                 Modifier
                     .height(12.dp)
                     .fillMaxWidth())
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             HorizontalDivider()
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             AppSkeleton(
                 Modifier
                     .fillMaxWidth()

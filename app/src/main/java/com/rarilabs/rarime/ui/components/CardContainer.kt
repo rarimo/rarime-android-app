@@ -23,15 +23,16 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 @Composable
 fun CardContainer(
     modifier: Modifier = Modifier,
-    backgroundColor: Color = RarimeTheme.colors.backgroundOpacity,
+    backgroundColor: Color = RarimeTheme.colors.componentPrimary,
     content: @Composable BoxScope.() -> Unit = {},
 ) {
     Box(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(24.dp))
+            .clip(RoundedCornerShape(20.dp))
             .background(backgroundColor)
-            .padding(20.dp),
+            .padding(16.dp)
+            .then(modifier),
         content = content
     )
 }
@@ -42,19 +43,18 @@ private fun CardContainerPreview() {
     Column (
         modifier = Modifier
             .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
             .padding(16.dp)
     ) {
         CardContainer {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
                     text = "My Card Title",
-                    style = RarimeTheme.typography.subtitle2,
+                    style = RarimeTheme.typography.subtitle4,
                     color = RarimeTheme.colors.textPrimary
                 )
                 Text(
                     text = "Some card description",
-                    style = RarimeTheme.typography.body3,
+                    style = RarimeTheme.typography.body4,
                     color = RarimeTheme.colors.textSecondary
                 )
                 Box(

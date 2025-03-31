@@ -57,19 +57,19 @@ fun ActionCardContent (
         ) {
             Text(
                 text = title,
-                style = RarimeTheme.typography.subtitle3,
+                style = RarimeTheme.typography.subtitle5,
                 color = RarimeTheme.colors.textPrimary
             )
             Text(
                 text = description,
-                style = RarimeTheme.typography.body3,
+                style = RarimeTheme.typography.body4,
                 color = RarimeTheme.colors.textSecondary
             )
         }
         AppIcon(
             id = R.drawable.ic_caret_right,
             size = 16.dp,
-            tint = RarimeTheme.colors.baseBlack,
+            tint = RarimeTheme.colors.invertedLight,
             modifier = Modifier
                 .background(RarimeTheme.colors.primaryMain, CircleShape)
                 .padding(4.dp)

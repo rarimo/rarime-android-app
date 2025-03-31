@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -31,15 +32,15 @@ enum class ButtonSize {
     Large;
 
     fun height(): Dp = when (this) {
-        Small -> 24.dp
+        Small -> 32.dp
         Medium -> 40.dp
-        Large -> 48.dp
+        Large -> 56.dp
     }
 
     fun padding(): PaddingValues = when (this) {
-        Small -> PaddingValues(16.dp, 0.dp)
-        Medium -> PaddingValues(24.dp, 0.dp)
-        Large -> PaddingValues(32.dp, 0.dp)
+        Small -> PaddingValues(14.dp, 0.dp)
+        Medium -> PaddingValues(16.dp, 0.dp)
+        Large -> PaddingValues(24.dp, 0.dp)
     }
 
     @Composable
@@ -52,6 +53,12 @@ enum class ButtonSize {
     fun iconSize(): Dp = when (this) {
         Small -> 16.dp
         Medium, Large -> 20.dp
+    }
+
+    fun cornerRadius(): Dp = when (this) {
+        Small -> 12.dp
+        Medium -> 16.dp
+        Large -> 20.dp
     }
 }
 
@@ -73,6 +80,7 @@ fun BaseButton(
         modifier = modifier
             .height(size.height())
             .defaultMinSize(minWidth = 96.dp, minHeight = size.height()),
+        shape = RoundedCornerShape(size.cornerRadius()),
         enabled = enabled,
         colors = colors,
     ) {
@@ -139,7 +147,7 @@ private fun BaseButtonPreview() {
             Text(
                 text = "Custom content",
                 color = RarimeTheme.colors.errorDark,
-                style = RarimeTheme.typography.subtitle3
+                style = RarimeTheme.typography.subtitle5
             )
         }
     }

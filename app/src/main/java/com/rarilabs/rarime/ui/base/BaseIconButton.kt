@@ -36,12 +36,12 @@ enum class ButtonIconSize {
     fun padding(): PaddingValues = when (this) {
         Small -> PaddingValues(4.dp, 0.dp)
         Medium -> PaddingValues(6.dp, 0.dp)
-        Large -> PaddingValues(8.dp, 0.dp)
+        Large -> PaddingValues(6.dp, 0.dp)
     }
 
     fun iconSize(): Dp = when (this) {
         Small -> 12.dp
-        Medium, Large -> 16.dp
+        Medium, Large -> 20.dp
     }
 }
 
@@ -57,11 +57,13 @@ fun BaseIconButton(
     Button(
         onClick = onClick,
         contentPadding = size.padding(),
-        modifier = modifier.width(size.size()).height(size.size()),
+        modifier = modifier
+            .width(size.size())
+            .height(size.size()),
         enabled = enabled,
         colors = colors,
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             icon.let {
                 AppIcon(
                     id = it,
@@ -97,14 +99,18 @@ private fun BaseIconButtonPreview() {
             icon = R.drawable.ic_arrow_right,
             onClick = { })
         BaseIconButton(
-            modifier = Modifier.height(64.dp).width(220.dp),
+            modifier = Modifier
+                .height(64.dp)
+                .width(220.dp),
             onClick = { },
             icon = R.drawable.ic_arrow_right,
         )
 
 
         BaseIconButton(
-            modifier = Modifier.height(64.dp).width(220.dp),
+            modifier = Modifier
+                .height(64.dp)
+                .width(220.dp),
             onClick = { },
             icon = R.drawable.ic_arrow_right,
             colors = ButtonColors(

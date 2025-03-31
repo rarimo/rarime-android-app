@@ -96,7 +96,7 @@ fun FieldTypeDatePicker(
             Text(
                 modifier = Modifier.weight(1f),
                 text = text,
-                style = RarimeTheme.typography.body3,
+                style = RarimeTheme.typography.body4,
                 color = RarimeTheme.colors.textSecondary
             )
             AppIcon(

@@ -36,18 +36,23 @@ fun MaintenanceScreen() {
                 contentDescription = null
             )
 
-            Text(
-                text = stringResource(R.string.maintenance_in_progress),
-                style = RarimeTheme.typography.h5,
-                color = RarimeTheme.colors.textPrimary,
-                textAlign = TextAlign.Center
-            )
-            Text(
-                text = stringResource(R.string.we_re_upgrading_for_a_better_experience_back_soon),
-                style = RarimeTheme.typography.body2,
-                color = RarimeTheme.colors.textSecondary,
-                textAlign = TextAlign.Center
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.maintenance_in_progress),
+                    style = RarimeTheme.typography.h3,
+                    color = RarimeTheme.colors.textPrimary,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = stringResource(R.string.we_re_upgrading_for_a_better_experience_back_soon),
+                    style = RarimeTheme.typography.body3,
+                    color = RarimeTheme.colors.textSecondary,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }

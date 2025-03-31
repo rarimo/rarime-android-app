@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">RariMe</string>
-    <string name="intro_step_1_title">Welcome</string>
-    <string name="intro_step_1_text">This app is where you privately store your digital identities, enabling you to go incognito across the web.</string>
+    <string name="intro_step_1_title">RariMe</string>
+    <string name="intro_step_1_text">Welcome to</string>
     <string name="intro_step_2_title">Go Incognito</string>
     <string name="intro_step_2_text">RariMe ensures your history, reputation and actions are not lost, and remain under your control.</string>
     <string name="intro_step_3_title">Proofs</string>
@@ -71,7 +71,7 @@
     <string name="nfc_reader_error">Scan again</string>
 
     <string name="beta_launch">Beta launch</string>
-    <string name="create_account_btn">Create account</string>
+    <string name="create_account_btn">Create Account</string>
     <string name="what_is_rarime_title">What is RariMe?</string>
     <string name="settings_title">Settings</string>
     <string name="card_visual">CARD VISUAL</string>
@@ -134,7 +134,7 @@
     <string name="scan_qr_description">Place QR code within the frame to scan</string>
     <string name="wallet_receive_title">Receive %1$s</string>
     <string name="wallet_receive_description">You can use the QR code or the wallet address to deposit the %1$s token to your account</string>
-    <string name="deposit_address_lbl">Your Rarimo Address</string>
+    <string name="deposit_address_lbl">Your Address</string>
     <string name="address_lbl">Address</string>
     <string name="amount_lbl">Amount</string>
     <string name="amount_placeholder">Enter amount in %1$s</string>
@@ -245,7 +245,7 @@
     <string name="invite_status_limited_card_desc">Used • Rewards limit reached</string>
     <string name="invite_status_awaiting_card_desc">Used • Scan your passport</string>
 
-    <string name="delete_profile_title">Are you sure?</string>
+    <string name="delete_profile_title">Delete your account?</string>
     <string name="delete_profile_desc">This action is irreversible and will delete all your data</string>
     <string name="delete_profile_confirm_btn">Yes</string>
     <string name="delete_profile_cancel_btn">No</string>
@@ -272,16 +272,17 @@
 
     <string name="field_type_date_picker_placeholder">Select date</string>
 
-    <string name="create_identity_selector_title">Authorisation</string>
-    <string name="create_identity_selector_subtitle">Choose a preferred method</string>
-    <string name="create_identity_selector_option_1">Create a new profile</string>
+    <string name="create_identity_selector_title">Get Started</string>
+    <string name="create_identity_selector_subtitle">Select an authorization method</string>
+    <string name="create_identity_selector_option_1">Create a new identity</string>
     <string name="create_identity_selector_option_2">Re-activate old profile</string>
 
-    <string name="create_identity_continue_btn">Start</string>
+    <string name="create_identity_continue_btn">Continue</string>
+    <string name="create_identity_creating_btn">Creating...</string>
     <string name="create_identity_import_title">Import keys</string>
     <string name="create_identity_import_placeholder">Your private key</string>
     <string name="create_identity_import_btn">Continue</string>
-    <string name="create_identity_title">Your keys</string>
+    <string name="create_identity_title">Your Private key</string>
     <string name="create_identity_copy_btn">Copy to clipboard</string>
     <string name="create_identity_copied_msg">Copied</string>
     <string name="create_identity_warning">Please store the private key safely and do not share it with anyone. If you lose this key, you will not be able to recover the account and will lose access forever.</string>
@@ -357,7 +358,7 @@
     <string name="notifications_no_active_balance">No active balance</string>
     <string name="default_notification_channel_id">notifications</string>
 
-    <string name="google_drive_backup_title">Google drive backup</string>
+    <string name="google_drive_backup_title">Google Drive backup</string>
     <string name="google_drive_backup_backed_up">Your account is backed up with Google Drive. If you lose your device, you can recover your account.</string>
     <string name="google_drive_backup_delete_btn">Delete Backup</string>
     <string name="google_drive_backup_not_backed_up">Your account is not backed up. If you lose your device, you will lose access to your account.</string>
@@ -372,15 +373,14 @@
     <string name="drive_error_cant_back_up_your_private_key">Failed to back up, try again later</string>
 
     <string name="drive_loading">Loading...</string>
-    <string name="drive_sign_in_to_google_drive">Sign in to Google Drive</string>
     <string name="drive_restore_using_google_drive">Restore using Google Drive</string>
-    <string name="drive_restore_description">You can restore account using your Google Drive backup or Private Key</string>
-    <string name="drive_continue_without_backup">Back up using a key</string>
+    <string name="drive_restore_description">You can restore account using your Google Drive backup or private key</string>
+    <string name="drive_continue_without_backup">Back up manually</string>
 
-    <string name="dreive_title_restore_your_account">Restore your\naccount</string>
+    <string name="drive_title_restore_your_account">Restore your account</string>
     <string name="drive_back_up_to_google_drive">Back up with Google Drive</string>
-    <string name="drive_title_back_up_your_account">Back up your\naccount</string>
-    <string name="restore_using_key">Restore using a key</string>
+    <string name="drive_title_back_up_your_account">Back up your account</string>
+    <string name="restore_using_key">Restore manually</string>
 
     <string name="drive_backup_description">Your account is not backed up. If you lose your device, you will lose access to your account</string>
     <string name="passport_already_registered_no_dg15_title">You have already registered</string>
@@ -409,5 +409,42 @@
     <string name="passport_is_expired_error_description">You cannot claim tokens because this passport is expired.</string>
     <string name="reserve_error_header">Reservation Failed</string>
     <string name="reserve_error_description">An error occurred while reserving tokens. Please send feedback in the settings.</string>
+    <string name="give_us_feedback">Give us Feedback</string>
 
+
+    <string name="zk_liveness_title">ZK Liveness</string>
+    <string name="zk_liveness_list_item_1">Only your camera and device should attest to your identity</string>
+    <string name="zk_liveness_list_item_2">No need for trusted third parties</string>
+    <string name="zk_liveness_list_item_3">What happens here, stays here!</string>
+    <string name="zk_liveness_btn">Let\'s start</string>
+
+
+    <string name="zk_identity_no_passport_title_1">Your</string>
+    <string name="zk_identity_no_passport_title_2">ZK Identity</string>
+    <string name="zk_identity_no_passport_list_caption">Select Identity Type</string>
+    <string name="zk_identity_no_passport_list_item_1">Passport</string>
+    <string name="zk_identity_no_passport_list_item_2">ZK Liveness</string>
+    <string name="zk_identity_no_passport_list_item_3">ID Card</string>
+    <string name="zk_identity_no_passport_list_item_4">X Verified Badge</string>
+    <string name="zk_identity_no_passport_list_item_5">Proof of employment</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="error">Error</string>
+    <string name="retry">Retry</string>
+    <string name="please_try_again">Please try again</string>
+    <string name="please_don_t_close_application">Please don’t close application</string>
+    <string name="downloading">Downloading</string>
+    <string name="applying_zk">Applying ZK</string>
+    <string name="creating">Creating</string>
+    <string name="finishing">Finishing</string>
+    <string name="select_icon_description">Select icon</string>
+    <string name="from_json_test_only">FROM JSON (TEST ONLY)</string>
+    <string name="passport">passport</string>
+    <string name="you">You</string>
+    <string name="hi">Hi</string>
+    <string name="stranger">Stranger</string>
+    <string name="no_passport_error">First, scan your passport.</string>
+    <string name="no_active_identity">No active identity. Please register first.</string>
+    <string name="reserved">Reserved</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="rmo">RMO</string>
 </resources>

@@ -67,7 +67,7 @@ class WalletManager @Inject constructor(
             listOf(
 //                WalletAsset(
 //                    identityManager.rarimoAddress(), RarimoToken(
-//                        Constants.RARIMO_CHAINS[RarimoChains.Mainnet.chainId]!!, // FIXME: !!
+//                        chainInfo = if (BuildConfig.isTestnet) Constants.RARIMO_CHAINS[RarimoChains.MainnetBeta.chainId]!! else Constants.RARIMO_CHAINS[RarimoChains.Mainnet.chainId]!!,
 //                        identityManager, cosmosManager, dataStoreManager
 //                    )
 //                ),
@@ -117,7 +117,7 @@ class WalletManager @Inject constructor(
 
         try {
             // Parallel execution of balance updates
-            val res =coroutineScope {
+            val res = coroutineScope {
                 balances.forEach { balance ->
                     async {
                         balance.token.loadDetails()
@@ -135,9 +135,12 @@ class WalletManager @Inject constructor(
 
             val newWalletAssets = balances.toList()
 
-            val areBalancesEqual = newWalletAssets.size == _walletAssets.value.size && newWalletAssets.zip(_walletAssets.value).all {
-                    (newAsset, oldAsset) -> newAsset.balance.value == oldAsset.balance.value && newAsset.token.symbol == oldAsset.token.symbol
-            }
+            val areBalancesEqual =
+                newWalletAssets.size == _walletAssets.value.size && newWalletAssets.zip(
+                    _walletAssets.value
+                ).all { (newAsset, oldAsset) ->
+                    newAsset.balance.value == oldAsset.balance.value && newAsset.token.symbol == oldAsset.token.symbol
+                }
 
             // Update _walletAssets only if data has changed
             if (!areBalancesEqual) {
@@ -163,7 +166,7 @@ class WalletManager @Inject constructor(
             }
         } catch (e: Exception) {
             // Handle exceptions appropriately
-            ErrorHandler.logError("loadBalances", "Error during loading balances",e)
+            ErrorHandler.logError("loadBalances", "Error during loading balances", e)
         }
     }
 }

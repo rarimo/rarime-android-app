@@ -127,13 +127,13 @@ fun UiSnackbarDefault(
         ) {
             Text(
                 text = title,
-                style = RarimeTheme.typography.subtitle4,
+                style = RarimeTheme.typography.subtitle6,
                 color = textColor
             )
 
             Text(
                 text = message,
-                style = RarimeTheme.typography.body4,
+                style = RarimeTheme.typography.body5,
                 color = textColor.copy(alpha = 0.64f)
             )
         }

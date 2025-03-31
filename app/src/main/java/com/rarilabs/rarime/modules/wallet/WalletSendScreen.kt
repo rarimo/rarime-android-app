@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -117,7 +118,6 @@ private fun WalletSendScreenContent(
     val confirmationSheetState = rememberAppSheetState()
 
     WalletRouteLayout(
-        headerModifier = Modifier.padding(horizontal = 20.dp),
         title = stringResource(R.string.wallet_send_title, selectedWalletAsset.token.symbol),
         description = stringResource(
             R.string.wallet_send_description, selectedWalletAsset.token.symbol
@@ -125,9 +125,10 @@ private fun WalletSendScreenContent(
         onBack = onBack
     ) {
         Column(
-            verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxSize()
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxSize()
         ) {
-            CardContainer(modifier = Modifier.padding(horizontal = 20.dp)) {
+            CardContainer {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                     AppTextField(
                         state = addressState,
@@ -154,12 +155,12 @@ private fun WalletSendScreenContent(
                             ) {
                                 Text(
                                     text = stringResource(R.string.available_hint),
-                                    style = RarimeTheme.typography.body4,
+                                    style = RarimeTheme.typography.body5,
                                     color = RarimeTheme.colors.textSecondary
                                 )
                                 Text(
                                     text = "${selectedWalletAsset.humanBalance()} ${selectedWalletAsset.token.symbol}",
-                                    style = RarimeTheme.typography.body4,
+                                    style = RarimeTheme.typography.body5,
                                     color = RarimeTheme.colors.textPrimary
                                 )
                             }
@@ -185,21 +186,21 @@ private fun WalletSendScreenContent(
             }
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(RarimeTheme.colors.backgroundPure)
-                    .padding(top = 12.dp, bottom = 20.dp)
-                    .padding(horizontal = 20.dp),
+                    .padding(top = 12.dp, bottom = 20.dp),
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(
                         text = stringResource(R.string.receiver_gets),
-                        style = RarimeTheme.typography.body3,
+                        style = RarimeTheme.typography.body4,
                         color = RarimeTheme.colors.textSecondary
                     )
                     Text(
                         text = "${NumberUtil.formatAmount(humanAmountState.text.toDoubleOrNull() ?: 0.0)} ${selectedWalletAsset.token.symbol}",
-                        style = RarimeTheme.typography.subtitle3,
+                        style = RarimeTheme.typography.subtitle5,
                         color = RarimeTheme.colors.textPrimary
                     )
                 }

@@ -32,6 +32,7 @@ fun WalletRouteLayout(
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary)
             .padding(top = 20.dp)
+            .padding(horizontal = 20.dp)
     ) {
         Column(
             modifier = headerModifier,
@@ -53,7 +54,7 @@ fun WalletRouteLayout(
                     if (title.isNotEmpty()) {
                         Text(
                             text = title,
-                            style = RarimeTheme.typography.subtitle2,
+                            style = RarimeTheme.typography.subtitle4,
                             color = RarimeTheme.colors.textPrimary
                         )
                     }
@@ -61,7 +62,7 @@ fun WalletRouteLayout(
                     if (description.isNotEmpty()) {
                         Text(
                             text = description,
-                            style = RarimeTheme.typography.body3,
+                            style = RarimeTheme.typography.body4,
                             color = RarimeTheme.colors.textSecondary
                         )
                     }
