@@ -160,10 +160,12 @@ class PointsManager @Inject constructor(
     private suspend fun generateVerifyPassportQueryProof(
         eDocument: EDocument, privateKey: ByteArray
     ): ZkProof {
+
+        val lightProofData = secureSharedPrefsManager.getLightRegistrationData()
+
         val assetContext: Context = context.createPackageContext("com.rarilabs.rarime", 0)
         val assetManager = assetContext.assets
 
-        val lightProofData = secureSharedPrefsManager.getLightRegistrationData()
 
         val zkp = ZKPUseCase(context, assetManager)
 
