@@ -24,6 +24,9 @@ import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.registration.RegistrationAPI
 import com.rarilabs.rarime.api.registration.RegistrationAPIManager
 import com.rarilabs.rarime.api.registration.RegistrationManager
+import com.rarilabs.rarime.api.voting.VotingApi
+import com.rarilabs.rarime.api.voting.VotingApiManager
+import com.rarilabs.rarime.api.voting.VotingManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
 import com.rarilabs.rarime.manager.NotificationManager
@@ -131,6 +134,20 @@ class APIModule {
             .baseUrl(BaseConfig.RELAYER_URL)
             .client(okHttpClient)
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideVotingApiManager(
+        @Named("authRetrofit") retrofit: Retrofit
+    ): VotingApiManager = VotingApiManager(retrofit.create(VotingApi::class.java))
+
+    @Provides
+    @Singleton
+    fun provideVotingManager(
+        votingApiManager: VotingApiManager
+    ): VotingManager {
+        return VotingManager(votingApiManager)
     }
 
     @Provides

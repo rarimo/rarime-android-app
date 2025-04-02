@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import org.web3j.crypto.Credentials
+import org.web3j.protocol.core.DefaultBlockParameter
 import java.math.BigInteger
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -142,6 +143,33 @@ class IdentityManager @Inject constructor(
             return null
         }
 
+    }
+
+    suspend fun getRegistrationSMTProof(
+        block: DefaultBlockParameter = DefaultBlockParameter.valueOf(
+            "latest"
+        )
+    ): RarimoContractManager.SMTProof {
+
+        val registerProofPubSignals =
+            ZkPubSignals.RegisterIdentityUniversalRSAPss2048PubSignals(registrationProof.value!!.pub_signals)
+        val passportHash =
+            registerProofPubSignals.getSignal(ZkPubSignals.RegisterIdentityUniversalRSAPss2048PubSignals.SignalKey.PassportKey)
+        val identityKey =
+            registerProofPubSignals.getSignal(ZkPubSignals.RegisterIdentityUniversalRSAPss2048PubSignals.SignalKey.IdentityKey)
+
+
+        val proofIndex = org.freedomtool.monpass.util.zk.PoseidonHash.hash(
+            listOf(
+                passportHash.toNormalizedByteArray(capacity = 32),
+                identityKey.toNormalizedByteArray(capacity = 32)
+            )
+        )
+
+
+        return withContext(Dispatchers.IO) {
+            contractManager.getProof(proofIndex, block)
+        }
     }
 
 

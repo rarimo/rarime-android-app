@@ -13,5 +13,5 @@ data class VoteCountData(
 )
 
 data class VoteCountAttributes(
-    @SerializedName("vote_count") val voteCount: Int
+    @SerializedName("vote_count") val voteCount: Long
 )
