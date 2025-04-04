@@ -1,7 +1,11 @@
 package com.rarilabs.rarime.api.voting
 
+import com.rarilabs.rarime.api.voting.models.IPFSResponseData
+import com.rarilabs.rarime.api.voting.models.LatestOperationResponse
 import com.rarilabs.rarime.api.voting.models.SendTransactionRequest
 import com.rarilabs.rarime.api.voting.models.VoteCountResponse
+import com.rarilabs.rarime.api.voting.models.VoteRequest
+import com.rarilabs.rarime.api.voting.models.VoteResponse
 import com.rarilabs.rarime.api.voting.models.VoteV2Response
 import retrofit2.Response
 import retrofit2.http.Body

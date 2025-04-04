@@ -14,22 +14,22 @@ class VotingApiManager @Inject constructor(
     private val votingApi: VotingApi
 ) {
 
-    suspend fun countRemainingVotes(
-        votingId: String
-    ): Long {
-
-        val response = votingApi.countRemainingVotes(votingId)
-
-        if (response.isSuccessful) {
-            response.body()?.data?.attributes?.voteCount ?: 0
-        }
-
-        throw Exception(response.errorBody()?.string())
-    }
+//    suspend fun countRemainingVotes(
+//        votingId: String
+//    ): Long {
+//
+//        val response = votingApi.countRemainingVotes(votingId)
+//
+//        if (response.isSuccessful) {
+//            response.body()?.data?.attributes?.voteCount ?: 0
+//        }
+//
+//        throw Exception(response.errorBody()?.string())
+//    }
 
 
     suspend fun getIPFSData(url: String): IPFSResponseData {
-        val response = votingApi.getDataFromIPFS(url)
+        val response = votingApi.getDataFromIPFS("https://ipfs.rarimo.com/ipfs/$url")
 
         if (response.isSuccessful) {
             return response.body()!!

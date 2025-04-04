@@ -1,7 +1,5 @@
 package com.rarilabs.rarime.api.voting.models
 
-import com.google.gson.Gson
-import identity.Identity
 import java.math.BigInteger
 
 enum class PollType {
@@ -22,9 +20,9 @@ data class PollVoteOption(
     val title: String,
 )
 
+
 data class UserInPoll(
     val poll: Poll,
-
     val pollCriteriaList: List<PollCriteria>,
     val userVerificationStatus: PollCriteriaStatus,
 )
@@ -45,15 +43,9 @@ data class Poll(
     val eventId: BigInteger,
     val proposalSMT: String,
     val proposalResults: List<List<Long>>,
-    val proposalStatus: ProposalStatus
-) {
-    fun getVotingData(): VotingData {
-        val rawVotingdata = votingData[0]
-        val ruleJson = Identity.decodeABIProposalRules(rawVotingdata)
-
-        return Gson().fromJson(ruleJson.decodeToString(), VotingData::class.java)
-    }
-}
+    val proposalStatus: ProposalStatus,
+    val imageUrl: String?
+)
 
 data class Question(
     val id: Long,
@@ -101,18 +93,6 @@ val MOCKED_POLL_ITEM = Poll(
     votingData = listOf(),
     proposalStatus = ProposalStatus.Started,
     proposalSMT = "",
+    imageUrl = null,
     proposalResults = listOf(listOf(5, 2, 4), listOf(1, 2, 5), listOf(8, 2, 5))
-)
-
-val MOCKED_USER_IN_POLL_ITEM = UserInPoll(
-    poll = MOCKED_POLL_ITEM,
-    pollCriteriaList = listOf(
-        PollCriteria(
-            title = "Citizen of Georgia", accomplished = true
-        ),
-        PollCriteria(
-            title = "Over 18+", accomplished = true
-        ),
-    ),
-    userVerificationStatus = PollCriteriaStatus.VERIFIED,
 )

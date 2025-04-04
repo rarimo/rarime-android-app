@@ -2,6 +2,7 @@ package com.rarilabs.rarime.modules.votes
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.voting.models.MOCKED_POLL_ITEM
+import com.rarilabs.rarime.api.voting.models.Poll
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppSkeleton
 import com.rarilabs.rarime.ui.components.CardContainer
@@ -30,10 +33,12 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
 fun VoteResultsCard(
-    voteData: VoteData,
+    voteData: Poll,
+    onCLick: (Poll) -> Unit
 ) {
     CardContainer(
-        backgroundColor = RarimeTheme.colors.backgroundPrimary
+        backgroundColor = RarimeTheme.colors.backgroundPrimary,
+        modifier = Modifier.clickable { onCLick.invoke(voteData) }
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -56,7 +61,7 @@ fun VoteResultsCard(
                     ) {
                         AppIcon(id = R.drawable.ic_timer_line)
                         Text(
-                            text = "${voteData.durationMillis / (1000 * 60 * 60)} hours",
+                            text = "${voteData.voteEndDate!! / (1000 * 60 * 60)} hours",
                             style = RarimeTheme.typography.subtitle7,
                             color = RarimeTheme.colors.textSecondary
                         )
@@ -68,7 +73,7 @@ fun VoteResultsCard(
                     ) {
                         AppIcon(id = R.drawable.ic_group_line)
                         Text(
-                            text = voteData.participantsCount.toString(),
+                            text = "participantsCount",
                             style = RarimeTheme.typography.subtitle7,
                             color = RarimeTheme.colors.textSecondary
                         )
@@ -83,11 +88,11 @@ fun VoteResultsCard(
                     .height(1.dp)
             )
 
-            voteData.questions.forEach { question ->
+            voteData.questionList.forEach { question ->
                 VoteResultsCardStatistics(
                     variants = question.variants.map {
                         mapOf(
-                            it.title to it.votedCount
+                            it to 3.0
                         )
                     }
                 )
@@ -316,48 +321,8 @@ fun VotesLoadingSkeleton() {
 @Composable
 fun VoteResultsCardPreview() {
     VoteResultsCard(
-        voteData = VoteData(
-            title = "Sample Vote",
-            description = "This is a sample vote for preview purposes",
-            durationMillis = 86400000,
-            participantsCount = 150,
-            questions = listOf(
-                VoteQuestion(
-                    "1",
-                    "Question 1",
-                    listOf(
-                        QuestionAnswerVariant("1", "Lorem", 100.0),
-                        QuestionAnswerVariant("2", "Ipsum", 200.0),
-                        QuestionAnswerVariant("3", "Dolor", 300.0),
-                        QuestionAnswerVariant("4", "Sit", 400.0),
-                        QuestionAnswerVariant("5", "Amet", 500.0),
-                        QuestionAnswerVariant("6", "Consectetur", 600.0),
-                        QuestionAnswerVariant("7", "Adipiscing", 700.0),
-                        QuestionAnswerVariant("8", "Elit", 800.0),
-                        QuestionAnswerVariant("9", "Sed", 900.0),
-                    ),
-                ),
-                VoteQuestion(
-                    "2",
-                    "Question 2",
-                    listOf(
-                        QuestionAnswerVariant("10", "Do", 1000.0),
-                        QuestionAnswerVariant("11", "Eiusmod", 1100.0),
-                        QuestionAnswerVariant("12", "Tempor", 1200.0),
-                        QuestionAnswerVariant("13", "Incididunt", 1300.0),
-                        QuestionAnswerVariant("14", "Labore", 1400.0),
-                        QuestionAnswerVariant("15", "Et", 1500.0),
-                        QuestionAnswerVariant("16", "Dolore", 1600.0),
-                        QuestionAnswerVariant("17", "Magna", 1700.0),
-                        QuestionAnswerVariant("18", "Aliqua", 1800.0),
-                        QuestionAnswerVariant("19", "Ut", 1900.0),
-                        QuestionAnswerVariant("20", "Enim", 2000.0),
-                    )
-                ),
-            ),
-            endDate = (1741092332000).toLong()
-        )
-    )
+        voteData = MOCKED_POLL_ITEM
+    ) {}
 }
 
 @Preview

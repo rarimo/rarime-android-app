@@ -36,6 +36,7 @@ import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.manager.SecurityManager
 import com.rarilabs.rarime.manager.SettingsManager
 import com.rarilabs.rarime.manager.StableCoinContractManager
+import com.rarilabs.rarime.manager.TestContractManager
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.store.SecureSharedPrefsManagerImpl
@@ -145,9 +146,22 @@ class APIModule {
     @Provides
     @Singleton
     fun provideVotingManager(
-        votingApiManager: VotingApiManager
+        votingApiManager: VotingApiManager,
+        votingContractManager: TestContractManager,
+        rarimoContractManager: RarimoContractManager,
+        passportManager: PassportManager,
+        identityManager: IdentityManager,
+        registrationManager: RegistrationManager,
+
     ): VotingManager {
-        return VotingManager(votingApiManager)
+        return VotingManager(
+            votingApiManager,
+            votingContractManager,
+            rarimoContractManager,
+            passportManager,
+            identityManager,
+            registrationManager
+        )
     }
 
     @Provides
@@ -403,6 +417,15 @@ class APIModule {
     fun web3(): Web3j {
         return Web3j.build(HttpService(BaseConfig.EVM_RPC_URL))
     }
+
+
+    @Provides
+    @Singleton
+    @Named("Test")
+    fun web3Test(): Web3j {
+        return Web3j.build(HttpService("https://rpc.qtestnet.org"))
+    }
+
 
     @Provides
     @Singleton
