@@ -23,6 +23,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.voting.models.MOCKED_POLL_ITEM
 import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.modules.home.v2.HomeScreen
 import com.rarilabs.rarime.modules.intro.IntroScreen
@@ -96,20 +97,16 @@ fun MainScreenRoutes(
             }
 
             navigation(
-                startDestination = Screen.Register.NewIdentity.route,
-                route = Screen.Register.route
+                startDestination = Screen.Register.NewIdentity.route, route = Screen.Register.route
             ) {
                 composable(Screen.Register.NewIdentity.route) {
                     ScreenInsetsContainer {
-                        NewIdentityScreen(
-                            onNext = {
-                                coroutineScope.launch {
-                                    mainViewModel.finishIntro()
-                                    navigateWithPopUp(Screen.Passcode.route)
-                                }
-                            },
-                            onBack = { navController.popBackStack() }
-                        )
+                        NewIdentityScreen(onNext = {
+                            coroutineScope.launch {
+                                mainViewModel.finishIntro()
+                                navigateWithPopUp(Screen.Passcode.route)
+                            }
+                        }, onBack = { navController.popBackStack() })
                     }
                 }
                 composable(Screen.Register.ImportIdentity.route) {
@@ -139,27 +136,23 @@ fun MainScreenRoutes(
                             onSkip = {
                                 mainViewModel.updatePasscodeState(SecurityCheckState.DISABLED)
                                 navigateWithSavedNextNavScreen(Screen.Main.route)
-                            }
-                        )
+                            })
                     }
                 }
                 composable(Screen.Passcode.AddPasscode.route) {
                     ScreenInsetsContainer {
-                        SetupPasscode(
-                            onPasscodeChange = {
-                                if (BiometricUtil.isSupported(context)) {
-                                    navigateWithPopUp(Screen.EnableBiometrics.route)
-                                } else {
-                                    mainViewModel.updateBiometricsState(SecurityCheckState.DISABLED)
-                                    navigateWithPopUp(Screen.Main.route)
-                                }
-                            },
-                            onClose = {
-                                navController.popBackStack(
-                                    Screen.Passcode.EnablePasscode.route, false
-                                )
+                        SetupPasscode(onPasscodeChange = {
+                            if (BiometricUtil.isSupported(context)) {
+                                navigateWithPopUp(Screen.EnableBiometrics.route)
+                            } else {
+                                mainViewModel.updateBiometricsState(SecurityCheckState.DISABLED)
+                                navigateWithPopUp(Screen.Main.route)
                             }
-                        )
+                        }, onClose = {
+                            navController.popBackStack(
+                                Screen.Passcode.EnablePasscode.route, false
+                            )
+                        })
                     }
                 }
             }
@@ -172,22 +165,18 @@ fun MainScreenRoutes(
 
             composable(Screen.EnableBiometrics.route) {
                 ScreenInsetsContainer {
-                    EnableBiometricsScreen(
-                        onNext = {
-                            navigateWithSavedNextNavScreen(Screen.Main.route)
-                        },
-                        onSkip = {
-                            navigateWithSavedNextNavScreen(Screen.Main.route)
-                        }
-                    )
+                    EnableBiometricsScreen(onNext = {
+                        navigateWithSavedNextNavScreen(Screen.Main.route)
+                    }, onSkip = {
+                        navigateWithSavedNextNavScreen(Screen.Main.route)
+                    })
                 }
             }
 
             composable(Screen.Lock.route) {
                 ScreenInsetsContainer {
                     LockScreen(
-                        onPass = { navigateWithSavedNextNavScreen(Screen.Main.route) }
-                    )
+                        onPass = { navigateWithSavedNextNavScreen(Screen.Main.route) })
                 }
             }
 
@@ -195,35 +184,29 @@ fun MainScreenRoutes(
             composable(Screen.ScanPassport.ScanPassportSpecific.route) {
                 ScreenInsetsContainer {
 
-                    ScanPassportScreen(
-                        onClose = {
-                            coroutineScope.launch {
-                                navController.popBackStack()
-                            }
-                        },
-                        onClaim = {
-                            coroutineScope.launch {
-                                navigateWithPopUp(Screen.Claim.Specific.route)
-                            }
+                    ScanPassportScreen(onClose = {
+                        coroutineScope.launch {
+                            navController.popBackStack()
                         }
-                    )
+                    }, onClaim = {
+                        coroutineScope.launch {
+                            navigateWithPopUp(Screen.Claim.Specific.route)
+                        }
+                    })
                 }
             }
 
             composable(Screen.ScanPassport.ScanPassportPoints.route) {
                 ScreenInsetsContainer {
-                    ScanPassportScreen(
-                        onClose = {
-                            coroutineScope.launch {
-                                navigateWithPopUp(Screen.Main.Identity.route)
-                            }
-                        },
-                        onClaim = {
-                            coroutineScope.launch {
-                                navigateWithPopUp(Screen.Claim.Reserve.route)
-                            }
+                    ScanPassportScreen(onClose = {
+                        coroutineScope.launch {
+                            navigateWithPopUp(Screen.Main.Identity.route)
                         }
-                    )
+                    }, onClaim = {
+                        coroutineScope.launch {
+                            navigateWithPopUp(Screen.Claim.Reserve.route)
+                        }
+                    })
                 }
             }
 
@@ -250,8 +233,7 @@ fun MainScreenRoutes(
                             navigate = simpleNavigate,
                             navigateWithPopUp = navigateWithPopUp,
                             sharedTransitionScope = this@SharedTransitionLayout,
-                            setVisibilityOfBottomBar = { mainViewModel.setBottomBarVisibility(it) }
-                        )
+                            setVisibilityOfBottomBar = { mainViewModel.setBottomBarVisibility(it) })
                     }
                 }
 
@@ -269,9 +251,8 @@ fun MainScreenRoutes(
 
                     voteId?.let {
                         VoteProcessScreen(
-                            voteId = voteId,
-                            onBackClick = { navController.popBackStack() }
-                        )
+                            selectedPoll = MOCKED_POLL_ITEM,
+                            onBackClick = { navController.popBackStack() }, onVote = {})
                     } ?: run {
                         navigateWithPopUp(Screen.Main.Home.route)
                     }
@@ -327,8 +308,7 @@ fun MainScreenRoutes(
                     AuthGuard(navigate = navigateWithPopUp) {
                         ScreenInsetsContainer {
                             ProfileScreen(
-                                appIcon = appIcon,
-                                navigate = { simpleNavigate(it) })
+                                appIcon = appIcon, navigate = { simpleNavigate(it) })
                         }
                     }
                 }
@@ -395,12 +375,10 @@ fun MainScreenRoutes(
             }
 
             composable(
-                route = Screen.Invitation.route,
-                arguments = listOf(
+                route = Screen.Invitation.route, arguments = listOf(
                     navArgument("code") {
                         type = NavType.StringType
-                    }
-                )
+                    })
             ) { entry ->
                 val code = entry.arguments?.getString("code")
                 AuthGuard(
@@ -413,22 +391,17 @@ fun MainScreenRoutes(
                     },
                     navigate = navigateWithPopUp,
                 ) {
-                    AcceptInvitation(
-                        code = code,
-                        onFinish = {
-                            mainViewModel.setModalVisibility(true)
-                            mainViewModel.setModalContent {
-                                CongratsInvitationModalContent(
-                                    onClose = {
-                                        mainViewModel.setModalVisibility(false)
-                                    }
-                                )
-                            }
+                    AcceptInvitation(code = code, onFinish = {
+                        mainViewModel.setModalVisibility(true)
+                        mainViewModel.setModalContent {
+                            CongratsInvitationModalContent(
+                                onClose = {
+                                    mainViewModel.setModalVisibility(false)
+                                })
+                        }
 
-                            navigateWithPopUp(Screen.Main.Home.route)
-                        },
-                        onError = { navigateWithPopUp(Screen.Main.Home.route) }
-                    )
+                        navigateWithPopUp(Screen.Main.Home.route)
+                    }, onError = { navigateWithPopUp(Screen.Main.Home.route) })
                 }
             }
 
@@ -472,9 +445,7 @@ fun MainScreenRoutes(
 
 @Composable
 fun AcceptInvitation(
-    onFinish: () -> Unit,
-    onError: () -> Unit,
-    code: String?
+    onFinish: () -> Unit, onError: () -> Unit, code: String?
 ) {
     val mainViewModel = LocalMainViewModel.current
 

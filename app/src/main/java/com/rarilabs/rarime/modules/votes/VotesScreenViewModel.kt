@@ -61,6 +61,8 @@ class VotesScreenViewModel @Inject constructor(
         votingManager.setSelectedPoll(poll)
     }
 
+    val vote = votingManager::vote
+
     suspend fun loadPolls(isRefresh: Boolean = false) {
         withContext(Dispatchers.IO) {
             val allPolls = votingManager.loadVotePolls(isRefresh)

@@ -86,6 +86,9 @@ val MOCKED_POLL_ITEM = Poll(
             id = 3, title = "question 3", IsSkippable = false, variants = listOf("1", "2", "3")
         ), Question(
             id = 4, title = "question 4", IsSkippable = false, variants = listOf("1", "2", "3")
+        ),
+        Question(
+            id = 5, title = "question 4", IsSkippable = false, variants = listOf("1", "2", "3")
         )
     ),
     eventId = BigInteger.ONE,

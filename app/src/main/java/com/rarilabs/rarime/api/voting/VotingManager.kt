@@ -65,7 +65,6 @@ class VotingManager @Inject constructor(
     private val registrationManager: RegistrationManager
 ) {
 
-
     private val ZERO_IN_HEX: String = "0x303030303030"
 
     private val _polls: MutableStateFlow<List<Poll>> = MutableStateFlow(listOf())
@@ -178,8 +177,17 @@ class VotingManager @Inject constructor(
     private val FIRST_POLL_MAX_LIMIT: BigInteger = BigInteger.valueOf(10L)
 
     private suspend fun loadPolls(): List<Poll> {
+
+        Log.i("Proposal", "load polls")
+
+        val proposal = "0x27ABc0BDfD339d167854c7a14Cf3DDe64bbfDBc9"
+
+        val multicall = "0xcA11bde05977b3631167028862bE2a173976CA11"
+
+        val VOTING_RPC_URL = "https://rpc.qtestnet.org"
+
         val proposalsStateContract =
-            votingContractManager.getProposalsStateContract("0x27ABc0BDfD339d167854c7a14Cf3DDe64bbfDBc9")
+            votingContractManager.getProposalsStateContract(proposal)
         val pollsList: MutableList<Poll> = mutableListOf()
 
         withContext(Dispatchers.IO) {
@@ -195,11 +203,7 @@ class VotingManager @Inject constructor(
                 FIRST_POLL_MAX_LIMIT
             }.toLong()
 
-            val proposal = "0x27ABc0BDfD339d167854c7a14Cf3DDe64bbfDBc9"
 
-            val multicall = "0xcA11bde05977b3631167028862bE2a173976CA11"
-
-            val VOTING_RPC_URL = "https://rpc.qtestnet.org"
 
             val proposalInfosArrayRaw = Identity.getStateInfosMulticall(
                 proposal,
@@ -357,7 +361,7 @@ class VotingManager @Inject constructor(
             voteProofJson.toByteArray(),
             selectedPoll.value!!.poll.id,
             pollResultJson.toByteArray(),
-            "GEO"
+            passportManager.passport.value!!.personDetails!!.nationality
         )
 
 
@@ -376,7 +380,6 @@ class VotingManager @Inject constructor(
         if (!res) {
             throw Exception("Error during checkIsTransactionSuccessful")
         }
-        //getReward(context)
     }
 
 
