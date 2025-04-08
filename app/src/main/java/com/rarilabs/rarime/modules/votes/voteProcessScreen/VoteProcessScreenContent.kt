@@ -200,7 +200,6 @@ fun VoteProcessScreenContent(
                                             interactionSource = remember { MutableInteractionSource() },
                                             indication = rememberRipple(bounded = true)
                                         ) {
-                                            // TODO: check for duplicates
                                             selectedOptionPerQuestion =
                                                 selectedOptionPerQuestion?.plus(
                                                     mapOf(question.id to variant.id)

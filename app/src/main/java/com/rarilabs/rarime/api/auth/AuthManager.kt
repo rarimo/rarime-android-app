@@ -65,7 +65,7 @@ class AuthManager @Inject constructor(
         val zkp = ZKPUseCase(context, assetManager)
 
         val authProofInputs = AuthProofInputs(
-            skIdentity = "0x" + identityManager.privateKey,
+            skIdentity = "0x" + identityManager.privateKey.value,
             eventID = BaseConfig.POINTS_SVC_ID,
             eventData = "0x" + decodedChallenge.toHexString(),
             revealPkIdentityHash = 0

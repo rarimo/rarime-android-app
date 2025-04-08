@@ -24,8 +24,7 @@ import javax.inject.Singleton
 class IdentityManager @Inject constructor(
     private val dataStoreManager: SecureSharedPrefsManager,
     private val rarimoContractManager: RarimoContractManager,
-
-    ) {
+) {
     private val _privateKey = MutableStateFlow(dataStoreManager.readPrivateKey())
     val privateKey: StateFlow<String?>
         get() = _privateKey.asStateFlow()
@@ -59,7 +58,6 @@ class IdentityManager @Inject constructor(
         data?.let {
             dataStoreManager.saveLightRegistrationData(it)
         }
-
     }
 
     fun getProfiler(): Profile{

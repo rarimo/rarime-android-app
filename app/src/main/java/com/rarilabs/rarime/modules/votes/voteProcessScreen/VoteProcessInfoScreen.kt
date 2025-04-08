@@ -13,6 +13,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,8 +37,12 @@ fun VoteProcessInfoScreen(
     modifier: Modifier = Modifier,
     userInPoll: UserInPoll,
     onClose: () -> Unit,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
+
+    val isEnabled = remember {
+        userInPoll.pollCriteriaList.isNotEmpty() && userInPoll.pollCriteriaList.none { !it.accomplished }
+    }
 
     Column(
         modifier = Modifier
@@ -143,13 +148,12 @@ fun VoteProcessInfoScreen(
                 }
             }
 
-
-
             Spacer(modifier = Modifier.weight(1f))
 
             PrimaryButton(
+                enabled = isEnabled,
                 modifier = Modifier.fillMaxWidth(),
-                text = "Let’s start",
+                text = if (isEnabled) "Let’s start" else "Not eligible",
                 onClick = onClick,
                 size = ButtonSize.Large
             )
@@ -172,7 +176,7 @@ private fun VoteProcessInfoScreenPreview() {
                     ),
                     PollCriteria(
                         title = "Citizen of Georgia",
-                        accomplished = false
+                        accomplished = true
                     )
                 )
             ),

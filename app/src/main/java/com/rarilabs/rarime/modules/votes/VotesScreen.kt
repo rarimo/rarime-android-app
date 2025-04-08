@@ -45,11 +45,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.voting.models.MOCKED_POLL_ITEM
 import com.rarilabs.rarime.api.voting.models.Poll
+import com.rarilabs.rarime.api.voting.models.PollResult
 import com.rarilabs.rarime.modules.home.v2.details.BaseDetailsScreen
 import com.rarilabs.rarime.modules.home.v2.details.DetailsProperties
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
+import com.rarilabs.rarime.modules.votes.voteProcessScreen.ErrorSendVoteScreen
+import com.rarilabs.rarime.modules.votes.voteProcessScreen.PollsItemVoteFinishedScreen
+import com.rarilabs.rarime.modules.votes.voteProcessScreen.SendingVoteScreen
 import com.rarilabs.rarime.modules.votes.voteProcessScreen.VoteProcessInfoScreen
 import com.rarilabs.rarime.modules.votes.voteProcessScreen.VoteProcessScreen
 import com.rarilabs.rarime.ui.base.ButtonSize
@@ -59,6 +63,7 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import kotlinx.coroutines.launch
 
@@ -107,6 +112,20 @@ fun VotesScreen(
         viewModel.loadPolls()
     }
 
+    fun vote(voteOption: List<PollResult>) {
+        currentState = VoteAppSheetState.PROCESSING_VOTE
+        scope.launch {
+            try {
+                viewModel.vote(voteOption, context)
+
+                currentState = VoteAppSheetState.FINISH_VOTE
+            } catch (e: Exception) {
+                ErrorHandler.logError("PollsItemVoteScreen", "Failed to vote in poll", e)
+                currentState = VoteAppSheetState.ERROR_VOTE
+            }
+        }
+    }
+
     val props = DetailsProperties(
         id = id,
         header = "Freedomtool",
@@ -144,22 +163,26 @@ fun VotesScreen(
                     onVote = {
                         scope.launch {
                             currentState = VoteAppSheetState.PROCESSING_VOTE
-                            viewModel.vote(it, context)
+                            vote(it)
                         }
                     }
                 )
             }
 
             VoteAppSheetState.PROCESSING_VOTE -> {
-
+                SendingVoteScreen()
             }
 
             VoteAppSheetState.ERROR_VOTE -> {
-
+                ErrorSendVoteScreen {
+                    navigate(it)
+                }
             }
 
             VoteAppSheetState.FINISH_VOTE -> {
-
+                PollsItemVoteFinishedScreen {
+                    navigate(it)
+                }
             }
         }
 

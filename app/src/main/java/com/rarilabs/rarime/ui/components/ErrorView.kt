@@ -24,6 +24,8 @@ fun ErrorView(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            AppIcon(id = iconId, size = 100.dp, tint = RarimeTheme.colors.errorDarker)
+
             Text(
                 text = title,
                 style = RarimeTheme.typography.h2,
@@ -36,7 +38,6 @@ fun ErrorView(
             )
         }
 
-        AppIcon(id = iconId, size = 100.dp, tint = RarimeTheme.colors.errorDarker)
     }
 }
 

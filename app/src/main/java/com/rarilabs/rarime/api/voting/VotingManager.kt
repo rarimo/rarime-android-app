@@ -148,11 +148,13 @@ class VotingManager @Inject constructor(
         val userAge = user?.birthDate?.let { calculateAgeFromBirthDate(it) } ?: 0
         val userNationality = user?.nationality.orEmpty()
 
-        val ageCriteria = votingData.birthDateUpperbound.toInt() <= userAge
+        val requiredAge = votingData.birthDateUpperbound.toByteArray().decodeToString().toInt()
+
         val nationalityCriteria = nationalityList.contains(userNationality)
 
+        val ageCriteria = requiredAge <= userAge
         return listOf(
-            PollCriteria(title = "age", accomplished = ageCriteria),
+            //PollCriteria(title = "age", accomplished = ageCriteria),
             PollCriteria(title = "nationality", accomplished = nationalityCriteria)
         )
     }
@@ -202,7 +204,6 @@ class VotingManager @Inject constructor(
             } else {
                 FIRST_POLL_MAX_LIMIT
             }.toLong()
-
 
 
             val proposalInfosArrayRaw = Identity.getStateInfosMulticall(
@@ -305,14 +306,14 @@ class VotingManager @Inject constructor(
 
         val registrationProof = identityManager.registrationProof.value!!
 
-        val passportInfoKey = registrationProof.pub_signals[1]
+        val eDocument = passportManager.passport.value
 
-        val proofIndex =
-            Identity.calculateProofIndex(passportInfoKey, registrationProof.pub_signals[3])
 
+        val passportInfoKey = passportManager.getPassportInfoKey(eDocument!!, registrationProof)
+
+        val proofIndex = passportManager.getProofIndex(passportInfoKey)
         val pollResultJson = gson.toJson(pollResults)
 
-        val eDocument = passportManager.passport.value
 
         val smtProofRaw = withContext(Dispatchers.IO) {
             registrationSmtContract.getProof(proofIndex).send()
@@ -345,7 +346,7 @@ class VotingManager @Inject constructor(
         val voteProof = generateVoteProof(
             context,
             profile,
-            eDocument!!,
+            eDocument,
             smtProofJson,
             passportInfoKey,
             pollResultJson.toByteArray(),
@@ -404,10 +405,9 @@ class VotingManager @Inject constructor(
 
         val votingData = decodeVotingData(selectedPoll.value!!.poll)
 
-
         val queryProofInputs = profile.buildQueryIdentityInputs(
             eDocument.dg1!!.decodeHexString(),
-            smtProofJson.toByteArray(Charsets.UTF_8),
+            smtProofJson.toByteArray(),
             "39457",
             passportInfoKey,
             identityInfo.issueTimestamp.toString(),
@@ -416,18 +416,19 @@ class VotingManager @Inject constructor(
             Numeric.toHexString(eventData),
             "0",
             max(
-                votingData.identityCreationTimestampUpperBound.toInt(),
-                identityInfo.issueTimestamp.toInt()
+                votingData.identityCreationTimestampUpperBound.toString().toULong(),
+                identityInfo.issueTimestamp.toString().toULong() + 1u,
             ).toString(),
             "0",
             votingData.identityCounterUpperBound.toString(),
-            votingData.expirationDateLowerBound.toString(16),
+            Numeric.toHexString(votingData.expirationDateLowerBound.toByteArray()),
             ZERO_IN_HEX,
-            ZERO_IN_HEX,
-            votingData.birthDateUpperbound.toString(16),
+            Numeric.toHexString(votingData.expirationDateLowerBound.toByteArray()),
+            Numeric.toHexString(votingData.birthDateUpperbound.toByteArray()),
             "0"
         )
-        val assetContext: Context = context.createPackageContext("org.freedomtool.unitedgsh", 0)
+
+        val assetContext: Context = context.createPackageContext("com.rarilabs.rarime", 0)
         val assetManager = assetContext.assets
 
         val zkp = ZKPUseCase(context, assetManager)
@@ -465,7 +466,15 @@ class VotingManager @Inject constructor(
         val rawVotingData = identityManager.getProfiler()
             .decodeABIProposalRules(poll.votingData[0])
 
-        val votingData = Gson().fromJson(rawVotingData.decodeToString(), VotingData::class.java)
+        val votingDataRaw = Gson().fromJson(rawVotingData.decodeToString(), VotingData::class.java)
+
+        val votingData = VotingData(
+            votingDataRaw.citizenshipWhitelist,
+            votingDataRaw.identityCreationTimestampUpperBound,
+            votingDataRaw.identityCounterUpperBound,
+            votingDataRaw.birthDateUpperbound,
+            votingDataRaw.expirationDateLowerBound
+        )
 
         return votingData
     }

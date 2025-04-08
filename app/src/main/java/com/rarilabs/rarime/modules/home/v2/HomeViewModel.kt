@@ -64,7 +64,7 @@ class HomeViewModel @Inject constructor(
             it.attributes.meta.static.name == BaseEvents.REFERRAL_COMMON.value
         }
 
-        _pointsEventData.value = points[0]
+        _pointsEventData.value = points.getOrNull(0)
     }
 
 }
