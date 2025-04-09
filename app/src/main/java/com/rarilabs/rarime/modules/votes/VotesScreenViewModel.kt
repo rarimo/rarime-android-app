@@ -65,9 +65,12 @@ class VotesScreenViewModel @Inject constructor(
 
     suspend fun loadPolls(isRefresh: Boolean = false) {
         withContext(Dispatchers.IO) {
-            val allPolls = votingManager.loadVotePolls(isRefresh)
+            val allPolls = votingManager.loadLocalVotePolls()
             _activeVotes.value = allPolls.filter { !it.isEnded }
             _historyVotes.value = allPolls.filter { it.isEnded }
+//            val allPolls = votingManager.loadVotePolls(isRefresh)
+//            _activeVotes.value = allPolls.filter { !it.isEnded }
+//            _historyVotes.value = allPolls.filter { it.isEnded }
         }
     }
 }

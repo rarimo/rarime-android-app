@@ -81,10 +81,10 @@ fun VoteHandler(
     LaunchedEffect(Unit) {
         scope.launch {
             try {
-                val proposalId = queryParams?.get("proposal_id")
+                val qrCodeUrl = queryParams?.get("qr_code_url")
                     ?: throw Exception("Proposal ID not found")
 
-                viewModel.loadDetails(proposalId)
+                viewModel.saveVoting(qrCodeUrl)
             } catch (e: Exception) {
                 ErrorHandler.logError("ExtIntActionPreview", "loadPreviewFields", e)
                 onFailHandler(e)

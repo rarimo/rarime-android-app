@@ -8,10 +8,12 @@ import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -99,6 +101,22 @@ object DateUtil {
         return SimpleDateFormat(formatType.pattern, Locale.US).format(date)
     }
 
+    fun yearsBetween(from: Date): Int {
+        val now = Calendar.getInstance()
+        val fromCal = Calendar.getInstance().apply {
+            time = from
+        }
+
+        var years = now.get(Calendar.YEAR) - fromCal.get(Calendar.YEAR)
+
+        // If today's date is before the birth date (month and day), subtract one year
+        if (now.get(Calendar.DAY_OF_YEAR) < fromCal.get(Calendar.DAY_OF_YEAR)) {
+            years--
+        }
+
+        return years
+    }
+
     fun formatDateString(
         dateStr: String?,
         inputFormat: DateFormatType = DateFormatType.DMY,
@@ -148,5 +166,9 @@ object DateUtil {
 
             else -> ""
         }
+    }
+
+    fun LocalDateTime.toDate(): Date {
+        return Date.from(this.atZone(ZoneId.systemDefault()).toInstant())
     }
 }

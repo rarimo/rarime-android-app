@@ -2,6 +2,7 @@ package com.rarilabs.rarime.api.voting
 
 import com.rarilabs.rarime.api.voting.models.IPFSResponseData
 import com.rarilabs.rarime.api.voting.models.LatestOperationResponse
+import com.rarilabs.rarime.api.voting.models.QRCodeVotingResponse
 import com.rarilabs.rarime.api.voting.models.SendTransactionRequest
 import com.rarilabs.rarime.api.voting.models.VoteCountResponse
 import com.rarilabs.rarime.api.voting.models.VoteRequest
@@ -21,12 +22,16 @@ interface VotingApi {
     suspend fun countRemainingVotes(@Path("voting_id") voteId: String): Response<VoteCountResponse>
 
 
+
     @POST("/integrations/proof-verification-relayer/v2/vote")
     suspend fun voteV2(@Body body: SendTransactionRequest): Response<VoteV2Response>
 
 
     @GET
     suspend fun getDataFromIPFS(@Url url: String): Response<IPFSResponseData>
+
+    @GET
+    suspend fun getVotingInfo(@Url url: String): Response<QRCodeVotingResponse>
 
     @POST("/integrations/voting-relayer/v1/vote")
     suspend fun vote(@Body payload: VoteRequest): Response<VoteResponse>

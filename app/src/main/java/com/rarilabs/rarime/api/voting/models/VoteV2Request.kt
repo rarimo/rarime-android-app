@@ -1,17 +1,15 @@
 package com.rarilabs.rarime.api.voting.models
 
-import com.google.gson.annotations.SerializedName
-
 data class SendTransactionRequest(
-    @SerializedName("data") val data: SendTransactionData
+    val data: SendTransactionData
 )
 
 data class SendTransactionData(
-    @SerializedName("type") val type: String,
-    @SerializedName("attributes") val attributes: SendTransactionAttributes
+    val type: String,
+    val attributes: SendTransactionAttributes
 )
 
 data class SendTransactionAttributes(
-    @SerializedName("tx_data") val txData: String,
-    @SerializedName("destination") val destination: String
+    val tx_data: String,
+    val destination: String
 )

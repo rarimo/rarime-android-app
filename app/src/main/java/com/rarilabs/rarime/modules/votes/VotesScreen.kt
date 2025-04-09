@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.modules.votes
 
-import android.util.Log
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -211,7 +210,6 @@ fun VotesScreen(
             mainViewModel.setExtIntDataURI(uri)
         },
         onVoteClick = {
-            Log.i("Click", it.title)
             viewModel.setSelectedPoll(it)
             voteSheetState.show()
         }

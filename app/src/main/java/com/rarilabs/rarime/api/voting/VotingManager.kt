@@ -7,7 +7,6 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.api.voting.models.ByteArrayDeserializer
 import com.rarilabs.rarime.api.voting.models.ByteArrayListDeserializer
 import com.rarilabs.rarime.api.voting.models.Poll
@@ -25,6 +24,7 @@ import com.rarilabs.rarime.api.voting.models.VoteRequest
 import com.rarilabs.rarime.api.voting.models.VoteRequestAttributes
 import com.rarilabs.rarime.api.voting.models.VoteRequestData
 import com.rarilabs.rarime.api.voting.models.VoteResponse
+import com.rarilabs.rarime.api.voting.models.VoteV2Response
 import com.rarilabs.rarime.api.voting.models.VotingData
 import com.rarilabs.rarime.api.voting.models.uint8ToProposalStatus
 import com.rarilabs.rarime.contracts.rarimo.StateKeeper
@@ -34,8 +34,11 @@ import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.manager.TestContractManager
-import com.rarilabs.rarime.modules.passportScan.calculateAgeFromBirthDate
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
+import com.rarilabs.rarime.store.room.voting.VotingRepository
+import com.rarilabs.rarime.util.Country
+import com.rarilabs.rarime.util.DateUtil
+import com.rarilabs.rarime.util.DateUtil.toDate
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
@@ -60,9 +63,10 @@ class VotingManager @Inject constructor(
     private val votingApiManager: VotingApiManager,
     private val votingContractManager: TestContractManager,
     private val rarimoContractManager: RarimoContractManager,
+    private val testnetContractManager: TestContractManager,
     private val passportManager: PassportManager,
     private val identityManager: IdentityManager,
-    private val registrationManager: RegistrationManager
+    private val votingRepository: VotingRepository
 ) {
 
     private val ZERO_IN_HEX: String = "0x303030303030"
@@ -115,10 +119,8 @@ class VotingManager @Inject constructor(
 
         val userStatus = getUserStatus()
         val votingData = decodeVotingData(poll)
-        val nationalityList =
-            votingData.citizenshipWhitelist.map { it.toByteArray().decodeToString() }
 
-        val criteria = createPollCriteria(userStatus, votingData, nationalityList)
+        val criteria = createPollRequirements(poll, passportManager.passport.value, votingData)
 
         _selectedPoll.value = UserInPoll(
             poll = poll,
@@ -135,32 +137,109 @@ class VotingManager @Inject constructor(
         }
     }
 
-    private fun createPollCriteria(
-        userStatus: PollCriteriaStatus,
-        votingData: VotingData,
-        nationalityList: List<String>
+    private fun createPollRequirements(
+        selectedPoll: Poll?,
+        passport: EDocument?,
+        votingData: VotingData
     ): List<PollCriteria> {
-        if (userStatus == PollCriteriaStatus.NEED_VERIFICATION) {
-            return listOf()
+        if (selectedPoll == null || passport == null) {
+            return emptyList()
         }
 
-        val user = passportManager.passport.value?.personDetails
-        val userAge = user?.birthDate?.let { calculateAgeFromBirthDate(it) } ?: 0
-        val userNationality = user?.nationality.orEmpty()
+        val decodedCountries = votingData.citizenshipWhitelist.map { isoCode ->
+            Country.fromISOCode(isoCode.toByteArray().decodeToString())
+        }
 
-        val requiredAge = votingData.birthDateUpperbound.toByteArray().decodeToString().toInt()
+        val decodedMinAgeAscii = votingData.birthDateUpperbound.toByteArray().decodeToString()
+        val decodedMaxAgeAscii = votingData.birthDateLowerbound.toByteArray().decodeToString()
+        val decodedGenderAscii = votingData.gender.toByteArray().decodeToString()
+//TODO fix dates
+        val formattedMinAge =
+            runCatching { DateUtil.parseDateString(decodedMinAgeAscii) }.getOrNull()
+        val formattedMaxAge =
+            runCatching { DateUtil.parseDateString(decodedMaxAgeAscii) }.getOrNull()
+        val userDateOfBirth =
+            DateUtil.parseDateString(passport.personDetails!!.birthDate!!)!!
 
-        val nationalityCriteria = nationalityList.contains(userNationality)
+        val isNationalityEligible =
+            decodedCountries.contains(Country.fromISOCode(passport.personDetails!!.nationality))
 
-        val ageCriteria = requiredAge <= userAge
-        return listOf(
-            //PollCriteria(title = "age", accomplished = ageCriteria),
-            PollCriteria(title = "nationality", accomplished = nationalityCriteria)
-        )
+        val isAgeEligible = when {
+            formattedMinAge == null && formattedMaxAge == null -> true
+            formattedMinAge != null && formattedMaxAge != null -> {
+                userDateOfBirth in formattedMaxAge..formattedMinAge
+            }
+
+            formattedMinAge != null -> userDateOfBirth <= formattedMinAge
+            formattedMaxAge != null -> userDateOfBirth >= formattedMaxAge
+            else -> false
+        }
+
+        val isGenderEligible = if (decodedGenderAscii == "M" || decodedGenderAscii == "F") {
+            decodedGenderAscii == passport.personDetails!!.gender
+        } else {
+            false
+        }
+
+        val countriesString = decodedCountries.joinToString(", ") { it.name }
+
+        val ageString: String = run {
+            val minYear = formattedMinAge?.let { DateUtil.yearsBetween(it.toDate()) } ?: 0
+            val maxYear = formattedMaxAge?.let { DateUtil.yearsBetween(it.toDate()) } ?: 0
+
+            when {
+                decodedMinAgeAscii != "000000" && decodedMaxAgeAscii != "000000" -> "$minYear-$maxYear"
+                decodedMinAgeAscii != "000000" -> "$minYear+"
+                decodedMaxAgeAscii != "000000" -> "$maxYear and below"
+                else -> "-"
+            }
+        }
+
+        val genderString = when (decodedGenderAscii) {
+            "M" -> "Male only"
+            "F" -> "Female only"
+            else -> "-"
+        }
+
+        val requirements = mutableListOf<PollCriteria>()
+
+        if (decodedCountries.isNotEmpty()) {
+            requirements.add(
+                PollCriteria(
+                    title = "Citizen of $countriesString",
+                    accomplished = isNationalityEligible
+                )
+            )
+        }
+
+        if (decodedMinAgeAscii != "000000" || decodedMaxAgeAscii != "000000") {
+            requirements.add(
+                PollCriteria(
+                    title = ageString,
+                    accomplished = isAgeEligible
+                )
+            )
+        }
+
+        if (decodedGenderAscii == "M" || decodedGenderAscii == "F") {
+            requirements.add(
+                PollCriteria(
+                    title = genderString,
+                    accomplished = isGenderEligible
+                )
+            )
+        }
+
+        return requirements
     }
+
 
     fun getSelectedPoll(): UserInPoll? {
         return _selectedPoll.value
+    }
+
+    suspend fun loadLocalVotePolls(): List<Poll> {
+        return votingRepository.getAllVoting()
     }
 
     suspend fun loadVotePolls(isRefresh: Boolean = false): List<Poll> {
@@ -171,9 +250,122 @@ class VotingManager @Inject constructor(
         return _polls.value
     }
 
-    fun isVerified(): Boolean {
-        val res = passportManager.passport.value
-        return res != null
+    private suspend fun getProposalId(url: String): Long {
+        val votingInfo = votingApiManager.getVotingInfo(url)
+        return votingInfo.data.attributes.metadata.proposal_id.toLong()
+    }
+
+    suspend fun saveVoting(url: String) {
+        val proposalId = getProposalId(url)
+        val poll = loadPollDetailsByProposalId(proposalId)
+        votingRepository.insertVoting(poll)
+    }
+
+
+    private suspend fun loadPollDetailsByProposalId(proposalId: Long): Poll {
+
+        val proposal = "0x4C61d7454653720DAb9e26Ca25dc7B8a5cf7065b"
+
+        val multicall = "0xcA11bde05977b3631167028862bE2a173976CA11"
+
+        val VOTING_RPC_URL = "https://rpc.qtestnet.org"
+
+        val proposalsStateContract =
+            votingContractManager.getProposalsStateContract(proposal)
+        val pollsList: MutableList<Poll> = mutableListOf()
+
+        withContext(Dispatchers.IO) {
+
+            val proposalInfosArrayRaw = Identity.getStateInfosMulticall(
+                proposal,
+                VOTING_RPC_URL,
+                multicall,
+                proposalId.toString(),
+                proposalId.toString()
+            )
+
+            val gsonBuilder = GsonBuilder()
+            gsonBuilder.registerTypeAdapter(ByteArray::class.java, ByteArrayDeserializer())
+
+            gsonBuilder.registerTypeAdapter(
+                object : TypeToken<List<ByteArray>>() {}.type, ByteArrayListDeserializer()
+            )
+            val gson = gsonBuilder.create()
+
+            val proposalInfoListType = object : TypeToken<List<ProposalIndexed>>() {}.type
+
+            val proposalInfos = gson.fromJson<List<ProposalIndexed>>(
+                proposalInfosArrayRaw.decodeToString(), proposalInfoListType
+            )
+
+            val pollDeferredList = proposalInfos.map { proposalInfoIndexed ->
+                async {
+                    val proposalInfo = proposalInfoIndexed.ProposalInfo
+                    val proposalStatusUint8 = proposalInfo.Status
+                    val proposalStatus = uint8ToProposalStatus(proposalStatusUint8)
+
+                    if (proposalStatus == ProposalStatus.DoNotShow) {
+                        return@async null
+                    }
+
+                    val proposalEventId = proposalsStateContract
+                        .getProposalEventId(BigInteger.valueOf(proposalInfoIndexed.Index.toLong()))
+                        .send()
+
+                    val votingAddresses = proposalInfo.Config.VotingWhitelist
+                    val ipfsLink = proposalInfo.Config.Description
+
+                    val rawData = votingApiManager.getIPFSData(ipfsLink)
+                    val voteOptions = mutableListOf<PollVoteOption>()
+                    val voteDescription = mutableListOf<String>()
+
+                    rawData.acceptedOptions.forEachIndexed { index, option ->
+                        option.variants.forEachIndexed { _index, _option ->
+                            voteOptions.add(PollVoteOption(_index, _option))
+                        }
+                        voteDescription.add(option.title)
+                    }
+
+                    val currentDateLongUtc = System.currentTimeMillis() / 1000
+                    val proposalSMT = proposalInfo.ProposalSMT
+
+                    Poll(
+                        id = proposalInfoIndexed.Index.toLong(),
+                        title = rawData.title,
+                        description = rawData.description!!,
+                        reward = 50L,
+                        voteStartDate = proposalInfo.Config.StartTimestamp,
+                        isEnded =
+                            proposalStatus == ProposalStatus.Ended || currentDateLongUtc > proposalInfo.Config.StartTimestamp.plus(
+                                proposalInfo.Config.Duration
+                            ),
+                        isStarted = proposalStatus == ProposalStatus.Started || currentDateLongUtc > proposalInfo.Config.StartTimestamp,
+                        voteEndDate = proposalInfo.Config.StartTimestamp.plus(proposalInfo.Config.Duration),
+                        questionList = rawData.acceptedOptions.mapIndexed { index, it ->
+                            Question(
+                                id = index.toLong(),
+                                title = it.title,
+                                IsSkippable = false,
+                                variants = it.variants
+                            )
+                        }.toList(),
+                        eventId = proposalEventId,
+                        votingData = proposalInfo.Config.VotingWhitelistData,
+                        votingAddresses = votingAddresses,
+                        proposalSMT = proposalSMT,
+                        proposalStatus = proposalStatus,
+                        proposalResults = proposalInfo.VotingResults,
+                        imageUrl = rawData.image
+                    )
+                }
+            }
+
+            val polls = pollDeferredList.awaitAll().filterNotNull().sortedBy { it.id }
+            Log.i("Polls", polls.map { it.id }.toString())
+            pollsList.addAll(polls)
+        }
+        return pollsList.first()
+
     }
 
     private val FIRST_POLL_MAX_LIMIT: BigInteger = BigInteger.valueOf(10L)
@@ -182,7 +374,7 @@ class VotingManager @Inject constructor(
 
         Log.i("Proposal", "load polls")
 
-        val proposal = "0x27ABc0BDfD339d167854c7a14Cf3DDe64bbfDBc9"
+        val proposal = "0x4C61d7454653720DAb9e26Ca25dc7B8a5cf7065b"
 
         val multicall = "0xcA11bde05977b3631167028862bE2a173976CA11"
 
@@ -354,7 +546,6 @@ class VotingManager @Inject constructor(
             identityInfo
         )
 
-
         val voteProofJson = gson.toJson(voteProof)
 
         val callDataBuilder = CallDataBuilder()
@@ -362,22 +553,21 @@ class VotingManager @Inject constructor(
             voteProofJson.toByteArray(),
             selectedPoll.value!!.poll.id,
             pollResultJson.toByteArray(),
-            passportManager.passport.value!!.personDetails!!.nationality
+            passportManager.passport.value?.personDetails?.nationality
         )
 
 
         val response = withContext(Dispatchers.IO) {
-            sendVote(
+            sendVoteV2(
                 "0x" + callData.toHexString(),
                 selectedPoll.value!!.poll.votingAddresses[0],
-                selectedPoll.value!!.poll.id
             )
         }
 
 
         ErrorHandler.logDebug("Vote Response", gson.toJson(response))
 
-        val res = rarimoContractManager.checkIsTransactionSuccessful(response.data.id)
+        val res = testnetContractManager.checkIsTransactionSuccessful(response.data.id)
         if (!res) {
             throw Exception("Error during checkIsTransactionSuccessful")
         }
@@ -405,10 +595,62 @@ class VotingManager @Inject constructor(
 
         val votingData = decodeVotingData(selectedPoll.value!!.poll)
 
+
+        Log.i("DEBUG", "eDocument.dg1 decoded: ${eDocument.dg1!!.decodeHexString()}")
+        Log.i(
+            "DEBUG",
+            "smtProofJson (as byte array): ${
+                smtProofJson.toByteArray(Charsets.UTF_8).contentToString()
+            }"
+        )
+        Log.i("DEBUG", "votingData.selector: ${votingData.selector}")
+        Log.i("DEBUG", "passportInfoKey: $passportInfoKey")
+        Log.i(
+            "DEBUG",
+            "identityInfo.issueTimestamp decoded: ${identityInfo.issueTimestamp}"
+        )
+        Log.i(
+            "DEBUG",
+            "passportInfo.identityReissueCounter decoded: ${passportInfo.identityReissueCounter}"
+        )
+        Log.i("DEBUG", "eventId: $eventId")
+        Log.i("DEBUG", "eventData (hex): ${Numeric.toHexString(eventData)}")
+        Log.i("DEBUG", "Static value: 0")
+        Log.i(
+            "DEBUG",
+            "Calculated timestamp upperbound: ${
+                max(
+                    votingData.timestampUpperbound.toString().toULong(),
+                    identityInfo.issueTimestamp.toString().toULong() + 1u
+                )
+            }"
+        )
+        Log.i("DEBUG", "Static value: 0")
+        Log.i(
+            "DEBUG",
+            "votingData.identityCounterUpperBound decoded: ${votingData.identityCounterUpperbound}"
+        )
+        Log.i(
+            "DEBUG",
+            "votingData.expirationDateLowerBound decoded: ${
+                votingData.expirationDateLowerbound.toByteArray().decodeToString()
+            }"
+        )
+        Log.i("DEBUG", "ZERO_IN_HEX: $ZERO_IN_HEX")
+        Log.i(
+            "DEBUG",
+            "votingData.birthDateLowerbound (hex): ${Numeric.toHexString(votingData.birthDateLowerbound.toByteArray())}"
+        )
+        Log.i(
+            "DEBUG",
+            "votingData.birthDateUpperbound (hex): ${Numeric.toHexString(votingData.birthDateUpperbound.toByteArray())}"
+        )
+        Log.i("DEBUG", "Static value: 0")
+
         val queryProofInputs = profile.buildQueryIdentityInputs(
             eDocument.dg1!!.decodeHexString(),
             smtProofJson.toByteArray(),
-            "39457",
+            votingData.selector.toString(),//"39457",
             passportInfoKey,
             identityInfo.issueTimestamp.toString(),
             passportInfo.identityReissueCounter.toString(),
@@ -416,14 +658,14 @@ class VotingManager @Inject constructor(
             Numeric.toHexString(eventData),
             "0",
             max(
-                votingData.identityCreationTimestampUpperBound.toString().toULong(),
+                votingData.timestampUpperbound.toString().toULong(),
                 identityInfo.issueTimestamp.toString().toULong() + 1u,
             ).toString(),
             "0",
-            votingData.identityCounterUpperBound.toString(),
-            Numeric.toHexString(votingData.expirationDateLowerBound.toByteArray()),
+            votingData.identityCounterUpperbound.toString(),
+            Numeric.toHexString(votingData.expirationDateLowerbound.toByteArray()),
             ZERO_IN_HEX,
-            Numeric.toHexString(votingData.expirationDateLowerBound.toByteArray()),
+            Numeric.toHexString(votingData.birthDateLowerbound.toByteArray()),
             Numeric.toHexString(votingData.birthDateUpperbound.toByteArray()),
             "0"
         )
@@ -448,6 +690,15 @@ class VotingManager @Inject constructor(
         queryProof
     }
 
+
+    private suspend fun sendVoteV2(
+        callData: String, destination: String
+    ): VoteV2Response {
+        val response = votingApiManager.voteV2(callData, destination)
+        return response
+    }
+
+    @Deprecated("Use sendVoteV2")
     private suspend fun sendVote(
         callData: String, destination: String, proposalId: Long
     ): VoteResponse {
@@ -466,15 +717,7 @@ class VotingManager @Inject constructor(
         val rawVotingData = identityManager.getProfiler()
             .decodeABIProposalRules(poll.votingData[0])
 
-        val votingDataRaw = Gson().fromJson(rawVotingData.decodeToString(), VotingData::class.java)
-
-        val votingData = VotingData(
-            votingDataRaw.citizenshipWhitelist,
-            votingDataRaw.identityCreationTimestampUpperBound,
-            votingDataRaw.identityCounterUpperBound,
-            votingDataRaw.birthDateUpperbound,
-            votingDataRaw.expirationDateLowerBound
-        )
+        val votingData = Gson().fromJson(rawVotingData.decodeToString(), VotingData::class.java)
 
         return votingData
     }

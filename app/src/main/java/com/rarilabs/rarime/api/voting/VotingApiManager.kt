@@ -2,6 +2,7 @@ package com.rarilabs.rarime.api.voting
 
 import com.rarilabs.rarime.api.voting.models.IPFSResponseData
 import com.rarilabs.rarime.api.voting.models.LatestOperationResponse
+import com.rarilabs.rarime.api.voting.models.QRCodeVotingResponse
 import com.rarilabs.rarime.api.voting.models.SendTransactionAttributes
 import com.rarilabs.rarime.api.voting.models.SendTransactionData
 import com.rarilabs.rarime.api.voting.models.SendTransactionRequest
@@ -57,6 +58,16 @@ class VotingApiManager @Inject constructor(
         throw Exception(response.errorBody()?.string())
     }
 
+    suspend fun getVotingInfo(url: String): QRCodeVotingResponse {
+        val response = votingApi.getVotingInfo(url)
+
+        if (response.isSuccessful) {
+            return response.body()!!
+        }
+
+        throw Exception(response.errorBody()?.string())
+    }
+
 
 //    suspend fun getVotingData(
 //        address: String?,
@@ -83,7 +94,7 @@ class VotingApiManager @Inject constructor(
                 data = SendTransactionData(
                     type = "send_transaction",
                     attributes = SendTransactionAttributes(
-                        txData = txData,
+                        tx_data = txData,
                         destination = destination
                     )
                 )

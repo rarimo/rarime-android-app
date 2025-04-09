@@ -36,6 +36,9 @@ interface IConfig {
     val GOOGLE_WEB_KEY: String
     val APP_ID_FIREBASE: String
 
+    val VOTING_RELAYER_URL: String
+
+
     val registerIdentity_1_256_3_5_576_248_NA: String
     val registerIdentity_1_256_3_6_576_248_1_2432_5_296: String
     val registerIdentity_2_256_3_6_336_264_21_2448_6_2008: String
@@ -137,6 +140,8 @@ object TestNetConfig : IConfig {
     override val REWARD_NOTIFICATION_TOPIC: String = "rarime-rewardable-stage"
 
     override val APPSFLYER_DEV_KEY = Keys.APPSFLYER_DEV_KEY
+
+    override val VOTING_RELAYER_URL: String = "https://api.stage.freedomtool.org"
 
     override val registerIdentity_1_256_3_5_576_248_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_5_576_248_NA-download.zip"
@@ -272,6 +277,8 @@ object MainnetConfig : IConfig {
     override val GLOBAL_NOTIFICATION_TOPIC = "rarime"
     override val REWARD_NOTIFICATION_TOPIC: String = "rarime-rewardable"
     override val APPSFLYER_DEV_KEY = Keys.APPSFLYER_DEV_KEY
+
+    override val VOTING_RELAYER_URL: String = ""
 
     override val registerIdentity_1_256_3_5_576_248_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_5_576_248_NA-download.zip"

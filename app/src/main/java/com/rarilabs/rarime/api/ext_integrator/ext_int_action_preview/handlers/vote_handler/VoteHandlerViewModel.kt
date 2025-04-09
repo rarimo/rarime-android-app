@@ -3,6 +3,7 @@ package com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.v
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorApiManager
+import com.rarilabs.rarime.api.voting.VotingManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RarimoContractManager
@@ -62,6 +63,7 @@ data class VoteSelections(
 @HiltViewModel
 class VoteHandlerViewModel @Inject constructor(
     private val extIntegratorApiManager: ExtIntegratorApiManager,
+    private val votingManager: VotingManager,
     private val passportManager: PassportManager,
     private val contractManager: RarimoContractManager,
     private val identityManager: IdentityManager,
@@ -76,6 +78,8 @@ class VoteHandlerViewModel @Inject constructor(
 
     private val _voteData = MutableStateFlow<VoteData?>(null)
     val voteData: StateFlow<VoteData?> = _voteData.asStateFlow()
+
+    val saveVoting = votingManager::saveVoting
 
     suspend fun loadDetails(proposalId: String) {
         extIntegratorApiManager.loadPassportInfo()

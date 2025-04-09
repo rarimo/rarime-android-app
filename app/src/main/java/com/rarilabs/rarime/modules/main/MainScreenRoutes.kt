@@ -249,6 +249,7 @@ fun MainScreenRoutes(
                 ) { backStackEntry ->
                     val voteId = backStackEntry.arguments?.getString("vote_id")
 
+
                     voteId?.let {
                         VoteProcessScreen(
                             selectedPoll = MOCKED_POLL_ITEM,
