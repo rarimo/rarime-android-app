@@ -150,7 +150,7 @@ class RegistrationManager @Inject constructor(
         val stateKeeperContract = rarimoContractManager.getStateKeeper()
 
         val passportInfoKeyBytes =
-            passportManager.getPassportInfoKey(eDocument, zkProof, lightRegistrationData)
+            passportManager.getPassportInfoKeyBytes(eDocument, zkProof, lightRegistrationData)
 
         val passportInfo = withContext(Dispatchers.IO) {
             stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()

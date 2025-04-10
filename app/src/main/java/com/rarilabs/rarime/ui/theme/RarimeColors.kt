@@ -89,6 +89,8 @@ class RarimeColors(
     gradient4: Brush,
     gradient5: Brush,
     gradient6: Brush,
+
+    additionalGreen: Color
 ) {
     var primaryDarker by mutableStateOf(primaryDarker, structuralEqualityPolicy())
         internal set
@@ -206,6 +208,9 @@ class RarimeColors(
     var gradient6 by mutableStateOf(gradient6, structuralEqualityPolicy())
         internal set
 
+    var additionalGreen by mutableStateOf(additionalGreen, structuralEqualityPolicy())
+        internal set
+
     fun copy(
         primaryDarker: Color = this.primaryDarker,
         primaryDark: Color = this.primaryDark,
@@ -258,9 +263,11 @@ class RarimeColors(
         gradient5: Brush = this.gradient5,
         gradient6: Brush = this.gradient6,
         invertedDark: Color = this.invertedDark,
-        invertedLight: Color = this.invertedLight
+        invertedLight: Color = this.invertedLight,
 
-        ) = RarimeColors(
+        additionalGreen: Color = this.additionalGreen
+
+    ) = RarimeColors(
         primaryDarker = primaryDarker,
         primaryDark = primaryDark,
         primaryMain = primaryMain,
@@ -315,7 +322,8 @@ class RarimeColors(
         gradient3 = gradient3,
         gradient4 = gradient4,
         gradient5 = gradient5,
-        gradient6 = gradient6
+        gradient6 = gradient6,
+        additionalGreen = additionalGreen
     )
 
     fun updateColorsFrom(other: RarimeColors) {
@@ -441,7 +449,9 @@ fun darkColors() = RarimeColors(
     gradient3 = Brush.linearGradient(colors = listOf(Color(0xFFDFFCC4), Color(0xFFF4F3F0))),
     gradient4 = Brush.linearGradient(colors = listOf(Color(0xFFD3D1EF), Color(0xFFFCE3FC))),
     gradient5 = Brush.linearGradient(colors = listOf(Color(0xFF80ED99), Color(0xFFD5FEC8))),
-    gradient6 = Brush.linearGradient(colors = listOf(Color(0xFF39CDA0), Color(0xFF45C45C)))
+    gradient6 = Brush.linearGradient(colors = listOf(Color(0xFF39CDA0), Color(0xFF45C45C))),
+
+    additionalGreen = Color(0xFFF1F7F1)
 )
 
 fun lightColors() = RarimeColors(
@@ -523,6 +533,7 @@ fun lightColors() = RarimeColors(
     gradient4 = Brush.linearGradient(colors = listOf(Color(0xFFD3D1EF), Color(0xFFFCE3FC))),
     gradient5 = Brush.linearGradient(colors = listOf(Color(0xFF80ED99), Color(0xFFD5FEC8))),
     gradient6 = Brush.linearGradient(colors = listOf(Color(0xFF39CDA0), Color(0xFF45C45C))),
+    additionalGreen = Color(0xFFF1F7F1)
 )
 
 val LocalColors = staticCompositionLocalOf { lightColors() }

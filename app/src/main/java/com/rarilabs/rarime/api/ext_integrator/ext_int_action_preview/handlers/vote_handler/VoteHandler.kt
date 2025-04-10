@@ -13,8 +13,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
-import com.rarilabs.rarime.modules.main.ScreenInsets
-import com.rarilabs.rarime.modules.votes.voteProcessScreen.VoteProcessScreenContent
 import com.rarilabs.rarime.ui.components.SnackbarSeverity
 import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
 import com.rarilabs.rarime.util.ErrorHandler
@@ -81,10 +79,10 @@ fun VoteHandler(
     LaunchedEffect(Unit) {
         scope.launch {
             try {
-                val proposalId = queryParams?.get("proposal_id")
+                val qrCodeUrl = queryParams?.get("qr_code_url")
                     ?: throw Exception("Proposal ID not found")
 
-                viewModel.loadDetails(proposalId)
+                viewModel.saveVoting(qrCodeUrl)
             } catch (e: Exception) {
                 ErrorHandler.logError("ExtIntActionPreview", "loadPreviewFields", e)
                 onFailHandler(e)
@@ -94,23 +92,23 @@ fun VoteHandler(
         }
     }
 
-    VoteProcessScreenContent(
-        screenInsets = mapOf(
-            ScreenInsets.TOP to screenInsets.get(ScreenInsets.TOP),
-            ScreenInsets.BOTTOM to screenInsets.get(ScreenInsets.BOTTOM)
-        ),
-        voteData = voteData,
-        isLoading = isLoading,
-        onBackClick = onCancel,
-        onVote = {
-            scope.launch {
-                try {
-                    viewModel.vote(context, it)
-                    onSuccessHandler()
-                } catch (error: Exception) {
-                    onFailHandler(error)
-                }
-            }
-        }
-    )
+//    VoteProcessScreenContent(
+//        screenInsets = mapOf(
+//            ScreenInsets.TOP to screenInsets.get(ScreenInsets.TOP),
+//            ScreenInsets.BOTTOM to screenInsets.get(ScreenInsets.BOTTOM)
+//        ),
+//        voteData = voteData,
+//        isLoading = isLoading,
+//        onBackClick = onCancel,
+//        onVote = {
+//            scope.launch {
+//                try {
+//                    viewModel.vote(context, it)
+//                    onSuccessHandler()
+//                } catch (error: Exception) {
+//                    onFailHandler(error)
+//                }
+//            }
+//        }
+//    )
 }

@@ -146,15 +146,16 @@ fun VoteProcessScreenContent(
             Spacer(modifier = Modifier.height(24.dp))
 
             if (isVoteEnded) {
-                Column (
+                Column(
                     modifier = Modifier.verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    voteData.questions.forEachIndexed { index, question ->
+                    voteData.questions.forEachIndexed { _, question ->
                         VoteResultsCardStatistics(
                             variants = question.variants
                                 .sortedByDescending { it.votedCount }
-                                .map { option -> mapOf(option.title to option.votedCount)
+                                .map { option ->
+                                    mapOf(option.title to option.votedCount)
                                 }
                         )
                     }
@@ -169,7 +170,7 @@ fun VoteProcessScreenContent(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Column (
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
@@ -177,7 +178,7 @@ fun VoteProcessScreenContent(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     voteData.questions.forEachIndexed { questionIndex, question ->
-                        Column (
+                        Column(
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Text(
@@ -187,7 +188,8 @@ fun VoteProcessScreenContent(
                             )
 
                             question.variants.forEachIndexed { variantIndex, variant ->
-                                val isActive = selectedOptionPerQuestion?.get(question.id) === variant.id
+                                val isActive =
+                                    selectedOptionPerQuestion?.get(question.id) === variant.id
 
                                 Row(
                                     modifier = Modifier
@@ -198,10 +200,10 @@ fun VoteProcessScreenContent(
                                             interactionSource = remember { MutableInteractionSource() },
                                             indication = rememberRipple(bounded = true)
                                         ) {
-                                            // TODO: check for duplicates
-                                            selectedOptionPerQuestion = selectedOptionPerQuestion?.plus(
-                                                mapOf(question.id to variant.id)
-                                            )
+                                            selectedOptionPerQuestion =
+                                                selectedOptionPerQuestion?.plus(
+                                                    mapOf(question.id to variant.id)
+                                                )
                                         }
                                         .background(
                                             if (isActive) Color.Transparent
@@ -279,7 +281,7 @@ fun VoteProcessScreenContent(
 @Preview
 @Composable
 fun VoteProcessScreenContentPreview() {
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(RarimeTheme.colors.backgroundPrimary)

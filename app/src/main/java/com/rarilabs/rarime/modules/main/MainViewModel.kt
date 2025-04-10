@@ -18,6 +18,7 @@ import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.ui.components.SnackbarShowOptions
 import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 enum class AppLoadingStates {
@@ -211,10 +213,10 @@ class MainViewModel @Inject constructor(
     }
 
     suspend fun finishIntro() {
-//        withContext(Dispatchers.IO) {
-//            tryLogin()
-//            loadUserDetails()
-//        }
+        withContext(Dispatchers.IO) {
+            tryLogin()
+            loadUserDetails()
+        }
     }
 
     suspend fun acceptInvitation(code: String) {

@@ -46,8 +46,8 @@ class AppSheetState(initialShowSheet: Boolean = false) {
     companion object {
         val Saver: Saver<AppSheetState, *> = listSaver(
             save = { listOf(it.showSheet) },
-            restore = {
-                AppSheetState(initialShowSheet = it[0])
+            restore = { list ->
+                AppSheetState(initialShowSheet = list[0])
             }
         )
     }
@@ -69,20 +69,22 @@ fun AppBottomSheet(
     fullScreen: Boolean = false,
     shape: Shape = BottomSheetDefaults.ExpandedShape,
     isHeaderEnabled: Boolean = true,
-    scrimColor: Color = BottomSheetDefaults.ScrimColor,
+    scrimColor: Color = Color.Black.copy(alpha = 0.5f), // Dims the background
     content: @Composable (HideSheetFn) -> Unit
 ) {
     val modalState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
     val configuration = LocalConfiguration.current
 
-    fun hide(cb: () -> Unit) {
-        coroutineScope.launch { modalState.hide() }.invokeOnCompletion {
-            if (!modalState.isVisible) {
-                state.hide()
-                cb()
+    // Hide the modal bottom sheet with an optional callback
+    fun hide(callback: () -> Unit = {}) {
+        coroutineScope.launch { modalState.hide() }
+            .invokeOnCompletion {
+                if (!modalState.isVisible) {
+                    state.hide()
+                    callback()
+                }
             }
-        }
     }
 
     if (state.showSheet) {
@@ -92,7 +94,7 @@ fun AppBottomSheet(
             shape = shape,
             dragHandle = null,
             containerColor = RarimeTheme.colors.backgroundPure,
-            onDismissRequest = { state.hide() },
+            onDismissRequest = { hide() },
             scrimColor = scrimColor
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
@@ -105,7 +107,7 @@ fun AppBottomSheet(
                     ) {
                         PrimaryTextButton(
                             leftIcon = R.drawable.ic_close,
-                            onClick = { hide {} }
+                            onClick = { hide() }
                         )
                     }
                 }
@@ -114,7 +116,7 @@ fun AppBottomSheet(
                         .fillMaxWidth()
                         .padding(bottom = 24.dp)
                 ) {
-                    content { cb -> hide(cb) }
+                    content { callback -> hide(callback) }
                 }
             }
         }

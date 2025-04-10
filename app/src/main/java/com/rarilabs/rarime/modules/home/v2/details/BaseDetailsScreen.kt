@@ -86,15 +86,17 @@ fun BaseDetailsScreen(
                 )
                 .fillMaxSize()
                 .zIndex(123f)
-                .padding(
-                    top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp + 12.dp,
-                    bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp
-                )
+                .verticalScroll(rememberScrollState())
+
                 .then(modifier)
 
         ) {
             Row(
                 modifier = Modifier
+                    .padding(
+                        top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp + 12.dp,
+                        //bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp
+                    )
                     .padding(start = 24.dp, end = 12.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -151,7 +153,6 @@ fun BaseDetailsScreen(
                         start = 24.dp,
                         end = 24.dp
                     )
-                    .verticalScroll(rememberScrollState())
             ) {
 
                 Text(
@@ -180,7 +181,11 @@ fun BaseDetailsScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
                 footer()
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(
+                    modifier = Modifier
+                        .height(24.dp)
+                        .padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp)
+                )
             }
 
         }

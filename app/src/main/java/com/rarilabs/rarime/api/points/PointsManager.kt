@@ -116,7 +116,7 @@ class PointsManager @Inject constructor(
             accessJwt,
             hmacSignature.toHexString(),
             requestPayload,
-            "Bearer ${authManager.accessToken.value!!}"
+            "Bearer ${authManager.accessToken}"
         )
     }
 
@@ -130,7 +130,7 @@ class PointsManager @Inject constructor(
 
         val response = try {
             val balance = pointsAPIManager.getPointsBalance(
-                userNullifierHex, "Bearer ${authManager.accessToken.value!!}", mapOf(
+                userNullifierHex, "Bearer ${authManager.accessToken}", mapOf(
                     "rank" to "true",
                     "referral_codes" to "true",
                 )
@@ -141,7 +141,7 @@ class PointsManager @Inject constructor(
                     secureSharedPrefsManager.getDeferredReferralCode() ?: Keys.genesisReferralCode
                 )
                 pointsAPIManager.getPointsBalance(
-                    userNullifierHex, "Bearer ${authManager.accessToken.value!!}", mapOf(
+                    userNullifierHex, "Bearer ${authManager.accessToken}", mapOf(
                         "rank" to "true",
                         "referral_codes" to "true",
                     )
@@ -286,7 +286,7 @@ class PointsManager @Inject constructor(
                         )
                     )
                 ),
-                "Bearer ${authManager.accessToken.value!!}",
+                "Bearer ${authManager.accessToken}",
                 signature = hmacSignature.toHexString()
             )
         }
@@ -342,7 +342,7 @@ class PointsManager @Inject constructor(
         return withContext(Dispatchers.IO) {
             try {
                 val response = pointsAPIManager.getEventsList(
-                    authorization = "Bearer ${authManager.accessToken.value!!}", params = params
+                    authorization = "Bearer ${authManager.accessToken}", params = params
                 )
 
                 response
@@ -385,7 +385,7 @@ class PointsManager @Inject constructor(
         return withContext(Dispatchers.IO) {
             try {
                 pointsAPIManager.getEvent(
-                    id = eventId, authorization = "Bearer ${authManager.accessToken.value!!}"
+                    id = eventId, authorization = "Bearer ${authManager.accessToken}"
                 )
             } catch (e: Exception) {
                 null

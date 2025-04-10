@@ -74,7 +74,7 @@ val localRewardsScreenViewModel =
 fun RewardsScreen(
     navigate: (String) -> Unit, rewardsViewModel: RewardsViewModel = hiltViewModel()
 ) {
-    val isAuthorized by rewardsViewModel.isAuthorized.collectAsState()
+    val isAuthorized = remember { rewardsViewModel.isAuthorized }
 
     var isLoading by remember {
         mutableStateOf(false)
@@ -125,9 +125,10 @@ fun RewardsScreen(
             ) {
                 AppCircularProgressIndicator()
             }
-        } else if (isAuthorized) {
-            RewardsScreenContent(navigate)
         }
+//        else if (isAuthorized) {
+//            RewardsScreenContent(navigate)
+//        }
     }
 }
 

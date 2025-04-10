@@ -15,7 +15,6 @@ import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.li
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.vote_handler.VoteHandler
 import com.rarilabs.rarime.api.ext_integrator.models.ExtIntegratorActions
 import com.rarilabs.rarime.ui.theme.RarimeTheme
-import com.rarilabs.rarime.util.Screen
 
 @Composable
 fun ExtIntActionPreview(
@@ -56,10 +55,11 @@ fun ExtIntActionPreview(
 
             ExtIntegratorActions.Vote.value -> {
                 LaunchedEffect(Unit) {
-                    val proposalId = dataUri?.getQueryParameter("proposal_id")
-                        ?: throw Exception("Proposal ID not found")
+                    val voteUrl = dataUri?.getQueryParameter("qr_code_url")
+                        ?: throw Exception("URL not found")
 
-                    navigate(Screen.Main.Vote.route.replace("{vote_id}", proposalId))
+
+                    //navigate(Screen.Main.Vote.route.replace("{vote_id}", proposalId))
                 }
 
                 VoteHandler(
