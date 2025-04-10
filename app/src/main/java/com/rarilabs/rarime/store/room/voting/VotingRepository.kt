@@ -14,7 +14,7 @@ class VotingRepository @Inject constructor(private val votingDao: VotingDao) {
 
             allVoting.map {
                 VotingEntityData.fromEntityDataToVote(it)
-            }
+            }.reversed()
         }
     }
 

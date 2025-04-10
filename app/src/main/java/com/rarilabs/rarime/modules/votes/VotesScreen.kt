@@ -75,6 +75,13 @@ private enum class VoteAppSheetState {
     FINISH_VOTE
 }
 
+enum class VotingStatus {
+    LOADING,
+    ALREADY_VOTED,
+    ALLOWED,
+    NOT_STARTED
+}
+
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -100,6 +107,7 @@ fun VotesScreen(
     val voteSheetState = rememberAppSheetState()
 
     val scope = rememberCoroutineScope()
+
 
     var currentState by remember {
         mutableStateOf(VoteAppSheetState.INFO_VOTE)
@@ -142,13 +150,15 @@ fun VotesScreen(
 
         when (currentState) {
             VoteAppSheetState.INFO_VOTE -> {
+
                 VoteProcessInfoScreen(
                     userInPoll = selectedPoll!!,
                     onClose = {
                         voteSheetState.hide()
                         viewModel.setSelectedPoll(null)
                     },
-                    onClick = { currentState = VoteAppSheetState.SELECT_OPTION_VOTE }
+                    onClick = { currentState = VoteAppSheetState.SELECT_OPTION_VOTE },
+                    checkIsVoted = viewModel.checkIsVoted
                 )
             }
 

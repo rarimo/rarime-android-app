@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Screen
@@ -32,7 +34,8 @@ fun PollsItemVoteFinishedScreen(
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
-                .fillMaxWidth(0.75f),
+                .fillMaxWidth()
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.weight(1f))
@@ -57,6 +60,7 @@ fun PollsItemVoteFinishedScreen(
             )
             Spacer(modifier = Modifier.weight(1f))
             PrimaryButton(
+                size = ButtonSize.Large,
                 modifier = Modifier.fillMaxWidth(),
                 text = "Home Page",
                 onClick = { navigate(Screen.Main.Home.route) }

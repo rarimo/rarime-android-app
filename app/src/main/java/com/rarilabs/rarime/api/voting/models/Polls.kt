@@ -100,5 +100,11 @@ val MOCKED_POLL_ITEM = Poll(
     proposalStatus = ProposalStatus.Started,
     proposalSMT = "",
     imageUrl = null,
-    proposalResults = listOf(listOf(5, 2, 4), listOf(1, 2, 5), listOf(8, 2, 5))
+    proposalResults = listOf(
+        listOf(5, 2, 4),
+        listOf(1, 2, 5),
+        listOf(8, 2, 5),
+        listOf(8, 2, 5),
+        listOf(8, 2, 5)
+    )
 )

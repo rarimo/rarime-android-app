@@ -361,7 +361,7 @@ fun HomeScreenContent(
                         Spacer(modifier = Modifier.width(16.dp))
 
                         VerticalPager(
-                            modifier = Modifier.weight(1f), // <-- Added this
+                            modifier = Modifier.weight(1f),
                             state = pagerState,
                             contentPadding = PaddingValues(top = 42.dp, bottom = 95.dp)
                         ) { page ->

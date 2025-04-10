@@ -5,17 +5,23 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -31,6 +37,12 @@ import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.DateUtil.getDateMessage
+import kotlinx.coroutines.launch
+
+private enum class VotingStatus {
+    LOADING, ALREADY_VOTED, ALLOWED, NOT_STARTED
+}
 
 @Composable
 fun VoteProcessInfoScreen(
@@ -38,10 +50,38 @@ fun VoteProcessInfoScreen(
     userInPoll: UserInPoll,
     onClose: () -> Unit,
     onClick: () -> Unit,
+    checkIsVoted: suspend () -> Boolean,
 ) {
 
-    val isEnabled = remember {
+    val isEligible = remember {
         userInPoll.pollCriteriaList.isNotEmpty() && userInPoll.pollCriteriaList.none { !it.accomplished }
+    }
+
+    val context = LocalContext.current
+
+    var voteState by remember {
+        mutableStateOf(VotingStatus.LOADING)
+    }
+
+    val scope = rememberCoroutineScope()
+
+
+    LaunchedEffect(Unit) {
+        scope.launch {
+            if (!userInPoll.poll.isStarted) {
+                voteState = VotingStatus.NOT_STARTED
+                return@launch
+            }
+            if (!isEligible) {
+                return@launch
+            }
+            val isVoted = checkIsVoted()
+            voteState = if (isVoted) {
+                VotingStatus.ALREADY_VOTED
+            } else {
+                VotingStatus.ALLOWED
+            }
+        }
     }
 
     Column(
@@ -64,9 +104,11 @@ fun VoteProcessInfoScreen(
             )
 
             AsyncImage(
-                modifier = Modifier.requiredHeight(140.dp),
-                model = userInPoll.poll.imageUrl?.isNotEmpty()
-                    ?: "https://ipfs.rarimo.com/ipfs/QmQmC3XsggXEsYHFP6cB7k3BJjaJxg27kWoooRc6HRTRm5",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1572.0f / 912.0f),
+                model = if (!userInPoll.poll.imageUrl.isNullOrEmpty()) "https://ipfs.rarimo.com/ipfs/" + userInPoll.poll.imageUrl else
+                    "https://ipfs.rarimo.com/ipfs/QmQmC3XsggXEsYHFP6cB7k3BJjaJxg27kWoooRc6HRTRm5",
                 contentDescription = null,
             )
         }
@@ -88,7 +130,7 @@ fun VoteProcessInfoScreen(
                 ) {
                     AppIcon(id = R.drawable.ic_timer_line)
                     Text(
-                        text = "${userInPoll.poll.voteEndDate!! / (1000 * 60 * 60)} hours",
+                        text = getDateMessage(poll = userInPoll.poll, context),
                         style = RarimeTheme.typography.subtitle7,
                         color = RarimeTheme.colors.textSecondary
                     )
@@ -100,13 +142,12 @@ fun VoteProcessInfoScreen(
                 ) {
                     AppIcon(id = R.drawable.ic_group_line)
                     Text(
-                        text = "participantsCount",
+                        text = userInPoll.poll.proposalResults[0].sum().toString(),
                         style = RarimeTheme.typography.subtitle7,
                         color = RarimeTheme.colors.textSecondary
                     )
                 }
             }
-
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
@@ -150,13 +191,44 @@ fun VoteProcessInfoScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            PrimaryButton(
-                enabled = isEnabled,
-                modifier = Modifier.fillMaxWidth(),
-                text = if (isEnabled) "Let’s start" else "Not eligible",
-                onClick = onClick,
-                size = ButtonSize.Large
-            )
+            when (voteState) {
+                VotingStatus.LOADING ->
+                    PrimaryButton(
+                        enabled = false,
+                        modifier = Modifier.fillMaxWidth(),
+                        text = if (isEligible) "Loading..." else "Not eligible",
+                        onClick = onClick,
+                        size = ButtonSize.Large
+                    )
+
+                VotingStatus.ALREADY_VOTED ->
+                    PrimaryButton(
+                        enabled = false,
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Already voted",
+                        onClick = onClick,
+                        size = ButtonSize.Large
+                    )
+
+                VotingStatus.ALLOWED -> {
+                    PrimaryButton(
+                        enabled = isEligible,
+                        modifier = Modifier.fillMaxWidth(),
+                        text = if (isEligible) "Let’s start" else "Not eligible",
+                        onClick = onClick,
+                        size = ButtonSize.Large
+                    )
+                }
+
+                VotingStatus.NOT_STARTED ->
+                    PrimaryButton(
+                        enabled = false,
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Voting has not started",
+                        onClick = onClick,
+                        size = ButtonSize.Large
+                    )
+            }
         }
     }
 }
@@ -180,8 +252,10 @@ private fun VoteProcessInfoScreenPreview() {
                     )
                 )
             ),
-            onClose = {}
-        ) {}
+            onClose = {},
+            onClick = {},
+            checkIsVoted = { false }
+        )
     }
 
 }

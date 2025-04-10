@@ -34,11 +34,11 @@ import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.manager.TestContractManager
+import com.rarilabs.rarime.modules.passportScan.calculateAgeFromBirthDate
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.room.voting.VotingRepository
 import com.rarilabs.rarime.util.Country
 import com.rarilabs.rarime.util.DateUtil
-import com.rarilabs.rarime.util.DateUtil.toDate
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
@@ -50,6 +50,7 @@ import identity.Profile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -70,10 +71,20 @@ class VotingManager @Inject constructor(
 ) {
 
     private val ZERO_IN_HEX: String = "0x303030303030"
+    private val EMPTY_VALUE: String = "0x302020202020"
 
-    private val _polls: MutableStateFlow<List<Poll>> = MutableStateFlow(listOf())
-    val polls: StateFlow<List<Poll>>
-        get() = _polls.asStateFlow()
+//    private val _polls: MutableStateFlow<List<Poll>> = MutableStateFlow(listOf())
+//
+//    val polls: StateFlow<List<Poll>>
+//        get() = _polls.asStateFlow()
+
+    // History votes
+    private val _historyVotes = MutableStateFlow<List<Poll>>(emptyList())
+    val historyVotes: StateFlow<List<Poll>> = _historyVotes.asStateFlow()
+
+    private val _activeVotes = MutableStateFlow<List<Poll>>(emptyList())
+    val activeVotes: StateFlow<List<Poll>> = _activeVotes.asStateFlow()
+
 
     private var _selectedPoll = MutableStateFlow<UserInPoll?>(null)
 
@@ -146,53 +157,73 @@ class VotingManager @Inject constructor(
             return emptyList()
         }
 
+        // Decode citizenship ISO codes.
         val decodedCountries = votingData.citizenshipWhitelist.map { isoCode ->
             Country.fromISOCode(isoCode.toByteArray().decodeToString())
         }
 
-        val decodedMinAgeAscii = votingData.birthDateUpperbound.toByteArray().decodeToString()
-        val decodedMaxAgeAscii = votingData.birthDateLowerbound.toByteArray().decodeToString()
+        // Decode raw MRZ values from voting data.
+        val rawMinAgeString = votingData.birthDateUpperbound.toByteArray().decodeToString()
+        val rawMaxAgeString = votingData.birthDateLowerbound.toByteArray().decodeToString()
+
+        // Use your helper to convert from MRZ format.
+        val decodedMinAgeAscii = DateUtil.convertFromMrzDate(rawMinAgeString)
+        val decodedMaxAgeAscii = DateUtil.convertFromMrzDate(rawMaxAgeString)
         val decodedGenderAscii = votingData.gender.toByteArray().decodeToString()
-//TODO fix dates
-        val formattedMinAge =
-            runCatching { DateUtil.parseDateString(decodedMinAgeAscii) }.getOrNull()
-        val formattedMaxAge =
-            runCatching { DateUtil.parseDateString(decodedMaxAgeAscii) }.getOrNull()
-        val userDateOfBirth =
-            DateUtil.parseDateString(passport.personDetails!!.birthDate!!)!!
 
-        val isNationalityEligible =
-            decodedCountries.contains(Country.fromISOCode(passport.personDetails!!.nationality))
+        // Helper to check if an age value is "empty".
+        fun isEmptyAgeValue(value: BigInteger): Boolean {
+            return value == BigInteger.valueOf(52983525027888L)
+        }
 
+        val isMinAgeEmpty = isEmptyAgeValue(votingData.birthDateUpperbound)
+        val isMaxAgeEmpty = isEmptyAgeValue(votingData.birthDateLowerbound)
+
+        // Calculate the ages only when provided.
+        val formattedMinAge = if (!isMinAgeEmpty) {
+            runCatching { calculateAgeFromBirthDate(decodedMinAgeAscii) }
+                .getOrNull()?.let { age -> if (age < 0) 100 + age else age }
+        } else null
+
+        val formattedMaxAge = if (!isMaxAgeEmpty) {
+            runCatching { calculateAgeFromBirthDate(decodedMaxAgeAscii) }
+                .getOrNull()?.let { age -> if (age < 0) 100 + age else age }
+        } else null
+
+        // Get user's age (assuming passport.personDetails.birthDate is valid).
+        val userAge =
+            calculateAgeFromBirthDate(passportManager.passport.value?.personDetails?.birthDate!!)
+
+        // Nationality eligibility.
+        val isNationalityEligible = decodedCountries.contains(
+            Country.fromISOCode(passport.personDetails!!.nationality)
+        )
+
+        // Age eligibility using available bounds.
         val isAgeEligible = when {
             formattedMinAge == null && formattedMaxAge == null -> true
-            formattedMinAge != null && formattedMaxAge != null -> {
-                userDateOfBirth in formattedMaxAge..formattedMinAge
-            }
-
-            formattedMinAge != null -> userDateOfBirth <= formattedMinAge
-            formattedMaxAge != null -> userDateOfBirth >= formattedMaxAge
+            formattedMinAge != null && formattedMaxAge != null -> userAge in formattedMinAge..formattedMaxAge
+            formattedMinAge != null -> userAge <= formattedMinAge
+            formattedMaxAge != null -> userAge >= formattedMaxAge
             else -> false
         }
 
+        // Gender eligibility: check only if a valid value was decoded.
         val isGenderEligible = if (decodedGenderAscii == "M" || decodedGenderAscii == "F") {
             decodedGenderAscii == passport.personDetails!!.gender
-        } else {
-            false
-        }
+        } else false
 
-        val countriesString = decodedCountries.joinToString(", ") { it.name }
+        // Build country string.
+        val countriesString = decodedCountries.joinToString(", ") { it.name.replace("_", " ") }
 
-        val ageString: String = run {
-            val minYear = formattedMinAge?.let { DateUtil.yearsBetween(it.toDate()) } ?: 0
-            val maxYear = formattedMaxAge?.let { DateUtil.yearsBetween(it.toDate()) } ?: 0
+        // Build a display string for age requirements.
+        val ageString: String = when {
+            !isMinAgeEmpty && !isMaxAgeEmpty ->
+                if (formattedMinAge != null && formattedMaxAge != null) "$formattedMinAge-$formattedMaxAge" else "-"
 
-            when {
-                decodedMinAgeAscii != "000000" && decodedMaxAgeAscii != "000000" -> "$minYear-$maxYear"
-                decodedMinAgeAscii != "000000" -> "$minYear+"
-                decodedMaxAgeAscii != "000000" -> "$maxYear and below"
-                else -> "-"
-            }
+            !isMinAgeEmpty -> if (formattedMinAge != null) "$formattedMinAge+" else "-"
+            !isMaxAgeEmpty -> if (formattedMaxAge != null) "$formattedMaxAge and below" else "-"
+            else -> "-"
         }
 
         val genderString = when (decodedGenderAscii) {
@@ -212,7 +243,8 @@ class VotingManager @Inject constructor(
             )
         }
 
-        if (decodedMinAgeAscii != "000000" || decodedMaxAgeAscii != "000000") {
+        // Add age criteria only if at least one bound is provided.
+        if (!isMaxAgeEmpty || !isMinAgeEmpty) {
             requirements.add(
                 PollCriteria(
                     title = ageString,
@@ -238,16 +270,35 @@ class VotingManager @Inject constructor(
         return _selectedPoll.value
     }
 
-    suspend fun loadLocalVotePolls(): List<Poll> {
-        return votingRepository.getAllVoting()
+    private suspend fun refreshVotes(polls: List<Poll>) = coroutineScope {
+        val refreshedPollsDeferred = polls.map { poll ->
+            async {
+                loadPollDetailsByProposalId(poll.id)
+            }
+        }
+
+        val refreshedPolls = refreshedPollsDeferred.awaitAll()
+
+        _activeVotes.value = refreshedPolls.filter { !it.isEnded }
+        _historyVotes.value = refreshedPolls.filter { it.isEnded }
+
+    }
+
+    suspend fun loadLocalVotePolls() {
+        val allPolls = votingRepository.getAllVoting()
+
+        _activeVotes.value = allPolls.filter { !it.isEnded }
+        _historyVotes.value = allPolls.filter { it.isEnded }
+
+        refreshVotes(allPolls)
     }
 
     suspend fun loadVotePolls(isRefresh: Boolean = false): List<Poll> {
-        if (_polls.value.isEmpty() || isRefresh) {
-            _polls.value = loadPolls()
-            return _polls.value
-        }
-        return _polls.value
+//        if (_polls.value.isEmpty() || isRefresh) {
+//            _polls.value = loadPolls()
+//            return _polls.value
+//        }
+        return _activeVotes.value
     }
 
     private suspend fun getProposalId(url: String): Long {
@@ -259,6 +310,7 @@ class VotingManager @Inject constructor(
         val proposalId = getProposalId(url)
         val poll = loadPollDetailsByProposalId(proposalId)
         votingRepository.insertVoting(poll)
+        loadLocalVotePolls()
     }
 
 
@@ -333,7 +385,7 @@ class VotingManager @Inject constructor(
                         id = proposalInfoIndexed.Index.toLong(),
                         title = rawData.title,
                         description = rawData.description!!,
-                        reward = 50L,
+                        reward = 0,
                         voteStartDate = proposalInfo.Config.StartTimestamp,
                         isEnded =
                             proposalStatus == ProposalStatus.Ended || currentDateLongUtc > proposalInfo.Config.StartTimestamp.plus(
@@ -355,7 +407,7 @@ class VotingManager @Inject constructor(
                         proposalSMT = proposalSMT,
                         proposalStatus = proposalStatus,
                         proposalResults = proposalInfo.VotingResults,
-                        imageUrl = rawData.image
+                        imageUrl = rawData.imageCid
                     )
                 }
             }
@@ -477,7 +529,7 @@ class VotingManager @Inject constructor(
                         proposalSMT = proposalSMT,
                         proposalStatus = proposalStatus,
                         proposalResults = proposalInfo.VotingResults,
-                        imageUrl = rawData.image
+                        imageUrl = rawData.imageCid
                     )
                 }
             }
@@ -595,58 +647,6 @@ class VotingManager @Inject constructor(
 
         val votingData = decodeVotingData(selectedPoll.value!!.poll)
 
-
-        Log.i("DEBUG", "eDocument.dg1 decoded: ${eDocument.dg1!!.decodeHexString()}")
-        Log.i(
-            "DEBUG",
-            "smtProofJson (as byte array): ${
-                smtProofJson.toByteArray(Charsets.UTF_8).contentToString()
-            }"
-        )
-        Log.i("DEBUG", "votingData.selector: ${votingData.selector}")
-        Log.i("DEBUG", "passportInfoKey: $passportInfoKey")
-        Log.i(
-            "DEBUG",
-            "identityInfo.issueTimestamp decoded: ${identityInfo.issueTimestamp}"
-        )
-        Log.i(
-            "DEBUG",
-            "passportInfo.identityReissueCounter decoded: ${passportInfo.identityReissueCounter}"
-        )
-        Log.i("DEBUG", "eventId: $eventId")
-        Log.i("DEBUG", "eventData (hex): ${Numeric.toHexString(eventData)}")
-        Log.i("DEBUG", "Static value: 0")
-        Log.i(
-            "DEBUG",
-            "Calculated timestamp upperbound: ${
-                max(
-                    votingData.timestampUpperbound.toString().toULong(),
-                    identityInfo.issueTimestamp.toString().toULong() + 1u
-                )
-            }"
-        )
-        Log.i("DEBUG", "Static value: 0")
-        Log.i(
-            "DEBUG",
-            "votingData.identityCounterUpperBound decoded: ${votingData.identityCounterUpperbound}"
-        )
-        Log.i(
-            "DEBUG",
-            "votingData.expirationDateLowerBound decoded: ${
-                votingData.expirationDateLowerbound.toByteArray().decodeToString()
-            }"
-        )
-        Log.i("DEBUG", "ZERO_IN_HEX: $ZERO_IN_HEX")
-        Log.i(
-            "DEBUG",
-            "votingData.birthDateLowerbound (hex): ${Numeric.toHexString(votingData.birthDateLowerbound.toByteArray())}"
-        )
-        Log.i(
-            "DEBUG",
-            "votingData.birthDateUpperbound (hex): ${Numeric.toHexString(votingData.birthDateUpperbound.toByteArray())}"
-        )
-        Log.i("DEBUG", "Static value: 0")
-
         val queryProofInputs = profile.buildQueryIdentityInputs(
             eDocument.dg1!!.decodeHexString(),
             smtProofJson.toByteArray(),
@@ -723,14 +723,20 @@ class VotingManager @Inject constructor(
     }
 
 
-//    suspend fun checkIsVoted(): Boolean = withContext(Dispatchers.IO) {
-//        val poseidonSMTContract =
-//            votingContractManager.getPoseidonSMT(selectedPoll.value!!.proposalSMT)
-//        val nullifier = identityManager.getNullifier(selectedPoll.value!!.eventId.toByteArray())
-//
-//        val proof = poseidonSMTContract.getProof(nullifier).send()
-//
-//        proof.existence
-//    }
+    @OptIn(ExperimentalStdlibApi::class)
+    suspend fun checkIsVoted(): Boolean = withContext(Dispatchers.IO) {
+        val poseidonSMTContract =
+            testnetContractManager.getPoseidonSMT(selectedPoll.value!!.poll.proposalSMT)
+
+        val profiler = identityManager.getProfiler()
+
+        val nullifier = profiler.calculateEventNullifierHex(
+            "0x" + selectedPoll.value!!.poll.eventId.toByteArray().toHexString()
+        )
+
+        val proof = poseidonSMTContract.getProof(Numeric.hexStringToByteArray(nullifier)).send()
+
+        proof.existence
+    }
 
 }

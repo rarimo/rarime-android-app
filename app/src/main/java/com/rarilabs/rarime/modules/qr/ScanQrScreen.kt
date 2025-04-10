@@ -38,7 +38,6 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
 fun ScanQrScreen(onBack: () -> Unit, onScan: (String) -> Unit) {
-    // TODO add fullscreen layout
     ScanQrScreenContent(onBack, onScan)
 }
 

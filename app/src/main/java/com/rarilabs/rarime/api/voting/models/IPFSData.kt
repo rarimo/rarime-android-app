@@ -10,5 +10,5 @@ data class IPFSResponseData(
     val title: String,
     val description: String?,
     val acceptedOptions: List<OptionVariant>,
-    val image: String?
+    val imageCid: String?
 )

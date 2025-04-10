@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.manager
 
+import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT
 import com.rarilabs.rarime.contracts.rarimo.ProposalsState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -21,6 +22,16 @@ class TestContractManager @Inject constructor(@Named("Test") private val web3j: 
         val gasProvider = DefaultGasProvider()
 
         return ProposalsState.load(
+            address, web3j, credentials, gasProvider
+        )
+    }
+
+    fun getPoseidonSMT(address: String): PoseidonSMT {
+        val ecKeyPair = Keys.createEcKeyPair()
+        val credentials = Credentials.create(ecKeyPair)
+        val gasProvider = DefaultGasProvider()
+
+        return PoseidonSMT.load(
             address, web3j, credentials, gasProvider
         )
     }

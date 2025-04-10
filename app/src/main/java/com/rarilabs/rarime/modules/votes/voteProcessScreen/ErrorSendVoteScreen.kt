@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.ErrorView
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.util.Screen
@@ -22,7 +23,7 @@ fun ErrorSendVoteScreen(modifier: Modifier = Modifier, navigate: (String) -> Uni
     Column(
         modifier
             .fillMaxSize()
-            .padding(horizontal = 32.dp),
+            .padding(horizontal = 24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -30,6 +31,7 @@ fun ErrorSendVoteScreen(modifier: Modifier = Modifier, navigate: (String) -> Uni
         ErrorView()
         Spacer(modifier = Modifier.weight(1f))
         PrimaryButton(
+            size = ButtonSize.Large,
             modifier = Modifier.fillMaxWidth(),
             text = "Home Page",
             onClick = { navigate(Screen.Main.Home.route) })

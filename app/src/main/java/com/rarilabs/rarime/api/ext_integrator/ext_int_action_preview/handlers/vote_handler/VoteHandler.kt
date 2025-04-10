@@ -13,8 +13,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
-import com.rarilabs.rarime.modules.main.ScreenInsets
-import com.rarilabs.rarime.modules.votes.voteProcessScreen.VoteProcessScreenContent
 import com.rarilabs.rarime.ui.components.SnackbarSeverity
 import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
 import com.rarilabs.rarime.util.ErrorHandler
@@ -94,23 +92,23 @@ fun VoteHandler(
         }
     }
 
-    VoteProcessScreenContent(
-        screenInsets = mapOf(
-            ScreenInsets.TOP to screenInsets.get(ScreenInsets.TOP),
-            ScreenInsets.BOTTOM to screenInsets.get(ScreenInsets.BOTTOM)
-        ),
-        voteData = voteData,
-        isLoading = isLoading,
-        onBackClick = onCancel,
-        onVote = {
-            scope.launch {
-                try {
-                    viewModel.vote(context, it)
-                    onSuccessHandler()
-                } catch (error: Exception) {
-                    onFailHandler(error)
-                }
-            }
-        }
-    )
+//    VoteProcessScreenContent(
+//        screenInsets = mapOf(
+//            ScreenInsets.TOP to screenInsets.get(ScreenInsets.TOP),
+//            ScreenInsets.BOTTOM to screenInsets.get(ScreenInsets.BOTTOM)
+//        ),
+//        voteData = voteData,
+//        isLoading = isLoading,
+//        onBackClick = onCancel,
+//        onVote = {
+//            scope.launch {
+//                try {
+//                    viewModel.vote(context, it)
+//                    onSuccessHandler()
+//                } catch (error: Exception) {
+//                    onFailHandler(error)
+//                }
+//            }
+//        }
+//    )
 }

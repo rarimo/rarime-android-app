@@ -447,4 +447,10 @@
     <string name="reserved">Reserved</string>
     <string name="upcoming">Upcoming</string>
     <string name="rmo">RMO</string>
+
+
+    <string name="poll_voting_ended">Voting has ended</string>
+    <string name="poll_voting_end_timer">Voting ends in %1$s</string>
+    <string name="poll_voting_start_timer">Voting starts in %1$s</string>
+
 </resources>
