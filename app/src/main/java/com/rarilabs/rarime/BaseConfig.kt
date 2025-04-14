@@ -40,6 +40,12 @@ interface IConfig {
 
     val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String
 
+    val VOTING_RPC_URL: String
+
+    val PROPOSAL_CONTRACT_ADDRESS: String
+
+    val MULTICALL_CONTRACT_ADDRRESS: String
+
 
     val registerIdentity_1_256_3_5_576_248_NA: String
     val registerIdentity_1_256_3_6_576_248_1_2432_5_296: String
@@ -146,6 +152,10 @@ object TestNetConfig : IConfig {
     override val VOTING_RELAYER_URL: String = "https://api.stage.freedomtool.org"
     override val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String =
         "0xFbae44a113A6f07687b180605f425e43066a6179"
+    override val VOTING_RPC_URL: String = "https://rpc.qtestnet.org"
+
+    override val PROPOSAL_CONTRACT_ADDRESS: String = "0x4C61d7454653720DAb9e26Ca25dc7B8a5cf7065b"
+    override val MULTICALL_CONTRACT_ADDRRESS: String = "0xcA11bde05977b3631167028862bE2a173976CA11"
 
     override val registerIdentity_1_256_3_5_576_248_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_5_576_248_NA-download.zip"
@@ -228,7 +238,6 @@ object TestNetConfig : IConfig {
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.12/registerIdentity_15_512_3_3_336_248_NA-download.zip"
     override val registerIdentity_20_160_3_3_736_200_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.12/registerIdentity_20_160_3_3_736_200_NA-download.zip"
-
 
 
     override val registerIdentityLight160: String =
@@ -284,6 +293,9 @@ object MainnetConfig : IConfig {
 
     override val VOTING_RELAYER_URL: String = ""
     override val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String = ""
+    override val VOTING_RPC_URL: String = ""
+    override val PROPOSAL_CONTRACT_ADDRESS: String = ""
+    override val MULTICALL_CONTRACT_ADDRRESS: String = ""
 
     override val registerIdentity_1_256_3_5_576_248_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_5_576_248_NA-download.zip"
@@ -367,7 +379,6 @@ object MainnetConfig : IConfig {
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.12/registerIdentity_15_512_3_3_336_248_NA-download.zip"
     override val registerIdentity_20_160_3_3_736_200_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.12/registerIdentity_20_160_3_3_736_200_NA-download.zip"
-
 
 
     override val registerIdentityLight160: String =

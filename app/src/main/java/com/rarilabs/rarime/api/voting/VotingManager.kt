@@ -50,6 +50,7 @@ import identity.Profile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -71,12 +72,7 @@ class VotingManager @Inject constructor(
     private val ZERO_IN_HEX: String = "0x303030303030"
     private val EMPTY_VALUE: String = "0x302020202020"
 
-//    private val _polls: MutableStateFlow<List<Poll>> = MutableStateFlow(listOf())
-//
-//    val polls: StateFlow<List<Poll>>
-//        get() = _polls.asStateFlow()
 
-    // History votes
     private val _historyVotes = MutableStateFlow<List<Poll>>(emptyList())
     val historyVotes: StateFlow<List<Poll>> = _historyVotes.asStateFlow()
 
@@ -261,36 +257,31 @@ class VotingManager @Inject constructor(
     }
 
     private suspend fun refreshVotes(polls: List<Poll>) = withContext(Dispatchers.IO) {
-
-        val refreshedPollsDeferred = polls.map { poll ->
-            async {
-                loadPollDetailsByProposalId(poll.id)
-            }
+        // Refresh each poll concurrently.
+        val refreshedPolls = coroutineScope {
+            polls.map { poll -> async { loadPollDetailsByProposalId(poll.id) } }
+                .awaitAll()
         }
-
-        val refreshedPolls = refreshedPollsDeferred.awaitAll()
-
+        // Update active and history votes.
         _activeVotes.value = refreshedPolls.filter { !it.isEnded }
         _historyVotes.value = refreshedPolls.filter { it.isEnded }
-
     }
 
-    suspend fun loadLocalVotePolls() {
-        val allPolls = votingRepository.getAllVoting()
 
+    suspend fun loadLocalVotePolls() = withContext(Dispatchers.IO) {
+        val allPolls = votingRepository.getAllVoting()
         _activeVotes.value = allPolls.filter { !it.isEnded }
         _historyVotes.value = allPolls.filter { it.isEnded }
-
         refreshVotes(allPolls)
     }
 
-    suspend fun loadVotePolls(isRefresh: Boolean = false): List<Poll> {
-//        if (_polls.value.isEmpty() || isRefresh) {
-//            _polls.value = loadPolls()
-//            return _polls.value
-//        }
-        return _activeVotes.value
-    }
+//    suspend fun loadVotePolls(isRefresh: Boolean = false): List<Poll> {
+////        if (_polls.value.isEmpty() || isRefresh) {
+////            _polls.value = loadPolls()
+////            return _polls.value
+////        }
+//        return _activeVotes.value
+//    }
 
     private suspend fun getProposalId(url: String): Long {
         val votingInfo = votingApiManager.getVotingInfo(url)
@@ -304,14 +295,10 @@ class VotingManager @Inject constructor(
         loadLocalVotePolls()
     }
 
-
     private suspend fun loadPollDetailsByProposalId(proposalId: Long): Poll {
-
-        val proposal = "0x4C61d7454653720DAb9e26Ca25dc7B8a5cf7065b"
-
-        val multicall = "0xcA11bde05977b3631167028862bE2a173976CA11"
-
-        val VOTING_RPC_URL = "https://rpc.qtestnet.org"
+        val proposal = BaseConfig.PROPOSAL_CONTRACT_ADDRESS
+        val multicall = BaseConfig.MULTICALL_CONTRACT_ADDRRESS
+        val votingRpcUrl = BaseConfig.VOTING_RPC_URL
 
         val proposalsStateContract = votingContractManager.getProposalsStateContract(proposal)
         val pollsList: MutableList<Poll> = mutableListOf()
@@ -319,7 +306,7 @@ class VotingManager @Inject constructor(
         withContext(Dispatchers.IO) {
 
             val proposalInfosArrayRaw = Identity.getStateInfosMulticall(
-                proposal, VOTING_RPC_URL, multicall, proposalId.toString(), proposalId.toString()
+                proposal, votingRpcUrl, multicall, proposalId.toString(), proposalId.toString()
             )
 
             val gsonBuilder = GsonBuilder()
