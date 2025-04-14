@@ -105,7 +105,12 @@ class VotingApiManager @Inject constructor(
             return response.body() ?: throw Exception("Empty body of response")
         }
 
-        throw Exception(response.errorBody()?.string())
+        if (response.errorBody()?.string()?.contains("gas") == true) {
+            throw VoteError.NotEnoughTokens(details = response.errorBody()!!.string())
+        }
+
+
+        throw VoteError.NetworkError(response.errorBody()?.string().toString())
     }
 
 }

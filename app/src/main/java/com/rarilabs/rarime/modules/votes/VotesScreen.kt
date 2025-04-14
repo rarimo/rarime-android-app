@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.voting.VoteError
 import com.rarilabs.rarime.api.voting.models.MOCKED_POLL_ITEM
 import com.rarilabs.rarime.api.voting.models.Poll
 import com.rarilabs.rarime.api.voting.models.PollResult
@@ -62,7 +63,6 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
-import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import kotlinx.coroutines.launch
 
@@ -108,6 +108,9 @@ fun VotesScreen(
 
     val scope = rememberCoroutineScope()
 
+    var error by remember {
+        mutableStateOf<VoteError?>(null)
+    }
 
     var currentState by remember {
         mutableStateOf(VoteAppSheetState.INFO_VOTE)
@@ -126,10 +129,13 @@ fun VotesScreen(
                 viewModel.vote(voteOption, context)
 
                 currentState = VoteAppSheetState.FINISH_VOTE
+            } catch (e: VoteError) {
+                error = e
             } catch (e: Exception) {
-                ErrorHandler.logError("PollsItemVoteScreen", "Failed to vote in poll", e)
-                currentState = VoteAppSheetState.ERROR_VOTE
+                error = VoteError.UnknownError(e.message.toString())
             }
+
+            currentState = VoteAppSheetState.ERROR_VOTE
         }
     }
 
@@ -146,11 +152,16 @@ fun VotesScreen(
         )
     )
 
-    AppBottomSheet(state = voteSheetState, isHeaderEnabled = false) {
+    AppBottomSheet(
+        state = voteSheetState,
+        isHeaderEnabled = false,
+        scrimColor = Color.Transparent,
+        fullScreen = true,
+        isWindowInsetsEnabled = false
+    ) {
 
         when (currentState) {
             VoteAppSheetState.INFO_VOTE -> {
-
                 VoteProcessInfoScreen(
                     userInPoll = selectedPoll!!,
                     onClose = {
@@ -183,9 +194,11 @@ fun VotesScreen(
             }
 
             VoteAppSheetState.ERROR_VOTE -> {
-                ErrorSendVoteScreen {
-                    navigate(it)
-                }
+                ErrorSendVoteScreen(
+                    navigate = navigate,
+                    error = error,
+                )
+
             }
 
             VoteAppSheetState.FINISH_VOTE -> {
@@ -245,11 +258,12 @@ fun VotesScreenContent(
 ) {
     var isQrCodeViewShown by remember { mutableStateOf(false) }
 
+
+    val tabs = listOf("Active", "History")
     val pagerState = rememberPagerState(
-        pageCount = { 2 },
+        pageCount = { tabs.size },
         initialPage = 0
     )
-    val tabs = listOf("Active", "History")
     val scope = rememberCoroutineScope()
 
     if (isQrCodeViewShown) {

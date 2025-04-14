@@ -54,7 +54,7 @@ fun VoteProcessInfoScreen(
 ) {
 
     val isEligible = remember {
-        userInPoll.pollCriteriaList.isNotEmpty() && userInPoll.pollCriteriaList.none { !it.accomplished }
+        userInPoll.userVerificationStatus == PollCriteriaStatus.VERIFIED && userInPoll.pollCriteriaList.none { !it.accomplished }
     }
 
     val context = LocalContext.current
@@ -107,6 +107,7 @@ fun VoteProcessInfoScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1572.0f / 912.0f),
+                //TODO FIX IT
                 model = if (!userInPoll.poll.imageUrl.isNullOrEmpty()) "https://ipfs.rarimo.com/ipfs/" + userInPoll.poll.imageUrl else
                     "https://ipfs.rarimo.com/ipfs/QmQmC3XsggXEsYHFP6cB7k3BJjaJxg27kWoooRc6HRTRm5",
                 contentDescription = null,

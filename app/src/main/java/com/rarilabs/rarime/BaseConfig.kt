@@ -38,6 +38,8 @@ interface IConfig {
 
     val VOTING_RELAYER_URL: String
 
+    val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String
+
 
     val registerIdentity_1_256_3_5_576_248_NA: String
     val registerIdentity_1_256_3_6_576_248_1_2432_5_296: String
@@ -142,6 +144,8 @@ object TestNetConfig : IConfig {
     override val APPSFLYER_DEV_KEY = Keys.APPSFLYER_DEV_KEY
 
     override val VOTING_RELAYER_URL: String = "https://api.stage.freedomtool.org"
+    override val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String =
+        "0xFbae44a113A6f07687b180605f425e43066a6179"
 
     override val registerIdentity_1_256_3_5_576_248_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_5_576_248_NA-download.zip"
@@ -279,6 +283,7 @@ object MainnetConfig : IConfig {
     override val APPSFLYER_DEV_KEY = Keys.APPSFLYER_DEV_KEY
 
     override val VOTING_RELAYER_URL: String = ""
+    override val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String = ""
 
     override val registerIdentity_1_256_3_5_576_248_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_5_576_248_NA-download.zip"

@@ -58,12 +58,12 @@ data class Question(
 data class VotingData(
     val selector: BigInteger,
     val citizenshipWhitelist: List<BigInteger>,
-    val timestampUpperbound: BigInteger,
-    val identityCounterUpperbound: BigInteger,
-    val gender: BigInteger,
+    val identityCreationTimestampUpperBound: BigInteger,
+    val identityCounterUpperBound: BigInteger,
+    val sex: BigInteger,
     val birthDateLowerbound: BigInteger,
     val birthDateUpperbound: BigInteger,
-    val expirationDateLowerbound: BigInteger
+    val expirationDateLowerBound: BigInteger
 )
 
 val MOCKED_POLL_ITEM = Poll(
@@ -72,7 +72,7 @@ val MOCKED_POLL_ITEM = Poll(
     title = "Mocked Poll",
     description = "This is a mocked poll for testing purposes.",
 
-    reward = 50,
+    reward = 0,
 
     voteStartDate = 1723125259,
     voteEndDate = 1630458000000,
