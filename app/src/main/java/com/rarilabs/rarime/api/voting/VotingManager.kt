@@ -74,16 +74,22 @@ class VotingManager @Inject constructor(
 
 
     private val _historyVotes = MutableStateFlow<List<Poll>>(emptyList())
-    val historyVotes: StateFlow<List<Poll>> = _historyVotes.asStateFlow()
+    val historyVotes: StateFlow<List<Poll>>
+        get() = _historyVotes.asStateFlow()
 
     private val _activeVotes = MutableStateFlow<List<Poll>>(emptyList())
-    val activeVotes: StateFlow<List<Poll>> = _activeVotes.asStateFlow()
+    val activeVotes: StateFlow<List<Poll>>
+        get() = _activeVotes.asStateFlow()
 
 
     private var _selectedPoll = MutableStateFlow<UserInPoll?>(null)
 
     val selectedPoll: StateFlow<UserInPoll?>
         get() = _selectedPoll.asStateFlow()
+
+    private val _isVotesLoading = MutableStateFlow(false)
+    val isVotesLoading: StateFlow<Boolean>
+        get() = _isVotesLoading.asStateFlow()
 
     fun totalParticipantsOfSelectedPoll(poll: Poll?): Long {
         val total = poll?.proposalResults?.sumOf { proposalResult ->
@@ -161,14 +167,12 @@ class VotingManager @Inject constructor(
         val decodedMaxAgeAscii = DateUtil.convertFromMrzDate(rawMaxAgeString)
         val decodedGenderAscii = votingData.sex.toByteArray().decodeToString()
 
-
         fun isEmptyAgeValue(value: BigInteger): Boolean {
             return value == BigInteger.valueOf(52983525027888L)
         }
 
         val isMinAgeEmpty = isEmptyAgeValue(votingData.birthDateUpperbound)
         val isMaxAgeEmpty = isEmptyAgeValue(votingData.birthDateLowerbound)
-
 
         val formattedMinAge = if (!isMinAgeEmpty) {
             runCatching { calculateAgeFromBirthDate(decodedMinAgeAscii) }.getOrNull()
@@ -180,7 +184,6 @@ class VotingManager @Inject constructor(
                 ?.let { age -> if (age < 0) 100 + age else age }
         } else null
 
-
         val userAge =
             calculateAgeFromBirthDate(passportManager.passport.value?.personDetails?.birthDate!!)
 
@@ -189,19 +192,18 @@ class VotingManager @Inject constructor(
             Country.fromISOCode(passport.personDetails!!.nationality)
         )
 
-
         val isAgeEligible = when {
             formattedMinAge == null && formattedMaxAge == null -> true
             formattedMinAge != null && formattedMaxAge != null -> userAge in formattedMinAge..formattedMaxAge
-            formattedMinAge != null -> userAge <= formattedMinAge
-            formattedMaxAge != null -> userAge >= formattedMaxAge
+            formattedMinAge != null -> userAge >= formattedMinAge
+            formattedMaxAge != null -> userAge <= formattedMaxAge
             else -> false
         }
 
-
-        val isGenderEligible = if (decodedGenderAscii == "M" || decodedGenderAscii == "F") {
-            decodedGenderAscii == passport.personDetails!!.gender
-        } else false
+        val isGenderEligible =
+            if (decodedGenderAscii == "M" || decodedGenderAscii == "F" || decodedGenderAscii == "O") {
+                decodedGenderAscii == passportManager.passport.value!!.personDetails!!.gender!![0].toString()
+            } else false
 
 
         val countriesString = decodedCountries.joinToString(", ") { it.name.replace("_", " ") }
@@ -251,37 +253,33 @@ class VotingManager @Inject constructor(
         return requirements
     }
 
-
     fun getSelectedPoll(): UserInPoll? {
         return _selectedPoll.value
     }
 
     private suspend fun refreshVotes(polls: List<Poll>) = withContext(Dispatchers.IO) {
+
         // Refresh each poll concurrently.
         val refreshedPolls = coroutineScope {
-            polls.map { poll -> async { loadPollDetailsByProposalId(poll.id) } }
-                .awaitAll()
+            polls.map { poll -> async { loadPollDetailsByProposalId(poll.id) } }.awaitAll()
         }
         // Update active and history votes.
         _activeVotes.value = refreshedPolls.filter { !it.isEnded }
         _historyVotes.value = refreshedPolls.filter { it.isEnded }
+
     }
 
 
     suspend fun loadLocalVotePolls() = withContext(Dispatchers.IO) {
+        _isVotesLoading.value = true
+
         val allPolls = votingRepository.getAllVoting()
         _activeVotes.value = allPolls.filter { !it.isEnded }
         _historyVotes.value = allPolls.filter { it.isEnded }
         refreshVotes(allPolls)
-    }
 
-//    suspend fun loadVotePolls(isRefresh: Boolean = false): List<Poll> {
-////        if (_polls.value.isEmpty() || isRefresh) {
-////            _polls.value = loadPolls()
-////            return _polls.value
-////        }
-//        return _activeVotes.value
-//    }
+        _isVotesLoading.value = false
+    }
 
     private suspend fun getProposalId(url: String): Long {
         val votingInfo = votingApiManager.getVotingInfo(url)
@@ -289,10 +287,14 @@ class VotingManager @Inject constructor(
     }
 
     suspend fun saveVoting(url: String) {
+        _isVotesLoading.value = true
+
         val proposalId = getProposalId(url)
         val poll = loadPollDetailsByProposalId(proposalId)
         votingRepository.insertVoting(poll)
         loadLocalVotePolls()
+        _isVotesLoading.value = false
+
     }
 
     private suspend fun loadPollDetailsByProposalId(proposalId: Long): Poll {
@@ -569,7 +571,11 @@ class VotingManager @Inject constructor(
                 passportInfo,
                 identityInfo
             )
+        } catch (e: VoteError.UniquenessError) {
+            ErrorHandler.logError("voting", "Error", e)
+            throw e
         } catch (e: Exception) {
+            ErrorHandler.logError("voting", "Error", e)
             throw VoteError.ZKPError(e.message.toString())
         }
 
@@ -639,7 +645,11 @@ class VotingManager @Inject constructor(
         var isReissuedAfterVoting = false
         if (identityInfo.issueTimestamp > votingData.identityCreationTimestampUpperBound) {
             if (passportInfo.identityReissueCounter > votingData.identityCounterUpperBound) {
-                throw Exception("Your identity can not be uniquely verified for voting")
+                throw VoteError.UniquenessError(
+                    "Your identity can not be uniquely verified for voting: " +
+                            "identityInfo.issueTimestamp > votingData.identityCreationTimestampUpperBound:  ${identityInfo.issueTimestamp} > ${votingData.identityCreationTimestampUpperBound}." +
+                            " passportInfo.identityReissueCounter > votingData.identityCounterUpperBound ${passportInfo.identityReissueCounter} > ${votingData.identityCounterUpperBound}"
+                )
             }
 
             identityCreationTimestampUpperBound = identityInfo.issueTimestamp + BigInteger.ONE
@@ -658,7 +668,7 @@ class VotingManager @Inject constructor(
         Log.i("VoteProof", "eventId: $eventId")
         Log.i("VoteProof", "eventData: ${Numeric.toHexString(eventData)}")
         Log.i("VoteProof", "timestampLowerbound: 0")
-        Log.i("VoteProof", "timestampUpperbound: ${identityCreationTimestampUpperBound}")
+        Log.i("VoteProof", "timestampUpperbound: $identityCreationTimestampUpperBound")
         Log.i("VoteProof", "identityCounterLowerbound: 0")
         Log.i("VoteProof", "identityCounterUpperbound: $identityCounterUpperBound")
         Log.i(
@@ -771,5 +781,6 @@ sealed class VoteError(message: String? = null) : Exception(message) {
     data class ZKPError(val details: String) : VoteError(details)
     data class NotEnoughTokens(val details: String) : VoteError(details)
     data class NetworkError(val details: String) : VoteError(details)
+    data class UniquenessError(val details: String) : VoteError(details)
     data class UnknownError(val details: String) : VoteError(details)
 }

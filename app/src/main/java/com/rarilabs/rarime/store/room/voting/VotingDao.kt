@@ -22,6 +22,9 @@ interface VotingDao {
     @Delete
     suspend fun deleteVoting(vote: VotingEntityData)
 
+    @Query("DELETE FROM voting")
+    suspend fun deleteAll()
+
     @Query("SELECT * FROM voting")
     fun getAllVotingSync(): List<VotingEntityData>
 
@@ -33,5 +36,8 @@ interface VotingDao {
 
     @Delete
     fun deleteVotingSync(vote: VotingEntityData)
+
+    @Query("DELETE FROM voting")
+    fun deleteAllSync()
 
 }

@@ -10,6 +10,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -38,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -56,6 +58,7 @@ import com.rarilabs.rarime.modules.home.v2.details.UnforgettableWalletScreen
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
+import com.rarilabs.rarime.modules.passportScan.models.PersonDetails
 import com.rarilabs.rarime.modules.votes.VotesScreen
 import com.rarilabs.rarime.store.room.notifications.models.NotificationEntityData
 import com.rarilabs.rarime.ui.components.CircledBadgeWithCounter
@@ -325,18 +328,27 @@ fun HomeScreenContent(
                     Modifier.padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(
-                            stringResource(R.string.hi),
+                            text = stringResource(R.string.hi),
                             style = RarimeTheme.typography.subtitle4,
-                            color = RarimeTheme.colors.textSecondary
+                            color = RarimeTheme.colors.textSecondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = passport?.personDetails?.name
                                 ?: stringResource(R.string.stranger),
                             style = RarimeTheme.typography.subtitle4,
-                            color = RarimeTheme.colors.textPrimary
+                            color = RarimeTheme.colors.textPrimary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f)
                         )
                     }
 
@@ -506,7 +518,11 @@ private fun HomeScreenPreview() {
                 firstReferralCode = "",
                 currentPointsBalance = 2323.toLong(),
                 notificationsCount = 2,
-                passport = null
+                passport = EDocument(
+                    personDetails = PersonDetails(
+                        name = "Mike"
+                    )
+                )
             )
         }
     }

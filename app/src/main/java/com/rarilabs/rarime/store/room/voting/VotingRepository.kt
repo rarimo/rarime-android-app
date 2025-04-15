@@ -25,6 +25,12 @@ class VotingRepository @Inject constructor(private val votingDao: VotingDao) {
         }
     }
 
+    suspend fun deleteAllVoting() {
+        withContext(Dispatchers.IO) {
+            votingDao.deleteAll()
+        }
+    }
+
     suspend fun updateVoting(vote: Poll) {
         return withContext(Dispatchers.IO) {
             val voteData = VotingEntityData.fromVoteToVotingEntityData(vote)

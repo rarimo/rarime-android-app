@@ -291,11 +291,13 @@ object MainnetConfig : IConfig {
     override val REWARD_NOTIFICATION_TOPIC: String = "rarime-rewardable"
     override val APPSFLYER_DEV_KEY = Keys.APPSFLYER_DEV_KEY
 
-    override val VOTING_RELAYER_URL: String = ""
-    override val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String = ""
-    override val VOTING_RPC_URL: String = ""
-    override val PROPOSAL_CONTRACT_ADDRESS: String = ""
-    override val MULTICALL_CONTRACT_ADDRRESS: String = ""
+    override val VOTING_RELAYER_URL: String = "https://api.test.stage.freedomtool.org"
+    override val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String =
+        "0x479F84502Db545FA8d2275372E0582425204A879"
+    override val VOTING_RPC_URL: String = "https://l2.rarimo.com"
+    override val PROPOSAL_CONTRACT_ADDRESS: String = "0x695f82E7899dC358BA6B15c8a989d46A4E50A158"
+    override val MULTICALL_CONTRACT_ADDRRESS: String = "0xb4EE49BDf7cf199081b2a286B2B9B5f87AE930b1"
+
 
     override val registerIdentity_1_256_3_5_576_248_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_5_576_248_NA-download.zip"

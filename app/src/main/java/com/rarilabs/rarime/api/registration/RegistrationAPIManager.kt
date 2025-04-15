@@ -86,6 +86,7 @@ class RegistrationAPIManager @Inject constructor(
         }
 
         val request = VerifySodRequest(
+
             data = VerifySodRequestData(
                 id = "",
                 type = "register",

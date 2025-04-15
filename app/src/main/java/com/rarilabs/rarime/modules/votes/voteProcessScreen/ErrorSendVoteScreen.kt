@@ -21,31 +21,27 @@ import com.rarilabs.rarime.util.Screen
 
 @Composable
 fun ErrorSendVoteScreen(
-    modifier: Modifier = Modifier,
-    navigate: (String) -> Unit,
-    error: Exception?
+    modifier: Modifier = Modifier, navigate: (String) -> Unit, error: Exception?
 ) {
 
     val (errorTitle, errorDescription) = remember(error) {
         when (error) {
             is VoteError -> {
                 when (error) {
-                    is VoteError.NetworkError ->
-                        "Network Error" to "Can't connect. Check your connection."
+                    is VoteError.NetworkError -> "Network Error" to "Can't connect. Check your connection."
 
-                    is VoteError.NotEnoughTokens ->
-                        "Insufficient Tokens" to "Not enough tokens."
+                    is VoteError.NotEnoughTokens -> "Insufficient Tokens" to "Not enough tokens."
 
-                    is VoteError.UnknownError ->
-                        "Unexpected Error" to "Something went wrong. Try again."
+                    is VoteError.UnknownError -> "Unexpected Error" to "Something went wrong. Try again."
 
-                    is VoteError.ZKPError ->
-                        "Validation Error" to "Validation failed. Try again."
+                    is VoteError.UniquenessError -> "Uniqueness Error" to "You registered your identity before the vote began."
+
+                    is VoteError.ZKPError -> "Validation Error" to "Validation failed. Try again."
+
                 }
             }
 
-            else ->
-                "Error" to "Something went wrong. Try again."
+            else -> "Error" to "Something went wrong. Try again."
         }
     }
 
@@ -58,8 +54,7 @@ fun ErrorSendVoteScreen(
     ) {
         Spacer(modifier = Modifier.weight(1f))
         ErrorView(
-            title = errorTitle,
-            subtitle = errorDescription
+            title = errorTitle, subtitle = errorDescription
         )
         Spacer(modifier = Modifier.weight(1f))
         PrimaryButton(

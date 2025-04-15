@@ -445,7 +445,7 @@ class APIModule {
     @Singleton
     @Named("Test")
     fun web3Test(): Web3j {
-        return Web3j.build(HttpService("https://rpc.qtestnet.org"))
+        return Web3j.build(HttpService(BaseConfig.VOTING_RPC_URL))
     }
 
 

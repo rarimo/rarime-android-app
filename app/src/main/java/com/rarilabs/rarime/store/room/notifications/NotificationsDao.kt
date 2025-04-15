@@ -20,6 +20,10 @@ interface NotificationsDao {
         @Delete
         suspend fun deleteNotifications(task : NotificationEntityData)
 
+        @Query("DELETE FROM notifications")
+        suspend fun deleteAll()
+
+
         @Query("SELECT * FROM notifications")
         fun getAllNotificationsSync() : List<NotificationEntityData>
         @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -28,5 +32,8 @@ interface NotificationsDao {
         fun updateNotificationsSync(task : NotificationEntityData)
         @Delete
         fun deleteNotificationsSync(task : NotificationEntityData)
+
+        @Query("DELETE FROM notifications")
+        suspend fun deleteAllSync()
 
 }

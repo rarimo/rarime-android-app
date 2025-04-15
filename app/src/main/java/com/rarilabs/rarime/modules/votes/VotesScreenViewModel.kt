@@ -5,9 +5,7 @@ import com.rarilabs.rarime.api.voting.VotingManager
 import com.rarilabs.rarime.api.voting.models.Poll
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -41,14 +39,9 @@ class VotesScreenViewModel @Inject constructor(
 
     val activeVotes: StateFlow<List<Poll>> = votingManager.activeVotes
 
-    private val _isLoadingActive = MutableStateFlow(false)
-    val isLoadingActive: StateFlow<Boolean> = _isLoadingActive.asStateFlow()
-
+    val isLoading = votingManager.isVotesLoading
 
     val historyVotes: StateFlow<List<Poll>> = votingManager.historyVotes
-
-    private val _isLoadingHistory = MutableStateFlow(false)
-    val isLoadingHistory: StateFlow<Boolean> = _isLoadingHistory.asStateFlow()
 
     val selectedVote = votingManager.selectedPoll
 

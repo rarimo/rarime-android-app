@@ -63,6 +63,7 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import kotlinx.coroutines.launch
 
@@ -99,10 +100,9 @@ fun VotesScreen(
     val context = LocalContext.current
 
     val activeVotes by viewModel.activeVotes.collectAsState()
-    val activeVotesLoading by viewModel.isLoadingActive.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     val historyVotes by viewModel.historyVotes.collectAsState()
-    val historyVotesLoading by viewModel.isLoadingHistory.collectAsState()
 
     val voteSheetState = rememberAppSheetState()
 
@@ -130,8 +130,10 @@ fun VotesScreen(
 
                 currentState = VoteAppSheetState.FINISH_VOTE
             } catch (e: VoteError) {
+                ErrorHandler.logError("Voting", e.message.toString(), e)
                 error = e
             } catch (e: Exception) {
+                ErrorHandler.logError("Voting", e.message.toString(), e)
                 error = VoteError.UnknownError(e.message.toString())
             }
 
@@ -198,7 +200,6 @@ fun VotesScreen(
                     navigate = navigate,
                     error = error,
                 )
-
             }
 
             VoteAppSheetState.FINISH_VOTE -> {
@@ -218,9 +219,8 @@ fun VotesScreen(
         sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = animatedContentScope,
         activeVotes = activeVotes,
-        activeVotesLoading = activeVotesLoading,
+        isLoading = isLoading,
         historyVotes = historyVotes,
-        historyVotesLoading = historyVotesLoading,
         qrCodeScanner = { onBackCb, onScanCb ->
             ScanQrScreen(
                 onBack = { onBackCb.invoke() },
@@ -235,6 +235,9 @@ fun VotesScreen(
         onVoteClick = {
             viewModel.setSelectedPoll(it)
             voteSheetState.show()
+        },
+        setIsLoading = {
+            viewModel
         }
     )
 }
@@ -249,12 +252,12 @@ fun VotesScreenContent(
     animatedContentScope: AnimatedContentScope,
     innerPaddings: Map<ScreenInsets, Number>,
     activeVotes: List<Poll>,
-    activeVotesLoading: Boolean,
+    isLoading: Boolean,
     historyVotes: List<Poll>,
-    historyVotesLoading: Boolean,
     qrCodeScanner: @Composable (onBackCb: () -> Unit, onScanCb: (String) -> Unit) -> Unit = { _, _ -> },
     onProposalScanned: (String) -> Unit,
-    onVoteClick: (Poll) -> Unit
+    onVoteClick: (Poll) -> Unit,
+    setIsLoading: (Boolean) -> Unit
 ) {
     var isQrCodeViewShown by remember { mutableStateOf(false) }
 
@@ -270,6 +273,7 @@ fun VotesScreenContent(
         qrCodeScanner(
             { isQrCodeViewShown = false },
             {
+                setIsLoading(true)
                 onProposalScanned(it)
                 isQrCodeViewShown = false
             }
@@ -379,12 +383,16 @@ fun VotesScreenContent(
 
                         HorizontalPager(
                             state = pagerState,
+                            modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
                             pageSpacing = 12.dp,
                             verticalAlignment = Alignment.Top,
                         ) { page ->
                             when (page) {
-                                0 -> if (activeVotesLoading)
+                                0 -> if (isLoading)
                                     VotesLoadingSkeleton()
+                                else if (activeVotes.isEmpty()) {
+
+                                }
                                 else ActiveVotesList(
                                     votes = activeVotes,
                                     onClick = {
@@ -392,8 +400,11 @@ fun VotesScreenContent(
                                     }
                                 )
 
-                                1 -> if (historyVotesLoading)
+                                1 -> if (isLoading)
                                     VotesLoadingSkeleton()
+                                else if (historyVotes.isEmpty()) {
+
+                                }
                                 else HistoryVotesList(
                                     votes = historyVotes,
                                     onClick = {
@@ -464,16 +475,16 @@ private fun VotesScreenPreview() {
                 MOCKED_POLL_ITEM,
                 MOCKED_POLL_ITEM
             ),
-            activeVotesLoading = false,
+            isLoading = false,
             historyVotes = listOf(
                 MOCKED_POLL_ITEM,
                 MOCKED_POLL_ITEM,
                 MOCKED_POLL_ITEM
             ),
-            historyVotesLoading = false,
             onProposalScanned = {},
             innerPaddings = mapOf(ScreenInsets.TOP to 23, ScreenInsets.BOTTOM to 12),
             onVoteClick = {},
+            setIsLoading = {}
         )
     }
 }

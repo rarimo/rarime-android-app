@@ -9,6 +9,8 @@ import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.SettingsManager
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
+import com.rarilabs.rarime.store.room.notifications.NotificationsRepository
+import com.rarilabs.rarime.store.room.voting.VotingRepository
 import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -23,6 +25,8 @@ class ProfileViewModel @Inject constructor(
     val identityManager: IdentityManager,
     val passportManager: PassportManager,
     val dataStoreManager: SecureSharedPrefsManager,
+    val notificationsRepository: NotificationsRepository,
+    val votingRepository: VotingRepository
 ) : ViewModel() {
     val rarimoAddress = identityManager.rarimoAddress()
 
@@ -38,7 +42,10 @@ class ProfileViewModel @Inject constructor(
     suspend fun clearAllData(context: Context) {
         dataStoreManager.clearAllData()
 
-        delay(1000)
+        notificationsRepository.deleteAllNotifications()
+        votingRepository.deleteAllVoting()
+
+        delay(1000L)
 
         val packageManager = context.packageManager
         val intent = packageManager.getLaunchIntentForPackage(context.packageName)

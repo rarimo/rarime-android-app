@@ -1,51 +1,57 @@
 package com.rarilabs.rarime.store.room.notifications
 
+import com.rarilabs.rarime.store.room.notifications.models.NotificationEntityData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import com.rarilabs.rarime.store.room.notifications.models.NotificationEntityData
 import javax.inject.Inject
 
-class NotificationsRepository @Inject constructor(private val taskDao: NotificationsDao) {
+class NotificationsRepository @Inject constructor(private val notificationDao: NotificationsDao) {
 
     suspend fun getAllNotifications(): List<NotificationEntityData> {
         return withContext(Dispatchers.IO) {
-            taskDao.getAllNotifications()
+            notificationDao.getAllNotifications()
         }
     }
 
     suspend fun insertNotifications(task: NotificationEntityData) {
         return withContext(Dispatchers.IO) {
-            taskDao.insertNotifications(task)
+            notificationDao.insertNotifications(task)
         }
     }
 
     suspend fun updateNotifications(task: NotificationEntityData) {
         return withContext(Dispatchers.IO) {
-            taskDao.updateNotifications(task)
+            notificationDao.updateNotifications(task)
         }
     }
 
     suspend fun deleteNotifications(task: NotificationEntityData) {
         return withContext(Dispatchers.IO) {
-            taskDao.deleteNotifications(task)
+            notificationDao.deleteNotifications(task)
+        }
+    }
+
+    suspend fun deleteAllNotifications() {
+        withContext(Dispatchers.IO) {
+            notificationDao.deleteAll()
         }
     }
 
     //Blocking
 
     fun getAllNotificationsSync(): List<NotificationEntityData> {
-        return taskDao.getAllNotificationsSync()
+        return notificationDao.getAllNotificationsSync()
     }
 
     fun insertNotificationsSync(task: NotificationEntityData) {
-        taskDao.insertNotificationsSync(task)
+        notificationDao.insertNotificationsSync(task)
     }
 
     fun updateNotificationsSync(task: NotificationEntityData) {
-        taskDao.updateNotificationsSync(task)
+        notificationDao.updateNotificationsSync(task)
     }
 
     fun deleteNotificationsSync(task: NotificationEntityData) {
-        taskDao.deleteNotificationsSync(task)
+        notificationDao.deleteNotificationsSync(task)
     }
 }

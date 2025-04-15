@@ -113,7 +113,7 @@ fun AppBottomSheet(
         ) {
             // Wrap the sheet content with a container that applies window insets (for content padding),
             // while the ModalBottomSheet itself still occupies the full screen so the scrim covers all edges.
-            Box(modifier = Modifier.fillMaxSize()) {
+            Box(modifier = if (fullScreen) Modifier.fillMaxSize() else Modifier.fillMaxWidth()) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -133,15 +133,7 @@ fun AppBottomSheet(
                             )
                         }
                     }
-                    // Adjust the inner content height if in full-screen mode
-                    Box(
-                        modifier = if (fullScreen)
-                            Modifier.fillMaxSize()
-                        else
-                            Modifier.fillMaxWidth()
-                    ) {
-                        content { callback -> hide(callback) }
-                    }
+                    content { callback -> hide(callback) }
                 }
             }
         }
