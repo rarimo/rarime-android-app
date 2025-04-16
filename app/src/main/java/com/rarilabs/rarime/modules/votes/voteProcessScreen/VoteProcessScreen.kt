@@ -60,7 +60,7 @@ fun VoteProcessScreen(
 
     Column(
         modifier = Modifier
-            .background(RarimeTheme.colors.additionalGreen)
+            .background(RarimeTheme.colors.backgroundPrimary)
             .then(modifier)
     ) {
         Row(
@@ -84,6 +84,7 @@ fun VoteProcessScreen(
 
         VoteProcessCard(
             voteOption = selectedPoll.questionList[passedCount],
+            isLastOption = passedCount + 1 == selectedPoll.questionList.size
         ) {
             selectedAnswers.add(it)
             val currentQuestion = passedCount + 1
@@ -99,8 +100,12 @@ fun VoteProcessScreen(
 
 @Composable
 fun VoteProcessCard(
-    modifier: Modifier = Modifier, voteOption: Question, onClick: (PollResult) -> Unit
-) {
+    modifier: Modifier = Modifier,
+    isLastOption: Boolean,
+    voteOption: Question,
+    onClick: (PollResult) -> Unit,
+
+    ) {
 
     var selectedOption by remember {
         mutableStateOf<PollResult?>(null)
@@ -146,12 +151,12 @@ fun VoteProcessCard(
                             .clip(RoundedCornerShape(16.dp))
                             .then(if (selectedOption?.answerIndex == idx) isSelectedModifier else isNotSelectedModifier)
                             .fillMaxWidth()
-                            .padding(16.dp)
                             .clickable {
                                 selectedOption = PollResult(
                                     questionIndex = voteOption.id.toInt(), answerIndex = idx
                                 )
-                            },
+                            }
+                            .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start
                     ) {
@@ -189,13 +194,13 @@ fun VoteProcessCard(
         ) {
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Next",
+                text = if (isLastOption) "Confirm" else "Next",
                 onClick = {
                     onClick.invoke(selectedOption!!)
                     selectedOption = null
                 },
                 size = ButtonSize.Large,
-                rightIcon = R.drawable.ic_arrow_right,
+                rightIcon = if (isLastOption) null else R.drawable.ic_arrow_right,
                 enabled = selectedOption != null
             )
         }

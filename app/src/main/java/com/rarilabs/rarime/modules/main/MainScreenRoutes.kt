@@ -233,7 +233,8 @@ fun MainScreenRoutes(
                             navigate = simpleNavigate,
                             navigateWithPopUp = navigateWithPopUp,
                             sharedTransitionScope = this@SharedTransitionLayout,
-                            setVisibilityOfBottomBar = { mainViewModel.setBottomBarVisibility(it) })
+                            setVisibilityOfBottomBar = { mainViewModel.setBottomBarVisibility(it) }
+                        )
                     }
                 }
 

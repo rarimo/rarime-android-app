@@ -80,6 +80,7 @@ fun SendingVoteScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            VoteLoadingScreen()
             //AppAnimation(id = R.raw.anim_dots)
             Spacer(modifier = Modifier.height(32.dp))
             Text(
@@ -117,7 +118,7 @@ fun SendingVoteScreen(
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            InfoAlert(text = "Please don\\'t close the app, or your answers won’t be included.")
+            InfoAlert(text = "Please don\'t close the app, or your answers won’t be included.")
         }
     }
 }

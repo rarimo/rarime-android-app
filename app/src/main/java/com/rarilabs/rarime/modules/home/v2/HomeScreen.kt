@@ -187,21 +187,6 @@ fun HomeScreenContent(
     val cardContent = remember {
         mutableListOf(
 //
-            CardContent(
-                type = CardType.FREEDOMTOOL,
-                properties = CardProperties(
-                    header = "Freedomtool",
-                    subTitle = "Voting",
-                    icon = R.drawable.ic_check_unframed,
-                    image = R.drawable.freedomtool_bg,
-                    backgroundGradient = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFFD5FEC8), Color(0xFF80ed99)
-                        )
-                    )
-                ),
-                onCardClick = {},
-            ),
 //            CardContent(
 //                type = CardType.UNFORGETTABLE_WALLET, properties = CardProperties(
 //                    header = "An Unforgettable",
@@ -225,6 +210,22 @@ fun HomeScreenContent(
                     backgroundGradient = Brush.linearGradient(
                         colors = listOf(
                             Color(0xFF9AFE8A), Color(0xFF8AFECC)
+                        )
+                    )
+                ),
+                onCardClick = {},
+            ),
+
+            CardContent(
+                type = CardType.FREEDOMTOOL,
+                properties = CardProperties(
+                    header = "Freedomtool",
+                    subTitle = "Voting",
+                    icon = R.drawable.ic_check_unframed,
+                    image = R.drawable.freedomtool_bg,
+                    backgroundGradient = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFFD5FEC8), Color(0xFF80ed99)
                         )
                     )
                 ),
@@ -329,7 +330,7 @@ fun HomeScreenContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -348,7 +349,6 @@ fun HomeScreenContent(
                             color = RarimeTheme.colors.textPrimary,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f)
                         )
                     }
 

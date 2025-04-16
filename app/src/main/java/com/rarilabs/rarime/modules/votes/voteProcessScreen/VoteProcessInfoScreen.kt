@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.votes.voteProcessScreen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -31,6 +33,8 @@ import com.rarilabs.rarime.api.voting.models.MOCKED_POLL_ITEM
 import com.rarilabs.rarime.api.voting.models.PollCriteria
 import com.rarilabs.rarime.api.voting.models.PollCriteriaStatus
 import com.rarilabs.rarime.api.voting.models.UserInPoll
+import com.rarilabs.rarime.data.enums.AppColorScheme
+import com.rarilabs.rarime.data.enums.isDark
 import com.rarilabs.rarime.ui.base.BaseIconButton
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
@@ -41,7 +45,7 @@ import com.rarilabs.rarime.util.DateUtil.getDateMessage
 import kotlinx.coroutines.launch
 
 private enum class VotingStatus {
-    LOADING, ALREADY_VOTED, ALLOWED, NOT_STARTED
+    LOADING, ALREADY_VOTED, ALLOWED, NOT_STARTED, NO_PASSPORT, NO_IDENTITY
 }
 
 @Composable
@@ -51,6 +55,7 @@ fun VoteProcessInfoScreen(
     onClose: () -> Unit,
     onClick: () -> Unit,
     checkIsVoted: suspend () -> Boolean,
+    colorMode: AppColorScheme
 ) {
 
     val isEligible = remember {
@@ -68,7 +73,9 @@ fun VoteProcessInfoScreen(
 
     LaunchedEffect(Unit) {
         scope.launch {
-            if (!userInPoll.poll.isStarted) {
+
+
+        if (!userInPoll.poll.isStarted) {
                 voteState = VotingStatus.NOT_STARTED
                 return@launch
             }
@@ -98,20 +105,32 @@ fun VoteProcessInfoScreen(
                 onClick = onClose,
                 icon = R.drawable.ic_close,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = RarimeTheme.colors.componentPrimary,
+                    containerColor = RarimeTheme.colors.inverted,
                     contentColor = RarimeTheme.colors.textPrimary
                 ),
             )
 
-            AsyncImage(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1572.0f / 912.0f),
-                //TODO FIX IT
-                model = if (!userInPoll.poll.imageUrl.isNullOrEmpty()) "https://ipfs.rarimo.com/ipfs/" + userInPoll.poll.imageUrl else
-                    "https://ipfs.rarimo.com/ipfs/QmQmC3XsggXEsYHFP6cB7k3BJjaJxg27kWoooRc6HRTRm5",
-                contentDescription = null,
-            )
+            if (userInPoll.poll.imageUrl == null) {
+                Image(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1284.0f / 696.0f),
+                    painter = if (colorMode.isDark()) painterResource(R.drawable.bg_globe_dark) else painterResource(
+                        R.drawable.bg_globe_light
+                    ),
+                    contentDescription = null
+                )
+            } else {
+                AsyncImage(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1572.0f / 912.0f),
+                    model = "https://ipfs.rarimo.com/ipfs/" + userInPoll.poll.imageUrl,
+                    contentDescription = null,
+                )
+            }
+
+
         }
 
 
@@ -129,7 +148,10 @@ fun VoteProcessInfoScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    AppIcon(id = R.drawable.ic_timer_line)
+                    AppIcon(
+                        id = R.drawable.ic_timer_line,
+                        tint = RarimeTheme.colors.textSecondary
+                    )
                     Text(
                         text = getDateMessage(poll = userInPoll.poll, context),
                         style = RarimeTheme.typography.subtitle7,
@@ -141,7 +163,10 @@ fun VoteProcessInfoScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    AppIcon(id = R.drawable.ic_group_line)
+                    AppIcon(
+                        id = R.drawable.ic_group_line,
+                        tint = RarimeTheme.colors.textSecondary
+                    )
                     Text(
                         text = userInPoll.poll.proposalResults[0].sum().toString(),
                         style = RarimeTheme.typography.subtitle7,
@@ -193,6 +218,15 @@ fun VoteProcessInfoScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             when (voteState) {
+
+                VotingStatus.NO_PASSPORT -> {
+
+                }
+
+                VotingStatus.NO_IDENTITY -> {
+
+                }
+
                 VotingStatus.LOADING ->
                     PrimaryButton(
                         enabled = false,
@@ -255,7 +289,8 @@ private fun VoteProcessInfoScreenPreview() {
             ),
             onClose = {},
             onClick = {},
-            checkIsVoted = { false }
+            checkIsVoted = { false },
+            colorMode = AppColorScheme.DARK
         )
     }
 

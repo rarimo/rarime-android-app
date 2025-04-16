@@ -33,30 +33,49 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun ScanQrScreen(onBack: () -> Unit, onScan: (String) -> Unit) {
-    ScanQrScreenContent(onBack, onScan)
+fun ScanQrScreen(
+    onBack: () -> Unit,
+    onScan: (String) -> Unit,
+    innerPaddings: Map<ScreenInsets, Number> = mapOf(
+        ScreenInsets.TOP to 0,
+        ScreenInsets.BOTTOM to 0
+    )
+) {
+    ScanQrScreenContent(onBack, onScan, innerPaddings)
 }
 
 @Composable
-fun ScanQrScreenContent(onBack: () -> Unit, onScan: (String) -> Unit) {
-    Box(modifier = Modifier.fillMaxSize().clipToBounds()) {
+fun ScanQrScreenContent(
+    onBack: () -> Unit,
+    onScan: (String) -> Unit,
+    innerPaddings: Map<ScreenInsets, Number>
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clipToBounds()
+    ) {
         ScanQrProcessor(
             onCompletion = onScan
         )
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .zIndex(2f)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(2f)
+        ) {
             CameraMask(boxSize = 300.dp)
             AppIcon(
+
                 id = R.drawable.ic_caret_left,
                 size = 20.dp,
                 tint = RarimeTheme.colors.baseWhite,
                 modifier = Modifier
-                    .padding(20.dp)
+                    .padding(top = (20.0 + innerPaddings[ScreenInsets.TOP]!!.toInt()).dp)
                     .clickable { onBack() }
             )
             Text(
@@ -65,7 +84,7 @@ fun ScanQrScreenContent(onBack: () -> Unit, onScan: (String) -> Unit) {
                 color = RarimeTheme.colors.baseWhite,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(21.dp)
+                    .padding(top = (20.0 + innerPaddings[ScreenInsets.TOP]!!.toInt()).dp)
             )
             Column(
                 verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -124,9 +143,11 @@ private fun CameraMask(
 @Preview(showBackground = true)
 @Composable
 fun PreviewScanQrScreen() {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .background(Color.White)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+    ) {
 
     }
 }

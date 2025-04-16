@@ -21,11 +21,10 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
-import com.rarilabs.rarime.util.Screen
 
 @Composable
 fun PollsItemVoteFinishedScreen(
-    navigate: (String) -> Unit,
+    onClose: () -> Unit,
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -46,8 +45,8 @@ fun PollsItemVoteFinishedScreen(
             )
             Spacer(modifier = Modifier.height(32.dp))
             Text(
-                text = "Poll finished",
-                style = RarimeTheme.typography.h5,
+                text = "Success",
+                style = RarimeTheme.typography.h3,
                 color = RarimeTheme.colors.textPrimary,
                 textAlign = TextAlign.Center
             )
@@ -62,8 +61,8 @@ fun PollsItemVoteFinishedScreen(
             PrimaryButton(
                 size = ButtonSize.Large,
                 modifier = Modifier.fillMaxWidth(),
-                text = "Home Page",
-                onClick = { navigate(Screen.Main.Home.route) }
+                text = "Close",
+                onClick = { onClose.invoke() }
             )
         }
     }
@@ -73,6 +72,6 @@ fun PollsItemVoteFinishedScreen(
 @Composable
 private fun PollsItemVoteFinishedScreenContentUnverifiedPreview() {
     PollsItemVoteFinishedScreen(
-        navigate = {},
+        onClose = {},
     )
 }

@@ -36,45 +36,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.voting.VoteError
 import com.rarilabs.rarime.api.voting.models.MOCKED_POLL_ITEM
 import com.rarilabs.rarime.api.voting.models.Poll
-import com.rarilabs.rarime.api.voting.models.PollResult
 import com.rarilabs.rarime.modules.home.v2.details.BaseDetailsScreen
 import com.rarilabs.rarime.modules.home.v2.details.DetailsProperties
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
-import com.rarilabs.rarime.modules.votes.voteProcessScreen.ErrorSendVoteScreen
-import com.rarilabs.rarime.modules.votes.voteProcessScreen.PollsItemVoteFinishedScreen
-import com.rarilabs.rarime.modules.votes.voteProcessScreen.SendingVoteScreen
-import com.rarilabs.rarime.modules.votes.voteProcessScreen.VoteProcessInfoScreen
-import com.rarilabs.rarime.modules.votes.voteProcessScreen.VoteProcessScreen
+import com.rarilabs.rarime.modules.votes.voteProcessScreen.VotingAppSheet
 import com.rarilabs.rarime.ui.base.ButtonSize
-import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
-import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import kotlinx.coroutines.launch
 
-
-private enum class VoteAppSheetState {
-    INFO_VOTE,
-    SELECT_OPTION_VOTE,
-    PROCESSING_VOTE,
-    ERROR_VOTE,
-    FINISH_VOTE
-}
 
 enum class VotingStatus {
     LOADING,
@@ -97,48 +82,17 @@ fun VotesScreen(
 ) {
     val mainViewModel = LocalMainViewModel.current
 
-    val context = LocalContext.current
-
     val activeVotes by viewModel.activeVotes.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
     val historyVotes by viewModel.historyVotes.collectAsState()
 
+    val selectedVote by viewModel.selectedVote.collectAsState()
+
     val voteSheetState = rememberAppSheetState()
-
-    val scope = rememberCoroutineScope()
-
-    var error by remember {
-        mutableStateOf<VoteError?>(null)
-    }
-
-    var currentState by remember {
-        mutableStateOf(VoteAppSheetState.INFO_VOTE)
-    }
-
-    val selectedPoll by viewModel.selectedVote.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadPolls()
-    }
-
-    fun vote(voteOption: List<PollResult>) {
-        currentState = VoteAppSheetState.PROCESSING_VOTE
-        scope.launch {
-            try {
-                viewModel.vote(voteOption, context)
-
-                currentState = VoteAppSheetState.FINISH_VOTE
-            } catch (e: VoteError) {
-                ErrorHandler.logError("Voting", e.message.toString(), e)
-                error = e
-            } catch (e: Exception) {
-                ErrorHandler.logError("Voting", e.message.toString(), e)
-                error = VoteError.UnknownError(e.message.toString())
-            }
-
-            currentState = VoteAppSheetState.ERROR_VOTE
-        }
     }
 
     val props = DetailsProperties(
@@ -154,63 +108,11 @@ fun VotesScreen(
         )
     )
 
-    AppBottomSheet(
-        state = voteSheetState,
-        isHeaderEnabled = false,
-        scrimColor = Color.Transparent,
-        fullScreen = true,
-        isWindowInsetsEnabled = false
-    ) {
-
-        when (currentState) {
-            VoteAppSheetState.INFO_VOTE -> {
-                VoteProcessInfoScreen(
-                    userInPoll = selectedPoll!!,
-                    onClose = {
-                        voteSheetState.hide()
-                        viewModel.setSelectedPoll(null)
-                    },
-                    onClick = { currentState = VoteAppSheetState.SELECT_OPTION_VOTE },
-                    checkIsVoted = viewModel.checkIsVoted
-                )
-            }
-
-            VoteAppSheetState.SELECT_OPTION_VOTE -> {
-                VoteProcessScreen(
-                    selectedPoll = selectedPoll!!.poll,
-
-                    onBackClick = {
-                        currentState = VoteAppSheetState.INFO_VOTE
-                    },
-                    onVote = {
-                        scope.launch {
-                            currentState = VoteAppSheetState.PROCESSING_VOTE
-                            vote(it)
-                        }
-                    }
-                )
-            }
-
-            VoteAppSheetState.PROCESSING_VOTE -> {
-                SendingVoteScreen()
-            }
-
-            VoteAppSheetState.ERROR_VOTE -> {
-                ErrorSendVoteScreen(
-                    navigate = navigate,
-                    error = error,
-                )
-            }
-
-            VoteAppSheetState.FINISH_VOTE -> {
-                PollsItemVoteFinishedScreen {
-                    navigate(it)
-                }
-            }
-        }
-
-
-    }
+    VotingAppSheet(
+        navigate = navigate,
+        voteSheetState = voteSheetState,
+        selectedPoll = selectedVote
+    )
 
     VotesScreenContent(
         modifier = Modifier,
@@ -223,6 +125,7 @@ fun VotesScreen(
         historyVotes = historyVotes,
         qrCodeScanner = { onBackCb, onScanCb ->
             ScanQrScreen(
+                innerPaddings = innerPaddings,
                 onBack = { onBackCb.invoke() },
                 onScan = { onScanCb.invoke(it) }
             )
@@ -236,9 +139,6 @@ fun VotesScreen(
             viewModel.setSelectedPoll(it)
             voteSheetState.show()
         },
-        setIsLoading = {
-            viewModel
-        }
     )
 }
 
@@ -257,10 +157,9 @@ fun VotesScreenContent(
     qrCodeScanner: @Composable (onBackCb: () -> Unit, onScanCb: (String) -> Unit) -> Unit = { _, _ -> },
     onProposalScanned: (String) -> Unit,
     onVoteClick: (Poll) -> Unit,
-    setIsLoading: (Boolean) -> Unit
 ) {
     var isQrCodeViewShown by remember { mutableStateOf(false) }
-
+    val uriHandler = LocalUriHandler.current
 
     val tabs = listOf("Active", "History")
     val pagerState = rememberPagerState(
@@ -273,7 +172,6 @@ fun VotesScreenContent(
         qrCodeScanner(
             { isQrCodeViewShown = false },
             {
-                setIsLoading(true)
                 onProposalScanned(it)
                 isQrCodeViewShown = false
             }
@@ -292,7 +190,7 @@ fun VotesScreenContent(
                 ) {
                     Text(
                         style = RarimeTheme.typography.body3,
-                        color = RarimeTheme.colors.textSecondary,
+                        color = RarimeTheme.colors.baseBlackOp50,
                         text = "An identification and privacy solution that revolutionizes polling, surveying and election processes"
                     )
 
@@ -313,9 +211,11 @@ fun VotesScreenContent(
                                 disabledContainerColor = RarimeTheme.colors.componentDisabled,
                                 disabledContentColor = RarimeTheme.colors.textDisabled
                             ),
-                            onClick = {},
+                            onClick = {
+                                uriHandler.openUri(BaseConfig.VOTING_WEBSITE_URL)
+                            },
                         ) {
-                            AppIcon(id = R.drawable.ic_plus)
+                            AppIcon(id = R.drawable.ic_plus, tint = RarimeTheme.colors.baseBlack)
                         }
 
                         Spacer(modifier = Modifier.width(16.dp))
@@ -392,8 +292,7 @@ fun VotesScreenContent(
                                     VotesLoadingSkeleton()
                                 else if (activeVotes.isEmpty()) {
 
-                                }
-                                else ActiveVotesList(
+                                } else ActiveVotesList(
                                     votes = activeVotes,
                                     onClick = {
                                         onVoteClick.invoke(it)
@@ -404,8 +303,7 @@ fun VotesScreenContent(
                                     VotesLoadingSkeleton()
                                 else if (historyVotes.isEmpty()) {
 
-                                }
-                                else HistoryVotesList(
+                                } else HistoryVotesList(
                                     votes = historyVotes,
                                     onClick = {
                                         onVoteClick.invoke(it)
@@ -484,7 +382,6 @@ private fun VotesScreenPreview() {
             onProposalScanned = {},
             innerPaddings = mapOf(ScreenInsets.TOP to 23, ScreenInsets.BOTTOM to 12),
             onVoteClick = {},
-            setIsLoading = {}
         )
     }
 }

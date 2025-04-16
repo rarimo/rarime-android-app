@@ -13,12 +13,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
+import com.rarilabs.rarime.modules.votes.voteProcessScreen.VotingAppSheet
 import com.rarilabs.rarime.ui.components.SnackbarSeverity
 import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
+import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.util.ErrorHandler
-import com.rarilabs.rarime.util.Screen
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
 @Composable
@@ -34,28 +33,16 @@ fun VoteHandler(
     val mainViewModel = LocalMainViewModel.current
     val screenInsets by mainViewModel.screenInsets.collectAsState()
 
-    fun onSuccessHandler() {
-        scope.launch {
-            val snackBar = async {
-                mainViewModel.showSnackbar(
-                    options = getSnackbarDefaultShowOptions(
-                        severity = SnackbarSeverity.Success,
-                        duration = SnackbarDuration.Long,
-                        title = context.getString(R.string.light_verification_success_title),
-                        message = context.getString(R.string.light_verification_success_subtitle),
-                    )
-                )
-            }
+    val voteSheetState = rememberAppSheetState()
 
-            val redirect = async { onSuccess.invoke(Screen.Main.Home.route) }
+    val selectedVote by viewModel.selectedVote.collectAsState()
 
-            awaitAll(
-                snackBar,
-                redirect
-            )
-        }
+    VotingAppSheet(
+        voteSheetState = voteSheetState,
+        selectedPoll = selectedVote,
+        navigate = onSuccess
+    )
 
-    }
 
     fun onFailHandler(e: Exception) {
         scope.launch {
@@ -66,7 +53,7 @@ fun VoteHandler(
                     severity = SnackbarSeverity.Error,
                     duration = SnackbarDuration.Long,
                     title = context.getString(R.string.light_verification_error_title),
-                    message = "", // TODO: implement me
+                    message = "",
                 )
             )
         }
@@ -74,7 +61,6 @@ fun VoteHandler(
     }
 
     var isLoading by remember { mutableStateOf(true) }
-    val voteData by viewModel.voteData.collectAsState()
 
     LaunchedEffect(Unit) {
         scope.launch {
@@ -82,7 +68,9 @@ fun VoteHandler(
                 val qrCodeUrl = queryParams?.get("qr_code_url")
                     ?: throw Exception("Proposal ID not found")
 
-                viewModel.saveVoting(qrCodeUrl)
+                voteSheetState.show()
+
+                viewModel.setQrVoting(qrCodeUrl)
             } catch (e: Exception) {
                 ErrorHandler.logError("ExtIntActionPreview", "loadPreviewFields", e)
                 onFailHandler(e)
@@ -91,24 +79,4 @@ fun VoteHandler(
             isLoading = false
         }
     }
-
-//    VoteProcessScreenContent(
-//        screenInsets = mapOf(
-//            ScreenInsets.TOP to screenInsets.get(ScreenInsets.TOP),
-//            ScreenInsets.BOTTOM to screenInsets.get(ScreenInsets.BOTTOM)
-//        ),
-//        voteData = voteData,
-//        isLoading = isLoading,
-//        onBackClick = onCancel,
-//        onVote = {
-//            scope.launch {
-//                try {
-//                    viewModel.vote(context, it)
-//                    onSuccessHandler()
-//                } catch (error: Exception) {
-//                    onFailHandler(error)
-//                }
-//            }
-//        }
-//    )
 }

@@ -281,7 +281,11 @@ fun IdentityCard(
                 }
             }
 
-            AppBottomSheet(state = settingsSheetState) {
+            AppBottomSheet(
+                state = settingsSheetState,
+                isHeaderEnabled = false,
+                fullScreen = false
+            ) {
                 PassportCardSettings(
                     look = look,
                     identifiers = identifier,

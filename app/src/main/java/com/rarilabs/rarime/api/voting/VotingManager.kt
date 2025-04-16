@@ -206,7 +206,8 @@ class VotingManager @Inject constructor(
             } else false
 
 
-        val countriesString = decodedCountries.joinToString(", ") { it.name.replace("_", " ") }
+        val countriesString =
+            decodedCountries.toSet().joinToString(", ") { it.name.replace("_", " ") }
 
 
         val ageString: String = when {
@@ -286,15 +287,15 @@ class VotingManager @Inject constructor(
         return votingInfo.data.attributes.metadata.proposal_id.toLong()
     }
 
-    suspend fun saveVoting(url: String) {
+    suspend fun setQrVoting(url: String) {
         _isVotesLoading.value = true
 
         val proposalId = getProposalId(url)
         val poll = loadPollDetailsByProposalId(proposalId)
-        votingRepository.insertVoting(poll)
-        loadLocalVotePolls()
+        //votingRepository.insertVoting(poll)
+        //loadLocalVotePolls()
         _isVotesLoading.value = false
-
+        setSelectedPoll(poll)
     }
 
     private suspend fun loadPollDetailsByProposalId(proposalId: Long): Poll {
@@ -608,6 +609,8 @@ class VotingManager @Inject constructor(
         if (!res) {
             throw VoteError.NetworkError("Error during checkIsTransactionSuccessful")
         }
+
+        votingRepository.insertVoting(selectedPoll.value!!.poll)
     }
 
 

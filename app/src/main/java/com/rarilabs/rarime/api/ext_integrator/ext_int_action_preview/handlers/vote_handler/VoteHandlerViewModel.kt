@@ -6,11 +6,7 @@ import com.rarilabs.rarime.api.voting.VotingManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RarimoContractManager
-import com.rarilabs.rarime.modules.votes.VoteData
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 data class VotingWhitelistData(
@@ -67,8 +63,9 @@ class VoteHandlerViewModel @Inject constructor(
     private val contractManager: RarimoContractManager,
     private val identityManager: IdentityManager,
 ) : ViewModel() {
-    private val _voteData = MutableStateFlow<VoteData?>(null)
-    val voteData: StateFlow<VoteData?> = _voteData.asStateFlow()
 
-    val saveVoting = votingManager::saveVoting
+    val setQrVoting = votingManager::setQrVoting
+
+    val selectedVote = votingManager.selectedPoll
+
 }

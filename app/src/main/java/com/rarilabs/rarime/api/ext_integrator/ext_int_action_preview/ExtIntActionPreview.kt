@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,14 +53,6 @@ fun ExtIntActionPreview(
             }
 
             ExtIntegratorActions.Vote.value -> {
-                LaunchedEffect(Unit) {
-                    val voteUrl = dataUri?.getQueryParameter("qr_code_url")
-                        ?: throw Exception("URL not found")
-
-
-                    //navigate(Screen.Main.Vote.route.replace("{vote_id}", proposalId))
-                }
-
                 VoteHandler(
                     queryParams = queryParams,
                     onCancel = onCancel,

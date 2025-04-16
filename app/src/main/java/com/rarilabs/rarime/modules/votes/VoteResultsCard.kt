@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.votes
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -68,7 +69,10 @@ fun VoteResultsCard(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        AppIcon(id = R.drawable.ic_timer_line)
+                        AppIcon(
+                            id = R.drawable.ic_timer_line,
+                            tint = RarimeTheme.colors.textSecondary
+                        )
                         Text(
                             text = getDateMessage(voteData, context),
                             style = RarimeTheme.typography.subtitle7,
@@ -80,7 +84,10 @@ fun VoteResultsCard(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        AppIcon(id = R.drawable.ic_group_line)
+                        AppIcon(
+                            id = R.drawable.ic_group_line,
+                            tint = RarimeTheme.colors.textSecondary
+                        )
                         Text(
                             text = voteData.proposalResults[0].sum().toString(),
                             style = RarimeTheme.typography.subtitle7,
@@ -101,7 +108,7 @@ fun VoteResultsCard(
 
                 HorizontalPager(state = pageState, pageSpacing = 12.dp) {
                     VoteResultsCardStatistics(
-                        variants = voteData.questionList[0].variants.mapIndexed { index, it ->
+                        variants = voteData.questionList[pageState.currentPage].variants.mapIndexed { index, it ->
                             mapOf(
                                 it to voteData.proposalResults[pageState.currentPage][index].toDouble()
                             )
@@ -339,13 +346,15 @@ fun VotesLoadingSkeleton() {
     }
 }
 
-@Preview
+@Preview(name = "Light Mode")
+@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_UNDEFINED, showBackground = true)
 @Composable
 fun VoteResultsCardPreview() {
     VoteResultsCard(
         voteData = MOCKED_POLL_ITEM
     ) {}
 }
+
 
 @Preview
 @Composable

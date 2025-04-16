@@ -46,6 +46,9 @@ interface IConfig {
 
     val MULTICALL_CONTRACT_ADDRRESS: String
 
+    val VOTING_WEBSITE_URL: String
+
+
 
     val registerIdentity_1_256_3_5_576_248_NA: String
     val registerIdentity_1_256_3_6_576_248_1_2432_5_296: String
@@ -156,6 +159,8 @@ object TestNetConfig : IConfig {
 
     override val PROPOSAL_CONTRACT_ADDRESS: String = "0x4C61d7454653720DAb9e26Ca25dc7B8a5cf7065b"
     override val MULTICALL_CONTRACT_ADDRRESS: String = "0xcA11bde05977b3631167028862bE2a173976CA11"
+
+    override val VOTING_WEBSITE_URL: String = "https://freedomtool.org"
 
     override val registerIdentity_1_256_3_5_576_248_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_5_576_248_NA-download.zip"
@@ -291,6 +296,7 @@ object MainnetConfig : IConfig {
     override val REWARD_NOTIFICATION_TOPIC: String = "rarime-rewardable"
     override val APPSFLYER_DEV_KEY = Keys.APPSFLYER_DEV_KEY
 
+    override val VOTING_WEBSITE_URL = "https://freedomtool.org"
     override val VOTING_RELAYER_URL: String = "https://api.test.stage.freedomtool.org"
     override val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String =
         "0x479F84502Db545FA8d2275372E0582425204A879"
