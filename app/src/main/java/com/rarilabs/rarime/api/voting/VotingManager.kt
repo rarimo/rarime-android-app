@@ -594,9 +594,6 @@ class VotingManager @Inject constructor(
 
         val zkp = ZKPUseCase(context, assetManager)
 
-        ErrorHandler.logDebug("Inputs", queryProofInputs.decodeToString())
-
-
         val queryProof = zkp.generateZKP(
             "circuit_query_zkey.zkey",
             R.raw.query_identity_dat,

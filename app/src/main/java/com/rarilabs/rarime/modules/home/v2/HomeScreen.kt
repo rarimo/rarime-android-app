@@ -10,6 +10,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -354,7 +356,13 @@ fun HomeScreenContent(
 
                     Spacer(modifier = Modifier.weight(1f))
                     CircledBadgeWithCounter(
-                        modifier = Modifier.clickable { navigate(Screen.NotificationsList.route) },
+                        modifier = Modifier.clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = rememberRipple(
+                                bounded = true,
+                                radius = 20.dp,
+                            )
+                        ) { navigate(Screen.NotificationsList.route) },
                         iconId = R.drawable.ic_bell,
                         containerSize = 40,
                         containerColor = RarimeTheme.colors.componentPrimary,
