@@ -2,16 +2,19 @@ package com.rarilabs.rarime.util
 
 import android.content.Context
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.voting.models.Poll
 import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -99,6 +102,22 @@ object DateUtil {
         return SimpleDateFormat(formatType.pattern, Locale.US).format(date)
     }
 
+    fun yearsBetween(from: Date): Int {
+        val now = Calendar.getInstance()
+        val fromCal = Calendar.getInstance().apply {
+            time = from
+        }
+
+        var years = now.get(Calendar.YEAR) - fromCal.get(Calendar.YEAR)
+
+        // If today's date is before the birth date (month and day), subtract one year
+        if (now.get(Calendar.DAY_OF_YEAR) < fromCal.get(Calendar.DAY_OF_YEAR)) {
+            years--
+        }
+
+        return years
+    }
+
     fun formatDateString(
         dateStr: String?,
         inputFormat: DateFormatType = DateFormatType.DMY,
@@ -112,7 +131,7 @@ object DateUtil {
     fun convertToDate(value: Long?, pattern: String = "d/M/yyyy"): String {
         return if (value != null) {
             val date = Date(value)
-            val format = SimpleDateFormat(pattern, Locale.getDefault())
+            val format = SimpleDateFormat(pattern, Locale.US)
             format.timeZone = TimeZone.getTimeZone("UTC")
             format.format(date)
         } else {
@@ -148,5 +167,53 @@ object DateUtil {
 
             else -> ""
         }
+    }
+
+    fun getDateMessage(poll: Poll, context: Context): String {
+        return when {
+            poll.isEnded -> context.getString(R.string.poll_voting_ended)
+            poll.isStarted -> {
+                // Voting ends in some relative time period.
+                val remaining = poll.voteEndDate?.let { getRelativeTimeMessage(it) } ?: "N/A"
+                context.getString(R.string.poll_voting_end_timer, remaining)
+            }
+
+            else -> {
+                // Voting starts in some relative time period.
+                val remaining = poll.voteStartDate?.let { getRelativeTimeMessage(it) } ?: "N/A"
+                context.getString(R.string.poll_voting_start_timer, remaining)
+            }
+        }
+    }
+
+    fun getRelativeTimeMessage(timestampSeconds: Long): String {
+        val currentTimeMillis = System.currentTimeMillis()
+        val targetMillis = timestampSeconds * 1000
+        val diffMillis = targetMillis - currentTimeMillis
+
+        // If the target time is in the past, return "0s"
+        if (diffMillis <= 0L) return "0s"
+
+        val seconds = diffMillis / 1000
+        val minutes = seconds / 60
+        val hours = minutes / 60
+        val days = hours / 24
+
+        // For longer durations, we show months (approximate: 30 days per month)
+        return when {
+            days >= 45 -> {
+                val months = days / 30 // approximation
+                "$months month" + if (months > 1) "s" else ""
+            }
+
+            days >= 1 -> "$days day" + if (days > 1) "s" else ""
+            hours >= 1 -> "$hours hour" + if (hours > 1) "s" else ""
+            minutes >= 1 -> "$minutes minute" + if (minutes > 1) "s" else ""
+            else -> "$seconds second" + if (seconds > 1) "s" else ""
+        }
+    }
+
+    fun LocalDateTime.toDate(): Date {
+        return Date.from(this.atZone(ZoneId.systemDefault()).toInstant())
     }
 }

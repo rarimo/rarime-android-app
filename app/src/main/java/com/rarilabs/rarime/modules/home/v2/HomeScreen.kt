@@ -10,6 +10,8 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -20,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -56,6 +60,7 @@ import com.rarilabs.rarime.modules.home.v2.details.UnforgettableWalletScreen
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
+import com.rarilabs.rarime.modules.passportScan.models.PersonDetails
 import com.rarilabs.rarime.modules.votes.VotesScreen
 import com.rarilabs.rarime.store.room.notifications.models.NotificationEntityData
 import com.rarilabs.rarime.ui.components.CircledBadgeWithCounter
@@ -185,21 +190,6 @@ fun HomeScreenContent(
         mutableListOf(
 //
 //            CardContent(
-//                type = CardType.FREEDOMTOOL,
-//                properties = CardProperties(
-//                    header = "Freedomtool",
-//                    subTitle = "Voting",
-//                    icon = R.drawable.ic_check_unframed,
-//                    image = R.drawable.freedomtool_bg,
-//                    backgroundGradient = Brush.linearGradient(
-//                        colors = listOf(
-//                            Color(0xFFD5FEC8), Color(0xFF80ed99)
-//                        )
-//                    )
-//                ),
-//                onCardClick = {},
-//            ),
-//            CardContent(
 //                type = CardType.UNFORGETTABLE_WALLET, properties = CardProperties(
 //                    header = "An Unforgettable",
 //                    subTitle = "Wallet",
@@ -222,6 +212,22 @@ fun HomeScreenContent(
                     backgroundGradient = Brush.linearGradient(
                         colors = listOf(
                             Color(0xFF9AFE8A), Color(0xFF8AFECC)
+                        )
+                    )
+                ),
+                onCardClick = {},
+            ),
+
+            CardContent(
+                type = CardType.FREEDOMTOOL,
+                properties = CardProperties(
+                    header = "Freedomtool",
+                    subTitle = "Voting",
+                    icon = R.drawable.ic_check_unframed,
+                    image = R.drawable.freedomtool_bg,
+                    backgroundGradient = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFFD5FEC8), Color(0xFF80ed99)
                         )
                     )
                 ),
@@ -325,24 +331,38 @@ fun HomeScreenContent(
                     Modifier.padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row {
+                    Row(
+
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(
-                            stringResource(R.string.hi),
+                            text = stringResource(R.string.hi),
                             style = RarimeTheme.typography.subtitle4,
-                            color = RarimeTheme.colors.textSecondary
+                            color = RarimeTheme.colors.textSecondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = passport?.personDetails?.name
                                 ?: stringResource(R.string.stranger),
                             style = RarimeTheme.typography.subtitle4,
-                            color = RarimeTheme.colors.textPrimary
+                            color = RarimeTheme.colors.textPrimary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                         )
                     }
 
                     Spacer(modifier = Modifier.weight(1f))
                     CircledBadgeWithCounter(
-                        modifier = Modifier.clickable { navigate(Screen.NotificationsList.route) },
+                        modifier = Modifier.clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = rememberRipple(
+                                bounded = true,
+                                radius = 20.dp,
+                            )
+                        ) { navigate(Screen.NotificationsList.route) },
                         iconId = R.drawable.ic_bell,
                         containerSize = 40,
                         containerColor = RarimeTheme.colors.componentPrimary,
@@ -361,7 +381,7 @@ fun HomeScreenContent(
                         Spacer(modifier = Modifier.width(16.dp))
 
                         VerticalPager(
-                            modifier = Modifier.weight(1f), // <-- Added this
+                            modifier = Modifier.weight(1f),
                             state = pagerState,
                             contentPadding = PaddingValues(top = 42.dp, bottom = 95.dp)
                         ) { page ->
@@ -506,7 +526,11 @@ private fun HomeScreenPreview() {
                 firstReferralCode = "",
                 currentPointsBalance = 2323.toLong(),
                 notificationsCount = 2,
-                passport = null
+                passport = EDocument(
+                    personDetails = PersonDetails(
+                        name = "Mike"
+                    )
+                )
             )
         }
     }

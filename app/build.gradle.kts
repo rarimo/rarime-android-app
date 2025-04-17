@@ -30,9 +30,8 @@ android {
         applicationId = "com.rarilabs.rarime"
         minSdk = 27
         targetSdk = 34
-
-        versionCode = 81
-        versionName = "2.1.30"
+        versionCode = 85
+        versionName = "2.2.32-internal"
 
         externalNativeBuild {
             cmake {
@@ -89,6 +88,7 @@ android {
         create("debug_testnet") {
             initWith(getByName("debug"))
             buildConfigField("Boolean", "isTestnet", "true")
+            signingConfig = signingConfigs.getByName("debug")
         }
         create("release_testnet") {
             initWith(getByName("release"))
@@ -254,5 +254,6 @@ dependencies {
     // AppsFlyer
     implementation("com.appsflyer:af-android-sdk:6.15.1")
 
+    implementation("io.coil-kt:coil-compose:2.0.0-rc01")
 
 }

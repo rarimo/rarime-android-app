@@ -1,11 +1,14 @@
 package com.rarilabs.rarime.modules.votes
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,28 +16,40 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.voting.models.MOCKED_POLL_ITEM
+import com.rarilabs.rarime.api.voting.models.Poll
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppSkeleton
 import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.HorizontalDivider
+import com.rarilabs.rarime.ui.components.HorizontalPageIndicator
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.DateUtil.getDateMessage
+
 
 @Composable
 fun VoteResultsCard(
-    voteData: VoteData,
+    voteData: Poll, onCLick: (Poll) -> Unit
 ) {
+    val context = LocalContext.current
+
+    val pageState = rememberPagerState { voteData.proposalResults.size }
+
     CardContainer(
-        backgroundColor = RarimeTheme.colors.backgroundPrimary
-    ) {
+        backgroundColor = RarimeTheme.colors.backgroundPrimary,
+        modifier = Modifier.clickable { onCLick.invoke(voteData) }) {
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -54,9 +69,12 @@ fun VoteResultsCard(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        AppIcon(id = R.drawable.ic_timer_line)
+                        AppIcon(
+                            id = R.drawable.ic_timer_line,
+                            tint = RarimeTheme.colors.textSecondary
+                        )
                         Text(
-                            text = "${voteData.durationMillis / (1000 * 60 * 60)} hours",
+                            text = getDateMessage(voteData, context),
                             style = RarimeTheme.typography.subtitle7,
                             color = RarimeTheme.colors.textSecondary
                         )
@@ -66,9 +84,12 @@ fun VoteResultsCard(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        AppIcon(id = R.drawable.ic_group_line)
+                        AppIcon(
+                            id = R.drawable.ic_group_line,
+                            tint = RarimeTheme.colors.textSecondary
+                        )
                         Text(
-                            text = voteData.participantsCount.toString(),
+                            text = voteData.proposalResults[0].sum().toString(),
                             style = RarimeTheme.typography.subtitle7,
                             color = RarimeTheme.colors.textSecondary
                         )
@@ -83,13 +104,26 @@ fun VoteResultsCard(
                     .height(1.dp)
             )
 
-            voteData.questions.forEach { question ->
-                VoteResultsCardStatistics(
-                    variants = question.variants.map {
-                        mapOf(
-                            it.title to it.votedCount
-                        )
-                    }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                HorizontalPager(state = pageState, pageSpacing = 12.dp) {
+                    VoteResultsCardStatistics(
+                        variants = voteData.questionList[pageState.currentPage].variants.mapIndexed { index, it ->
+                            mapOf(
+                                it to voteData.proposalResults[pageState.currentPage][index].toDouble()
+                            )
+                        })
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                HorizontalPageIndicator(
+                    numberOfPages = pageState.pageCount,
+                    selectedPage = pageState.currentPage,
+                    selectedColor = RarimeTheme.colors.primaryMain,
+                    defaultRadius = 6.dp,
+                    selectedLength = 16.dp,
+                    space = 8.dp
                 )
             }
         }
@@ -114,13 +148,13 @@ fun VoteResultsCardStatistics(
         return largestOption?.values?.first() == amount
     }
 
-    Column (
+    Column(
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
             .border(1.dp, RarimeTheme.colors.componentPrimary, RoundedCornerShape(16.dp))
     ) {
         variants.forEach {
-            Box (
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -138,7 +172,7 @@ fun VoteResultsCardStatistics(
                         .background(RarimeTheme.colors.successLight)
                 )
 
-                Row (
+                Row(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(vertical = 8.dp, horizontal = 16.dp),
@@ -155,7 +189,7 @@ fun VoteResultsCardStatistics(
                         horizontalAlignment = Alignment.End
                     ) {
                         Text(
-                            text = "%.2f%%".format(percentage),
+                            text = if (percentage > 0.0) "%.2f%%".format(percentage) else "0.0%",
                             color = RarimeTheme.colors.textPrimary,
                             style = RarimeTheme.typography.subtitle6
                         )
@@ -312,53 +346,15 @@ fun VotesLoadingSkeleton() {
     }
 }
 
-@Preview
+@Preview(name = "Light Mode")
+@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_UNDEFINED, showBackground = true)
 @Composable
 fun VoteResultsCardPreview() {
     VoteResultsCard(
-        voteData = VoteData(
-            title = "Sample Vote",
-            description = "This is a sample vote for preview purposes",
-            durationMillis = 86400000,
-            participantsCount = 150,
-            questions = listOf(
-                VoteQuestion(
-                    "1",
-                    "Question 1",
-                    listOf(
-                        QuestionAnswerVariant("1", "Lorem", 100.0),
-                        QuestionAnswerVariant("2", "Ipsum", 200.0),
-                        QuestionAnswerVariant("3", "Dolor", 300.0),
-                        QuestionAnswerVariant("4", "Sit", 400.0),
-                        QuestionAnswerVariant("5", "Amet", 500.0),
-                        QuestionAnswerVariant("6", "Consectetur", 600.0),
-                        QuestionAnswerVariant("7", "Adipiscing", 700.0),
-                        QuestionAnswerVariant("8", "Elit", 800.0),
-                        QuestionAnswerVariant("9", "Sed", 900.0),
-                    ),
-                ),
-                VoteQuestion(
-                    "2",
-                    "Question 2",
-                    listOf(
-                        QuestionAnswerVariant("10", "Do", 1000.0),
-                        QuestionAnswerVariant("11", "Eiusmod", 1100.0),
-                        QuestionAnswerVariant("12", "Tempor", 1200.0),
-                        QuestionAnswerVariant("13", "Incididunt", 1300.0),
-                        QuestionAnswerVariant("14", "Labore", 1400.0),
-                        QuestionAnswerVariant("15", "Et", 1500.0),
-                        QuestionAnswerVariant("16", "Dolore", 1600.0),
-                        QuestionAnswerVariant("17", "Magna", 1700.0),
-                        QuestionAnswerVariant("18", "Aliqua", 1800.0),
-                        QuestionAnswerVariant("19", "Ut", 1900.0),
-                        QuestionAnswerVariant("20", "Enim", 2000.0),
-                    )
-                ),
-            ),
-            endDate = (1741092332000).toLong()
-        )
-    )
+        voteData = MOCKED_POLL_ITEM
+    ) {}
 }
+
 
 @Preview
 @Composable

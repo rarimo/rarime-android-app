@@ -16,9 +16,6 @@ import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
 import com.rarilabs.rarime.util.data.ZkProof
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.ZoneId
@@ -38,23 +35,23 @@ class AuthManager @Inject constructor(
     private val identityManager: IdentityManager,
     private val dataStoreManager: SecureSharedPrefsManager,
 ) {
-    private var _accessToken = MutableStateFlow(dataStoreManager.readAccessToken())
-    private var _refreshToken = MutableStateFlow(dataStoreManager.readRefreshToken())
+    private var _accessToken = dataStoreManager.readAccessToken()
+    private var _refreshToken = dataStoreManager.readRefreshToken()
 
-    val accessToken: StateFlow<String?>
-        get() = _accessToken.asStateFlow()
+    val accessToken: String?
+        get() = _accessToken
 
-    val refreshToken: StateFlow<String?>
-        get() = _refreshToken.asStateFlow()
+    val refreshToken: String?
+        get() = _refreshToken
 
     private fun getIsAuthorized(): Boolean {
-        return _accessToken.value != null && !isAccessTokenExpired()
+        return _accessToken != null && !isAccessTokenExpired()
     }
 
-    private var _isAuthorized = MutableStateFlow(getIsAuthorized())
+    private var _isAuthorized = getIsAuthorized()
 
-    val isAuthorized: StateFlow<Boolean>
-        get() = _isAuthorized.asStateFlow()
+    val isAuthorized: Boolean
+        get() = _isAuthorized
 
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun getAuthQueryProof(nullifierHex: String): ZkProof {
@@ -111,20 +108,20 @@ class AuthManager @Inject constructor(
             )
         }
 
-        _accessToken.value = response.data.attributes.access_token.token
-        _refreshToken.value = response.data.attributes.refresh_token.token
+        _accessToken = response.data.attributes.access_token.token
+        _refreshToken = response.data.attributes.refresh_token.token
 
-        _isAuthorized.value = getIsAuthorized()
+        _isAuthorized = getIsAuthorized()
     }
 
     fun updateTokens(accessToken: String, refreshToken: String) {
-        _accessToken.value = accessToken
-        _refreshToken.value = refreshToken
-        _isAuthorized.value = getIsAuthorized()
+        _accessToken = accessToken
+        _refreshToken = refreshToken
+        _isAuthorized = getIsAuthorized()
     }
 
     fun isAccessTokenExpired(): Boolean {
-        return _accessToken.value?.let {
+        return _accessToken?.let {
             try {
                 val accessJWT = JWT(it)
 

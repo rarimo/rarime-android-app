@@ -13,8 +13,10 @@ class SettingsManager @Inject constructor(
 ) {
     var colorScheme = mutableStateOf(dataStoreManager.readColorScheme())
         private set
+
     var language = mutableStateOf(dataStoreManager.readLanguage())
         private set
+
 
     fun updateColorScheme(newScheme: AppColorScheme) {
         colorScheme.value = newScheme

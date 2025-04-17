@@ -73,7 +73,6 @@ fun PassportCard(
     val settingsSheetState = rememberAppSheetState()
     var isPressing by remember { mutableStateOf(false) }
 
-    // TODO: fix recomposition
     val fullName = passport.personDetails!!.name + " " + passport.personDetails!!.surname
     val image = remember {
         passport.personDetails!!.getPortraitImage()

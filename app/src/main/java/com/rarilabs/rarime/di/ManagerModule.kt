@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.di
 
-//import retrofit2.converter.gson.GsonConverterFactory
 import android.content.Context
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.airdrop.AirDropAPI
@@ -24,6 +23,9 @@ import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.registration.RegistrationAPI
 import com.rarilabs.rarime.api.registration.RegistrationAPIManager
 import com.rarilabs.rarime.api.registration.RegistrationManager
+import com.rarilabs.rarime.api.voting.VotingApi
+import com.rarilabs.rarime.api.voting.VotingApiManager
+import com.rarilabs.rarime.api.voting.VotingManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
 import com.rarilabs.rarime.manager.NotificationManager
@@ -33,12 +35,15 @@ import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.manager.SecurityManager
 import com.rarilabs.rarime.manager.SettingsManager
 import com.rarilabs.rarime.manager.StableCoinContractManager
+import com.rarilabs.rarime.manager.TestContractManager
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.store.SecureSharedPrefsManagerImpl
 import com.rarilabs.rarime.store.room.notifications.AppDatabase
 import com.rarilabs.rarime.store.room.notifications.NotificationsDao
 import com.rarilabs.rarime.store.room.notifications.NotificationsRepository
+import com.rarilabs.rarime.store.room.voting.VotingDao
+import com.rarilabs.rarime.store.room.voting.VotingRepository
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Binds
@@ -52,6 +57,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.http.HttpService
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Named
 import javax.inject.Singleton
@@ -69,7 +75,10 @@ abstract class ManagerModule {
 class APIModule {
     @Provides
     @Singleton
-    fun provideNfcManager(@ApplicationContext context: Context, pointsManager: PointsManager): NfcManager {
+    fun provideNfcManager(
+        @ApplicationContext context: Context,
+        pointsManager: PointsManager
+    ): NfcManager {
         return NfcManager(context, pointsManager)
     }
 
@@ -82,6 +91,23 @@ class APIModule {
                 Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
             )
         ).baseUrl(BaseConfig.RELAYER_URL).client(
+            OkHttpClient.Builder()
+                .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                .build()
+        ).build()
+    }
+
+
+    @Provides
+    @Singleton
+    @Named("voting")
+    fun provideVotingRetrofit(): Retrofit {
+        return Retrofit.Builder().addConverterFactory(
+            GsonConverterFactory.create()
+//            MoshiConverterFactory.create(
+//                Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+//            )
+        ).baseUrl(BaseConfig.VOTING_RELAYER_URL).client(
             OkHttpClient.Builder()
                 .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build()
@@ -102,7 +128,6 @@ class APIModule {
                 .build()
         ).build()
     }
-
 
 
     @Provides
@@ -131,6 +156,34 @@ class APIModule {
             .baseUrl(BaseConfig.RELAYER_URL)
             .client(okHttpClient)
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideVotingApiManager(
+        @Named("voting") retrofit: Retrofit
+    ): VotingApiManager = VotingApiManager(retrofit.create(VotingApi::class.java))
+
+    @Provides
+    @Singleton
+    fun provideVotingManager(
+        votingApiManager: VotingApiManager,
+        votingContractManager: TestContractManager,
+        rarimoContractManager: RarimoContractManager,
+        passportManager: PassportManager,
+        identityManager: IdentityManager,
+        votingRepository: VotingRepository,
+        testContractManager: TestContractManager,
+    ): VotingManager {
+        return VotingManager(
+            votingApiManager,
+            votingContractManager,
+            rarimoContractManager,
+            testContractManager,
+            passportManager,
+            identityManager,
+            votingRepository
+        )
     }
 
     @Provides
@@ -387,6 +440,15 @@ class APIModule {
         return Web3j.build(HttpService(BaseConfig.EVM_RPC_URL))
     }
 
+
+    @Provides
+    @Singleton
+    @Named("Test")
+    fun web3Test(): Web3j {
+        return Web3j.build(HttpService(BaseConfig.VOTING_RPC_URL))
+    }
+
+
     @Provides
     @Singleton
     @Named("STABLE_COIN")
@@ -408,19 +470,35 @@ class APIModule {
 
     @Provides
     @Singleton
-    fun provideDao(appDatabase: AppDatabase): NotificationsDao {
+    fun provideNotificationDao(appDatabase: AppDatabase): NotificationsDao {
         return appDatabase.notificationsDao()
     }
 
     @Provides
     @Singleton
-    fun provideNotificationsRepository(taskDao: NotificationsDao): NotificationsRepository {
-        return NotificationsRepository(taskDao)
+    fun provideVotingDao(appDatabase: AppDatabase): VotingDao {
+        return appDatabase.votingDao()
     }
 
     @Provides
     @Singleton
-    fun provideNotificationManager(notificationsRepository: NotificationsRepository, passportManager: PassportManager): NotificationManager {
+    fun provideNotificationsRepository(notificationsDao: NotificationsDao): NotificationsRepository {
+        return NotificationsRepository(notificationsDao)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideVotingRepository(votingDao: VotingDao): VotingRepository {
+        return VotingRepository(votingDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNotificationManager(
+        notificationsRepository: NotificationsRepository,
+        passportManager: PassportManager
+    ): NotificationManager {
         return NotificationManager(notificationsRepository, passportManager)
     }
 }

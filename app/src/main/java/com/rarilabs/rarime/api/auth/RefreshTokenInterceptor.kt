@@ -15,7 +15,7 @@ class RefreshTokenInterceptor @Inject constructor(
     private var isRefreshing = AtomicBoolean(false)
 
     private suspend fun refresh() {
-        authManager.get().refreshToken.value?.let {
+        authManager.get().refreshToken?.let {
             val refreshAuthAPIManager = AuthAPIManager(refreshRetrofit.create(AuthAPI::class.java))
 
             val response = refreshAuthAPIManager.refresh(
@@ -54,14 +54,14 @@ class RefreshTokenInterceptor @Inject constructor(
                         }
                     }
 
-                    var newAccessToken = authManager.get().accessToken.value
+                    var newAccessToken = authManager.get().accessToken
 
                     if (newAccessToken?.isEmpty() == true) {
                         runBlocking {
                             authManager.get().login()
                         }
 
-                        newAccessToken = authManager.get().accessToken.value
+                        newAccessToken = authManager.get().accessToken
                     }
 
 

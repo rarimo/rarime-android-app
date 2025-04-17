@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.api.auth
 
-import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.auth.models.AuthChallengeBody
 import com.rarilabs.rarime.api.auth.models.RequestAuthorizeBody
 import com.rarilabs.rarime.api.auth.models.RequestAuthorizeResponseBody

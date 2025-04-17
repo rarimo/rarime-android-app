@@ -80,6 +80,10 @@ class PassportManager @Inject constructor(
         _passport.value = passport
     }
 
+    fun getLightRegistrationData(): LightRegistrationData? {
+        return dataStoreManager.getLightRegistrationData()
+    }
+
     suspend fun loadPassportStatus() {
         if (passport.value == null) {
             return
@@ -122,7 +126,43 @@ class PassportManager @Inject constructor(
         updatePassportStatus(if (isUnsupported) PassportStatus.WAITLIST_NOT_ALLOWED else PassportStatus.WAITLIST)
     }
 
+
+    fun getProofIndex(
+        passportInfoKey: String,
+        lightProofData: LightRegistrationData? = getLightRegistrationData()
+    ): ByteArray {
+        return Identity.calculateProofIndex(
+            passportInfoKey,
+            if (lightProofData == null) identityManager.registrationProof.value!!.pub_signals[3]
+            else identityManager.registrationProof.value!!.pub_signals[2]
+        )
+    }
+
     fun getPassportInfoKey(
+        eDocument: EDocument,
+        zkProof: ZkProof,
+        lightProofData: LightRegistrationData? = getLightRegistrationData()
+    ): String {
+        val passportInfoKey: String =
+
+            if (lightProofData != null) {
+                if (eDocument.dg15.isNullOrEmpty()) {
+                    BigInteger(Numeric.hexStringToByteArray(lightProofData.passport_hash)).toString()
+                } else {
+                    BigInteger(Numeric.hexStringToByteArray(lightProofData.public_key)).toString()
+                }
+            } else {
+                if (eDocument.dg15.isNullOrEmpty()) {
+                    zkProof.pub_signals[1] //lightProofData.passport_hash
+                } else {
+                    zkProof.pub_signals[0] //lightProofData.public_key
+                }
+            }
+
+        return passportInfoKey
+    }
+
+    fun getPassportInfoKeyBytes(
         eDocument: EDocument,
         zkProof: ZkProof,
         lightProofData: LightRegistrationData? = null

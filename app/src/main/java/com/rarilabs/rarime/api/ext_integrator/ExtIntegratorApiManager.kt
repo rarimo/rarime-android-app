@@ -22,14 +22,12 @@ import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
 import com.rarilabs.rarime.util.data.ZkProof
 import com.rarilabs.rarime.util.decodeHexString
-import identity.Identity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import org.web3j.utils.Numeric
-import java.math.BigInteger
 import javax.inject.Inject
 
 class ExtIntegratorApiManager @Inject constructor(
@@ -123,7 +121,7 @@ class ExtIntegratorApiManager @Inject constructor(
 
         if (eDocument == null) return
 
-        val passportInfoKey = passportManager.getPassportInfoKey(
+        val passportInfoKey = passportManager.getPassportInfoKeyBytes(
             eDocument,
             identityManager.registrationProof.value!!
         )
@@ -140,32 +138,16 @@ class ExtIntegratorApiManager @Inject constructor(
 
     private suspend fun getQueryParams(): Pair<ByteArray, String> {
 
-        val lightProofData = sharedPreferences.getLightRegistrationData()
-
         val registrationSmtContract = contractManager.getPoseidonSMT(
             BaseConfig.REGISTRATION_SMT_CONTRACT_ADDRESS
         )
 
-        val passportInfoKey: String =
-            if (lightProofData != null) {
-                if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {
-                    BigInteger(Numeric.hexStringToByteArray(lightProofData.passport_hash)).toString()
-                } else {
-                    BigInteger(Numeric.hexStringToByteArray(lightProofData.public_key)).toString()
-                }
-            } else {
-                if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {
-                    identityManager.registrationProof.value!!.pub_signals[1] //lightProofData.passport_hash
-                } else {
-                    identityManager.registrationProof.value!!.pub_signals[0] //lightProofData.public_key
-                }
-            }
-
-        val proofIndex = Identity.calculateProofIndex(
-            passportInfoKey,
-            if (lightProofData == null) identityManager.registrationProof.value!!.pub_signals[3]
-            else identityManager.registrationProof.value!!.pub_signals[2]
+        val passportInfoKey = passportManager.getPassportInfoKey(
+            passportManager.passport.value!!,
+            identityManager.registrationProof.value!!
         )
+
+        val proofIndex = passportManager.getProofIndex(passportInfoKey)
 
         val smtProofRaw = withContext(Dispatchers.IO) {
             registrationSmtContract.getProof(proofIndex).send()

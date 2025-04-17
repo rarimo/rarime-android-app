@@ -27,7 +27,7 @@ data class ProofTxFull(
                 siblings = proof.siblings.map { it.toBase64() },
                 existence = proof.existence,
                 key = proof.key.toBase64(),
-                value = proof.pValue.toBase64(),
+                value = proof.value.toBase64(),
                 auxExistence = proof.auxExistence,
                 auxKey = proof.auxKey.toBase64(),
                 auxValue = proof.auxValue.toBase64()

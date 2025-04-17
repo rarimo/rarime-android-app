@@ -2,7 +2,6 @@ package com.rarilabs.rarime.manager
 
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT
-import com.rarilabs.rarime.contracts.rarimo.Registration
 import com.rarilabs.rarime.contracts.rarimo.StateKeeper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -37,6 +36,7 @@ class RarimoContractManager @Inject constructor(@Named("RARIMO") private val web
             address, web3j, credentials, gasProvider
         )
     }
+
 
     suspend fun checkIsTransactionSuccessful(txHash: String): Boolean {
         val receiptProcessor: TransactionReceiptProcessor = PollingTransactionReceiptProcessor(

@@ -49,6 +49,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.rarilabs.rarime.BuildConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
@@ -61,6 +62,7 @@ import com.rarilabs.rarime.modules.passportScan.calculateAgeFromBirthDate
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.PersonDetails
 import com.rarilabs.rarime.modules.passportScan.nfc.RevocationStep
+import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.WaitlistPassportScreen
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppSheetState
@@ -90,6 +92,9 @@ fun IdentityCard(
     val haptic = LocalHapticFeedback.current
 
     val settingsSheetState = rememberAppSheetState()
+
+    val whiteListSheetState = rememberAppSheetState()
+
     val revokeSheetState = rememberAppSheetState()
 
 
@@ -101,15 +106,10 @@ fun IdentityCard(
 
     // Animated saturation based on registration status.
     val targetSaturation =
-        if (
-            registrationStatus.passportStatus == PassportStatus.UNREGISTERED ||
-            registrationStatus.passportStatus == PassportStatus.ALREADY_REGISTERED_BY_OTHER_PK
-        )
-            0f
+        if (registrationStatus.passportStatus == PassportStatus.UNREGISTERED || registrationStatus.passportStatus == PassportStatus.ALREADY_REGISTERED_BY_OTHER_PK) 0f
         else 1f
     val animatedSaturation by animateFloatAsState(
-        targetValue = targetSaturation,
-        animationSpec = tween(durationMillis = 500)
+        targetValue = targetSaturation, animationSpec = tween(durationMillis = 500)
     )
     // Recompute the color matrix only when animatedSaturation changes.
     val colorMatrix = remember(animatedSaturation) {
@@ -130,8 +130,7 @@ fun IdentityCard(
 
     Column(verticalArrangement = Arrangement.spacedBy((-43).dp)) {
 
-        if (
-            listOf(
+        if (listOf(
                 PassportStatus.WAITLIST,
                 PassportStatus.NOT_ALLOWED,
                 PassportStatus.WAITLIST_NOT_ALLOWED
@@ -165,8 +164,7 @@ fun IdentityCard(
                             tryAwaitRelease()
                             isPressing = false
                         })
-                    }
-            ) {
+                    }) {
                 Box(
                     modifier = Modifier
                         .align(Alignment.End)
@@ -175,7 +173,13 @@ fun IdentityCard(
                         .background(RarimeTheme.colors.componentPrimary)
                 ) {
                     Text(
-                        modifier = Modifier.padding(vertical = 2.dp, horizontal = 8.dp),
+                        modifier = Modifier
+                            .padding(vertical = 2.dp, horizontal = 8.dp)
+                            .clickable {
+                                if (BuildConfig.isTestnet) {
+                                    whiteListSheetState.show()
+                                }
+                            },
                         text = "PASSPORT",
                         color = RarimeTheme.colors.textPrimary,
                         style = RarimeTheme.typography.overline2
@@ -225,8 +229,7 @@ fun IdentityCard(
                     ) {
                         Image(
                             alignment = Alignment.BottomEnd,
-                            modifier = Modifier
-                                .height(200.dp),
+                            modifier = Modifier.height(200.dp),
                             contentScale = ContentScale.FillHeight,
                             bitmap = faceImage ?: ImageBitmap(1, 1),
                             contentDescription = null,
@@ -267,26 +270,34 @@ fun IdentityCard(
                         ),
                         onClose = { revokeSheetState.hide() },
                         onNext = { revokeSheetState.hide() },
-                        onError = { revokeSheetState.hide() }
-                    )
+                        onError = { revokeSheetState.hide() })
                 }
 
-                AppBottomSheet(state = settingsSheetState) {
-                    PassportCardSettings(
-                        look = look,
-                        identifiers = identifier,
-                        onLookChange = onLookChange,
-                        onIdentifiersChange = onIdentifierChange,
-                        settingAppBottomSheetState = settingsSheetState,
-                        eDocument = passport
-                    )
+                if (BuildConfig.isTestnet) {
+                    AppBottomSheet(state = whiteListSheetState) {
+                        WaitlistPassportScreen(
+                            eDocument = passport, onClose = { whiteListSheetState.hide() })
+                    }
                 }
-
             }
+
+            AppBottomSheet(
+                state = settingsSheetState,
+                isHeaderEnabled = false,
+                fullScreen = false
+            ) {
+                PassportCardSettings(
+                    look = look,
+                    identifiers = identifier,
+                    onLookChange = onLookChange,
+                    onIdentifiersChange = onIdentifierChange,
+                    settingAppBottomSheetState = settingsSheetState,
+                    eDocument = passport
+                )
+            }
+
         }
     }
-
-
 }
 
 
@@ -384,14 +395,12 @@ private fun PassportIdentifiersPicker(
                 }
 
                 RadioButton(
-                    selected = isSelected,
-                    onClick = {
+                    selected = isSelected, onClick = {
                         if (isSelected) {
                             return@RadioButton
                         }
                         onIdentifierChange(identifier)
-                    }
-                )
+                    })
             }
         }
     }
@@ -411,8 +420,7 @@ private fun PassportLookOption(
                 shape = RoundedCornerShape(8.dp)
             )
             .background(
-                Color.Transparent,
-                RoundedCornerShape(8.dp)
+                Color.Transparent, RoundedCornerShape(8.dp)
             )
             .padding(16.dp)
             .clickable(
@@ -435,9 +443,7 @@ private fun PassportLookOption(
                 )
                 .border(
                     width = 1.dp,
-                    color = look
-                        .getForegroundColor()
-                        .copy(alpha = 0.1f),
+                    color = look.getForegroundColor().copy(alpha = 0.1f),
                     shape = RoundedCornerShape(8.dp)
                 )
                 .padding(9.dp)
@@ -447,9 +453,7 @@ private fun PassportLookOption(
                     .width(12.dp)
                     .height(12.dp)
                     .background(
-                        look
-                            .getForegroundColor()
-                            .copy(alpha = 0.1f), CircleShape
+                        look.getForegroundColor().copy(alpha = 0.1f), CircleShape
                     )
             )
             Box(
@@ -457,9 +461,7 @@ private fun PassportLookOption(
                     .width(29.dp)
                     .height(5.dp)
                     .background(
-                        look
-                            .getForegroundColor()
-                            .copy(alpha = 0.1f), RoundedCornerShape(100.dp)
+                        look.getForegroundColor().copy(alpha = 0.1f), RoundedCornerShape(100.dp)
                     )
             )
             Box(
@@ -467,9 +469,7 @@ private fun PassportLookOption(
                     .width(19.dp)
                     .height(5.dp)
                     .background(
-                        look
-                            .getForegroundColor()
-                            .copy(alpha = 0.1f), RoundedCornerShape(100.dp)
+                        look.getForegroundColor().copy(alpha = 0.1f), RoundedCornerShape(100.dp)
                     )
             )
         }
@@ -533,10 +533,7 @@ fun StatusCard(modifier: Modifier = Modifier, passportStatus: PassportStatus) {
                     style = RarimeTheme.typography.subtitle5,
                     color = RarimeTheme.colors.textPrimary
                 )
-                if (
-                    passportStatus == PassportStatus.WAITLIST ||
-                    passportStatus == PassportStatus.WAITLIST_NOT_ALLOWED
-                ) {
+                if (passportStatus == PassportStatus.WAITLIST || passportStatus == PassportStatus.WAITLIST_NOT_ALLOWED) {
                     Text(
                         text = stringResource(id = statusDescription),
                         style = RarimeTheme.typography.body4,

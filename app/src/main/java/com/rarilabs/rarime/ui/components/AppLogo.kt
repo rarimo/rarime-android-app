@@ -25,7 +25,7 @@ fun AppLogo(
     iconSize: Int = 96
 ) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = RarimeTheme.colors.baseBlack.copy(alpha = 0.9f)),
+        colors = CardDefaults.cardColors(containerColor = RarimeTheme.colors.baseBlack),
         shape = RoundedCornerShape(radius.dp),
         modifier = modifier
             .size(wrapperSize.dp)

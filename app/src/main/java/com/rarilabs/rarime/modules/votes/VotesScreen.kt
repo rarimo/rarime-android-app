@@ -18,14 +18,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,23 +36,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.voting.models.MOCKED_POLL_ITEM
+import com.rarilabs.rarime.api.voting.models.Poll
 import com.rarilabs.rarime.modules.home.v2.details.BaseDetailsScreen
 import com.rarilabs.rarime.modules.home.v2.details.DetailsProperties
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
+import com.rarilabs.rarime.modules.votes.voteProcessScreen.VotingAppSheet
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.TransparentButton
+import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import kotlinx.coroutines.launch
+
+
+enum class VotingStatus {
+    LOADING,
+    ALREADY_VOTED,
+    ALLOWED,
+    NOT_STARTED
+}
+
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -69,10 +83,17 @@ fun VotesScreen(
     val mainViewModel = LocalMainViewModel.current
 
     val activeVotes by viewModel.activeVotes.collectAsState()
-    val activeVotesLoading by viewModel.isLoadingActive.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     val historyVotes by viewModel.historyVotes.collectAsState()
-    val historyVotesLoading by viewModel.isLoadingHistory.collectAsState()
+
+    val selectedVote by viewModel.selectedVote.collectAsState()
+
+    val voteSheetState = rememberAppSheetState()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadPolls()
+    }
 
     val props = DetailsProperties(
         id = id,
@@ -87,20 +108,24 @@ fun VotesScreen(
         )
     )
 
+    VotingAppSheet(
+        navigate = navigate,
+        voteSheetState = voteSheetState,
+        selectedPoll = selectedVote
+    )
+
     VotesScreenContent(
         modifier = Modifier,
         props = props,
         onBack = onBack,
         sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = animatedContentScope,
-
         activeVotes = activeVotes,
-        activeVotesLoading = activeVotesLoading,
+        isLoading = isLoading,
         historyVotes = historyVotes,
-        historyVotesLoading = historyVotesLoading,
-
         qrCodeScanner = { onBackCb, onScanCb ->
             ScanQrScreen(
+                innerPaddings = innerPaddings,
                 onBack = { onBackCb.invoke() },
                 onScan = { onScanCb.invoke(it) }
             )
@@ -108,8 +133,11 @@ fun VotesScreen(
         innerPaddings = innerPaddings,
         onProposalScanned = {
             val uri = it.toUri()
-
             mainViewModel.setExtIntDataURI(uri)
+        },
+        onVoteClick = {
+            viewModel.setSelectedPoll(it)
+            voteSheetState.show()
         }
     )
 }
@@ -123,22 +151,21 @@ fun VotesScreenContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
     innerPaddings: Map<ScreenInsets, Number>,
-
-    activeVotes: List<VoteData>,
-    activeVotesLoading: Boolean,
-    historyVotes: List<VoteData>,
-    historyVotesLoading: Boolean,
-
+    activeVotes: List<Poll>,
+    isLoading: Boolean,
+    historyVotes: List<Poll>,
     qrCodeScanner: @Composable (onBackCb: () -> Unit, onScanCb: (String) -> Unit) -> Unit = { _, _ -> },
     onProposalScanned: (String) -> Unit,
+    onVoteClick: (Poll) -> Unit,
 ) {
     var isQrCodeViewShown by remember { mutableStateOf(false) }
+    val uriHandler = LocalUriHandler.current
 
+    val tabs = listOf("Active", "History")
     val pagerState = rememberPagerState(
-        pageCount = { 2 },
+        pageCount = { tabs.size },
         initialPage = 0
     )
-    val tabs = listOf("Active", "History")
     val scope = rememberCoroutineScope()
 
     if (isQrCodeViewShown) {
@@ -152,8 +179,7 @@ fun VotesScreenContent(
     } else {
         BaseDetailsScreen(
             innerPaddings = innerPaddings,
-            modifier = modifier
-                .verticalScroll(rememberScrollState()),
+            modifier = modifier,
             properties = props,
             sharedTransitionScope = sharedTransitionScope,
             animatedContentScope = animatedContentScope,
@@ -164,7 +190,7 @@ fun VotesScreenContent(
                 ) {
                     Text(
                         style = RarimeTheme.typography.body3,
-                        color = RarimeTheme.colors.textSecondary,
+                        color = RarimeTheme.colors.baseBlackOp50,
                         text = "An identification and privacy solution that revolutionizes polling, surveying and election processes"
                     )
 
@@ -185,9 +211,11 @@ fun VotesScreenContent(
                                 disabledContainerColor = RarimeTheme.colors.componentDisabled,
                                 disabledContentColor = RarimeTheme.colors.textDisabled
                             ),
-                            onClick = {},
+                            onClick = {
+                                uriHandler.openUri(BaseConfig.VOTING_WEBSITE_URL)
+                            },
                         ) {
-                            AppIcon(id = R.drawable.ic_plus)
+                            AppIcon(id = R.drawable.ic_plus, tint = RarimeTheme.colors.baseBlack)
                         }
 
                         Spacer(modifier = Modifier.width(16.dp))
@@ -243,7 +271,9 @@ fun VotesScreenContent(
                                         text = title.uppercase(),
                                         style = RarimeTheme.typography.overline2,
                                         color = if (pagerState.currentPage == index)
-                                            RarimeTheme.colors.baseBlack else RarimeTheme.colors.baseBlack.copy(0.4f),
+                                            RarimeTheme.colors.baseBlack else RarimeTheme.colors.baseBlack.copy(
+                                            0.4f
+                                        ),
                                     )
                                 }
                             }
@@ -253,20 +283,31 @@ fun VotesScreenContent(
 
                         HorizontalPager(
                             state = pagerState,
+                            modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
                             pageSpacing = 12.dp,
                             verticalAlignment = Alignment.Top,
                         ) { page ->
                             when (page) {
-                                0 -> if (activeVotesLoading)
+                                0 -> if (isLoading)
                                     VotesLoadingSkeleton()
-                                else ActiveVotesList(
-                                    votes = activeVotes
+                                else if (activeVotes.isEmpty()) {
+
+                                } else ActiveVotesList(
+                                    votes = activeVotes,
+                                    onClick = {
+                                        onVoteClick.invoke(it)
+                                    }
                                 )
 
-                                1 -> if (historyVotesLoading)
+                                1 -> if (isLoading)
                                     VotesLoadingSkeleton()
-                                else HistoryVotesList(
-                                    votes = historyVotes
+                                else if (historyVotes.isEmpty()) {
+
+                                } else HistoryVotesList(
+                                    votes = historyVotes,
+                                    onClick = {
+                                        onVoteClick.invoke(it)
+                                    }
                                 )
                             }
                         }
@@ -279,26 +320,28 @@ fun VotesScreenContent(
 
 @Composable
 fun ActiveVotesList(
-    votes: List<VoteData>
+    onClick: (Poll) -> Unit,
+    votes: List<Poll>
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         votes.forEach {
-            VoteResultsCard(it)
+            VoteResultsCard(it, onCLick = onClick)
         }
     }
 }
 
 @Composable
 fun HistoryVotesList(
-    votes: List<VoteData>
+    votes: List<Poll>,
+    onClick: (Poll) -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         votes.forEach {
-            VoteResultsCard(it)
+            VoteResultsCard(it, onCLick = onClick)
         }
     }
 }
@@ -326,150 +369,19 @@ private fun VotesScreenPreview() {
             sharedTransitionScope = state,
             animatedContentScope = anim,
             activeVotes = listOf(
-                VoteData(
-                    title = "Protocol Update Proposal",
-                    description = "Vote on the proposed update to the network protocol",
-                    durationMillis = 86400000 * 3, // 3 days
-                    participantsCount = 320,
-                    questions = listOf(
-                        VoteQuestion(
-                            "2",
-                            "Question 2",
-                            listOf(
-                                QuestionAnswerVariant("10", "Do", 1000.0),
-                                QuestionAnswerVariant("11", "Eiusmod", 1100.0),
-                                QuestionAnswerVariant("12", "Tempor", 1200.0),
-                                QuestionAnswerVariant("13", "Incididunt", 1300.0),
-                                QuestionAnswerVariant("14", "Labore", 1400.0),
-                                QuestionAnswerVariant("15", "Et", 1500.0),
-                                QuestionAnswerVariant("16", "Dolore", 1600.0),
-                                QuestionAnswerVariant("17", "Magna", 1700.0),
-                                QuestionAnswerVariant("18", "Aliqua", 1800.0),
-                                QuestionAnswerVariant("19", "Ut", 1900.0),
-                                QuestionAnswerVariant("20", "Enim", 2000.0),
-                            )
-                        ),
-                        VoteQuestion(
-                            "2",
-                            "Question 2",
-                            listOf(
-                                QuestionAnswerVariant("10", "Do", 1000.0),
-                                QuestionAnswerVariant("11", "Eiusmod", 1100.0),
-                                QuestionAnswerVariant("12", "Tempor", 1200.0),
-                                QuestionAnswerVariant("13", "Incididunt", 1300.0),
-                                QuestionAnswerVariant("14", "Labore", 1400.0),
-                                QuestionAnswerVariant("15", "Et", 1500.0),
-                                QuestionAnswerVariant("16", "Dolore", 1600.0),
-                                QuestionAnswerVariant("17", "Magna", 1700.0),
-                                QuestionAnswerVariant("18", "Aliqua", 1800.0),
-                                QuestionAnswerVariant("19", "Ut", 1900.0),
-                                QuestionAnswerVariant("20", "Enim", 2000.0),
-                            )
-                        ),
-                        VoteQuestion(
-                            "2",
-                            "Question 2",
-                            listOf(
-                                QuestionAnswerVariant("10", "Do", 1000.0),
-                                QuestionAnswerVariant("11", "Eiusmod", 1100.0),
-                                QuestionAnswerVariant("12", "Tempor", 1200.0),
-                                QuestionAnswerVariant("13", "Incididunt", 1300.0),
-                                QuestionAnswerVariant("14", "Labore", 1400.0),
-                                QuestionAnswerVariant("15", "Et", 1500.0),
-                                QuestionAnswerVariant("16", "Dolore", 1600.0),
-                                QuestionAnswerVariant("17", "Magna", 1700.0),
-                                QuestionAnswerVariant("18", "Aliqua", 1800.0),
-                                QuestionAnswerVariant("19", "Ut", 1900.0),
-                                QuestionAnswerVariant("20", "Enim", 2000.0),
-                            )
-                        ),
-                    ),
-                    endDate = System.currentTimeMillis() + 86400000 * 3
-                )
+                MOCKED_POLL_ITEM,
+                MOCKED_POLL_ITEM,
+                MOCKED_POLL_ITEM
             ),
-            activeVotesLoading = false,
+            isLoading = false,
             historyVotes = listOf(
-                VoteData(
-                    title = "Treasury Allocation",
-                    description = "Vote on allocating treasury funds for development",
-                    durationMillis = 86400000 * 7, // 7 days
-                    participantsCount = 412,
-                    questions = listOf(
-                        VoteQuestion(
-                            "2",
-                            "Question 2",
-                            listOf(
-                                QuestionAnswerVariant("10", "Do", 1000.0),
-                                QuestionAnswerVariant("11", "Eiusmod", 1100.0),
-                                QuestionAnswerVariant("12", "Tempor", 1200.0),
-                                QuestionAnswerVariant("13", "Incididunt", 1300.0),
-                                QuestionAnswerVariant("14", "Labore", 1400.0),
-                                QuestionAnswerVariant("15", "Et", 1500.0),
-                                QuestionAnswerVariant("16", "Dolore", 1600.0),
-                                QuestionAnswerVariant("17", "Magna", 1700.0),
-                                QuestionAnswerVariant("18", "Aliqua", 1800.0),
-                                QuestionAnswerVariant("19", "Ut", 1900.0),
-                                QuestionAnswerVariant("20", "Enim", 2000.0),
-                            )
-                        ),
-                        VoteQuestion(
-                            "2",
-                            "Question 2",
-                            listOf(
-                                QuestionAnswerVariant("10", "Do", 1000.0),
-                                QuestionAnswerVariant("11", "Eiusmod", 1100.0),
-                                QuestionAnswerVariant("12", "Tempor", 1200.0),
-                                QuestionAnswerVariant("13", "Incididunt", 1300.0),
-                                QuestionAnswerVariant("14", "Labore", 1400.0),
-                                QuestionAnswerVariant("15", "Et", 1500.0),
-                                QuestionAnswerVariant("16", "Dolore", 1600.0),
-                                QuestionAnswerVariant("17", "Magna", 1700.0),
-                                QuestionAnswerVariant("18", "Aliqua", 1800.0),
-                                QuestionAnswerVariant("19", "Ut", 1900.0),
-                                QuestionAnswerVariant("20", "Enim", 2000.0),
-                            )
-                        ),
-                        VoteQuestion(
-                            "2",
-                            "Question 2",
-                            listOf(
-                                QuestionAnswerVariant("10", "Do", 1000.0),
-                                QuestionAnswerVariant("11", "Eiusmod", 1100.0),
-                                QuestionAnswerVariant("12", "Tempor", 1200.0),
-                                QuestionAnswerVariant("13", "Incididunt", 1300.0),
-                                QuestionAnswerVariant("14", "Labore", 1400.0),
-                                QuestionAnswerVariant("15", "Et", 1500.0),
-                                QuestionAnswerVariant("16", "Dolore", 1600.0),
-                                QuestionAnswerVariant("17", "Magna", 1700.0),
-                                QuestionAnswerVariant("18", "Aliqua", 1800.0),
-                                QuestionAnswerVariant("19", "Ut", 1900.0),
-                                QuestionAnswerVariant("20", "Enim", 2000.0),
-                            )
-                        ),
-                        VoteQuestion(
-                            "2",
-                            "Question 2",
-                            listOf(
-                                QuestionAnswerVariant("10", "Do", 1000.0),
-                                QuestionAnswerVariant("11", "Eiusmod", 1100.0),
-                                QuestionAnswerVariant("12", "Tempor", 1200.0),
-                                QuestionAnswerVariant("13", "Incididunt", 1300.0),
-                                QuestionAnswerVariant("14", "Labore", 1400.0),
-                                QuestionAnswerVariant("15", "Et", 1500.0),
-                                QuestionAnswerVariant("16", "Dolore", 1600.0),
-                                QuestionAnswerVariant("17", "Magna", 1700.0),
-                                QuestionAnswerVariant("18", "Aliqua", 1800.0),
-                                QuestionAnswerVariant("19", "Ut", 1900.0),
-                                QuestionAnswerVariant("20", "Enim", 2000.0),
-                            )
-                        ),
-                    ),
-                    endDate = System.currentTimeMillis() + 86400000 * 5
-                )
+                MOCKED_POLL_ITEM,
+                MOCKED_POLL_ITEM,
+                MOCKED_POLL_ITEM
             ),
-            historyVotesLoading = false,
             onProposalScanned = {},
             innerPaddings = mapOf(ScreenInsets.TOP to 23, ScreenInsets.BOTTOM to 12),
+            onVoteClick = {},
         )
     }
 }

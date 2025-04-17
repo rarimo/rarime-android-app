@@ -5,7 +5,7 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -38,9 +38,9 @@
         <activity
             android:name="com.rarilabs.rarime.MainActivity"
             android:exported="true"
+            android:launchMode="singleTask"
             android:localeConfig="@xml/locales_config"
             android:screenOrientation="portrait"
-            android:launchMode="singleTask"
             android:theme="@style/Theme.Rarime">
 
             <!-- Deep Link Intent Filters -->
@@ -56,12 +56,30 @@
                 <data android:pathPattern="/r/.*" />
             </intent-filter>
 
-            <intent-filter>
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="rarime" android:host="external" />
+                <data android:scheme="https" />
+                <data android:host="app.rarime.com" />
+                <data android:pathPrefix="/external" />
+
+                <data android:scheme="http" />
+                <data android:host="app.rarime.com" />
+                <data android:pathPrefix="/external" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="external"
+                    android:scheme="rarime" />
             </intent-filter>
         </activity>
 
@@ -141,6 +159,6 @@
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/default_notification_channel_id"/>
+            android:value="@string/default_notification_channel_id" />
     </application>
 </manifest>

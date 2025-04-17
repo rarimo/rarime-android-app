@@ -77,6 +77,11 @@ class MainActivity : AppCompatActivity() {
         nfcManager.handleNewIntent(intent)
     }
 
+    override fun onDestroy() {
+        Log.d("MainActivityBW", "onDestroy called")
+        super.onDestroy()
+    }
+
     private fun initAppsFlyer() {
         AppsFlyerLib.getInstance()
             .init(BaseConfig.APPSFLYER_DEV_KEY, null, application.applicationContext)

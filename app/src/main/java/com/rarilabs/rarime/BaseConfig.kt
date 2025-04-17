@@ -36,6 +36,18 @@ interface IConfig {
     val GOOGLE_WEB_KEY: String
     val APP_ID_FIREBASE: String
 
+    val VOTING_RELAYER_URL: String
+
+    val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String
+
+    val VOTING_RPC_URL: String
+
+    val PROPOSAL_CONTRACT_ADDRESS: String
+
+    val MULTICALL_CONTRACT_ADDRRESS: String
+
+    val VOTING_WEBSITE_URL: String
+
     val registerIdentity_1_256_3_5_576_248_NA: String
     val registerIdentity_1_256_3_6_576_248_1_2432_5_296: String
     val registerIdentity_2_256_3_6_336_264_21_2448_6_2008: String
@@ -99,7 +111,6 @@ interface IConfig {
 /* TESTNET */
 object TestNetConfig : IConfig {
     override val RELAYER_URL = "https://api.orgs.app.stage.rarime.com"
-    override val EVM_RPC_URL = "https://rpc.evm.node1.mainnet-beta.rarimo.com"
     override val COSMOS_RPC_URL = "https://rpc-api.node1.mainnet-beta.rarimo.com"
     override val EVM_SERVICE_URL =
         "https://api.orgs.app.stage.rarime.com/integrations/evm-airdrop-svc-glo/"
@@ -117,11 +128,13 @@ object TestNetConfig : IConfig {
     override val EVM_STABLE_COIN_RPC = "https://ethereum-sepolia-rpc.publicnode.com"
     override val STABLE_COIN_ADDRESS = "0xbd03f0fC994fd1015eAdc37c943055330e238Ad9"
 
-    override val REGISTER_CONTRACT_ADDRESS = "0x1b0F076c8800c457CE734BA85aC8569284DD640A"
-    override val CERTIFICATES_SMT_CONTRACT_ADDRESS = "0xb393B0F444fC849bC61E3285C6c38b1052520007"
-    override val REGISTRATION_SMT_CONTRACT_ADDRESS = "0xc1534912902BBe8C54626e2D69288C76a843bc0E"
-    override val STATE_KEEPER_CONTRACT_ADDRESS = "0x0Ca8340633e0D728db012D59bD543fD80dDabFC9"
-    override val REGISTRATION_SIMPLE_CONTRACT_ADRRESS = "0xa2e2Cbbd0BAa74FE1bb4b61B12D420072806FFe0"
+
+    override val EVM_RPC_URL = "https://rpc.evm.mainnet.rarimo.com"
+    override val REGISTER_CONTRACT_ADDRESS = "0x70aadcdb5624dC458c22D47f6c458d1D5cE1768C"
+    override val REGISTRATION_SIMPLE_CONTRACT_ADRRESS = "0x7815E9d49Ce74ca1c56a7276CE7DCA61d4f9878d"
+    override val CERTIFICATES_SMT_CONTRACT_ADDRESS = "0x3DA489Eca2E8BC19cF8E5a9B60a7BE87f8D54fc0"
+    override val REGISTRATION_SMT_CONTRACT_ADDRESS = "0x550B483129807BA148482152dEb3ac7a85e53cfe"
+    override val STATE_KEEPER_CONTRACT_ADDRESS = "0x1021fC4e4693D729b69939A2066d16dF120B7F38"
     override val POINTS_SVC_SELECTOR = "23073"
     override val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP = 1715688000L
 
@@ -136,6 +149,16 @@ object TestNetConfig : IConfig {
     override val REWARD_NOTIFICATION_TOPIC: String = "rarime-rewardable-stage"
 
     override val APPSFLYER_DEV_KEY = Keys.APPSFLYER_DEV_KEY
+
+    override val VOTING_RELAYER_URL: String = "https://api.stage.freedomtool.org"
+    override val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String =
+        "0xFbae44a113A6f07687b180605f425e43066a6179"
+    override val VOTING_RPC_URL: String = "https://rpc.qtestnet.org"
+
+    override val PROPOSAL_CONTRACT_ADDRESS: String = "0x4C61d7454653720DAb9e26Ca25dc7B8a5cf7065b"
+    override val MULTICALL_CONTRACT_ADDRRESS: String = "0xcA11bde05977b3631167028862bE2a173976CA11"
+
+    override val VOTING_WEBSITE_URL: String = "https://freedomtool.org"
 
     override val registerIdentity_1_256_3_5_576_248_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_5_576_248_NA-download.zip"
@@ -218,7 +241,6 @@ object TestNetConfig : IConfig {
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.12/registerIdentity_15_512_3_3_336_248_NA-download.zip"
     override val registerIdentity_20_160_3_3_736_200_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.12/registerIdentity_20_160_3_3_736_200_NA-download.zip"
-
 
 
     override val registerIdentityLight160: String =
@@ -272,6 +294,15 @@ object MainnetConfig : IConfig {
     override val REWARD_NOTIFICATION_TOPIC: String = "rarime-rewardable"
     override val APPSFLYER_DEV_KEY = Keys.APPSFLYER_DEV_KEY
 
+    override val VOTING_WEBSITE_URL = "https://freedomtool.org"
+    override val VOTING_RELAYER_URL: String = "https://api.freedomtool.org"
+    override val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String =
+        "0x479F84502Db545FA8d2275372E0582425204A879"
+    override val VOTING_RPC_URL: String = "https://l2.rarimo.com"
+    override val PROPOSAL_CONTRACT_ADDRESS: String = "0x9C4b84a940C9D3140a1F40859b3d4367DC8d099a"
+    override val MULTICALL_CONTRACT_ADDRRESS: String = "0xb4EE49BDf7cf199081b2a286B2B9B5f87AE930b1"
+
+
     override val registerIdentity_1_256_3_5_576_248_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_5_576_248_NA-download.zip"
     override val registerIdentity_1_256_3_6_576_248_1_2432_5_296: String =
@@ -354,7 +385,6 @@ object MainnetConfig : IConfig {
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.12/registerIdentity_15_512_3_3_336_248_NA-download.zip"
     override val registerIdentity_20_160_3_3_736_200_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.12/registerIdentity_20_160_3_3_736_200_NA-download.zip"
-
 
 
     override val registerIdentityLight160: String =

@@ -1,12 +1,12 @@
 package com.rarilabs.rarime.modules.votes
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.rarilabs.rarime.api.voting.VotingManager
+import com.rarilabs.rarime.api.voting.models.Poll
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 data class QuestionAnswerVariant(
@@ -32,165 +32,33 @@ data class VoteData(
     val endDate: Long
 )
 
-class VotesScreenViewModel @Inject constructor(): ViewModel() {
-    // Active votes
-    private val _activeVotes = MutableStateFlow<List<VoteData>>(emptyList())
-    val activeVotes: StateFlow<List<VoteData>> = _activeVotes.asStateFlow()
+@HiltViewModel
+class VotesScreenViewModel @Inject constructor(
+    private val votingManager: VotingManager,
+) : ViewModel() {
 
-    private val _isLoadingActive = MutableStateFlow(false)
-    val isLoadingActive: StateFlow<Boolean> = _isLoadingActive.asStateFlow()
+    val activeVotes: StateFlow<List<Poll>> = votingManager.activeVotes
 
-    // History votes
-    private val _historyVotes = MutableStateFlow<List<VoteData>>(emptyList())
-    val historyVotes: StateFlow<List<VoteData>> = _historyVotes.asStateFlow()
+    val isLoading = votingManager.isVotesLoading
 
-    private val _isLoadingHistory = MutableStateFlow(false)
-    val isLoadingHistory: StateFlow<Boolean> = _isLoadingHistory.asStateFlow()
+    val historyVotes: StateFlow<List<Poll>> = votingManager.historyVotes
 
-    init {
-        loadActiveVotes()
-        loadHistoryVotes()
+    val selectedVote = votingManager.selectedPoll
+
+    fun setSelectedPoll(poll: Poll?) {
+        votingManager.setSelectedPoll(poll)
     }
 
-    private fun loadActiveVotes() {
-        viewModelScope.launch {
-            _isLoadingActive.value = true
-            delay(800) // Simulate network delay
+    val checkIsVoted = votingManager::checkIsVoted
 
-            _activeVotes.value = listOf(
-                VoteData(
-                    title = "Protocol Update Proposal",
-                    description = "Vote on the proposed update to the network protocol",
-                    durationMillis = 86400000 * 3, // 3 days
-                    participantsCount = 320,
-                    questions = listOf(
-                        VoteQuestion(
-                            "1",
-                            "Question 1",
-                            variants = listOf(
-                                QuestionAnswerVariant(
-                                    "1",
-                                    "Yes",
-                                    100.0,
-                                ),
-                                QuestionAnswerVariant(
-                                    "2",
-                                    "No",
-                                    144.0,
-                                ),
-                                QuestionAnswerVariant(
-                                    "3",
-                                    "Abstain",
-                                    64.0,
-                                ),
-                            ),
-                        ),
-                    ),
-                    endDate = System.currentTimeMillis() + 86400000 * 2 // Ends in 2 days
-                ),
-                VoteData(
-                    title = "Treasury Allocation",
-                    description = "Vote on allocating treasury funds for development",
-                    durationMillis = 86400000 * 7, // 7 days
-                    participantsCount = 412,
-                    questions = listOf(
-                        VoteQuestion(
-                            "1",
-                            "Question 1",
-                            variants = listOf(
-                                QuestionAnswerVariant(
-                                    "1",
-                                    "Yes",
-                                    100.0,
-                                ),
-                                QuestionAnswerVariant(
-                                    "2",
-                                    "No",
-                                    144.0,
-                                ),
-                                QuestionAnswerVariant(
-                                    "3",
-                                    "Abstain",
-                                    64.0,
-                                ),
-                            ),
-                        )
-                    ),
-                    endDate = System.currentTimeMillis() + 86400000 * 5 // Ends in 5 days
-                )
-            )
-            _isLoadingActive.value = false
-        }
-    }
+    val vote = votingManager::vote
 
-    private fun loadHistoryVotes() {
-        viewModelScope.launch {
-            _isLoadingHistory.value = true
-            delay(800) // Simulate network delay
-
-            _historyVotes.value = listOf(
-                VoteData(
-                    title = "Governance Structure Change",
-                    description = "Vote on proposed changes to governance structure",
-                    durationMillis = 86400000 * 5, // 5 days (already ended)
-                    participantsCount = 275,
-                    questions = listOf(
-                        VoteQuestion(
-                            "1",
-                            "Question 1",
-                            variants = listOf(
-                                QuestionAnswerVariant(
-                                    "1",
-                                    "Yes",
-                                    100.0,
-                                ),
-                                QuestionAnswerVariant(
-                                    "2",
-                                    "No",
-                                    144.0,
-                                ),
-                                QuestionAnswerVariant(
-                                    "3",
-                                    "Abstain",
-                                    64.0,
-                                ),
-                            ),
-                        )
-                    ),
-                    endDate = System.currentTimeMillis() - 86400000 * 2 // Ended 2 days ago
-                ),
-                VoteData(
-                    title = "Fee Structure Update",
-                    description = "Vote on proposed changes to transaction fee structure",
-                    durationMillis = 86400000 * 4, // 4 days (already ended)
-                    participantsCount = 390,
-                    questions = listOf(
-                        VoteQuestion(
-                            "1",
-                            "Question 1",
-                            variants = listOf(
-                                QuestionAnswerVariant(
-                                    "1",
-                                    "Yes",
-                                    100.0,
-                                ),
-                                QuestionAnswerVariant(
-                                    "2",
-                                    "No",
-                                    144.0,
-                                ),
-                                QuestionAnswerVariant(
-                                    "3",
-                                    "Abstain",
-                                    64.0,
-                                ),
-                            ),
-                        )
-                    ),
-                    endDate = System.currentTimeMillis() - 86400000 * 7 // Ended 7 days ago
-                )
-            )
-            _isLoadingHistory.value = false
+    suspend fun loadPolls(isRefresh: Boolean = false) {
+        withContext(Dispatchers.IO) {
+            votingManager.loadLocalVotePolls()
+//            val allPolls = votingManager.loadVotePolls(isRefresh)
+//            _activeVotes.value = allPolls.filter { !it.isEnded }
+//            _historyVotes.value = allPolls.filter { it.isEnded }
         }
     }
 }

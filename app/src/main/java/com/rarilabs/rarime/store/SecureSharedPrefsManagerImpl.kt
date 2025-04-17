@@ -155,7 +155,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         )?.toList()
 
         return valuesList?.map { PassportIdentifier.fromString(it) }
-            ?: listOf(PassportIdentifier.NATIONALITY, PassportIdentifier.DOCUMENT_ID)
+            ?: listOf(PassportIdentifier.DOCUMENT_ID, PassportIdentifier.NATIONALITY)
     }
 
     override fun savePassportIdentifiers(identifiers: List<PassportIdentifier>) {
