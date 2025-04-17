@@ -114,9 +114,6 @@ fun VoteProcessCard(
     Column {
         Column(
             Modifier
-                .background(
-                    RarimeTheme.colors.backgroundSurface1, shape = RoundedCornerShape(24.dp)
-                )
                 .padding(24.dp)
                 .then(modifier)
         ) {
@@ -141,7 +138,6 @@ fun VoteProcessCard(
                     val isSelectedModifier = Modifier.border(
                         1.dp, RarimeTheme.colors.primaryMain, RoundedCornerShape(16.dp)
                     )
-
 
                     val isNotSelectedModifier =
                         Modifier.background(RarimeTheme.colors.componentPrimary)
@@ -179,7 +175,11 @@ fun VoteProcessCard(
                                 .padding(horizontal = 16.dp)
                                 .height(20.dp)
                         )
-                        Text(it)
+                        Text(
+                            it,
+                            color = RarimeTheme.colors.textPrimary,
+                            style = RarimeTheme.typography.buttonMedium
+                        )
                     }
                 }
             }

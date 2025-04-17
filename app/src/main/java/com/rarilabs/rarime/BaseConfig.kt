@@ -48,8 +48,6 @@ interface IConfig {
 
     val VOTING_WEBSITE_URL: String
 
-
-
     val registerIdentity_1_256_3_5_576_248_NA: String
     val registerIdentity_1_256_3_6_576_248_1_2432_5_296: String
     val registerIdentity_2_256_3_6_336_264_21_2448_6_2008: String
@@ -297,11 +295,11 @@ object MainnetConfig : IConfig {
     override val APPSFLYER_DEV_KEY = Keys.APPSFLYER_DEV_KEY
 
     override val VOTING_WEBSITE_URL = "https://freedomtool.org"
-    override val VOTING_RELAYER_URL: String = "https://api.test.stage.freedomtool.org"
+    override val VOTING_RELAYER_URL: String = "https://api.freedomtool.org"
     override val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String =
         "0x479F84502Db545FA8d2275372E0582425204A879"
     override val VOTING_RPC_URL: String = "https://l2.rarimo.com"
-    override val PROPOSAL_CONTRACT_ADDRESS: String = "0x695f82E7899dC358BA6B15c8a989d46A4E50A158"
+    override val PROPOSAL_CONTRACT_ADDRESS: String = "0x9C4b84a940C9D3140a1F40859b3d4367DC8d099a"
     override val MULTICALL_CONTRACT_ADDRRESS: String = "0xb4EE49BDf7cf199081b2a286B2B9B5f87AE930b1"
 
 

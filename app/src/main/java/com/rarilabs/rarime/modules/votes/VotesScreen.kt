@@ -138,7 +138,7 @@ fun VotesScreen(
         onVoteClick = {
             viewModel.setSelectedPoll(it)
             voteSheetState.show()
-        },
+        }
     )
 }
 

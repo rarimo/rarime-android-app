@@ -139,6 +139,7 @@ fun MainScreenRoutes(
                             })
                     }
                 }
+
                 composable(Screen.Passcode.AddPasscode.route) {
                     ScreenInsetsContainer {
                         SetupPasscode(onPasscodeChange = {
@@ -321,6 +322,7 @@ fun MainScreenRoutes(
                         }
                     }
                 }
+
                 composable(Screen.Main.Profile.ExportKeys.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
                         ScreenInsetsContainer {
@@ -328,6 +330,7 @@ fun MainScreenRoutes(
                         }
                     }
                 }
+
                 composable(Screen.Main.Profile.Language.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
                         ScreenInsetsContainer {
@@ -337,6 +340,7 @@ fun MainScreenRoutes(
                         }
                     }
                 }
+
                 composable(Screen.Main.Profile.Theme.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
                         ScreenInsetsContainer {
@@ -344,6 +348,7 @@ fun MainScreenRoutes(
                         }
                     }
                 }
+
                 composable(Screen.Main.Profile.AppIcon.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
                         ScreenInsetsContainer {
@@ -403,13 +408,18 @@ fun MainScreenRoutes(
                         }
 
                         navigateWithPopUp(Screen.Main.Home.route)
-                    }, onError = { navigateWithPopUp(Screen.Main.Home.route) })
+                    },
+                        onError = { navigateWithPopUp(Screen.Main.Home.route) })
                 }
             }
 
             composable(
                 route = Screen.ExtIntegrator.route,
                 deepLinks = listOf(
+                    navDeepLink {
+                        uriPattern = "https://app.rarime.com/external"
+                        action = Intent.ACTION_VIEW
+                    },
                     navDeepLink {
                         uriPattern = "rarime://${Screen.ExtIntegrator.route}"
                         action = Intent.ACTION_VIEW

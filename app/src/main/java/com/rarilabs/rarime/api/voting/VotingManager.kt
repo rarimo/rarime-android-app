@@ -395,125 +395,6 @@ class VotingManager @Inject constructor(
 
     }
 
-    private val FIRST_POLL_MAX_LIMIT: BigInteger = BigInteger.valueOf(10L)
-
-    private suspend fun loadPolls(): List<Poll> {
-
-        Log.i("Proposal", "load polls")
-
-        val proposal = "0x4C61d7454653720DAb9e26Ca25dc7B8a5cf7065b"
-
-        val multicall = "0xcA11bde05977b3631167028862bE2a173976CA11"
-
-        val VOTING_RPC_URL = "https://rpc.qtestnet.org"
-
-        val proposalsStateContract = votingContractManager.getProposalsStateContract(proposal)
-        val pollsList: MutableList<Poll> = mutableListOf()
-
-        withContext(Dispatchers.IO) {
-
-            val lastProposalId = proposalsStateContract.lastProposalId().send()
-            if (lastProposalId.toLong() == 0L) {
-                return@withContext emptyList<Poll>()
-            }
-
-            val limit = if (FIRST_POLL_MAX_LIMIT > lastProposalId) {
-                lastProposalId
-            } else {
-                FIRST_POLL_MAX_LIMIT
-            }.toLong()
-
-
-            val proposalInfosArrayRaw = Identity.getStateInfosMulticall(
-                proposal,
-                VOTING_RPC_URL,
-                multicall,
-                (lastProposalId.toLong() - limit + 1).toString(),
-                lastProposalId.toString()
-            )
-
-            val gsonBuilder = GsonBuilder()
-            gsonBuilder.registerTypeAdapter(ByteArray::class.java, ByteArrayDeserializer())
-
-            gsonBuilder.registerTypeAdapter(
-                object : TypeToken<List<ByteArray>>() {}.type, ByteArrayListDeserializer()
-            )
-            val gson = gsonBuilder.create()
-
-            val proposalInfoListType = object : TypeToken<List<ProposalIndexed>>() {}.type
-
-            val proposalInfos = gson.fromJson<List<ProposalIndexed>>(
-                proposalInfosArrayRaw.decodeToString(), proposalInfoListType
-            )
-
-            val pollDeferredList = proposalInfos.map { proposalInfoIndexed ->
-                async {
-                    val proposalInfo = proposalInfoIndexed.ProposalInfo
-                    val proposalStatusUint8 = proposalInfo.Status
-                    val proposalStatus = uint8ToProposalStatus(proposalStatusUint8)
-
-                    if (proposalStatus == ProposalStatus.DoNotShow) {
-                        return@async null
-                    }
-
-                    val proposalEventId = proposalsStateContract.getProposalEventId(
-                        BigInteger.valueOf(proposalInfoIndexed.Index.toLong())
-                    ).send()
-
-                    val votingAddresses = proposalInfo.Config.VotingWhitelist
-                    val ipfsLink = proposalInfo.Config.Description
-
-                    val rawData = votingApiManager.getIPFSData(ipfsLink)
-                    val voteOptions = mutableListOf<PollVoteOption>()
-                    val voteDescription = mutableListOf<String>()
-
-                    rawData.acceptedOptions.forEachIndexed { index, option ->
-                        option.variants.forEachIndexed { _index, _option ->
-                            voteOptions.add(PollVoteOption(_index, _option))
-                        }
-                        voteDescription.add(option.title)
-                    }
-
-                    val currentDateLongUtc = System.currentTimeMillis() / 1000
-                    val proposalSMT = proposalInfo.ProposalSMT
-
-                    Poll(
-                        id = proposalInfoIndexed.Index.toLong(),
-                        title = rawData.title,
-                        description = rawData.description!!,
-                        reward = 50L,
-                        voteStartDate = proposalInfo.Config.StartTimestamp,
-                        isEnded = proposalStatus == ProposalStatus.Ended || currentDateLongUtc > proposalInfo.Config.StartTimestamp.plus(
-                            proposalInfo.Config.Duration
-                        ),
-                        isStarted = proposalStatus == ProposalStatus.Started || currentDateLongUtc > proposalInfo.Config.StartTimestamp,
-                        voteEndDate = proposalInfo.Config.StartTimestamp.plus(proposalInfo.Config.Duration),
-                        questionList = rawData.acceptedOptions.mapIndexed { index, it ->
-                            Question(
-                                id = index.toLong(),
-                                title = it.title,
-                                IsSkippable = false,
-                                variants = it.variants
-                            )
-                        }.toList(),
-                        eventId = proposalEventId,
-                        votingData = proposalInfo.Config.VotingWhitelistData,
-                        votingAddresses = votingAddresses,
-                        proposalSMT = proposalSMT,
-                        proposalStatus = proposalStatus,
-                        proposalResults = proposalInfo.VotingResults,
-                        imageUrl = rawData.imageCid
-                    )
-                }
-            }
-
-            val polls = pollDeferredList.awaitAll().filterNotNull().sortedBy { it.id }
-            Log.i("Polls", polls.map { it.id }.toString())
-            pollsList.addAll(polls)
-        }
-        return pollsList.reversed()
-    }
-
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun vote(pollResults: List<PollResult>, context: Context) {
         val gson = Gson()
@@ -524,7 +405,6 @@ class VotingManager @Inject constructor(
         val registrationProof = identityManager.registrationProof.value!!
 
         val eDocument = passportManager.passport.value!!
-
 
         val passportInfoKey = passportManager.getPassportInfoKey(eDocument, registrationProof)
 
@@ -559,7 +439,6 @@ class VotingManager @Inject constructor(
 
         val passportInfo = tupleContractInfo.component1()
         val identityInfo = tupleContractInfo.component2()
-
 
         val (voteProof, isReissuedAfterVoting) = try {
             generateVoteProof(
@@ -610,7 +489,8 @@ class VotingManager @Inject constructor(
             throw VoteError.NetworkError("Error during checkIsTransactionSuccessful")
         }
 
-        votingRepository.insertVoting(selectedPoll.value!!.poll)
+        val wait = votingRepository.insertVoting(selectedPoll.value!!.poll)
+        refreshVotes(votingRepository.getAllVoting())
     }
 
 
