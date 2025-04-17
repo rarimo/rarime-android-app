@@ -19,7 +19,7 @@ data class DownloadRequest(
     val zkey: String, val zkeyLen: Long, val dat: String, val datLen: Long
 )
 
-class CircuitUseCase(private val context: Context) {
+class CircuitDownloader(private val context: Context) {
     private val fileDownloader = FileDownloaderInternal(context)
 
     suspend fun download(

@@ -16,7 +16,7 @@ import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.manager.WalletManager
-import com.rarilabs.rarime.modules.passportScan.CircuitUseCase
+import com.rarilabs.rarime.modules.passportScan.CircuitDownloader
 import com.rarilabs.rarime.modules.passportScan.ConnectionError
 import com.rarilabs.rarime.modules.passportScan.DownloadCircuitError
 import com.rarilabs.rarime.modules.passportScan.DownloadRequest
@@ -207,7 +207,7 @@ class ProofViewModel @Inject constructor(
 
         val circuitData = getCircuitData(circuitName)
 
-        val circuitUseCase = CircuitUseCase(application as Context)
+        val circuitUseCase = CircuitDownloader(application as Context)
 
         val filePaths = try {
             withContext(Dispatchers.Default) {
@@ -324,7 +324,7 @@ class ProofViewModel @Inject constructor(
 
         //TODO: Don't forget to update download manager here
         val filePaths = withContext(Dispatchers.Default) {
-            CircuitUseCase(application as Context).download(registeredCircuitData) { progress, visibility ->
+            CircuitDownloader(application as Context).download(registeredCircuitData) { progress, visibility ->
                 if (_state.value.value < PassportProofState.APPLYING_ZERO_KNOWLEDGE.value) {
                     _progress.value = progress
                     _progressVisibility.value = !visibility

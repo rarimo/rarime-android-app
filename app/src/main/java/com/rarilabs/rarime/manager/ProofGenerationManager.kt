@@ -14,7 +14,7 @@ import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.registration.PassportAlreadyRegisteredByOtherPK
 import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.data.enums.PassportStatus
-import com.rarilabs.rarime.modules.passportScan.CircuitUseCase
+import com.rarilabs.rarime.modules.passportScan.CircuitDownloader
 import com.rarilabs.rarime.modules.passportScan.DownloadCircuitError
 import com.rarilabs.rarime.modules.passportScan.DownloadRequest
 import com.rarilabs.rarime.modules.passportScan.models.CryptoUtilsPassport
@@ -155,22 +155,24 @@ class ProofGenerationManager @Inject constructor(
             val circuitData = getCircuitData(circuitName)
 
             // Download circuit files with CircuitUseCase.
-            val circuitUseCase = CircuitUseCase(application)
+            val circuitDownloader = CircuitDownloader(application)
+
+
             val filePaths = withContext(Dispatchers.Default) {
-                circuitUseCase.download(circuitData) { progress, visibility ->
+                circuitDownloader.download(circuitData) { progress, visibility ->
                     _downloadProgress.value = progress
                 }
             } ?: throw DownloadCircuitError()
 
             _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
-            // Proof generation
+
             val proof =
                 generateRegisterIdentityProof(eDocument, circuitData, filePaths, circuitType)
 
             if (!BuildConfig.isTestnet) {
                 try {
                     ErrorHandler.logDebug(TAG, "Deleting redundant circuit files")
-                    circuitUseCase.deleteRedunantFiles(circuitData)
+                    circuitDownloader.deleteRedunantFiles(circuitData)
                 } catch (e: Exception) {
                     ErrorHandler.logError(TAG, "Error deleting redundant circuit files", e)
                 }
@@ -244,7 +246,7 @@ class ProofGenerationManager @Inject constructor(
 
             // Download circuit files
             val filePaths = withContext(Dispatchers.Default) {
-                CircuitUseCase(application).download(registeredCircuitData) { progress, visibility ->
+                CircuitDownloader(application).download(registeredCircuitData) { progress, visibility ->
                     _downloadProgress.value = progress
                 }
             } ?: throw DownloadCircuitError()
@@ -306,6 +308,7 @@ class ProofGenerationManager @Inject constructor(
                 try {
                     resetState()
                     registerCertificate(eDocument)
+
 
                     val proof = registerByDocument(eDocument)
                     identityManager.setRegistrationProof(proof)
@@ -405,7 +408,9 @@ class ProofGenerationManager @Inject constructor(
         registerIdentityCircuitType: RegisterIdentityCircuitType
     ): ZkProof {
         ErrorHandler.logDebug(TAG, "Generating full registration proof")
-        val inputs = buildRegistrationCircuits(eDocument, registerIdentityCircuitType)
+
+
+        val inputs = buildGrothRegistrationInputs(eDocument, registerIdentityCircuitType)
         val assetContext: Context = application.createPackageContext("com.rarilabs.rarime", 0)
         val assetManager = assetContext.assets
         val zkp = ZKPUseCase(application, assetManager)
@@ -467,7 +472,14 @@ class ProofGenerationManager @Inject constructor(
         )
     }
 
-    private suspend fun buildRegistrationCircuits(
+//    private suspend fun buildPlonkRegistrationInputs(
+//        eDocument: EDocument, circuitType: RegisterIdentityCircuitType
+//    ): ByteArray {
+//
+//    }
+
+
+    private suspend fun buildGrothRegistrationInputs(
         eDocument: EDocument, circuitType: RegisterIdentityCircuitType
     ): ByteArray {
         val gson = GsonBuilder().setPrettyPrinting().create()
