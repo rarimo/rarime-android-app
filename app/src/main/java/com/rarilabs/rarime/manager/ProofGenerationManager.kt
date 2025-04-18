@@ -154,25 +154,13 @@ class ProofGenerationManager @Inject constructor(
             val circuitName = getCircuitName(circuitType)
             val circuitData = getCircuitData(circuitName)
 
-            // Download circuit files with CircuitUseCase.
-            val circuitDownloader = CircuitDownloader(application)
-
-
-            val filePaths = withContext(Dispatchers.Default) {
-                circuitDownloader.download(circuitData) { progress, visibility ->
-                    _downloadProgress.value = progress
-                }
-            } ?: throw DownloadCircuitError()
-
-            _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
-
             val proof =
-                generateRegisterIdentityProof(eDocument, circuitData, filePaths, circuitType)
+                generateRegisterIdentityProof(eDocument, circuitData, circuitType)
 
             if (!BuildConfig.isTestnet) {
                 try {
                     ErrorHandler.logDebug(TAG, "Deleting redundant circuit files")
-                    circuitDownloader.deleteRedunantFiles(circuitData)
+                    //circuitDownloader.deleteRedunantFiles(circuitData)
                 } catch (e: Exception) {
                     ErrorHandler.logError(TAG, "Error deleting redundant circuit files", e)
                 }
@@ -401,14 +389,25 @@ class ProofGenerationManager @Inject constructor(
             currentRegistration!!.await()
         }
 
+
     private suspend fun generateRegisterIdentityProof(
         eDocument: EDocument,
         registeredCircuitData: RegisteredCircuitData,
-        filePaths: DownloadRequest?,
         registerIdentityCircuitType: RegisterIdentityCircuitType
     ): ZkProof {
+
+        val circuitDownloader = CircuitDownloader(application)
+
+        val filePaths = withContext(Dispatchers.Default) {
+            circuitDownloader.download(registeredCircuitData) { progress, visibility ->
+                _downloadProgress.value = progress
+            }
+        } ?: throw DownloadCircuitError()
+
+
         ErrorHandler.logDebug(TAG, "Generating full registration proof")
 
+        _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
 
         val inputs = buildGrothRegistrationInputs(eDocument, registerIdentityCircuitType)
         val assetContext: Context = application.createPackageContext("com.rarilabs.rarime", 0)
@@ -472,11 +471,68 @@ class ProofGenerationManager @Inject constructor(
         )
     }
 
-//    private suspend fun buildPlonkRegistrationInputs(
-//        eDocument: EDocument, circuitType: RegisterIdentityCircuitType
-//    ): ByteArray {
-//
-//    }
+    suspend fun buildPlonkRegistrationInputs(
+        eDocument: EDocument,
+        circuitType: RegisterIdentityCircuitType
+    ): ByteArray = withContext(Dispatchers.IO) {
+        val gson = GsonBuilder().setPrettyPrinting().create()
+
+        val dg1Bytes = Numeric.hexStringToByteArray(eDocument.dg1)
+        val dg15Bytes = eDocument.dg15?.decodeHexString() ?: ByteArray(0)
+        val sodFile = eDocument.getSodFile()
+        val ecBytes = Numeric.hexStringToByteArray(sodFile.readASN1Data())
+        val saBytes = sodFile.eContent
+
+        val chunkSize = circuitType.passportHashType.getChunkSize().toInt()
+
+        val dg1Count = SmartChunking.chunkNumber(dg1Bytes.size * 8, chunkSize)
+        val ecCount = SmartChunking.chunkNumber(ecBytes.size * 8, chunkSize)
+        val saCount = SmartChunking.chunkNumber(saBytes.size * 8, chunkSize)
+        val dg15Count =
+            if (dg15Bytes.isEmpty()) 0 else SmartChunking.chunkNumber(dg15Bytes.size * 8, chunkSize)
+
+        val dg1Chunks = SmartChunking.bigintToArray(chunkSize, dg1Count, BigInteger(1, dg1Bytes))
+        val ecChunks = SmartChunking.bigintToArray(chunkSize, ecCount, BigInteger(1, ecBytes))
+        val saChunks = SmartChunking.bigintToArray(chunkSize, saCount, BigInteger(1, saBytes))
+        val dg15Chunks = if (dg15Bytes.isEmpty()) emptyList() else SmartChunking.bigintToArray(
+            chunkSize,
+            dg15Count,
+            BigInteger(1, dg15Bytes)
+        )
+
+        val publicKey = sodFile.docSigningCertificate.publicKey
+        val sigBytes = sodFile.encryptedDigest
+        val pubKeyData = CryptoUtilsPassport.getDataFromPublicKey(publicKey)
+            ?: throw IllegalArgumentException("Invalid public key data")
+        val keyCount = SmartChunking.chunkNumber(pubKeyData.size * 8, chunkSize)
+
+        val pkChunks = SmartChunking.bigintToArray(chunkSize, keyCount, BigInteger(1, pubKeyData))
+        val sigChunks = SmartChunking.bigintToArray(chunkSize, keyCount, BigInteger(1, sigBytes))
+
+        val reduction =
+            SmartChunking.computeBarrettReduction(pubKeyData.size * 8, BigInteger(1, pubKeyData))
+
+        //TODO fake data
+        val skIdentity = "0x" + BigInteger.ZERO.toString(16)
+        val icaoRoot = "0x" + BigInteger.ZERO.toString(16)
+        val inclusionBranches = List(80) { "0x" + BigInteger.ZERO.toString(16) }
+
+        val inputs = PlonkRegistrationInputs(
+            dg1 = dg1Chunks,
+            dg15 = dg15Chunks,
+            ec = ecChunks,
+            sa = saChunks,
+            pk = pkChunks,
+            reduction = reduction,
+            sig = sigChunks,
+            sk_identity = skIdentity,
+            icao_root = icaoRoot,
+            inclusion_branches = inclusionBranches
+        )
+
+        gson.toJson(inputs).toByteArray()
+    }
+
 
 
     private suspend fun buildGrothRegistrationInputs(
@@ -559,7 +615,8 @@ class ProofGenerationManager @Inject constructor(
             dg1 = dg1Chunks,
             dg15 = dg15,
             slaveMerkleRoot = (BigInteger(proof.root)).toString(),
-            slaveMerkleInclusionBranches = proof.siblings.map { BigInteger(it).toString() })
+            slaveMerkleInclusionBranches = proof.siblings.map { BigInteger(it).toString() }
+        )
         registrationManager.setMasterCertProof(proof)
         return gson.toJson(inputs).toByteArray()
     }
