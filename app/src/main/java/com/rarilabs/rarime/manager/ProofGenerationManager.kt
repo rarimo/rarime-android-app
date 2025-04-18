@@ -19,6 +19,7 @@ import com.rarilabs.rarime.modules.passportScan.DownloadCircuitError
 import com.rarilabs.rarime.modules.passportScan.DownloadRequest
 import com.rarilabs.rarime.modules.passportScan.models.CryptoUtilsPassport
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
+import com.rarilabs.rarime.modules.passportScan.models.PlonkRegistrationInputs
 import com.rarilabs.rarime.modules.passportScan.models.RegisterIdentityInputs
 import com.rarilabs.rarime.modules.passportScan.models.RegisterIdentityLightInputs
 import com.rarilabs.rarime.modules.passportScan.nfc.SODFileOwn
@@ -84,6 +85,7 @@ class ProofGenerationManager @Inject constructor(
     private val privateKeyBytes = identityManager.privateKeyBytes
 
     private fun resetState() {
+
         _state.value = PassportProofState.READING_DATA
         _proofError.value = null
     }
@@ -146,6 +148,7 @@ class ProofGenerationManager @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     private suspend fun registerByDocument(eDocument: EDocument): ZkProof {
         try {
             _state.value = PassportProofState.READING_DATA
@@ -155,7 +158,9 @@ class ProofGenerationManager @Inject constructor(
             val circuitData = getCircuitData(circuitName)
 
             val proof =
-                generateRegisterIdentityProof(eDocument, circuitData, circuitType)
+                generateRegisterIdentityProofGroth(eDocument, circuitData, circuitType)
+
+
 
             if (!BuildConfig.isTestnet) {
                 try {
@@ -389,8 +394,19 @@ class ProofGenerationManager @Inject constructor(
             currentRegistration!!.await()
         }
 
+    private suspend fun generateRegisterIdentityProofPlonk(
+        eDocument: EDocument,
+        registeredCircuitData: RegisteredCircuitData,
+        registerIdentityCircuitType: RegisterIdentityCircuitType
+    ): ZkProof {
 
-    private suspend fun generateRegisterIdentityProof(
+        val circuitDownloader = CircuitDownloader(application)
+
+
+    }
+
+
+    private suspend fun generateRegisterIdentityProofGroth(
         eDocument: EDocument,
         registeredCircuitData: RegisteredCircuitData,
         registerIdentityCircuitType: RegisterIdentityCircuitType
@@ -403,7 +419,6 @@ class ProofGenerationManager @Inject constructor(
                 _downloadProgress.value = progress
             }
         } ?: throw DownloadCircuitError()
-
 
         ErrorHandler.logDebug(TAG, "Generating full registration proof")
 
@@ -483,18 +498,41 @@ class ProofGenerationManager @Inject constructor(
         val ecBytes = Numeric.hexStringToByteArray(sodFile.readASN1Data())
         val saBytes = sodFile.eContent
 
+
+        val cert = sodFile.docSigningCertificate
+        val certPem = SecurityUtil.convertToPEM(cert)
+
+        val certificatesSMTAddress = BaseConfig.CERTIFICATES_SMT_CONTRACT_ADDRESS
+
+        val x509Utils = X509Util()
+
+        val proof = withContext(Dispatchers.IO) {
+            val icao = readICAO(application.applicationContext)
+            val slaveCertificateIndex =
+                x509Utils.getSlaveCertificateIndex(certPem.toByteArray(), icao)
+            val indexHex = slaveCertificateIndex.toHexString()
+            val contract = rarimoContractManager.getPoseidonSMT(certificatesSMTAddress)
+            contract.getProof(indexHex.hexToByteArray()).send()
+        }
+
         val chunkSize = circuitType.passportHashType.getChunkSize().toInt()
 
-        val dg1Count = SmartChunking.chunkNumber(dg1Bytes.size * 8, chunkSize)
-        val ecCount = SmartChunking.chunkNumber(ecBytes.size * 8, chunkSize)
-        val saCount = SmartChunking.chunkNumber(saBytes.size * 8, chunkSize)
+        val dg1Count = CircuitUtil.noirChunkNumber(dg1Bytes.size * 8, chunkSize)
+        val ecCount = CircuitUtil.noirChunkNumber(ecBytes.size * 8, chunkSize)
+        val saCount = CircuitUtil.noirChunkNumber(saBytes.size * 8, chunkSize)
         val dg15Count =
-            if (dg15Bytes.isEmpty()) 0 else SmartChunking.chunkNumber(dg15Bytes.size * 8, chunkSize)
+            if (dg15Bytes.isEmpty()) 0 else CircuitUtil.noirChunkNumber(
+                dg15Bytes.size * 8,
+                chunkSize
+            )
 
-        val dg1Chunks = SmartChunking.bigintToArray(chunkSize, dg1Count, BigInteger(1, dg1Bytes))
-        val ecChunks = SmartChunking.bigintToArray(chunkSize, ecCount, BigInteger(1, ecBytes))
-        val saChunks = SmartChunking.bigintToArray(chunkSize, saCount, BigInteger(1, saBytes))
-        val dg15Chunks = if (dg15Bytes.isEmpty()) emptyList() else SmartChunking.bigintToArray(
+
+        val dg1Chunks =
+            CircuitUtil.bigIntToChunkingArray(chunkSize, dg1Count, BigInteger(1, dg1Bytes))
+        val ecChunks = CircuitUtil.bigIntToChunkingArray(chunkSize, ecCount, BigInteger(1, ecBytes))
+        val saChunks = CircuitUtil.bigIntToChunkingArray(chunkSize, saCount, BigInteger(1, saBytes))
+        val dg15Chunks =
+            if (dg15Bytes.isEmpty()) emptyList() else CircuitUtil.bigIntToChunkingArray(
             chunkSize,
             dg15Count,
             BigInteger(1, dg15Bytes)
@@ -504,18 +542,20 @@ class ProofGenerationManager @Inject constructor(
         val sigBytes = sodFile.encryptedDigest
         val pubKeyData = CryptoUtilsPassport.getDataFromPublicKey(publicKey)
             ?: throw IllegalArgumentException("Invalid public key data")
-        val keyCount = SmartChunking.chunkNumber(pubKeyData.size * 8, chunkSize)
+        val keyCount = CircuitUtil.noirChunkNumber(pubKeyData.size * 8, chunkSize)
 
-        val pkChunks = SmartChunking.bigintToArray(chunkSize, keyCount, BigInteger(1, pubKeyData))
-        val sigChunks = SmartChunking.bigintToArray(chunkSize, keyCount, BigInteger(1, sigBytes))
+        val pkChunks =
+            CircuitUtil.bigIntToChunkingArray(chunkSize, keyCount, BigInteger(1, pubKeyData))
+        val sigChunks =
+            CircuitUtil.bigIntToChunkingArray(chunkSize, keyCount, BigInteger(1, sigBytes))
 
         val reduction =
-            SmartChunking.computeBarrettReduction(pubKeyData.size * 8, BigInteger(1, pubKeyData))
+            CircuitUtil.computeBarrettReduction(pubKeyData.size * 8, BigInteger(1, pubKeyData))
 
         //TODO fake data
-        val skIdentity = "0x" + BigInteger.ZERO.toString(16)
-        val icaoRoot = "0x" + BigInteger.ZERO.toString(16)
-        val inclusionBranches = List(80) { "0x" + BigInteger.ZERO.toString(16) }
+        val skIdentity = Numeric.toHexStringWithPrefix(BigInteger(privateKeyBytes))
+        val icaoRoot = (BigInteger(proof.root)).toString()
+        val inclusionBranches = proof.siblings.map { BigInteger(it).toString() }
 
         val inputs = PlonkRegistrationInputs(
             dg1 = dg1Chunks,

@@ -88,4 +88,25 @@ object CircuitUtil {
         }
     }
 
+
+    fun bigIntToChunkingArray(nBits: Int, numChunks: Int, x: BigInteger): List<BigInteger> {
+        val mod = BigInteger.ONE.shiftLeft(nBits)
+        val out = mutableListOf<BigInteger>()
+        var value = x
+        repeat(numChunks) {
+            out.add(value.mod(mod))
+            value = value.shiftRight(nBits)
+        }
+        return out
+    }
+
+    fun computeBarrettReduction(nBits: Int, modulus: BigInteger): BigInteger {
+        return BigInteger.ONE.shiftLeft(2 * nBits).divide(modulus)
+    }
+
+    fun noirChunkNumber(dataBits: Int, chunkSize: Int): Int {
+        val length = dataBits + 1 + 64
+        return (length + chunkSize - 1) / chunkSize
+    }
+
 }

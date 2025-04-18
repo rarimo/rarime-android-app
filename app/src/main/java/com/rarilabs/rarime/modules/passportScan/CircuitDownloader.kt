@@ -22,6 +22,10 @@ data class DownloadRequest(
 class CircuitDownloader(private val context: Context) {
     private val fileDownloader = FileDownloaderInternal(context)
 
+    suspend fun downloadTrustedSetup(): String {
+        TODO()
+    }
+
     suspend fun download(
         circuitData: RegisteredCircuitData,
         onProgressUpdate: (Int, Boolean) -> Unit

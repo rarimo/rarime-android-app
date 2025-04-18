@@ -192,6 +192,7 @@ dependencies {
     implementation("net.sf.scuba:scuba-sc-android:0.0.20")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation(files("libs/Identity.aar"))
+    implementation(files("libs/lib-release.aar"))
 
     // QR Code
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
