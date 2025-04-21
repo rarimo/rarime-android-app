@@ -113,9 +113,6 @@ private fun TabItem(
             .background(animatedColor)
             .pointerInput(Unit) {
                 detectTapGestures {
-                    if (tab.route == Screen.Main.QrScan.route) {
-                        onQrCodeRouteSelected(tab)
-                    }
                     onTabSelected(tab)
                 }
             },

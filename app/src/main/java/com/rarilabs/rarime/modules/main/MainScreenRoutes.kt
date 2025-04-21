@@ -6,6 +6,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.fadeIn
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -15,6 +16,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.net.toUri
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -38,6 +40,7 @@ import com.rarilabs.rarime.modules.profile.ExportKeysScreen
 import com.rarilabs.rarime.modules.profile.LanguageScreen
 import com.rarilabs.rarime.modules.profile.ProfileScreen
 import com.rarilabs.rarime.modules.profile.ThemeScreen
+import com.rarilabs.rarime.modules.qr.ScanQrScreen
 import com.rarilabs.rarime.modules.register.NewIdentityScreen
 import com.rarilabs.rarime.modules.rewards.RewardsClaimScreen
 import com.rarilabs.rarime.modules.rewards.RewardsScreen
@@ -242,6 +245,22 @@ fun MainScreenRoutes(
                 composable(Screen.Main.Identity.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
                         ZkIdentityScreen(navigate = simpleNavigate)
+                    }
+                }
+
+                composable(Screen.Main.QrScan.route) {
+                    AuthGuard(navigate = navigateWithPopUp) {
+                        ScreenInsetsContainer {
+                            ScanQrScreen(
+                                onBack = {
+                                    navigateWithPopUp(Screen.Main.Home.route)                                },
+                                onScan = {
+                                    val uri = it.toUri()
+                                    navigateWithPopUp(Screen.Main.Home.route)
+                                    mainViewModel.setExtIntDataURI(uri)
+                                }
+                            )
+                        }
                     }
                 }
 
