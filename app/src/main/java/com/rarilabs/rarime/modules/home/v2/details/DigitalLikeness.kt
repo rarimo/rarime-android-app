@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -21,10 +22,9 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import com.rarilabs.rarime.util.Screen
 
-
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun CreateIdentityDetails(
+fun DigitalLikeness(
     modifier: Modifier = Modifier,
     id: Int,
     onBack: () -> Unit,
@@ -34,14 +34,14 @@ fun CreateIdentityDetails(
     navigate: (String) -> Unit = {}
 ) {
 
-    val backgroundGradient = RarimeTheme.colors.gradient1
+    val backgroundGradient = RarimeTheme.colors.gradient7
 
     val props = remember {
         DetailsProperties(
             id = id,
-            header = "Your Device",
-            subTitle = "Your Identity",
-            imageId = R.drawable.drawable_hand_phone,
+            header = "Digital likeness",
+            subTitle = "Set a rule",
+            imageId = R.drawable.drawable_digital_likeness,
             backgroundGradient = backgroundGradient
         )
     }
@@ -51,6 +51,7 @@ fun CreateIdentityDetails(
         innerPaddings = innerPaddings,
         sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = animatedContentScope,
+        imageModifier = Modifier.padding(horizontal = 52.dp),
         onBack = onBack,
         footer = {
             Column {
@@ -83,7 +84,7 @@ fun CreateIdentityDetails(
 private fun CreateIdentityDetailsPreview() {
 
     PrevireSharedAnimationProvider { state, anim ->
-        CreateIdentityDetails(
+        DigitalLikeness(
             id = 0,
             sharedTransitionScope = state,
             animatedContentScope = anim,

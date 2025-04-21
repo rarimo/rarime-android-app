@@ -95,6 +95,7 @@ class RarimeColors(
     gradient4: Brush,
     gradient5: Brush,
     gradient6: Brush,
+    gradient7: Brush,
 
     additionalGreen: Color
 ) {
@@ -221,12 +222,15 @@ class RarimeColors(
     var gradient6 by mutableStateOf(gradient6, structuralEqualityPolicy())
         internal set
 
+    var gradient7 by mutableStateOf(gradient7, structuralEqualityPolicy())
+        internal set
 
     var inverted by mutableStateOf(inverted, structuralEqualityPolicy())
         internal set
 
     var additionalGreen by mutableStateOf(additionalGreen, structuralEqualityPolicy())
         internal set
+
 
     fun copy(
         primaryDarker: Color = this.primaryDarker,
@@ -279,6 +283,7 @@ class RarimeColors(
         gradient4: Brush = this.gradient4,
         gradient5: Brush = this.gradient5,
         gradient6: Brush = this.gradient6,
+        gradient7: Brush = this.gradient7,
         invertedDark: Color = this.invertedDark,
         invertedLight: Color = this.invertedLight,
         inverted: Color = this.inverted,
@@ -349,6 +354,7 @@ class RarimeColors(
         gradient4 = gradient4,
         gradient5 = gradient5,
         gradient6 = gradient6,
+        gradient7 = gradient7,
         additionalGreen = additionalGreen,
         inverted = inverted
     )
@@ -480,6 +486,14 @@ fun darkColors() = RarimeColors(
     gradient5 = Brush.linearGradient(colors = listOf(Color(0xFF80ED99), Color(0xFFD5FEC8))),
     gradient6 = Brush.linearGradient(colors = listOf(Color(0xFF39CDA0), Color(0xFF45C45C))),
 
+    gradient7 = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFF8F3FE), Color(0xFFEEE9FE), Color(
+                0xFFF8F3FE
+            )
+        )
+    ),
+
     additionalGreen = Color(0xFFF1F7F1),
 
 
@@ -567,7 +581,13 @@ fun lightColors() = RarimeColors(
     gradient4 = Brush.linearGradient(colors = listOf(Color(0xFFD3D1EF), Color(0xFFFCE3FC))),
     gradient5 = Brush.linearGradient(colors = listOf(Color(0xFF80ED99), Color(0xFFD5FEC8))),
     gradient6 = Brush.linearGradient(colors = listOf(Color(0xFF39CDA0), Color(0xFF45C45C))),
-
+    gradient7 = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFF8F3FE), Color(0xFFEEE9FE), Color(
+                0xFFF8F3FE
+            )
+        )
+    ),
 
     baseBlackOp40 = Color(0x66141614),
     baseBlackOp50 = Color(0x80141614),

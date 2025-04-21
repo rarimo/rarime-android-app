@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -40,6 +38,8 @@ fun ClaimTokensScreen(
     currentPointsBalance: Long?
 ) {
 
+    val backgroundGradient = RarimeTheme.colors.gradient3
+
     val props = DetailsProperties(
         id = id,
         header = if (currentPointsBalance != null && currentPointsBalance != 0L) stringResource(R.string.reserved) else stringResource(
@@ -51,12 +51,7 @@ fun ClaimTokensScreen(
             R.string.rmo
         ),
         imageId = R.drawable.claim_rmo_image,
-        backgroundGradient = Brush.linearGradient(
-            colors = listOf(
-                Color(0xFFF4F3F0),
-                Color(0xFFDFFCC4)
-            )
-        )
+        backgroundGradient = backgroundGradient
     )
 
     BaseDetailsScreen(

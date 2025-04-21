@@ -55,6 +55,7 @@ data class DetailsProperties(
 @Composable
 fun BaseDetailsScreen(
     modifier: Modifier = Modifier,
+    imageModifier: Modifier = Modifier,
     properties: DetailsProperties,
     footer: @Composable () -> Unit,
     onBack: () -> Unit,
@@ -138,7 +139,8 @@ fun BaseDetailsScreen(
                             imageKey
                         ), animatedVisibilityScope = animatedContentScope
                     )
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .then(imageModifier),
                 contentScale = ContentScale.FillWidth
             )
 
