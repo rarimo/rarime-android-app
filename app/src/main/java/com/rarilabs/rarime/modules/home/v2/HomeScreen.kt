@@ -55,6 +55,7 @@ import com.rarilabs.rarime.api.points.models.PointsEventData
 import com.rarilabs.rarime.api.points.models.ReferralCodeStatuses
 import com.rarilabs.rarime.modules.home.v2.details.ClaimTokensScreen
 import com.rarilabs.rarime.modules.home.v2.details.CreateIdentityDetails
+import com.rarilabs.rarime.modules.home.v2.details.DigitalLikeness
 import com.rarilabs.rarime.modules.home.v2.details.InviteOthersScreen
 import com.rarilabs.rarime.modules.home.v2.details.UnforgettableWalletScreen
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
@@ -71,7 +72,7 @@ import com.rarilabs.rarime.util.Screen
 import kotlin.math.abs
 
 enum class CardType {
-    YOUR_IDENTITY, INVITE_OTHERS, CLAIM, UNFORGETTABLE_WALLET, FREEDOMTOOL, OTHER
+    YOUR_IDENTITY, INVITE_OTHERS, CLAIM, UNFORGETTABLE_WALLET, FREEDOMTOOL, OTHER, LIKENESS
 }
 
 data class CardContent(
@@ -186,6 +187,8 @@ fun HomeScreenContent(
         setVisibilityOfBottomBar(selectedPageId == null)
     }
 
+    val gradient = RarimeTheme.colors.gradient7
+
     val cardContent = remember {
         mutableListOf(
 //
@@ -253,6 +256,23 @@ fun HomeScreenContent(
                             Color(0xFFDFFCC4), Color(0xFFF4F3F0)
                         )
                     )
+                ), onCardClick = {}, footer = {}),
+
+            CardContent(
+                type = CardType.LIKENESS, properties = CardProperties(
+                    header = if (currentPointsBalance != null && currentPointsBalance != 0L) context.getString(
+                        R.string.reserved
+                    ) else context.getString(
+                        R.string.upcoming
+                    ),
+                    subTitle = if (currentPointsBalance != null && currentPointsBalance != 0L) ("$currentPointsBalance " + context.getString(
+                        R.string.rmo
+                    )) else context.getString(
+                        R.string.rmo
+                    ),
+                    icon = R.drawable.ic_rarimo,
+                    image = R.drawable.drawable_digital_likeness,
+                    backgroundGradient = gradient
                 ), onCardClick = {}, footer = {})
         )
 
@@ -503,6 +523,17 @@ fun HomeScreenContent(
 
                 CardType.OTHER -> {
 
+                }
+
+                CardType.LIKENESS -> {
+                    DigitalLikeness(
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedContentScope = this@AnimatedContent,
+                        id = it,
+                        onBack = { selectedPageId = null },
+                        navigate = navigate,
+                        innerPaddings = innerPaddings
+                    )
                 }
             }
         }
