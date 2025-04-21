@@ -8,6 +8,8 @@ import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.noirandroid.lib.Circuit
+import com.noirandroid.lib.Proof
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.BuildConfig
 import com.rarilabs.rarime.api.points.PointsManager
@@ -15,6 +17,7 @@ import com.rarilabs.rarime.api.registration.PassportAlreadyRegisteredByOtherPK
 import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.modules.passportScan.CircuitDownloader
+import com.rarilabs.rarime.modules.passportScan.CircuitNoirDownloader
 import com.rarilabs.rarime.modules.passportScan.DownloadCircuitError
 import com.rarilabs.rarime.modules.passportScan.DownloadRequest
 import com.rarilabs.rarime.modules.passportScan.models.CryptoUtilsPassport
@@ -28,6 +31,7 @@ import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.SecurityUtil
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.circuits.CircuitUtil
+import com.rarilabs.rarime.util.circuits.RegisterNoirCircuitData
 import com.rarilabs.rarime.util.circuits.RegisteredCircuitData
 import com.rarilabs.rarime.util.data.ZkProof
 import com.rarilabs.rarime.util.decodeHexString
@@ -38,6 +42,7 @@ import identity.X509Util
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,8 +51,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import org.bouncycastle.jce.interfaces.ECPublicKey
 import org.web3j.utils.Numeric
+import java.io.File
 import java.io.IOException
 import java.math.BigInteger
+import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -157,15 +164,22 @@ class ProofGenerationManager @Inject constructor(
             val circuitName = getCircuitName(circuitType)
             val circuitData = getCircuitData(circuitName)
 
-            val proof =
-                generateRegisterIdentityProofGroth(eDocument, circuitData, circuitType)
+
+            val proof = if (RegisterNoirCircuitData.fromValue(circuitType.buildName()) != null) {
+                generateRegisterIdentityProofPlonk(
+                    eDocument,
+                    registerIdentityCircuitType = circuitType
+                ).toString()
+            } else {
+                generateRegisterIdentityProofGroth(eDocument, circuitData, circuitType).toString()
+            }
+
 
 
 
             if (!BuildConfig.isTestnet) {
                 try {
                     ErrorHandler.logDebug(TAG, "Deleting redundant circuit files")
-                    //circuitDownloader.deleteRedunantFiles(circuitData)
                 } catch (e: Exception) {
                     ErrorHandler.logError(TAG, "Error deleting redundant circuit files", e)
                 }
@@ -239,7 +253,7 @@ class ProofGenerationManager @Inject constructor(
 
             // Download circuit files
             val filePaths = withContext(Dispatchers.Default) {
-                CircuitDownloader(application).download(registeredCircuitData) { progress, visibility ->
+                CircuitDownloader(application).downloadGrothFiles(registeredCircuitData) { progress, visibility ->
                     _downloadProgress.value = progress
                 }
             } ?: throw DownloadCircuitError()
@@ -396,13 +410,43 @@ class ProofGenerationManager @Inject constructor(
 
     private suspend fun generateRegisterIdentityProofPlonk(
         eDocument: EDocument,
-        registeredCircuitData: RegisteredCircuitData,
         registerIdentityCircuitType: RegisterIdentityCircuitType
-    ): ZkProof {
+    ): Proof {
+        val customDispatcher = Executors.newFixedThreadPool(1) { runnable ->
+            Thread(null, runnable, "LargeStackThread", 100 * 1024 * 1024) // 100 MB stack size
+        }.asCoroutineDispatcher()
 
-        val circuitDownloader = CircuitDownloader(application)
+        val circuitDownloader = CircuitNoirDownloader(application)
 
 
+        val trustedSetupPath =
+            circuitDownloader.downloadTrustedSetup(onProgressUpdate = { progress, isEnded ->
+                _downloadProgress.value = progress
+            })
+
+        val circuitData = RegisterNoirCircuitData.fromValue(registerIdentityCircuitType.buildName())
+
+        val byteCodePath =
+            circuitDownloader.downloadNoirByteCode(circuitData = circuitData!!) { progress, isEnded ->
+                _downloadProgress.value = progress
+            }
+
+        _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
+
+        val inputs = buildPlonkRegistrationInputs(eDocument, registerIdentityCircuitType)
+
+        return withContext(customDispatcher) {
+            val circuitByteCode = File(byteCodePath).readText()
+
+
+            val circuit = Circuit.fromJsonManifest(circuitByteCode)
+
+            circuit.setupSrs(trustedSetupPath, false)
+
+            val proof = circuit.prove(inputs, proofType = "plonk", recursive = false)
+
+            proof
+        }
     }
 
 
@@ -415,7 +459,7 @@ class ProofGenerationManager @Inject constructor(
         val circuitDownloader = CircuitDownloader(application)
 
         val filePaths = withContext(Dispatchers.Default) {
-            circuitDownloader.download(registeredCircuitData) { progress, visibility ->
+            circuitDownloader.downloadGrothFiles(registeredCircuitData) { progress, visibility ->
                 _downloadProgress.value = progress
             }
         } ?: throw DownloadCircuitError()
@@ -486,11 +530,10 @@ class ProofGenerationManager @Inject constructor(
         )
     }
 
-    suspend fun buildPlonkRegistrationInputs(
+    private suspend fun buildPlonkRegistrationInputs(
         eDocument: EDocument,
         circuitType: RegisterIdentityCircuitType
-    ): ByteArray = withContext(Dispatchers.IO) {
-        val gson = GsonBuilder().setPrettyPrinting().create()
+    ): Map<String, Any> = withContext(Dispatchers.IO) {
 
         val dg1Bytes = Numeric.hexStringToByteArray(eDocument.dg1)
         val dg15Bytes = eDocument.dg15?.decodeHexString() ?: ByteArray(0)
@@ -533,10 +576,10 @@ class ProofGenerationManager @Inject constructor(
         val saChunks = CircuitUtil.bigIntToChunkingArray(chunkSize, saCount, BigInteger(1, saBytes))
         val dg15Chunks =
             if (dg15Bytes.isEmpty()) emptyList() else CircuitUtil.bigIntToChunkingArray(
-            chunkSize,
-            dg15Count,
-            BigInteger(1, dg15Bytes)
-        )
+                chunkSize,
+                dg15Count,
+                BigInteger(1, dg15Bytes)
+            )
 
         val publicKey = sodFile.docSigningCertificate.publicKey
         val sigBytes = sodFile.encryptedDigest
@@ -552,7 +595,6 @@ class ProofGenerationManager @Inject constructor(
         val reduction =
             CircuitUtil.computeBarrettReduction(pubKeyData.size * 8, BigInteger(1, pubKeyData))
 
-        //TODO fake data
         val skIdentity = Numeric.toHexStringWithPrefix(BigInteger(privateKeyBytes))
         val icaoRoot = (BigInteger(proof.root)).toString()
         val inclusionBranches = proof.siblings.map { BigInteger(it).toString() }
@@ -568,11 +610,14 @@ class ProofGenerationManager @Inject constructor(
             sk_identity = skIdentity,
             icao_root = icaoRoot,
             inclusion_branches = inclusionBranches
-        )
+        ).let { input ->
+            input::class.members
+                .filterIsInstance<kotlin.reflect.KProperty1<PlonkRegistrationInputs, *>>()
+                .associate { it.name to it.get(input)!! }
+        }
 
-        gson.toJson(inputs).toByteArray()
+        inputs
     }
-
 
 
     private suspend fun buildGrothRegistrationInputs(

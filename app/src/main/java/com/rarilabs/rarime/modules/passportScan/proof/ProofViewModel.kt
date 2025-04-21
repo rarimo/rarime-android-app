@@ -211,7 +211,7 @@ class ProofViewModel @Inject constructor(
 
         val filePaths = try {
             withContext(Dispatchers.Default) {
-                circuitUseCase.download(circuitData) { progress, visibility ->
+                circuitUseCase.downloadGrothFiles(circuitData) { progress, visibility ->
                     _progress.value = progress
                     _progressVisibility.value = !visibility
                 }
@@ -324,7 +324,7 @@ class ProofViewModel @Inject constructor(
 
         //TODO: Don't forget to update download manager here
         val filePaths = withContext(Dispatchers.Default) {
-            CircuitDownloader(application as Context).download(registeredCircuitData) { progress, visibility ->
+            CircuitDownloader(application as Context).downloadGrothFiles(registeredCircuitData) { progress, visibility ->
                 if (_state.value.value < PassportProofState.APPLYING_ZERO_KNOWLEDGE.value) {
                     _progress.value = progress
                     _progressVisibility.value = !visibility
