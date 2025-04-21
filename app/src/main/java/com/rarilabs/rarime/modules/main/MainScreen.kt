@@ -32,7 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.core.net.toUri
@@ -58,7 +57,6 @@ val mainRoutes = listOf(
     Screen.Main.Home.route,
     Screen.Main.Rewards.RewardsMain.route,
     Screen.Main.Wallet.route,
-    Screen.Main.QrScan.route,
     Screen.Main.Profile.route,
     Screen.Main.Identity.route
 )
@@ -103,11 +101,11 @@ fun MainScreen(
     }
 }
 
-@Preview(showBackground = true)
 @Composable
 fun AppLoadingScreen() {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         AppIcon(
@@ -198,6 +196,11 @@ fun MainScreenContent(
                         launchSingleTop = true
                     }
                 }
+            } else if (
+                route == Screen.Main.QrScan.route
+            ) {
+                val currentQrCodeSheetState = qrCodeSheetState.value
+                currentQrCodeSheetState.show()
             } else {
                 navController.navigate(route) {
                     popUpTo(navController.graph.id) { inclusive = true }
@@ -305,7 +308,6 @@ fun MainScreenContent(
                 }
             }
 
-<<<<<<< Updated upstream
             AppBottomSheet(
                 shape = RectangleShape,
                 state = qrCodeState,
@@ -323,24 +325,6 @@ fun MainScreenContent(
                     }
                 )
             }
-=======
-//            AppBottomSheet(
-//                state = qrCodeState,
-//                fullScreen = false,
-//                isHeaderEnabled = false
-//            ) {
-//                ScanQrScreen(
-//                    onBack = {
-//                        qrCodeState.hide()
-//                    },
-//                    onScan = {
-//                        val uri = it.toUri()
-//                        qrCodeState.hide()
-//                        mainViewModel.setExtIntDataURI(uri)
-//                    }
-//                )
-//            }
->>>>>>> Stashed changes
 
             AppBottomSheet(
                 state = enterProgramSheetState,

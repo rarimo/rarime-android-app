@@ -50,7 +50,6 @@ fun ScanQrScreen(
 }
 
 @Composable
-<<<<<<< Updated upstream
 fun ScanQrScreenContent(
     onBack: () -> Unit,
     onScan: (String) -> Unit,
@@ -61,10 +60,6 @@ fun ScanQrScreenContent(
             .fillMaxSize()
             .clipToBounds()
     ) {
-=======
-fun ScanQrScreenContent(onBack: () -> Unit, onScan: (String) -> Unit) {
-    Box(modifier = Modifier.fillMaxSize().clipToBounds()) {
->>>>>>> Stashed changes
         ScanQrProcessor(
             onCompletion = onScan
         )
