@@ -112,10 +112,12 @@ private fun TabItem(
             .clip(RoundedCornerShape(13.dp))
             .background(animatedColor)
             .pointerInput(Unit) {
-                if (tab.route == Screen.Main.QrScan.route) {
-                    onQrCodeRouteSelected(tab)
+                detectTapGestures {
+                    if (tab.route == Screen.Main.QrScan.route) {
+                        onQrCodeRouteSelected(tab)
+                    }
+                    onTabSelected(tab)
                 }
-                onTabSelected(tab)
             },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
