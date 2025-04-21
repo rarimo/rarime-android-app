@@ -20,7 +20,7 @@ fun ExtIntActionPreview(
     dataUri: Uri?,
     navigate: (String) -> Unit,
     onCancel: () -> Unit = {},
-    onSuccess: (extDestination: String?, localDestination: String?) -> Unit = { extDestination, localDestination ->},
+    onSuccess: (extDestination: String?, localDestination: String?) -> Unit = { extDestination, localDestination -> },
     onError: () -> Unit = {}
 ) {
     val queryParams = remember {
@@ -56,7 +56,7 @@ fun ExtIntActionPreview(
                 VoteHandler(
                     queryParams = queryParams,
                     onCancel = onCancel,
-                    onSuccess = { destination -> onSuccess(null, destination) },
+                    onSuccess = { destination -> onSuccess(destination, null) },
                     onFail = { onError() }
                 )
             }

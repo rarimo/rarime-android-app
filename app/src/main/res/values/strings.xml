@@ -452,5 +452,6 @@
     <string name="poll_voting_ended">Voting has ended</string>
     <string name="poll_voting_end_timer">Voting ends in %1$s</string>
     <string name="poll_voting_start_timer">Voting starts in %1$s</string>
+    <string name="failed_to_parse_qr_code">Failed to parse QR-Code</string>
 
 </resources>

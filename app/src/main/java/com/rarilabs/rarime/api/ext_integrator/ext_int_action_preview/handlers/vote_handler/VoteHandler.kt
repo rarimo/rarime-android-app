@@ -31,7 +31,6 @@ fun VoteHandler(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val mainViewModel = LocalMainViewModel.current
-    val screenInsets by mainViewModel.screenInsets.collectAsState()
 
     val voteSheetState = rememberAppSheetState()
 
@@ -53,10 +52,11 @@ fun VoteHandler(
                     severity = SnackbarSeverity.Error,
                     duration = SnackbarDuration.Long,
                     title = context.getString(R.string.light_verification_error_title),
-                    message = "",
+                    message = context.getString(R.string.failed_to_parse_qr_code),
                 )
             )
         }
+        onCancel()
         onFail.invoke()
     }
 
