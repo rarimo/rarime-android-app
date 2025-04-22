@@ -663,4 +663,5 @@ sealed class VoteError(message: String? = null) : Exception(message) {
     data class NetworkError(val details: String) : VoteError(details)
     data class UniquenessError(val details: String) : VoteError(details)
     data class UnknownError(val details: String) : VoteError(details)
+    data class NotFound(val details: String) : VoteError(details)
 }

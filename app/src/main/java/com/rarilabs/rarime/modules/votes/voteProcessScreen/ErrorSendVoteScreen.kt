@@ -30,7 +30,7 @@ fun ErrorSendVoteScreen(
                 when (error) {
                     is VoteError.NetworkError -> "Network Error" to "Can't connect. Check your connection."
 
-                    is VoteError.NotEnoughTokens -> "Insufficient Tokens" to "Not enough tokens."
+                    is VoteError.NotEnoughTokens -> "Insufficient Tokens" to "The maximum number of participants has been reached."
 
                     is VoteError.UnknownError -> "Unexpected Error" to "Something went wrong. Try again."
 
@@ -38,6 +38,7 @@ fun ErrorSendVoteScreen(
 
                     is VoteError.ZKPError -> "Validation Error" to "Validation failed. Try again."
 
+                    is VoteError.NotFound -> "Not found" to "Vote not found"
                 }
             }
 

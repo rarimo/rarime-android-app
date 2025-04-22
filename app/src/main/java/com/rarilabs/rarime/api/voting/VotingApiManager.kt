@@ -45,6 +45,10 @@ class VotingApiManager @Inject constructor(
             return response.body()!!
         }
 
+        if (response.code() == 403) {
+            throw VoteError.NotEnoughTokens(response.errorBody()?.string().toString())
+        }
+
         throw Exception(response.errorBody()?.string())
     }
 
@@ -63,6 +67,10 @@ class VotingApiManager @Inject constructor(
 
         if (response.isSuccessful) {
             return response.body()!!
+        }
+
+        if (response.code() == 404) {
+            throw VoteError.NotFound(response.errorBody()?.string().toString())
         }
 
         throw Exception(response.errorBody()?.string())
@@ -112,5 +120,6 @@ class VotingApiManager @Inject constructor(
 
         throw VoteError.NetworkError(response.errorBody()?.string().toString())
     }
+
 
 }

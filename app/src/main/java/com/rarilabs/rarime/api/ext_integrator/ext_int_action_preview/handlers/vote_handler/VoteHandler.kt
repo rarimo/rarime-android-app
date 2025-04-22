@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.voting.VoteError
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.votes.voteProcessScreen.VotingAppSheet
 import com.rarilabs.rarime.ui.components.SnackbarSeverity
@@ -47,14 +48,27 @@ fun VoteHandler(
         scope.launch {
             ErrorHandler.logError("VoteHandler", "onFailHandler", e)
 
-            mainViewModel.showSnackbar(
-                options = getSnackbarDefaultShowOptions(
-                    severity = SnackbarSeverity.Error,
-                    duration = SnackbarDuration.Long,
-                    title = context.getString(R.string.light_verification_error_title),
-                    message = context.getString(R.string.failed_to_parse_qr_code),
+            if (e is VoteError.NotFound) {
+                mainViewModel.showSnackbar(
+                    options = getSnackbarDefaultShowOptions(
+                        severity = SnackbarSeverity.Error,
+                        duration = SnackbarDuration.Long,
+                        title = context.getString(R.string.light_verification_error_title),
+                        message = "Qr code is expired. Try another one",
+                    )
                 )
-            )
+            } else {
+                mainViewModel.showSnackbar(
+                    options = getSnackbarDefaultShowOptions(
+                        severity = SnackbarSeverity.Error,
+                        duration = SnackbarDuration.Long,
+                        title = context.getString(R.string.light_verification_error_title),
+                        message = context.getString(R.string.failed_to_parse_qr_code),
+                    )
+                )
+            }
+
+
         }
         onCancel()
         onFail.invoke()
