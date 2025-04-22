@@ -45,10 +45,6 @@ class VotingApiManager @Inject constructor(
             return response.body()!!
         }
 
-        if (response.code() == 403) {
-            throw VoteError.NotEnoughTokens(response.errorBody()?.string().toString())
-        }
-
         throw Exception(response.errorBody()?.string())
     }
 
@@ -115,6 +111,10 @@ class VotingApiManager @Inject constructor(
 
         if (response.errorBody()?.string()?.contains("gas") == true) {
             throw VoteError.NotEnoughTokens(details = response.errorBody()!!.string())
+        }
+
+        if (response.code() == 403) {
+            throw VoteError.NotEnoughTokens(response.errorBody()?.string().toString())
         }
 
 
