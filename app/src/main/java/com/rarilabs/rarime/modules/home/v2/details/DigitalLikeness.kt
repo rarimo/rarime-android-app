@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.modules.home.v2.details
 
 import android.Manifest
+import android.graphics.Bitmap
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -78,7 +79,19 @@ fun DigitalLikeness(
             isHeaderEnabled = false,
             isWindowInsetsEnabled = false
         ) {
-            DigitalLikenessCamera()
+
+            var selectedBitmap: Bitmap? by remember { mutableStateOf(null) }
+
+            if (selectedBitmap != null) {
+                DigitalLikenessCamera {
+                    selectedBitmap = it
+                }
+            } else {
+
+            }
+
+
+
         }
     }
 
