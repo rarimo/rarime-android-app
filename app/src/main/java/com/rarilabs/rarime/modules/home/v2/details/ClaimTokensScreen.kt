@@ -7,6 +7,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -51,6 +52,7 @@ fun ClaimTokensScreen(
             R.string.rmo
         ),
         imageId = R.drawable.claim_rmo_image,
+        imageModifier = Modifier.padding(top = 160.dp, bottom = 80.dp),
         backgroundGradient = backgroundGradient
     )
 

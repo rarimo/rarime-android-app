@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -43,8 +44,10 @@ import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 data class CardProperties(
     val header: String,
     val subTitle: String,
+    val caption: String? = null,
     val icon: Int,
     val image: Int,
+    val imageModifier: Modifier = Modifier,
     val backgroundGradient: Brush,
 )
 
@@ -65,15 +68,13 @@ fun HomeCard(
     val imageKey = remember(id) { "image-$id" }
     val headerKey = remember(id) { "header-$id" }
     val subTitleKey = remember(id) { "subTitle-$id" }
+    val captionKey = remember(id) { "caption-$id" }
 
     with(sharedTransitionScope) {
-        // Make the card fill the entire screen
         Card(
             modifier = modifier
                 .fillMaxSize()
-                // Ensure the card always stays rounded during transitions.
                 .clip(RoundedCornerShape(32.dp))
-                // Smooth out size changes during transition.
                 .animateContentSize(
                     animationSpec = spring(dampingRatio = 0.8f, stiffness = 180f)
                 )
@@ -110,7 +111,7 @@ fun HomeCard(
                 Image(
                     painter = painterResource(cardProperties.image),
                     contentDescription = null,
-                    modifier = Modifier
+                    modifier = cardProperties.imageModifier
                         .matchParentSize()
                         .sharedElement(
                             rememberSharedContentState(imageKey),
@@ -171,7 +172,29 @@ fun HomeCard(
                                     text = cardProperties.subTitle,
                                 )
 
-                                footer()
+                                if (cardProperties.caption != null) {
+                                    Spacer(Modifier.height(12.dp))
+                                    Text(
+                                        modifier = Modifier
+                                            .sharedBounds(
+                                                rememberSharedContentState(captionKey),
+                                                animatedVisibilityScope = animatedContentScope
+                                            ),
+                                        color = RarimeTheme.colors.baseBlack.copy(alpha = 0.4f),
+                                        style = RarimeTheme.typography.body4,
+                                        text = cardProperties.caption,
+                                    )
+                                }
+
+                                Column(
+                                    modifier = Modifier
+                                        .padding(
+                                            start = 24.dp,
+                                            end = 24.dp,
+                                        )
+                                ) {
+                                    footer()
+                                }
                             }
                             AppIcon(
                                 id = R.drawable.ic_arrow_right_up_line,
@@ -203,7 +226,8 @@ private fun HomeCardPreview() {
                     Color(0xFFD5FEC8),
                     Color(0xFF80ed99)
                 )
-            )
+            ),
+            imageModifier = Modifier
         ),
         onCardClick = {},
     )
@@ -221,6 +245,4 @@ private fun HomeCardPreview() {
                 prop.footer()
             })
     }
-
-
 }

@@ -55,6 +55,7 @@ import com.rarilabs.rarime.api.points.models.PointsEventData
 import com.rarilabs.rarime.api.points.models.ReferralCodeStatuses
 import com.rarilabs.rarime.modules.home.v2.details.ClaimTokensScreen
 import com.rarilabs.rarime.modules.home.v2.details.CreateIdentityDetails
+import com.rarilabs.rarime.modules.home.v2.details.DigitalLikeness
 import com.rarilabs.rarime.modules.home.v2.details.InviteOthersScreen
 import com.rarilabs.rarime.modules.home.v2.details.UnforgettableWalletScreen
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
@@ -71,7 +72,7 @@ import com.rarilabs.rarime.util.Screen
 import kotlin.math.abs
 
 enum class CardType {
-    YOUR_IDENTITY, INVITE_OTHERS, CLAIM, UNFORGETTABLE_WALLET, FREEDOMTOOL, OTHER
+    DIGITAL_LIKENESS, YOUR_IDENTITY, INVITE_OTHERS, CLAIM, UNFORGETTABLE_WALLET, FREEDOMTOOL, OTHER
 }
 
 data class CardContent(
@@ -186,7 +187,7 @@ fun HomeScreenContent(
         setVisibilityOfBottomBar(selectedPageId == null)
     }
 
-    val cardContent = remember {
+    val cardContent =
         mutableListOf(
 //
 //            CardContent(
@@ -201,14 +202,34 @@ fun HomeScreenContent(
 //                        )
 //                    )
 //                ), onCardClick = {}, footer = {}),
+            CardContent(
+                type = CardType.DIGITAL_LIKENESS, properties = CardProperties(
+                    header = stringResource(R.string.digital_likeness),
+                    subTitle = stringResource(R.string.set_a_rule),
+                    caption = stringResource(R.string.first_human_ai_contract),
+                    icon = R.drawable.ic_rarimo,
+                    image = R.drawable.drawable_digital_likeness,
+                    imageModifier = Modifier
+                        .padding(bottom = 150.dp)
+                        .padding(horizontal = 25.dp),
+                    backgroundGradient = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFFF8F3FE), Color(0xFFEEE9FE), Color(
+                                0xFFF8F3FE
+                            )
+                        )
+                    ),
+                ), onCardClick = {}, footer = {}),
 
             CardContent(
                 type = CardType.YOUR_IDENTITY,
                 properties = CardProperties(
-                    header = "Your Device",
-                    subTitle = "Your Identity",
+                    header = stringResource(R.string.your_device),
+                    subTitle = stringResource(R.string.your_identity),
+                    caption = stringResource(R.string.nothing_leaves_this_device),
                     icon = R.drawable.ic_rarime,
                     image = R.drawable.drawable_hand_phone,
+                    imageModifier = Modifier.padding(bottom = 120.dp),
                     backgroundGradient = Brush.linearGradient(
                         colors = listOf(
                             Color(0xFF9AFE8A), Color(0xFF8AFECC)
@@ -221,10 +242,11 @@ fun HomeScreenContent(
             CardContent(
                 type = CardType.FREEDOMTOOL,
                 properties = CardProperties(
-                    header = "Freedomtool",
-                    subTitle = "Voting",
+                    header = stringResource(R.string.freedomtool),
+                    subTitle = stringResource(R.string.voting),
                     icon = R.drawable.ic_check_unframed,
                     image = R.drawable.freedomtool_bg,
+                    imageModifier = Modifier.padding(bottom = 120.dp),
                     backgroundGradient = Brush.linearGradient(
                         colors = listOf(
                             Color(0xFFD5FEC8), Color(0xFF80ed99)
@@ -253,7 +275,7 @@ fun HomeScreenContent(
                             Color(0xFFDFFCC4), Color(0xFFF4F3F0)
                         )
                     )
-                ), onCardClick = {}, footer = {})
+                ), onCardClick = {}, footer = {}),
         )
 
 
@@ -312,8 +334,7 @@ fun HomeScreenContent(
 //                )
 //            }
 //        }
-        //)
-    }
+    //)
 
     val pagerState = rememberPagerState(pageCount = { cardContent.size })
 
@@ -395,7 +416,6 @@ fun HomeScreenContent(
 
                             val absoluteOffset = abs(pageOffset).coerceIn(0f, 1f)
                             val targetScale = lerp(0.8f, 1f, 1f - absoluteOffset)
-
 
                             key(page) {
                                 val scale by animateFloatAsState(
@@ -501,9 +521,18 @@ fun HomeScreenContent(
                     )
                 }
 
-                CardType.OTHER -> {
-
+                CardType.DIGITAL_LIKENESS -> {
+                    DigitalLikeness(
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedContentScope = this@AnimatedContent,
+                        id = it,
+                        onBack = { selectedPageId = null },
+                        navigate = navigate,
+                        innerPaddings = innerPaddings
+                    )
                 }
+
+                CardType.OTHER -> {}
             }
         }
     }
