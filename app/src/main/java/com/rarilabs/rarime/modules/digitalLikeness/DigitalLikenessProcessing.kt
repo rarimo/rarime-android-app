@@ -1,10 +1,12 @@
 package com.rarilabs.rarime.modules.digitalLikeness
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,14 +32,16 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 import kotlinx.coroutines.delay
 
 
-private enum class ProcessingStatus {
-    DOWNLOADING, EXTRACTING_FEATURES, RUNNING_ZKML, OVERRIDING_ACCESS
+enum class ProcessingStatus(val value: String) {
+    DOWNLOADING("Downloading circuit data"),
+    EXTRACTING_FEATURES("Extracting image features"),
+    RUNNING_ZKML("Running ZKML"),
+    OVERRIDING_ACCESS("Overriding access"),
+    FINSH("")
 }
 
-private enum class ProcessingItemStatus {
-    FINISHED,
-    LOADING,
-    NOT_ACTIVE
+enum class ProcessingItemStatus {
+    FINISHED, LOADING, NOT_ACTIVE
 }
 
 @Composable
@@ -50,31 +54,37 @@ fun DigitalLikenessProcessing(modifier: Modifier = Modifier) {
     }
 
     LaunchedEffect(Unit) {
-        for (i in 0..100) {
-            currentProgress = i.toFloat() / 100f
-            delay(100)
-            if (i == 100) {
+        while (true) {
+            for (i in 0..100) {
+                currentProgress = i.toFloat() / 100f
+                delay(20)
 
-                if (currentStep == ProcessingStatus.OVERRIDING_ACCESS) {
-                    break
+                if (i == 100) {
+                    when (currentStep) {
+                        ProcessingStatus.DOWNLOADING -> {
+                            currentStep = ProcessingStatus.EXTRACTING_FEATURES
+                        }
+
+                        ProcessingStatus.EXTRACTING_FEATURES -> {
+                            currentStep = ProcessingStatus.RUNNING_ZKML
+                        }
+
+                        ProcessingStatus.RUNNING_ZKML -> {
+                            currentStep = ProcessingStatus.OVERRIDING_ACCESS
+                        }
+
+                        ProcessingStatus.OVERRIDING_ACCESS -> {
+                            currentStep = ProcessingStatus.FINSH
+                        }
+
+                        ProcessingStatus.FINSH -> {
+
+                        }
+                    }
                 }
-
-                when (currentStep) {
-                    ProcessingStatus.DOWNLOADING -> {
-                        currentStep = ProcessingStatus.EXTRACTING_FEATURES
-                    }
-
-                    ProcessingStatus.EXTRACTING_FEATURES -> {
-                        currentStep = ProcessingStatus.RUNNING_ZKML
-                    }
-
-                    ProcessingStatus.RUNNING_ZKML -> {
-                        currentStep = ProcessingStatus.OVERRIDING_ACCESS
-                    }
-
-                    ProcessingStatus.OVERRIDING_ACCESS -> {}
-                }
-
+            }
+            if (currentStep == ProcessingStatus.FINSH) {
+                break
             }
         }
     }
@@ -90,42 +100,57 @@ fun DigitalLikenessProcessing(modifier: Modifier = Modifier) {
             style = RarimeTheme.typography.h1
         )
 
+        Spacer(modifier = Modifier.height(76.dp))
+
 
         for (i in ProcessingStatus.entries) {
-            val isFinished = currentStep.ordinal > i.ordinal
 
-            val isProcessng = currentStep.ordinal == i.ordinal
+            if (i == ProcessingStatus.FINSH)
+                continue
 
-            val isNotStarted = currentStep.ordinal < i.ordinal
+            val isFinished =
+                i.ordinal < currentStep.ordinal      // step comes before current = done
+            val isProcessing = i.ordinal == currentStep.ordinal   // current step
+            val isNotStarted = i.ordinal > currentStep.ordinal
 
             val currentStatus = when {
                 isFinished -> ProcessingItemStatus.FINISHED
-                isProcessng -> ProcessingItemStatus.LOADING
+                isProcessing -> ProcessingItemStatus.LOADING
                 isNotStarted -> ProcessingItemStatus.NOT_ACTIVE
                 else -> throw IllegalStateException()
             }
 
 
-            ProcessItem()
+            when (currentStatus) {
+                ProcessingItemStatus.FINISHED -> ProcessItemFinished(title = i.value)
+                ProcessingItemStatus.LOADING -> ProcessItemLoading(
+                    title = i.value,
+                    progress = currentProgress
+                )
+
+                ProcessingItemStatus.NOT_ACTIVE -> ProcessItemNotActive(
+                    title = i.value
+                )
+            }
+
+            Spacer(Modifier.height(8.dp))
         }
 
     }
 }
 
 @Composable
-fun ProcessItem(
+fun ProcessItemLoading(
     modifier: Modifier = Modifier,
     title: String,
     progress: Float,
-    status: ProcessingItemStatus
 ) {
     Box(modifier = modifier.fillMaxWidth()) {
         Box(
             modifier = Modifier
                 .fillMaxWidth(
-                    if (isFinished) 1f else progress.coerceIn(
-                        0f,
-                        1f
+                    progress.coerceIn(
+                        0f, 1f
                     )
                 )
                 .height(62.dp)
@@ -137,6 +162,11 @@ fun ProcessItem(
         Row(
             modifier = Modifier
                 .clip(RoundedCornerShape(24.dp))
+                .border(
+                    1.dp,
+                    shape = RoundedCornerShape(24.dp),
+                    color = RarimeTheme.colors.componentPrimary
+                )
                 .fillMaxWidth()
                 .padding(20.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -147,14 +177,96 @@ fun ProcessItem(
                 style = RarimeTheme.typography.subtitle5,
                 color = RarimeTheme.colors.textPrimary
             )
-            if (isFinished) {
-                AppIcon(id = R.drawable.ic_check)
-            } else {
-                Text(
-                    text = "${(progress * 100).toInt()}%", style = RarimeTheme.typography.subtitle5,
-                    color = RarimeTheme.colors.textPrimary
+
+            Text(
+                text = "${(progress * 100).toInt()}%",
+                style = RarimeTheme.typography.subtitle5,
+                color = RarimeTheme.colors.textPrimary
+            )
+
+        }
+    }
+}
+
+@Composable
+fun ProcessItemFinished(
+    modifier: Modifier = Modifier,
+    title: String,
+) {
+    Box(modifier = modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(
+                    1f
                 )
-            }
+                .height(62.dp)
+                .clip(RoundedCornerShape(24.dp))
+                .background(RarimeTheme.colors.componentPrimary)
+                .align(Alignment.CenterStart)
+        )
+
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(24.dp))
+                .border(
+                    1.dp,
+                    shape = RoundedCornerShape(24.dp),
+                    color = RarimeTheme.colors.componentPrimary
+                )
+                .fillMaxWidth()
+                .padding(20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                title,
+                style = RarimeTheme.typography.subtitle5,
+                color = RarimeTheme.colors.textPrimary
+            )
+
+
+            AppIcon(id = R.drawable.ic_check)
+
+        }
+    }
+}
+
+
+@Composable
+fun ProcessItemNotActive(
+    modifier: Modifier = Modifier,
+    title: String,
+) {
+    Box(modifier = modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(
+                    0f
+                )
+                .height(62.dp)
+                .clip(RoundedCornerShape(24.dp))
+                .background(RarimeTheme.colors.componentPrimary)
+                .align(Alignment.CenterStart)
+        )
+
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(24.dp))
+                .fillMaxWidth()
+                .border(
+                    1.dp,
+                    shape = RoundedCornerShape(24.dp),
+                    color = RarimeTheme.colors.componentPrimary
+                )
+                .padding(20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                title,
+                style = RarimeTheme.typography.subtitle5,
+                color = RarimeTheme.colors.textSecondary
+            )
         }
     }
 }
@@ -162,18 +274,7 @@ fun ProcessItem(
 @Preview
 @Composable
 private fun DigitalLikenessProcessingPreview() {
-    DigitalLikenessProcessing()
-}
-
-@Preview
-@Composable
-private fun ProcessItemPreview() {
     Surface {
-        ProcessItem(
-            modifier = Modifier,
-            title = "Downloading circuit data",
-            progress = 0.1f,
-            isFinished = true
-        )
+        DigitalLikenessProcessing()
     }
 }

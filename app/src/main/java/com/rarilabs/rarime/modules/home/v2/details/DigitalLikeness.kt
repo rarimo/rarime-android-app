@@ -38,6 +38,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessCamera
+import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessProcessing
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppBottomSheet
@@ -65,6 +66,10 @@ fun DigitalLikeness(
 
     // whenever permission becomes granted AND we intended to show, open the sheet
     LaunchedEffect(cameraPermissionState.status.isGranted, showOnGrant) {
+        if (!cameraPermissionState.status.isGranted) {
+            cameraPermissionState.launchPermissionRequest()
+        }
+
         if (cameraPermissionState.status.isGranted && showOnGrant) {
             appSheetState.show()
             showOnGrant = false
@@ -82,14 +87,13 @@ fun DigitalLikeness(
 
             var selectedBitmap: Bitmap? by remember { mutableStateOf(null) }
 
-            if (selectedBitmap != null) {
+            if (selectedBitmap == null) {
                 DigitalLikenessCamera {
                     selectedBitmap = it
                 }
             } else {
-
+                DigitalLikenessProcessing()
             }
-
 
 
         }
