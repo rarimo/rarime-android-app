@@ -48,13 +48,14 @@ fun UnforgettableWalletScreen(
         animatedContentScope = animatedContentScope,
         onBack = onBack,
         innerPaddings = innerPaddings,
-        footer = {
+        body = {
             Text(
                 style = RarimeTheme.typography.body3,
                 color = RarimeTheme.colors.textSecondary,
                 text = "Say goodbye to seed phrases! ZK Face Wallet leverages cutting-edge zero-knowledge (ZK) cryptography and biometric authentication to give you a seamless, secure, and self-sovereign crypto experience."
             )
-
+        },
+        footer = {
             Spacer(modifier = Modifier.height(24.dp))
             TransparentButton(
                 size = ButtonSize.Large,
@@ -71,7 +72,7 @@ fun UnforgettableWalletScreen(
                 text = "49,421 other already joined",
             )
             Spacer(modifier = Modifier.height(16.dp))
-        },
+        }
     )
 }
 
@@ -80,7 +81,6 @@ fun UnforgettableWalletScreen(
 @Preview
 @Composable
 private fun UnforgettableWalletScreenPreview() {
-
     PrevireSharedAnimationProvider { state, anim ->
         UnforgettableWalletScreen(
             id = 0,
