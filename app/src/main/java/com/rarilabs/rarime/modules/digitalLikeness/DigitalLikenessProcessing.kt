@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
@@ -32,7 +32,7 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 import kotlinx.coroutines.delay
 
 
-enum class ProcessingStatus(val value: String) {
+enum class ProcessingStatus(val title: String) {
     DOWNLOADING("Downloading circuit data"),
     EXTRACTING_FEATURES("Extracting image features"),
     RUNNING_ZKML("Running ZKML"),
@@ -45,7 +45,7 @@ enum class ProcessingItemStatus {
 }
 
 @Composable
-fun DigitalLikenessProcessing(modifier: Modifier = Modifier) {
+fun DigitalLikenessProcessing(modifier: Modifier = Modifier, onNext: () -> Unit) {
 
     var currentStep: ProcessingStatus by remember { mutableStateOf(ProcessingStatus.DOWNLOADING) }
 
@@ -78,7 +78,7 @@ fun DigitalLikenessProcessing(modifier: Modifier = Modifier) {
                         }
 
                         ProcessingStatus.FINSH -> {
-
+                            onNext()
                         }
                     }
                 }
@@ -91,50 +91,60 @@ fun DigitalLikenessProcessing(modifier: Modifier = Modifier) {
 
     Column(
         Modifier
-            .fillMaxSize()
             .then(modifier)
     ) {
         Text(
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
             text = "Please wait",
             color = RarimeTheme.colors.textPrimary,
             style = RarimeTheme.typography.h1
         )
 
-        Spacer(modifier = Modifier.height(76.dp))
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            text = "",
+            color = RarimeTheme.colors.textPrimary,
+            style = RarimeTheme.typography.h1
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            for (i in ProcessingStatus.entries) {
+
+                if (i == ProcessingStatus.FINSH)
+                    continue
+
+                val isFinished =
+                    i.ordinal < currentStep.ordinal      // step comes before current = done
+                val isProcessing = i.ordinal == currentStep.ordinal   // current step
+                val isNotStarted = i.ordinal > currentStep.ordinal
+
+                val currentStatus = when {
+                    isFinished -> ProcessingItemStatus.FINISHED
+                    isProcessing -> ProcessingItemStatus.LOADING
+                    isNotStarted -> ProcessingItemStatus.NOT_ACTIVE
+                    else -> throw IllegalStateException()
+                }
 
 
-        for (i in ProcessingStatus.entries) {
+                when (currentStatus) {
+                    ProcessingItemStatus.FINISHED -> ProcessItemFinished(title = i.title)
+                    ProcessingItemStatus.LOADING -> ProcessItemLoading(
+                        title = i.title,
+                        progress = currentProgress
+                    )
 
-            if (i == ProcessingStatus.FINSH)
-                continue
-
-            val isFinished =
-                i.ordinal < currentStep.ordinal      // step comes before current = done
-            val isProcessing = i.ordinal == currentStep.ordinal   // current step
-            val isNotStarted = i.ordinal > currentStep.ordinal
-
-            val currentStatus = when {
-                isFinished -> ProcessingItemStatus.FINISHED
-                isProcessing -> ProcessingItemStatus.LOADING
-                isNotStarted -> ProcessingItemStatus.NOT_ACTIVE
-                else -> throw IllegalStateException()
+                    ProcessingItemStatus.NOT_ACTIVE -> ProcessItemNotActive(
+                        title = i.title
+                    )
+                }
             }
-
-
-            when (currentStatus) {
-                ProcessingItemStatus.FINISHED -> ProcessItemFinished(title = i.value)
-                ProcessingItemStatus.LOADING -> ProcessItemLoading(
-                    title = i.value,
-                    progress = currentProgress
-                )
-
-                ProcessingItemStatus.NOT_ACTIVE -> ProcessItemNotActive(
-                    title = i.value
-                )
-            }
-
-            Spacer(Modifier.height(8.dp))
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
 
     }
 }
@@ -145,7 +155,11 @@ fun ProcessItemLoading(
     title: String,
     progress: Float,
 ) {
-    Box(modifier = modifier.fillMaxWidth()) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier)
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth(
@@ -275,6 +289,8 @@ fun ProcessItemNotActive(
 @Composable
 private fun DigitalLikenessProcessingPreview() {
     Surface {
-        DigitalLikenessProcessing()
+        DigitalLikenessProcessing {
+
+        }
     }
 }

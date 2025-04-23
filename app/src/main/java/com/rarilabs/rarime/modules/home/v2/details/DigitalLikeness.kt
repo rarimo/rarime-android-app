@@ -5,10 +5,8 @@ import android.graphics.Bitmap
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,17 +18,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -80,7 +67,7 @@ fun DigitalLikeness(
     if (cameraPermissionState.status.isGranted) {
         AppBottomSheet(
             state = appSheetState,
-            fullScreen = true,
+            fullScreen = false,
             isHeaderEnabled = false,
             isWindowInsetsEnabled = false
         ) {
@@ -92,10 +79,10 @@ fun DigitalLikeness(
                     selectedBitmap = it
                 }
             } else {
-                DigitalLikenessProcessing()
+                DigitalLikenessProcessing(
+                    modifier = Modifier.padding(vertical = 16.dp),
+                    onNext = {})
             }
-
-
         }
     }
 
@@ -160,58 +147,4 @@ private fun CreateIdentityDetailsPreview() {
             onBack = {}
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun BlurExample2() {
-
-    val offsetInPx: Float
-    val widthInPx: Float
-    val heightInPx: Float
-
-    with(LocalDensity.current) {
-        offsetInPx = 150.dp.toPx()
-        widthInPx = 300.dp.toPx()
-        heightInPx = 200.dp.toPx()
-    }
-
-    val painter = painterResource(R.drawable.drawable_digital_likeness)
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .drawBehind {
-                with(painter) {
-                    draw(size)
-                }
-            }
-            .drawWithContent {
-                with(drawContext.canvas.nativeCanvas) {
-                    val checkPoint = saveLayer(null, null)
-
-                    // Destination
-                    drawContent()
-
-                    // Source
-                    drawRoundRect(
-                        topLeft = Offset(
-                            x = (size.width - widthInPx) / 2,
-                            y = offsetInPx
-                        ),
-                        size = Size(widthInPx, heightInPx),
-                        cornerRadius = CornerRadius(30f, 30f),
-                        color = Color.Transparent,
-                        blendMode = BlendMode.Clear
-                    )
-                    restoreToCount(checkPoint)
-                }
-            }
-            .blur(20.dp)
-            .drawBehind {
-                with(painter) {
-                    draw(size)
-                }
-            }
-    )
 }
