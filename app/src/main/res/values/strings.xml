@@ -471,7 +471,7 @@
     <string name="save">Save</string>
     <string name="use_my_likeness_and_pay_me">Use my likeness\nand pay me.</string>
     <string name="soon">Soon</string>
-    <string name="don_t_sell_my_face_data">Don’t sell my\nface data.</string>
-    <string name="ask_me_every_time">Ask me\nevery time.</string>
+    <string name="don_t_sell_my_face_data">Don’t use my\face at all</string>
+    <string name="ask_me_every_time">Ask me first</string>
 
 </resources>
