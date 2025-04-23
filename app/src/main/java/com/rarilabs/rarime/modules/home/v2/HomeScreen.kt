@@ -187,9 +187,7 @@ fun HomeScreenContent(
         setVisibilityOfBottomBar(selectedPageId == null)
     }
 
-    val gradient = RarimeTheme.colors.gradient7
-
-    val cardContent = remember {
+    val cardContent =
         mutableListOf(
 //
 //            CardContent(
@@ -204,14 +202,34 @@ fun HomeScreenContent(
 //                        )
 //                    )
 //                ), onCardClick = {}, footer = {}),
+            CardContent(
+                type = CardType.LIKENESS, properties = CardProperties(
+                    header = stringResource(R.string.digital_likeness),
+                    subTitle = stringResource(R.string.set_a_rule),
+                    caption = stringResource(R.string.first_human_ai_contract),
+                    icon = R.drawable.ic_rarimo,
+                    image = R.drawable.drawable_digital_likeness,
+                    imageModifier = Modifier
+                        .padding(bottom = 150.dp)
+                        .padding(horizontal = 25.dp),
+                    backgroundGradient = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFFF8F3FE), Color(0xFFEEE9FE), Color(
+                                0xFFF8F3FE
+                            )
+                        )
+                    ),
+                ), onCardClick = {}, footer = {}),
 
             CardContent(
                 type = CardType.YOUR_IDENTITY,
                 properties = CardProperties(
-                    header = "Your Device",
-                    subTitle = "Your Identity",
+                    header = stringResource(R.string.your_device),
+                    subTitle = stringResource(R.string.your_identity),
+                    caption = stringResource(R.string.nothing_leaves_this_device),
                     icon = R.drawable.ic_rarime,
                     image = R.drawable.drawable_hand_phone,
+                    imageModifier = Modifier.padding(bottom = 120.dp),
                     backgroundGradient = Brush.linearGradient(
                         colors = listOf(
                             Color(0xFF9AFE8A), Color(0xFF8AFECC)
@@ -224,10 +242,11 @@ fun HomeScreenContent(
             CardContent(
                 type = CardType.FREEDOMTOOL,
                 properties = CardProperties(
-                    header = "Freedomtool",
-                    subTitle = "Voting",
+                    header = stringResource(R.string.freedomtool),
+                    subTitle = stringResource(R.string.voting),
                     icon = R.drawable.ic_check_unframed,
                     image = R.drawable.freedomtool_bg,
+                    imageModifier = Modifier.padding(bottom = 120.dp),
                     backgroundGradient = Brush.linearGradient(
                         colors = listOf(
                             Color(0xFFD5FEC8), Color(0xFF80ed99)
@@ -257,23 +276,6 @@ fun HomeScreenContent(
                         )
                     )
                 ), onCardClick = {}, footer = {}),
-
-            CardContent(
-                type = CardType.LIKENESS, properties = CardProperties(
-                    header = if (currentPointsBalance != null && currentPointsBalance != 0L) context.getString(
-                        R.string.reserved
-                    ) else context.getString(
-                        R.string.upcoming
-                    ),
-                    subTitle = if (currentPointsBalance != null && currentPointsBalance != 0L) ("$currentPointsBalance " + context.getString(
-                        R.string.rmo
-                    )) else context.getString(
-                        R.string.rmo
-                    ),
-                    icon = R.drawable.ic_rarimo,
-                    image = R.drawable.drawable_digital_likeness,
-                    backgroundGradient = gradient
-                ), onCardClick = {}, footer = {})
         )
 
 
@@ -332,8 +334,7 @@ fun HomeScreenContent(
 //                )
 //            }
 //        }
-        //)
-    }
+    //)
 
     val pagerState = rememberPagerState(pageCount = { cardContent.size })
 
@@ -415,7 +416,6 @@ fun HomeScreenContent(
 
                             val absoluteOffset = abs(pageOffset).coerceIn(0f, 1f)
                             val targetScale = lerp(0.8f, 1f, 1f - absoluteOffset)
-
 
                             key(page) {
                                 val scale by animateFloatAsState(

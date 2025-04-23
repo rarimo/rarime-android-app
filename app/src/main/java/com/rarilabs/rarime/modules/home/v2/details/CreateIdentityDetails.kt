@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
@@ -36,15 +36,16 @@ fun CreateIdentityDetails(
 
     val backgroundGradient = RarimeTheme.colors.gradient1
 
-    val props = remember {
+    val props =
         DetailsProperties(
             id = id,
-            header = "Your Device",
-            subTitle = "Your Identity",
+            header = stringResource(R.string.your_device),
+            subTitle = stringResource(R.string.your_identity),
+            caption = stringResource(R.string.nothing_leaves_this_device),
             imageId = R.drawable.drawable_hand_phone,
             backgroundGradient = backgroundGradient
         )
-    }
+
 
     BaseDetailsScreen(
         properties = props,
@@ -52,26 +53,26 @@ fun CreateIdentityDetails(
         sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = animatedContentScope,
         onBack = onBack,
-        footer = {
+        body = {
             Column {
                 Text(
                     style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.baseBlack.copy(alpha = 0.5f),
-                    text = "This app is where you privately store your digital identities, enabling you to go incognito across the web."
+                    text = stringResource(R.string.create_identity_details_description)
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
-                TransparentButton(
-                    size = ButtonSize.Large,
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "Let’s Start",
-                    onClick = {
-                        navigate(Screen.Main.Identity.route)
-                    }
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
             }
+            TransparentButton(
+                size = ButtonSize.Large,
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.let_s_start),
+                onClick = {
+                    navigate(Screen.Main.Identity.route)
+                }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
         },
     )
 }
