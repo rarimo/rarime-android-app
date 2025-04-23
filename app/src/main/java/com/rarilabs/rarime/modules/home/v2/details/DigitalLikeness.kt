@@ -34,27 +34,31 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessCamera
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessProcessing
+import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessViewModel
+import com.rarilabs.rarime.modules.digitalLikeness.LikenessRule
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppBottomSheet
@@ -67,10 +71,6 @@ import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 const val ALREADY_SET_AMOUNT = "49,421"
 
-enum class LikenessRule {
-    ALWAYS_ALLOW, REJECT, ASK_EVERYTIME
-}
-
 data class RuleOptionData(
     val isSelected: Boolean,
     val type: LikenessRule,
@@ -79,8 +79,8 @@ data class RuleOptionData(
     val iconRes: Int
 )
 
-@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalPermissionsApi::class)
 @Composable
+@OptIn(ExperimentalSharedTransitionApi::class)
 fun DigitalLikeness(
     modifier: Modifier = Modifier,
     id: Int,
@@ -88,32 +88,57 @@ fun DigitalLikeness(
     innerPaddings: Map<ScreenInsets, Number>,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
-    navigate: (String) -> Unit = {}
+    navigate: (String) -> Unit = {},
+    viewModel: DigitalLikenessViewModel = hiltViewModel()
 ) {
+
+    val selectedRule by viewModel.selectedRule.collectAsState()
+    val isScanned by viewModel.isScanned.collectAsState()
+
+    DigitalLikenessContent(
+        modifier,
+        id,
+        onBack,
+        innerPaddings,
+        sharedTransitionScope,
+        animatedContentScope,
+        selectedRule,
+        viewModel::setSelectedOption
+    )
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalPermissionsApi::class)
+@Composable
+fun DigitalLikenessContent(
+    modifier: Modifier = Modifier,
+    id: Int,
+    onBack: () -> Unit,
+    innerPaddings: Map<ScreenInsets, Number>,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
+    selectedRule: LikenessRule,
+    setSelectedRule: (LikenessRule) -> Unit
+) {
+
+    val isPreview = LocalInspectionMode.current
     val appSheetState = rememberAppSheetState()
-    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
-    var showOnGrant by remember { mutableStateOf(false) }
+
+    val cameraPermissionState = if (!isPreview)
+        rememberPermissionState(Manifest.permission.CAMERA)
+    else null
 
     val ruleSheetState = rememberAppSheetState(false)
-    var selectedRule by rememberSaveable { mutableStateOf(LikenessRule.ALWAYS_ALLOW) }
 
-    LaunchedEffect(cameraPermissionState.status.isGranted, showOnGrant) {
-        if (!cameraPermissionState.status.isGranted) {
-            cameraPermissionState.launchPermissionRequest()
-        }
 
-        if (cameraPermissionState.status.isGranted && showOnGrant) {
-            appSheetState.show()
-            showOnGrant = false
-        }
-    }
-
-    if (cameraPermissionState.status.isGranted) {
+    if (isPreview ||
+        cameraPermissionState!!.status.isGranted
+    ) {
         AppBottomSheet(
             state = appSheetState,
-            fullScreen = false,
+            fullScreen = true,
+            scrimColor = Color.Transparent,
             isHeaderEnabled = false,
-            isWindowInsetsEnabled = false,
+            isWindowInsetsEnabled = true,
         ) {
 
             var selectedBitmap: Bitmap? by remember { mutableStateOf(null) }
@@ -128,10 +153,6 @@ fun DigitalLikeness(
                     onNext = {})
             }
         }
-    }
-
-    AppBottomSheet(state = ruleSheetState) {
-        // TODO: Add content
     }
 
 
@@ -194,10 +215,20 @@ fun DigitalLikeness(
                 RuleSheet(
                     state = ruleSheetState, selectedRule,
                     onRuleSelect = { newRule ->
-                        selectedRule = newRule
+
+                        setSelectedRule(newRule)
                     },
                     onSave = {
-                        // TODO: Add save logic
+                        ruleSheetState.hide()
+
+
+                        if (!isPreview) {
+                            if (!cameraPermissionState!!.status.isGranted) {
+                                cameraPermissionState.launchPermissionRequest()
+                            }
+                        }
+                        appSheetState.show()
+
                     }
                 )
             }
@@ -411,12 +442,22 @@ fun RuleSheetPreview() {
 @Composable
 private fun CreateIdentityDetailsPreview() {
 
+
+    var selectedRule by remember {
+        mutableStateOf(
+            LikenessRule.ALWAYS_ALLOW
+        )
+    }
+
     PrevireSharedAnimationProvider { state, anim ->
-        DigitalLikeness(
+        DigitalLikenessContent(
             id = 0,
             sharedTransitionScope = state,
             animatedContentScope = anim,
             innerPaddings = mapOf(ScreenInsets.TOP to 23, ScreenInsets.BOTTOM to 12),
-            onBack = {})
+            onBack = {},
+            selectedRule = selectedRule,
+            setSelectedRule = { selectedRule = it }
+        )
     }
 }

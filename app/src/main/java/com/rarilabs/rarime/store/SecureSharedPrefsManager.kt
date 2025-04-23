@@ -8,6 +8,7 @@ import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.manager.WalletAsset
+import com.rarilabs.rarime.modules.digitalLikeness.LikenessRule
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.util.data.ZkProof
@@ -87,4 +88,11 @@ interface SecureSharedPrefsManager {
 
     fun saveIsAlreadyReserved(isAlreadyReserved: Boolean)
     fun getIsAlreadyReserved(): Boolean
+
+    fun saveSelectedLikenessRule(likenessRule: LikenessRule)
+    fun getSelectedLikenessRule(): LikenessRule
+
+    //TODO change to actual data
+    fun saveIsLikenessScanned(flag: Boolean)
+    fun getIsLikenessScanned(): Boolean
 }
