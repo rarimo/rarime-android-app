@@ -84,7 +84,6 @@ fun InviteOthersScreen(
 @Preview
 @Composable
 private fun InviteOthersScreenPreview() {
-
     PrevireSharedAnimationProvider { state, anim ->
         InviteOthersScreen(
             id = 0,
