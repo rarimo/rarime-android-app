@@ -55,10 +55,21 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
-import com.rarilabs.rarime.ui.theme.RarimeTheme.colors
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 const val ALREADY_SET_AMOUNT = "49,421"
+
+enum class LikenessRule {
+    ALWAYS_ALLOW, REJECT, ASK_EVERYTIME
+}
+
+data class RuleOptionData(
+    val isSelected: Boolean,
+    val type: LikenessRule,
+    val title: String,
+    val badgeText: String? = null,
+    val iconRes: Int
+)
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -81,7 +92,7 @@ fun DigitalLikeness(
         subTitle = stringResource(R.string.set_a_rule),
         caption = stringResource(R.string.first_human_ai_contract),
         imageId = R.drawable.drawable_digital_likeness,
-        backgroundGradient = colors.gradient7,
+        backgroundGradient = RarimeTheme.colors.gradient7,
         imageModifier = Modifier
             .padding(horizontal = 52.dp)
             .padding(bottom = 40.dp)
@@ -97,19 +108,19 @@ fun DigitalLikeness(
             Column {
                 Text(
                     style = RarimeTheme.typography.body3,
-                    color = colors.baseBlack.copy(alpha = 0.5f),
+                    color = RarimeTheme.colors.baseBlack.copy(alpha = 0.5f),
                     text = stringResource(R.string.digital_likeness_description_1)
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 Text(
                     style = RarimeTheme.typography.body3,
-                    color = colors.baseBlack.copy(alpha = 0.5f),
+                    color = RarimeTheme.colors.baseBlack.copy(alpha = 0.5f),
                     text = stringResource(R.string.digital_likeness_description_2)
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 Text(
                     style = RarimeTheme.typography.body3,
-                    color = colors.baseBlack.copy(alpha = 0.5f),
+                    color = RarimeTheme.colors.baseBlack.copy(alpha = 0.5f),
                     text = stringResource(R.string.digital_likeness_description_3)
                 )
             }
@@ -127,7 +138,7 @@ fun DigitalLikeness(
                     Text(
                         stringResource(R.string.digital_likeness_registered_lbl),
                         style = RarimeTheme.typography.body4,
-                        color = colors.textSecondary
+                        color = RarimeTheme.colors.textSecondary
                     )
                 }
                 RuleSheet(
@@ -195,7 +206,7 @@ private fun RuleSheet(
                     Text(stringResource(R.string.set_the_rule), style = RarimeTheme.typography.h2)
                     // TODO: Recheck the text below
                     Text(
-                        "All of those options are demo and....", color = colors.textSecondary
+                        "All of those options are demo and....", color = RarimeTheme.colors.textSecondary
                     )
                 }
                 IconButton(onClick = { state.hide() }) {
@@ -233,33 +244,21 @@ private fun RuleSheet(
     }
 }
 
-enum class LikenessRule {
-    ALWAYS_ALLOW, REJECT, ASK_EVERYTIME
-}
-
-data class RuleOptionData(
-    val isSelected: Boolean,
-    val type: LikenessRule,
-    val title: String,
-    val badgeText: String? = null,
-    val iconRes: Int
-)
-
 @Composable
 fun RuleOption(
     item: RuleOptionData, onClick: (LikenessRule) -> Unit, modifier: Modifier = Modifier
 ) {
     val iconBackground by animateColorAsState(
-        targetValue = if (item.isSelected) colors.textPrimary else colors.componentPrimary,
+        targetValue = if (item.isSelected) RarimeTheme.colors.textPrimary else RarimeTheme.colors.componentPrimary,
         animationSpec = tween(durationMillis = 300)
     )
     val iconTint by animateColorAsState(
-        targetValue = if (item.isSelected) colors.invertedLight else colors.textPrimary,
+        targetValue = if (item.isSelected) RarimeTheme.colors.invertedLight else RarimeTheme.colors.textPrimary,
         animationSpec = tween(durationMillis = 300)
     )
 
     val cardBorderColor by animateColorAsState(
-        targetValue = if (item.isSelected) colors.textPrimary else (colors.componentPrimary.copy(
+        targetValue = if (item.isSelected) RarimeTheme.colors.textPrimary else (RarimeTheme.colors.componentPrimary.copy(
             alpha = 0.05f
         )),
         animationSpec = tween(durationMillis = 500)
@@ -277,7 +276,7 @@ fun RuleOption(
                 onClick = { onClick(item.type) }
             ),
         colors = CardDefaults.cardColors(
-            containerColor = colors.backgroundSurface1
+            containerColor = RarimeTheme.colors.backgroundSurface1
         ),
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(1.dp, cardBorderColor),
@@ -312,10 +311,10 @@ fun RuleOption(
                         text = text.uppercase(),
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
-                        color = colors.infoDarker,
+                        color = RarimeTheme.colors.infoDarker,
                         modifier = Modifier
                             .background(
-                                color = colors.infoLighter, shape = RoundedCornerShape(8.dp)
+                                color = RarimeTheme.colors.infoLighter, shape = RoundedCornerShape(8.dp)
                             )
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     )
