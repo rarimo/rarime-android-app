@@ -70,8 +70,10 @@ fun ExtIntQueryProofHandler(
     val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
     val sheetState = rememberAppSheetState(false)
 
-    LaunchedEffect(isLoaded) {
-        sheetState.show()
+    if (isLoaded) {
+        LaunchedEffect(Unit) {
+            sheetState.show()
+        }
     }
 
     fun onSuccessHandler() {
