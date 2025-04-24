@@ -394,17 +394,11 @@ class APIModule {
         dataStoreManager: SecureSharedPrefsManager,
         identityManager: IdentityManager,
         pointsManager: PointsManager,
-        cosmosManager: CosmosManager,
-        erc20Manager: Erc20Manager,
-        stableCoinContractManager: StableCoinContractManager
     ): WalletManager {
         return WalletManager(
             dataStoreManager = dataStoreManager,
             identityManager = identityManager,
             pointsManager = pointsManager,
-            cosmosManager = cosmosManager,
-            erc20Manager = erc20Manager,
-            stableCoinContractManager = stableCoinContractManager
         )
     }
 

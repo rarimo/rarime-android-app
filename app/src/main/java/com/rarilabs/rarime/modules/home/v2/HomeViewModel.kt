@@ -6,11 +6,10 @@ import com.rarilabs.rarime.api.airdrop.AirDropManager
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.points.models.BaseEvents
 import com.rarilabs.rarime.api.points.models.PointsEventData
-import com.rarilabs.rarime.api.registration.RegistrationManager
+import com.rarilabs.rarime.manager.LikenessManager
 import com.rarilabs.rarime.manager.NotificationManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.WalletManager
-import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -29,8 +28,7 @@ class HomeViewModel @Inject constructor(
     private val walletManager: WalletManager,
     private val pointsManager: PointsManager,
     private val notificationManager: NotificationManager,
-    private val registrationManager: RegistrationManager,
-    private val sharedPrefsManager: SecureSharedPrefsManager
+    private val likenessManager: LikenessManager
 ) : AndroidViewModel(app) {
 
     val pointsToken = walletManager.pointsToken
@@ -43,6 +41,9 @@ class HomeViewModel @Inject constructor(
 
     val pointsEventData: StateFlow<PointsEventData?>
         get() = _pointsEventData.asStateFlow()
+
+    val isScanned = likenessManager.isScanned
+    val selectedRule = likenessManager.selectedRule
 
 
     suspend fun initHomeData() = withContext(Dispatchers.IO) {

@@ -78,12 +78,13 @@ fun DigitalLikenessProcessing(modifier: Modifier = Modifier, onNext: () -> Unit)
                         }
 
                         ProcessingStatus.FINSH -> {
-                            onNext()
+
                         }
                     }
                 }
             }
             if (currentStep == ProcessingStatus.FINSH) {
+                onNext()
                 break
             }
         }
@@ -128,7 +129,6 @@ fun DigitalLikenessProcessing(modifier: Modifier = Modifier, onNext: () -> Unit)
                     isNotStarted -> ProcessingItemStatus.NOT_ACTIVE
                     else -> throw IllegalStateException()
                 }
-
 
                 when (currentStatus) {
                     ProcessingItemStatus.FINISHED -> ProcessItemFinished(title = i.title)

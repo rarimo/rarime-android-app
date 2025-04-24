@@ -2,6 +2,7 @@ package com.rarilabs.rarime.modules.home.v2.details
 
 import android.Manifest
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -55,16 +56,17 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.manager.LikenessRule
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessCamera
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessProcessing
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessViewModel
-import com.rarilabs.rarime.modules.digitalLikeness.LikenessRule
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppSheetState
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
+import com.rarilabs.rarime.ui.components.PrimaryTextButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
@@ -93,7 +95,7 @@ fun DigitalLikeness(
 ) {
 
     val selectedRule by viewModel.selectedRule.collectAsState()
-    val isScanned by viewModel.isScanned.collectAsState()
+    val isScanned by viewModel.isLivenessScanned.collectAsState()
 
     DigitalLikenessContent(
         modifier,
@@ -103,7 +105,9 @@ fun DigitalLikeness(
         sharedTransitionScope,
         animatedContentScope,
         selectedRule,
-        viewModel::setSelectedOption
+        viewModel.setSelectedRule,
+        isScanned,
+        viewModel.setIsLivenessScanned
     )
 }
 
@@ -117,22 +121,22 @@ fun DigitalLikenessContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
     selectedRule: LikenessRule,
-    setSelectedRule: (LikenessRule) -> Unit
+    setSelectedRule: (LikenessRule) -> Unit,
+    isScanned: Boolean,
+    setIsScanned: (Boolean) -> Unit
 ) {
 
     val isPreview = LocalInspectionMode.current
     val appSheetState = rememberAppSheetState()
 
-    val cameraPermissionState = if (!isPreview)
-        rememberPermissionState(Manifest.permission.CAMERA)
-    else null
 
+    val cameraPermissionState = if (!isPreview) rememberPermissionState(Manifest.permission.CAMERA)
+    else null
     val ruleSheetState = rememberAppSheetState(false)
 
 
-    if (isPreview ||
-        cameraPermissionState!!.status.isGranted
-    ) {
+
+    if (isPreview || cameraPermissionState!!.status.isGranted) {
         AppBottomSheet(
             state = appSheetState,
             fullScreen = true,
@@ -140,7 +144,6 @@ fun DigitalLikenessContent(
             isHeaderEnabled = false,
             isWindowInsetsEnabled = true,
         ) {
-
             var selectedBitmap: Bitmap? by remember { mutableStateOf(null) }
 
             if (selectedBitmap == null) {
@@ -150,24 +153,33 @@ fun DigitalLikenessContent(
             } else {
                 DigitalLikenessProcessing(
                     modifier = Modifier.padding(vertical = 16.dp),
-                    onNext = {})
+                    onNext = { setIsScanned(true); appSheetState.hide() })
             }
         }
     }
 
+    RuleSheet(state = ruleSheetState, selectedRule = selectedRule, onRuleSelect = { newRule ->
+        setSelectedRule(newRule)
+    }, onSave = {
+        ruleSheetState.hide()
+        if (!isScanned) {
+            appSheetState.show()
+        }
 
-    val props =
-        DetailsProperties(
-            id = id,
-            header = stringResource(R.string.digital_likeness),
-            subTitle = stringResource(R.string.set_a_rule),
-            caption = stringResource(R.string.first_human_ai_contract),
-            imageId = R.drawable.drawable_digital_likeness,
-            backgroundGradient = RarimeTheme.colors.gradient7,
-            imageModifier = Modifier
-                .padding(horizontal = 52.dp)
-                .padding(bottom = 40.dp)
-        )
+    })
+
+
+    val props = DetailsProperties(
+        id = id,
+        header = stringResource(R.string.digital_likeness),
+        subTitle = stringResource(R.string.set_a_rule),
+        caption = if (isScanned) null else stringResource(R.string.first_human_ai_contract),
+        imageId = R.drawable.drawable_digital_likeness,
+        backgroundGradient = RarimeTheme.colors.gradient7,
+        imageModifier = Modifier
+            .padding(horizontal = 52.dp)
+            .padding(bottom = 40.dp)
+    )
 
     BaseDetailsScreen(
         properties = props,
@@ -175,6 +187,58 @@ fun DigitalLikenessContent(
         sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = animatedContentScope,
         onBack = onBack,
+        header = if (isScanned) { headerKey, subTitleKey ->
+            with(sharedTransitionScope) {
+                Text(
+                    style = RarimeTheme.typography.h5,
+                    color = RarimeTheme.colors.baseBlack,
+                    text = "My Rules:",
+                    modifier = Modifier.sharedBounds(
+                        rememberSharedContentState(
+                            headerKey
+                        ), animatedVisibilityScope = animatedContentScope
+                    )
+                )
+
+                val selectedRuleText =
+                    when (selectedRule) {
+                        LikenessRule.ALWAYS_ALLOW -> {
+                            stringResource(R.string.use_my_likeness_and_pay_me)
+                        }
+
+                        LikenessRule.REJECT -> {
+                            stringResource(R.string.don_t_sell_my_face_data)
+                        }
+
+                        LikenessRule.ASK_EVERYTIME -> {
+                            stringResource(R.string.ask_me_every_time)
+                        }
+                    }
+
+
+
+                PrimaryTextButton(
+                    modifier = Modifier.skipToLookaheadSize(),
+                    rightIcon = R.drawable.ic_carret_down,
+                    onClick = { ruleSheetState.show(); Log.i("XD", "HERE") },
+                    content = {
+                        Text(
+                            style = RarimeTheme.typography.additional1,
+                            text = selectedRuleText,
+                            color = RarimeTheme.colors.baseBlack.copy(alpha = 0.4f),
+                            modifier = Modifier
+                                .sharedBounds(
+                                    rememberSharedContentState(
+                                        subTitleKey
+                                    ), animatedVisibilityScope = animatedContentScope
+                                )
+                                .skipToLookaheadSize(),
+                        )
+                    })
+            }
+        } else {
+            null
+        },
         body = {
             Column {
                 Text(
@@ -196,41 +260,36 @@ fun DigitalLikenessContent(
                 )
             }
         },
-        footer = {
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(24.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(ALREADY_SET_AMOUNT, style = RarimeTheme.typography.h4)
-                    Text(
-                        stringResource(R.string.digital_likeness_registered_lbl),
-                        style = RarimeTheme.typography.body4,
-                        color = RarimeTheme.colors.textSecondary
-                    )
-                }
-                RuleSheet(
-                    state = ruleSheetState, selectedRule,
-                    onRuleSelect = { newRule ->
-
-                        setSelectedRule(newRule)
-                    },
-                    onSave = {
-                        ruleSheetState.hide()
-
-
-                        if (!isPreview) {
-                            if (!cameraPermissionState!!.status.isGranted) {
-                                cameraPermissionState.launchPermissionRequest()
-                            }
-                        }
-                        appSheetState.show()
+        footer = if (isScanned) null else {
+            {
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(24.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(ALREADY_SET_AMOUNT, style = RarimeTheme.typography.h4)
+                        Text(
+                            stringResource(R.string.digital_likeness_registered_lbl),
+                            style = RarimeTheme.typography.body4,
+                            color = RarimeTheme.colors.textSecondary
+                        )
 
                     }
-                )
+
+                    PrimaryButton(
+                        onClick = {
+                            if (cameraPermissionState!!.status.isGranted) {
+                                ruleSheetState.show()
+                            } else {
+                                cameraPermissionState.launchPermissionRequest()
+                            }
+
+                        }, text = stringResource(R.string.set_a_rule), size = ButtonSize.Large
+                    )
+                }
             }
         },
     )
@@ -266,11 +325,7 @@ private fun RuleSheet(
         )
     )
 
-    PrimaryButton(
-        onClick = { state.show() },
-        text = stringResource(R.string.set_a_rule),
-        size = ButtonSize.Large
-    )
+
     AppBottomSheet(modifier, state, isHeaderEnabled = false) {
         Column(modifier = Modifier.padding(horizontal = 20.dp)) {
             Row(
@@ -309,8 +364,7 @@ private fun RuleSheet(
             ) {
                 items(rules.size) { index ->
                     RuleOption(
-                        item = rules[index],
-                        onClick = { likenessRule ->
+                        item = rules[index], onClick = { likenessRule ->
                             onRuleSelect(likenessRule)
                         })
                 }
@@ -342,8 +396,7 @@ fun RuleOption(
     val cardBorderColor by animateColorAsState(
         targetValue = if (item.isSelected) RarimeTheme.colors.textPrimary else (RarimeTheme.colors.componentPrimary.copy(
             alpha = 0.05f
-        )),
-        animationSpec = tween(durationMillis = 500)
+        )), animationSpec = tween(durationMillis = 500)
     )
 
     Card(
@@ -355,8 +408,7 @@ fun RuleOption(
                 indication = rememberRipple(
                     bounded = true,
                 ),
-                onClick = { onClick(item.type) }
-            ),
+                onClick = { onClick(item.type) }),
         colors = CardDefaults.cardColors(
             containerColor = RarimeTheme.colors.backgroundSurface1
         ),
@@ -421,9 +473,7 @@ fun RuleOptionPreview() {
             title = "Use my likeness\nand pay me.",
             badgeText = "Soon",
             iconRes = R.drawable.money_dollar_circle_line
-        ),
-        onClick = {}
-    )
+        ), onClick = {})
 }
 
 @Preview
@@ -431,10 +481,10 @@ fun RuleOptionPreview() {
 fun RuleSheetPreview() {
     val ruleSheetState = rememberAppSheetState(false)
     RuleSheet(
-        ruleSheetState, selectedRule = LikenessRule.ALWAYS_ALLOW,
+        ruleSheetState,
+        selectedRule = LikenessRule.ALWAYS_ALLOW,
         onRuleSelect = {},
-        onSave = { ruleSheetState.hide() }
-    )
+        onSave = { ruleSheetState.hide() })
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -449,6 +499,12 @@ private fun CreateIdentityDetailsPreview() {
         )
     }
 
+    var isScanned by remember {
+        mutableStateOf(
+            true
+        )
+    }
+
     PrevireSharedAnimationProvider { state, anim ->
         DigitalLikenessContent(
             id = 0,
@@ -457,7 +513,8 @@ private fun CreateIdentityDetailsPreview() {
             innerPaddings = mapOf(ScreenInsets.TOP to 23, ScreenInsets.BOTTOM to 12),
             onBack = {},
             selectedRule = selectedRule,
-            setSelectedRule = { selectedRule = it }
-        )
+            setSelectedRule = { selectedRule = it },
+            isScanned = isScanned,
+            setIsScanned = { isScanned = it })
     }
 }
