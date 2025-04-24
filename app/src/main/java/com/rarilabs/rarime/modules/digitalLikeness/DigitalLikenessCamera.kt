@@ -1,6 +1,14 @@
 package com.rarilabs.rarime.modules.digitalLikeness
 
+
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
+import android.graphics.RectF
 import androidx.camera.core.CameraSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -31,7 +39,6 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.platform.LocalContext
@@ -148,7 +155,17 @@ fun DigitalLikenessCamera(
                     PrimaryButton(
                         text = "Continue",
                         onClick = {
-                            onNext(selectedBitmap!!)
+
+                            val density = context.resources.displayMetrics.density
+                            val horizontalPaddingPx = 50f * density
+                            val topPaddingPx = 200f * density
+                            val bitmap = cropBitmapToOval(
+                                src = selectedBitmap!!,
+                                aspectRatio = 395f / 290f,
+                                horizontalPaddingPx = horizontalPaddingPx,
+                                topPaddingPx = topPaddingPx
+                            )
+                            onNext(bitmap)
                         }
                     )
                 }
@@ -171,7 +188,8 @@ private fun CameraMask(
         val ovalH = ovalW * aspectRatio
         val topPx = topPadding.toPx()
 
-        val path = Path().apply {
+
+        val path = androidx.compose.ui.graphics.Path().apply {
             addOval(
                 Rect(offset = Offset(hpPx, topPx), size = Size(ovalW, ovalH))
             )
@@ -181,6 +199,47 @@ private fun CameraMask(
             drawRect(color = Color.Black.copy(alpha = 0.6f), size = size)
         }
     }
+}
+
+
+@SuppressLint("UseKtx")
+fun cropBitmapToOval(
+    src: Bitmap,
+    aspectRatio: Float = 395f / 290f,
+    horizontalPaddingPx: Float = 50f,
+    topPaddingPx: Float = 200f
+): Bitmap {
+    val w = src.width
+    val h = src.height
+
+    // 1) prepare an output bitmap that supports transparency
+    val output = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(output)
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+    // 2) draw the source image into it
+    canvas.drawBitmap(src, 0f, 0f, paint)
+
+    // 3) build the oval mask path
+    val ovalW = w - 2f * horizontalPaddingPx
+    val ovalH = ovalW * aspectRatio
+    val rectF = RectF(
+        horizontalPaddingPx,
+        topPaddingPx,
+        horizontalPaddingPx + ovalW,
+        topPaddingPx + ovalH
+    )
+    val maskPath = Path().apply {
+        addOval(rectF, Path.Direction.CW)
+    }
+
+    // 4) apply DST_IN: keeps only the parts of the drawn bitmap
+    //    that overlap with the opaque pixels of maskPath.
+    paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
+    canvas.drawPath(maskPath, paint)
+    paint.xfermode = null
+
+    return output
 }
 
 @Preview

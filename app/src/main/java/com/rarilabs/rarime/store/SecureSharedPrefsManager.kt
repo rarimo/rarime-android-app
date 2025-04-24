@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.store
 
+import android.graphics.Bitmap
 import com.rarilabs.rarime.api.registration.models.LightRegistrationData
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.data.enums.AppLanguage
@@ -95,4 +96,7 @@ interface SecureSharedPrefsManager {
     //TODO change to actual data
     fun saveIsLikenessScanned(flag: Boolean)
     fun getIsLikenessScanned(): Boolean
+
+    fun saveLikenessFace(face: Bitmap)
+    fun getLikenessFace(): Bitmap?
 }

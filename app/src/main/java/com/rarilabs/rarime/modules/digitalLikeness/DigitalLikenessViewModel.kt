@@ -19,4 +19,7 @@ class DigitalLikenessViewModel @Inject constructor(
     val setSelectedRule = likenessManager::setSelectedRule
 
     val setIsLivenessScanned = likenessManager::setIsLikenessScanned
+
+    val faceImage = likenessManager.faceImage
+    val saveFaceImage = likenessManager::saveFaceImage
 }

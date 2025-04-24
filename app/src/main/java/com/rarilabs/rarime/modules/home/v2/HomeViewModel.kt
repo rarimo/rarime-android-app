@@ -45,6 +45,8 @@ class HomeViewModel @Inject constructor(
     val isScanned = likenessManager.isScanned
     val selectedRule = likenessManager.selectedRule
 
+    val faceImage = likenessManager.faceImage
+
 
     suspend fun initHomeData() = withContext(Dispatchers.IO) {
         coroutineScope {

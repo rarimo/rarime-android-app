@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.manager
 
+import android.graphics.Bitmap
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,10 +21,14 @@ class LikenessManager @Inject constructor(
     val sharedPrefsManager: SecureSharedPrefsManager
 ) {
 
-    private val _selectedRule =
-        MutableStateFlow<LikenessRule>(sharedPrefsManager.getSelectedLikenessRule())
+    private val _selectedRule = MutableStateFlow(sharedPrefsManager.getSelectedLikenessRule())
 
-    private val _isScanned = MutableStateFlow<Boolean>(sharedPrefsManager.getIsLikenessScanned())
+    private val _isScanned = MutableStateFlow(sharedPrefsManager.getIsLikenessScanned())
+
+
+    private val _faceImage: MutableStateFlow<Bitmap?> = MutableStateFlow(loadFaceImage())
+
+    val faceImage: StateFlow<Bitmap?> = _faceImage.asStateFlow()
 
     val isScanned: StateFlow<Boolean>
         get() = _isScanned.asStateFlow()
@@ -36,8 +41,17 @@ class LikenessManager @Inject constructor(
         _selectedRule.value = selectedRule
     }
 
+    fun saveFaceImage(face: Bitmap) {
+        sharedPrefsManager.saveLikenessFace(face)
+        _faceImage.value = face
+    }
+
+    private fun loadFaceImage(): Bitmap? = sharedPrefsManager.getLikenessFace()
+
+
     fun setIsLikenessScanned(isScanned: Boolean) {
         sharedPrefsManager.saveIsLikenessScanned(isScanned)
         _isScanned.value = isScanned
     }
+
 }
