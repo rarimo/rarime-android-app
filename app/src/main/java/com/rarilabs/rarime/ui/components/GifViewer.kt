@@ -16,6 +16,7 @@ import coil.size.Size
 @Composable
 fun GifViewer(
     modifier: Modifier = Modifier,
+    contentScale: ContentScale = ContentScale.FillBounds,
     gifId: Int,
 ) {
     val context = LocalContext.current
@@ -36,7 +37,7 @@ fun GifViewer(
             ImageRequest.Builder(context).data(data = gifId).apply(block = { size(Size.ORIGINAL) })
                 .build(),
             imageLoader = imageLoader,
-            contentScale = ContentScale.FillBounds,
+            contentScale = contentScale,
         ),
         contentDescription = null
     )
