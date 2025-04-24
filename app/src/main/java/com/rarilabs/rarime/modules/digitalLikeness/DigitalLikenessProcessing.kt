@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,11 +24,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.AppIcon
+import com.rarilabs.rarime.ui.components.GifViewer
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import kotlinx.coroutines.delay
 
@@ -92,6 +95,7 @@ fun DigitalLikenessProcessing(modifier: Modifier = Modifier, onNext: () -> Unit)
 
     Column(
         Modifier
+            .background(RarimeTheme.colors.backgroundPrimary)
             .then(modifier)
     ) {
         Text(
@@ -100,6 +104,14 @@ fun DigitalLikenessProcessing(modifier: Modifier = Modifier, onNext: () -> Unit)
             text = "Please wait",
             color = RarimeTheme.colors.textPrimary,
             style = RarimeTheme.typography.h1
+        )
+
+        GifViewer(
+            gifId = R.raw.likeness_processing,
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f),
+            contentScale = ContentScale.Crop
         )
 
         Text(
@@ -215,7 +227,7 @@ fun ProcessItemFinished(
                 )
                 .height(62.dp)
                 .clip(RoundedCornerShape(24.dp))
-                .background(RarimeTheme.colors.componentPrimary)
+                .background(RarimeTheme.colors.successLighter)
                 .align(Alignment.CenterStart)
         )
 
@@ -235,11 +247,11 @@ fun ProcessItemFinished(
             Text(
                 title,
                 style = RarimeTheme.typography.subtitle5,
-                color = RarimeTheme.colors.textPrimary
+                color = RarimeTheme.colors.successDark
             )
 
 
-            AppIcon(id = R.drawable.ic_check)
+            AppIcon(id = R.drawable.ic_check, tint = RarimeTheme.colors.successDarker)
 
         }
     }

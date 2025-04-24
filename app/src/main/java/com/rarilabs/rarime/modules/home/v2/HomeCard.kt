@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
@@ -43,7 +44,9 @@ import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 data class CardProperties(
     val header: String,
+    val headerStyle: TextStyle? = null,
     val subTitle: String,
+    val subTitleStyle: TextStyle? = null,
     val caption: String? = null,
     val icon: Int,
     val image: Int,
@@ -90,9 +93,7 @@ fun HomeCard(
                         animationSpec = tween(durationMillis = 400, easing = FastOutLinearInEasing)
                     ),
                     resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
-                ),
-            onClick = onCardClick,
-            shape = RoundedCornerShape(32.dp)
+                ), onClick = onCardClick, shape = RoundedCornerShape(32.dp)
         ) {
             Box(
                 modifier = Modifier
@@ -154,8 +155,7 @@ fun HomeCard(
                         Row(
                             modifier = Modifier
                                 .padding(bottom = 24.dp, start = 24.dp, end = 24.dp)
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                                .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Column(modifier = Modifier.weight(1f, fill = false)) {
 
@@ -163,24 +163,24 @@ fun HomeCard(
                                     header(headerKey, subTitleKey)
                                 } else {
                                     Text(
-                                        modifier = Modifier
-                                            .sharedBounds(
-                                                rememberSharedContentState(headerKey),
-                                                animatedVisibilityScope = animatedContentScope
-                                            ),
-                                        color = RarimeTheme.colors.baseBlack,
-                                        style = RarimeTheme.typography.h2,
+                                        modifier = Modifier.sharedBounds(
+                                            rememberSharedContentState(headerKey),
+                                            animatedVisibilityScope = animatedContentScope
+                                        ),
+                                        color = RarimeTheme.colors.textPrimary,
+                                        style = cardProperties.headerStyle
+                                            ?: RarimeTheme.typography.h2,
                                         text = cardProperties.header
                                     )
 
                                     Text(
-                                        modifier = Modifier
-                                            .sharedBounds(
-                                                rememberSharedContentState(subTitleKey),
-                                                animatedVisibilityScope = animatedContentScope
-                                            ),
+                                        modifier = Modifier.sharedBounds(
+                                            rememberSharedContentState(subTitleKey),
+                                            animatedVisibilityScope = animatedContentScope
+                                        ),
                                         color = RarimeTheme.colors.baseBlack.copy(alpha = 0.4f),
-                                        style = RarimeTheme.typography.additional2,
+                                        style = cardProperties.subTitleStyle
+                                            ?: RarimeTheme.typography.additional2,
                                         text = cardProperties.subTitle,
                                     )
                                 }
@@ -189,11 +189,10 @@ fun HomeCard(
                                 if (cardProperties.caption != null) {
                                     Spacer(Modifier.height(12.dp))
                                     Text(
-                                        modifier = Modifier
-                                            .sharedBounds(
-                                                rememberSharedContentState(captionKey),
-                                                animatedVisibilityScope = animatedContentScope
-                                            ),
+                                        modifier = Modifier.sharedBounds(
+                                            rememberSharedContentState(captionKey),
+                                            animatedVisibilityScope = animatedContentScope
+                                        ),
                                         color = RarimeTheme.colors.baseBlack.copy(alpha = 0.4f),
                                         style = RarimeTheme.typography.body4,
                                         text = cardProperties.caption,
@@ -201,11 +200,10 @@ fun HomeCard(
                                 }
 
                                 Column(
-                                    modifier = Modifier
-                                        .padding(
-                                            start = 24.dp,
-                                            end = 24.dp,
-                                        )
+                                    modifier = Modifier.padding(
+                                        start = 24.dp,
+                                        end = 24.dp,
+                                    )
                                 ) {
                                     footer()
                                 }
@@ -237,8 +235,7 @@ private fun HomeCardPreview() {
             image = R.drawable.freedomtool_bg,
             backgroundGradient = Brush.linearGradient(
                 colors = listOf(
-                    Color(0xFFD5FEC8),
-                    Color(0xFF80ed99)
+                    Color(0xFFD5FEC8), Color(0xFF80ed99)
                 )
             ),
             imageModifier = Modifier

@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -46,6 +47,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -141,16 +144,12 @@ fun DigitalLikenessContent(
     saveFaceImage: (Bitmap) -> Unit,
     faceImage: Bitmap?
 ) {
-
     val isPreview = LocalInspectionMode.current
     val appSheetState = rememberAppSheetState()
-
 
     val cameraPermissionState = if (!isPreview) rememberPermissionState(Manifest.permission.CAMERA)
     else null
     val ruleSheetState = rememberAppSheetState(false)
-
-
 
     if (isPreview || cameraPermissionState!!.status.isGranted) {
         AppBottomSheet(
@@ -190,6 +189,16 @@ fun DigitalLikenessContent(
         id = id,
         header = stringResource(R.string.digital_likeness),
         subTitle = stringResource(R.string.set_a_rule),
+        subTitleStyle = RarimeTheme.typography.additional1.copy(
+            brush = Brush.linearGradient(
+                colors = listOf(
+                    Color(0xFF655CA4),
+                    Color(0xFF7E66B2)
+                ),
+                start = Offset(0f, 0f),
+                end = Offset(100f, 0f)
+            )
+        ),
         caption = if (isScanned) null else stringResource(R.string.first_human_ai_contract),
         imageId = R.drawable.drawable_digital_likeness,
         backgroundGradient = RarimeTheme.colors.gradient7,
@@ -245,22 +254,41 @@ fun DigitalLikenessContent(
 
                 PrimaryTextButton(
                     modifier = Modifier.skipToLookaheadSize(),
-                    rightIcon = R.drawable.ic_carret_down,
                     onClick = { ruleSheetState.show(); Log.i("XD", "HERE") },
                     content = {
-                        Text(
-                            style = RarimeTheme.typography.additional1,
-                            text = selectedRuleText,
-                            color = RarimeTheme.colors.baseBlack.copy(alpha = 0.4f),
+                        Box(
                             modifier = Modifier
-                                .sharedBounds(
-                                    rememberSharedContentState(
-                                        subTitleKey
-                                    ), animatedVisibilityScope = animatedContentScope
+                                .fillMaxWidth()
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .wrapContentWidth()
+                                    .align(Alignment.TopStart)
+                            ) {
+                                Text(
+                                    text = selectedRuleText,
+                                    style = props.subTitleStyle
+                                        ?: RarimeTheme.typography.additional2,
+                                    modifier = Modifier
+                                        .padding(top = 12.dp)
+                                        .sharedBounds(
+                                            rememberSharedContentState(subTitleKey),
+                                            animatedVisibilityScope = animatedContentScope
+                                        )
+                                        .skipToLookaheadSize()
                                 )
-                                .skipToLookaheadSize(),
-                        )
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_carret_down),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .padding(bottom = 15.dp)
+                                        .align(Alignment.Bottom)
+                                )
+                            }
+                        }
                     })
+                HorizontalDivider(modifier = Modifier.padding(vertical = 24.dp))
             }
         } else {
             null
@@ -284,6 +312,7 @@ fun DigitalLikenessContent(
                     color = RarimeTheme.colors.baseBlack.copy(alpha = 0.5f),
                     text = stringResource(R.string.digital_likeness_description_3)
                 )
+                Spacer(modifier = Modifier.height(50.dp))
             }
         },
         footer = if (isScanned) null else {

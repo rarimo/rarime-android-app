@@ -37,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
@@ -224,13 +225,23 @@ fun HomeScreenContent(
                     properties = CardProperties(
                         header = stringResource(R.string.digital_likeness),
                         subTitle = stringResource(R.string.set_a_rule),
+                        subTitleStyle = RarimeTheme.typography.additional2.copy(
+                            brush = Brush.linearGradient(
+                                colors = listOf(
+                                    Color(0xFF655CA4),
+                                    Color(0xFF7E66B2)
+                                ),
+                                start = Offset(0f, 0f),
+                                end = Offset(100f, 0f)
+                            )
+                        ),
                         caption = stringResource(R.string.first_human_ai_contract),
                         icon = R.drawable.ic_rarimo,
                         image = R.drawable.drawable_digital_likeness,
                         imageModifier =
                             if (faceImage == null) Modifier
-                                .padding(bottom = 150.dp)
-                                .padding(horizontal = 25.dp)
+                                .padding(bottom = 160.dp)
+                                .padding(horizontal = 40.dp)
                             else Modifier
                                 .padding(horizontal = 25.dp)
                                 .padding(top = 150.dp),
@@ -282,7 +293,16 @@ fun HomeScreenContent(
                             )
 
                             Text(
-                                style = RarimeTheme.typography.additional2,
+                                style = RarimeTheme.typography.additional2.copy(
+                                    brush = Brush.linearGradient(
+                                        colors = listOf(
+                                            Color(0xFF655CA4),
+                                            Color(0xFF7E66B2)
+                                        ),
+                                        start = Offset(0f, 0f),
+                                        end = Offset(0f, 100f)
+                                    )
+                                ),
                                 text = selectedRuleText,
                                 color = RarimeTheme.colors.baseBlack.copy(alpha = 0.4f),
                                 modifier = Modifier
