@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.modules.home.v2
 
 import android.Manifest
+import android.graphics.Bitmap
 import android.os.Build
 import android.util.Log
 import androidx.activity.compose.BackHandler
@@ -39,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -59,6 +61,7 @@ import com.rarilabs.rarime.modules.home.v2.details.ClaimTokensScreen
 import com.rarilabs.rarime.modules.home.v2.details.CreateIdentityDetails
 import com.rarilabs.rarime.modules.home.v2.details.DigitalLikeness
 import com.rarilabs.rarime.modules.home.v2.details.InviteOthersScreen
+import com.rarilabs.rarime.modules.home.v2.details.LikenessFrame
 import com.rarilabs.rarime.modules.home.v2.details.UnforgettableWalletScreen
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
@@ -82,6 +85,7 @@ data class CardContent(
     val properties: CardProperties,
     val onCardClick: () -> Unit = {},
     val footer: @Composable () -> Unit = {},
+    val image: (@Composable (modifier: Modifier) -> Unit)? = null,
     val header: (@Composable (headerKey: String, subTitleKey: String) -> Unit)? = null
 )
 
@@ -106,6 +110,8 @@ fun HomeScreen(
 
     val isScanned by viewModel.isScanned.collectAsState()
     val selectedRule by viewModel.selectedRule.collectAsState()
+
+    val faceImage by viewModel.faceImage.collectAsState()
 
     val notificationsCount by remember(notifications) {
         derivedStateOf { notifications.count { it.isActive } }
@@ -164,6 +170,7 @@ fun HomeScreen(
         notificationsCount = notificationsCount,
         passport = passport,
         selectedLikenessRule = selectedRule,
+        faceImage = faceImage,
         isLikenessScanned = isScanned
     )
 }
@@ -184,6 +191,7 @@ fun HomeScreenContent(
     notificationsCount: Int,
     isLikenessScanned: Boolean,
     selectedLikenessRule: LikenessRule,
+    faceImage: Bitmap?,
     passport: EDocument?
 ) {
 
@@ -192,7 +200,7 @@ fun HomeScreenContent(
     val context = LocalContext.current
 
 
-    AnimatedContent(selectedPageId, label = "content") {
+    AnimatedContent(selectedPageId, label = "content") { it ->
         LaunchedEffect(selectedPageId) {
             setVisibilityOfBottomBar(selectedPageId == null)
         }
@@ -230,9 +238,13 @@ fun HomeScreenContent(
                         caption = stringResource(R.string.first_human_ai_contract),
                         icon = R.drawable.ic_rarimo,
                         image = R.drawable.drawable_digital_likeness,
-                        imageModifier = Modifier
-                            .padding(bottom = 160.dp)
-                            .padding(horizontal = 40.dp),
+                        imageModifier =
+                            if (faceImage == null) Modifier
+                                .padding(bottom = 160.dp)
+                                .padding(horizontal = 40.dp)
+                            else Modifier
+                                .padding(horizontal = 25.dp)
+                                .padding(top = 150.dp),
                         backgroundGradient = Brush.linearGradient(
                             colors = listOf(
                                 Color(0xFFF8F3FE), Color(0xFFEEE9FE), Color(
@@ -242,6 +254,15 @@ fun HomeScreenContent(
                         ),
                     ),
                     onCardClick = {},
+                    image = if (faceImage == null) null else {
+                        { mod ->
+                            LikenessFrame(
+                                faceImage = faceImage.asImageBitmap(),
+                                frameRes = R.drawable.drawable_likeness_face_bg,
+                                modifier = mod
+                            )
+                        }
+                    },
                     footer = {},
                     header = if (isLikenessScanned) { headerKey, subTitleKey ->
 
@@ -272,7 +293,7 @@ fun HomeScreenContent(
                             )
 
                             Text(
-                                style = RarimeTheme.typography.additional2.copy(                              // делаем копию и ...
+                                style = RarimeTheme.typography.additional2.copy(
                                     brush = Brush.linearGradient(
                                         colors = listOf(
                                             Color(0xFF655CA4),
@@ -508,6 +529,7 @@ fun HomeScreenContent(
                                     },
                                     cardProperties = cardContent[page].properties,
                                     footer = cardContent[page].footer,
+                                    image = cardContent[page].image,
                                     sharedTransitionScope = sharedTransitionScope,
                                     animatedContentScope = this@AnimatedContent,
                                     id = page,
@@ -640,7 +662,8 @@ private fun HomeScreenPreview() {
                     )
                 ),
                 selectedLikenessRule = LikenessRule.ALWAYS_ALLOW,
-                isLikenessScanned = true
+                isLikenessScanned = true,
+                faceImage = null
             )
         }
     }

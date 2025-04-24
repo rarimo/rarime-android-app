@@ -3,12 +3,14 @@ package com.rarilabs.rarime.modules.home.v2.details
 import android.Manifest
 import android.graphics.Bitmap
 import android.util.Log
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -47,13 +50,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -72,6 +81,7 @@ import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.PrimaryTextButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.BackgroundRemover
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 const val ALREADY_SET_AMOUNT = "49,421"
@@ -100,6 +110,8 @@ fun DigitalLikeness(
     val selectedRule by viewModel.selectedRule.collectAsState()
     val isScanned by viewModel.isLivenessScanned.collectAsState()
 
+    val faceImage by viewModel.faceImage.collectAsState()
+
     DigitalLikenessContent(
         modifier,
         id,
@@ -110,7 +122,9 @@ fun DigitalLikeness(
         selectedRule,
         viewModel.setSelectedRule,
         isScanned,
-        viewModel.setIsLivenessScanned
+        viewModel.setIsLivenessScanned,
+        viewModel.saveFaceImage,
+        faceImage,
     )
 }
 
@@ -126,7 +140,9 @@ fun DigitalLikenessContent(
     selectedRule: LikenessRule,
     setSelectedRule: (LikenessRule) -> Unit,
     isScanned: Boolean,
-    setIsScanned: (Boolean) -> Unit
+    setIsScanned: (Boolean) -> Unit,
+    saveFaceImage: (Bitmap) -> Unit,
+    faceImage: Bitmap?
 ) {
     val isPreview = LocalInspectionMode.current
     val appSheetState = rememberAppSheetState()
@@ -147,12 +163,14 @@ fun DigitalLikenessContent(
 
             if (selectedBitmap == null) {
                 DigitalLikenessCamera {
-                    selectedBitmap = it
+                    BackgroundRemover().removeBackground(it) { img ->
+                        selectedBitmap = img
+                    }
                 }
             } else {
                 DigitalLikenessProcessing(
                     modifier = Modifier.padding(vertical = 16.dp),
-                    onNext = { setIsScanned(true); appSheetState.hide() })
+                    onNext = { setIsScanned(true); saveFaceImage(selectedBitmap!!);appSheetState.hide() })
             }
         }
     }
@@ -164,7 +182,6 @@ fun DigitalLikenessContent(
         if (!isScanned) {
             appSheetState.show()
         }
-
     })
 
 
@@ -190,11 +207,22 @@ fun DigitalLikenessContent(
             .padding(bottom = 40.dp)
     )
 
+
+
     BaseDetailsScreen(
         properties = props,
         innerPaddings = innerPaddings,
         sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = animatedContentScope,
+        image = if (faceImage == null) null else {
+            {
+                LikenessFrame(
+                    faceImage = faceImage.asImageBitmap(),
+                    frameRes = R.drawable.drawable_likeness_face_bg,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+            }
+        },
         onBack = onBack,
         header = if (isScanned) { headerKey, subTitleKey ->
             with(sharedTransitionScope) {
@@ -209,21 +237,19 @@ fun DigitalLikenessContent(
                     )
                 )
 
-                val selectedRuleText =
-                    when (selectedRule) {
-                        LikenessRule.ALWAYS_ALLOW -> {
-                            stringResource(R.string.use_my_likeness_and_pay_me)
-                        }
-
-                        LikenessRule.REJECT -> {
-                            stringResource(R.string.don_t_sell_my_face_data)
-                        }
-
-                        LikenessRule.ASK_EVERYTIME -> {
-                            stringResource(R.string.ask_me_every_time)
-                        }
+                val selectedRuleText = when (selectedRule) {
+                    LikenessRule.ALWAYS_ALLOW -> {
+                        stringResource(R.string.use_my_likeness_and_pay_me)
                     }
 
+                    LikenessRule.REJECT -> {
+                        stringResource(R.string.don_t_sell_my_face_data)
+                    }
+
+                    LikenessRule.ASK_EVERYTIME -> {
+                        stringResource(R.string.ask_me_every_time)
+                    }
+                }
 
 
                 PrimaryTextButton(
@@ -242,8 +268,10 @@ fun DigitalLikenessContent(
                             ) {
                                 Text(
                                     text = selectedRuleText,
-                                    style = props.subTitleStyle ?: RarimeTheme.typography.additional2,
-                                    modifier = Modifier.padding(top = 12.dp)
+                                    style = props.subTitleStyle
+                                        ?: RarimeTheme.typography.additional2,
+                                    modifier = Modifier
+                                        .padding(top = 12.dp)
                                         .sharedBounds(
                                             rememberSharedContentState(subTitleKey),
                                             animatedVisibilityScope = animatedContentScope
@@ -266,7 +294,7 @@ fun DigitalLikenessContent(
             null
         },
         body = {
-            Column() {
+            Column {
                 Text(
                     style = RarimeTheme.typography.body3,
                     color = RarimeTheme.colors.baseBlack.copy(alpha = 0.5f),
@@ -320,6 +348,48 @@ fun DigitalLikenessContent(
             }
         },
     )
+}
+
+@Composable
+fun LikenessFrame(
+    faceImage: ImageBitmap,
+    @DrawableRes frameRes: Int,
+    modifier: Modifier = Modifier,
+    frameSize: Dp = 260.dp,       // size of your white PNG background
+    faceSize: Dp = 320.dp,        // make this larger than frameSize!
+    //faceOffsetY: Dp = (-30).dp    // nudge it up so it overflows nicely
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(frameSize)
+            .graphicsLayer { clip = false }
+            .then(modifier),  // allow overflow
+        contentAlignment = Alignment.TopCenter
+    ) {
+        // 1) background frame (bottom)
+        Image(
+            painter = painterResource(frameRes),
+            contentDescription = null,
+            modifier = Modifier
+                .size(frameSize)
+                .aspectRatio(1f),
+            contentScale = ContentScale.Crop
+        )
+
+        // 2) face (on top, larger than the frame, overflowing)
+        Image(
+            bitmap = faceImage,
+            contentDescription = null,
+            modifier = Modifier
+                .size(faceSize)
+                .aspectRatio(1f)
+                .padding(horizontal = 24.dp)
+                //.offset(y = faceOffsetY)
+                .zIndex(1f),
+            contentScale = ContentScale.Crop
+        )
+    }
 }
 
 @Composable
@@ -542,6 +612,9 @@ private fun CreateIdentityDetailsPreview() {
             selectedRule = selectedRule,
             setSelectedRule = { selectedRule = it },
             isScanned = isScanned,
-            setIsScanned = { isScanned = it })
+            setIsScanned = { isScanned = it },
+            saveFaceImage = {},
+            faceImage = null
+        )
     }
 }

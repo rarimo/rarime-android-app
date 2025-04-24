@@ -65,6 +65,7 @@ fun HomeCard(
     animatedContentScope: AnimatedContentScope,
     footer: @Composable () -> Unit,
     header: (@Composable (headerKey: String, subTitleKey: String) -> Unit)? = null,
+    image: (@Composable (modifier: Modifier) -> Unit)? = null,
     onCardClick: () -> Unit,
 ) {
     val boundKey = remember(id) { "$id-bound" }
@@ -110,18 +111,24 @@ fun HomeCard(
                         )
 
                 )
-                Image(
-                    painter = painterResource(cardProperties.image),
-                    contentDescription = null,
-                    modifier = cardProperties.imageModifier
-                        .matchParentSize()
-                        .sharedElement(
-                            rememberSharedContentState(imageKey),
-                            animatedVisibilityScope = animatedContentScope
-                        )
-                        .clip(RoundedCornerShape(32.dp)),
-                    contentScale = ContentScale.Fit
-                )
+                if (image != null) {
+                    image(cardProperties.imageModifier)
+                } else {
+                    Image(
+                        painter = painterResource(cardProperties.image),
+                        contentDescription = null,
+                        modifier = cardProperties.imageModifier
+                            .matchParentSize()
+                            .sharedElement(
+                                rememberSharedContentState(imageKey),
+                                animatedVisibilityScope = animatedContentScope
+                            )
+                            .clip(RoundedCornerShape(32.dp)),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+
+
 
                 Column(
                     modifier = Modifier

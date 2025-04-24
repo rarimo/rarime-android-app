@@ -70,6 +70,7 @@ fun BaseDetailsScreen(
     header: (@Composable (headerKey: String, subTitleKey: String) -> Unit)? = null,
     body: (@Composable () -> Unit)? = null,
     footer: (@Composable () -> Unit)? = null,
+    image: (@Composable () -> Unit)? = null,
     onBack: () -> Unit,
     innerPaddings: Map<ScreenInsets, Number>,
     sharedTransitionScope: SharedTransitionScope,
@@ -147,17 +148,22 @@ fun BaseDetailsScreen(
 
                     // Default body part
                     // Keeping image outside body container
-                    Image(
-                        painter = painterResource(properties.imageId),
-                        contentDescription = null,
-                        modifier = properties.imageModifier
-                            .sharedElement(
-                                state = rememberSharedContentState(imageKey),
-                                animatedVisibilityScope = animatedContentScope
-                            )
-                            .fillMaxWidth(),
-                        contentScale = ContentScale.FillWidth
-                    )
+                    if (image == null) {
+                        Image(
+                            painter = painterResource(properties.imageId),
+                            contentDescription = null,
+                            modifier = properties.imageModifier
+                                .sharedElement(
+                                    state = rememberSharedContentState(imageKey),
+                                    animatedVisibilityScope = animatedContentScope
+                                )
+                                .fillMaxWidth(),
+                            contentScale = ContentScale.FillWidth
+                        )
+                    } else {
+                        image()
+                    }
+
 
                     Column(
                         modifier = Modifier.padding(horizontal = 24.dp, vertical = 20.dp)
@@ -178,7 +184,8 @@ fun BaseDetailsScreen(
                             )
 
                             Text(
-                                style = properties.subTitleStyle ?: RarimeTheme.typography.additional1,
+                                style = properties.subTitleStyle
+                                    ?: RarimeTheme.typography.additional1,
                                 text = properties.subTitle,
                                 color = RarimeTheme.colors.baseBlack.copy(alpha = 0.4f),
                                 modifier = Modifier
