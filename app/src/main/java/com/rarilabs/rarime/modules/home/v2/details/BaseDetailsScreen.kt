@@ -65,6 +65,7 @@ data class DetailsProperties(
 fun BaseDetailsScreen(
     modifier: Modifier = Modifier,
     properties: DetailsProperties,
+    header: (@Composable (headerKey: String, subTitleKey: String) -> Unit)? = null,
     body: (@Composable () -> Unit)? = null,
     footer: (@Composable () -> Unit)? = null,
     onBack: () -> Unit,
@@ -159,29 +160,35 @@ fun BaseDetailsScreen(
                     Column(
                         modifier = Modifier.padding(horizontal = 24.dp, vertical = 20.dp)
                     ) {
-                        Text(
-                            style = RarimeTheme.typography.h1,
-                            color = RarimeTheme.colors.baseBlack,
-                            text = properties.header,
-                            modifier = Modifier.sharedBounds(
-                                rememberSharedContentState(
-                                    headerKey
-                                ), animatedVisibilityScope = animatedContentScope
-                            )
-                        )
 
-                        Text(
-                            style = RarimeTheme.typography.additional1,
-                            text = properties.subTitle,
-                            color = RarimeTheme.colors.baseBlack.copy(alpha = 0.4f),
-                            modifier = Modifier
-                                .sharedBounds(
+                        if (header != null) {
+                            header(headerKey, subTitleKey)
+                        } else {
+                            Text(
+                                style = RarimeTheme.typography.h1,
+                                color = RarimeTheme.colors.baseBlack,
+                                text = properties.header,
+                                modifier = Modifier.sharedBounds(
                                     rememberSharedContentState(
-                                        subTitleKey
+                                        headerKey
                                     ), animatedVisibilityScope = animatedContentScope
                                 )
-                                .skipToLookaheadSize(),
-                        )
+                            )
+
+                            Text(
+                                style = RarimeTheme.typography.additional1,
+                                text = properties.subTitle,
+                                color = RarimeTheme.colors.baseBlack.copy(alpha = 0.4f),
+                                modifier = Modifier
+                                    .sharedBounds(
+                                        rememberSharedContentState(
+                                            subTitleKey
+                                        ), animatedVisibilityScope = animatedContentScope
+                                    )
+                                    .skipToLookaheadSize(),
+                            )
+                        }
+
 
                         if (properties.caption != null) {
                             Spacer(Modifier.height(12.dp))

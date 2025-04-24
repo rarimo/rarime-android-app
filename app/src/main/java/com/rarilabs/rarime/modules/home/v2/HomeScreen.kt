@@ -53,6 +53,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.points.models.PointsBalanceData
 import com.rarilabs.rarime.api.points.models.PointsEventData
 import com.rarilabs.rarime.api.points.models.ReferralCodeStatuses
+import com.rarilabs.rarime.manager.LikenessRule
 import com.rarilabs.rarime.modules.home.v2.details.ClaimTokensScreen
 import com.rarilabs.rarime.modules.home.v2.details.CreateIdentityDetails
 import com.rarilabs.rarime.modules.home.v2.details.DigitalLikeness
@@ -72,7 +73,7 @@ import com.rarilabs.rarime.util.Screen
 import kotlin.math.abs
 
 enum class CardType {
-    DIGITAL_LIKENESS, YOUR_IDENTITY, INVITE_OTHERS, CLAIM, UNFORGETTABLE_WALLET, FREEDOMTOOL, OTHER
+    YOUR_IDENTITY, INVITE_OTHERS, CLAIM, UNFORGETTABLE_WALLET, FREEDOMTOOL, OTHER, LIKENESS
 }
 
 data class CardContent(
@@ -80,6 +81,7 @@ data class CardContent(
     val properties: CardProperties,
     val onCardClick: () -> Unit = {},
     val footer: @Composable () -> Unit = {},
+    val header: (@Composable (headerKey: String, subTitleKey: String) -> Unit)? = null
 )
 
 
@@ -94,13 +96,15 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
 
-
     val pointsBalance by viewModel.pointsToken.collectAsState()
     val pointsEvent by viewModel.pointsEventData.collectAsState()
 
     val passport by viewModel.passport.collectAsState()
 
     val notifications: List<NotificationEntityData> by viewModel.notifications.collectAsState()
+
+    val isScanned by viewModel.isScanned.collectAsState()
+    val selectedRule by viewModel.selectedRule.collectAsState()
 
     val notificationsCount by remember(notifications) {
         derivedStateOf { notifications.count { it.isActive } }
@@ -114,8 +118,6 @@ fun HomeScreen(
         val notificationPermission = rememberPermissionState(
             permission = Manifest.permission.POST_NOTIFICATIONS
         )
-
-
         LaunchedEffect(Unit) {
             try {
                 if (!notificationPermission.status.isGranted) {
@@ -160,6 +162,8 @@ fun HomeScreen(
         currentPointsBalance = currentPointsBalance,
         notificationsCount = notificationsCount,
         passport = passport,
+        selectedLikenessRule = selectedRule,
+        isLikenessScanned = isScanned
     )
 }
 
@@ -177,18 +181,23 @@ fun HomeScreenContent(
     firstReferralCode: String?,
     currentPointsBalance: Long?,
     notificationsCount: Int,
+    isLikenessScanned: Boolean,
+    selectedLikenessRule: LikenessRule,
     passport: EDocument?
 ) {
+
 
     var selectedPageId by remember { mutableStateOf<Int?>(null) }
     val context = LocalContext.current
 
-    LaunchedEffect(selectedPageId) {
-        setVisibilityOfBottomBar(selectedPageId == null)
-    }
 
-    val cardContent =
-        mutableListOf(
+    AnimatedContent(selectedPageId, label = "content") {
+        LaunchedEffect(selectedPageId) {
+            setVisibilityOfBottomBar(selectedPageId == null)
+        }
+
+        val cardContent =
+            mutableListOf(
 //
 //            CardContent(
 //                type = CardType.UNFORGETTABLE_WALLET, properties = CardProperties(
@@ -202,81 +211,129 @@ fun HomeScreenContent(
 //                        )
 //                    )
 //                ), onCardClick = {}, footer = {}),
-            CardContent(
-                type = CardType.DIGITAL_LIKENESS, properties = CardProperties(
-                    header = stringResource(R.string.digital_likeness),
-                    subTitle = stringResource(R.string.set_a_rule),
-                    caption = stringResource(R.string.first_human_ai_contract),
-                    icon = R.drawable.ic_rarimo,
-                    image = R.drawable.drawable_digital_likeness,
-                    imageModifier = Modifier
-                        .padding(bottom = 150.dp)
-                        .padding(horizontal = 25.dp),
-                    backgroundGradient = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFFF8F3FE), Color(0xFFEEE9FE), Color(
-                                0xFFF8F3FE
+                CardContent(
+                    type = CardType.LIKENESS,
+                    properties = CardProperties(
+                        header = stringResource(R.string.digital_likeness),
+                        subTitle = stringResource(R.string.set_a_rule),
+                        caption = stringResource(R.string.first_human_ai_contract),
+                        icon = R.drawable.ic_rarimo,
+                        image = R.drawable.drawable_digital_likeness,
+                        imageModifier = Modifier
+                            .padding(bottom = 150.dp)
+                            .padding(horizontal = 25.dp),
+                        backgroundGradient = Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFFF8F3FE), Color(0xFFEEE9FE), Color(
+                                    0xFFF8F3FE
+                                )
+                            )
+                        ),
+                    ),
+                    onCardClick = {},
+                    footer = {},
+                    header = if (isLikenessScanned) { headerKey, subTitleKey ->
+
+                        val selectedRuleText =
+                            when (selectedLikenessRule) {
+                                LikenessRule.ALWAYS_ALLOW -> {
+                                    stringResource(R.string.use_my_likeness_and_pay_me)
+                                }
+
+                                LikenessRule.REJECT -> {
+                                    stringResource(R.string.don_t_sell_my_face_data)
+                                }
+
+                                LikenessRule.ASK_EVERYTIME -> {
+                                    stringResource(R.string.ask_me_every_time)
+                                }
+                            }
+                        with(sharedTransitionScope) {
+                            Text(
+                                style = RarimeTheme.typography.h5,
+                                color = RarimeTheme.colors.baseBlack,
+                                text = "My Rules",
+                                modifier = Modifier.sharedBounds(
+                                    rememberSharedContentState(
+                                        headerKey
+                                    ), animatedVisibilityScope = this@AnimatedContent
+                                )
+                            )
+
+                            Text(
+                                style = RarimeTheme.typography.additional2,
+                                text = selectedRuleText,
+                                color = RarimeTheme.colors.baseBlack.copy(alpha = 0.4f),
+                                modifier = Modifier
+                                    .sharedBounds(
+                                        rememberSharedContentState(
+                                            subTitleKey
+                                        ), animatedVisibilityScope = this@AnimatedContent
+                                    )
+                                    .skipToLookaheadSize(),
+                            )
+
+                        }
+
+                    } else null
+                ),
+
+                CardContent(
+                    type = CardType.YOUR_IDENTITY,
+                    properties = CardProperties(
+                        header = stringResource(R.string.your_device),
+                        subTitle = stringResource(R.string.your_identity),
+                        caption = stringResource(R.string.nothing_leaves_this_device),
+                        icon = R.drawable.ic_rarime,
+                        image = R.drawable.drawable_hand_phone,
+                        imageModifier = Modifier.padding(bottom = 120.dp),
+                        backgroundGradient = Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFF9AFE8A), Color(0xFF8AFECC)
                             )
                         )
                     ),
-                ), onCardClick = {}, footer = {}),
-
-            CardContent(
-                type = CardType.YOUR_IDENTITY,
-                properties = CardProperties(
-                    header = stringResource(R.string.your_device),
-                    subTitle = stringResource(R.string.your_identity),
-                    caption = stringResource(R.string.nothing_leaves_this_device),
-                    icon = R.drawable.ic_rarime,
-                    image = R.drawable.drawable_hand_phone,
-                    imageModifier = Modifier.padding(bottom = 120.dp),
-                    backgroundGradient = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFF9AFE8A), Color(0xFF8AFECC)
-                        )
-                    )
+                    onCardClick = {},
                 ),
-                onCardClick = {},
-            ),
 
-            CardContent(
-                type = CardType.FREEDOMTOOL,
-                properties = CardProperties(
-                    header = stringResource(R.string.freedomtool),
-                    subTitle = stringResource(R.string.voting),
-                    icon = R.drawable.ic_check_unframed,
-                    image = R.drawable.freedomtool_bg,
-                    imageModifier = Modifier.padding(bottom = 120.dp),
-                    backgroundGradient = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFFD5FEC8), Color(0xFF80ed99)
+                CardContent(
+                    type = CardType.FREEDOMTOOL,
+                    properties = CardProperties(
+                        header = stringResource(R.string.freedomtool),
+                        subTitle = stringResource(R.string.voting),
+                        icon = R.drawable.ic_check_unframed,
+                        image = R.drawable.freedomtool_bg,
+                        imageModifier = Modifier.padding(bottom = 120.dp),
+                        backgroundGradient = Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFFD5FEC8), Color(0xFF80ed99)
+                            )
                         )
-                    )
+                    ),
+                    onCardClick = {},
                 ),
-                onCardClick = {},
-            ),
 
-            CardContent(
-                type = CardType.CLAIM, properties = CardProperties(
-                    header = if (currentPointsBalance != null && currentPointsBalance != 0L) context.getString(
-                        R.string.reserved
-                    ) else context.getString(
-                        R.string.upcoming
-                    ),
-                    subTitle = if (currentPointsBalance != null && currentPointsBalance != 0L) ("$currentPointsBalance " + context.getString(
-                        R.string.rmo
-                    )) else context.getString(
-                        R.string.rmo
-                    ),
-                    icon = R.drawable.ic_rarimo,
-                    image = R.drawable.claim_rmo_image,
-                    backgroundGradient = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFFDFFCC4), Color(0xFFF4F3F0)
+                CardContent(
+                    type = CardType.CLAIM, properties = CardProperties(
+                        header = if (currentPointsBalance != null && currentPointsBalance != 0L) context.getString(
+                            R.string.reserved
+                        ) else context.getString(
+                            R.string.upcoming
+                        ),
+                        subTitle = if (currentPointsBalance != null && currentPointsBalance != 0L) ("$currentPointsBalance " + context.getString(
+                            R.string.rmo
+                        )) else context.getString(
+                            R.string.rmo
+                        ),
+                        icon = R.drawable.ic_rarimo,
+                        image = R.drawable.claim_rmo_image,
+                        backgroundGradient = Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFFDFFCC4), Color(0xFFF4F3F0)
+                            )
                         )
-                    )
-                ), onCardClick = {}, footer = {}),
-        )
+                    ), onCardClick = {}, footer = {}),
+            )
 
 
 //            CardContent(
@@ -334,11 +391,10 @@ fun HomeScreenContent(
 //                )
 //            }
 //        }
-    //)
+        //)
 
-    val pagerState = rememberPagerState(pageCount = { cardContent.size })
+        val pagerState = rememberPagerState(pageCount = { cardContent.size })
 
-    AnimatedContent(selectedPageId, label = "content") {
         if (it == null) {
             Column(
                 modifier = modifier
@@ -435,6 +491,7 @@ fun HomeScreenContent(
                                     sharedTransitionScope = sharedTransitionScope,
                                     animatedContentScope = this@AnimatedContent,
                                     id = page,
+                                    header = cardContent[page].header,
                                     onCardClick = {
                                         cardContent[page].onCardClick; selectedPageId = page
                                     })
@@ -521,7 +578,11 @@ fun HomeScreenContent(
                     )
                 }
 
-                CardType.DIGITAL_LIKENESS -> {
+                CardType.OTHER -> {
+
+                }
+
+                CardType.LIKENESS -> {
                     DigitalLikeness(
                         sharedTransitionScope = sharedTransitionScope,
                         animatedContentScope = this@AnimatedContent,
@@ -531,8 +592,6 @@ fun HomeScreenContent(
                         innerPaddings = innerPaddings
                     )
                 }
-
-                CardType.OTHER -> {}
             }
         }
     }
@@ -559,7 +618,9 @@ private fun HomeScreenPreview() {
                     personDetails = PersonDetails(
                         name = "Mike"
                     )
-                )
+                ),
+                selectedLikenessRule = LikenessRule.ALWAYS_ALLOW,
+                isLikenessScanned = true
             )
         }
     }

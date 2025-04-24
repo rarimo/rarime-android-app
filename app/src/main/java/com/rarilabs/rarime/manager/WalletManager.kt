@@ -3,8 +3,6 @@ package com.rarilabs.rarime.manager
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.Gson
-import com.rarilabs.rarime.api.cosmos.CosmosManager
-import com.rarilabs.rarime.api.erc20.Erc20Manager
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.data.tokens.PointsToken
 import com.rarilabs.rarime.data.tokens.Token
@@ -58,9 +56,6 @@ class WalletManager @Inject constructor(
     private val dataStoreManager: SecureSharedPrefsManager,
     private val identityManager: IdentityManager,
     private val pointsManager: PointsManager,
-    private val cosmosManager: CosmosManager,
-    private val stableCoinContractManager: StableCoinContractManager,
-    private val erc20Manager: Erc20Manager
 ) {
     private fun getWalletAssets(): List<WalletAsset> {
         return dataStoreManager.readWalletAssets(

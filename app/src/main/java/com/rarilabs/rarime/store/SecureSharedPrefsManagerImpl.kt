@@ -13,6 +13,7 @@ import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.data.enums.SecurityCheckState
+import com.rarilabs.rarime.manager.LikenessRule
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.manager.WalletAssetJSON
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
@@ -51,7 +52,9 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "DEFERRED_REFERRAL_CODE" to "DEFERRED_REFERRAL_CODE",
         "LIGHT_REGISTRATION_DATA" to "LIGHT_REGISTRATION_DATA",
         "ALREADY_RESERVED" to "ALREADY_RESERVED",
-        "PASSPORT_STATUS" to "PASSPORT_STATUS"
+        "PASSPORT_STATUS" to "PASSPORT_STATUS",
+        "SELECTED_LIKENESS_OPTION" to "SELECTED_LIKENESS_OPTION",
+        "LIKENESS_DATA" to "LIKENESS_DATA"
     )
 
     private val PREFS_FILE_NAME = "sharedPrefFile12"
@@ -440,5 +443,33 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
 
     override fun getIsAlreadyReserved(): Boolean {
         return getSharedPreferences().getBoolean(accessTokens["ALREADY_RESERVED"], false)
+    }
+
+
+    override fun saveSelectedLikenessRule(likenessRule: LikenessRule) {
+        val editor = getEditor()
+        editor.putInt(accessTokens["SELECTED_LIKENESS_OPTION"], likenessRule.value)
+        editor.apply()
+    }
+
+    override fun getSelectedLikenessRule(): LikenessRule {
+        return LikenessRule.fromInt(
+            getSharedPreferences().getInt(
+                accessTokens["SELECTED_LIKENESS_OPTION"],
+                LikenessRule.ALWAYS_ALLOW.value
+            )
+        )
+    }
+
+
+    override fun saveIsLikenessScanned(flag: Boolean) {
+        val editor = getEditor()
+        editor.putBoolean(accessTokens["LIKENESS_DATA"], flag)
+        editor.apply()
+    }
+
+    override fun getIsLikenessScanned(): Boolean {
+        return getSharedPreferences().getBoolean(accessTokens["LIKENESS_DATA"], false)
+
     }
 }

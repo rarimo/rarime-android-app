@@ -61,6 +61,7 @@ fun HomeCard(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
     footer: @Composable () -> Unit,
+    header: (@Composable (headerKey: String, subTitleKey: String) -> Unit)? = null,
     onCardClick: () -> Unit,
 ) {
     val boundKey = remember(id) { "$id-bound" }
@@ -150,27 +151,33 @@ fun HomeCard(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Column(modifier = Modifier.weight(1f, fill = false)) {
-                                Text(
-                                    modifier = Modifier
-                                        .sharedBounds(
-                                            rememberSharedContentState(headerKey),
-                                            animatedVisibilityScope = animatedContentScope
-                                        ),
-                                    color = RarimeTheme.colors.baseBlack,
-                                    style = RarimeTheme.typography.h2,
-                                    text = cardProperties.header
-                                )
 
-                                Text(
-                                    modifier = Modifier
-                                        .sharedBounds(
-                                            rememberSharedContentState(subTitleKey),
-                                            animatedVisibilityScope = animatedContentScope
-                                        ),
-                                    color = RarimeTheme.colors.baseBlack.copy(alpha = 0.4f),
-                                    style = RarimeTheme.typography.additional2,
-                                    text = cardProperties.subTitle,
-                                )
+                                if (header != null) {
+                                    header(headerKey, subTitleKey)
+                                } else {
+                                    Text(
+                                        modifier = Modifier
+                                            .sharedBounds(
+                                                rememberSharedContentState(headerKey),
+                                                animatedVisibilityScope = animatedContentScope
+                                            ),
+                                        color = RarimeTheme.colors.baseBlack,
+                                        style = RarimeTheme.typography.h2,
+                                        text = cardProperties.header
+                                    )
+
+                                    Text(
+                                        modifier = Modifier
+                                            .sharedBounds(
+                                                rememberSharedContentState(subTitleKey),
+                                                animatedVisibilityScope = animatedContentScope
+                                            ),
+                                        color = RarimeTheme.colors.baseBlack.copy(alpha = 0.4f),
+                                        style = RarimeTheme.typography.additional2,
+                                        text = cardProperties.subTitle,
+                                    )
+                                }
+
 
                                 if (cardProperties.caption != null) {
                                     Spacer(Modifier.height(12.dp))
