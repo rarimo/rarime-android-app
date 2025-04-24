@@ -70,7 +70,6 @@ fun VoteHandler(
 
 
         }
-        onCancel()
         onFail.invoke()
     }
 
@@ -83,14 +82,15 @@ fun VoteHandler(
                     ?: throw Exception("Proposal ID not found")
 
                 voteSheetState.show()
-
                 viewModel.setQrVoting(qrCodeUrl)
+
             } catch (e: Exception) {
+                voteSheetState.hide()
                 ErrorHandler.logError("ExtIntActionPreview", "loadPreviewFields", e)
                 onFailHandler(e)
+            } finally {
+                isLoading = false
             }
-
-            isLoading = false
         }
     }
 }
