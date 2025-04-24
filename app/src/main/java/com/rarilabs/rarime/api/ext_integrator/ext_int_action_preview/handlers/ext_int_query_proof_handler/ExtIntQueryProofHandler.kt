@@ -68,16 +68,10 @@ fun ExtIntQueryProofHandler(
     var isSubmitting by remember { mutableStateOf(false) }
     var isLoaded by remember { mutableStateOf(false) }
     val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
-    val sheetState = rememberAppSheetState(true)
+    val sheetState = rememberAppSheetState(false)
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(isLoaded) {
         sheetState.show()
-    }
-    LaunchedEffect(sheetState.showSheet) {
-        if (!sheetState.showSheet) {
-            sheetState.hide() // Reset state after hiding
-            onCancel.invoke()
-        }
     }
 
     fun onSuccessHandler() {

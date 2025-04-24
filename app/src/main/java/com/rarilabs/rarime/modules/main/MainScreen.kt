@@ -4,11 +4,9 @@ package com.rarilabs.rarime.modules.main
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -225,7 +223,7 @@ fun MainScreenContent(
             },
 
             snackbarHost = {
-                // Замість SnackbarHost, просто показуй кастомний snackbar
+                // Show custom snackbar instead of `SnackbarHost`
                 snackbarContent?.let { snackContent ->
                     Column(
                         modifier = Modifier
@@ -234,7 +232,7 @@ fun MainScreenContent(
                     ) {
                         UiSnackbarDefault(snackContent)
 
-                        // Автоматичне зникнення
+                        // Disappear automatically
                         LaunchedEffect(snackContent) {
                             kotlinx.coroutines.delay(
                                 when (snackContent.duration) {
@@ -257,24 +255,28 @@ fun MainScreenContent(
             ScreenBarsColor(
                 colorScheme = mainViewModel.colorScheme.value, route = currentRoute ?: ""
             )
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(RarimeTheme.colors.backgroundPrimary)
-            )
 
             key(extIntDataURI?.second) {
                 extIntDataURI?.first?.let { uri ->
+                    // If the "external" route comes in, the handler shows a blank white screen,
+                    // thus  it's necessary to immediately redirect back to the Home route.
+                    if (currentRoute == "external") {
+                        navigateWithPopUp(Screen.Main.Home.route)
+                    }
                     ExtIntActionPreview(
                         navigate = navigateWithPopUp,
                         dataUri = uri,
+                        onError = {
+                            navigateWithPopUp(Screen.Main.Home.route)
+                            mainViewModel.setExtIntDataURI(null)
+                        },
                         onCancel = {
                             navigateWithPopUp(Screen.Main.Home.route)
                             mainViewModel.setExtIntDataURI(null)
                         },
                         onSuccess = { extDestination, localDestination ->
                             if (!extDestination.isNullOrEmpty()) {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(extDestination))
+                                val intent = Intent(Intent.ACTION_VIEW, extDestination.toUri())
 
                                 try {
                                     context.startActivity(intent)
