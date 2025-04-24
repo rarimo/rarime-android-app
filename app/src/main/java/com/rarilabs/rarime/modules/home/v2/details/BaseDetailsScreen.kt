@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,6 +54,7 @@ data class DetailsProperties(
     val id: Int,
     val header: String,
     val subTitle: String,
+    val subTitleStyle: TextStyle? = null,
     val caption: String? = null,
     val modifier: Modifier = Modifier,
     val backgroundGradient: Brush,
@@ -176,7 +178,7 @@ fun BaseDetailsScreen(
                             )
 
                             Text(
-                                style = RarimeTheme.typography.additional1,
+                                style = properties.subTitleStyle ?: RarimeTheme.typography.additional1,
                                 text = properties.subTitle,
                                 color = RarimeTheme.colors.baseBlack.copy(alpha = 0.4f),
                                 modifier = Modifier
