@@ -77,6 +77,7 @@ fun MainScreenRoutes(
 
     fun navigateWithSavedNextNavScreen(route: String) {
         savedNextNavScreen?.let {
+            navigateWithPopUp(savedNextNavScreen!!)
             savedNextNavScreen = null
         } ?: run {
             navigateWithPopUp(route)
