@@ -41,6 +41,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -442,8 +443,15 @@ private fun RuleSheet(
     onSave: (LikenessRule) -> Unit,
 ) {
 
+
     var localSelectedRule: LikenessRule? by remember {
         mutableStateOf(selectedRule)
+    }
+
+    LaunchedEffect(state.showSheet) {
+        if (!state.showSheet) {
+            localSelectedRule = selectedRule
+        }
     }
 
     val rules = listOf(
