@@ -399,7 +399,7 @@ fun LikenessFrame(
     faceImage: ImageBitmap,
     @DrawableRes frameRes: Int,
     modifier: Modifier = Modifier,
-    frameSize: Dp = 260.dp,       // size of your white PNG background
+    frameSize: Dp = 320.dp,       // size of your white PNG background
     faceSize: Dp = 320.dp,        // make this larger than frameSize!
     //faceOffsetY: Dp = (-30).dp    // nudge it up so it overflows nicely
 ) {
@@ -417,7 +417,7 @@ fun LikenessFrame(
             modifier = Modifier
                 .size(frameSize)
                 .aspectRatio(1f),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Fit
         )
 
         // 2) face (on top, larger than the frame, overflowing)

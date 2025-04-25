@@ -120,7 +120,7 @@ fun DigitalLikenessCamera(
                 id = R.drawable.ic_face_scan, size = 40.dp, tint = RarimeTheme.colors.baseWhite
             )
             Text(
-                text = "Turn your head slightly to the left",
+                text = "Keep your face in the frame",
                 style = RarimeTheme.typography.subtitle5,
                 color = RarimeTheme.colors.baseWhite
             )
