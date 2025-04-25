@@ -54,6 +54,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.withContext
 import org.web3j.utils.Numeric
 import java.math.BigInteger
@@ -81,6 +82,7 @@ class VotingManager @Inject constructor(
     val activeVotes: StateFlow<List<Poll>>
         get() = _activeVotes.asStateFlow()
 
+    val allVotesFlow = combine(activeVotes, historyVotes) { a, h -> a + h }
 
     private var _selectedPoll = MutableStateFlow<UserInPoll?>(null)
 
@@ -663,4 +665,5 @@ sealed class VoteError(message: String? = null) : Exception(message) {
     data class NetworkError(val details: String) : VoteError(details)
     data class UniquenessError(val details: String) : VoteError(details)
     data class UnknownError(val details: String) : VoteError(details)
+    data class NotFound(val details: String) : VoteError(details)
 }
