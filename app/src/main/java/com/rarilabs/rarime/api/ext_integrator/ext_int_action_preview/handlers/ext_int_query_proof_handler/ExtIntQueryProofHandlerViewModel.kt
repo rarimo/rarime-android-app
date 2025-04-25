@@ -7,6 +7,7 @@ import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorApiManager
 import com.rarilabs.rarime.api.ext_integrator.models.NoActiveIdentity
 import com.rarilabs.rarime.api.ext_integrator.models.NoPassport
 import com.rarilabs.rarime.api.ext_integrator.models.QueryProofGenResponse
+import com.rarilabs.rarime.api.ext_integrator.models.YourAgeDoesNotMeetTheRequirements
 import com.rarilabs.rarime.api.ext_integrator.models.YourCitizenshipDoesNotMeetTheRequirements
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
@@ -49,7 +50,7 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
         val tempMap = mutableMapOf<String, String>()
 
         try {
-            var age_lower_bound_years =
+            val ageLowerBoundYears =
                 if (queryProofParametersRequest.value?.data?.attributes?.birth_date_upper_bound != null && queryProofParametersRequest.value?.data?.attributes?.birth_date_upper_bound != "0x303030303030") {
                     val birthDateUpperBoundBytes = Numeric.hexStringToByteArray(
                         queryProofParametersRequest.value?.data?.attributes?.birth_date_upper_bound
@@ -62,22 +63,17 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
                     0
                 }
 
+            if (ageLowerBoundYears > 0) {
+                tempMap["Age"] = "${ageLowerBoundYears}+"
+            }
+
             val birthDate = passportManager.passport.value?.personDetails?.birthDate
                 ?: throw Exception("Birth date is null")
             val age = calculateAgeFromBirthDate(birthDate)
 
-            if (age_lower_bound_years > 0) {
-                tempMap.set(
-                    "Age", "${age_lower_bound_years}+"
-                )
+            if (ageLowerBoundYears > 0 && ageLowerBoundYears > age) {
+                throw YourAgeDoesNotMeetTheRequirements()
             }
-
-
-            if (age_lower_bound_years > 0 && age_lower_bound_years > age) {
-                throw YourCitizenshipDoesNotMeetTheRequirements()
-            }
-
-
         } catch (e: Exception) {
             Log.e("age_lower_bound_years", e.message, e)
         }
@@ -95,7 +91,7 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
         }
 
         try {
-            var nationality =
+            val nationality =
                 if (queryProofParametersRequest.value?.data?.attributes?.citizenship_mask != null && queryProofParametersRequest.value?.data?.attributes?.citizenship_mask != "0x") {
                     val nationality =
                         Numeric.hexStringToByteArray(queryProofParametersRequest.value?.data?.attributes?.citizenship_mask)
@@ -108,19 +104,16 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
                     ""
                 }
 
+            if (nationality.isNotEmpty()) {
+                tempMap["Nationality"] = nationality
+            }
+
             val citizenship = passportManager.passport.value?.personDetails?.issuerAuthority
                 ?: throw Exception("Citizenship is null")
 
             if (nationality != citizenship) {
                 throw YourCitizenshipDoesNotMeetTheRequirements()
             }
-
-            if (nationality.isNotEmpty()) {
-                tempMap.set(
-                    "Nationality", nationality
-                )
-            }
-
 
         } catch (e: Exception) {
             Log.e("nationality", e.message, e)
