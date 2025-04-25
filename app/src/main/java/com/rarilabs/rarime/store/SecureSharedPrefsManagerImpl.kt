@@ -457,12 +457,18 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         editor.apply()
     }
 
-    override fun getSelectedLikenessRule(): LikenessRule {
+    override fun getSelectedLikenessRule(): LikenessRule? {
+
+        val enumValue = getSharedPreferences().getInt(
+            accessTokens["SELECTED_LIKENESS_OPTION"],
+            -1
+        )
+
+        if (enumValue == -1)
+            return null
+
         return LikenessRule.fromInt(
-            getSharedPreferences().getInt(
-                accessTokens["SELECTED_LIKENESS_OPTION"],
-                LikenessRule.ALWAYS_ALLOW.value
-            )
+            enumValue
         )
     }
 

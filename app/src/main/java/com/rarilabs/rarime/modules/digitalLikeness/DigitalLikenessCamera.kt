@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -133,43 +134,54 @@ fun DigitalLikenessCamera(
                 textAlign = TextAlign.Center,
             )
 
-            if (selectedBitmap == null) {
-
-                PrimaryButton(
-                    onClick = {
-                        // Freeze camera by capturing current frame
-                        selectedBitmap = previewView.bitmap
-                    }, text = "Photo"
-                )
-            } else {
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    PrimaryButton(
-                        modifier = modifier.weight(1f),
-                        leftIcon = R.drawable.ic_restart_line,
-                        onClick = {
-                            // Unfreeze: clear captured frame
-                            selectedBitmap = null
-                        },
-                    )
+            Column(modifier = Modifier.padding(top = 8.dp)) {
+                if (selectedBitmap == null) {
 
                     PrimaryButton(
-                        text = "Continue",
+                        size = ButtonSize.Large,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
                         onClick = {
-
-                            val density = context.resources.displayMetrics.density
-                            val horizontalPaddingPx = 50f * density
-                            val topPaddingPx = 200f * density
-                            val bitmap = cropBitmapToOval(
-                                src = selectedBitmap!!,
-                                aspectRatio = 395f / 290f,
-                                horizontalPaddingPx = horizontalPaddingPx,
-                                topPaddingPx = topPaddingPx
-                            )
-                            onNext(bitmap)
-                        }
+                            selectedBitmap = previewView.bitmap
+                        }, text = "Photo"
                     )
+                } else {
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        PrimaryButton(
+                            modifier = Modifier.weight(3f),
+                            size = ButtonSize.Large,
+                            leftIcon = R.drawable.ic_restart_line,
+                            onClick = {
+                                // Unfreeze: clear captured frame
+                                selectedBitmap = null
+                            },
+                        )
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        PrimaryButton(
+                            modifier = Modifier.weight(7f),
+                            size = ButtonSize.Large,
+                            text = "Continue",
+                            onClick = {
+                                val density = context.resources.displayMetrics.density
+                                val horizontalPaddingPx = 50f * density
+                                val topPaddingPx = 200f * density
+                                val bitmap = cropBitmapToOval(
+                                    src = selectedBitmap!!,
+                                    aspectRatio = 395f / 290f,
+                                    horizontalPaddingPx = horizontalPaddingPx,
+                                    topPaddingPx = topPaddingPx
+                                )
+                                onNext(bitmap)
+                            }
+                        )
+                    }
                 }
             }
+
+
         }
     }
 }

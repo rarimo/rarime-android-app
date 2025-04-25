@@ -2,7 +2,6 @@ package com.rarilabs.rarime.modules.home.v2.details
 
 import android.Manifest
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -11,6 +10,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
@@ -35,14 +35,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,6 +76,7 @@ import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessCamera
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessProcessing
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
+import com.rarilabs.rarime.ui.base.BaseTooltip
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppSheetState
@@ -83,6 +87,7 @@ import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.BackgroundRemover
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
+import kotlinx.coroutines.launch
 
 const val ALREADY_SET_AMOUNT = "49,421"
 
@@ -128,7 +133,11 @@ fun DigitalLikeness(
     )
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalPermissionsApi::class)
+@OptIn(
+    ExperimentalSharedTransitionApi::class,
+    ExperimentalPermissionsApi::class,
+    ExperimentalMaterial3Api::class
+)
 @Composable
 fun DigitalLikenessContent(
     modifier: Modifier = Modifier,
@@ -137,7 +146,7 @@ fun DigitalLikenessContent(
     innerPaddings: Map<ScreenInsets, Number>,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
-    selectedRule: LikenessRule,
+    selectedRule: LikenessRule?,
     setSelectedRule: (LikenessRule) -> Unit,
     isScanned: Boolean,
     setIsScanned: (Boolean) -> Unit,
@@ -146,6 +155,10 @@ fun DigitalLikenessContent(
 ) {
     val isPreview = LocalInspectionMode.current
     val appSheetState = rememberAppSheetState()
+
+    val tooltipState = rememberTooltipState()
+
+    val scope = rememberCoroutineScope()
 
     val cameraPermissionState = if (!isPreview) rememberPermissionState(Manifest.permission.CAMERA)
     else null
@@ -170,14 +183,21 @@ fun DigitalLikenessContent(
             } else {
                 DigitalLikenessProcessing(
                     modifier = Modifier.padding(vertical = 16.dp),
-                    onNext = { setIsScanned(true); saveFaceImage(selectedBitmap!!);appSheetState.hide() })
+                    onNext = {
+                        setIsScanned(true)
+                        saveFaceImage(selectedBitmap!!)
+                        appSheetState.hide()
+
+                        scope.launch {
+                            tooltipState.show()
+                        }
+                    })
             }
         }
     }
 
-    RuleSheet(state = ruleSheetState, selectedRule = selectedRule, onRuleSelect = { newRule ->
+    RuleSheet(state = ruleSheetState, selectedRule = selectedRule, onSave = { newRule ->
         setSelectedRule(newRule)
-    }, onSave = {
         ruleSheetState.hide()
         if (!isScanned) {
             appSheetState.show()
@@ -192,11 +212,8 @@ fun DigitalLikenessContent(
         subTitleStyle = RarimeTheme.typography.additional1.copy(
             brush = Brush.linearGradient(
                 colors = listOf(
-                    Color(0xFF655CA4),
-                    Color(0xFF7E66B2)
-                ),
-                start = Offset(0f, 0f),
-                end = Offset(100f, 0f)
+                    Color(0xFF655CA4), Color(0xFF7E66B2)
+                ), start = Offset(0f, 0f), end = Offset(100f, 0f)
             )
         ),
         caption = if (isScanned) null else stringResource(R.string.first_human_ai_contract),
@@ -226,16 +243,27 @@ fun DigitalLikenessContent(
         onBack = onBack,
         header = if (isScanned) { headerKey, subTitleKey ->
             with(sharedTransitionScope) {
+
+
                 Text(
                     style = RarimeTheme.typography.h5,
                     color = RarimeTheme.colors.baseBlack,
                     text = "My Rules:",
-                    modifier = Modifier.sharedBounds(
-                        rememberSharedContentState(
-                            headerKey
-                        ), animatedVisibilityScope = animatedContentScope
-                    )
-                )
+                    modifier = Modifier
+
+                        .clickable {
+                            scope.launch {
+                                tooltipState.show(
+                                    MutatePriority.Default
+                                )
+                            }
+                        }
+                        .sharedBounds(
+                            rememberSharedContentState(
+                                headerKey
+                            ),
+                            animatedVisibilityScope = animatedContentScope,
+                        ))
 
                 val selectedRuleText = when (selectedRule) {
                     LikenessRule.ALWAYS_ALLOW -> {
@@ -249,45 +277,60 @@ fun DigitalLikenessContent(
                     LikenessRule.ASK_EVERYTIME -> {
                         stringResource(R.string.ask_me_every_time)
                     }
+                    else -> ""
                 }
 
 
-                PrimaryTextButton(
-                    modifier = Modifier.skipToLookaheadSize(),
-                    onClick = { ruleSheetState.show(); Log.i("XD", "HERE") },
-                    content = {
-                        Box(
+                BaseTooltip(
+                    state = tooltipState, tooltipContent = {
+                        Text(
                             modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .wrapContentWidth()
-                                    .align(Alignment.TopStart)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(RarimeTheme.colors.baseBlack)
+                                .padding(horizontal = 12.dp, vertical = 8.dp),
+                            text = "Success! Your rule is set. You can\nupdate it anytime by clicking the title.",
+                            color = RarimeTheme.colors.baseWhite
+                        )
+                    }) {
+
+                    PrimaryTextButton(
+                        modifier = Modifier.skipToLookaheadSize(),
+                        onClick = { ruleSheetState.show() },
+                        content = {
+                            Box(
+                                modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text(
-                                    text = selectedRuleText,
-                                    style = props.subTitleStyle
-                                        ?: RarimeTheme.typography.additional2,
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier
-                                        .padding(top = 12.dp)
-                                        .sharedBounds(
-                                            rememberSharedContentState(subTitleKey),
-                                            animatedVisibilityScope = animatedContentScope
-                                        )
-                                        .skipToLookaheadSize()
-                                )
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_carret_down),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .padding(bottom = 15.dp)
-                                        .align(Alignment.Bottom)
-                                )
+                                        .wrapContentWidth()
+                                        .align(Alignment.TopStart)
+                                ) {
+                                    Text(
+                                        text = selectedRuleText,
+                                        style = props.subTitleStyle
+                                            ?: RarimeTheme.typography.additional2,
+                                        modifier = Modifier
+                                            .padding(top = 12.dp)
+                                            .sharedBounds(
+                                                rememberSharedContentState(subTitleKey),
+                                                animatedVisibilityScope = animatedContentScope
+                                            )
+                                            .skipToLookaheadSize()
+                                    )
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_carret_down),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .padding(bottom = 15.dp)
+                                            .align(Alignment.Bottom)
+                                    )
+                                }
                             }
-                        }
-                    })
+                        })
+                }
+
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 24.dp))
             }
         } else {
@@ -365,8 +408,7 @@ fun LikenessFrame(
             .height(frameSize)
             .graphicsLayer { clip = false }
             .then(modifier),  // allow overflow
-        contentAlignment = Alignment.TopCenter
-    ) {
+        contentAlignment = Alignment.TopCenter) {
         // 1) background frame (bottom)
         Image(
             painter = painterResource(frameRes),
@@ -395,26 +437,30 @@ fun LikenessFrame(
 @Composable
 private fun RuleSheet(
     state: AppSheetState,
-    selectedRule: LikenessRule,
-    onRuleSelect: (LikenessRule) -> Unit,
+    selectedRule: LikenessRule?,
     modifier: Modifier = Modifier,
-    onSave: () -> Unit,
+    onSave: (LikenessRule) -> Unit,
 ) {
+
+    var localSelectedRule: LikenessRule? by remember {
+        mutableStateOf(selectedRule)
+    }
+
     val rules = listOf(
         RuleOptionData(
-            isSelected = LikenessRule.ALWAYS_ALLOW == selectedRule,
+            isSelected = LikenessRule.ALWAYS_ALLOW == localSelectedRule,
             type = LikenessRule.ALWAYS_ALLOW,
             title = stringResource(R.string.use_my_likeness_and_pay_me),
             badgeText = stringResource(R.string.soon),
             iconRes = R.drawable.money_dollar_circle_line
         ), RuleOptionData(
-            isSelected = LikenessRule.REJECT == selectedRule,
+            isSelected = LikenessRule.REJECT == localSelectedRule,
             type = LikenessRule.REJECT,
             title = stringResource(R.string.don_t_sell_my_face_data),
             badgeText = stringResource(R.string.soon),
             iconRes = R.drawable.subtract_fill
         ), RuleOptionData(
-            isSelected = LikenessRule.ASK_EVERYTIME == selectedRule,
+            isSelected = LikenessRule.ASK_EVERYTIME == localSelectedRule,
             type = LikenessRule.ASK_EVERYTIME,
             title = stringResource(R.string.ask_me_every_time),
             badgeText = stringResource(R.string.soon),
@@ -437,9 +483,9 @@ private fun RuleSheet(
                     modifier = Modifier.padding(top = 12.dp, bottom = 24.dp)
                 ) {
                     Text(stringResource(R.string.set_the_rule), style = RarimeTheme.typography.h2)
-                    // TODO: Recheck the text below
+
                     Text(
-                        "All of those options are demo and....",
+                        "The rules are yours to change",
                         color = RarimeTheme.colors.textSecondary
                     )
                 }
@@ -462,15 +508,18 @@ private fun RuleSheet(
                 items(rules.size) { index ->
                     RuleOption(
                         item = rules[index], onClick = { likenessRule ->
-                            onRuleSelect(likenessRule)
+                            localSelectedRule = likenessRule
                         })
                 }
             }
             Spacer(Modifier.height(17.dp))
             PrimaryButton(
-                text = stringResource(R.string.save),
+                text = if (localSelectedRule == null) stringResource(R.string.set_a_rule) else stringResource(
+                    R.string.save
+                ),
+                enabled = localSelectedRule != null,
                 size = ButtonSize.Large,
-                onClick = onSave,
+                onClick = { onSave(localSelectedRule!!) },
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -580,7 +629,6 @@ fun RuleSheetPreview() {
     RuleSheet(
         ruleSheetState,
         selectedRule = LikenessRule.ALWAYS_ALLOW,
-        onRuleSelect = {},
         onSave = { ruleSheetState.hide() })
 }
 

@@ -33,7 +33,7 @@ class LikenessManager @Inject constructor(
     val isScanned: StateFlow<Boolean>
         get() = _isScanned.asStateFlow()
 
-    val selectedRule: StateFlow<LikenessRule>
+    val selectedRule: StateFlow<LikenessRule?>
         get() = _selectedRule.asStateFlow()
 
     fun setSelectedRule(selectedRule: LikenessRule) {

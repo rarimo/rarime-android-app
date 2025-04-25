@@ -91,7 +91,7 @@ interface SecureSharedPrefsManager {
     fun getIsAlreadyReserved(): Boolean
 
     fun saveSelectedLikenessRule(likenessRule: LikenessRule)
-    fun getSelectedLikenessRule(): LikenessRule
+    fun getSelectedLikenessRule(): LikenessRule?
 
     //TODO change to actual data
     fun saveIsLikenessScanned(flag: Boolean)

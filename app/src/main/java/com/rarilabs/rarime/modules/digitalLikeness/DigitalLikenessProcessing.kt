@@ -39,7 +39,6 @@ enum class ProcessingStatus(val title: String) {
     DOWNLOADING("Downloading circuit data"),
     EXTRACTING_FEATURES("Extracting image features"),
     RUNNING_ZKML("Running ZKML"),
-    OVERRIDING_ACCESS("Overriding access"),
     FINSH("")
 }
 
@@ -73,10 +72,6 @@ fun DigitalLikenessProcessing(modifier: Modifier = Modifier, onNext: () -> Unit)
                         }
 
                         ProcessingStatus.RUNNING_ZKML -> {
-                            currentStep = ProcessingStatus.OVERRIDING_ACCESS
-                        }
-
-                        ProcessingStatus.OVERRIDING_ACCESS -> {
                             currentStep = ProcessingStatus.FINSH
                         }
 
@@ -95,16 +90,11 @@ fun DigitalLikenessProcessing(modifier: Modifier = Modifier, onNext: () -> Unit)
 
     Column(
         Modifier
+            .padding(horizontal = 16.dp)
             .background(RarimeTheme.colors.backgroundPrimary)
             .then(modifier)
     ) {
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            text = "Please wait",
-            color = RarimeTheme.colors.textPrimary,
-            style = RarimeTheme.typography.h1
-        )
+
 
         GifViewer(
             gifId = R.raw.likeness_processing,
@@ -117,12 +107,13 @@ fun DigitalLikenessProcessing(modifier: Modifier = Modifier, onNext: () -> Unit)
         Text(
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
-            text = "",
+            text = "Please wait",
             color = RarimeTheme.colors.textPrimary,
             style = RarimeTheme.typography.h1
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+
+        Spacer(modifier = Modifier.weight(1f))
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             for (i in ProcessingStatus.entries) {

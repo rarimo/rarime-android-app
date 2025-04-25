@@ -190,7 +190,7 @@ fun HomeScreenContent(
     currentPointsBalance: Long?,
     notificationsCount: Int,
     isLikenessScanned: Boolean,
-    selectedLikenessRule: LikenessRule,
+    selectedLikenessRule: LikenessRule?,
     faceImage: Bitmap?,
     passport: EDocument?
 ) {
@@ -279,6 +279,7 @@ fun HomeScreenContent(
                                 LikenessRule.ASK_EVERYTIME -> {
                                     stringResource(R.string.ask_me_every_time)
                                 }
+                                else -> ""
                             }
                         with(sharedTransitionScope) {
                             Text(

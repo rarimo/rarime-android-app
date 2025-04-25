@@ -161,7 +161,10 @@ fun BaseDetailsScreen(
                             contentScale = ContentScale.FillWidth
                         )
                     } else {
-                        image()
+                        Column(properties.imageModifier) {
+                            image()
+                        }
+
                     }
 
 
