@@ -92,12 +92,12 @@ fun HomeScreen(
     setVisibilityOfBottomBar: (Boolean) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-
-
     val pointsBalance by viewModel.pointsToken.collectAsState()
     val pointsEvent by viewModel.pointsEventData.collectAsState()
 
     val passport by viewModel.passport.collectAsState()
+
+    val hasVotes by viewModel.hasVotes.collectAsState()
 
     val notifications: List<NotificationEntityData> by viewModel.notifications.collectAsState()
 
@@ -153,6 +153,7 @@ fun HomeScreen(
         navigateWithPopUp,
         setVisibilityOfBottomBar,
         innerPaddings,
+        hasVotes = hasVotes,
         pointsEvent = pointsEvent,
         pointsBalance = pointsBalance?.balanceDetails,
         firstReferralCode = firstReferralCode,
@@ -171,6 +172,7 @@ fun HomeScreenContent(
     navigateWithPopUp: (String) -> Unit,
     setVisibilityOfBottomBar: (Boolean) -> Unit,
     innerPaddings: Map<ScreenInsets, Number>,
+    hasVotes: Boolean,
     pointsEvent: PointsEventData?,
     pointsBalance: PointsBalanceData?,
     firstReferralCode: String?,
@@ -218,43 +220,42 @@ fun HomeScreenContent(
                 onCardClick = {},
             ),
 
-            CardContent(
-                type = CardType.FREEDOMTOOL,
-                properties = CardProperties(
-                    header = "Freedomtool",
-                    subTitle = "Voting",
-                    icon = R.drawable.ic_check_unframed,
-                    image = R.drawable.freedomtool_bg,
-                    backgroundGradient = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFFD5FEC8), Color(0xFF80ed99)
-                        )
+        ).also { list ->
+            if (hasVotes) {
+                list.add(
+                    CardContent(
+                        type = CardType.FREEDOMTOOL,
+                        properties = CardProperties(
+                            header = "Freedomtool",
+                            subTitle = "Voting",
+                            icon = R.drawable.ic_check_unframed,
+                            image = R.drawable.freedomtool_bg,
+                            backgroundGradient = Brush.linearGradient(
+                                listOf(Color(0xFFD5FEC8), Color(0xFF80ED99))
+                            )
+                        ),
+                        onCardClick = { }
                     )
-                ),
-                onCardClick = {},
-            ),
-
-            CardContent(
-                type = CardType.CLAIM, properties = CardProperties(
-                    header = if (currentPointsBalance != null && currentPointsBalance != 0L) context.getString(
-                        R.string.reserved
-                    ) else context.getString(
-                        R.string.upcoming
-                    ),
-                    subTitle = if (currentPointsBalance != null && currentPointsBalance != 0L) ("$currentPointsBalance " + context.getString(
-                        R.string.rmo
-                    )) else context.getString(
-                        R.string.rmo
-                    ),
-                    icon = R.drawable.ic_rarimo,
-                    image = R.drawable.claim_rmo_image,
-                    backgroundGradient = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFFDFFCC4), Color(0xFFF4F3F0)
-                        )
+                )
+            }
+            if (currentPointsBalance != null && currentPointsBalance != 0L) {
+                list.add(
+                    CardContent(
+                        type = CardType.CLAIM,
+                        properties = CardProperties(
+                            header = context.getString(R.string.reserved),
+                            subTitle = "$currentPointsBalance ${context.getString(R.string.rmo)}",
+                            icon = R.drawable.ic_rarimo,
+                            image = R.drawable.claim_rmo_image,
+                            backgroundGradient = Brush.linearGradient(
+                                listOf(Color(0xFFDFFCC4), Color(0xFFF4F3F0))
+                            )
+                        ),
+                        onCardClick = { }
                     )
-                ), onCardClick = {}, footer = {})
-        )
+                )
+            }
+        }
 
 
 //            CardContent(
@@ -526,6 +527,7 @@ private fun HomeScreenPreview() {
                 firstReferralCode = "",
                 currentPointsBalance = 2323.toLong(),
                 notificationsCount = 2,
+                hasVotes = true,
                 passport = EDocument(
                     personDetails = PersonDetails(
                         name = "Mike"
