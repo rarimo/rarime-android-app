@@ -112,6 +112,15 @@ fun DigitalLikenessProcessing(modifier: Modifier = Modifier, onNext: () -> Unit)
             style = RarimeTheme.typography.h1
         )
 
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            textAlign = TextAlign.Center,
+            text = currentStep.title,
+            color = RarimeTheme.colors.textSecondary,
+            style = RarimeTheme.typography.body3
+        )
 
         Spacer(modifier = Modifier.weight(1f))
 
