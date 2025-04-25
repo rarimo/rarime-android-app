@@ -47,13 +47,18 @@ import com.rarilabs.rarime.util.decodeHexString
 import identity.CallDataBuilder
 import identity.Identity
 import identity.Profile
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
 import org.web3j.utils.Numeric
 import java.math.BigInteger
@@ -81,6 +86,7 @@ class VotingManager @Inject constructor(
     val activeVotes: StateFlow<List<Poll>>
         get() = _activeVotes.asStateFlow()
 
+    val allVotesFlow = combine(activeVotes, historyVotes) { a, h -> a + h }
 
     private var _selectedPoll = MutableStateFlow<UserInPoll?>(null)
 

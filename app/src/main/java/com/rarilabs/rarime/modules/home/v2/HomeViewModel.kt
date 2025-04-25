@@ -1,12 +1,16 @@
 package com.rarilabs.rarime.modules.home.v2
 
 import android.app.Application
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.rarilabs.rarime.api.airdrop.AirDropManager
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.points.models.BaseEvents
 import com.rarilabs.rarime.api.points.models.PointsEventData
 import com.rarilabs.rarime.api.registration.RegistrationManager
+import com.rarilabs.rarime.api.voting.VotingManager
+import com.rarilabs.rarime.api.voting.models.Poll
 import com.rarilabs.rarime.manager.NotificationManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.WalletManager
@@ -16,8 +20,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -30,10 +38,24 @@ class HomeViewModel @Inject constructor(
     private val pointsManager: PointsManager,
     private val notificationManager: NotificationManager,
     private val registrationManager: RegistrationManager,
-    private val sharedPrefsManager: SecureSharedPrefsManager
+    private val sharedPrefsManager: SecureSharedPrefsManager,
+    private val votingManager: VotingManager,
 ) : AndroidViewModel(app) {
 
     val pointsToken = walletManager.pointsToken
+
+    val allUserVotes: StateFlow<List<Poll>> = votingManager.allVotesFlow
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+
+    val isUserVoted: StateFlow<Boolean> =
+        votingManager.allVotesFlow
+            .map { it.isNotEmpty() }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = false
+            )
 
     val passport = passportManager.passport
 
