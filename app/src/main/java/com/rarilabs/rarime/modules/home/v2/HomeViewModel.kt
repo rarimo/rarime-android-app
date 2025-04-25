@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.modules.home.v2
 
 import android.app.Application
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.rarilabs.rarime.api.airdrop.AirDropManager
@@ -23,7 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
@@ -44,13 +43,14 @@ class HomeViewModel @Inject constructor(
 
     val pointsToken = walletManager.pointsToken
 
-    val allUserVotes: StateFlow<List<Poll>> = votingManager.allVotesFlow
+    private val allUserVotes: StateFlow<List<Poll>> = votingManager.allVotesFlow
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
 
-    val isUserVoted: StateFlow<Boolean> =
-        votingManager.allVotesFlow
+    val hasVotes: StateFlow<Boolean> =
+        allUserVotes
             .map { it.isNotEmpty() }
+            .distinctUntilChanged()
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),

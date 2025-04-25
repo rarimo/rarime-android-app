@@ -97,7 +97,7 @@ fun HomeScreen(
 
     val passport by viewModel.passport.collectAsState()
 
-    val isUserVoted by viewModel.isUserVoted.collectAsState()
+    val hasVotes by viewModel.hasVotes.collectAsState()
 
     val notifications: List<NotificationEntityData> by viewModel.notifications.collectAsState()
 
@@ -153,7 +153,7 @@ fun HomeScreen(
         navigateWithPopUp,
         setVisibilityOfBottomBar,
         innerPaddings,
-        isUserVoted = isUserVoted,
+        hasVotes = hasVotes,
         pointsEvent = pointsEvent,
         pointsBalance = pointsBalance?.balanceDetails,
         firstReferralCode = firstReferralCode,
@@ -172,7 +172,7 @@ fun HomeScreenContent(
     navigateWithPopUp: (String) -> Unit,
     setVisibilityOfBottomBar: (Boolean) -> Unit,
     innerPaddings: Map<ScreenInsets, Number>,
-    isUserVoted: Boolean,
+    hasVotes: Boolean,
     pointsEvent: PointsEventData?,
     pointsBalance: PointsBalanceData?,
     firstReferralCode: String?,
@@ -221,7 +221,7 @@ fun HomeScreenContent(
             ),
 
         ).also { list ->
-            if (isUserVoted) {
+            if (hasVotes) {
                 list.add(
                     CardContent(
                         type = CardType.FREEDOMTOOL,
@@ -527,7 +527,7 @@ private fun HomeScreenPreview() {
                 firstReferralCode = "",
                 currentPointsBalance = 2323.toLong(),
                 notificationsCount = 2,
-                isUserVoted = true,
+                hasVotes = true,
                 passport = EDocument(
                     personDetails = PersonDetails(
                         name = "Mike"
