@@ -97,8 +97,6 @@ fun HomeScreen(
 
     val passport by viewModel.passport.collectAsState()
 
-    val allUserVotes by viewModel.allUserVotes.collectAsState()
-
     val isUserVoted by viewModel.isUserVoted.collectAsState()
 
     val notifications: List<NotificationEntityData> by viewModel.notifications.collectAsState()
