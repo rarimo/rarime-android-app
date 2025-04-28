@@ -9,7 +9,6 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.noirandroid.lib.Circuit
-import com.noirandroid.lib.Proof
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.BuildConfig
 import com.rarilabs.rarime.api.points.PointsManager
@@ -169,12 +168,10 @@ class ProofGenerationManager @Inject constructor(
                 generateRegisterIdentityProofPlonk(
                     eDocument,
                     registerIdentityCircuitType = circuitType
-                ).toString()
+                )
             } else {
-                generateRegisterIdentityProofGroth(eDocument, circuitData, circuitType).toString()
+                generateRegisterIdentityProofGroth(eDocument, circuitData, circuitType)
             }
-
-
 
 
             if (!BuildConfig.isTestnet) {
@@ -411,7 +408,7 @@ class ProofGenerationManager @Inject constructor(
     private suspend fun generateRegisterIdentityProofPlonk(
         eDocument: EDocument,
         registerIdentityCircuitType: RegisterIdentityCircuitType
-    ): Proof {
+    ): ZkProof {
         val customDispatcher = Executors.newFixedThreadPool(1) { runnable ->
             Thread(null, runnable, "LargeStackThread", 100 * 1024 * 1024) // 100 MB stack size
         }.asCoroutineDispatcher()
@@ -445,7 +442,10 @@ class ProofGenerationManager @Inject constructor(
 
             val proof = circuit.prove(inputs, proofType = "plonk", recursive = false)
 
-            proof
+            //TODO fix it
+            val zk = ZkProof.getProofFromSavedData(proof.proof.toString())
+
+            return@withContext zk
         }
     }
 

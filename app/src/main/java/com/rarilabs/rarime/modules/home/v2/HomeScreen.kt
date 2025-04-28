@@ -94,6 +94,10 @@ fun HomeScreen(
 ) {
 
 
+    LaunchedEffect(Unit) {
+
+    }
+
     val pointsBalance by viewModel.pointsToken.collectAsState()
     val pointsEvent by viewModel.pointsEventData.collectAsState()
 

@@ -2,6 +2,25 @@ package com.rarilabs.rarime.util.data
 
 import com.google.gson.Gson
 
+private val gson = Gson() // 1 раз на весь файл
+
+interface ZkProof {
+    fun getProof(): String
+    fun getPubSignals(): List<String>
+    fun preparingForSaving(): String
+
+    companion object {
+        fun getProofFromSavedData(data: String): ZkProof {
+            return runCatching { gson.fromJson(data, GrothProof::class.java) }
+                .getOrNull()
+                ?.takeIf { it.proof != null && it.pub_signals != null }
+                ?: runCatching { gson.fromJson(data, PlonkProof::class.java) }
+                    .getOrNull()
+                    ?.takeIf { it.proof != null && it.pub_signals != null }
+                ?: throw IllegalArgumentException("Unknown proof format")
+        }
+    }
+}
 
 data class Proof(
     val pi_a: List<String>,
@@ -11,14 +30,29 @@ data class Proof(
 ) {
     companion object {
         fun fromJson(jsonString: String): Proof {
-            val json = Gson().fromJson(jsonString, Proof::class.java)
-            return json
+            return gson.fromJson(jsonString, Proof::class.java)
         }
     }
-
 }
 
-data class ZkProof(
+data class PlonkProof(
+    val proof: String,
+    val pub_signals: List<String>,
+) : ZkProof {
+    override fun getProof(): String = proof
+
+    override fun getPubSignals(): List<String> = pub_signals
+
+    override fun preparingForSaving(): String = gson.toJson(this)
+}
+
+data class GrothProof(
     val proof: Proof,
     val pub_signals: List<String>
-)
+) : ZkProof {
+    override fun getProof(): String = gson.toJson(proof)
+
+    override fun getPubSignals(): List<String> = pub_signals
+
+    override fun preparingForSaving(): String = gson.toJson(this)
+}

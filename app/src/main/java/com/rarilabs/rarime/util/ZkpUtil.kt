@@ -5,8 +5,8 @@ import android.content.res.AssetManager
 import com.google.gson.Gson
 import com.rarilabs.rarime.util.ZkpUtil.groth16InternalStorage
 import com.rarilabs.rarime.util.ZkpUtil.groth16ProverBig
+import com.rarilabs.rarime.util.data.GrothProof
 import com.rarilabs.rarime.util.data.Proof
-import com.rarilabs.rarime.util.data.ZkProof
 import java.io.ByteArrayOutputStream
 
 object ZkpUtil {
@@ -37,6 +37,16 @@ object ZkpUtil {
         errorMsgMaxSize: Long,
     ): Int
 
+    external fun bionet(
+        circuitBuffer: ByteArray,
+        circuitSize: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
 
     external fun queryIdentity(
         circuitBuffer: ByteArray,
@@ -532,7 +542,7 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         proofFunction: (
             datFilePath: String, datFileLen: Long, jsonBuffer: ByteArray, jsonSize: Long, wtnsBuffer: ByteArray, wtnsSize: LongArray, errorMsg: ByteArray, errorMsgMaxSize: Long
         ) -> Int
-    ): ZkProof {
+    ): GrothProof {
 
 
         val msg = ByteArray(256)
@@ -621,7 +631,7 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         val foramtedProof = proofDataZip.toString(Charsets.UTF_8).slice(0..index)
         val proof = Proof.fromJson(foramtedProof)
 
-        return ZkProof(
+        return GrothProof(
             proof = proof, pub_signals = getPubSignals(formatedPubData).toList()
         )
     }
@@ -630,7 +640,7 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         zkeyFileName: String, datFile: Int, inputs: ByteArray, proofFunction: (
             circuitBuffer: ByteArray, circuitSize: Long, jsonBuffer: ByteArray, jsonSize: Long, wtnsBuffer: ByteArray, wtnsSize: LongArray, errorMsg: ByteArray, errorMsgMaxSize: Long
         ) -> Int
-    ): ZkProof {
+    ): GrothProof {
         val datFile = openRawResourceAsByteArray(datFile)
 
         val msg = ByteArray(256)
@@ -714,7 +724,7 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         val foramtedProof = proofDataZip.toString(Charsets.UTF_8).slice(0..index)
         val proof = Proof.fromJson(foramtedProof)
 
-        return ZkProof(
+        return GrothProof(
             proof = proof, pub_signals = getPubSignals(formatedPubData).toList()
         )
     }
