@@ -66,8 +66,7 @@ fun DigitalLikenessProcessing(modifier: Modifier = Modifier, onNext: () -> Unit)
         }
 
         currentStep = ProcessingStatus.FINSH
-        delay(500)
-
+        delay(200)
         onNext()
     }
 

@@ -64,8 +64,8 @@ fun HomeCard(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
     footer: @Composable () -> Unit,
+    image: (@Composable () -> Unit)? = null,
     header: (@Composable (headerKey: String, subTitleKey: String) -> Unit)? = null,
-    image: (@Composable (modifier: Modifier) -> Unit)? = null,
     onCardClick: () -> Unit,
 ) {
     val boundKey = remember(id) { "$id-bound" }
@@ -110,25 +110,26 @@ fun HomeCard(
                             animatedVisibilityScope = animatedContentScope
                         )
 
-                )
-                if (image != null) {
-                    image(Modifier)
-                } else {
-                    Image(
-                        painter = painterResource(cardProperties.imageRes),
-                        contentDescription = null,
-                        modifier = cardProperties.imageModifier
-                            .matchParentSize()
-                            .sharedElement(
-                                rememberSharedContentState(imageKey),
-                                animatedVisibilityScope = animatedContentScope
-                            )
-                            .clip(RoundedCornerShape(32.dp)),
-                        contentScale = ContentScale.Fit
-                    )
+                ) {
+
+                    if (image == null) {
+                        Image(
+                            painter = painterResource(cardProperties.imageRes),
+                            contentDescription = null,
+                            modifier = cardProperties.imageModifier
+                                .matchParentSize()
+                                .sharedElement(
+                                    rememberSharedContentState(imageKey),
+                                    animatedVisibilityScope = animatedContentScope
+                                )
+                                .clip(RoundedCornerShape(32.dp)),
+                            contentScale = ContentScale.Fit
+                        )
+                    } else {
+                        image()
+                    }
+
                 }
-
-
 
                 Column(
                     modifier = Modifier
@@ -252,8 +253,7 @@ private fun HomeCardPreview() {
             id = 2,
             sharedTransitionScope = state,
             animatedContentScope = anim,
-            footer = {
-                prop.footer()
-            })
+            footer = {}
+        )
     }
 }
