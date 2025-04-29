@@ -49,24 +49,32 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -160,6 +168,7 @@ fun DigitalLikenessContent(
     val tooltipState = rememberTooltipState()
 
     val scope = rememberCoroutineScope()
+    var selectedBitmap: Bitmap? by remember { mutableStateOf(null) }
 
     val cameraPermissionState = if (!isPreview) rememberPermissionState(Manifest.permission.CAMERA)
     else null
@@ -171,10 +180,9 @@ fun DigitalLikenessContent(
             fullScreen = true,
             scrimColor = Color.Transparent,
             isHeaderEnabled = false,
+            disableScrollClose = true,
             isWindowInsetsEnabled = true,
         ) {
-            var selectedBitmap: Bitmap? by remember { mutableStateOf(null) }
-
             if (selectedBitmap == null) {
                 DigitalLikenessCamera {
                     BackgroundRemover().removeBackground(it) { img ->
@@ -237,19 +245,19 @@ fun DigitalLikenessContent(
                 LikenessFrame(
                     faceImage = faceImage.asImageBitmap(),
                     frameRes = R.drawable.drawable_likeness_face_bg,
-                    modifier = Modifier.padding(vertical = 16.dp)
+                    modifier = Modifier.padding(top = 20.dp),
+                    frameSize = 325.dp,
+                    faceSize = 295.dp
                 )
             }
         },
         onBack = onBack,
         header = if (isScanned) { headerKey, subTitleKey ->
             with(sharedTransitionScope) {
-
-
                 Text(
                     style = RarimeTheme.typography.h5,
                     color = RarimeTheme.colors.baseBlack,
-                    text = "My Rules:",
+                    text = "My Rule:",
                     modifier = Modifier
 
                         .clickable {
@@ -394,22 +402,48 @@ fun DigitalLikenessContent(
     )
 }
 
+// Draw shape for face photo
+class LeafShape(
+    private val bigRadius: Dp = 100.dp,
+    private val smallRadius: Dp = 25.dp
+) : Shape {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density
+    ): Outline {
+        val bigR = with(density) { bigRadius.toPx() }
+        val smallR = with(density) { smallRadius.toPx() }
+
+        val path = Path().apply {
+            addRoundRect(
+                RoundRect(
+                    rect = Rect(0f, 0f, size.width, size.height),
+                    topLeft = CornerRadius(bigR, bigR),
+                    topRight = CornerRadius(smallR, smallR),
+                    bottomRight = CornerRadius(bigR, bigR),
+                    bottomLeft = CornerRadius(smallR, smallR)
+                )
+            )
+        }
+        return Outline.Generic(path)
+    }
+}
+
 @Composable
 fun LikenessFrame(
     faceImage: ImageBitmap,
     @DrawableRes frameRes: Int,
     modifier: Modifier = Modifier,
     frameSize: Dp = 320.dp,       // size of your white PNG background
-    faceSize: Dp = 320.dp,        // make this larger than frameSize!
-    //faceOffsetY: Dp = (-30).dp    // nudge it up so it overflows nicely
+    faceSize: Dp = 270.dp,        // make this larger than frameSize!
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .height(frameSize)
-            .graphicsLayer { clip = false }
-            .then(modifier),  // allow overflow
-        contentAlignment = Alignment.TopCenter) {
+            .height(frameSize),
+        contentAlignment = Alignment.TopCenter
+    ) {
         // 1) background frame (bottom)
         Image(
             painter = painterResource(frameRes),
@@ -420,17 +454,18 @@ fun LikenessFrame(
             contentScale = ContentScale.Fit
         )
 
-        // 2) face (on top, larger than the frame, overflowing)
+        // 2) face image
         Image(
             bitmap = faceImage,
             contentDescription = null,
+            alignment = BiasAlignment(
+                horizontalBias = 0f,
+                verticalBias = 0.1f
+            ),
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(faceSize)
-                .aspectRatio(1f)
-                .padding(horizontal = 24.dp)
-                //.offset(y = faceOffsetY)
-                .zIndex(1f),
-            contentScale = ContentScale.Crop
+                .clip(LeafShape())
         )
     }
 }
@@ -442,7 +477,6 @@ private fun RuleSheet(
     modifier: Modifier = Modifier,
     onSave: (LikenessRule) -> Unit,
 ) {
-
 
     var localSelectedRule: LikenessRule? by remember {
         mutableStateOf(selectedRule)
@@ -475,7 +509,6 @@ private fun RuleSheet(
             iconRes = R.drawable.ic_question
         )
     )
-
 
     AppBottomSheet(modifier, state, isHeaderEnabled = false) {
         Column(modifier = Modifier.padding(horizontal = 20.dp)) {
@@ -580,7 +613,7 @@ fun RuleOption(
                 modifier = Modifier
                     .size(40.dp)
                     .background(iconBackground, shape = CircleShape)
-                    .padding(10.dp)
+                    .padding(vertical = 2.dp, horizontal = 4.dp)
             ) {
                 Icon(
                     painter = painterResource(item.iconRes),
@@ -633,7 +666,7 @@ fun RuleOptionPreview() {
 @Preview
 @Composable
 fun RuleSheetPreview() {
-    val ruleSheetState = rememberAppSheetState(false)
+    val ruleSheetState = rememberAppSheetState(true)
     RuleSheet(
         ruleSheetState,
         selectedRule = LikenessRule.ALWAYS_ALLOW,
@@ -654,7 +687,7 @@ private fun CreateIdentityDetailsPreview() {
 
     var isScanned by remember {
         mutableStateOf(
-            true
+            false
         )
     }
 

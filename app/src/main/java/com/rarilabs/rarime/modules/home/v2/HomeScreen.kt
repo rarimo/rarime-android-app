@@ -80,15 +80,19 @@ enum class CardType {
     YOUR_IDENTITY, INVITE_OTHERS, CLAIM, UNFORGETTABLE_WALLET, FREEDOMTOOL, OTHER, LIKENESS
 }
 
+/**
+ * Data holder for a home-screen card.
+ *
+ * WARNING: Do NOT add nullable composable parameters (e.g. `footer`, `header`, `image`, etc.)
+ * to this class. Embedding composable lambdas here can lead to runtime crashes when content
+ * is unexpectedly null or missing. If you need custom composable content, supply it at
+ * render time (e.g. directly in your HomeCard call), not in the data model.
+ */
 data class CardContent(
     val type: CardType,
     val properties: CardProperties,
     val onCardClick: () -> Unit = {},
-    val footer: @Composable () -> Unit = {},
-    val image: (@Composable (modifier: Modifier) -> Unit)? = null,
-    val header: (@Composable (headerKey: String, subTitleKey: String) -> Unit)? = null
 )
-
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -198,13 +202,10 @@ fun HomeScreenContent(
     faceImage: Bitmap?,
     passport: EDocument?
 ) {
-
-
     var selectedPageId by remember { mutableStateOf<Int?>(null) }
     val context = LocalContext.current
 
-
-    AnimatedContent(selectedPageId, label = "content") { it ->
+    AnimatedContent(selectedPageId, label = "content") {
         LaunchedEffect(selectedPageId) {
             setVisibilityOfBottomBar(selectedPageId == null)
         }
@@ -241,14 +242,12 @@ fun HomeScreenContent(
                         ),
                         caption = stringResource(R.string.first_human_ai_contract),
                         icon = R.drawable.ic_rarimo,
-                        image = R.drawable.drawable_digital_likeness,
+                        imageRes = R.drawable.drawable_digital_likeness,
                         imageModifier =
                             if (faceImage == null) Modifier
                                 .padding(bottom = 160.dp)
                                 .padding(horizontal = 40.dp)
-                            else Modifier
-                                .padding(horizontal = 25.dp)
-                                .padding(top = 150.dp),
+                            else Modifier,
                         backgroundGradient = Brush.linearGradient(
                             colors = listOf(
                                 Color(0xFFF8F3FE), Color(0xFFEEE9FE), Color(
@@ -258,70 +257,36 @@ fun HomeScreenContent(
                         ),
                     ),
                     onCardClick = {},
-                    image = if (faceImage == null) null else {
-                        { mod ->
-                            LikenessFrame(
-                                faceImage = faceImage.asImageBitmap(),
-                                frameRes = R.drawable.drawable_likeness_face_bg,
-                                modifier = mod
-                            )
-                        }
-                    },
-                    footer = {},
-                    header = if (isLikenessScanned) { headerKey, subTitleKey ->
-
-                        val selectedRuleText =
-                            when (selectedLikenessRule) {
-                                LikenessRule.ALWAYS_ALLOW -> {
-                                    stringResource(R.string.use_my_likeness_and_pay_me)
-                                }
-
-                                LikenessRule.REJECT -> {
-                                    stringResource(R.string.don_t_sell_my_face_data)
-                                }
-
-                                LikenessRule.ASK_EVERYTIME -> {
-                                    stringResource(R.string.ask_me_every_time)
-                                }
-                                else -> ""
-                            }
-                        with(sharedTransitionScope) {
-                            Text(
-                                style = RarimeTheme.typography.h5,
-                                color = RarimeTheme.colors.baseBlack,
-                                text = "My Rules",
-                                modifier = Modifier.sharedBounds(
-                                    rememberSharedContentState(
-                                        headerKey
-                                    ), animatedVisibilityScope = this@AnimatedContent
-                                )
-                            )
-
-                            Text(
-                                style = RarimeTheme.typography.additional2.copy(
-                                    brush = Brush.linearGradient(
-                                        colors = listOf(
-                                            Color(0xFF655CA4),
-                                            Color(0xFF7E66B2)
-                                        ),
-                                        start = Offset(0f, 0f),
-                                        end = Offset(0f, 100f)
-                                    )
-                                ),
-                                text = selectedRuleText,
-                                color = RarimeTheme.colors.baseBlack.copy(alpha = 0.4f),
-                                modifier = Modifier
-                                    .sharedBounds(
-                                        rememberSharedContentState(
-                                            subTitleKey
-                                        ), animatedVisibilityScope = this@AnimatedContent
-                                    )
-                                    .skipToLookaheadSize(),
-                            )
-
-                        }
-
-                    } else null
+//                    image = if (faceImage == null) null else {
+//                        {
+//                            LikenessFrame(
+//                                faceImage = faceImage.asImageBitmap(),
+//                                frameRes = R.drawable.drawable_likeness_face_bg,
+//                                modifier = Modifier.padding(top = 20.dp),
+//                                frameSize = 325.dp,
+//                                faceSize = 295.dp
+//                            )
+//                        }
+//                    },
+//                    image = if (faceImage == null) null else {
+//                        { mod ->
+//                            LikenessFrame(
+//                                faceImage = faceImage.asImageBitmap(),
+//                                frameRes = R.drawable.drawable_likeness_face_bg,
+//                                modifier = mod
+//                            )
+//                        }
+//                    },
+//                    image = if (faceImage != null) {
+//                        { mod ->
+//                            Log.i(".asImageBitmap()", faceImage.asImageBitmap().toString())
+//                            LikenessFrame(
+//                                faceImage = faceImage.asImageBitmap(),
+//                                frameRes = R.drawable.drawable_likeness_face_bg,
+//                                modifier = mod
+//                            )
+//                        }
+//                    } else null,
                 ),
 
                 CardContent(
@@ -331,7 +296,7 @@ fun HomeScreenContent(
                         subTitle = stringResource(R.string.your_identity),
                         caption = stringResource(R.string.nothing_leaves_this_device),
                         icon = R.drawable.ic_rarime,
-                        image = R.drawable.drawable_hand_phone,
+                        imageRes = R.drawable.drawable_hand_phone,
                         imageModifier = Modifier.padding(bottom = 120.dp),
                         backgroundGradient = Brush.linearGradient(
                             colors = listOf(
@@ -351,7 +316,7 @@ fun HomeScreenContent(
                                 header = "Freedomtool",
                                 subTitle = "Voting",
                                 icon = R.drawable.ic_check_unframed,
-                                image = R.drawable.freedomtool_bg,
+                                imageRes = R.drawable.freedomtool_bg,
                                 backgroundGradient = Brush.linearGradient(
                                     listOf(Color(0xFFD5FEC8), Color(0xFF80ED99))
                                 )
@@ -368,74 +333,16 @@ fun HomeScreenContent(
                                 header = context.getString(R.string.reserved),
                                 subTitle = "$currentPointsBalance ${context.getString(R.string.rmo)}",
                                 icon = R.drawable.ic_rarimo,
-                                image = R.drawable.claim_rmo_image,
+                                imageRes = R.drawable.claim_rmo_image,
                                 backgroundGradient = Brush.linearGradient(
                                     listOf(Color(0xFFDFFCC4), Color(0xFFF4F3F0))
-                            )
+                                )
                             ),
                             onCardClick = { }
                         )
                     )
                 }
             }
-
-
-//            CardContent(
-//                type = CardType.INVITE_OTHERS, properties = CardProperties(
-//                    header = "Invite",
-//                    subTitle = "Others",
-//                    icon = R.drawable.ic_rarimo,
-//                    image = R.drawable.invite_groupe_image,
-//                    backgroundGradient = Brush.linearGradient(
-//                        colors = listOf(
-//                            Color(0xFFCBE7EC), Color(0xFFF2F8EE)
-//                        )
-//                    )
-//                ), onCardClick = {}, footer = {
-//                    Column(
-//                        modifier = Modifier.padding(top = 24.dp)
-//                    ) {
-//                        if (firstReferralCode != null) {
-//                            Row(
-//                                Modifier
-//                                    .clip(RoundedCornerShape(8.dp))
-//                                    .background(RarimeTheme.colors.baseWhite)
-//                                    .padding(vertical = 8.dp, horizontal = 16.dp),
-//                                verticalAlignment = Alignment.CenterVertically
-//                            ) {
-//                                Text(text = firstReferralCode, style = RarimeTheme.typography.h5)
-//                                VerticalDivider(
-//                                    modifier = Modifier
-//                                        .height(24.dp)
-//                                        .padding(horizontal = 16.dp)
-//                                )
-//                                AppIcon(id = R.drawable.ic_copy_simple)
-//                            }
-//                        }
-//
-//                        Spacer(Modifier.height(20.dp))
-//                        Text(text = "*Nothing leaves thi devise")
-//                    }
-//                }),
-//        ).also {
-//            if (currentPointsBalance != null && currentPointsBalance != 0L) {
-//                it.add(
-//                    CardContent(
-//                        type = CardType.CLAIM, properties = CardProperties(
-//                            header = "Claim",
-//                            subTitle = ("""$currentPointsBalance RMO"""),
-//                            icon = R.drawable.ic_rarimo,
-//                            image = R.drawable.claim_rmo_image,
-//                            backgroundGradient = Brush.linearGradient(
-//                                colors = listOf(
-//                                    Color(0xFFDFFCC4), Color(0xFFF4F3F0)
-//                                )
-//                            )
-//                        ), onCardClick = {}, footer = {})
-//                )
-//            }
-//        }
-        //)
 
         val pagerState = rememberPagerState(pageCount = { cardContent.size })
 
@@ -523,7 +430,8 @@ fun HomeScreenContent(
                                         dampingRatio = 0.5f, stiffness = 300f
                                     )
                                 )
-
+                                // TODO: Refactor nullable slots logic (image, header footer)
+                                // For now only `LIKENESS` has extra content
                                 HomeCard(
                                     modifier = Modifier.graphicsLayer {
                                         scaleX = scale
@@ -531,12 +439,77 @@ fun HomeScreenContent(
                                         alpha = lerp(0.8f, 1f, 1f - absoluteOffset)
                                     },
                                     cardProperties = cardContent[page].properties,
-                                    footer = cardContent[page].footer,
-                                    image = cardContent[page].image,
+                                    image = if (faceImage != null && cardContent[page].type === CardType.LIKENESS) {
+                                        {
+                                            LikenessFrame(
+                                                faceImage = faceImage.asImageBitmap(),
+                                                frameRes = R.drawable.drawable_likeness_face_bg,
+                                                modifier = Modifier.padding(top = 20.dp),
+                                                frameSize = 325.dp,
+                                                faceSize = 295.dp
+                                            )
+                                        }
+                                    } else null,
+                                    header = if (isLikenessScanned && cardContent[page].type == CardType.LIKENESS) { headerKey, subTitleKey ->
+                                        val selectedRuleText =
+                                            when (selectedLikenessRule) {
+                                                LikenessRule.ALWAYS_ALLOW -> {
+                                                    stringResource(R.string.use_my_likeness_and_pay_me)
+                                                }
+
+                                                LikenessRule.REJECT -> {
+                                                    stringResource(R.string.don_t_sell_my_face_data)
+                                                }
+
+                                                LikenessRule.ASK_EVERYTIME -> {
+                                                    stringResource(R.string.ask_me_every_time)
+                                                }
+
+                                                else -> ""
+                                            }
+                                        with(sharedTransitionScope) {
+                                            Text(
+                                                style = RarimeTheme.typography.h5,
+                                                color = RarimeTheme.colors.baseBlack,
+                                                text = "My Rule",
+                                                modifier = Modifier.sharedBounds(
+                                                    rememberSharedContentState(
+                                                        headerKey
+                                                    ),
+                                                    animatedVisibilityScope = this@AnimatedContent
+                                                )
+                                            )
+
+                                            Text(
+                                                style = RarimeTheme.typography.additional2.copy(
+                                                    brush = Brush.linearGradient(
+                                                        colors = listOf(
+                                                            Color(0xFF655CA4),
+                                                            Color(0xFF7E66B2)
+                                                        ),
+                                                        start = Offset(0f, 0f),
+                                                        end = Offset(0f, 100f)
+                                                    )
+                                                ),
+                                                text = selectedRuleText,
+                                                color = RarimeTheme.colors.baseBlack.copy(alpha = 0.4f),
+                                                modifier = Modifier
+                                                    .sharedBounds(
+                                                        rememberSharedContentState(
+                                                            subTitleKey
+                                                        ),
+                                                        animatedVisibilityScope = this@AnimatedContent
+                                                    )
+                                                    .skipToLookaheadSize(),
+                                            )
+
+                                        }
+
+                                    } else null,
+                                    footer = {},
                                     sharedTransitionScope = sharedTransitionScope,
                                     animatedContentScope = this@AnimatedContent,
                                     id = page,
-                                    header = cardContent[page].header,
                                     onCardClick = {
                                         cardContent[page].onCardClick; selectedPageId = page
                                     })
@@ -623,10 +596,6 @@ fun HomeScreenContent(
                     )
                 }
 
-                CardType.OTHER -> {
-
-                }
-
                 CardType.LIKENESS -> {
                     DigitalLikeness(
                         sharedTransitionScope = sharedTransitionScope,
@@ -636,6 +605,10 @@ fun HomeScreenContent(
                         navigate = navigate,
                         innerPaddings = innerPaddings
                     )
+                }
+
+                CardType.OTHER -> {
+
                 }
             }
         }
