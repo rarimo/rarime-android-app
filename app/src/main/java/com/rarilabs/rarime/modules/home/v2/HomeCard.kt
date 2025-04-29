@@ -49,7 +49,7 @@ data class CardProperties(
     val subTitleStyle: TextStyle? = null,
     val caption: String? = null,
     val icon: Int,
-    val image: Int,
+    val imageRes: Int,
     val imageModifier: Modifier = Modifier,
     val backgroundGradient: Brush,
 )
@@ -112,10 +112,10 @@ fun HomeCard(
 
                 )
                 if (image != null) {
-                    image(cardProperties.imageModifier)
+                    image(Modifier)
                 } else {
                     Image(
-                        painter = painterResource(cardProperties.image),
+                        painter = painterResource(cardProperties.imageRes),
                         contentDescription = null,
                         modifier = cardProperties.imageModifier
                             .matchParentSize()
@@ -232,7 +232,7 @@ private fun HomeCardPreview() {
             header = "Freedomtool",
             subTitle = "Voting",
             icon = R.drawable.ic_check_unframed,
-            image = R.drawable.freedomtool_bg,
+            imageRes = R.drawable.freedomtool_bg,
             backgroundGradient = Brush.linearGradient(
                 colors = listOf(
                     Color(0xFFD5FEC8), Color(0xFF80ed99)

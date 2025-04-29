@@ -50,42 +50,25 @@ enum class ProcessingItemStatus {
 fun DigitalLikenessProcessing(modifier: Modifier = Modifier, onNext: () -> Unit) {
 
     var currentStep: ProcessingStatus by remember { mutableStateOf(ProcessingStatus.DOWNLOADING) }
-
-    var currentProgress: Float by remember {
-        mutableFloatStateOf(0.0f)
-    }
+    var currentProgress: Float by remember { mutableFloatStateOf(0f) }
 
     LaunchedEffect(Unit) {
-        while (true) {
-            for (i in 0..100) {
-                currentProgress = i.toFloat() / 100f
+        // Exclude FINISH 'cause FINISH has no progress at all
+        val steps = ProcessingStatus.entries.filterNot { it == ProcessingStatus.FINSH }
+
+        for (step in steps) {
+            currentStep = step
+            // from 0 to 100
+            repeat(101) { i ->
+                currentProgress = i / 100f
                 delay(20)
-
-                if (i == 100) {
-                    when (currentStep) {
-                        ProcessingStatus.DOWNLOADING -> {
-                            currentStep = ProcessingStatus.EXTRACTING_FEATURES
-                        }
-
-                        ProcessingStatus.EXTRACTING_FEATURES -> {
-                            currentStep = ProcessingStatus.RUNNING_ZKML
-                        }
-
-                        ProcessingStatus.RUNNING_ZKML -> {
-                            currentStep = ProcessingStatus.FINSH
-                        }
-
-                        ProcessingStatus.FINSH -> {
-
-                        }
-                    }
-                }
-            }
-            if (currentStep == ProcessingStatus.FINSH) {
-                onNext()
-                break
             }
         }
+
+        currentStep = ProcessingStatus.FINSH
+        delay(500)
+
+        onNext()
     }
 
     Column(
@@ -94,8 +77,6 @@ fun DigitalLikenessProcessing(modifier: Modifier = Modifier, onNext: () -> Unit)
             .background(RarimeTheme.colors.backgroundPrimary)
             .then(modifier)
     ) {
-
-
         GifViewer(
             gifId = R.raw.likeness_processing,
             modifier = Modifier
@@ -179,7 +160,7 @@ fun ProcessItemLoading(
                         0f, 1f
                     )
                 )
-                .height(62.dp)
+                .height(60.dp)
                 .clip(RoundedCornerShape(24.dp))
                 .background(RarimeTheme.colors.componentPrimary)
                 .align(Alignment.CenterStart)
@@ -225,7 +206,7 @@ fun ProcessItemFinished(
                 .fillMaxWidth(
                     1f
                 )
-                .height(62.dp)
+                .height(60.dp)
                 .clip(RoundedCornerShape(24.dp))
                 .background(RarimeTheme.colors.successLighter)
                 .align(Alignment.CenterStart)

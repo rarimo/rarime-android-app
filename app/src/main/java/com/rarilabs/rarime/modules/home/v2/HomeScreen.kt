@@ -89,7 +89,6 @@ data class CardContent(
     val header: (@Composable (headerKey: String, subTitleKey: String) -> Unit)? = null
 )
 
-
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen(
@@ -203,8 +202,7 @@ fun HomeScreenContent(
     var selectedPageId by remember { mutableStateOf<Int?>(null) }
     val context = LocalContext.current
 
-
-    AnimatedContent(selectedPageId, label = "content") { it ->
+    AnimatedContent(selectedPageId, label = "content") {
         LaunchedEffect(selectedPageId) {
             setVisibilityOfBottomBar(selectedPageId == null)
         }
@@ -241,14 +239,12 @@ fun HomeScreenContent(
                         ),
                         caption = stringResource(R.string.first_human_ai_contract),
                         icon = R.drawable.ic_rarimo,
-                        image = R.drawable.drawable_digital_likeness,
+                        imageRes = R.drawable.drawable_digital_likeness,
                         imageModifier =
                             if (faceImage == null) Modifier
                                 .padding(bottom = 160.dp)
                                 .padding(horizontal = 40.dp)
-                            else Modifier
-                                .padding(horizontal = 25.dp)
-                                .padding(top = 150.dp),
+                            else Modifier,
                         backgroundGradient = Brush.linearGradient(
                             colors = listOf(
                                 Color(0xFFF8F3FE), Color(0xFFEEE9FE), Color(
@@ -283,13 +279,14 @@ fun HomeScreenContent(
                                 LikenessRule.ASK_EVERYTIME -> {
                                     stringResource(R.string.ask_me_every_time)
                                 }
+
                                 else -> ""
                             }
                         with(sharedTransitionScope) {
                             Text(
                                 style = RarimeTheme.typography.h5,
                                 color = RarimeTheme.colors.baseBlack,
-                                text = "My Rules",
+                                text = "My Rule",
                                 modifier = Modifier.sharedBounds(
                                     rememberSharedContentState(
                                         headerKey
@@ -331,7 +328,7 @@ fun HomeScreenContent(
                         subTitle = stringResource(R.string.your_identity),
                         caption = stringResource(R.string.nothing_leaves_this_device),
                         icon = R.drawable.ic_rarime,
-                        image = R.drawable.drawable_hand_phone,
+                        imageRes = R.drawable.drawable_hand_phone,
                         imageModifier = Modifier.padding(bottom = 120.dp),
                         backgroundGradient = Brush.linearGradient(
                             colors = listOf(
@@ -351,7 +348,7 @@ fun HomeScreenContent(
                                 header = "Freedomtool",
                                 subTitle = "Voting",
                                 icon = R.drawable.ic_check_unframed,
-                                image = R.drawable.freedomtool_bg,
+                                imageRes = R.drawable.freedomtool_bg,
                                 backgroundGradient = Brush.linearGradient(
                                     listOf(Color(0xFFD5FEC8), Color(0xFF80ED99))
                                 )
@@ -368,10 +365,10 @@ fun HomeScreenContent(
                                 header = context.getString(R.string.reserved),
                                 subTitle = "$currentPointsBalance ${context.getString(R.string.rmo)}",
                                 icon = R.drawable.ic_rarimo,
-                                image = R.drawable.claim_rmo_image,
+                                imageRes = R.drawable.claim_rmo_image,
                                 backgroundGradient = Brush.linearGradient(
                                     listOf(Color(0xFFDFFCC4), Color(0xFFF4F3F0))
-                            )
+                                )
                             ),
                             onCardClick = { }
                         )
