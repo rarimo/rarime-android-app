@@ -403,7 +403,7 @@ fun DigitalLikenessContent(
 }
 
 // Draw shape for face photo
-class SquashedOval(
+class LeafShape(
     private val bigRadius: Dp = 100.dp,
     private val smallRadius: Dp = 25.dp
 ) : Shape {
@@ -437,7 +437,6 @@ fun LikenessFrame(
     modifier: Modifier = Modifier,
     frameSize: Dp = 320.dp,       // size of your white PNG background
     faceSize: Dp = 270.dp,        // make this larger than frameSize!
-    //faceOffsetY: Dp = (-30).dp    // nudge it up so it overflows nicely
 ) {
     Box(
         modifier = modifier
@@ -466,7 +465,7 @@ fun LikenessFrame(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(faceSize)
-                .clip(SquashedOval())
+                .clip(LeafShape())
         )
     }
 }
