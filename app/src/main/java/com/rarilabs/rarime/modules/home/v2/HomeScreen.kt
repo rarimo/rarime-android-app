@@ -431,7 +431,7 @@ fun HomeScreenContent(
                                     )
                                 )
                                 // TODO: Refactor nullable slots logic (image, header footer)
-                                // For now: extra content has only `LIKENESS`
+                                // For now only `LIKENESS` has extra content
                                 HomeCard(
                                     modifier = Modifier.graphicsLayer {
                                         scaleX = scale
