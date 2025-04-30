@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
@@ -127,6 +128,7 @@ private fun AppLoadingFailedScreen() {
 
 // We have a floating tab bar at the bottom of the screen,
 // so no need to use scaffold padding
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreenContent(
@@ -211,6 +213,7 @@ fun MainScreenContent(
 
     AppTheme(colorScheme = mainViewModel.colorScheme.value) {
         Scaffold(
+            containerColor = RarimeTheme.colors.backgroundPrimary,
             bottomBar = {
                 if (mainViewModel.isBottomBarShown.value) {
                     BottomTabBar(

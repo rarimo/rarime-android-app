@@ -33,6 +33,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -85,6 +86,7 @@ import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessCamera
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessProcessing
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
+import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.BaseTooltip
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppBottomSheet
@@ -286,6 +288,7 @@ fun DigitalLikenessContent(
                     LikenessRule.ASK_EVERYTIME -> {
                         stringResource(R.string.ask_me_every_time)
                     }
+
                     else -> ""
                 }
 
@@ -381,12 +384,18 @@ fun DigitalLikenessContent(
                         Text(
                             stringResource(R.string.digital_likeness_registered_lbl),
                             style = RarimeTheme.typography.body4,
-                            color = RarimeTheme.colors.textSecondary
+                            color = RarimeTheme.colors.baseBlack.copy(alpha = 0.5f)
                         )
 
                     }
 
-                    PrimaryButton(
+                    BaseButton(
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = RarimeTheme.colors.baseBlack,
+                            contentColor = RarimeTheme.colors.baseWhite,
+                            disabledContainerColor = RarimeTheme.colors.componentDisabled,
+                            disabledContentColor = RarimeTheme.colors.textDisabled
+                        ),
                         onClick = {
                             if (cameraPermissionState!!.status.isGranted) {
                                 ruleSheetState.show()
@@ -523,7 +532,11 @@ private fun RuleSheet(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.padding(top = 12.dp, bottom = 24.dp)
                 ) {
-                    Text(stringResource(R.string.set_the_rule), style = RarimeTheme.typography.h2)
+                    Text(
+                        stringResource(R.string.set_the_rule),
+                        style = RarimeTheme.typography.h2,
+                        color = RarimeTheme.colors.textPrimary
+                    )
 
                     Text(
                         "The rules are yours to change",
@@ -532,6 +545,7 @@ private fun RuleSheet(
                 }
                 IconButton(onClick = { state.hide() }) {
                     Icon(
+                        tint = RarimeTheme.colors.textPrimary,
                         painter = painterResource(R.drawable.ic_close), contentDescription = "Close"
                     )
                 }
@@ -643,7 +657,10 @@ fun RuleOption(
                 }
 
                 Text(
-                    text = item.title, style = RarimeTheme.typography.subtitle6, modifier = Modifier
+                    text = item.title,
+                    style = RarimeTheme.typography.subtitle6,
+                    modifier = Modifier,
+                    color = RarimeTheme.colors.textPrimary
                 )
             }
         }

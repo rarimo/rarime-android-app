@@ -168,7 +168,7 @@ fun HomeCard(
                                             rememberSharedContentState(headerKey),
                                             animatedVisibilityScope = animatedContentScope
                                         ),
-                                        color = RarimeTheme.colors.textPrimary,
+                                        color = RarimeTheme.colors.baseBlack,
                                         style = cardProperties.headerStyle
                                             ?: RarimeTheme.typography.h2,
                                         text = cardProperties.header

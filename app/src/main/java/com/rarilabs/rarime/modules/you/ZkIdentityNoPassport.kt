@@ -2,7 +2,9 @@ package com.rarilabs.rarime.modules.you
 
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,12 +21,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.BuildConfig
 import com.rarilabs.rarime.R
@@ -63,7 +67,6 @@ fun ZkIdentityNoPassport(
     val sheetState = rememberAppSheetState(false)
     var currentScreen by remember { mutableStateOf(IdentityScreenType.NONE) }
     val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
-
 
     val context = LocalContext.current
 
@@ -171,39 +174,54 @@ fun ZkIdentityNoPassportContent(
     sheetState: AppSheetState,
     innerPaddings: Map<ScreenInsets, Number>
 ) {
-    AppBackgroundGradient()
-    Column(
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(
-                top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp + 20.dp,
-                bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp,
-            )
-            .padding(horizontal = 20.dp)
+            .background(RarimeTheme.colors.backgroundPrimary)
             .then(modifier)
     ) {
-        Text(
-            stringResource(R.string.zk_identity_no_passport_title_1),
-            style = RarimeTheme.typography.h1,
-            color = RarimeTheme.colors.textPrimary
-        )
-        Text(
-            stringResource(R.string.zk_identity_no_passport_title_2),
-            style = RarimeTheme.typography.additional1,
-            color = RarimeTheme.colors.successMain
+        AppBackgroundGradient(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.TopStart)
+                .zIndex(1f)
         )
 
-        Spacer(modifier = Modifier.height(88.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(
+                    bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp,
+                    top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp + 40.dp,
+                )
+                .background(RarimeTheme.colors.backgroundPrimary)
+                .padding(horizontal = 20.dp)
+                .then(modifier)
+        ) {
+            Text(
+                stringResource(R.string.zk_identity_no_passport_title_1),
+                style = RarimeTheme.typography.h1,
+                color = RarimeTheme.colors.textPrimary
+            )
+            Text(
+                stringResource(R.string.zk_identity_no_passport_title_2),
+                style = RarimeTheme.typography.additional1,
+                color = RarimeTheme.colors.successMain
+            )
 
-        Text(
-            modifier = Modifier.padding(bottom = 16.dp),
-            text = stringResource(R.string.zk_identity_no_passport_list_caption),
-            style = RarimeTheme.typography.body3,
-            color = RarimeTheme.colors.textSecondary
-        )
+            Spacer(modifier = Modifier.height(88.dp))
 
-        IdentityList(items = identityItems)
+            Text(
+                modifier = Modifier.padding(bottom = 16.dp),
+                text = stringResource(R.string.zk_identity_no_passport_list_caption),
+                style = RarimeTheme.typography.body3,
+                color = RarimeTheme.colors.textSecondary
+            )
+
+            IdentityList(items = identityItems)
+        }
     }
 }
 
