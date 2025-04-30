@@ -4,7 +4,6 @@ package com.rarilabs.rarime.modules.main
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -213,6 +212,7 @@ fun MainScreenContent(
 
     AppTheme(colorScheme = mainViewModel.colorScheme.value) {
         Scaffold(
+            containerColor = RarimeTheme.colors.backgroundPrimary,
             bottomBar = {
                 if (mainViewModel.isBottomBarShown.value) {
                     BottomTabBar(

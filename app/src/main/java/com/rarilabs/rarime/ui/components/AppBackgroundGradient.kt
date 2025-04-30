@@ -21,7 +21,7 @@ fun AppBackgroundGradient(
         Color.Transparent,
         Color.Transparent
     ),
-    center: Offset = Offset(1000f, 100f),
+    center: Offset = Offset(10f, 10f),
     radius: Float = 1000f,
     scaleX: Float = 3f,
     height: Int = 300
