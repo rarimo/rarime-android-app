@@ -3,6 +3,8 @@ package com.rarilabs.rarime.modules.home.v3
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,13 +25,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.rarilabs.rarime.modules.home.v2.VerticalPageIndicator
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.FreedomtoolCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.components.HomeHeader
+import com.rarilabs.rarime.modules.home.v3.ui.components.VerticalPageIndicator
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.FreedomtoolExpandedCard
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
@@ -37,6 +41,7 @@ import com.rarilabs.rarime.store.room.notifications.models.NotificationEntityDat
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import com.rarilabs.rarime.util.Screen
+import kotlin.math.abs
 
 enum class CardType(val layoutId: Int) {
     FREEDOMTOOL(0), ANOTHER_ONE(1)
@@ -110,6 +115,24 @@ fun HomeScreenContent(
                             contentPadding = PaddingValues(bottom = 8.dp),
                         ) { page ->
                             val cardType = CardType.entries[page]
+
+                            val pageOffset = remember(
+                                pagerState.currentPage, pagerState.currentPageOffsetFraction
+                            ) {
+                                derivedStateOf {
+                                    (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
+                                }
+                            }.value
+
+                            val absoluteOffset = abs(pageOffset).coerceIn(0f, 1f)
+                            val targetScale = lerp(0.8f, 1f, 1f - absoluteOffset)
+
+                            val scale by animateFloatAsState(
+                                targetValue = targetScale, animationSpec = spring(
+                                    dampingRatio = 0.5f, stiffness = 300f
+                                )
+                            )
+
                             // Common props for every collapsed card
                             val collapsedCardProps = BaseCardProps.Collapsed(
                                 onExpand = { selectedCard = cardType },
@@ -121,10 +144,20 @@ fun HomeScreenContent(
                             when (cardType) {
                                 CardType.FREEDOMTOOL -> FreedomtoolCollapsedCard(
                                     collapsedCardProps = collapsedCardProps,
+                                    modifier = Modifier.graphicsLayer {
+                                        scaleX = scale
+                                        scaleY = scale
+                                        alpha = lerp(0.8f, 1f, 1f - absoluteOffset)
+                                    },
                                 )
 
                                 CardType.ANOTHER_ONE -> FreedomtoolCollapsedCard(
                                     collapsedCardProps = collapsedCardProps,
+                                    modifier = Modifier.graphicsLayer {
+                                        scaleX = scale
+                                        scaleY = scale
+                                        alpha = lerp(0.8f, 1f, 1f - absoluteOffset)
+                                    },
                                 )
                             }
                         }

@@ -55,8 +55,7 @@ fun FreedomtoolCollapsedCard(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) }
                     )
                     .clip(RoundedCornerShape(16.dp))
-                    .padding(start = 16.dp)
-                    .padding(bottom = 16.dp)
+                    .padding(start = 16.dp, bottom = 8.dp, top = 8. dp)
                     .fillMaxWidth()
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
