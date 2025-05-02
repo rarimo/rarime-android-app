@@ -116,13 +116,13 @@ fun HomeScreenContent(
                         ) { page ->
                             val cardType = CardType.entries[page]
 
-                            val pageOffset = remember(
+                            val pageOffset by remember(
                                 pagerState.currentPage, pagerState.currentPageOffsetFraction
                             ) {
                                 derivedStateOf {
                                     (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
                                 }
-                            }.value
+                            }
 
                             val absoluteOffset = abs(pageOffset).coerceIn(0f, 1f)
                             val targetScale = lerp(0.8f, 1f, 1f - absoluteOffset)
