@@ -63,8 +63,12 @@ set(LIGHT_LIB_FILES
 function(import_lib_normal filename)
     get_filename_component(name ${filename} NAME_WE)
     add_library(${name} SHARED IMPORTED)
-    set_target_properties(${name} PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/lib/${filename})
+    set_target_properties(${name} PROPERTIES
+            IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/lib/${filename}"
+            IMPORTED_SONAME "${filename}"
+    )
     list(APPEND LIB_TARGETS ${name})
+
     set(LIB_TARGETS ${LIB_TARGETS} PARENT_SCOPE)
 endfunction()
 

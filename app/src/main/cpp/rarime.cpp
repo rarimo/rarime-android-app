@@ -51,6 +51,7 @@
 #include "witnesscalc_registerIdentity_20_256_3_5_336_72_NA.h"
 #include "witnesscalc_registerIdentity_21_256_3_5_576_232_NA.h"
 
+
 #include <jni.h>
 #include <iostream>
 #include <string>
@@ -64,7 +65,6 @@
 using namespace std;
 
 #define LOG_TAG "native-lib"
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
 
@@ -2317,15 +2317,15 @@ Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity1125635576248118085296(JNI
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity125636336248127444256(JNIEnv *env,
-                                                                             jobject thiz,
-                                                                             jstring filePath,
-                                                                             jlong fileSizeJ,
-                                                                             jbyteArray json_buffer,
-                                                                             jlong json_size,
-                                                                             jbyteArray wtns_buffer,
-                                                                             jlongArray wtns_size,
-                                                                             jbyteArray error_msg,
-                                                                             jlong error_msg_max_size) {
+                                                                            jobject thiz,
+                                                                            jstring filePath,
+                                                                            jlong fileSizeJ,
+                                                                            jbyteArray json_buffer,
+                                                                            jlong json_size,
+                                                                            jbyteArray wtns_buffer,
+                                                                            jlongArray wtns_size,
+                                                                            jbyteArray error_msg,
+                                                                            jlong error_msg_max_size) {
     const char *nativeFilePath = env->GetStringUTFChars(filePath, nullptr);
     unsigned long fileSize = static_cast<unsigned long>(fileSizeJ);
 
@@ -2383,15 +2383,15 @@ Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity125636336248127444256(JNIE
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity125636336560127444256(JNIEnv *env,
-                                                                             jobject thiz,
-                                                                             jstring filePath,
-                                                                             jlong fileSizeJ,
-                                                                             jbyteArray json_buffer,
-                                                                             jlong json_size,
-                                                                             jbyteArray wtns_buffer,
-                                                                             jlongArray wtns_size,
-                                                                             jbyteArray error_msg,
-                                                                             jlong error_msg_max_size) {
+                                                                            jobject thiz,
+                                                                            jstring filePath,
+                                                                            jlong fileSizeJ,
+                                                                            jbyteArray json_buffer,
+                                                                            jlong json_size,
+                                                                            jbyteArray wtns_buffer,
+                                                                            jlongArray wtns_size,
+                                                                            jbyteArray error_msg,
+                                                                            jlong error_msg_max_size) {
     const char *nativeFilePath = env->GetStringUTFChars(filePath, nullptr);
     unsigned long fileSize = static_cast<unsigned long>(fileSizeJ);
 
@@ -2450,15 +2450,15 @@ Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity125636336560127444256(JNIE
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity416033336216112963256(JNIEnv *env,
-                                                                             jobject thiz,
-                                                                             jstring filePath,
-                                                                             jlong fileSizeJ,
-                                                                             jbyteArray json_buffer,
-                                                                             jlong json_size,
-                                                                             jbyteArray wtns_buffer,
-                                                                             jlongArray wtns_size,
-                                                                             jbyteArray error_msg,
-                                                                             jlong error_msg_max_size) {
+                                                                            jobject thiz,
+                                                                            jstring filePath,
+                                                                            jlong fileSizeJ,
+                                                                            jbyteArray json_buffer,
+                                                                            jlong json_size,
+                                                                            jbyteArray wtns_buffer,
+                                                                            jlongArray wtns_size,
+                                                                            jbyteArray error_msg,
+                                                                            jlong error_msg_max_size) {
     const char *nativeFilePath = env->GetStringUTFChars(filePath, nullptr);
     unsigned long fileSize = static_cast<unsigned long>(fileSizeJ);
 
@@ -2515,15 +2515,15 @@ Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity416033336216112963256(JNIE
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity1125633336248NA(JNIEnv *env,
-                                                                             jobject thiz,
-                                                                             jstring filePath,
-                                                                             jlong fileSizeJ,
-                                                                             jbyteArray json_buffer,
-                                                                             jlong json_size,
-                                                                             jbyteArray wtns_buffer,
-                                                                             jlongArray wtns_size,
-                                                                             jbyteArray error_msg,
-                                                                             jlong error_msg_max_size) {
+                                                                      jobject thiz,
+                                                                      jstring filePath,
+                                                                      jlong fileSizeJ,
+                                                                      jbyteArray json_buffer,
+                                                                      jlong json_size,
+                                                                      jbyteArray wtns_buffer,
+                                                                      jlongArray wtns_size,
+                                                                      jbyteArray error_msg,
+                                                                      jlong error_msg_max_size) {
     const char *nativeFilePath = env->GetStringUTFChars(filePath, nullptr);
     unsigned long fileSize = static_cast<unsigned long>(fileSizeJ);
 
@@ -2580,15 +2580,15 @@ Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity1125633336248NA(JNIEnv *en
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity142563433664114805296(JNIEnv *env,
-                                                                             jobject thiz,
-                                                                             jstring filePath,
-                                                                             jlong fileSizeJ,
-                                                                             jbyteArray json_buffer,
-                                                                             jlong json_size,
-                                                                             jbyteArray wtns_buffer,
-                                                                             jlongArray wtns_size,
-                                                                             jbyteArray error_msg,
-                                                                             jlong error_msg_max_size) {
+                                                                            jobject thiz,
+                                                                            jstring filePath,
+                                                                            jlong fileSizeJ,
+                                                                            jbyteArray json_buffer,
+                                                                            jlong json_size,
+                                                                            jbyteArray wtns_buffer,
+                                                                            jlongArray wtns_size,
+                                                                            jbyteArray error_msg,
+                                                                            jlong error_msg_max_size) {
     const char *nativeFilePath = env->GetStringUTFChars(filePath, nullptr);
     unsigned long fileSize = static_cast<unsigned long>(fileSizeJ);
 
@@ -2645,15 +2645,15 @@ Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity142563433664114805296(JNIE
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity1551233336248NA(JNIEnv *env,
-                                                                             jobject thiz,
-                                                                             jstring filePath,
-                                                                             jlong fileSizeJ,
-                                                                             jbyteArray json_buffer,
-                                                                             jlong json_size,
-                                                                             jbyteArray wtns_buffer,
-                                                                             jlongArray wtns_size,
-                                                                             jbyteArray error_msg,
-                                                                             jlong error_msg_max_size) {
+                                                                      jobject thiz,
+                                                                      jstring filePath,
+                                                                      jlong fileSizeJ,
+                                                                      jbyteArray json_buffer,
+                                                                      jlong json_size,
+                                                                      jbyteArray wtns_buffer,
+                                                                      jlongArray wtns_size,
+                                                                      jbyteArray error_msg,
+                                                                      jlong error_msg_max_size) {
     const char *nativeFilePath = env->GetStringUTFChars(filePath, nullptr);
     unsigned long fileSize = static_cast<unsigned long>(fileSizeJ);
 
@@ -2710,15 +2710,15 @@ Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity1551233336248NA(JNIEnv *en
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity2016033736200NA(JNIEnv *env,
-                                                                             jobject thiz,
-                                                                             jstring filePath,
-                                                                             jlong fileSizeJ,
-                                                                             jbyteArray json_buffer,
-                                                                             jlong json_size,
-                                                                             jbyteArray wtns_buffer,
-                                                                             jlongArray wtns_size,
-                                                                             jbyteArray error_msg,
-                                                                             jlong error_msg_max_size) {
+                                                                      jobject thiz,
+                                                                      jstring filePath,
+                                                                      jlong fileSizeJ,
+                                                                      jbyteArray json_buffer,
+                                                                      jlong json_size,
+                                                                      jbyteArray wtns_buffer,
+                                                                      jlongArray wtns_size,
+                                                                      jbyteArray error_msg,
+                                                                      jlong error_msg_max_size) {
     const char *nativeFilePath = env->GetStringUTFChars(filePath, nullptr);
     unsigned long fileSize = static_cast<unsigned long>(fileSizeJ);
 
@@ -2777,15 +2777,15 @@ Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity2016033736200NA(JNIEnv *en
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity202563533672NA(JNIEnv *env,
-                                                                             jobject thiz,
-                                                                             jstring filePath,
-                                                                             jlong fileSizeJ,
-                                                                             jbyteArray json_buffer,
-                                                                             jlong json_size,
-                                                                             jbyteArray wtns_buffer,
-                                                                             jlongArray wtns_size,
-                                                                             jbyteArray error_msg,
-                                                                             jlong error_msg_max_size) {
+                                                                     jobject thiz,
+                                                                     jstring filePath,
+                                                                     jlong fileSizeJ,
+                                                                     jbyteArray json_buffer,
+                                                                     jlong json_size,
+                                                                     jbyteArray wtns_buffer,
+                                                                     jlongArray wtns_size,
+                                                                     jbyteArray error_msg,
+                                                                     jlong error_msg_max_size) {
     const char *nativeFilePath = env->GetStringUTFChars(filePath, nullptr);
     unsigned long fileSize = static_cast<unsigned long>(fileSizeJ);
 
@@ -2843,15 +2843,15 @@ Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity202563533672NA(JNIEnv *env
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity2125635576232NA(JNIEnv *env,
-                                                                             jobject thiz,
-                                                                             jstring filePath,
-                                                                             jlong fileSizeJ,
-                                                                             jbyteArray json_buffer,
-                                                                             jlong json_size,
-                                                                             jbyteArray wtns_buffer,
-                                                                             jlongArray wtns_size,
-                                                                             jbyteArray error_msg,
-                                                                             jlong error_msg_max_size) {
+                                                                      jobject thiz,
+                                                                      jstring filePath,
+                                                                      jlong fileSizeJ,
+                                                                      jbyteArray json_buffer,
+                                                                      jlong json_size,
+                                                                      jbyteArray wtns_buffer,
+                                                                      jlongArray wtns_size,
+                                                                      jbyteArray error_msg,
+                                                                      jlong error_msg_max_size) {
     const char *nativeFilePath = env->GetStringUTFChars(filePath, nullptr);
     unsigned long fileSize = static_cast<unsigned long>(fileSizeJ);
 

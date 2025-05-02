@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.modules.home.v2
 
 import android.Manifest
+import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
 import android.util.Log
@@ -34,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +54,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.gson.Gson
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.points.models.PointsBalanceData
 import com.rarilabs.rarime.api.points.models.PointsEventData
@@ -74,6 +77,11 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import com.rarilabs.rarime.util.Screen
+import com.rarilabs.rarime.util.ZKPUseCase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 import kotlin.math.abs
 
 enum class CardType {
@@ -89,7 +97,6 @@ data class CardContent(
     val header: (@Composable (headerKey: String, subTitleKey: String) -> Unit)? = null
 )
 
-
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen(
@@ -100,6 +107,46 @@ fun HomeScreen(
     setVisibilityOfBottomBar: (Boolean) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
+
+//    val customDispatcher = remember {
+//        Executors.newFixedThreadPool(1) { runnable ->
+//            Thread(null, runnable, "LargeStackThread", 100 * 1024 * 1024) // 100 MB stack size
+//        }.asCoroutineDispatcher()
+//    }
+
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    /// FOR TESTS
+    LaunchedEffect(Unit) {
+        scope.launch {
+            withContext(Dispatchers.Default) {
+                val inputs = """
+             
+            """.trimIndent()
+
+                val assetContext: Context = context.createPackageContext("com.rarilabs.rarime", 0)
+                val assetManager = assetContext.assets
+
+
+                val file = File("/data/data/com.rarilabs.rarime/files/likeness.zkey")
+
+                val a = ZKPUseCase(
+                    context = assetContext,
+                    assetManager = assetManager
+                )
+                val proof = a.bioent(
+                    file.absolutePath,
+                    file.length(),
+                    inputs
+                )
+
+                Log.i("Proof", Gson().toJson(proof))
+            }
+
+        }
+
+    }
 
     val pointsBalance by viewModel.pointsToken.collectAsState()
     val pointsEvent by viewModel.pointsEventData.collectAsState()
@@ -199,10 +246,8 @@ fun HomeScreenContent(
     passport: EDocument?
 ) {
 
-
     var selectedPageId by remember { mutableStateOf<Int?>(null) }
     val context = LocalContext.current
-
 
     AnimatedContent(selectedPageId, label = "content") { it ->
         LaunchedEffect(selectedPageId) {
@@ -211,7 +256,7 @@ fun HomeScreenContent(
 
         val cardContent =
             mutableListOf(
-//
+
 //            CardContent(
 //                type = CardType.UNFORGETTABLE_WALLET, properties = CardProperties(
 //                    header = "An Unforgettable",
@@ -283,6 +328,7 @@ fun HomeScreenContent(
                                 LikenessRule.ASK_EVERYTIME -> {
                                     stringResource(R.string.ask_me_every_time)
                                 }
+
                                 else -> ""
                             }
                         with(sharedTransitionScope) {
@@ -371,7 +417,7 @@ fun HomeScreenContent(
                                 image = R.drawable.claim_rmo_image,
                                 backgroundGradient = Brush.linearGradient(
                                     listOf(Color(0xFFDFFCC4), Color(0xFFF4F3F0))
-                            )
+                                )
                             ),
                             onCardClick = { }
                         )
