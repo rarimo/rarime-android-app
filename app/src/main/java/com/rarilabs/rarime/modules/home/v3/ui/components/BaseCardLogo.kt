@@ -1,4 +1,4 @@
-package com.rarilabs.rarime.modules.home.v3.cards
+package com.rarilabs.rarime.modules.home.v3.ui.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
@@ -18,6 +18,7 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.rarilabs.rarime.R
 
 @Composable
 fun BaseCardLogo(
@@ -60,7 +61,7 @@ fun BaseCardLogoPreview_CutCorner() {
         size = 48,
         iconSize = 32,
         contentPadding = 8,
-        resId = com.rarilabs.rarime.R.drawable.ic_body_scan_fill,
+        resId = R.drawable.ic_body_scan_fill,
         tint = RarimeTheme.colors.baseWhite,
         shape = CutCornerShape(5.dp),
         backgroundColor = RarimeTheme.colors.successDark
@@ -74,7 +75,7 @@ fun BaseCardLogoPreview_RoundedRect() {
         size = 48,
         iconSize = 24,
         contentPadding = 12,
-        resId = com.rarilabs.rarime.R.drawable.ic_body_scan_fill,
+        resId = R.drawable.ic_body_scan_fill,
         tint = RarimeTheme.colors.errorDark,
         shape = RoundedCornerShape(5.dp),
         backgroundColor = RarimeTheme.colors.errorLighter

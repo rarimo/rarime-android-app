@@ -1,7 +1,8 @@
+package com.rarilabs.rarime.modules.home.v3.ui.components
+
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -12,26 +13,28 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.modules.home.v3.cards.BaseCardLogo
-import com.rarilabs.rarime.modules.home.v3.cards.BaseCardTitle
-import com.rarilabs.rarime.ui.components.AppBackgroundGradient
+import com.rarilabs.rarime.modules.home.v3.model.BG_DOT_MAP_HEIGHT
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun BaseCollapsedCard(
+fun BaseExpandedCard(
     modifier: Modifier = Modifier,
 
     // slots
@@ -41,7 +44,7 @@ fun BaseCollapsedCard(
     overlay: @Composable BoxScope.() -> Unit = {},
 
     // default `Card` props
-    shape: Shape = RoundedCornerShape(40.dp),
+    shape: Shape = RoundedCornerShape(0.dp),
     colors: CardColors = CardDefaults.cardColors(),
     elevation: CardElevation = CardDefaults.cardElevation(),
     border: BorderStroke? = null,
@@ -64,6 +67,7 @@ fun BaseCollapsedCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
+                        .verticalScroll(rememberScrollState())
                 ) {
                     body()
                 }
@@ -73,42 +77,52 @@ fun BaseCollapsedCard(
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
-fun BaseCollapsedCardPreview() {
-    BaseCollapsedCard(
-        modifier = Modifier
-            .height(552.dp)
-            .padding(16.dp)
-            .fillMaxWidth(),
+fun BaseExpandedCardPreview() {
+    BaseExpandedCard(
+        modifier = Modifier.fillMaxSize(),
         header = {
-            Row(modifier = Modifier.padding(24.dp)) {
-                BaseCardLogo()
+            Row(modifier = Modifier.padding(20.dp)) {
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(onClick = {}) {
+                    AppIcon(id = R.drawable.ic_close)
+                }
             }
         },
-        body = {},
-        footer = {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom,
-                modifier = Modifier.padding(start = 22.dp, bottom = 28.dp, end = 30.dp)
+        body = {
+            Column(
+                modifier = Modifier.padding(20.dp)
             ) {
+                Spacer(Modifier.height(BG_DOT_MAP_HEIGHT.dp))
                 BaseCardTitle(
                     title = "RariMe",
                     gradientTitle = "Learn More",
+                    gradient = RarimeTheme.colors.gradient6,
                     caption = "* Nothing leaves this device",
                 )
-                Spacer(modifier = Modifier.weight(1f))
-                AppIcon(id = R.drawable.ic_arrow_right_up_line)
+                Spacer(modifier = Modifier.height(24.dp))
+                Text(
+                    "An identification and privacy solution that revolutionizes polling, surveying and election processes",
+                    color = RarimeTheme.colors.textSecondary
+                )
             }
         },
+        footer = {},
         overlay = {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(RarimeTheme.colors.backgroundBlur)
+                    .background(RarimeTheme.colors.gradient3)
             ) {
-                AppBackgroundGradient()
+                Image(
+                    painter = painterResource(R.drawable.freedomtool_bg),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(BG_DOT_MAP_HEIGHT.dp)
+                )
             }
         }
     )

@@ -1,4 +1,4 @@
-package com.rarilabs.rarime.modules.home.v3.cards
+package com.rarilabs.rarime.modules.home.v3.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -33,6 +33,7 @@ fun BaseCardTitle(
     modifier: Modifier = Modifier,
 
     title: String? = null,
+    titleModifier: Modifier = Modifier,
     titleStyle: TextStyle = TextStyle(
         fontSize = RarimeTheme.typography.h2.fontSize,
         fontWeight = RarimeTheme.typography.h2.fontWeight,
@@ -40,6 +41,7 @@ fun BaseCardTitle(
     ),
 
     gradientTitle: String? = null,
+    gradientTitleModifier: Modifier = Modifier,
     gradient: Brush = RarimeTheme.colors.gradient6,
     gradientTitleStyle: TextStyle = TextStyle(
         brush = gradient,
@@ -48,6 +50,7 @@ fun BaseCardTitle(
     ),
 
     caption: String? = null,
+    captionModifier: Modifier = Modifier,
     captionStyle: TextStyle = TextStyle(
         fontSize = RarimeTheme.typography.body4.fontSize,
         fontWeight = RarimeTheme.typography.body4.fontWeight,
@@ -58,7 +61,8 @@ fun BaseCardTitle(
         title?.let {
             Text(
                 text = it,
-                style = titleStyle
+                style = titleStyle,
+                modifier = titleModifier
             )
         }
 
@@ -66,7 +70,8 @@ fun BaseCardTitle(
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = it,
-                style = gradientTitleStyle
+                style = gradientTitleStyle,
+                modifier = gradientTitleModifier
             )
         }
 
@@ -74,7 +79,8 @@ fun BaseCardTitle(
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = it,
-                style = captionStyle
+                style = captionStyle,
+                modifier = captionModifier
             )
         }
     }
