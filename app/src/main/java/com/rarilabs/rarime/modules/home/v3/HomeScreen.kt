@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +16,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,11 +29,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.modules.home.v2.VerticalPageIndicator
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.FreedomtoolCollapsedCard
+import com.rarilabs.rarime.modules.home.v3.ui.components.HomeHeader
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.FreedomtoolExpandedCard
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
+import com.rarilabs.rarime.store.room.notifications.models.NotificationEntityData
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
+import com.rarilabs.rarime.util.Screen
 
 enum class CardType(val layoutId: Int) {
     FREEDOMTOOL(0), ANOTHER_ONE(1)
@@ -44,18 +49,27 @@ fun HomeScreenV3(
     navigateWithPopUp: (String) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     setVisibilityOfBottomBar: (Boolean) -> Unit,
-    homeViewModel: HomeViewModel = hiltViewModel(),
+    viewModel: HomeViewModel = hiltViewModel(),
 ) {
+    val passport by viewModel.passport.collectAsState()
     val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
+    val notifications: List<NotificationEntityData> by viewModel.notifications.collectAsState()
+    val notificationsCount by remember(notifications) {
+        derivedStateOf { notifications.count { it.isActive } }
+    }
+
     HomeScreenContent(
+        userPassportName = passport?.personDetails?.name,
+        notificationsCount = notificationsCount,
         modifier = Modifier
             .fillMaxSize()
             .padding(
                 top = innerPaddings[ScreenInsets.TOP]?.toFloat()?.dp ?: 0.dp,
                 bottom = innerPaddings[ScreenInsets.BOTTOM]?.toFloat()?.dp ?: 0.dp
             ),
+        navigate = navigate,
         sharedTransitionScope = sharedTransitionScope,
-        setVisibilityOfBottomBar = setVisibilityOfBottomBar
+        setVisibilityOfBottomBar = setVisibilityOfBottomBar,
     )
 }
 
@@ -63,8 +77,11 @@ fun HomeScreenV3(
 @Composable
 fun HomeScreenContent(
     modifier: Modifier = Modifier,
+    navigate: (String) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
-    setVisibilityOfBottomBar: (Boolean) -> Unit
+    setVisibilityOfBottomBar: (Boolean) -> Unit,
+    userPassportName: String?,
+    notificationsCount: Int?
 ) {
     var selectedCard by remember { mutableStateOf<CardType?>(null) }
     LaunchedEffect(selectedCard) {
@@ -77,44 +94,51 @@ fun HomeScreenContent(
     Box(modifier = modifier) {
         AnimatedContent(targetState = selectedCard) { targetState ->
             if (targetState == null) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    VerticalPager(
-                        modifier = Modifier.weight(1f),
-                        state = pagerState,
-                        contentPadding = PaddingValues(vertical = 32.dp),
-                    ) { page ->
-                        val cardType = CardType.entries[page]
-                        // Common props for every collapsed card
-                        val collapsedCardProps = BaseCardProps.Collapsed(
-                            onExpand = { selectedCard = cardType },
-                            layoutId = cardType.layoutId,
-                            animatedVisibilityScope = this@AnimatedContent,
-                            sharedTransitionScope = sharedTransitionScope
-                        )
-
-                        when (cardType) {
-                            CardType.FREEDOMTOOL -> FreedomtoolCollapsedCard(
-                                collapsedCardProps = collapsedCardProps,
-                            )
-
-                            CardType.ANOTHER_ONE -> FreedomtoolCollapsedCard(
-                                collapsedCardProps = collapsedCardProps,
-                            )
-                        }
-                    }
-                    VerticalPageIndicator(
-                        numberOfPages = pagerState.pageCount,
-                        selectedPage = pagerState.currentPage,
-                        modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                        defaultRadius = 6.dp,
-                        selectedColor = RarimeTheme.colors.primaryMain,
-                        defaultColor = RarimeTheme.colors.primaryLight,
-                        selectedLength = 16.dp,
-                        space = 8.dp
+                Column {
+                    HomeHeader(
+                        notificationsCount = notificationsCount,
+                        name = userPassportName,
+                        onNotificationClick = { navigate(Screen.NotificationsList.route) }
                     )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        VerticalPager(
+                            modifier = Modifier.weight(1f),
+                            state = pagerState,
+                            contentPadding = PaddingValues(bottom = 8.dp),
+                        ) { page ->
+                            val cardType = CardType.entries[page]
+                            // Common props for every collapsed card
+                            val collapsedCardProps = BaseCardProps.Collapsed(
+                                onExpand = { selectedCard = cardType },
+                                layoutId = cardType.layoutId,
+                                animatedVisibilityScope = this@AnimatedContent,
+                                sharedTransitionScope = sharedTransitionScope
+                            )
+
+                            when (cardType) {
+                                CardType.FREEDOMTOOL -> FreedomtoolCollapsedCard(
+                                    collapsedCardProps = collapsedCardProps,
+                                )
+
+                                CardType.ANOTHER_ONE -> FreedomtoolCollapsedCard(
+                                    collapsedCardProps = collapsedCardProps,
+                                )
+                            }
+                        }
+                        VerticalPageIndicator(
+                            numberOfPages = pagerState.pageCount,
+                            selectedPage = pagerState.currentPage,
+                            modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+                            defaultRadius = 6.dp,
+                            selectedColor = RarimeTheme.colors.primaryMain,
+                            defaultColor = RarimeTheme.colors.primaryLight,
+                            selectedLength = 16.dp,
+                            space = 8.dp
+                        )
+                    }
                 }
 
             } else {
@@ -155,7 +179,11 @@ private fun HomeScreenPreview() {
             HomeScreenContent(
                 modifier = Modifier.fillMaxSize(),
                 sharedTransitionScope = sharedTransitionScope,
-                setVisibilityOfBottomBar = {})
+                navigate = {},
+                setVisibilityOfBottomBar = {},
+                userPassportName = "Mike",
+                notificationsCount = 2,
+            )
         }
     }
 }

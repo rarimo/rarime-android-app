@@ -56,7 +56,7 @@ fun FreedomtoolCollapsedCard(
                     )
                     .clip(RoundedCornerShape(16.dp))
                     .padding(start = 16.dp)
-                    .padding(vertical = 16.dp)
+                    .padding(bottom = 16.dp)
                     .fillMaxWidth()
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
