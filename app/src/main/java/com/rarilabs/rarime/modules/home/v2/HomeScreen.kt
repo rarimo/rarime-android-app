@@ -9,6 +9,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -323,6 +324,7 @@ fun HomeScreenContent(
             Column(
                 modifier = modifier
                     .fillMaxSize()
+                    .background(RarimeTheme.colors.backgroundPrimary)
                     .padding(
                         bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp,
                         top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp
@@ -511,7 +513,7 @@ fun HomeScreenContent(
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun HomeScreenPreview() {
     PrevireSharedAnimationProvider { transform, _ ->
