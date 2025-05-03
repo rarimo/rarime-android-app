@@ -82,7 +82,7 @@ fun AppBottomSheet(
     val modalState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { newValue ->
-            if (disableScrollClose) newValue != SheetValue.Hidden else true
+            if (disableScrollClose) newValue == SheetValue.Hidden  else true
         })
     val coroutineScope = rememberCoroutineScope()
 
@@ -90,11 +90,11 @@ fun AppBottomSheet(
     // Instead, we'll apply insets on the inner content.
     fun hide(callback: () -> Unit = {}) {
         coroutineScope.launch { modalState.hide() }.invokeOnCompletion {
-                if (!modalState.isVisible) {
-                    state.hide()
-                    callback()
-                }
+            if (!modalState.isVisible) {
+                state.hide()
+                callback()
             }
+        }
     }
 
     if (state.showSheet) {

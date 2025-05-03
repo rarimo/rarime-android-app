@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -73,7 +74,6 @@ fun DigitalLikenessCamera(
     val cameraProvider = remember {
         ProcessCameraProvider.getInstance(context).get()
     }
-
     LaunchedEffect(Unit) {
         val previewUseCase = androidx.camera.core.Preview.Builder().build().also {
             it.setSurfaceProvider(previewView.surfaceProvider)
@@ -91,7 +91,6 @@ fun DigitalLikenessCamera(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .clip(RoundedCornerShape(16.dp))
     ) {
 
         if (selectedBitmap != null) {

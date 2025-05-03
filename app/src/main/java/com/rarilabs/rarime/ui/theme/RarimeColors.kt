@@ -375,6 +375,10 @@ class RarimeColors(
         this.successMain = other.successMain
         this.successLight = other.successLight
         this.successLighter = other.successLighter
+        this.infoDarker = other.infoDarker
+        this.infoMain = other.infoMain
+        this.infoLighter = other.infoLighter
+        this.infoLight = other.infoLight
         this.errorDarker = other.errorDarker
         this.errorDark = other.errorDark
         this.errorMain = other.errorMain
@@ -402,6 +406,7 @@ class RarimeColors(
         this.invertedDark = other.invertedDark
         this.invertedLight = other.invertedLight
         this.inverted = other.inverted
+        this.backgroundSurface1 = other.backgroundSurface1
     }
 }
 
