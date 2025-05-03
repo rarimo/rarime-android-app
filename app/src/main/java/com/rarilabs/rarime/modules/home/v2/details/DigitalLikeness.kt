@@ -587,18 +587,16 @@ private fun RuleSheet(
 fun RuleOption(
     item: RuleOptionData, onClick: (LikenessRule) -> Unit, modifier: Modifier = Modifier
 ) {
-    val colors = RarimeTheme.colors
-
     val iconBackground by animateColorAsState(
-        targetValue = if (item.isSelected) colors.textPrimary else colors.componentPrimary,
+        targetValue = if (item.isSelected) RarimeTheme.colors.textPrimary else RarimeTheme.colors.componentPrimary,
         animationSpec = tween(durationMillis = 300)
     )
     val iconTint by animateColorAsState(
-        targetValue = if (item.isSelected) colors.invertedLight else colors.textPrimary,
+        targetValue = if (item.isSelected) RarimeTheme.colors.invertedLight else RarimeTheme.colors.textPrimary,
         animationSpec = tween(durationMillis = 300)
     )
     val cardBorderColor by animateColorAsState(
-        targetValue = if (item.isSelected) colors.textPrimary else colors.componentPrimary.copy(alpha = 0.05f),
+        targetValue = if (item.isSelected) RarimeTheme.colors.textPrimary else RarimeTheme.colors.componentPrimary.copy(alpha = 0.05f),
         animationSpec = tween(durationMillis = 500)
     )
 
