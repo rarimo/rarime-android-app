@@ -134,8 +134,7 @@ fun FreedomtoolExpandedCardContent(
                         onCollapse = onCollapse,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope,
-                        topPadding = innerPaddings[ScreenInsets.TOP]!!.toInt().dp,
-                        bottomPadding = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp
+                        innerPaddings = innerPaddings
                     )
                 },
                 body = {
@@ -170,8 +169,7 @@ private fun Header(
     onCollapse: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    topPadding: Dp,
-    bottomPadding: Dp
+    innerPaddings: Map<ScreenInsets, Number>,
 ) {
     with(sharedTransitionScope) {
         Row(
@@ -184,7 +182,10 @@ private fun Header(
                     resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                 )
                 .fillMaxWidth()
-                .padding(top = topPadding, bottom = bottomPadding)
+                .padding(
+                    top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp,
+                    bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp
+                )
                 .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.End
         ) {
