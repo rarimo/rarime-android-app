@@ -47,9 +47,17 @@ enum class ProcessingItemStatus {
 }
 
 @Composable
-fun DigitalLikenessProcessing(modifier: Modifier = Modifier, onNext: () -> Unit) {
+fun DigitalLikenessProcessing(
+    modifier: Modifier = Modifier,
+    processing: () -> Unit,
+    onNext: () -> Unit
+) {
 
     var currentStep: ProcessingStatus by remember { mutableStateOf(ProcessingStatus.DOWNLOADING) }
+
+    LaunchedEffect(Unit) {
+        processing()
+    }
 
     var currentProgress: Float by remember {
         mutableFloatStateOf(0.0f)
@@ -82,7 +90,7 @@ fun DigitalLikenessProcessing(modifier: Modifier = Modifier, onNext: () -> Unit)
                 }
             }
             if (currentStep == ProcessingStatus.FINSH) {
-                onNext()
+                //onNext()
                 break
             }
         }
@@ -301,8 +309,12 @@ fun ProcessItemNotActive(
 @Composable
 private fun DigitalLikenessProcessingPreview() {
     Surface {
-        DigitalLikenessProcessing {
+        DigitalLikenessProcessing(
+            modifier = Modifier,
+            onNext = {
 
-        }
+            },
+            processing = {}
+        )
     }
 }

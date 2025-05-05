@@ -29,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,12 +48,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import kotlinx.coroutines.launch
 
 @Composable
 fun DigitalLikenessCamera(
@@ -62,10 +65,12 @@ fun DigitalLikenessCamera(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
+    val scope = rememberCoroutineScope()
+
     var selectedBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
     val previewView = remember {
-        PreviewView(context).apply {
+        return@remember PreviewView(context).apply {
             scaleType = PreviewView.ScaleType.FILL_CENTER
         }
     }
@@ -93,6 +98,7 @@ fun DigitalLikenessCamera(
             .fillMaxSize()
             .clip(RoundedCornerShape(16.dp))
     ) {
+
 
         if (selectedBitmap != null) {
             selectedBitmap?.let { bmp ->
@@ -143,8 +149,12 @@ fun DigitalLikenessCamera(
                             .fillMaxWidth()
                             .padding(horizontal = 8.dp),
                         onClick = {
-                            selectedBitmap = previewView.bitmap
-                        }, text = "Photo"
+                            scope.launch {
+                                selectedBitmap = previewView.bitmap
+                            }
+
+                        },
+                        text = "Photo"
                     )
                 } else {
                     Row(modifier = Modifier.fillMaxWidth()) {
@@ -175,8 +185,7 @@ fun DigitalLikenessCamera(
                                     topPaddingPx = topPaddingPx
                                 )
                                 onNext(bitmap)
-                            }
-                        )
+                            })
                     }
                 }
             }
@@ -224,34 +233,47 @@ fun cropBitmapToOval(
     val w = src.width
     val h = src.height
 
-    // 1) prepare an output bitmap that supports transparency
     val output = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(output)
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
-    // 2) draw the source image into it
     canvas.drawBitmap(src, 0f, 0f, paint)
 
-    // 3) build the oval mask path
     val ovalW = w - 2f * horizontalPaddingPx
     val ovalH = ovalW * aspectRatio
     val rectF = RectF(
-        horizontalPaddingPx,
-        topPaddingPx,
-        horizontalPaddingPx + ovalW,
-        topPaddingPx + ovalH
+        horizontalPaddingPx, topPaddingPx, horizontalPaddingPx + ovalW, topPaddingPx + ovalH
     )
     val maskPath = Path().apply {
         addOval(rectF, Path.Direction.CW)
     }
-
-    // 4) apply DST_IN: keeps only the parts of the drawn bitmap
-    //    that overlap with the opaque pixels of maskPath.
     paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
     canvas.drawPath(maskPath, paint)
     paint.xfermode = null
 
     return output
+}
+
+@Composable
+fun BoxWithRectBorder(rect: android.graphics.Rect) {
+    Box(
+        modifier = Modifier
+            .zIndex(100f)
+            .fillMaxSize()
+    ) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val strokeWidthPx = 2.dp.toPx()
+
+            drawRect(
+                color = Color.Red,
+                topLeft = Offset(rect.left.toFloat(), rect.top.toFloat()),
+                size = Size(
+                    rect.width().toFloat(), rect.height().toFloat()
+                ),
+                style = androidx.compose.ui.graphics.drawscope.Stroke(width = strokeWidthPx)
+            )
+        }
+    }
 }
 
 @Preview

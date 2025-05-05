@@ -171,6 +171,9 @@ dependencies {
     //// ML-KIT ////
     implementation(libs.text.recognition)
     implementation("com.google.mlkit:segmentation-selfie:16.0.0-beta6")
+    implementation("org.tensorflow:tensorflow-lite:2.13.0")
+    implementation("org.tensorflow:tensorflow-lite-support:0.4.3")
+    implementation("org.tensorflow:tensorflow-lite-gpu:2.13.0")
 
 
     //// ACCOMPANIST ////

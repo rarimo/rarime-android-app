@@ -2,6 +2,7 @@ package com.rarilabs.rarime.modules.home.v2.details
 
 import android.Manifest
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -71,6 +72,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.gson.Gson
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.manager.LikenessRule
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessCamera
@@ -88,6 +90,8 @@ import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.BackgroundRemover
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
+import com.rarilabs.rarime.util.data.Proof
+import com.rarilabs.rarime.util.data.ZkProof
 import kotlinx.coroutines.launch
 
 const val ALREADY_SET_AMOUNT = "49,421"
@@ -118,6 +122,9 @@ fun DigitalLikeness(
 
     val faceImage by viewModel.faceImage.collectAsState()
 
+
+
+
     DigitalLikenessContent(
         modifier,
         id,
@@ -130,6 +137,8 @@ fun DigitalLikeness(
         isScanned,
         viewModel.setIsLivenessScanned,
         viewModel.saveFaceImage,
+        processImage =
+            viewModel::processImage,
         faceImage,
     )
 }
@@ -152,6 +161,7 @@ fun DigitalLikenessContent(
     isScanned: Boolean,
     setIsScanned: (Boolean) -> Unit,
     saveFaceImage: (Bitmap) -> Unit,
+    processImage: suspend (Bitmap) -> ZkProof,
     faceImage: Bitmap?
 ) {
     val isPreview = LocalInspectionMode.current
@@ -175,6 +185,9 @@ fun DigitalLikenessContent(
         ) {
             var selectedBitmap: Bitmap? by remember { mutableStateOf(null) }
 
+
+            val scope = rememberCoroutineScope()
+
             if (selectedBitmap == null) {
                 DigitalLikenessCamera {
                     BackgroundRemover().removeBackground(it) { img ->
@@ -184,6 +197,14 @@ fun DigitalLikenessContent(
             } else {
                 DigitalLikenessProcessing(
                     modifier = Modifier.padding(vertical = 16.dp),
+                    processing = {
+                        scope.launch {
+
+                            val proof = processImage(selectedBitmap!!)
+
+                            Log.i("Image processed", Gson().toJson(proof))
+                        }
+                    },
                     onNext = {
                         setIsScanned(true)
                         saveFaceImage(selectedBitmap!!)
@@ -278,6 +299,7 @@ fun DigitalLikenessContent(
                     LikenessRule.ASK_EVERYTIME -> {
                         stringResource(R.string.ask_me_every_time)
                     }
+
                     else -> ""
                 }
 
@@ -670,6 +692,16 @@ private fun CreateIdentityDetailsPreview() {
             isScanned = isScanned,
             setIsScanned = { isScanned = it },
             saveFaceImage = {},
+            processImage = {
+                ZkProof(
+                    proof = Proof(
+                        pi_a = listOf(),
+                        pi_b = listOf(listOf()),
+                        pi_c = listOf(),
+                        protocol = ""
+                    ), pub_signals = listOf()
+                )
+            },
             faceImage = null
         )
     }

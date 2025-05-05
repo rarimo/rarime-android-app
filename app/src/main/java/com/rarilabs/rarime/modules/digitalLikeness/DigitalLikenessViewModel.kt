@@ -1,7 +1,9 @@
 package com.rarilabs.rarime.modules.digitalLikeness
 
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.manager.LikenessManager
+import com.rarilabs.rarime.util.data.ZkProof
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -22,4 +24,8 @@ class DigitalLikenessViewModel @Inject constructor(
 
     val faceImage = likenessManager.faceImage
     val saveFaceImage = likenessManager::saveFaceImage
+
+    suspend fun processImage(btimap: Bitmap): ZkProof {
+        return likenessManager.livenessProofGeneration(bitmap = btimap)
+    }
 }
