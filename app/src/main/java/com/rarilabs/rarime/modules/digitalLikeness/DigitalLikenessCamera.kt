@@ -1,15 +1,11 @@
 package com.rarilabs.rarime.modules.digitalLikeness
 
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Path
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffXfermode
-import android.graphics.RectF
+import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ExperimentalGetImage
+import androidx.camera.core.ImageAnalysis
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Canvas
@@ -39,6 +35,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -48,13 +45,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.facemesh.FaceMesh
+import com.google.mlkit.vision.facemesh.FaceMeshDetection
+import com.google.mlkit.vision.facemesh.FaceMeshDetector
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import kotlinx.coroutines.launch
+import java.util.concurrent.Executors
 
+
+@OptIn(ExperimentalGetImage::class)
 @Composable
 fun DigitalLikenessCamera(
     modifier: Modifier = Modifier,
@@ -62,6 +66,16 @@ fun DigitalLikenessCamera(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+
+    val meshDetector: FaceMeshDetector = remember {
+        FaceMeshDetection.getClient()
+    }
+
+    var imageSize by remember { mutableStateOf(Size.Zero) }
+
+    val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
+
+    var detectedMeshes by remember { mutableStateOf<List<FaceMesh>>(emptyList()) }
 
     val scope = rememberCoroutineScope()
 
@@ -88,14 +102,45 @@ fun DigitalLikenessCamera(
         } catch (e: Exception) {
             e.printStackTrace()
         }
+
+        val analysisUseCase =
+            ImageAnalysis.Builder().setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build().also {
+                    it.setAnalyzer(cameraExecutor) { imageProxy ->
+                        val mediaImage = imageProxy.image
+                        if (mediaImage != null) {
+                            val rotation = imageProxy.imageInfo.rotationDegrees
+                            val origW = mediaImage.width
+                            val origH = mediaImage.height
+                            val (rotW, rotH) = if (rotation == 90 || rotation == 270) {
+                                origH to origW
+                            } else {
+                                origW to origH
+                            }
+                            imageSize = Size(rotW.toFloat(), rotH.toFloat())
+
+                            val inputImage = InputImage.fromMediaImage(mediaImage, rotation)
+                            meshDetector.process(inputImage).addOnSuccessListener { faceMeshList ->
+                                detectedMeshes = faceMeshList
+                            }.addOnCompleteListener {
+                                imageProxy.close()
+                            }
+                        } else {
+                            imageProxy.close()
+                        }
+                    }
+                }
+
+        cameraProvider.unbindAll()
+        cameraProvider.bindToLifecycle(
+            lifecycleOwner, CameraSelector.DEFAULT_FRONT_CAMERA, previewUseCase, analysisUseCase
+        )
     }
 
+
     Box(
-        modifier = modifier
-            .fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
-
-
         if (selectedBitmap != null) {
             selectedBitmap?.let { bmp ->
                 Image(
@@ -110,7 +155,70 @@ fun DigitalLikenessCamera(
             )
         }
 
-        CameraMask()
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val viewW = size.width
+            val viewH = size.height
+
+            if (imageSize.width == 0f || imageSize.height == 0f) return@Canvas
+
+
+            val scale = maxOf(
+                viewW / imageSize.width, viewH / imageSize.height
+            )
+            val scaledW = imageSize.width * scale
+            val scaledH = imageSize.height * scale
+
+
+            val dx = (scaledW - viewW) / 2f
+            val dy = (scaledH - viewH) / 2f
+
+
+            detectedMeshes.forEach { faceMesh ->
+
+                faceMesh.allTriangles.forEachIndexed { idx, tri ->
+
+
+                    val pts = tri.allPoints
+                    if (pts.size == 3) {
+
+                        val mapped = pts.map { p ->
+                            val rawX = p.position.x * scale - dx
+                            val rawY = p.position.y * scale - dy
+
+                            Offset(viewW - rawX, rawY)
+                        }
+
+                        val path = androidx.compose.ui.graphics.Path().apply {
+                            moveTo(mapped[0].x, mapped[0].y)
+                            lineTo(mapped[1].x, mapped[1].y)
+                            lineTo(mapped[2].x, mapped[2].y)
+                            close()
+                        }
+                        mapped.forEach { vertex ->
+                            drawCircle(
+                                center = vertex,
+                                radius = 2.dp.toPx(),
+                                color = Color.White.copy(alpha = 0.5f)
+                            )
+                        }
+
+
+                        drawPath(
+                            path = path,
+                            color = Color.White.copy(alpha = 0.5f),
+                            style = Stroke(width = 1.dp.toPx())
+                        )
+                    }
+
+                }
+
+
+            }
+
+
+        }
+
+        //CameraMask()
 
         Column(
             modifier = Modifier
@@ -171,25 +279,28 @@ fun DigitalLikenessCamera(
                             size = ButtonSize.Large,
                             text = "Continue",
                             onClick = {
-                                val density = context.resources.displayMetrics.density
-                                val horizontalPaddingPx = 50f * density
-                                val topPaddingPx = 200f * density
-                                val bitmap = cropBitmapToOval(
-                                    src = selectedBitmap!!,
-                                    aspectRatio = 395f / 290f,
-                                    horizontalPaddingPx = horizontalPaddingPx,
-                                    topPaddingPx = topPaddingPx
-                                )
-                                onNext(bitmap)
+//                                val density = context.resources.displayMetrics.density
+//                                val horizontalPaddingPx = 50f * density
+//                                val topPaddingPx = 200f * density
+
+                                onNext(selectedBitmap!!)
+
+//                                    cropBitmapToOval(
+//                                    src = selectedBitmap!!,
+//                                    aspectRatio = 395f / 290f,
+//                                    horizontalPaddingPx = horizontalPaddingPx,
+//                                    topPaddingPx = topPaddingPx
+//                                )
+                                //onNext(bitmap)
                             })
                     }
                 }
             }
 
-
         }
     }
 }
+
 
 @Composable
 private fun CameraMask(
@@ -218,37 +329,37 @@ private fun CameraMask(
     }
 }
 
-
-@SuppressLint("UseKtx")
-fun cropBitmapToOval(
-    src: Bitmap,
-    aspectRatio: Float = 395f / 290f,
-    horizontalPaddingPx: Float = 50f,
-    topPaddingPx: Float = 200f
-): Bitmap {
-    val w = src.width
-    val h = src.height
-
-    val output = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(output)
-    val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-
-    canvas.drawBitmap(src, 0f, 0f, paint)
-
-    val ovalW = w - 2f * horizontalPaddingPx
-    val ovalH = ovalW * aspectRatio
-    val rectF = RectF(
-        horizontalPaddingPx, topPaddingPx, horizontalPaddingPx + ovalW, topPaddingPx + ovalH
-    )
-    val maskPath = Path().apply {
-        addOval(rectF, Path.Direction.CW)
-    }
-    paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
-    canvas.drawPath(maskPath, paint)
-    paint.xfermode = null
-
-    return output
-}
+//
+//@SuppressLint("UseKtx")
+//fun cropBitmapToOval(
+//    src: Bitmap,
+//    aspectRatio: Float = 395f / 290f,
+//    horizontalPaddingPx: Float = 50f,
+//    topPaddingPx: Float = 200f
+//): Bitmap {
+//    val w = src.width
+//    val h = src.height
+//
+//    val output = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+//    val canvas = Canvas(output)
+//    val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+//
+//    canvas.drawBitmap(src, 0f, 0f, paint)
+//
+//    val ovalW = w - 2f * horizontalPaddingPx
+//    val ovalH = ovalW * aspectRatio
+//    val rectF = RectF(
+//        horizontalPaddingPx, topPaddingPx, horizontalPaddingPx + ovalW, topPaddingPx + ovalH
+//    )
+//    val maskPath = Path().apply {
+//        addOval(rectF, Path.Direction.CW)
+//    }
+//    paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
+//    canvas.drawPath(maskPath, paint)
+//    paint.xfermode = null
+//
+//    return output
+//}
 
 @Composable
 fun BoxWithRectBorder(rect: android.graphics.Rect) {
@@ -266,7 +377,7 @@ fun BoxWithRectBorder(rect: android.graphics.Rect) {
                 size = Size(
                     rect.width().toFloat(), rect.height().toFloat()
                 ),
-                style = androidx.compose.ui.graphics.drawscope.Stroke(width = strokeWidthPx)
+                style = Stroke(width = strokeWidthPx)
             )
         }
     }

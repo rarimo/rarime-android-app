@@ -175,6 +175,9 @@ dependencies {
     implementation("org.tensorflow:tensorflow-lite-support:0.4.3")
     implementation("org.tensorflow:tensorflow-lite-gpu:2.13.0")
 
+    implementation("com.google.mlkit:face-detection:16.1.7")
+    implementation("com.google.mlkit:face-mesh-detection:16.0.0-beta3")
+
 
     //// ACCOMPANIST ////
     implementation("com.google.accompanist:accompanist-permissions:0.31.6-rc")
@@ -252,7 +255,7 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.1")
     implementation("com.google.firebase:firebase-messaging:24.0.1")
 
-    implementation("com.google.mlkit:face-detection:16.1.7")
+
 
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.31.0-alpha")
