@@ -66,12 +66,8 @@ fun HomeScreenV3(
     HomeScreenContent(
         userPassportName = passport?.personDetails?.name,
         notificationsCount = notificationsCount,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                top = innerPaddings[ScreenInsets.TOP]?.toFloat()?.dp ?: 0.dp,
-                bottom = innerPaddings[ScreenInsets.BOTTOM]?.toFloat()?.dp ?: 0.dp
-            ),
+        innerPaddings = innerPaddings,
+        modifier = Modifier.fillMaxSize(),
         navigate = navigate,
         sharedTransitionScope = sharedTransitionScope,
         setVisibilityOfBottomBar = setVisibilityOfBottomBar,
@@ -82,6 +78,7 @@ fun HomeScreenV3(
 @Composable
 fun HomeScreenContent(
     modifier: Modifier = Modifier,
+    innerPaddings: Map<ScreenInsets, Number>,
     navigate: (String) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     setVisibilityOfBottomBar: (Boolean) -> Unit,
@@ -99,7 +96,12 @@ fun HomeScreenContent(
     Box(modifier = modifier) {
         AnimatedContent(targetState = selectedCard) { targetState ->
             if (targetState == null) {
-                Column {
+                Column(
+                    modifier = Modifier.padding(
+                        top = innerPaddings[ScreenInsets.TOP]?.toFloat()?.dp ?: 0.dp,
+                        bottom = innerPaddings[ScreenInsets.BOTTOM]?.toFloat()?.dp ?: 0.dp
+                    )
+                ) {
                     HomeHeader(
                         notificationsCount = notificationsCount,
                         name = userPassportName,
@@ -112,7 +114,7 @@ fun HomeScreenContent(
                         VerticalPager(
                             modifier = Modifier.weight(1f),
                             state = pagerState,
-                            contentPadding = PaddingValues(bottom = 8.dp),
+                            contentPadding = PaddingValues(top = 42.dp, bottom = 95.dp),
                         ) { page ->
                             val cardType = CardType.entries[page]
 
@@ -141,23 +143,21 @@ fun HomeScreenContent(
                                 sharedTransitionScope = sharedTransitionScope
                             )
 
+                            val baseCollapsedModifier = Modifier.graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                                alpha = lerp(0.8f, 1f, 1f - absoluteOffset)
+                            }
+
                             when (cardType) {
                                 CardType.FREEDOMTOOL -> FreedomtoolCollapsedCard(
                                     collapsedCardProps = collapsedCardProps,
-                                    modifier = Modifier.graphicsLayer {
-                                        scaleX = scale
-                                        scaleY = scale
-                                        alpha = lerp(0.8f, 1f, 1f - absoluteOffset)
-                                    },
+                                    modifier = baseCollapsedModifier,
                                 )
 
                                 CardType.ANOTHER_ONE -> FreedomtoolCollapsedCard(
                                     collapsedCardProps = collapsedCardProps,
-                                    modifier = Modifier.graphicsLayer {
-                                        scaleX = scale
-                                        scaleY = scale
-                                        alpha = lerp(0.8f, 1f, 1f - absoluteOffset)
-                                    },
+                                    modifier = baseCollapsedModifier,
                                 )
                             }
                         }
@@ -216,6 +216,7 @@ private fun HomeScreenPreview() {
                 setVisibilityOfBottomBar = {},
                 userPassportName = "Mike",
                 notificationsCount = 2,
+                innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
             )
         }
     }

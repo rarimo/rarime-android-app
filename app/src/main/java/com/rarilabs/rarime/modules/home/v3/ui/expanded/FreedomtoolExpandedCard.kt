@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +40,9 @@ fun FreedomtoolExpandedCard(
     expandedCardProps: BaseCardProps.Expanded,
     modifier: Modifier = Modifier,
 ) {
+    val systemBarsPadding = WindowInsets.systemBars
+        .asPaddingValues()
+
     with(expandedCardProps) {
         with(sharedTransitionScope) {
             BaseExpandedCard(
@@ -59,7 +65,8 @@ fun FreedomtoolExpandedCard(
                                 exit = fadeOut(),
                                 resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                             )
-                            .padding(20.dp)
+                            .padding(vertical = systemBarsPadding.calculateBottomPadding())
+                            .padding(horizontal = 16.dp)
                             .fillMaxWidth()
                     ) {
                         Spacer(modifier = Modifier.weight(1f))
@@ -70,14 +77,15 @@ fun FreedomtoolExpandedCard(
                 },
                 body = {
                     Column(
-                        modifier = Modifier.padding(horizontal = 20.dp)
+                        modifier = Modifier
+                            .padding(horizontal = 20.dp)
                             .sharedBounds(
                                 rememberSharedContentState(HomeSharedKeys.content(layoutId)),
                                 animatedVisibilityScope = animatedVisibilityScope,
                                 renderInOverlayDuringTransition = false,
                                 enter = fadeIn(),
                                 exit = fadeOut(),
-                                resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                                resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
                             )
                     ) {
                         Spacer(Modifier.height((BG_DOT_MAP_HEIGHT - 150).dp))

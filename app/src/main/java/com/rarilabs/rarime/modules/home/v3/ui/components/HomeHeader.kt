@@ -28,7 +28,7 @@ fun HomeHeader(
     onNotificationClick: () -> Unit,
 ) {
     Row(
-        modifier.padding(top = 20.dp, start = 20.dp, end = 20.dp, bottom = 16.dp),
+        modifier.padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
