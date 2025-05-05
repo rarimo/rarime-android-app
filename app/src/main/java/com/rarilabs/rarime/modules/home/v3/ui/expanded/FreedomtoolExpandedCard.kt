@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.home.v3.ui.expanded
 
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
@@ -9,17 +10,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,14 +18,7 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,6 +26,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -51,6 +37,7 @@ import com.rarilabs.rarime.api.voting.models.Poll
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BG_DOT_MAP_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
+import com.rarilabs.rarime.modules.home.v3.model.CardType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
@@ -59,7 +46,6 @@ import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
 import com.rarilabs.rarime.modules.votes.ActiveVotesList
 import com.rarilabs.rarime.modules.votes.HistoryVotesList
-import com.rarilabs.rarime.modules.votes.VoteResultsCard
 import com.rarilabs.rarime.modules.votes.VotesLoadingSkeleton
 import com.rarilabs.rarime.modules.votes.VotesScreenViewModel
 import com.rarilabs.rarime.modules.votes.voteProcessScreen.VotingAppSheet
@@ -69,6 +55,7 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import kotlinx.coroutines.launch
 
 @Composable
@@ -80,382 +67,361 @@ fun FreedomtoolExpandedCard(
     viewModel: VotesScreenViewModel = hiltViewModel()
 ) {
     val mainViewModel = LocalMainViewModel.current
-
     val activeVotes by viewModel.activeVotes.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-
     val historyVotes by viewModel.historyVotes.collectAsState()
-
-    val selectedVote by viewModel.selectedVote.collectAsState()
-
+    val isLoading by viewModel.isLoading.collectAsState()
+    val selectedPoll by viewModel.selectedVote.collectAsState()
     val voteSheetState = rememberAppSheetState()
 
-    LaunchedEffect(Unit) {
-        viewModel.loadPolls()
-    }
-
+    LaunchedEffect(Unit) { viewModel.loadPolls() }
     VotingAppSheet(
         navigate = navigate,
         voteSheetState = voteSheetState,
-        selectedPoll = selectedVote
+        selectedPoll = selectedPoll
     )
 
-    FreedomtoolExpandedCardContent(
-        expandedCardProps = expandedCardProps,
-        activeVotes = activeVotes,
-        onProposalScanned = {
-            val uri = it.toUri()
-            mainViewModel.setExtIntDataURI(uri)
-        },
-        onVoteClick = {
-            viewModel.setSelectedPoll(it)
-            voteSheetState.show()
-        },
-        innerPaddings = innerPaddings,
-        qrCodeScanner = { onBackCb, onScanCb ->
-            ScanQrScreen(
-                innerPaddings = innerPaddings,
-                onBack = { onBackCb.invoke() },
-                onScan = { onScanCb.invoke(it) }
-            )
-        },
-        historyVotes = historyVotes,
-        isLoading = isLoading,
-        modifier = modifier
-    )
+    var showQrScan by remember { mutableStateOf(false) }
+    if (showQrScan) {
+        ScanQrScreen(
+            innerPaddings = innerPaddings,
+            onBack = { showQrScan = false },
+            onScan = {
+                mainViewModel.setExtIntDataURI(it.toUri())
+                showQrScan = false
+            }
+        )
+    } else {
+        FreedomtoolExpandedCardContent(
+            cardProps = expandedCardProps,
+            modifier = modifier,
+            innerPaddings = innerPaddings,
+            activeVotes = activeVotes,
+            historyVotes = historyVotes,
+            isLoading = isLoading,
+            onScan = { showQrScan = true },
+            onVoteClick = {
+                viewModel.setSelectedPoll(it)
+                voteSheetState.show()
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun FreedomtoolExpandedCardContent(
+    cardProps: BaseCardProps.Expanded,
     modifier: Modifier = Modifier,
-    innerPaddings: Map<ScreenInsets, Number> = mapOf(
-        ScreenInsets.TOP to 0,
-        ScreenInsets.BOTTOM to 0
-    ),
-    expandedCardProps: BaseCardProps.Expanded,
+    innerPaddings: Map<ScreenInsets, Number>,
     activeVotes: List<Poll>,
     historyVotes: List<Poll>,
     isLoading: Boolean,
-    onProposalScanned: (String) -> Unit,
-    onVoteClick: (Poll) -> Unit,
-    qrCodeScanner: @Composable (onBackCb: () -> Unit, onScanCb: (String) -> Unit) -> Unit = { _, _ -> },
+    onScan: () -> Unit,
+    onVoteClick: (Poll) -> Unit
 ) {
+    with(cardProps) {
+        with(cardProps.sharedTransitionScope) {
+            BaseExpandedCard(
+                modifier = modifier
+                    .sharedElement(
+                        state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) }
+                    ),
+                header = {
+                    Header(
+                        layoutId = layoutId,
+                        onCollapse = onCollapse,
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        topPadding = innerPaddings[ScreenInsets.TOP]!!.toInt().dp,
+                        bottomPadding = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp
+                    )
+                },
+                body = {
+                    Body(
+                        layoutId = layoutId,
+                        activeVotes = activeVotes,
+                        historyVotes = historyVotes,
+                        isLoading = isLoading,
+                        onScan = onScan,
+                        onVoteClick = onVoteClick,
+                        innerPaddings = innerPaddings,
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
+                },
+                overlay = {
+                    Overlay(
+                        layoutId = layoutId,
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
+                }
+            )
+        }
+    }
+}
 
-    var isQrCodeViewShown by remember { mutableStateOf(false) }
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun Header(
+    layoutId: Int,
+    onCollapse: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    topPadding: Dp,
+    bottomPadding: Dp
+) {
+    with(sharedTransitionScope) {
+        Row(
+            modifier = Modifier
+                .sharedBounds(
+                    rememberSharedContentState(HomeSharedKeys.header(layoutId)),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                )
+                .fillMaxWidth()
+                .padding(top = topPadding, bottom = bottomPadding)
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+            IconButton(onClick = onCollapse) {
+                AppIcon(id = R.drawable.ic_close)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun Body(
+    layoutId: Int,
+    activeVotes: List<Poll>,
+    historyVotes: List<Poll>,
+    isLoading: Boolean,
+    onScan: () -> Unit,
+    onVoteClick: (Poll) -> Unit,
+    innerPaddings: Map<ScreenInsets, Number>,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
+) {
     val uriHandler = LocalUriHandler.current
+    with(sharedTransitionScope) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+                .sharedBounds(
+                    rememberSharedContentState(HomeSharedKeys.content(layoutId)),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    renderInOverlayDuringTransition = false,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+                )
+        ) {
+            Spacer(Modifier.height((BG_DOT_MAP_HEIGHT - 200).dp))
+            BaseCardTitle(
+                title = "RariMe",
+                accentTitle = "Voting",
+                caption = "* Nothing leaves this device",
+                titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.baseBlack),
+                accentTitleStyle = RarimeTheme.typography.additional1.copy(color = RarimeTheme.colors.baseBlackOp40),
+                titleModifier = Modifier.sharedBounds(
+                    rememberSharedContentState(HomeSharedKeys.title(layoutId)),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
+                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                ),
+                accentTitleModifier = Modifier.sharedBounds(
+                    rememberSharedContentState(HomeSharedKeys.gradientTitle(layoutId)),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
+                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                ),
+                captionModifier = Modifier.sharedBounds(
+                    rememberSharedContentState(HomeSharedKeys.caption(layoutId)),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
+                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                )
+            )
+            Text(
+                "An identification and privacy solution that revolutionizes polling, surveying and election processes",
+                style = RarimeTheme.typography.body3,
+                color = RarimeTheme.colors.baseBlackOp50
+            )
+            VoteActionRow(
+                onLink = { uriHandler.openUri(BaseConfig.VOTING_WEBSITE_URL) },
+                onScan = onScan
+            )
+            HorizontalDivider(
+                modifier = Modifier
+                    .background(RarimeTheme.colors.componentPrimary)
+                    .fillMaxWidth()
+                    .height(2.dp)
+            )
+            TabsAndPager(
+                activeVotes = activeVotes,
+                historyVotes = historyVotes,
+                isLoading = isLoading,
+                onVoteClick = onVoteClick,
+                innerPaddings = innerPaddings
+            )
+        }
+    }
+}
 
+@Composable
+private fun VoteActionRow(
+    onLink: () -> Unit,
+    onScan: () -> Unit
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        IconButton(
+            modifier = Modifier
+                .width(56.dp)
+                .height(56.dp)
+                .background(
+                    RarimeTheme.colors.componentPrimary,
+                    RoundedCornerShape(20.dp)
+                ),
+            colors = IconButtonDefaults.iconButtonColors(
+                containerColor = Color.Transparent,
+                contentColor = RarimeTheme.colors.textPrimary,
+                disabledContainerColor = RarimeTheme.colors.componentDisabled,
+                disabledContentColor = RarimeTheme.colors.textDisabled
+            ),
+            onClick = onLink,
+        ) {
+            AppIcon(id = R.drawable.ic_plus, tint = RarimeTheme.colors.baseBlack)
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        TransparentButton(
+            modifier = Modifier
+                .weight(1f)
+                .height(56.dp),
+            size = ButtonSize.Large,
+            text = "Scan a QR",
+            onClick = onScan
+        )
+    }
+}
+
+@Composable
+private fun TabsAndPager(
+    activeVotes: List<Poll>,
+    historyVotes: List<Poll>,
+    isLoading: Boolean,
+    onVoteClick: (Poll) -> Unit,
+    innerPaddings: Map<ScreenInsets, Number>
+) {
     val tabs = listOf("Active", "History")
-    val pagerState = rememberPagerState(
-        pageCount = { tabs.size },
-        initialPage = 0
-    )
+    val pagerState = rememberPagerState(pageCount = { tabs.size }, initialPage = 0)
     val scope = rememberCoroutineScope()
 
-    if (isQrCodeViewShown) {
-        qrCodeScanner(
-            { isQrCodeViewShown = false },
-            {
-                onProposalScanned(it)
-                isQrCodeViewShown = false
-            }
-        )
-    } else {
-        with(expandedCardProps) {
-            with(sharedTransitionScope) {
-                BaseExpandedCard(
-                    modifier = modifier
-                        .sharedElement(
-                            state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = { _, _ ->
-                                tween(durationMillis = ANIMATION_DURATION_MS)
-                            },
-                        ),
-                    header = {
-                        Row(
-                            modifier = Modifier
-                                .sharedBounds(
-                                    rememberSharedContentState(HomeSharedKeys.header(layoutId)),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                    enter = fadeIn(),
-                                    exit = fadeOut(),
-                                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                                )
-                                .padding(
-                                    top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp,
-                                    bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp
-                                )
-                                .padding(horizontal = 16.dp)
-                                .fillMaxWidth()
-                        ) {
-                            Spacer(modifier = Modifier.weight(1f))
-                            IconButton(onClick = onCollapse) {
-                                AppIcon(id = R.drawable.ic_close)
-                            }
-                        }
-                    },
-                    body = {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(24.dp),
-                            modifier = Modifier
-                                .padding(horizontal = 20.dp)
-                                .sharedBounds(
-                                    rememberSharedContentState(HomeSharedKeys.content(layoutId)),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                    renderInOverlayDuringTransition = false,
-                                    enter = fadeIn(),
-                                    exit = fadeOut(),
-                                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
-                                )
-                        ) {
-                            Spacer(Modifier.height((BG_DOT_MAP_HEIGHT - 150).dp))
-                            BaseCardTitle(
-                                title = "RariMe",
-                                accentTitle = "Voting",
-                                caption = "* Nothing leaves this device",
-                                titleModifier =
-                                    Modifier.sharedBounds(
-                                        rememberSharedContentState(HomeSharedKeys.title(layoutId)),
-                                        animatedVisibilityScope = animatedVisibilityScope,
-                                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                                    ),
-                                titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.baseBlack),
-                                accentTitleStyle = RarimeTheme.typography.additional1.copy(color = RarimeTheme.colors.baseBlackOp40),
-                                accentTitleModifier =
-                                    Modifier.sharedBounds(
-                                        rememberSharedContentState(
-                                            HomeSharedKeys.gradientTitle(
-                                                layoutId
-                                            )
-                                        ),
-                                        animatedVisibilityScope = animatedVisibilityScope,
-                                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                                    ),
-                                captionModifier =
-                                    Modifier.sharedBounds(
-                                        rememberSharedContentState(
-                                            HomeSharedKeys.caption(
-                                                layoutId
-                                            )
-                                        ),
-                                        animatedVisibilityScope = animatedVisibilityScope,
-                                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                                    )
-
-                            )
-                            Text(
-                                "An identification and privacy solution that revolutionizes polling, surveying and election processes",
-                                style = RarimeTheme.typography.body3,
-                                color = RarimeTheme.colors.baseBlackOp50,
-                            )
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                IconButton(
-                                    modifier = Modifier
-                                        .width(56.dp)
-                                        .height(56.dp)
-                                        .background(
-                                            RarimeTheme.colors.componentPrimary,
-                                            RoundedCornerShape(20.dp)
-                                        ),
-                                    colors = IconButtonDefaults.iconButtonColors(
-                                        containerColor = Color.Transparent,
-                                        contentColor = RarimeTheme.colors.textPrimary,
-                                        disabledContainerColor = RarimeTheme.colors.componentDisabled,
-                                        disabledContentColor = RarimeTheme.colors.textDisabled
-                                    ),
-                                    onClick = {
-                                        uriHandler.openUri(BaseConfig.VOTING_WEBSITE_URL)
-                                    },
-                                ) {
-                                    AppIcon(
-                                        id = R.drawable.ic_plus,
-                                        tint = RarimeTheme.colors.baseBlack
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.width(16.dp))
-
-                                TransparentButton(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(56.dp),
-                                    size = ButtonSize.Large,
-                                    text = "Scan a QR",
-                                    onClick = {
-                                        isQrCodeViewShown = true
-                                    }
-                                )
-                            }
-
-                            HorizontalDivider(
-                                modifier = Modifier
-                                    .background(RarimeTheme.colors.componentPrimary)
-                                    .fillMaxWidth()
-                                    .height(2.dp)
-                            )
-
-                            Column {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                ) {
-                                    tabs.forEachIndexed { index, title ->
-                                        Box(
-                                            modifier = Modifier
-                                                .padding(0.dp)
-                                                .background(
-                                                    color = if (pagerState.currentPage == index) RarimeTheme.colors.componentPrimary else Color.Transparent,
-                                                    shape = RoundedCornerShape(100.dp)
-                                                )
-                                                .clip(RoundedCornerShape(100.dp))
-                                                .clickable(
-                                                    interactionSource = remember { MutableInteractionSource() },
-                                                    indication = rememberRipple(bounded = true)
-                                                ) {
-                                                    scope.launch {
-                                                        pagerState.animateScrollToPage(
-                                                            index,
-                                                            animationSpec = tween(
-                                                                durationMillis = 500,
-                                                            )
-                                                        )
-                                                    }
-                                                }
-                                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                                        ) {
-                                            Text(
-                                                text = title.uppercase(),
-                                                style = RarimeTheme.typography.overline2,
-                                                color = if (pagerState.currentPage == index)
-                                                    RarimeTheme.colors.baseBlack else RarimeTheme.colors.baseBlack.copy(
-                                                    0.4f
-                                                ),
-                                            )
-                                        }
-                                    }
-                                }
-
-                                Spacer(modifier = Modifier.height(24.dp))
-
-                                HorizontalPager(
-                                    state = pagerState,
-                                    modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp + 20.dp),
-                                    pageSpacing = 12.dp,
-                                    verticalAlignment = Alignment.Top,
-                                ) { page ->
-                                    when (page) {
-                                        0 -> if (isLoading)
-                                            VotesLoadingSkeleton()
-                                        else if (activeVotes.isEmpty()) {
-                                            Row(
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(vertical = 10.dp),
-                                                horizontalArrangement = Arrangement.Center
-                                            ) {
-                                                Text(
-                                                    "No active votes",
-                                                    color = RarimeTheme.colors.baseBlackOp40,
-                                                    textAlign = TextAlign.Center
-                                                )
-                                            }
-                                        } else ActiveVotesList(
-                                            votes = activeVotes,
-                                            onClick = {
-                                                onVoteClick.invoke(it)
-                                            }
-                                        )
-
-                                        1 -> if (isLoading)
-                                            VotesLoadingSkeleton()
-                                        else if (historyVotes.isEmpty()) {
-                                            Row(
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(vertical = 10.dp),
-                                                horizontalArrangement = Arrangement.Center
-                                            ) {
-                                                Text(
-                                                    "No votes",
-                                                    textAlign = TextAlign.Center,
-                                                    color = RarimeTheme.colors.baseBlackOp40
-                                                )
-                                            }
-                                        } else HistoryVotesList(
-                                            votes = historyVotes,
-                                            onClick = {
-                                                onVoteClick.invoke(it)
-                                            }
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    overlay = {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(RarimeTheme.colors.gradient5)
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.freedomtool_bg),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(BG_DOT_MAP_HEIGHT.dp)
-                                    .offset(y = (-80).dp)
-                                    .sharedBounds(
-                                        rememberSharedContentState(
-                                            HomeSharedKeys.image(
-                                                layoutId
-                                            )
-                                        ),
-                                        animatedVisibilityScope = animatedVisibilityScope,
-                                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                                    )
-                            )
-                        }
-                    }
+    Row {
+        tabs.forEachIndexed { idx, title ->
+            val sel = pagerState.currentPage == idx
+            Text(
+                text = title.uppercase(),
+                modifier = Modifier
+                    .clip(RoundedCornerShape(100.dp))
+                    .background(if (sel) RarimeTheme.colors.componentPrimary else Color.Transparent)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = rememberRipple(bounded = true)
+                    ) { scope.launch { pagerState.animateScrollToPage(idx) } }
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                style = RarimeTheme.typography.overline2,
+                color = if (sel) RarimeTheme.colors.baseBlack else RarimeTheme.colors.baseBlack.copy(
+                    alpha = 0.4f
                 )
-            }
+            )
+        }
+    }
+    HorizontalPager(
+        state = pagerState,
+        modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp + 20.dp),
+        pageSpacing = 12.dp,
+        verticalAlignment = Alignment.Top
+    ) { page ->
+        when {
+            isLoading -> VotesLoadingSkeleton()
+            page == 0 && activeVotes.isEmpty() -> EmptyState("No active votes")
+            page == 0 -> ActiveVotesList(votes = activeVotes, onClick = onVoteClick)
+            page == 1 && historyVotes.isEmpty() -> EmptyState("No votes")
+            else -> HistoryVotesList(historyVotes) { onVoteClick(it) }
         }
     }
 }
 
 @Composable
-fun ActiveVotesList(
-    onClick: (Poll) -> Unit,
-    votes: List<Poll>
-) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+private fun EmptyState(text: String) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp)
     ) {
-        votes.forEach {
-            VoteResultsCard(it, onCLick = onClick)
-        }
+        Text(text = text, color = RarimeTheme.colors.baseBlackOp40, textAlign = TextAlign.Center)
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun HistoryVotesList(
-    votes: List<Poll>,
-    onClick: (Poll) -> Unit
+private fun Overlay(
+    layoutId: Int,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        votes.forEach {
-            VoteResultsCard(it, onCLick = onClick)
+    with(sharedTransitionScope) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(RarimeTheme.colors.gradient5)
+        ) {
+            Image(
+                painter = painterResource(R.drawable.freedomtool_bg),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(BG_DOT_MAP_HEIGHT.dp)
+                    .offset(y = (-80).dp)
+                    .sharedBounds(
+                        rememberSharedContentState(HomeSharedKeys.image(layoutId)),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    )
+            )
         }
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Preview(showBackground = true)
+@Composable
+fun FreedomtoolExpandedCardPreview() {
+    PrevireSharedAnimationProvider { sts, avs ->
+        FreedomtoolExpandedCardContent(
+            cardProps = BaseCardProps.Expanded(
+                onCollapse = {},
+                layoutId = CardType.FREEDOMTOOL.layoutId,
+                animatedVisibilityScope = avs,
+                sharedTransitionScope = sts
+            ),
+            modifier = Modifier.fillMaxSize(),
+            innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
+            activeVotes = emptyList(),
+            historyVotes = emptyList(),
+            isLoading = false,
+            onScan = {},
+            onVoteClick = {}
+        )
+    }
+}
