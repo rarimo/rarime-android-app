@@ -37,7 +37,6 @@ import com.rarilabs.rarime.modules.home.v3.ui.components.VerticalPageIndicator
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.FreedomtoolExpandedCard
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
-import com.rarilabs.rarime.store.room.notifications.models.NotificationEntityData
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import com.rarilabs.rarime.util.Screen
@@ -46,6 +45,7 @@ import kotlin.math.abs
 enum class CardType(val layoutId: Int) {
     FREEDOMTOOL(0), ANOTHER_ONE(1)
 }
+
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -58,7 +58,7 @@ fun HomeScreenV3(
 ) {
     val passport by viewModel.passport.collectAsState()
     val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
-    val notifications: List<NotificationEntityData> by viewModel.notifications.collectAsState()
+    val notifications by viewModel.notifications.collectAsState()
     val notificationsCount by remember(notifications) {
         derivedStateOf { notifications.count { it.isActive } }
     }
@@ -94,8 +94,8 @@ fun HomeScreenContent(
     val pagerState = rememberPagerState(pageCount = { CardType.entries.size })
 
     Box(modifier = modifier) {
-        AnimatedContent(targetState = selectedCard) { targetState ->
-            if (targetState == null) {
+        AnimatedContent(selectedCard) { targetCard ->
+            if (targetCard == null) {
                 Column(
                     modifier = Modifier.padding(
                         top = innerPaddings[ScreenInsets.TOP]?.toFloat()?.dp ?: 0.dp,
@@ -183,12 +183,12 @@ fun HomeScreenContent(
                     // Common props for every expanded card
                     val expandedCardProps = BaseCardProps.Expanded(
                         onCollapse = { selectedCard = null },
-                        layoutId = targetState.layoutId,
+                        layoutId = targetCard.layoutId,
                         animatedVisibilityScope = this@AnimatedContent,
                         sharedTransitionScope = sharedTransitionScope
                     )
 
-                    when (targetState) {
+                    when (targetCard) {
                         CardType.FREEDOMTOOL -> FreedomtoolExpandedCard(
                             expandedCardProps = expandedCardProps
                         )

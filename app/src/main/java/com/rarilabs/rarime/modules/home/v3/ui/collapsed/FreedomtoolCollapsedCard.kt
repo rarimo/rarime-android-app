@@ -48,21 +48,22 @@ fun FreedomtoolCollapsedCard(
     with(collapsedCardProps) {
         with(sharedTransitionScope) {
             BaseCollapsedCard(
-                modifier = modifier
+                modifier = Modifier
                     .sharedElement(
                         state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
                         animatedVisibilityScope = animatedVisibilityScope,
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) }
                     )
                     .clip(RoundedCornerShape(16.dp))
-                    .padding(start = 16.dp, bottom = 8.dp, top = 8. dp)
+                    .padding(start = 16.dp, bottom = 8.dp, top = 8.dp)
                     .fillMaxWidth()
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
                     ) {
                         onExpand()
-                    },
+                    }
+                    .then(modifier),
                 header = {
                     Row(
                         modifier = Modifier
