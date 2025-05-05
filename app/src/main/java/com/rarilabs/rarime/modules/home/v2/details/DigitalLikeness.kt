@@ -63,6 +63,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -179,6 +180,7 @@ fun DigitalLikenessContent(
     if (isPreview || cameraPermissionState!!.status.isGranted) {
         AppBottomSheet(
             state = appSheetState,
+            shape = RectangleShape,
             fullScreen = true,
             scrimColor = Color.Transparent,
             isHeaderEnabled = false,
@@ -593,11 +595,9 @@ fun RuleOption(
         targetValue = if (item.isSelected) RarimeTheme.colors.invertedLight else RarimeTheme.colors.textPrimary,
         animationSpec = tween(durationMillis = 300)
     )
-
     val cardBorderColor by animateColorAsState(
-        targetValue = if (item.isSelected) RarimeTheme.colors.textPrimary else (RarimeTheme.colors.componentPrimary.copy(
-            alpha = 0.05f
-        )), animationSpec = tween(durationMillis = 500)
+        targetValue = if (item.isSelected) RarimeTheme.colors.textPrimary else RarimeTheme.colors.componentPrimary.copy(alpha = 0.05f),
+        animationSpec = tween(durationMillis = 500)
     )
 
     Card(
