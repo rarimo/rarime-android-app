@@ -32,7 +32,10 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.GifViewer
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 
 enum class ProcessingStatus(val title: String) {
@@ -55,45 +58,31 @@ fun DigitalLikenessProcessing(
 
     var currentStep: ProcessingStatus by remember { mutableStateOf(ProcessingStatus.DOWNLOADING) }
 
-    LaunchedEffect(Unit) {
-        processing()
-    }
-
     var currentProgress: Float by remember {
-        mutableFloatStateOf(0.0f)
+        mutableFloatStateOf(0f)
     }
 
     LaunchedEffect(Unit) {
-        while (true) {
-            for (i in 0..100) {
-                currentProgress = i.toFloat() / 100f
-                delay(20)
+        withContext(Dispatchers.Default) {
 
-                if (i == 100) {
-                    when (currentStep) {
-                        ProcessingStatus.DOWNLOADING -> {
-                            currentStep = ProcessingStatus.EXTRACTING_FEATURES
-                        }
+            val steps = ProcessingStatus.entries.filterNot { it == ProcessingStatus.FINSH }
+            val p = async { processing() }
 
-                        ProcessingStatus.EXTRACTING_FEATURES -> {
-                            currentStep = ProcessingStatus.RUNNING_ZKML
-                        }
-
-                        ProcessingStatus.RUNNING_ZKML -> {
-                            currentStep = ProcessingStatus.FINSH
-                        }
-
-                        ProcessingStatus.FINSH -> {
-
-                        }
-                    }
+            for (step in steps) {
+                currentStep = step
+                // from 0 to 100
+                repeat(101) { i ->
+                    currentProgress = i / 100f
+                    delay(20)
                 }
             }
-            if (currentStep == ProcessingStatus.FINSH) {
-                //onNext()
-                break
-            }
+
+            currentStep = ProcessingStatus.FINSH
+            delay(200)
+            p.await()
+            onNext()
         }
+
     }
 
     Column(
@@ -102,8 +91,6 @@ fun DigitalLikenessProcessing(
             .background(RarimeTheme.colors.backgroundPrimary)
             .then(modifier)
     ) {
-
-
         GifViewer(
             gifId = R.raw.likeness_processing,
             modifier = Modifier
@@ -187,7 +174,7 @@ fun ProcessItemLoading(
                         0f, 1f
                     )
                 )
-                .height(62.dp)
+                .height(60.dp)
                 .clip(RoundedCornerShape(24.dp))
                 .background(RarimeTheme.colors.componentPrimary)
                 .align(Alignment.CenterStart)
@@ -233,7 +220,7 @@ fun ProcessItemFinished(
                 .fillMaxWidth(
                     1f
                 )
-                .height(62.dp)
+                .height(60.dp)
                 .clip(RoundedCornerShape(24.dp))
                 .background(RarimeTheme.colors.successLighter)
                 .align(Alignment.CenterStart)

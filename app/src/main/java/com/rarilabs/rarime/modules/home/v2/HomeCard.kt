@@ -49,7 +49,7 @@ data class CardProperties(
     val subTitleStyle: TextStyle? = null,
     val caption: String? = null,
     val icon: Int,
-    val image: Int,
+    val imageRes: Int,
     val imageModifier: Modifier = Modifier,
     val backgroundGradient: Brush,
 )
@@ -64,8 +64,8 @@ fun HomeCard(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
     footer: @Composable () -> Unit,
+    image: (@Composable () -> Unit)? = null,
     header: (@Composable (headerKey: String, subTitleKey: String) -> Unit)? = null,
-    image: (@Composable (modifier: Modifier) -> Unit)? = null,
     onCardClick: () -> Unit,
 ) {
     val boundKey = remember(id) { "$id-bound" }
@@ -110,25 +110,26 @@ fun HomeCard(
                             animatedVisibilityScope = animatedContentScope
                         )
 
-                )
-                if (image != null) {
-                    image(cardProperties.imageModifier)
-                } else {
-                    Image(
-                        painter = painterResource(cardProperties.image),
-                        contentDescription = null,
-                        modifier = cardProperties.imageModifier
-                            .matchParentSize()
-                            .sharedElement(
-                                rememberSharedContentState(imageKey),
-                                animatedVisibilityScope = animatedContentScope
-                            )
-                            .clip(RoundedCornerShape(32.dp)),
-                        contentScale = ContentScale.Fit
-                    )
+                ) {
+
+                    if (image == null) {
+                        Image(
+                            painter = painterResource(cardProperties.imageRes),
+                            contentDescription = null,
+                            modifier = cardProperties.imageModifier
+                                .matchParentSize()
+                                .sharedElement(
+                                    rememberSharedContentState(imageKey),
+                                    animatedVisibilityScope = animatedContentScope
+                                )
+                                .clip(RoundedCornerShape(32.dp)),
+                            contentScale = ContentScale.Fit
+                        )
+                    } else {
+                        image()
+                    }
+
                 }
-
-
 
                 Column(
                     modifier = Modifier
@@ -167,7 +168,7 @@ fun HomeCard(
                                             rememberSharedContentState(headerKey),
                                             animatedVisibilityScope = animatedContentScope
                                         ),
-                                        color = RarimeTheme.colors.textPrimary,
+                                        color = RarimeTheme.colors.baseBlack,
                                         style = cardProperties.headerStyle
                                             ?: RarimeTheme.typography.h2,
                                         text = cardProperties.header
@@ -232,7 +233,7 @@ private fun HomeCardPreview() {
             header = "Freedomtool",
             subTitle = "Voting",
             icon = R.drawable.ic_check_unframed,
-            image = R.drawable.freedomtool_bg,
+            imageRes = R.drawable.freedomtool_bg,
             backgroundGradient = Brush.linearGradient(
                 colors = listOf(
                     Color(0xFFD5FEC8), Color(0xFF80ed99)
@@ -252,8 +253,7 @@ private fun HomeCardPreview() {
             id = 2,
             sharedTransitionScope = state,
             animatedContentScope = anim,
-            footer = {
-                prop.footer()
-            })
+            footer = {}
+        )
     }
 }

@@ -6,7 +6,6 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -61,7 +60,6 @@ val mainRoutes = listOf(
 
 val LocalMainViewModel = compositionLocalOf<MainViewModel> { error("No MainViewModel provided") }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
@@ -211,6 +209,7 @@ fun MainScreenContent(
 
     AppTheme(colorScheme = mainViewModel.colorScheme.value) {
         Scaffold(
+            containerColor = RarimeTheme.colors.backgroundPrimary,
             bottomBar = {
                 if (mainViewModel.isBottomBarShown.value) {
                     BottomTabBar(
