@@ -264,7 +264,7 @@ private fun Body(
                     .fillMaxWidth()
                     .height(2.dp)
             )
-            TabsAndPager(
+            VoteTabs(
                 activeVotes = activeVotes,
                 historyVotes = historyVotes,
                 isLoading = isLoading,
@@ -312,7 +312,7 @@ private fun VoteActionRow(
 }
 
 @Composable
-private fun TabsAndPager(
+private fun VoteTabs(
     activeVotes: List<Poll>,
     historyVotes: List<Poll>,
     isLoading: Boolean,
