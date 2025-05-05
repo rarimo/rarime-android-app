@@ -21,9 +21,9 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
  * @param title Optional primary title text.
  * @param titleStyle TextStyle for the primary title.
  *
- * @param gradientTitle Optional text rendered with a gradient brush.
+ * @param accentTitle Optional text rendered with a gradient brush.
  * @param gradient Brush used to tint the gradientTitle text.
- * @param gradientTitleStyle TextStyle for the gradient title.
+ * @param accentTitleStyle TextStyle for the gradient title.
  *
  * @param caption Optional caption text below the title or subtitle.
  * @param captionStyle TextStyle for the caption.
@@ -40,13 +40,13 @@ fun BaseCardTitle(
         color = RarimeTheme.colors.textPrimary
     ),
 
-    gradientTitle: String? = null,
-    gradientTitleModifier: Modifier = Modifier,
+    accentTitle: String? = null,
+    accentTitleModifier: Modifier = Modifier,
     gradient: Brush = RarimeTheme.colors.gradient6,
-    gradientTitleStyle: TextStyle = TextStyle(
+    accentTitleStyle: TextStyle = TextStyle(
         brush = gradient,
-        fontSize = RarimeTheme.typography.h2.fontSize,
-        fontWeight = RarimeTheme.typography.h2.fontWeight
+        fontSize = RarimeTheme.typography.additional2.fontSize,
+        fontWeight = RarimeTheme.typography.additional2.fontWeight
     ),
 
     caption: String? = null,
@@ -66,12 +66,12 @@ fun BaseCardTitle(
             )
         }
 
-        gradientTitle?.let {
+        accentTitle?.let {
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = it,
-                style = gradientTitleStyle,
-                modifier = gradientTitleModifier
+                style = accentTitleStyle,
+                modifier = accentTitleModifier
             )
         }
 
@@ -91,7 +91,7 @@ fun BaseCardTitle(
 fun BaseCardTitlePreview_Default() {
     BaseCardTitle(
         title = "RariMe",
-        gradientTitle = "Learn More",
+        accentTitle = "Learn More",
         caption = "* Nothing leaves this device"
     )
 }
@@ -101,7 +101,7 @@ fun BaseCardTitlePreview_Default() {
 fun BaseCardTitlePreview_CustomStyles() {
     BaseCardTitle(
         title = "RariMe",
-        gradientTitle = "Explore",
+        accentTitle = "Explore",
         caption = "Built locally",
         titleStyle = TextStyle(
             fontSize = RarimeTheme.typography.h5.fontSize,

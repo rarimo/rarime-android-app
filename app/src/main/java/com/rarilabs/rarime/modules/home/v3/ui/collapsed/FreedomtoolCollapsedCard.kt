@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -55,7 +56,8 @@ fun FreedomtoolCollapsedCard(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) }
                     )
                     .clip(RoundedCornerShape(16.dp))
-                    .padding(start = 16.dp, bottom = 8.dp, top = 8.dp)
+                    .padding(vertical = 8.dp)
+                    .padding(horizontal = 16.dp)
                     .fillMaxWidth()
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
@@ -97,35 +99,38 @@ fun FreedomtoolCollapsedCard(
                     ) {
                         BaseCardTitle(
                             title = "RariMe",
-                            gradientTitle = "Learn More",
+                            accentTitle = "Voting",
                             caption = "* Nothing leaves this device",
                             titleModifier =
-                                Modifier.sharedElement(
-                                    state = rememberSharedContentState(HomeSharedKeys.title(layoutId)),
+                                Modifier.sharedBounds(
+                                    rememberSharedContentState(HomeSharedKeys.title(layoutId)),
                                     animatedVisibilityScope = animatedVisibilityScope,
-                                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) }
+                                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                                 ),
-                            gradientTitleModifier =
-                                Modifier.sharedElement(
-                                    state = rememberSharedContentState(
+                            accentTitleStyle = RarimeTheme.typography.additional2.copy(color = RarimeTheme.colors.baseBlackOp40),
+                            accentTitleModifier =
+                                Modifier.sharedBounds(
+                                    rememberSharedContentState(
                                         HomeSharedKeys.gradientTitle(
                                             layoutId
                                         )
                                     ),
                                     animatedVisibilityScope = animatedVisibilityScope,
-                                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) }
+                                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                                 ),
                             captionModifier =
-                                Modifier.sharedElement(
-                                    state = rememberSharedContentState(
+                                Modifier.sharedBounds(
+                                    rememberSharedContentState(
                                         HomeSharedKeys.caption(
                                             layoutId
                                         )
                                     ),
                                     animatedVisibilityScope = animatedVisibilityScope,
-                                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) }
+                                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                                 )
-
                         )
                         Spacer(modifier = Modifier.weight(1f))
                         AppIcon(id = R.drawable.ic_arrow_right_up_line)
@@ -143,6 +148,17 @@ fun FreedomtoolCollapsedCard(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(BG_DOT_MAP_HEIGHT.dp)
+                                .offset(y = (-20).dp)
+                                .sharedBounds(
+                                    rememberSharedContentState(
+                                        HomeSharedKeys.image(
+                                            layoutId
+                                        )
+                                    ),
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                                )
                         )
                     }
                 }
@@ -152,7 +168,7 @@ fun FreedomtoolCollapsedCard(
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun FreedomtoolCollapsedCardPreview() {
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->

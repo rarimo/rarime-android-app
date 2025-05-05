@@ -94,7 +94,7 @@ fun BaseCollapsedCardPreview() {
             ) {
                 BaseCardTitle(
                     title = "RariMe",
-                    gradientTitle = "Learn More",
+                    accentTitle = "Learn More",
                     caption = "* Nothing leaves this device",
                 )
                 Spacer(modifier = Modifier.weight(1f))

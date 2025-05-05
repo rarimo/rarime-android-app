@@ -164,7 +164,7 @@ fun HomeScreenContent(
                         VerticalPageIndicator(
                             numberOfPages = pagerState.pageCount,
                             selectedPage = pagerState.currentPage,
-                            modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+                            modifier = Modifier.padding(end = 8.dp),
                             defaultRadius = 6.dp,
                             selectedColor = RarimeTheme.colors.primaryMain,
                             defaultColor = RarimeTheme.colors.primaryLight,
@@ -190,11 +190,15 @@ fun HomeScreenContent(
 
                     when (targetCard) {
                         CardType.FREEDOMTOOL -> FreedomtoolExpandedCard(
-                            expandedCardProps = expandedCardProps
+                            expandedCardProps = expandedCardProps,
+                            innerPaddings = innerPaddings,
+                            navigate = navigate
                         )
 
                         CardType.ANOTHER_ONE -> FreedomtoolExpandedCard(
-                            expandedCardProps = expandedCardProps
+                            expandedCardProps = expandedCardProps,
+                            innerPaddings = innerPaddings,
+                            navigate = navigate
                         )
                     }
                 }

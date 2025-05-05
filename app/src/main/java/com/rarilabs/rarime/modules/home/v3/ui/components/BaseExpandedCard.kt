@@ -98,7 +98,7 @@ fun BaseExpandedCardPreview() {
                 Spacer(Modifier.height(BG_DOT_MAP_HEIGHT.dp))
                 BaseCardTitle(
                     title = "RariMe",
-                    gradientTitle = "Learn More",
+                    accentTitle = "Learn More",
                     gradient = RarimeTheme.colors.gradient6,
                     caption = "* Nothing leaves this device",
                 )
