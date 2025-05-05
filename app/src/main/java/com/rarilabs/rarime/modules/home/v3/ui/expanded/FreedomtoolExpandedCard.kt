@@ -120,7 +120,7 @@ fun FreedomtoolExpandedCardContent(
     onVoteClick: (Poll) -> Unit
 ) {
     with(cardProps) {
-        with(cardProps.sharedTransitionScope) {
+        with(sharedTransitionScope) {
             BaseExpandedCard(
                 modifier = modifier
                     .sharedElement(
