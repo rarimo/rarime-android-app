@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.digitalLikeness
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -28,22 +28,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.createBitmap
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.manager.LivenessProcessingStatus
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.GifViewer
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
-
-enum class ProcessingStatus(val title: String) {
-    DOWNLOADING("Downloading circuit data"),
-    EXTRACTING_FEATURES("Extracting image features"),
-    RUNNING_ZKML("Running ZKML"),
-    FINSH("")
-}
 
 enum class ProcessingItemStatus {
     FINISHED, LOADING, NOT_ACTIVE
@@ -52,37 +46,35 @@ enum class ProcessingItemStatus {
 @Composable
 fun DigitalLikenessProcessing(
     modifier: Modifier = Modifier,
-    processing: () -> Unit,
+    selectedBitmap: Bitmap,
+    processing: suspend (Bitmap) -> Unit,
+    currentProcessingState: LivenessProcessingStatus,
     onNext: () -> Unit
 ) {
-
-    var currentStep: ProcessingStatus by remember { mutableStateOf(ProcessingStatus.DOWNLOADING) }
 
     var currentProgress: Float by remember {
         mutableFloatStateOf(0f)
     }
 
+    LaunchedEffect(currentProcessingState) {
+        if (currentProcessingState == LivenessProcessingStatus.FINSH)
+            return@LaunchedEffect
+
+        currentProgress = 0f
+        repeat(101) { i ->
+            currentProgress = i / 100f
+            delay(20)
+        }
+    }
+
     LaunchedEffect(Unit) {
         withContext(Dispatchers.Default) {
+            processing(
+                selectedBitmap
+            )
 
-            val steps = ProcessingStatus.entries.filterNot { it == ProcessingStatus.FINSH }
-            val p = async { processing() }
-
-            for (step in steps) {
-                currentStep = step
-                // from 0 to 100
-                repeat(101) { i ->
-                    currentProgress = i / 100f
-                    delay(20)
-                }
-            }
-
-            currentStep = ProcessingStatus.FINSH
-            delay(200)
-            p.await()
             onNext()
         }
-
     }
 
     Column(
@@ -112,7 +104,7 @@ fun DigitalLikenessProcessing(
                 .fillMaxWidth()
                 .padding(top = 16.dp),
             textAlign = TextAlign.Center,
-            text = currentStep.title,
+            text = currentProcessingState.title,
             color = RarimeTheme.colors.textSecondary,
             style = RarimeTheme.typography.body3
         )
@@ -120,15 +112,15 @@ fun DigitalLikenessProcessing(
         Spacer(modifier = Modifier.weight(1f))
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            for (i in ProcessingStatus.entries) {
+            for (i in LivenessProcessingStatus.entries) {
 
-                if (i == ProcessingStatus.FINSH)
+                if (i == LivenessProcessingStatus.FINSH)
                     continue
 
                 val isFinished =
-                    i.ordinal < currentStep.ordinal      // step comes before current = done
-                val isProcessing = i.ordinal == currentStep.ordinal   // current step
-                val isNotStarted = i.ordinal > currentStep.ordinal
+                    i.ordinal < currentProcessingState.ordinal      // step comes before current = done
+                val isProcessing = i.ordinal == currentProcessingState.ordinal   // current step
+                val isNotStarted = i.ordinal > currentProcessingState.ordinal
 
                 val currentStatus = when {
                     isFinished -> ProcessingItemStatus.FINISHED
@@ -298,10 +290,14 @@ private fun DigitalLikenessProcessingPreview() {
     Surface {
         DigitalLikenessProcessing(
             modifier = Modifier,
+            selectedBitmap = createBitmap(0, 0, Bitmap.Config.ALPHA_8),
             onNext = {
 
             },
-            processing = {}
+            currentProcessingState = LivenessProcessingStatus.DOWNLOADING,
+            processing = {
+
+            }
         )
     }
 }

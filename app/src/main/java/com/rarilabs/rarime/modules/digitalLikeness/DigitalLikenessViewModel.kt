@@ -17,6 +17,7 @@ class DigitalLikenessViewModel @Inject constructor(
 
     val selectedRule = likenessManager.selectedRule
 
+    val livenessState = likenessManager.state
 
     val setSelectedRule = likenessManager::setSelectedRule
 
@@ -25,7 +26,7 @@ class DigitalLikenessViewModel @Inject constructor(
     val faceImage = likenessManager.faceImage
     val saveFaceImage = likenessManager::saveFaceImage
 
-    suspend fun processImage(btimap: Bitmap): ZkProof {
-        return likenessManager.livenessProofGeneration(bitmap = btimap)
+    suspend fun processImage(bitmap: Bitmap): ZkProof {
+        return likenessManager.livenessProofGeneration(bitmap = bitmap)
     }
 }

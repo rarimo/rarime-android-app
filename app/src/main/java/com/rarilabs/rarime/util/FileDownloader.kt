@@ -3,6 +3,7 @@ package com.rarilabs.rarime.util
 import android.content.Context
 import com.rarilabs.rarime.modules.passportScan.ConnectionError
 import com.rarilabs.rarime.modules.passportScan.DownloadCircuitError
+import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.ResponseBody
@@ -18,6 +19,20 @@ import java.util.zip.ZipInputStream
 class FileDownloaderInternal(private val context: Context) {
 
     private val client = OkHttpClient()
+
+    suspend fun downloadFileBlocking(url: String, fileName: String): File {
+        return suspendCancellableCoroutine { cont ->
+
+            downloadFile(url, fileName) { isSuccess, isFinished, _, e ->
+                if (!isSuccess && e != null) {
+                    cont.resumeWith(Result.failure(e))
+                } else if (isFinished) {
+                    val file = getFile(fileName)
+                    cont.resume(file, onCancellation = {})
+                }
+            }
+        }
+    }
 
     fun downloadFile(
         url: String,

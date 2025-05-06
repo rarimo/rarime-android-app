@@ -2,7 +2,6 @@ package com.rarilabs.rarime.modules.home.v2.details
 
 import android.Manifest
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -82,9 +81,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.gson.Gson
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.manager.LikenessRule
+import com.rarilabs.rarime.manager.LivenessProcessingStatus
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessCamera
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessProcessing
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessViewModel
@@ -133,6 +132,8 @@ fun DigitalLikeness(
 
     val faceImage by viewModel.faceImage.collectAsState()
 
+    val selectedState by viewModel.livenessState.collectAsState()
+
     DigitalLikenessContent(
         modifier,
         id,
@@ -145,9 +146,9 @@ fun DigitalLikeness(
         isScanned,
         viewModel.setIsLivenessScanned,
         viewModel.saveFaceImage,
-        processImage =
-            viewModel::processImage,
-        faceImage,
+        livenessStatus = selectedState,
+        processImage = viewModel::processImage,
+        faceImage = faceImage,
     )
 }
 
@@ -169,7 +170,8 @@ fun DigitalLikenessContent(
     isScanned: Boolean,
     setIsScanned: (Boolean) -> Unit,
     saveFaceImage: (Bitmap) -> Unit,
-    processImage: suspend (Bitmap) -> ZkProof,
+    processImage: suspend (Bitmap) -> Unit,
+    livenessStatus: LivenessProcessingStatus,
     faceImage: Bitmap?
 ) {
     val isPreview = LocalInspectionMode.current
@@ -178,7 +180,6 @@ fun DigitalLikenessContent(
     val tooltipState = rememberTooltipState()
 
     val scope = rememberCoroutineScope()
-    var selectedBitmap: Bitmap? by remember { mutableStateOf(null) }
 
     val cameraPermissionState = if (!isPreview) rememberPermissionState(Manifest.permission.CAMERA)
     else null
@@ -196,9 +197,6 @@ fun DigitalLikenessContent(
         ) {
             var selectedBitmap: Bitmap? by remember { mutableStateOf(null) }
 
-
-            val scope = rememberCoroutineScope()
-
             if (selectedBitmap == null) {
                 DigitalLikenessCamera {
                     BackgroundRemover().removeBackground(it) { img ->
@@ -208,19 +206,13 @@ fun DigitalLikenessContent(
             } else {
                 DigitalLikenessProcessing(
                     modifier = Modifier.padding(vertical = 16.dp),
-                    processing = {
-                        scope.launch {
-
-                            val proof = processImage(selectedBitmap!!)
-
-                            Log.i("Image processed", Gson().toJson(proof))
-                        }
-                    },
+                    processing = processImage,
+                    currentProcessingState = livenessStatus,
+                    selectedBitmap = selectedBitmap!!,
                     onNext = {
                         setIsScanned(true)
                         saveFaceImage(selectedBitmap!!)
                         appSheetState.hide()
-
                         scope.launch {
                             tooltipState.show()
                         }
@@ -417,8 +409,7 @@ fun DigitalLikenessContent(
                             contentColor = RarimeTheme.colors.baseWhite,
                             disabledContainerColor = RarimeTheme.colors.componentDisabled,
                             disabledContentColor = RarimeTheme.colors.textDisabled
-                        ),
-                        onClick = {
+                        ), onClick = {
                             if (cameraPermissionState!!.status.isGranted) {
                                 ruleSheetState.show()
                             } else {
@@ -435,13 +426,10 @@ fun DigitalLikenessContent(
 
 // Draw shape for face photo
 class LeafShape(
-    private val bigRadius: Dp = 100.dp,
-    private val smallRadius: Dp = 25.dp
+    private val bigRadius: Dp = 100.dp, private val smallRadius: Dp = 25.dp
 ) : Shape {
     override fun createOutline(
-        size: Size,
-        layoutDirection: LayoutDirection,
-        density: Density
+        size: Size, layoutDirection: LayoutDirection, density: Density
     ): Outline {
         val bigR = with(density) { bigRadius.toPx() }
         val smallR = with(density) { smallRadius.toPx() }
@@ -472,8 +460,7 @@ fun LikenessFrame(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(frameSize),
-        contentAlignment = Alignment.TopCenter
+            .height(frameSize), contentAlignment = Alignment.TopCenter
     ) {
         // 1) background frame (bottom)
         Image(
@@ -490,8 +477,7 @@ fun LikenessFrame(
             bitmap = faceImage,
             contentDescription = null,
             alignment = BiasAlignment(
-                horizontalBias = 0f,
-                verticalBias = 0.1f
+                horizontalBias = 0f, verticalBias = 0.1f
             ),
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -561,14 +547,14 @@ private fun RuleSheet(
                     )
 
                     Text(
-                        "The rules are yours to change",
-                        color = RarimeTheme.colors.textSecondary
+                        "The rules are yours to change", color = RarimeTheme.colors.textSecondary
                     )
                 }
                 IconButton(onClick = { state.hide() }) {
                     Icon(
                         tint = RarimeTheme.colors.textPrimary,
-                        painter = painterResource(R.drawable.ic_close), contentDescription = "Close"
+                        painter = painterResource(R.drawable.ic_close),
+                        contentDescription = "Close"
                     )
                 }
             }
@@ -618,8 +604,7 @@ fun RuleOption(
     val cardBorderColor by animateColorAsState(
         targetValue = if (item.isSelected) RarimeTheme.colors.textPrimary else RarimeTheme.colors.componentPrimary.copy(
             alpha = 0.05f
-        ),
-        animationSpec = tween(durationMillis = 500)
+        ), animationSpec = tween(durationMillis = 500)
     )
 
     Card(
@@ -745,14 +730,12 @@ private fun CreateIdentityDetailsPreview() {
             processImage = {
                 ZkProof(
                     proof = Proof(
-                        pi_a = listOf(),
-                        pi_b = listOf(listOf()),
-                        pi_c = listOf(),
-                        protocol = ""
+                        pi_a = listOf(), pi_b = listOf(listOf()), pi_c = listOf(), protocol = ""
                     ), pub_signals = listOf()
                 )
             },
-            faceImage = null
+            faceImage = null,
+            livenessStatus = LivenessProcessingStatus.DOWNLOADING
         )
     }
 }

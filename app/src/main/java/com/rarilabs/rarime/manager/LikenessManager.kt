@@ -3,7 +3,9 @@ package com.rarilabs.rarime.manager
 import android.content.Context
 import android.graphics.Bitmap
 import com.google.gson.Gson
+import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
+import com.rarilabs.rarime.util.FileDownloaderInternal
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.bionet.BionetAnalizer
 import com.rarilabs.rarime.util.data.ZkProof
@@ -27,14 +29,20 @@ enum class LikenessRule(val value: Int) {
     }
 }
 
-
 data class LivenessInputs(
     val image: List<List<List<Int>>>,
     val features: List<Int>,
-    val nonce: Int,   ///number from contract
-    val address: Int,
+    val nonce: Int,
+    val address: Int, // Nullifier
     val threshold: Int
 )
+
+enum class LivenessProcessingStatus(val title: String) {
+    DOWNLOADING("Downloading circuit data"), EXTRACTING_FEATURES("Extracting image features"), RUNNING_ZKML(
+        "Running ZKML"
+    ),
+    FINSH("")
+}
 
 @Singleton
 class LikenessManager @Inject constructor(
@@ -42,12 +50,16 @@ class LikenessManager @Inject constructor(
     val sharedPrefsManager: SecureSharedPrefsManager
 ) {
 
+    private val zkeyFileName = "likeness.zkey"
+
     private val _selectedRule = MutableStateFlow(sharedPrefsManager.getSelectedLikenessRule())
 
     private val _isScanned = MutableStateFlow(sharedPrefsManager.getIsLikenessScanned())
 
-    private val bionetAnalizer = BionetAnalizer()
+    private var _state = MutableStateFlow(LivenessProcessingStatus.DOWNLOADING)
 
+    val state: StateFlow<LivenessProcessingStatus>
+        get() = _state.asStateFlow()
 
     private val _faceImage: MutableStateFlow<Bitmap?> = MutableStateFlow(loadFaceImage())
 
@@ -72,15 +84,35 @@ class LikenessManager @Inject constructor(
     private fun loadFaceImage(): Bitmap? = sharedPrefsManager.getLikenessFace()
 
 
+    private suspend fun downloadLivenessZkey(): File {
+        val fileDownloader = FileDownloaderInternal(application)
+
+        val file =
+            fileDownloader.downloadFileBlocking(BaseConfig.FACE_REGISTRY_ZKEY_URL, zkeyFileName)
+
+
+        return file
+    }
+
+
     suspend fun livenessProofGeneration(bitmap: Bitmap): ZkProof {
 
-        val preparedImage = bionetAnalizer.getPreparedInputForML(bitmap)!!
 
+        _state.value = LivenessProcessingStatus.DOWNLOADING
+
+        val file = downloadLivenessZkey()
+
+        _state.value = LivenessProcessingStatus.EXTRACTING_FEATURES
+
+        val bionetAnalizer = BionetAnalizer()
+
+        val preparedImage = bionetAnalizer.getPreparedInputForML(bitmap)!!
 
         val assetContext: Context = application.createPackageContext("com.rarilabs.rarime", 0)
         val assetManager = assetContext.assets
 
         val zkp = ZKPUseCase(application, assetManager)
+
 
         val tfLite = RunTFLiteFeatureExtractorUseCase(
             context = application, modelName = "bio_net_v3.tflite"
@@ -88,13 +120,13 @@ class LikenessManager @Inject constructor(
 
         val features = tfLite.invoke(preparedImage)
 
-        val quantizedFeatures = features.map { it -> (it * 2.0.pow(15.0)).toInt() }
+        val quantizedFeatures = features.map { (it * 2.0.pow(15.0)).toInt() }
 
         val quantizedImage =
-            listOf(preparedImage.map { it -> it.map { it2 -> (it2 * 2.0.pow(15.0)).toInt() } })
+            listOf(preparedImage.map { it.map { it2 -> (it2 * 2.0.pow(15.0)).toInt() } })
 
+        _state.value = LivenessProcessingStatus.RUNNING_ZKML
 
-        val file = File("/data/data/com.rarilabs.rarime/likeness.zkey")
 
         val inputs = LivenessInputs(
             image = quantizedImage,
@@ -103,12 +135,17 @@ class LikenessManager @Inject constructor(
             threshold = 123,
             nonce = 107374182
         )
+
         return withContext(Dispatchers.Default) {
-            zkp.bioent(
+            val zkproof = zkp.bioent(
                 zkeyFilePath = file.absolutePath,
                 zkeyFileLen = file.length(),
                 inputs = Gson().toJson(inputs)
             )
+
+            _state.value = LivenessProcessingStatus.FINSH
+
+            return@withContext zkproof
         }
 
     }
