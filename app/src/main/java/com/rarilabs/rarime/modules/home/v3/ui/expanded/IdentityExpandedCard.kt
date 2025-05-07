@@ -189,8 +189,6 @@ private fun Body(
                 style = RarimeTheme.typography.body3,
                 color = RarimeTheme.colors.baseBlackOp50
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -207,7 +205,10 @@ private fun Footer(
     with(sharedTransitionScope) {
         Row(
             modifier = Modifier
-                .padding(bottom = (innerPaddings[ScreenInsets.BOTTOM]!!.toInt() + 20).dp)
+                .padding(
+                    bottom = (innerPaddings[ScreenInsets.BOTTOM]!!.toInt() + 10).dp,
+                    top = 10.dp
+                )
                 .padding(horizontal = 16.dp)
                 .sharedBounds(
                     rememberSharedContentState(HomeSharedKeys.footer(layoutId)),
