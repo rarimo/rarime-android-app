@@ -254,7 +254,7 @@ private fun Body(
                     resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                 ),
                 accentTitleModifier = Modifier.sharedBounds(
-                    rememberSharedContentState(HomeSharedKeys.gradientTitle(layoutId)),
+                    rememberSharedContentState(HomeSharedKeys.accentTitle(layoutId)),
                     animatedVisibilityScope = animatedVisibilityScope,
                     boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
                     resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()

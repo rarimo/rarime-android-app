@@ -162,7 +162,7 @@ private fun Footer(
                 accentTitleModifier =
                     Modifier.sharedBounds(
                         rememberSharedContentState(
-                            HomeSharedKeys.gradientTitle(
+                            HomeSharedKeys.accentTitle(
                                 layoutId
                             )
                         ),
