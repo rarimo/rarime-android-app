@@ -37,7 +37,7 @@ fun BaseCardTitle(
     titleStyle: TextStyle = TextStyle(
         fontSize = RarimeTheme.typography.h2.fontSize,
         fontWeight = RarimeTheme.typography.h2.fontWeight,
-        color = RarimeTheme.colors.textPrimary
+        color = RarimeTheme.colors.baseBlack
     ),
 
     accentTitle: String? = null,
@@ -54,7 +54,7 @@ fun BaseCardTitle(
     captionStyle: TextStyle = TextStyle(
         fontSize = RarimeTheme.typography.body4.fontSize,
         fontWeight = RarimeTheme.typography.body4.fontWeight,
-        color = RarimeTheme.colors.textSecondary
+        color = RarimeTheme.colors.baseBlackOp40
     ),
 ) {
     Column(modifier = modifier) {

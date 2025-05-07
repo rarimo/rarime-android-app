@@ -8,4 +8,5 @@ object HomeSharedKeys {
     fun gradientTitle(layoutId: Int) = "gradient-title-$layoutId"
     fun caption(layoutId: Int) = "caption-$layoutId"
     fun image(layoutId: Int) = "image-$layoutId"
+    fun footer(layoutId: Int) = "footer-$layoutId"
 }

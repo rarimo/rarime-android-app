@@ -25,12 +25,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
-import com.rarilabs.rarime.modules.home.v3.model.BG_DOT_MAP_HEIGHT
+import com.rarilabs.rarime.modules.home.v3.model.BG_HAND_PHONE
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
 import com.rarilabs.rarime.modules.home.v3.model.CardType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
@@ -43,9 +44,9 @@ import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun FreedomtoolCollapsedCard(
+fun IdentityCollapsedCard(
     collapsedCardProps: BaseCardProps.Collapsed,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     with(collapsedCardProps) {
         with(sharedTransitionScope) {
@@ -82,7 +83,7 @@ fun FreedomtoolCollapsedCard(
                             .fillMaxWidth()
                     ) {
                         BaseCardLogo(
-                            resId = R.drawable.ic_check_unframed,
+                            resId = R.drawable.ic_rarime,
                             backgroundColor = Color.Transparent,
                             size = 58,
                             tint = RarimeTheme.colors.baseBlackOp40
@@ -105,9 +106,8 @@ fun FreedomtoolCollapsedCard(
                             )
                     ) {
                         BaseCardTitle(
-                            title = "RariMe",
-                            accentTitle = "Voting",
-                            caption = "* Nothing leaves this device",
+                            title = "Your Device",
+                            accentTitle = "Your Identity",
                             titleModifier =
                                 Modifier.sharedBounds(
                                     rememberSharedContentState(HomeSharedKeys.title(layoutId)),
@@ -127,35 +127,39 @@ fun FreedomtoolCollapsedCard(
                                     boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                                     resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                                 ),
-                            captionModifier =
-                                Modifier.sharedBounds(
-                                    rememberSharedContentState(
-                                        HomeSharedKeys.caption(
-                                            layoutId
-                                        )
-                                    ),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                                )
                         )
                         Spacer(modifier = Modifier.weight(1f))
                         AppIcon(id = R.drawable.ic_arrow_right_up_line)
+                    }
+                    // Ensure the footer has a shared element in both states for smooth open/close animation.
+                    Row(
+                        modifier = Modifier.sharedBounds(
+                            rememberSharedContentState(HomeSharedKeys.footer(layoutId)),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                        )
+                    ) {
+                        // Placeholder; no visible UI content.
                     }
                 },
                 overlay = {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(RarimeTheme.colors.gradient5)
+                            .background(RarimeTheme.colors.gradient1)
                     ) {
+                        val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+                        println("screenHeight $screenHeight")
+                        val yOffset = if (screenHeight < 700.dp) (-50).dp else (0).dp
+
                         Image(
-                            painter = painterResource(R.drawable.freedomtool_bg),
+                            painter = painterResource(R.drawable.drawable_hand_phone),
                             contentDescription = null,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(BG_DOT_MAP_HEIGHT.dp)
-                                .offset(y = (-10).dp)
+                                .height(BG_HAND_PHONE.dp)
+                                .offset(y = yOffset)
                                 .sharedBounds(
                                     rememberSharedContentState(
                                         HomeSharedKeys.image(
@@ -174,15 +178,16 @@ fun FreedomtoolCollapsedCard(
     }
 }
 
+
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
-fun FreedomtoolCollapsedCardPreview() {
+fun IdentityCollapsedCardPreview() {
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
-        FreedomtoolCollapsedCard(
+        IdentityCollapsedCard(
             collapsedCardProps = BaseCardProps.Collapsed(
                 onExpand = {},
-                layoutId = CardType.FREEDOMTOOL.layoutId,
+                layoutId = CardType.IDENTITY.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope
             ),

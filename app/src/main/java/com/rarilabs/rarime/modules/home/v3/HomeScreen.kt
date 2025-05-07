@@ -33,9 +33,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
 import com.rarilabs.rarime.modules.home.v3.model.CardType
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.FreedomtoolCollapsedCard
+import com.rarilabs.rarime.modules.home.v3.ui.collapsed.IdentityCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.components.HomeHeader
 import com.rarilabs.rarime.modules.home.v3.ui.components.VerticalPageIndicator
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.FreedomtoolExpandedCard
+import com.rarilabs.rarime.modules.home.v3.ui.expanded.IdentityExpandedCard
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -151,7 +153,7 @@ fun HomeScreenContent(
                                     modifier = baseCollapsedModifier,
                                 )
 
-                                CardType.ANOTHER_ONE -> FreedomtoolCollapsedCard(
+                                CardType.IDENTITY -> IdentityCollapsedCard(
                                     collapsedCardProps = collapsedCardProps,
                                     modifier = baseCollapsedModifier,
                                 )
@@ -191,7 +193,7 @@ fun HomeScreenContent(
                             navigate = navigate
                         )
 
-                        CardType.ANOTHER_ONE -> FreedomtoolExpandedCard(
+                        CardType.IDENTITY -> IdentityExpandedCard(
                             expandedCardProps = expandedCardProps,
                             innerPaddings = innerPaddings,
                             navigate = navigate
