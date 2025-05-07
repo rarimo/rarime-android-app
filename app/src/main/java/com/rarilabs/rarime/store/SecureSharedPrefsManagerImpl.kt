@@ -2,6 +2,9 @@ package com.rarilabs.rarime.store
 
 import android.app.Application
 import android.content.SharedPreferences
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
@@ -13,6 +16,7 @@ import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.data.enums.SecurityCheckState
+import com.rarilabs.rarime.manager.LikenessRule
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.manager.WalletAssetJSON
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
@@ -20,6 +24,7 @@ import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.LocaleUtil
 import com.rarilabs.rarime.util.data.ZkProof
+import java.io.ByteArrayOutputStream
 import javax.crypto.AEADBadTagException
 import javax.inject.Inject
 
@@ -51,7 +56,10 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "DEFERRED_REFERRAL_CODE" to "DEFERRED_REFERRAL_CODE",
         "LIGHT_REGISTRATION_DATA" to "LIGHT_REGISTRATION_DATA",
         "ALREADY_RESERVED" to "ALREADY_RESERVED",
-        "PASSPORT_STATUS" to "PASSPORT_STATUS"
+        "PASSPORT_STATUS" to "PASSPORT_STATUS",
+        "SELECTED_LIKENESS_OPTION" to "SELECTED_LIKENESS_OPTION",
+        "LIKENESS_DATA" to "LIKENESS_DATA",
+        "LIKENESS_FACE" to "LIKENESS_FACE"
     )
 
     private val PREFS_FILE_NAME = "sharedPrefFile12"
@@ -440,5 +448,65 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
 
     override fun getIsAlreadyReserved(): Boolean {
         return getSharedPreferences().getBoolean(accessTokens["ALREADY_RESERVED"], false)
+    }
+
+
+    override fun saveSelectedLikenessRule(likenessRule: LikenessRule) {
+        val editor = getEditor()
+        editor.putInt(accessTokens["SELECTED_LIKENESS_OPTION"], likenessRule.value)
+        editor.apply()
+    }
+
+    override fun getSelectedLikenessRule(): LikenessRule? {
+
+        val enumValue = getSharedPreferences().getInt(
+            accessTokens["SELECTED_LIKENESS_OPTION"],
+            -1
+        )
+
+        if (enumValue == -1)
+            return null
+
+        return LikenessRule.fromInt(
+            enumValue
+        )
+    }
+
+
+    override fun saveIsLikenessScanned(flag: Boolean) {
+        val editor = getEditor()
+        editor.putBoolean(accessTokens["LIKENESS_DATA"], flag)
+        editor.apply()
+    }
+
+    override fun getIsLikenessScanned(): Boolean {
+        return getSharedPreferences().getBoolean(accessTokens["LIKENESS_DATA"], false)
+
+    }
+
+    override fun saveLikenessFace(face: Bitmap) {
+        val baos = ByteArrayOutputStream().apply {
+            face.compress(Bitmap.CompressFormat.PNG, 100, this)
+        }
+        val bytes = baos.toByteArray()
+
+        val encoded = Base64.encodeToString(bytes, Base64.DEFAULT)
+
+        getEditor()
+            .putString(accessTokens["LIKENESS_FACE"], encoded)
+            .apply()
+    }
+
+    override fun getLikenessFace(): Bitmap? {
+        val encoded = getSharedPreferences()
+            .getString(accessTokens["LIKENESS_FACE"], null)
+
+        if (encoded.isNullOrEmpty()) {
+            return null
+        }
+
+        val bytes = Base64.decode(encoded, Base64.DEFAULT)
+
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
 }

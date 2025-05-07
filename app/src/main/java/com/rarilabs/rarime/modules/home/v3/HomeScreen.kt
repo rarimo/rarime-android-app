@@ -40,6 +40,7 @@ import com.rarilabs.rarime.modules.home.v3.ui.components.HomeHeader
 import com.rarilabs.rarime.modules.home.v3.ui.components.VerticalPageIndicator
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.FreedomtoolExpandedCard
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.IdentityExpandedCard
+import com.rarilabs.rarime.modules.home.v3.ui.expanded.LikenessExpandedCard
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -215,8 +216,7 @@ fun HomeScreenContent(
                             navigate = navigate
                         )
 
-                        // TODO: Replace with LikenessCollapsedCard
-                        CardType.LIKENESS -> IdentityExpandedCard(
+                        CardType.LIKENESS -> LikenessExpandedCard(
                             expandedCardProps = expandedCardProps,
                             innerPaddings = innerPaddings,
                             navigate = navigate

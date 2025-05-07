@@ -12,6 +12,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -226,7 +227,7 @@ private fun Footer(
             AppIcon(id = R.drawable.ic_arrow_right_up_line)
         }
         // Ensure the footer has a shared element in both states for smooth open/close animation.
-        Row(
+        Column(
             modifier = Modifier.sharedBounds(
                 rememberSharedContentState(HomeSharedKeys.footer(layoutId)),
                 animatedVisibilityScope = animatedVisibilityScope,
@@ -246,6 +247,7 @@ private fun Overlay(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
+    // TODO: Recheck and remove if not needed
     with(sharedTransitionScope) {
         Box(
             modifier = Modifier

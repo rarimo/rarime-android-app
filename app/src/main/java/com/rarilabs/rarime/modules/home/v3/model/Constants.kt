@@ -5,3 +5,5 @@ const val BG_HAND_PHONE_HEIGHT = 400
 const val IMG_LIKENESS_HEIGHT = 250
 
 const val ANIMATION_DURATION_MS = 300
+
+const val ALREADY_SET_AMOUNT = "49,421"
