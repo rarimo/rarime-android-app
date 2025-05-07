@@ -148,7 +148,7 @@ private fun Footer(
                 )
         ) {
             BaseCardTitle(
-                title = "RariMe",
+                title = "Freedomtool",
                 accentTitle = "Voting",
                 caption = "* Nothing leaves this device",
                 titleModifier =

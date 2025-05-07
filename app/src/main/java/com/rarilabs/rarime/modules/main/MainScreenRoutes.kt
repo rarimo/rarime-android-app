@@ -231,19 +231,12 @@ fun MainScreenRoutes(
             ) {
                 composable(Screen.Main.Home.route) {
                     AuthGuard(navigate = simpleNavigate) {
-//                        TODO: Replace with v3
                         HomeScreenV3(
                             navigate = simpleNavigate,
                             navigateWithPopUp = navigateWithPopUp,
                             sharedTransitionScope = this@SharedTransitionLayout,
                             setVisibilityOfBottomBar = { mainViewModel.setBottomBarVisibility(it) },
                         )
-//                        HomeScreen(
-//                            navigate = simpleNavigate,
-//                            navigateWithPopUp = navigateWithPopUp,
-//                            sharedTransitionScope = this@SharedTransitionLayout,
-//                            setVisibilityOfBottomBar = { mainViewModel.setBottomBarVisibility(it) }
-//                        )
                     }
                 }
 

@@ -60,11 +60,24 @@ fun HomeScreenV3(
     val passport by viewModel.passport.collectAsState()
     val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
     val notifications by viewModel.notifications.collectAsState()
+    val hasVotes by viewModel.hasVotes.collectAsState()
+//    TODO: Create claim card and pass it as prop (check ClaimTokensScreen)
+//    val pointsBalance by viewModel.pointsToken.collectAsState()
+//    val currentPointsBalance = pointsBalance?.balanceDetails?.attributes?.amount
     val notificationsCount by remember(notifications) {
         derivedStateOf { notifications.count { it.isActive } }
     }
 
+    val visibleCards = buildList {
+        if (hasVotes) add(CardType.FREEDOMTOOL)
+        add(CardType.IDENTITY)
+//        TODO: Add Claim card
+//        if (currentPointsBalance != null && currentPointsBalance != 0L)
+//            add(CarType.CLAIM)
+    }
+
     HomeScreenContent(
+        visibleCards = visibleCards,
         userPassportName = passport?.personDetails?.name,
         notificationsCount = notificationsCount,
         innerPaddings = innerPaddings,
@@ -83,6 +96,7 @@ fun HomeScreenContent(
     navigate: (String) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     setVisibilityOfBottomBar: (Boolean) -> Unit,
+    visibleCards: List<CardType>,
     userPassportName: String?,
     notificationsCount: Int?
 ) {
@@ -92,7 +106,7 @@ fun HomeScreenContent(
     }
 
     // Hoist pagerState to remember scroll position across recompositions
-    val pagerState = rememberPagerState(pageCount = { CardType.entries.size })
+    val pagerState = rememberPagerState(pageCount = { visibleCards.size })
 
     Box(modifier = modifier) {
         AnimatedContent(selectedCard) { targetCard ->
@@ -174,6 +188,8 @@ fun HomeScreenContent(
                                     collapsedCardProps = collapsedCardProps,
                                     modifier = baseCollapsedModifier,
                                 )
+
+                                // TODO: Implement rest collapsed cards here
                             }
                         }
                         VerticalPageIndicator(
@@ -221,6 +237,8 @@ fun HomeScreenContent(
                             innerPaddings = innerPaddings,
                             navigate = navigate
                         )
+
+                        // TODO: Implement rest expanded cards here
                     }
                 }
             }
@@ -242,6 +260,7 @@ private fun HomeScreenPreview() {
                 userPassportName = "Mike",
                 notificationsCount = 2,
                 innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
+                visibleCards = CardType.entries
             )
         }
     }

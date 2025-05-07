@@ -357,7 +357,7 @@ private fun Body(
                 )
                 Spacer(modifier = Modifier.height(40.dp))
             }
-            DigitalLikenessTitle(
+            LikenessTitle(
                 isScanned = isScanned,
                 selectedRule = selectedRule,
                 animatedVisibilityScope = animatedVisibilityScope,
@@ -390,7 +390,7 @@ private fun Body(
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
-private fun DigitalLikenessTitle(
+private fun LikenessTitle(
     modifier: Modifier = Modifier,
     layoutId: Int,
     isScanned: Boolean,

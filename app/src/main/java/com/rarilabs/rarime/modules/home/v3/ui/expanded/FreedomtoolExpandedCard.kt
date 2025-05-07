@@ -242,7 +242,7 @@ private fun Body(
         ) {
             Spacer(Modifier.height((BG_DOT_MAP_HEIGHT - 200).dp))
             BaseCardTitle(
-                title = "RariMe",
+                title = "Freedomtool",
                 accentTitle = "Voting",
                 caption = "* Nothing leaves this device",
                 titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.baseBlack),

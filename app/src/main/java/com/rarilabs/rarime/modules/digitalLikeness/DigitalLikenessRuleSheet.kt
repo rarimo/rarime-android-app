@@ -197,7 +197,7 @@ fun RuleOption(
             // icon
             Box(
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(30.dp)
                     .background(iconBackground, shape = CircleShape)
                     .padding(vertical = 2.dp, horizontal = 4.dp)
             ) {
