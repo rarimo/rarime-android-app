@@ -74,19 +74,19 @@ fun DigitalLikenessRuleSheet(
         RuleOptionData(
             isSelected = LikenessRule.ALWAYS_ALLOW == localSelectedRule,
             type = LikenessRule.ALWAYS_ALLOW,
-            title = "Use my likeness\n and pay me",
+            title = "Use my likeness\nand pay me",
             badgeText = "Soon",
             iconRes = R.drawable.ic_money_dollar_circle_line
         ), RuleOptionData(
             isSelected = LikenessRule.REJECT == localSelectedRule,
             type = LikenessRule.REJECT,
-            title = "Don’t use my\n face at all",
+            title = "Don’t use my\nface at all",
             badgeText = "Soon",
             iconRes = R.drawable.ic_substract_fill
         ), RuleOptionData(
             isSelected = LikenessRule.ASK_EVERYTIME == localSelectedRule,
             type = LikenessRule.ASK_EVERYTIME,
-            title = "Ask me\n first",
+            title = "Ask me\nfirst",
             badgeText = "Soon",
             iconRes = R.drawable.ic_question
         )

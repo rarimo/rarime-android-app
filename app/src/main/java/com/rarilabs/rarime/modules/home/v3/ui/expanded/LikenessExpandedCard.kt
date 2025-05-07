@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.home.v3.ui.expanded
 
+import DigitalLikenessFrame
 import android.Manifest
 import android.graphics.Bitmap
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -9,7 +10,10 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,10 +24,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipState
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -34,8 +41,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -60,6 +71,7 @@ import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.BaseButton
+import com.rarilabs.rarime.ui.base.BaseTooltip
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
@@ -124,16 +136,12 @@ fun LikenessExpandedCardContent(
 ) {
     val isPreview = LocalInspectionMode.current
     val appSheetState = rememberAppSheetState()
-
     val tooltipState = rememberTooltipState()
-
     val scope = rememberCoroutineScope()
     var selectedBitmap: Bitmap? by remember { mutableStateOf(null) }
-
+    val ruleSheetState = rememberAppSheetState(false)
     val cameraPermissionState = if (!isPreview) rememberPermissionState(Manifest.permission.CAMERA)
     else null
-
-    val ruleSheetState = rememberAppSheetState(false)
 
     if (isPreview || cameraPermissionState!!.status.isGranted) {
         AppBottomSheet(
@@ -158,7 +166,6 @@ fun LikenessExpandedCardContent(
                         setIsScanned(true)
                         saveFaceImage(selectedBitmap!!)
                         appSheetState.hide()
-
                         scope.launch {
                             tooltipState.show()
                         }
@@ -203,22 +210,36 @@ fun LikenessExpandedCardContent(
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope,
                         innerPaddings = innerPaddings,
-                    )
-                },
-                footer = {
-                    Footer(
-                        layoutId = layoutId,
-                        innerPaddings = innerPaddings,
-                        sharedTransitionScope = sharedTransitionScope,
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        onStart = {
-                            if (cameraPermissionState!!.status.isGranted) {
-                                ruleSheetState.show()
-                            } else {
-                                cameraPermissionState.launchPermissionRequest()
+                        faceImage = faceImage,
+                        isScanned = isScanned,
+                        selectedRule = selectedRule,
+                        tooltipState = tooltipState,
+                        onRuleSheetShow = { ruleSheetState.show() },
+                        onTooltipShow = {
+                            scope.launch {
+                                tooltipState.show(
+                                    MutatePriority.Default
+                                )
                             }
                         }
                     )
+                },
+                footer = {
+                    if (!isScanned) {
+                        Footer(
+                            layoutId = layoutId,
+                            innerPaddings = innerPaddings,
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            onStart = {
+                                if (cameraPermissionState!!.status.isGranted) {
+                                    ruleSheetState.show()
+                                } else {
+                                    cameraPermissionState.launchPermissionRequest()
+                                }
+                            }
+                        )
+                    }
                 },
                 background = {
                     Box(
@@ -254,7 +275,6 @@ private fun Header(
                 .fillMaxWidth()
                 .padding(
                     top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp,
-                    bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp
                 )
                 .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.End
@@ -266,20 +286,26 @@ private fun Header(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun Body(
     layoutId: Int,
     innerPaddings: Map<ScreenInsets, Number>,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
+    faceImage: Bitmap?,
+    isScanned: Boolean,
+    selectedRule: LikenessRule?,
+    tooltipState: TooltipState,
+    onRuleSheetShow: () -> Unit,
+    onTooltipShow: () -> Unit
 ) {
     with(sharedTransitionScope) {
         Column(
             verticalArrangement = Arrangement.spacedBy(24.dp),
             modifier = Modifier
                 .padding(horizontal = 20.dp)
-                .padding(bottom = 20.dp)
+                .padding(bottom = (innerPaddings[ScreenInsets.BOTTOM]!!.toInt() + 20).dp)
                 .sharedBounds(
                     rememberSharedContentState(HomeSharedKeys.content(layoutId)),
                     animatedVisibilityScope = animatedVisibilityScope,
@@ -289,54 +315,57 @@ private fun Body(
                     resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
                 )
         ) {
-            Image(
-                painter = painterResource(R.drawable.drawable_digital_likeness),
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(IMG_LIKENESS_HEIGHT.dp)
-                    .offset(y = 40.dp)
-                    .sharedBounds(
-                        rememberSharedContentState(
-                            HomeSharedKeys.image(
-                                layoutId
-                            )
+            if (faceImage != null) {
+                DigitalLikenessFrame(
+                    faceImage = faceImage.asImageBitmap(),
+                    frameRes = R.drawable.drawable_likeness_face_bg,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .offset(y = 40.dp)
+                        .sharedBounds(
+                            rememberSharedContentState(
+                                HomeSharedKeys.image(
+                                    layoutId
+                                )
+                            ),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                         ),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                    )
-            )
-            Spacer(modifier = Modifier.height(40.dp))
-            BaseCardTitle(
-                title = "Digital likeness",
-                accentTitle = "Set a rule",
-                titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.baseBlack),
-                accentTitleStyle = RarimeTheme.typography.additional1.copy(color = RarimeTheme.colors.baseBlackOp40),
-                titleModifier = Modifier.sharedBounds(
-                    rememberSharedContentState(HomeSharedKeys.title(layoutId)),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
-                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                ),
-                accentTitleModifier = Modifier.sharedBounds(
-                    rememberSharedContentState(HomeSharedKeys.gradientTitle(layoutId)),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
-                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                ),
-                caption = "First human-AI Contract",
-                captionModifier =
-                    Modifier.sharedBounds(
-                        rememberSharedContentState(
-                            HomeSharedKeys.caption(
-                                layoutId
-                            )
-                        ),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                    )
+                    frameSize = 325.dp,
+                    faceSize = 295.dp
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+            } else {
+                Image(
+                    painter = painterResource(R.drawable.drawable_digital_likeness),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(IMG_LIKENESS_HEIGHT.dp)
+                        .offset(y = 40.dp)
+                        .sharedBounds(
+                            rememberSharedContentState(
+                                HomeSharedKeys.image(
+                                    layoutId
+                                )
+                            ),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                        )
+                )
+                Spacer(modifier = Modifier.height(40.dp))
+            }
+            DigitalLikenessTitle(
+                isScanned = isScanned,
+                selectedRule = selectedRule,
+                animatedVisibilityScope = animatedVisibilityScope,
+                sharedTransitionScope = sharedTransitionScope,
+                layoutId = layoutId,
+                onTooltipShow = onTooltipShow,
+                onRuleSheetShow = onRuleSheetShow,
+                tooltipState = tooltipState
             )
             Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
                 Text(
@@ -355,6 +384,136 @@ private fun Body(
                     color = RarimeTheme.colors.baseBlackOp50
                 )
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
+@Composable
+private fun DigitalLikenessTitle(
+    modifier: Modifier = Modifier,
+    layoutId: Int,
+    isScanned: Boolean,
+    selectedRule: LikenessRule?,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    sharedTransitionScope: SharedTransitionScope,
+    tooltipState: TooltipState,
+    onTooltipShow: () -> Unit,
+    onRuleSheetShow: () -> Unit
+) {
+    with(sharedTransitionScope) {
+        Column {
+            if (isScanned) {
+                BaseTooltip(
+                    state = tooltipState, tooltipContent = {
+                        Text(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(RarimeTheme.colors.baseBlack)
+                                .padding(horizontal = 12.dp, vertical = 8.dp),
+                            text = "Success! Your rule is set. You can\nupdate it anytime by clicking the title.",
+                            color = RarimeTheme.colors.baseWhite
+                        )
+                    }) {
+                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
+                        BaseCardTitle(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null,
+                                    onClick = onTooltipShow
+                                ),
+                            title = "My rule:",
+                            accentTitle = when (selectedRule) {
+                                LikenessRule.ALWAYS_ALLOW -> "Use my likeness and pay me"
+                                LikenessRule.REJECT -> "Don't use \nmy face data"
+                                LikenessRule.ASK_EVERYTIME -> "Ask me first"
+                                else -> ""
+                            },
+                            titleStyle = RarimeTheme.typography.h5.copy(
+                                color = RarimeTheme.colors.baseBlack
+                            ),
+                            accentTitleStyle = RarimeTheme.typography.additional2.copy(
+                                brush = Brush.linearGradient(
+                                    colors = listOf(
+                                        Color(0xFF655CA4), Color(0xFF7E66B2)
+                                    ), start = Offset(0f, 0f), end = Offset(100f, 0f)
+                                )
+                            ),
+                            titleModifier = Modifier.sharedBounds(
+                                rememberSharedContentState(HomeSharedKeys.title(layoutId)),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
+                                resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                            ),
+                            accentTitleModifier = Modifier.sharedBounds(
+                                rememberSharedContentState(HomeSharedKeys.gradientTitle(layoutId)),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
+                                resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                            ),
+                            caption = "First human-AI Contract",
+                            captionModifier =
+                                Modifier.sharedBounds(
+                                    rememberSharedContentState(
+                                        HomeSharedKeys.caption(
+                                            layoutId
+                                        )
+                                    ),
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                                )
+                        )
+                        IconButton(
+                            modifier = Modifier.offset(y = (-28).dp, x = (-100).dp),
+                            onClick = onRuleSheetShow,
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_carret_down),
+                                contentDescription = null,
+                            )
+                        }
+                    }
+                }
+                HorizontalDivider(
+                    modifier = Modifier.padding(top = 15.dp),
+                    color = RarimeTheme.colors.baseBlack.copy(alpha = 0.1f)
+                )
+            } else
+                BaseCardTitle(
+                    title = "Digital likeness",
+                    accentTitle = "Set a rule",
+                    titleStyle = RarimeTheme.typography.h1.copy(
+                        color = RarimeTheme.colors.baseBlack
+                    ),
+                    accentTitleStyle = RarimeTheme.typography.additional1.copy(color = RarimeTheme.colors.baseBlackOp40),
+                    titleModifier = Modifier.sharedBounds(
+                        rememberSharedContentState(HomeSharedKeys.title(layoutId)),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    ),
+                    accentTitleModifier = Modifier.sharedBounds(
+                        rememberSharedContentState(HomeSharedKeys.gradientTitle(layoutId)),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    ),
+                    caption = "First human-AI Contract",
+                    captionModifier =
+                        Modifier.sharedBounds(
+                            rememberSharedContentState(
+                                HomeSharedKeys.caption(
+                                    layoutId
+                                )
+                            ),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                        )
+                )
         }
     }
 }
@@ -382,7 +541,7 @@ private fun Footer(
                 )
                 .padding(horizontal = 20.dp)
         ) {
-            HorizontalDivider()
+            HorizontalDivider(color = RarimeTheme.colors.baseBlack.copy(alpha = 0.1f))
             Spacer(modifier = Modifier.height(24.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
