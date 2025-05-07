@@ -26,7 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
-import com.rarilabs.rarime.modules.home.v3.model.BG_HAND_PHONE
+import com.rarilabs.rarime.modules.home.v3.model.BG_HAND_PHONE_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
@@ -165,7 +165,7 @@ private fun Body(
                     resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
                 )
         ) {
-            Spacer(Modifier.height((BG_HAND_PHONE - 100).dp))
+            Spacer(Modifier.height((BG_HAND_PHONE_HEIGHT - 100).dp))
             BaseCardTitle(
                 title = "Your Device",
                 accentTitle = "Your Identity",
@@ -246,7 +246,7 @@ private fun Overlay(
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(BG_HAND_PHONE.dp)
+                    .height(BG_HAND_PHONE_HEIGHT.dp)
                     .offset(y = 40.dp)
                     .sharedBounds(
                         rememberSharedContentState(

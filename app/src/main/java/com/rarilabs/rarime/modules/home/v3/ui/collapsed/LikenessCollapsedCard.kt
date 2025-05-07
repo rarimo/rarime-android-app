@@ -32,10 +32,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
-import com.rarilabs.rarime.modules.home.v3.model.BG_HAND_PHONE_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
 import com.rarilabs.rarime.modules.home.v3.model.CardType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
+import com.rarilabs.rarime.modules.home.v3.model.IMG_LIKENESS_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardLogo
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCollapsedCard
@@ -45,7 +45,7 @@ import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun IdentityCollapsedCard(
+fun LikenessCollapsedCard(
     collapsedCardProps: BaseCardProps.Collapsed,
     modifier: Modifier = Modifier
 ) {
@@ -71,6 +71,13 @@ fun IdentityCollapsedCard(
                     .then(modifier),
                 header = {
                     Header(
+                        layoutId = layoutId,
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedVisibilityScope = animatedVisibilityScope,
+                    )
+                },
+                body = {
+                    Body(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope,
@@ -117,12 +124,44 @@ private fun Header(
                 .fillMaxWidth()
         ) {
             BaseCardLogo(
-                resId = R.drawable.ic_rarime,
+                resId = R.drawable.ic_body_scan_fill,
                 backgroundColor = Color.Transparent,
-                size = 55,
+                size = 50,
                 tint = RarimeTheme.colors.baseBlack.copy(alpha = 0.1f)
             )
         }
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun Body(
+    layoutId: Int,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+) {
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+    val yOffset = if (screenHeight < 700.dp) (-50).dp else (0).dp
+
+    with(sharedTransitionScope) {
+        Image(
+            painter = painterResource(R.drawable.drawable_digital_likeness),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IMG_LIKENESS_HEIGHT.dp)
+                .offset(y = yOffset)
+                .sharedBounds(
+                    rememberSharedContentState(
+                        HomeSharedKeys.image(
+                            layoutId
+                        )
+                    ),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                )
+        )
     }
 }
 
@@ -149,8 +188,8 @@ private fun Footer(
                 )
         ) {
             BaseCardTitle(
-                title = "Your Device",
-                accentTitle = "Your Identity",
+                title = "Digital likeness",
+                accentTitle = "Set a rule",
                 titleModifier =
                     Modifier.sharedBounds(
                         rememberSharedContentState(HomeSharedKeys.title(layoutId)),
@@ -170,6 +209,18 @@ private fun Footer(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
+                caption = "First human-AI Contract",
+                captionModifier =
+                    Modifier.sharedBounds(
+                        rememberSharedContentState(
+                            HomeSharedKeys.caption(
+                                layoutId
+                            )
+                        ),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    )
             )
             Spacer(modifier = Modifier.weight(1f))
             AppIcon(id = R.drawable.ic_arrow_right_up_line)
@@ -199,30 +250,8 @@ private fun Overlay(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(RarimeTheme.colors.gradient1)
-        ) {
-            val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-            val yOffset = if (screenHeight < 700.dp) (-50).dp else (0).dp
-
-            Image(
-                painter = painterResource(R.drawable.drawable_hand_phone),
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(BG_HAND_PHONE_HEIGHT.dp)
-                    .offset(y = yOffset)
-                    .sharedBounds(
-                        rememberSharedContentState(
-                            HomeSharedKeys.image(
-                                layoutId
-                            )
-                        ),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                    )
-            )
-        }
+                .background(RarimeTheme.colors.gradient7)
+        )
     }
 }
 
@@ -230,12 +259,12 @@ private fun Overlay(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
-fun IdentityCollapsedCardPreview() {
+fun LikenessCollapsedCardPreview() {
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
-        IdentityCollapsedCard(
+        LikenessCollapsedCard(
             collapsedCardProps = BaseCardProps.Collapsed(
                 onExpand = {},
-                layoutId = CardType.IDENTITY.layoutId,
+                layoutId = CardType.LIKENESS.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope
             ),

@@ -35,6 +35,7 @@ import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
 import com.rarilabs.rarime.modules.home.v3.model.CardType
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.FreedomtoolCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.IdentityCollapsedCard
+import com.rarilabs.rarime.modules.home.v3.ui.collapsed.LikenessCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.components.HomeHeader
 import com.rarilabs.rarime.modules.home.v3.ui.components.VerticalPageIndicator
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.FreedomtoolExpandedCard
@@ -167,6 +168,11 @@ fun HomeScreenContent(
                                     collapsedCardProps = collapsedCardProps,
                                     modifier = baseCollapsedModifier,
                                 )
+
+                                CardType.LIKENESS -> LikenessCollapsedCard(
+                                    collapsedCardProps = collapsedCardProps,
+                                    modifier = baseCollapsedModifier,
+                                )
                             }
                         }
                         VerticalPageIndicator(
@@ -204,6 +210,13 @@ fun HomeScreenContent(
                         )
 
                         CardType.IDENTITY -> IdentityExpandedCard(
+                            expandedCardProps = expandedCardProps,
+                            innerPaddings = innerPaddings,
+                            navigate = navigate
+                        )
+
+                        // TODO: Replace with LikenessCollapsedCard
+                        CardType.LIKENESS -> IdentityExpandedCard(
                             expandedCardProps = expandedCardProps,
                             innerPaddings = innerPaddings,
                             navigate = navigate
