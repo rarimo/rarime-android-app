@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.home.v3.ui.expanded
 
+import android.Manifest
 import android.graphics.Bitmap
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -20,19 +21,34 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.manager.LikenessRule
+import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessCamera
+import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessProcessing
+import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessRuleSheet
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessViewModel
 import com.rarilabs.rarime.modules.home.v3.model.ALREADY_SET_AMOUNT
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
@@ -45,11 +61,14 @@ import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
+import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
+import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.BackgroundRemover
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
-import com.rarilabs.rarime.util.Screen
+import kotlinx.coroutines.launch
 
 data class RuleOptionData(
     val isSelected: Boolean,
@@ -85,7 +104,11 @@ fun LikenessExpandedCard(
     )
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(
+    ExperimentalSharedTransitionApi::class,
+    ExperimentalPermissionsApi::class,
+    ExperimentalMaterial3Api::class
+)
 @Composable
 fun LikenessExpandedCardContent(
     modifier: Modifier = Modifier,
@@ -99,6 +122,63 @@ fun LikenessExpandedCardContent(
     saveFaceImage: (Bitmap) -> Unit,
     faceImage: Bitmap?
 ) {
+    val isPreview = LocalInspectionMode.current
+    val appSheetState = rememberAppSheetState()
+
+    val tooltipState = rememberTooltipState()
+
+    val scope = rememberCoroutineScope()
+    var selectedBitmap: Bitmap? by remember { mutableStateOf(null) }
+
+    val cameraPermissionState = if (!isPreview) rememberPermissionState(Manifest.permission.CAMERA)
+    else null
+
+    val ruleSheetState = rememberAppSheetState(false)
+
+    if (isPreview || cameraPermissionState!!.status.isGranted) {
+        AppBottomSheet(
+            state = appSheetState,
+            shape = RectangleShape,
+            fullScreen = true,
+            scrimColor = Color.Transparent,
+            isHeaderEnabled = false,
+            disableScrollClose = true,
+            isWindowInsetsEnabled = true,
+        ) {
+            if (selectedBitmap == null) {
+                DigitalLikenessCamera {
+                    BackgroundRemover().removeBackground(it) { img ->
+                        selectedBitmap = img
+                    }
+                }
+            } else {
+                DigitalLikenessProcessing(
+                    modifier = Modifier.padding(vertical = 16.dp),
+                    onNext = {
+                        setIsScanned(true)
+                        saveFaceImage(selectedBitmap!!)
+                        appSheetState.hide()
+
+                        scope.launch {
+                            tooltipState.show()
+                        }
+                    })
+            }
+        }
+    }
+
+    DigitalLikenessRuleSheet(
+        state = ruleSheetState,
+        selectedRule = selectedRule,
+        onSave = { newRule ->
+            setSelectedRule(newRule)
+            ruleSheetState.hide()
+            if (!isScanned) {
+                appSheetState.show()
+            }
+        })
+
+
     with(cardProps) {
         with(sharedTransitionScope) {
             BaseExpandedCard(
@@ -127,11 +207,17 @@ fun LikenessExpandedCardContent(
                 },
                 footer = {
                     Footer(
-                        onNavigate = { navigate(Screen.Main.Identity.route) },
                         layoutId = layoutId,
                         innerPaddings = innerPaddings,
                         sharedTransitionScope = sharedTransitionScope,
-                        animatedVisibilityScope = animatedVisibilityScope
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        onStart = {
+                            if (cameraPermissionState!!.status.isGranted) {
+                                ruleSheetState.show()
+                            } else {
+                                cameraPermissionState.launchPermissionRequest()
+                            }
+                        }
                     )
                 },
                 background = {
@@ -280,7 +366,7 @@ private fun Footer(
     innerPaddings: Map<ScreenInsets, Number>,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    onNavigate: () -> Unit
+    onStart: () -> Unit
 ) {
     with(sharedTransitionScope) {
         Column(
@@ -320,8 +406,7 @@ private fun Footer(
                         disabledContainerColor = RarimeTheme.colors.componentDisabled,
                         disabledContentColor = RarimeTheme.colors.textDisabled
                     ),
-                    text = "Set a rule", size = ButtonSize.Large, onClick = {
-                    }
+                    text = "Set a rule", size = ButtonSize.Large, onClick = onStart
                 )
             }
         }
