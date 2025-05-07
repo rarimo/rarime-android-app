@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
 import com.rarilabs.rarime.modules.home.v3.model.CardType
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.FreedomtoolCollapsedCard
@@ -93,6 +94,14 @@ fun HomeScreenContent(
 
     Box(modifier = modifier) {
         AnimatedContent(selectedCard) { targetCard ->
+            // Temporarily disable pager scrolling while the expand/collapse animation runs
+            var pagerScrollEnabled by remember { mutableStateOf(true) }
+            LaunchedEffect(selectedCard) {
+                pagerScrollEnabled = false
+                kotlinx.coroutines.delay(ANIMATION_DURATION_MS.toLong())
+                pagerScrollEnabled = true
+            }
+
             if (targetCard == null) {
                 Column(
                     modifier = Modifier.padding(
@@ -111,6 +120,7 @@ fun HomeScreenContent(
                     ) {
                         VerticalPager(
                             modifier = Modifier.weight(1f),
+                            userScrollEnabled = pagerScrollEnabled,
                             state = pagerState,
                             contentPadding = PaddingValues(top = 42.dp, bottom = 95.dp),
                         ) { page ->
