@@ -37,7 +37,7 @@ fun BaseCollapsedCard(
     header: @Composable () -> Unit = {},
     body: @Composable ColumnScope.() -> Unit = {},
     footer: @Composable () -> Unit = {},
-    overlay: @Composable BoxScope.() -> Unit = {},
+    background: @Composable BoxScope.() -> Unit = {},
 
     // default `Card` props
     shape: Shape = RoundedCornerShape(40.dp),
@@ -53,10 +53,8 @@ fun BaseCollapsedCard(
         border = border
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            // Overlay below the main content
-            overlay()
+            background()
 
-            // Main content
             Column(modifier = Modifier.fillMaxSize()) {
                 header()
                 Column(
@@ -101,7 +99,7 @@ fun BaseCollapsedCardPreview() {
                 AppIcon(id = R.drawable.ic_arrow_right_up_line)
             }
         },
-        overlay = {
+        background = {
             Box(
                 modifier = Modifier
                     .fillMaxSize()

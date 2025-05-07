@@ -82,8 +82,8 @@ fun FreedomtoolCollapsedCard(
                         animatedVisibilityScope = animatedVisibilityScope
                     )
                 },
-                overlay = {
-                    Overlay(
+                background = {
+                    Background(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope
@@ -190,7 +190,7 @@ private fun Footer(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun Overlay(
+private fun Background(
     layoutId: Int,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,

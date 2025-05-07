@@ -91,11 +91,11 @@ fun LikenessCollapsedCard(
                         animatedVisibilityScope = animatedVisibilityScope,
                     )
                 },
-                overlay = {
-                    Overlay(
-                        layoutId = layoutId,
-                        sharedTransitionScope = sharedTransitionScope,
-                        animatedVisibilityScope = animatedVisibilityScope,
+                background = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(RarimeTheme.colors.gradient7)
                     )
                 }
             )
@@ -239,24 +239,6 @@ private fun Footer(
         }
     }
 }
-
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Composable
-private fun Overlay(
-    layoutId: Int,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope,
-) {
-    // TODO: Recheck and remove if not needed
-    with(sharedTransitionScope) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(RarimeTheme.colors.gradient7)
-        )
-    }
-}
-
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview

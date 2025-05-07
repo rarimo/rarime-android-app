@@ -41,7 +41,7 @@ fun BaseExpandedCard(
     header: @Composable () -> Unit = {},
     body: @Composable ColumnScope.() -> Unit = {},
     footer: @Composable () -> Unit = {},
-    overlay: @Composable BoxScope.() -> Unit = {},
+    background: @Composable BoxScope.() -> Unit = {},
 
     // default `Card` props
     shape: Shape = RoundedCornerShape(0.dp),
@@ -57,10 +57,8 @@ fun BaseExpandedCard(
         border = border
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            // Overlay below the main content
-            overlay()
+            background()
 
-            // Main content
             Column(modifier = Modifier.fillMaxSize()) {
                 header()
                 Column(
@@ -110,7 +108,7 @@ fun BaseExpandedCardPreview() {
             }
         },
         footer = {},
-        overlay = {
+        background = {
             Box(
                 modifier = Modifier
                     .fillMaxSize()

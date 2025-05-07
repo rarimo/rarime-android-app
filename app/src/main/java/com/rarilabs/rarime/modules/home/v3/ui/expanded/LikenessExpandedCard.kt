@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.home.v3.ui.expanded
 
+import android.graphics.Bitmap
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -31,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.manager.LikenessRule
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessViewModel
 import com.rarilabs.rarime.modules.home.v3.model.ALREADY_SET_AMOUNT
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
@@ -49,6 +51,14 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import com.rarilabs.rarime.util.Screen
 
+data class RuleOptionData(
+    val isSelected: Boolean,
+    val type: LikenessRule,
+    val title: String,
+    val badgeText: String? = null,
+    val iconRes: Int
+)
+
 @Composable
 fun LikenessExpandedCard(
     modifier: Modifier = Modifier,
@@ -66,6 +76,12 @@ fun LikenessExpandedCard(
         cardProps = expandedCardProps,
         innerPaddings = innerPaddings,
         navigate = navigate,
+        selectedRule = selectedRule,
+        setSelectedRule = viewModel.setSelectedRule,
+        isScanned = isScanned,
+        setIsScanned = viewModel.setIsLivenessScanned,
+        saveFaceImage = viewModel.saveFaceImage,
+        faceImage = faceImage
     )
 }
 
@@ -76,6 +92,12 @@ fun LikenessExpandedCardContent(
     cardProps: BaseCardProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
     navigate: (String) -> Unit,
+    selectedRule: LikenessRule?,
+    setSelectedRule: (LikenessRule) -> Unit,
+    isScanned: Boolean,
+    setIsScanned: (Boolean) -> Unit,
+    saveFaceImage: (Bitmap) -> Unit,
+    faceImage: Bitmap?
 ) {
     with(cardProps) {
         with(sharedTransitionScope) {
@@ -112,12 +134,11 @@ fun LikenessExpandedCardContent(
                         animatedVisibilityScope = animatedVisibilityScope
                     )
                 },
-                overlay = {
-                    Overlay(
-                        layoutId = layoutId,
-                        innerPaddings = innerPaddings,
-                        sharedTransitionScope = sharedTransitionScope,
-                        animatedVisibilityScope = animatedVisibilityScope
+                background = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(RarimeTheme.colors.gradient7)
                     )
                 }
             )
@@ -300,33 +321,10 @@ private fun Footer(
                         disabledContentColor = RarimeTheme.colors.textDisabled
                     ),
                     text = "Set a rule", size = ButtonSize.Large, onClick = {
-//                    if (cameraPermissionState!!.status.isGranted) {
-//                        ruleSheetState.show()
-//                    } else {
-//                        cameraPermissionState.launchPermissionRequest()
-//                    }
-
                     }
                 )
             }
         }
-    }
-}
-
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Composable
-private fun Overlay(
-    layoutId: Int,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope,
-    innerPaddings: Map<ScreenInsets, Number>,
-) {
-    with(sharedTransitionScope) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(RarimeTheme.colors.gradient7)
-        )
     }
 }
 
@@ -342,8 +340,14 @@ fun LikenessExpandedCardPreview() {
                 sharedTransitionScope = sharedTransitionScope,
                 onCollapse = {}
             ),
-            innerPaddings = mapOf(ScreenInsets.TOP to 40, ScreenInsets.BOTTOM to 20),
-            navigate = {}
+            innerPaddings = mapOf(ScreenInsets.TOP to 20, ScreenInsets.BOTTOM to 20),
+            navigate = {},
+            selectedRule = null,
+            setSelectedRule = {},
+            isScanned = false,
+            setIsScanned = {},
+            saveFaceImage = {},
+            faceImage = null
         )
     }
 }

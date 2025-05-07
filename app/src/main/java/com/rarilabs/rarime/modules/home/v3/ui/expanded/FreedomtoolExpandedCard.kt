@@ -166,8 +166,8 @@ fun FreedomtoolExpandedCardContent(
                         animatedVisibilityScope = animatedVisibilityScope
                     )
                 },
-                overlay = {
-                    Overlay(
+                background = {
+                    Background(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope
@@ -391,7 +391,7 @@ private fun EmptyState(text: String) {
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun Overlay(
+private fun Background(
     layoutId: Int,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
