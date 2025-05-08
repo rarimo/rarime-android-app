@@ -379,16 +379,17 @@ private fun LikenessTitle(
 @Composable
 fun LikenessCollapsedCardPreview() {
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
-        LikenessCollapsedCard(
+        LikenessCollapsedCardContent(
             collapsedCardProps = BaseCardProps.Collapsed(
                 onExpand = {},
                 layoutId = CardType.LIKENESS.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope
             ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(450.dp)
+            modifier = Modifier.height(450.dp),
+            faceImage = null,
+            isScanned = false,
+            selectedRule = null
         )
     }
 }

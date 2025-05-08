@@ -68,15 +68,17 @@ fun HomeScreenV3(
         derivedStateOf { notifications.count { it.isActive } }
     }
 
-    val visibleCards = buildList {
-        if (hasVotes) {
-            add(CardType.FREEDOMTOOL)
-        }
-        add(CardType.IDENTITY)
+    val visibleCards = remember(hasVotes) {
+        buildList {
+            if (hasVotes) {
+                add(CardType.FREEDOMTOOL)
+            }
+            add(CardType.IDENTITY)
 //        TODO: Add Claim card
 //        if (currentPointsBalance != null && currentPointsBalance != 0L)
 //            add(CarType.CLAIM)
-        add(CardType.LIKENESS)
+            add(CardType.LIKENESS)
+        }
     }
 
     HomeScreenContent(
@@ -117,7 +119,7 @@ fun HomeScreenContent(
             var pagerScrollEnabled by remember { mutableStateOf(true) }
             LaunchedEffect(selectedCard) {
                 pagerScrollEnabled = false
-                kotlinx.coroutines.delay(ANIMATION_DURATION_MS.toLong())
+                kotlinx.coroutines.delay((ANIMATION_DURATION_MS + 100).toLong())
                 pagerScrollEnabled = true
             }
 
@@ -158,7 +160,11 @@ fun HomeScreenContent(
 
                             // Common props for every collapsed card
                             val collapsedCardProps = BaseCardProps.Collapsed(
-                                onExpand = { selectedCard = cardType },
+                                onExpand = {
+                                    if (pagerScrollEnabled) {
+                                        selectedCard = cardType
+                                    }
+                                },
                                 layoutId = cardType.layoutId,
                                 animatedVisibilityScope = this@AnimatedContent,
                                 sharedTransitionScope = sharedTransitionScope
