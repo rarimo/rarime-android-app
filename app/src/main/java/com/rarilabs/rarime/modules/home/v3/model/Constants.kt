@@ -7,4 +7,5 @@ const val IMG_LIKENESS_HEIGHT = 250
 
 const val ANIMATION_DURATION_MS = 300
 
+// TODO: to use the actual count from the backend/contract
 const val ALREADY_SET_AMOUNT = 49_421
