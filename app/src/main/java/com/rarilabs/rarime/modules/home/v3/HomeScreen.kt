@@ -69,14 +69,14 @@ fun HomeScreenV3(
     }
 
     val visibleCards = buildList {
-        add(CardType.FREEDOMTOOL)
-        add(CardType.LIKENESS)
-//        if (hasVotes) { add(CardType.FREEDOMTOOL) }
+        if (hasVotes) {
+            add(CardType.FREEDOMTOOL)
+        }
         add(CardType.IDENTITY)
 //        TODO: Add Claim card
 //        if (currentPointsBalance != null && currentPointsBalance != 0L)
 //            add(CarType.CLAIM)
-
+        add(CardType.LIKENESS)
     }
 
     HomeScreenContent(
