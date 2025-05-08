@@ -33,11 +33,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
 import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.modules.home.v3.ui.collapsed.ClaimCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.FreedomtoolCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.IdentityCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.LikenessCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.components.HomeHeader
 import com.rarilabs.rarime.modules.home.v3.ui.components.VerticalPageIndicator
+import com.rarilabs.rarime.modules.home.v3.ui.expanded.ClaimExpandedCard
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.FreedomtoolExpandedCard
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.IdentityExpandedCard
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.LikenessExpandedCard
@@ -46,6 +48,7 @@ import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import com.rarilabs.rarime.util.Screen
+import kotlinx.coroutines.delay
 import kotlin.math.abs
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -61,23 +64,27 @@ fun HomeScreenV3(
     val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
     val notifications by viewModel.notifications.collectAsState()
     val hasVotes by viewModel.hasVotes.collectAsState()
-//    TODO: Create claim card and pass it as prop (check ClaimTokensScreen)
-//    val pointsBalance by viewModel.pointsToken.collectAsState()
-//    val currentPointsBalance = pointsBalance?.balanceDetails?.attributes?.amount
+    val pointsBalance by viewModel.pointsToken.collectAsState()
+    val currentPointsBalance = pointsBalance?.balanceDetails?.attributes?.amount
     val notificationsCount by remember(notifications) {
         derivedStateOf { notifications.count { it.isActive } }
     }
 
     val visibleCards = remember(hasVotes) {
         buildList {
-            if (hasVotes) {
-                add(CardType.FREEDOMTOOL)
-            }
+//            if (hasVotes) {
+//                add(CardType.FREEDOMTOOL)
+//            }
+//            add(CardType.IDENTITY)
+//            if (currentPointsBalance != null && currentPointsBalance != 0L) {
+//                add(CardType.CLAIM)
+//            }
+//            add(CardType.CLAIM)
+            // TODO: Remove after tests and uncomment code above
+            add(CardType.FREEDOMTOOL)
             add(CardType.IDENTITY)
-//        TODO: Add Claim card
-//        if (currentPointsBalance != null && currentPointsBalance != 0L)
-//            add(CarType.CLAIM)
             add(CardType.LIKENESS)
+            add(CardType.CLAIM)
         }
     }
 
@@ -90,6 +97,7 @@ fun HomeScreenV3(
         navigate = navigate,
         sharedTransitionScope = sharedTransitionScope,
         setVisibilityOfBottomBar = setVisibilityOfBottomBar,
+        currentPointsBalance = currentPointsBalance,
     )
 }
 
@@ -103,7 +111,8 @@ fun HomeScreenContent(
     setVisibilityOfBottomBar: (Boolean) -> Unit,
     visibleCards: List<CardType>,
     userPassportName: String?,
-    notificationsCount: Int?
+    notificationsCount: Int?,
+    currentPointsBalance: Long?
 ) {
     var selectedCard by remember { mutableStateOf<CardType?>(null) }
     LaunchedEffect(selectedCard) {
@@ -119,7 +128,7 @@ fun HomeScreenContent(
             var pagerScrollEnabled by remember { mutableStateOf(true) }
             LaunchedEffect(selectedCard) {
                 pagerScrollEnabled = false
-                kotlinx.coroutines.delay((ANIMATION_DURATION_MS + 100).toLong())
+                delay((ANIMATION_DURATION_MS + 100).toLong())
                 pagerScrollEnabled = true
             }
 
@@ -192,6 +201,11 @@ fun HomeScreenContent(
                                     modifier = baseCollapsedModifier,
                                 )
 
+                                CardType.CLAIM -> ClaimCollapsedCard(
+                                    collapsedCardProps = collapsedCardProps,
+                                    modifier = baseCollapsedModifier,
+                                    currentPointsBalance = currentPointsBalance
+                                )
                                 // TODO: Implement rest collapsed cards here
                             }
                         }
@@ -241,6 +255,12 @@ fun HomeScreenContent(
                             navigate = navigate
                         )
 
+                        CardType.CLAIM -> ClaimExpandedCard(
+                            expandedCardProps = expandedCardProps,
+                            innerPaddings = innerPaddings,
+                            navigate = navigate,
+                            currentPointsBalance = currentPointsBalance
+                        )
                         // TODO: Implement rest expanded cards here
                     }
                 }
@@ -263,7 +283,8 @@ private fun HomeScreenPreview() {
                 userPassportName = "Mike",
                 notificationsCount = 2,
                 innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
-                visibleCards = CardType.entries
+                visibleCards = CardType.entries,
+                currentPointsBalance = 200L
             )
         }
     }
