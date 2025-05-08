@@ -26,6 +26,8 @@ class DigitalLikenessViewModel @Inject constructor(
     val faceImage = likenessManager.faceImage
     val saveFaceImage = likenessManager::saveFaceImage
 
+    val downloadProgress = likenessManager.downloadProgress
+
     suspend fun processImage(bitmap: Bitmap): ZkProof {
         return likenessManager.livenessProofGeneration(bitmap = bitmap)
     }

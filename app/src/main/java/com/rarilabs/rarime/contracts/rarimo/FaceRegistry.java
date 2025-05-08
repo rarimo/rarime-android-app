@@ -140,6 +140,9 @@ public class FaceRegistry extends Contract {
 
     public static final String FUNC_USERREGISTRYHASH = "userRegistryHash";
 
+    public static final String EVENT_ID = "0x00479fba7a69b6aaecd137c541a6860858207877a3bf70da303a7a4bdfab466a";
+
+
     public static final Event INITIALIZED_EVENT = new Event("Initialized",
             List.of(new TypeReference<Uint64>() {
             }));

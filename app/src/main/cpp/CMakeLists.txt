@@ -11,6 +11,8 @@ set(NORMAL_LIB_FILES
         librapidsnark.so
         libwitnesscalc_queryIdentity.so
         libwitnesscalc_auth.so
+        libwitnesscalc_faceRegistryNoInclusion.so
+
         libwitnesscalc_registerIdentity_1_256_3_5_576_248_NA.so
         libwitnesscalc_registerIdentity_1_256_3_6_576_248_1_2432_5_296.so
         libwitnesscalc_registerIdentity_2_256_3_6_336_264_21_2448_6_2008.so

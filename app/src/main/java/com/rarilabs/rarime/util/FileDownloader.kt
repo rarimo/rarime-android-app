@@ -34,6 +34,29 @@ class FileDownloaderInternal(private val context: Context) {
         }
     }
 
+
+    suspend fun downloadFileBlocking(
+        url: String,
+        fileName: String,
+        onProgress: (progress: Int) -> Unit
+    ): File {
+        return suspendCancellableCoroutine { cont ->
+
+            downloadFile(url, fileName) { isSuccess, isFinished, progress, e ->
+                if (!isSuccess && e != null) {
+                    onProgress(progress)
+                    cont.resumeWith(Result.failure(e))
+                } else if (isFinished) {
+                    onProgress(100)
+                    val file = getFile(fileName)
+                    cont.resume(file, onCancellation = {})
+                } else {
+                    onProgress(progress)
+                }
+            }
+        }
+    }
+
     fun downloadFile(
         url: String,
         fileName: String,

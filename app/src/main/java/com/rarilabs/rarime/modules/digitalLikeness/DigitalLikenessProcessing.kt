@@ -49,16 +49,25 @@ fun DigitalLikenessProcessing(
     selectedBitmap: Bitmap,
     processing: suspend (Bitmap) -> Unit,
     currentProcessingState: LivenessProcessingStatus,
-    onNext: () -> Unit
+    onNext: () -> Unit,
+    downloadProgress: Int
 ) {
 
     var currentProgress: Float by remember {
         mutableFloatStateOf(0f)
     }
 
+    LaunchedEffect(downloadProgress) {
+        currentProgress = downloadProgress / 100f
+    }
+
     LaunchedEffect(currentProcessingState) {
         if (currentProcessingState == LivenessProcessingStatus.FINSH)
             return@LaunchedEffect
+
+        if (currentProcessingState == LivenessProcessingStatus.DOWNLOADING) {
+            return@LaunchedEffect
+        }
 
         currentProgress = 0f
         repeat(101) { i ->
@@ -297,7 +306,8 @@ private fun DigitalLikenessProcessingPreview() {
             currentProcessingState = LivenessProcessingStatus.DOWNLOADING,
             processing = {
 
-            }
+            },
+            downloadProgress = 0
         )
     }
 }

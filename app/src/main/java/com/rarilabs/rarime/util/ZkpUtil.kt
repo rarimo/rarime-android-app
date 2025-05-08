@@ -63,6 +63,17 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
+    external fun faceRegistryNoInclusion(
+        circuitBuffer: ByteArray,
+        circuitSize: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
     external fun registerIdentity125635576248NA(
         datFilePath: String,
         datFileLen: Long,

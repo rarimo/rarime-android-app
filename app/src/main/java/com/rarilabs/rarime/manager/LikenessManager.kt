@@ -2,6 +2,7 @@ package com.rarilabs.rarime.manager
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.util.Log
 import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
@@ -11,6 +12,7 @@ import com.rarilabs.rarime.util.bionet.BionetAnalizer
 import com.rarilabs.rarime.util.data.ZkProof
 import com.rarilabs.rarime.util.tflite.RunTFLiteFeatureExtractorUseCase
 import dagger.hilt.android.qualifiers.ApplicationContext
+import identity.CallDataBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,10 +24,10 @@ import javax.inject.Singleton
 import kotlin.math.pow
 
 enum class LikenessRule(val value: Int) {
-    ALWAYS_ALLOW(0), REJECT(1), ASK_EVERYTIME(2);
+    UNSET(0), USE_AND_PAY(1), NOT_USE(2), ASK_FIRST(3);
 
     companion object {
-        fun fromInt(value: Int) = LikenessRule.entries.first { it.value == value }
+        fun fromInt(value: Int) = entries.first { it.value == value }
     }
 }
 
@@ -47,23 +49,32 @@ enum class LivenessProcessingStatus(val title: String) {
 @Singleton
 class LikenessManager @Inject constructor(
     @ApplicationContext private val application: Context,
-    val sharedPrefsManager: SecureSharedPrefsManager
+    val sharedPrefsManager: SecureSharedPrefsManager,
+    val rarimoContractManager: RarimoContractManager,
+    val identityManager: IdentityManager
 ) {
 
     private val zkeyFileName = "likeness.zkey"
 
     private val _selectedRule = MutableStateFlow(sharedPrefsManager.getSelectedLikenessRule())
 
-    private val _isScanned = MutableStateFlow(sharedPrefsManager.getIsLikenessScanned())
+    private val _isScanned = MutableStateFlow(sharedPrefsManager.getLivenessProof() != null)
 
     private var _state = MutableStateFlow(LivenessProcessingStatus.DOWNLOADING)
 
     val state: StateFlow<LivenessProcessingStatus>
         get() = _state.asStateFlow()
 
+
     private val _faceImage: MutableStateFlow<Bitmap?> = MutableStateFlow(loadFaceImage())
 
     val faceImage: StateFlow<Bitmap?> = _faceImage.asStateFlow()
+
+    private val _downloadProgress: MutableStateFlow<Int> = MutableStateFlow(0)
+
+    val downloadProgress: StateFlow<Int>
+        get() = _downloadProgress.asStateFlow()
+
 
     val isScanned: StateFlow<Boolean>
         get() = _isScanned.asStateFlow()
@@ -84,19 +95,60 @@ class LikenessManager @Inject constructor(
     private fun loadFaceImage(): Bitmap? = sharedPrefsManager.getLikenessFace()
 
 
+    suspend fun changeLikenessRule(newRule: LikenessRule) {
+        val ruleValue = newRule.value
+
+
+        val nullifier = identityManager.getNullifierForFaceLikeness()
+        val eventId = ""
+        val nonce = ""
+
+        val assetContext: Context =
+            (application).createPackageContext("com.rarilabs.rarime", 0)
+        val assetManager = assetContext.assets
+
+        val zkp = ZKPUseCase(
+            assetContext, assetManager
+        )
+
+//        val inclusionProof = withContext(Dispatchers.Default) {
+//            zkp.generateZKP(
+//                "face_registry_no_inclusion.zkey",
+//                datFile = R.raw.face_registry_no_inclusion,
+//                inputs = inclusionProofInputs,
+//                proofFunction = ZkpUtil::faceRegistryNoInclusion
+//            )
+//        }
+
+        // send proof
+
+    }
+
+
+    private fun generateChangeLikenessRuleProofInputs() {
+        val faceRegContract = rarimoContractManager.getFaceRegistry()
+
+        val eventId = ""
+
+        //val nonce = faceRegContract.getVerificationNonce()
+    }
+
     private suspend fun downloadLivenessZkey(): File {
         val fileDownloader = FileDownloaderInternal(application)
 
         val file =
-            fileDownloader.downloadFileBlocking(BaseConfig.FACE_REGISTRY_ZKEY_URL, zkeyFileName)
-
+            fileDownloader.downloadFileBlocking(BaseConfig.FACE_REGISTRY_ZKEY_URL, zkeyFileName) {
+                if (_downloadProgress.value != it) {
+                    Log.i("Proggress", it.toString())
+                    _downloadProgress.value = it
+                }
+            }
 
         return file
     }
 
 
     suspend fun livenessProofGeneration(bitmap: Bitmap): ZkProof {
-
 
         _state.value = LivenessProcessingStatus.DOWNLOADING
 
@@ -143,6 +195,15 @@ class LikenessManager @Inject constructor(
                 inputs = Gson().toJson(inputs)
             )
 
+
+            val callDataBuilder = CallDataBuilder()
+            val callData =
+                callDataBuilder.buildFaceRegistryRegisterUser(Gson().toJson(zkproof).toByteArray())
+
+            //TODO send to backend
+
+            sharedPrefsManager.saveLivenessProof(zkproof)
+
             _state.value = LivenessProcessingStatus.FINSH
 
             return@withContext zkproof
@@ -152,7 +213,7 @@ class LikenessManager @Inject constructor(
 
 
     fun setIsLikenessScanned(isScanned: Boolean) {
-        sharedPrefsManager.saveIsLikenessScanned(isScanned)
+        //sharedPrefsManager.saveIsLikenessScanned(isScanned)
         _isScanned.value = isScanned
     }
 

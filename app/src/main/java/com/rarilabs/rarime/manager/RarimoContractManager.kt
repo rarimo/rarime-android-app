@@ -38,7 +38,7 @@ class RarimoContractManager @Inject constructor(@Named("RARIMO") private val web
         )
     }
 
-    suspend fun getFaceRegistry(): FaceRegistry {
+    fun getFaceRegistry(): FaceRegistry {
         val ecKeyPair = Keys.createEcKeyPair()
         val credentials = Credentials.create(ecKeyPair)
         val gasProvider = DefaultGasProvider()

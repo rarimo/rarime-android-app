@@ -473,15 +473,19 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     }
 
 
-    override fun saveIsLikenessScanned(flag: Boolean) {
+    override fun saveLivenessProof(proof: ZkProof) {
         val editor = getEditor()
-        editor.putBoolean(accessTokens["LIKENESS_DATA"], flag)
+
+        val proofjson = Gson().toJson(proof)
+        editor.putString(accessTokens["LIKENESS_DATA"], proofjson)
         editor.apply()
     }
 
-    override fun getIsLikenessScanned(): Boolean {
-        return getSharedPreferences().getBoolean(accessTokens["LIKENESS_DATA"], false)
+    override fun getLivenessProof(): ZkProof? {
+        val proofJson = getSharedPreferences().getString(accessTokens["LIKENESS_DATA"], null)
+            ?: return null
 
+        return Gson().fromJson<ZkProof>(proofJson, ZkProof::class.java)
     }
 
     override fun saveLikenessFace(face: Bitmap) {

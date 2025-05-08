@@ -134,6 +134,8 @@ fun DigitalLikeness(
 
     val selectedState by viewModel.livenessState.collectAsState()
 
+    val downloadProgress by viewModel.downloadProgress.collectAsState()
+
     DigitalLikenessContent(
         modifier,
         id,
@@ -149,6 +151,7 @@ fun DigitalLikeness(
         livenessStatus = selectedState,
         processImage = viewModel::processImage,
         faceImage = faceImage,
+        downloadProgress = downloadProgress
     )
 }
 
@@ -172,7 +175,8 @@ fun DigitalLikenessContent(
     saveFaceImage: (Bitmap) -> Unit,
     processImage: suspend (Bitmap) -> Unit,
     livenessStatus: LivenessProcessingStatus,
-    faceImage: Bitmap?
+    faceImage: Bitmap?,
+    downloadProgress: Int
 ) {
     val isPreview = LocalInspectionMode.current
     val appSheetState = rememberAppSheetState()
@@ -206,6 +210,7 @@ fun DigitalLikenessContent(
             } else {
                 DigitalLikenessProcessing(
                     modifier = Modifier.padding(vertical = 16.dp),
+                    downloadProgress = downloadProgress,
                     processing = processImage,
                     currentProcessingState = livenessStatus,
                     selectedBitmap = selectedBitmap!!,
@@ -735,7 +740,8 @@ private fun CreateIdentityDetailsPreview() {
                 )
             },
             faceImage = null,
-            livenessStatus = LivenessProcessingStatus.DOWNLOADING
+            livenessStatus = LivenessProcessingStatus.DOWNLOADING,
+            downloadProgress = 0
         )
     }
 }
