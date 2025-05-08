@@ -25,13 +25,13 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun VerticalPageIndicator(
-    numberOfPages: Int,
+    totalPages: Int,
     modifier: Modifier = Modifier,
     selectedPage: Int = 0,
     selectedColor: Color = Color.Blue,
     defaultColor: Color = Color.LightGray,
-    defaultRadius: Dp = 20.dp,
-    selectedLength: Dp = 60.dp,
+    defaultSize: Dp = 20.dp,
+    selectedHeight: Dp = 60.dp,
     space: Dp = 30.dp,
     animationDurationInMillis: Int = 300,
 ) {
@@ -39,14 +39,13 @@ fun VerticalPageIndicator(
         verticalArrangement = Arrangement.spacedBy(space),
         modifier = modifier,
     ) {
-        for (i in 0 until numberOfPages) {
-            val isSelected = i == selectedPage
+        for (i in 0 until totalPages) {
             PageIndicatorView(
-                isSelected = isSelected,
+                isSelected = i == selectedPage,
                 selectedColor = selectedColor,
                 defaultColor = defaultColor,
-                defaultRadius = defaultRadius,
-                selectedLength = selectedLength,
+                defaultRadius = defaultSize,
+                selectedLength = selectedHeight,
                 animationDurationInMillis = animationDurationInMillis,
             )
         }
@@ -112,7 +111,7 @@ fun PageIndicatorView(
 @Preview
 @Composable
 private fun HomeProgressIndicatorPreview() {
-    val numberOfPages = 3
+    val totalPages = 3
     val (selectedPage, setSelectedPage) = remember {
         mutableIntStateOf(0)
     }
@@ -121,14 +120,14 @@ private fun HomeProgressIndicatorPreview() {
         key1 = selectedPage,
     ) {
         delay(3000)
-        setSelectedPage((selectedPage + 1) % numberOfPages)
+        setSelectedPage((selectedPage + 1) % totalPages)
     }
 
     VerticalPageIndicator(
-        numberOfPages = numberOfPages,
+        totalPages = totalPages,
         selectedPage = selectedPage,
-        defaultRadius = 60.dp,
-        selectedLength = 120.dp,
+        defaultSize = 60.dp,
+        selectedHeight = 120.dp,
         space = 30.dp,
         animationDurationInMillis = 1000,
     )

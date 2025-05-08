@@ -114,25 +114,25 @@ fun HomeScreenContent(
     notificationsCount: Int?,
     currentPointsBalance: Long?
 ) {
-    var selectedCard by remember { mutableStateOf<CardType?>(null) }
-    LaunchedEffect(selectedCard) {
-        setVisibilityOfBottomBar(selectedCard == null)
+    var selectedCardType by remember { mutableStateOf<CardType?>(null) }
+    LaunchedEffect(selectedCardType) {
+        setVisibilityOfBottomBar(selectedCardType == null)
     }
 
     // Hoist pagerState to remember scroll position across recompositions
     val pagerState = rememberPagerState(pageCount = { visibleCards.size })
 
     Box(modifier = modifier) {
-        AnimatedContent(selectedCard) { targetCard ->
+        AnimatedContent(selectedCardType) { targetCardType ->
             // Temporarily disable pager scrolling while the expand/collapse animation runs
             var pagerScrollEnabled by remember { mutableStateOf(true) }
-            LaunchedEffect(selectedCard) {
+            LaunchedEffect(selectedCardType) {
                 pagerScrollEnabled = false
                 delay((ANIMATION_DURATION_MS + 100).toLong())
                 pagerScrollEnabled = true
             }
 
-            if (targetCard == null) {
+            if (targetCardType == null) {
                 Column(
                     modifier = Modifier.padding(
                         top = innerPaddings[ScreenInsets.TOP]?.toFloat()?.dp ?: 0.dp,
@@ -171,7 +171,7 @@ fun HomeScreenContent(
                             val collapsedCardProps = BaseCardProps.Collapsed(
                                 onExpand = {
                                     if (pagerScrollEnabled) {
-                                        selectedCard = cardType
+                                        selectedCardType = cardType
                                     }
                                 },
                                 layoutId = cardType.layoutId,
@@ -210,13 +210,13 @@ fun HomeScreenContent(
                             }
                         }
                         VerticalPageIndicator(
-                            numberOfPages = pagerState.pageCount,
+                            totalPages = pagerState.pageCount,
                             selectedPage = pagerState.currentPage,
                             modifier = Modifier.padding(end = 8.dp),
-                            defaultRadius = 6.dp,
+                            defaultSize = 6.dp,
                             selectedColor = RarimeTheme.colors.primaryMain,
                             defaultColor = RarimeTheme.colors.primaryLight,
-                            selectedLength = 16.dp,
+                            selectedHeight = 16.dp,
                             space = 8.dp
                         )
                     }
@@ -230,13 +230,13 @@ fun HomeScreenContent(
                 ) {
                     // Common props for every expanded card
                     val expandedCardProps = BaseCardProps.Expanded(
-                        onCollapse = { selectedCard = null },
-                        layoutId = targetCard.layoutId,
+                        onCollapse = { selectedCardType = null },
+                        layoutId = targetCardType.layoutId,
                         animatedVisibilityScope = this@AnimatedContent,
                         sharedTransitionScope = sharedTransitionScope
                     )
 
-                    when (targetCard) {
+                    when (targetCardType) {
                         CardType.FREEDOMTOOL -> FreedomtoolExpandedCard(
                             expandedCardProps = expandedCardProps,
                             innerPaddings = innerPaddings,

@@ -82,7 +82,7 @@ fun DigitalLikenessRuleSheet(
             type = LikenessRule.REJECT,
             title = "Don’t use my\nface at all",
             badgeText = "Soon",
-            iconRes = R.drawable.ic_substract_fill
+            iconRes = R.drawable.ic_subtract_fill
         ), RuleOptionData(
             isSelected = LikenessRule.ASK_EVERYTIME == localSelectedRule,
             type = LikenessRule.ASK_EVERYTIME,

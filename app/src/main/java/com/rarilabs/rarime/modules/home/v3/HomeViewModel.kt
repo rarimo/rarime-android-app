@@ -3,17 +3,14 @@ package com.rarilabs.rarime.modules.home.v3
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.rarilabs.rarime.api.airdrop.AirDropManager
 import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.points.models.BaseEvents
 import com.rarilabs.rarime.api.points.models.PointsEventData
-import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.api.voting.VotingManager
 import com.rarilabs.rarime.api.voting.models.Poll
 import com.rarilabs.rarime.manager.NotificationManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.WalletManager
-import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -30,15 +27,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val app: Application,
-    private val passportManager: PassportManager,
-    private val airDropManager: AirDropManager,
+    app: Application,
+    passportManager: PassportManager,
     private val walletManager: WalletManager,
     private val pointsManager: PointsManager,
-    private val notificationManager: NotificationManager,
-    private val registrationManager: RegistrationManager,
-    private val sharedPrefsManager: SecureSharedPrefsManager,
-    private val votingManager: VotingManager,
+    notificationManager: NotificationManager,
+    votingManager: VotingManager,
 ) : AndroidViewModel(app) {
 
     val pointsToken = walletManager.pointsToken

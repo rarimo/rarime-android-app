@@ -9,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 enum class LikenessRule(val value: Int) {
-    ALWAYS_ALLOW(0), REJECT(1), ASK_EVERYTIME(2);
+    NOT_SELECTED(0), ALWAYS_ALLOW(1), REJECT(2), ASK_EVERYTIME(3);
 
     companion object {
         fun fromInt(value: Int) = LikenessRule.entries.first { it.value == value }

@@ -150,7 +150,7 @@ fun LikenessExpandedCardContent(
             fullScreen = true,
             scrimColor = Color.Transparent,
             isHeaderEnabled = false,
-            disableScrollClose = true,
+            disablePullClose = true,
             isWindowInsetsEnabled = true,
         ) {
             if (selectedBitmap == null) {
@@ -549,7 +549,12 @@ private fun Footer(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(ALREADY_SET_AMOUNT, style = RarimeTheme.typography.h4)
+                    Text(
+                        text = String.format(
+                            "%,d",
+                            ALREADY_SET_AMOUNT
+                        ), style = RarimeTheme.typography.h4
+                    )
                     Text(
                         "Already registered",
                         style = RarimeTheme.typography.body4,
