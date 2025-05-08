@@ -69,11 +69,14 @@ fun HomeScreenV3(
     }
 
     val visibleCards = buildList {
-        if (hasVotes) add(CardType.FREEDOMTOOL)
+        add(CardType.FREEDOMTOOL)
+        add(CardType.LIKENESS)
+//        if (hasVotes) { add(CardType.FREEDOMTOOL) }
         add(CardType.IDENTITY)
 //        TODO: Add Claim card
 //        if (currentPointsBalance != null && currentPointsBalance != 0L)
 //            add(CarType.CLAIM)
+
     }
 
     HomeScreenContent(
@@ -132,27 +135,21 @@ fun HomeScreenContent(
                     )
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         VerticalPager(
                             modifier = Modifier.weight(1f),
                             userScrollEnabled = pagerScrollEnabled,
                             state = pagerState,
+                            pageSpacing = 10.dp,
                             contentPadding = PaddingValues(top = 42.dp, bottom = 95.dp),
                         ) { page ->
-                            val cardType = CardType.entries[page]
-
-                            val pageOffset by remember(
-                                pagerState.currentPage, pagerState.currentPageOffsetFraction
-                            ) {
-                                derivedStateOf {
-                                    (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
-                                }
-                            }
-
+                            val cardType = visibleCards[page]
+                            val currentPage = pagerState.currentPage
+                            val currentOffset = pagerState.currentPageOffsetFraction
+                            val pageOffset = (currentPage - page) + currentOffset
                             val absoluteOffset = abs(pageOffset).coerceIn(0f, 1f)
-                            val targetScale = lerp(0.8f, 1f, 1f - absoluteOffset)
-
+                            val targetScale = lerp(0.9f, 1f, 1f - absoluteOffset)
                             val scale by animateFloatAsState(
                                 targetValue = targetScale, animationSpec = spring(
                                     dampingRatio = 0.5f, stiffness = 300f
