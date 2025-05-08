@@ -45,7 +45,7 @@ fun VerticalPageIndicator(
                 selectedColor = selectedColor,
                 defaultColor = defaultColor,
                 defaultRadius = defaultSize,
-                selectedLength = selectedHeight,
+                selectedHeight = selectedHeight,
                 animationDurationInMillis = animationDurationInMillis,
             )
         }
@@ -59,7 +59,7 @@ fun PageIndicatorView(
     selectedColor: Color,
     defaultColor: Color,
     defaultRadius: Dp,
-    selectedLength: Dp,
+    selectedHeight: Dp,
     animationDurationInMillis: Int,
     modifier: Modifier = Modifier,
 ) {
@@ -76,7 +76,7 @@ fun PageIndicatorView(
     )
     val height: Dp by animateDpAsState(
         targetValue = if (isSelected) {
-            selectedLength
+            selectedHeight
         } else {
             defaultRadius
         },
