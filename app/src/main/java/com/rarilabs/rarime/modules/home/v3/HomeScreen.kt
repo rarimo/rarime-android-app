@@ -246,7 +246,8 @@ fun HomeScreenContent(
                         CardType.IDENTITY -> IdentityExpandedCard(
                             expandedCardProps = expandedCardProps,
                             innerPaddings = innerPaddings,
-                            navigate = navigate
+                            navigate = navigate,
+                            setVisibilityOfBottomBar = setVisibilityOfBottomBar
                         )
 
                         CardType.LIKENESS -> LikenessExpandedCard(

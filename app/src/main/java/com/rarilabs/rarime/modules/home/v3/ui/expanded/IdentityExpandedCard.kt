@@ -46,13 +46,15 @@ fun IdentityExpandedCard(
     modifier: Modifier = Modifier,
     expandedCardProps: BaseCardProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
-    navigate: (String) -> Unit
+    navigate: (String) -> Unit,
+    setVisibilityOfBottomBar: (Boolean) -> Unit
 ) {
     IdentityExpandedCardContent(
         modifier = modifier,
         cardProps = expandedCardProps,
         innerPaddings = innerPaddings,
         navigate = navigate,
+        setVisibilityOfBottomBar = setVisibilityOfBottomBar
     )
 }
 
@@ -62,7 +64,8 @@ fun IdentityExpandedCardContent(
     modifier: Modifier = Modifier,
     cardProps: BaseCardProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
-    navigate: (String) -> Unit
+    navigate: (String) -> Unit,
+    setVisibilityOfBottomBar: (Boolean) -> Unit
 ) {
     with(cardProps) {
         with(sharedTransitionScope) {
@@ -92,11 +95,15 @@ fun IdentityExpandedCardContent(
                 },
                 footer = {
                     Footer(
-                        onNavigate = { navigate(Screen.Main.Identity.route) },
+                        onNavigate = {
+                            setVisibilityOfBottomBar(true)
+                            navigate(Screen.Main.Identity.route)
+                        },
                         layoutId = layoutId,
                         innerPaddings = innerPaddings,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope
+
                     )
                 },
                 background = {
@@ -279,7 +286,8 @@ fun IdentityExpandedCardPreview() {
                 onCollapse = {}
             ),
             innerPaddings = mapOf(ScreenInsets.TOP to 40, ScreenInsets.BOTTOM to 20),
-            navigate = {}
+            navigate = {},
+            setVisibilityOfBottomBar = {}
         )
     }
 }
