@@ -18,6 +18,8 @@ class DigitalLikenessViewModel @Inject constructor(
 
     val livenessState = likenessManager.state
 
+    val errorState = likenessManager.errorState
+
     val setSelectedRule = likenessManager::setSelectedRule
 
     val faceImage = likenessManager.faceImage

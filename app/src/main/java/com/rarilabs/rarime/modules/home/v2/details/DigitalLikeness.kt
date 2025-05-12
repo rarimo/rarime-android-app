@@ -133,6 +133,7 @@ fun DigitalLikeness(
     val faceImage by viewModel.faceImage.collectAsState()
 
     val selectedState by viewModel.livenessState.collectAsState()
+    val errorState by viewModel.errorState.collectAsState()
 
     val downloadProgress by viewModel.downloadProgress.collectAsState()
 
@@ -148,9 +149,10 @@ fun DigitalLikeness(
         isRegistered,
         viewModel.saveFaceImage,
         livenessStatus = selectedState,
+        livenessError = errorState,
         processImage = viewModel::processImage,
         faceImage = faceImage,
-        downloadProgress = downloadProgress
+        downloadProgress = downloadProgress,
     )
 }
 
@@ -173,6 +175,7 @@ fun DigitalLikenessContent(
     saveFaceImage: (Bitmap) -> Unit,
     processImage: suspend (Bitmap) -> Unit,
     livenessStatus: LivenessProcessingStatus,
+    livenessError: LivenessProcessingStatus?,
     faceImage: Bitmap?,
     downloadProgress: Int
 ) {
@@ -186,7 +189,6 @@ fun DigitalLikenessContent(
     val cameraPermissionState = if (!isPreview) rememberPermissionState(Manifest.permission.CAMERA)
     else null
     val ruleSheetState = rememberAppSheetState(false)
-
     if (isPreview || cameraPermissionState!!.status.isGranted) {
         AppBottomSheet(
             state = appSheetState,
@@ -211,6 +213,7 @@ fun DigitalLikenessContent(
                     downloadProgress = downloadProgress,
                     processing = processImage,
                     currentProcessingState = livenessStatus,
+                    currentProcessingError = livenessError,
                     selectedBitmap = selectedBitmap!!,
                     onNext = {
                         saveFaceImage(selectedBitmap!!)
@@ -262,7 +265,7 @@ fun DigitalLikenessContent(
         innerPaddings = innerPaddings,
         sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = animatedContentScope,
-        image = if (faceImage == null) null else {
+        image = if (faceImage != null) {
             {
                 LikenessFrame(
                     faceImage = faceImage.asImageBitmap(),
@@ -272,6 +275,23 @@ fun DigitalLikenessContent(
                     faceSize = 295.dp
                 )
             }
+        } else if (isRegistered) {
+            {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        modifier = Modifier.size(140.dp),
+                        painter = painterResource(R.drawable.ic_question),
+                        tint = RarimeTheme.colors.baseBlack.copy(alpha = 0.1f),
+                        contentDescription = null
+                    )
+                }
+            }
+        } else {
+            null
         },
         onBack = onBack,
         header = if (isRegistered) { headerKey, subTitleKey ->
@@ -731,7 +751,6 @@ private fun CreateIdentityDetailsPreview() {
             selectedRule = selectedRule,
             setSelectedRule = { selectedRule = it },
             isRegistered = isRegistered,
-            //setIsScanned = { isRegistered = it },
             saveFaceImage = {},
             processImage = {
                 ZkProof(
@@ -742,6 +761,7 @@ private fun CreateIdentityDetailsPreview() {
             },
             faceImage = null,
             livenessStatus = LivenessProcessingStatus.DOWNLOADING,
+            livenessError = null,
             downloadProgress = 0
         )
     }

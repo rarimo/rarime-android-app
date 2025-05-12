@@ -3,6 +3,7 @@ package com.rarilabs.rarime.modules.digitalLikeness
 import android.graphics.Bitmap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -20,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,11 +40,12 @@ import com.rarilabs.rarime.ui.components.GifViewer
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
 enum class ProcessingItemStatus {
-    FINISHED, LOADING, NOT_ACTIVE
+    FINISHED, LOADING, NOT_ACTIVE, FAILED
 }
 
 @Composable
@@ -49,6 +54,7 @@ fun DigitalLikenessProcessing(
     selectedBitmap: Bitmap,
     processing: suspend (Bitmap) -> Unit,
     currentProcessingState: LivenessProcessingStatus,
+    currentProcessingError: LivenessProcessingStatus? = null,
     onNext: () -> Unit,
     downloadProgress: Int
 ) {
@@ -57,22 +63,38 @@ fun DigitalLikenessProcessing(
         mutableFloatStateOf(0f)
     }
 
+    val retryScope = rememberCoroutineScope()
+
     LaunchedEffect(downloadProgress) {
         currentProgress = downloadProgress / 100f
     }
 
     LaunchedEffect(currentProcessingState) {
-        if (currentProcessingState == LivenessProcessingStatus.FINSH)
-            return@LaunchedEffect
+        when (currentProcessingState) {
+            LivenessProcessingStatus.RUNNING_ZKML -> {
+                currentProgress = 0f
+                val totalTime = 40_000L
+                val steps = 100
+                val stepDelay = totalTime / steps
 
-        if (currentProcessingState == LivenessProcessingStatus.DOWNLOADING) {
-            return@LaunchedEffect
-        }
+                repeat(steps + 1) { i ->
+                    currentProgress = i / steps.toFloat()
+                    delay(stepDelay)
+                }
+            }
 
-        currentProgress = 0f
-        repeat(101) { i ->
-            currentProgress = i / 100f
-            delay(20)
+            LivenessProcessingStatus.DOWNLOADING,
+            LivenessProcessingStatus.FINISH -> {
+                return@LaunchedEffect
+            }
+
+            else -> {
+                currentProgress = 0f
+                repeat(101) { i ->
+                    currentProgress = i / 100f
+                    delay(20)
+                }
+            }
         }
     }
 
@@ -82,7 +104,10 @@ fun DigitalLikenessProcessing(
                 selectedBitmap
             )
 
-            onNext()
+            if (currentProcessingError != LivenessProcessingStatus.DOWNLOADING) {
+                onNext()
+            }
+
         }
     }
 
@@ -123,17 +148,20 @@ fun DigitalLikenessProcessing(
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             for (i in LivenessProcessingStatus.entries) {
 
-                if (i == LivenessProcessingStatus.FINSH)
+                if (i == LivenessProcessingStatus.FINISH)
                     continue
 
+                val isError =
+                    currentProcessingError?.ordinal != null && i == currentProcessingError
                 val isFinished =
                     i.ordinal < currentProcessingState.ordinal      // step comes before current = done
                 val isProcessing = i.ordinal == currentProcessingState.ordinal   // current step
                 val isNotStarted = i.ordinal > currentProcessingState.ordinal
 
                 val currentStatus = when {
+                    isError -> ProcessingItemStatus.FAILED
                     isFinished -> ProcessingItemStatus.FINISHED
-                    isProcessing -> ProcessingItemStatus.LOADING
+                    isProcessing && !isError -> ProcessingItemStatus.LOADING
                     isNotStarted -> ProcessingItemStatus.NOT_ACTIVE
                     else -> throw IllegalStateException()
                 }
@@ -147,6 +175,17 @@ fun DigitalLikenessProcessing(
 
                     ProcessingItemStatus.NOT_ACTIVE -> ProcessItemNotActive(
                         title = i.title
+                    )
+
+                    ProcessingItemStatus.FAILED -> ProcessItemError(
+                        title = i.title,
+                        onRetry = if (currentProcessingError == LivenessProcessingStatus.DOWNLOADING) {
+                            {
+                                retryScope.launch {
+                                    processing(selectedBitmap)
+                                }
+                            }
+                        } else null
                     )
                 }
             }
@@ -167,6 +206,7 @@ fun ProcessItemLoading(
         modifier = Modifier
             .fillMaxWidth()
             .then(modifier)
+            .clip(RoundedCornerShape(24.dp))
     ) {
         Box(
             modifier = Modifier
@@ -206,6 +246,58 @@ fun ProcessItemLoading(
                 color = RarimeTheme.colors.textPrimary
             )
 
+        }
+    }
+}
+
+@Composable
+fun ProcessItemError(
+    modifier: Modifier = Modifier,
+    title: String, onRetry: (() -> Unit)? = null
+) {
+    Box(modifier = modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(
+                    1f
+                )
+                .height(60.dp)
+                .clip(RoundedCornerShape(24.dp))
+                .background(RarimeTheme.colors.errorLighter)
+                .align(Alignment.CenterStart)
+        )
+
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(24.dp))
+                .border(
+                    1.dp,
+                    shape = RoundedCornerShape(24.dp),
+                    color = RarimeTheme.colors.componentPrimary
+                )
+                .fillMaxWidth()
+                .padding(20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                title,
+                style = RarimeTheme.typography.subtitle5,
+                color = RarimeTheme.colors.errorDark
+            )
+
+            if (onRetry != null) {
+                AppIcon(
+                    id = R.drawable.ic_restart_line,
+                    tint = RarimeTheme.colors.errorDark,
+                    modifier = Modifier
+                        .clickable(onClick = onRetry)
+                        .size(20.dp)
+                        .clip(CircleShape)
+                )
+            } else {
+                AppIcon(id = R.drawable.ic_close, tint = RarimeTheme.colors.errorDark)
+            }
         }
     }
 }
