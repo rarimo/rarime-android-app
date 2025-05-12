@@ -248,7 +248,8 @@ class LikenessManager @Inject constructor(
         _state.value = LivenessProcessingStatus.DOWNLOADING
 
         val file =
-            File("/data/data/com.rarilabs.rarime/files/likeness.zkey")//downloadLivenessZkey()
+            //File("/data/data/com.rarilabs.rarime/files/likeness.zkey")//
+            downloadLivenessZkey()
 
         _state.value = LivenessProcessingStatus.EXTRACTING_FEATURES
 
@@ -294,13 +295,15 @@ class LikenessManager @Inject constructor(
         _state.value = LivenessProcessingStatus.RUNNING_ZKML
 
 
-        val inputs = LivenessInputs(
-            image = quantizedImage,
-            features = quantizedFeatures,
-            address = address.toString(),
-            threshold = "107374182",
-            nonce = nonce
-        )
+        val inputs =
+
+            LivenessInputs(
+                image = quantizedImage,
+                features = quantizedFeatures,
+                address = address.toString(),
+                threshold = "107374182",
+                nonce = nonce
+            )
 
         Log.i("Inputs", GsonBuilder().setPrettyPrinting().create().toJson(inputs))
 
@@ -319,6 +322,7 @@ class LikenessManager @Inject constructor(
             val callDataBuilder = CallDataBuilder()
             val callData =
                 callDataBuilder.buildFaceRegistryRegisterUser(Gson().toJson(zkproof).toByteArray())
+
 
             val response = likenessApiManager.likenessRegistry("0x" + callData.toHexString())
 

@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.contracts.rarimo;
 
 import org.web3j.abi.EventEncoder;
+import org.web3j.abi.FunctionEncoder;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.Utils;
 import org.web3j.abi.datatypes.Address;
@@ -814,6 +815,18 @@ public class FaceRegistry extends Contract {
         return executeRemoteCallTransaction(function);
     }
 
+    public String registerUserCallData(BigInteger userAddress_,
+                                       BigInteger featureHash_, ProofPoints zkPoints_) {
+        final Function function = new Function(
+                FUNC_REGISTERUSER,
+                Arrays.asList(new Uint256(userAddress_),
+                        new Uint256(featureHash_),
+                        zkPoints_),
+                Collections.emptyList());
+
+        return FunctionEncoder.encode(function);
+    }
+
     public RemoteFunctionCall<TransactionReceipt> removeOracles(List<String> oracles_) {
         final Function function = new Function(
                 FUNC_REMOVEORACLES,
@@ -957,16 +970,25 @@ public class FaceRegistry extends Contract {
         public List<BigInteger> c;
 
         public ProofPoints(List<BigInteger> a, List<List<BigInteger>> b, List<BigInteger> c) {
-            super(new StaticArray2<Uint256>(
+            super(
+                    new StaticArray2<>(
                             Uint256.class,
-                            org.web3j.abi.Utils.typeMap(a, Uint256.class)),
-                    new StaticArray2<StaticArray2>(
+                            a.stream().map(Uint256::new).toArray(Uint256[]::new)
+                    ),
+                    new StaticArray2<>(
                             StaticArray2.class,
-                            org.web3j.abi.Utils.typeMap(b, StaticArray2.class,
-                                    Uint256.class)),
-                    new StaticArray2<Uint256>(
+                            new StaticArray2<>(Uint256.class,
+                                    new Uint256(b.get(0).get(0)),
+                                    new Uint256(b.get(0).get(1))),
+                            new StaticArray2<>(Uint256.class,
+                                    new Uint256(b.get(1).get(0)),
+                                    new Uint256(b.get(1).get(1)))),
+                    new StaticArray2<>(
                             Uint256.class,
-                            org.web3j.abi.Utils.typeMap(c, Uint256.class)));
+                            c.stream().map(Uint256::new).toArray(Uint256[]::new)
+                    )
+            );
+
             this.a = a;
             this.b = b;
             this.c = c;

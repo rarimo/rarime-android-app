@@ -166,8 +166,9 @@ object TestNetConfig : IConfig {
 
     override val FACE_REGISTRY_ADDRESS: String = "0x3C0f27AC1817820C1BA41337B53090652aE4F448"
 
+
     override val FACE_REGISTRY_ZKEY_URL: String =
-        "https://storage.googleapis.com/rarimo-store/zkey/likeness.zkey"
+        "https://storage.googleapis.com/rarimo-store/zkey/circuit_final.zkey"
 
     override val registerIdentity_1_256_3_5_576_248_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_5_576_248_NA-download.zip"
