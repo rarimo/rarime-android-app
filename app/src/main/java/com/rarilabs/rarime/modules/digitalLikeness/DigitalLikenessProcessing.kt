@@ -70,17 +70,31 @@ fun DigitalLikenessProcessing(
     }
 
     LaunchedEffect(currentProcessingState) {
-        if (currentProcessingState == LivenessProcessingStatus.FINISH)
-            return@LaunchedEffect
+        when (currentProcessingState) {
+            LivenessProcessingStatus.RUNNING_ZKML -> {
+                currentProgress = 0f
+                val totalTime = 40_000L
+                val steps = 100
+                val stepDelay = totalTime / steps
 
-        if (currentProcessingState == LivenessProcessingStatus.DOWNLOADING) {
-            return@LaunchedEffect
-        }
+                repeat(steps + 1) { i ->
+                    currentProgress = i / steps.toFloat()
+                    delay(stepDelay)
+                }
+            }
 
-        currentProgress = 0f
-        repeat(101) { i ->
-            currentProgress = i / 100f
-            delay(20)
+            LivenessProcessingStatus.DOWNLOADING,
+            LivenessProcessingStatus.FINISH -> {
+                return@LaunchedEffect
+            }
+
+            else -> {
+                currentProgress = 0f
+                repeat(101) { i ->
+                    currentProgress = i / 100f
+                    delay(20)
+                }
+            }
         }
     }
 

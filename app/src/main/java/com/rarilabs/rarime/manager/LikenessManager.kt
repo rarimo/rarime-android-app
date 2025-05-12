@@ -143,12 +143,16 @@ class LikenessManager @Inject constructor(
 
         val faceContract = rarimoContractManager.getFaceRegistry()
 
-        val isAlreadyRegistered = withContext(Dispatchers.IO) {
-            faceContract.isUserRegistered(address).send()
+        val isAlreadyRegistered = try {
+            withContext(Dispatchers.IO) {
+                faceContract.isUserRegistered(address).send()
+            }
+        } catch (e: Exception) {
+            ErrorHandler.logError("LikenessManager", e.message.orEmpty())
+            false
         }
 
         return isAlreadyRegistered
-
     }
 
     suspend fun changeLikenessRule(newRule: LikenessRule) {
@@ -356,7 +360,7 @@ class LikenessManager @Inject constructor(
                 _state.value = LivenessProcessingStatus.FINISH
             }
         } catch (e: Exception) {
-            ErrorHandler.logError("livenessProofGeneration error", e.message.toString())
+            ErrorHandler.logError("LikenessManager", e.message.orEmpty())
             _errorState.value = _state.value
         }
 

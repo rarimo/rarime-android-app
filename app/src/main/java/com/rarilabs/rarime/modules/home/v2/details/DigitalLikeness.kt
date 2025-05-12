@@ -152,7 +152,7 @@ fun DigitalLikeness(
         livenessError = errorState,
         processImage = viewModel::processImage,
         faceImage = faceImage,
-        downloadProgress = downloadProgress
+        downloadProgress = downloadProgress,
     )
 }
 
@@ -189,7 +189,6 @@ fun DigitalLikenessContent(
     val cameraPermissionState = if (!isPreview) rememberPermissionState(Manifest.permission.CAMERA)
     else null
     val ruleSheetState = rememberAppSheetState(false)
-
     if (isPreview || cameraPermissionState!!.status.isGranted) {
         AppBottomSheet(
             state = appSheetState,
@@ -266,7 +265,7 @@ fun DigitalLikenessContent(
         innerPaddings = innerPaddings,
         sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = animatedContentScope,
-        image = if (faceImage == null) null else {
+        image = if (faceImage != null) {
             {
                 LikenessFrame(
                     faceImage = faceImage.asImageBitmap(),
@@ -276,6 +275,23 @@ fun DigitalLikenessContent(
                     faceSize = 295.dp
                 )
             }
+        } else if (isRegistered) {
+            {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        modifier = Modifier.size(140.dp),
+                        painter = painterResource(R.drawable.ic_question),
+                        tint = RarimeTheme.colors.baseBlack.copy(alpha = 0.1f),
+                        contentDescription = null
+                    )
+                }
+            }
+        } else {
+            null
         },
         onBack = onBack,
         header = if (isRegistered) { headerKey, subTitleKey ->
@@ -735,7 +751,6 @@ private fun CreateIdentityDetailsPreview() {
             selectedRule = selectedRule,
             setSelectedRule = { selectedRule = it },
             isRegistered = isRegistered,
-            //setIsScanned = { isRegistered = it },
             saveFaceImage = {},
             processImage = {
                 ZkProof(
