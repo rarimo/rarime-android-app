@@ -96,6 +96,8 @@ class RarimeColors(
     gradient5: Brush,
     gradient6: Brush,
     gradient7: Brush,
+    gradient8: Brush,
+    gradient9: Brush,
 
     additionalGreen: Color
 ) {
@@ -224,6 +226,10 @@ class RarimeColors(
 
     var gradient7 by mutableStateOf(gradient7, structuralEqualityPolicy())
         internal set
+    var gradient8 by mutableStateOf(gradient8, structuralEqualityPolicy())
+        internal set
+    var gradient9 by mutableStateOf(gradient9, structuralEqualityPolicy())
+        internal set
 
     var inverted by mutableStateOf(inverted, structuralEqualityPolicy())
         internal set
@@ -283,6 +289,8 @@ class RarimeColors(
         gradient5: Brush = this.gradient5,
         gradient6: Brush = this.gradient6,
         gradient7: Brush = this.gradient7,
+        gradient8: Brush = this.gradient8,
+        gradient9: Brush = this.gradient9,
         invertedDark: Color = this.invertedDark,
         invertedLight: Color = this.invertedLight,
         inverted: Color = this.inverted,
@@ -354,6 +362,8 @@ class RarimeColors(
         gradient5 = gradient5,
         gradient6 = gradient6,
         gradient7 = gradient7,
+        gradient8 = gradient8,
+        gradient9 = gradient9,
         additionalGreen = additionalGreen,
         inverted = inverted
     )
@@ -496,6 +506,8 @@ fun darkColors() = RarimeColors(
             )
         )
     ),
+    gradient8 = Brush.linearGradient(colors = listOf(Color(0xFF651C9F),Color(0xFF9D4EDD))),
+    gradient9 = Brush.linearGradient(colors = listOf(Color(0xFFE3C4F3),Color(0xFFFFFFFF))),
 
     additionalGreen = Color(0xFFF1F7F1),
 
@@ -591,6 +603,8 @@ fun lightColors() = RarimeColors(
             )
         )
     ),
+    gradient8 = Brush.linearGradient(colors = listOf(Color(0xFF651C9F),Color(0xFF9D4EDD))),
+    gradient9 = Brush.linearGradient(colors = listOf(Color(0xFFE3C4F3),Color(0xFFFFFFFF))),
 
     baseBlackOp40 = Color(0x66141614),
     baseBlackOp50 = Color(0x80141614),
