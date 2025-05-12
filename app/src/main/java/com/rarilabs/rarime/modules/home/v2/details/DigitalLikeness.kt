@@ -128,7 +128,7 @@ fun DigitalLikeness(
 ) {
 
     val selectedRule by viewModel.selectedRule.collectAsState()
-    val isScanned by viewModel.isLivenessScanned.collectAsState()
+    val isRegistered by viewModel.isRegistered.collectAsState()
 
     val faceImage by viewModel.faceImage.collectAsState()
 
@@ -145,8 +145,7 @@ fun DigitalLikeness(
         animatedContentScope,
         selectedRule,
         viewModel.setSelectedRule,
-        isScanned,
-        viewModel.setIsLivenessScanned,
+        isRegistered,
         viewModel.saveFaceImage,
         livenessStatus = selectedState,
         processImage = viewModel::processImage,
@@ -169,9 +168,8 @@ fun DigitalLikenessContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
     selectedRule: LikenessRule?,
-    setSelectedRule: (LikenessRule) -> Unit,
-    isScanned: Boolean,
-    setIsScanned: (Boolean) -> Unit,
+    setSelectedRule: suspend (LikenessRule) -> Unit,
+    isRegistered: Boolean,
     saveFaceImage: (Bitmap) -> Unit,
     processImage: suspend (Bitmap) -> Unit,
     livenessStatus: LivenessProcessingStatus,
@@ -215,7 +213,6 @@ fun DigitalLikenessContent(
                     currentProcessingState = livenessStatus,
                     selectedBitmap = selectedBitmap!!,
                     onNext = {
-                        setIsScanned(true)
                         saveFaceImage(selectedBitmap!!)
                         appSheetState.hide()
                         scope.launch {
@@ -227,10 +224,14 @@ fun DigitalLikenessContent(
     }
 
     RuleSheet(state = ruleSheetState, selectedRule = selectedRule, onSave = { newRule ->
-        setSelectedRule(newRule)
-        ruleSheetState.hide()
-        if (!isScanned) {
-            appSheetState.show()
+        scope.launch {
+
+            setSelectedRule(newRule)
+
+            ruleSheetState.hide()
+            if (!isRegistered) {
+                appSheetState.show()
+            }
         }
     })
 
@@ -246,7 +247,7 @@ fun DigitalLikenessContent(
                 ), start = Offset(0f, 0f), end = Offset(100f, 0f)
             )
         ),
-        caption = if (isScanned) null else stringResource(R.string.first_human_ai_contract),
+        caption = if (isRegistered) null else stringResource(R.string.first_human_ai_contract),
         imageId = R.drawable.drawable_digital_likeness,
         backgroundGradient = RarimeTheme.colors.gradient7,
         imageModifier = Modifier
@@ -273,7 +274,7 @@ fun DigitalLikenessContent(
             }
         },
         onBack = onBack,
-        header = if (isScanned) { headerKey, subTitleKey ->
+        header = if (isRegistered) { headerKey, subTitleKey ->
             with(sharedTransitionScope) {
                 Text(
                     style = RarimeTheme.typography.h5,
@@ -296,15 +297,15 @@ fun DigitalLikenessContent(
                         ))
 
                 val selectedRuleText = when (selectedRule) {
-                    LikenessRule.ALWAYS_ALLOW -> {
+                    LikenessRule.USE_AND_PAY -> {
                         stringResource(R.string.use_my_likeness_and_pay_me)
                     }
 
-                    LikenessRule.REJECT -> {
+                    LikenessRule.NOT_USE -> {
                         stringResource(R.string.don_t_sell_my_face_data)
                     }
 
-                    LikenessRule.ASK_EVERYTIME -> {
+                    LikenessRule.ASK_FIRST -> {
                         stringResource(R.string.ask_me_every_time)
                     }
 
@@ -389,7 +390,7 @@ fun DigitalLikenessContent(
                 Spacer(modifier = Modifier.height(50.dp))
             }
         },
-        footer = if (isScanned) null else {
+        footer = if (isRegistered) null else {
             {
                 HorizontalDivider()
                 Spacer(modifier = Modifier.height(24.dp))
@@ -512,20 +513,20 @@ private fun RuleSheet(
 
     val rules = listOf(
         RuleOptionData(
-            isSelected = LikenessRule.ALWAYS_ALLOW == localSelectedRule,
-            type = LikenessRule.ALWAYS_ALLOW,
+            isSelected = LikenessRule.USE_AND_PAY == localSelectedRule,
+            type = LikenessRule.USE_AND_PAY,
             title = stringResource(R.string.use_my_likeness_and_pay_me),
             badgeText = stringResource(R.string.soon),
             iconRes = R.drawable.money_dollar_circle_line
         ), RuleOptionData(
-            isSelected = LikenessRule.REJECT == localSelectedRule,
-            type = LikenessRule.REJECT,
+            isSelected = LikenessRule.NOT_USE == localSelectedRule,
+            type = LikenessRule.NOT_USE,
             title = stringResource(R.string.don_t_sell_my_face_data),
             badgeText = stringResource(R.string.soon),
             iconRes = R.drawable.subtract_fill
         ), RuleOptionData(
-            isSelected = LikenessRule.ASK_EVERYTIME == localSelectedRule,
-            type = LikenessRule.ASK_EVERYTIME,
+            isSelected = LikenessRule.ASK_FIRST == localSelectedRule,
+            type = LikenessRule.ASK_FIRST,
             title = stringResource(R.string.ask_me_every_time),
             badgeText = stringResource(R.string.soon),
             iconRes = R.drawable.ic_question
@@ -685,7 +686,7 @@ fun RuleOptionPreview() {
     RuleOption(
         item = RuleOptionData(
             isSelected = false,
-            type = LikenessRule.ALWAYS_ALLOW,
+            type = LikenessRule.ASK_FIRST,
             title = "Use my likeness\nand pay me.",
             badgeText = "Soon",
             iconRes = R.drawable.money_dollar_circle_line
@@ -698,7 +699,7 @@ fun RuleSheetPreview() {
     val ruleSheetState = rememberAppSheetState(true)
     RuleSheet(
         ruleSheetState,
-        selectedRule = LikenessRule.ALWAYS_ALLOW,
+        selectedRule = LikenessRule.ASK_FIRST,
         onSave = { ruleSheetState.hide() })
 }
 
@@ -710,11 +711,11 @@ private fun CreateIdentityDetailsPreview() {
 
     var selectedRule by remember {
         mutableStateOf(
-            LikenessRule.ALWAYS_ALLOW
+            LikenessRule.ASK_FIRST
         )
     }
 
-    var isScanned by remember {
+    var isRegistered by remember {
         mutableStateOf(
             false
         )
@@ -729,8 +730,8 @@ private fun CreateIdentityDetailsPreview() {
             onBack = {},
             selectedRule = selectedRule,
             setSelectedRule = { selectedRule = it },
-            isScanned = isScanned,
-            setIsScanned = { isScanned = it },
+            isRegistered = isRegistered,
+            //setIsScanned = { isRegistered = it },
             saveFaceImage = {},
             processImage = {
                 ZkProof(

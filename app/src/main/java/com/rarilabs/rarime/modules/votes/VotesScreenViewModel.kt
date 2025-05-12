@@ -1,8 +1,8 @@
 package com.rarilabs.rarime.modules.votes
 
 import androidx.lifecycle.ViewModel
-import com.rarilabs.rarime.api.voting.VotingManager
 import com.rarilabs.rarime.api.voting.models.Poll
+import com.rarilabs.rarime.manager.VotingManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

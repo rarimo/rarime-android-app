@@ -164,7 +164,7 @@ object TestNetConfig : IConfig {
 
     override val VOTING_WEBSITE_URL: String = "https://freedomtool.org"
 
-    override val FACE_REGISTRY_ADDRESS: String = "0x497326DaA4258c1366133c0cF2aeAb2785494492"
+    override val FACE_REGISTRY_ADDRESS: String = "0x3C0f27AC1817820C1BA41337B53090652aE4F448"
 
     override val FACE_REGISTRY_ZKEY_URL: String =
         "https://storage.googleapis.com/rarimo-store/zkey/likeness.zkey"
@@ -311,10 +311,10 @@ object MainnetConfig : IConfig {
     override val PROPOSAL_CONTRACT_ADDRESS: String = "0x9C4b84a940C9D3140a1F40859b3d4367DC8d099a"
     override val MULTICALL_CONTRACT_ADDRRESS: String = "0xb4EE49BDf7cf199081b2a286B2B9B5f87AE930b1"
 
-    override val FACE_REGISTRY_ADDRESS: String = "0x497326DaA4258c1366133c0cF2aeAb2785494492"
+    override val FACE_REGISTRY_ADDRESS: String = "0x15DCd57B70D97F1D1F220ccb4e6B8E886aF3e3B9"
 
     override val FACE_REGISTRY_ZKEY_URL: String =
-        "https://storage.googleapis.com/rarimo-store/zkey/likeness.zkey"
+        "https://storage.googleapis.com/rarimo-store/zkey/circuit_final.zkey"
 
     override val registerIdentity_1_256_3_5_576_248_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_5_576_248_NA-download.zip"

@@ -1,4 +1,4 @@
-package com.rarilabs.rarime.api.voting
+package com.rarilabs.rarime.manager
 
 import android.content.Context
 import android.util.Log
@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.voting.VotingApiManager
 import com.rarilabs.rarime.api.voting.models.ByteArrayDeserializer
 import com.rarilabs.rarime.api.voting.models.ByteArrayListDeserializer
 import com.rarilabs.rarime.api.voting.models.Poll
@@ -30,10 +31,6 @@ import com.rarilabs.rarime.api.voting.models.uint8ToProposalStatus
 import com.rarilabs.rarime.contracts.rarimo.StateKeeper
 import com.rarilabs.rarime.data.ProofTxFull
 import com.rarilabs.rarime.data.enums.PassportStatus
-import com.rarilabs.rarime.manager.IdentityManager
-import com.rarilabs.rarime.manager.PassportManager
-import com.rarilabs.rarime.manager.RarimoContractManager
-import com.rarilabs.rarime.manager.TestContractManager
 import com.rarilabs.rarime.modules.passportScan.calculateAgeFromBirthDate
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.room.voting.VotingRepository

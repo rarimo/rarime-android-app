@@ -4,38 +4,40 @@ import android.content.Context
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.airdrop.AirDropAPI
 import com.rarilabs.rarime.api.airdrop.AirDropAPIManager
-import com.rarilabs.rarime.api.airdrop.AirDropManager
 import com.rarilabs.rarime.api.auth.AuthAPI
 import com.rarilabs.rarime.api.auth.AuthAPIManager
-import com.rarilabs.rarime.api.auth.AuthManager
 import com.rarilabs.rarime.api.auth.RefreshTokenInterceptor
 import com.rarilabs.rarime.api.cosmos.CosmosAPI
 import com.rarilabs.rarime.api.cosmos.CosmosAPIManager
-import com.rarilabs.rarime.api.cosmos.CosmosManager
 import com.rarilabs.rarime.api.erc20.Erc20API
 import com.rarilabs.rarime.api.erc20.Erc20ApiManager
-import com.rarilabs.rarime.api.erc20.Erc20Manager
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorAPI
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorApiManager
+import com.rarilabs.rarime.api.likeness.LikenessApi
+import com.rarilabs.rarime.api.likeness.LikenessApiManager
 import com.rarilabs.rarime.api.points.PointsAPI
 import com.rarilabs.rarime.api.points.PointsAPIManager
-import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.registration.RegistrationAPI
 import com.rarilabs.rarime.api.registration.RegistrationAPIManager
-import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.api.voting.VotingApi
 import com.rarilabs.rarime.api.voting.VotingApiManager
-import com.rarilabs.rarime.api.voting.VotingManager
+import com.rarilabs.rarime.manager.AirDropManager
+import com.rarilabs.rarime.manager.AuthManager
+import com.rarilabs.rarime.manager.CosmosManager
+import com.rarilabs.rarime.manager.Erc20Manager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
 import com.rarilabs.rarime.manager.NotificationManager
 import com.rarilabs.rarime.manager.PassportManager
+import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.manager.ProofGenerationManager
 import com.rarilabs.rarime.manager.RarimoContractManager
+import com.rarilabs.rarime.manager.RegistrationManager
 import com.rarilabs.rarime.manager.SecurityManager
 import com.rarilabs.rarime.manager.SettingsManager
 import com.rarilabs.rarime.manager.StableCoinContractManager
 import com.rarilabs.rarime.manager.TestContractManager
+import com.rarilabs.rarime.manager.VotingManager
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.store.SecureSharedPrefsManagerImpl
@@ -460,6 +462,12 @@ class APIModule {
     @Singleton
     fun provideAppDatabase(@ApplicationContext appContext: Context): AppDatabase {
         return AppDatabase.getDatabase(appContext)
+    }
+
+    @Provides
+    @Singleton
+    fun provideLikenessApiManager(@Named("jsonApiRetrofit") retrofit: Retrofit): LikenessApiManager {
+        return LikenessApiManager(retrofit.create(LikenessApi::class.java))
     }
 
     @Provides

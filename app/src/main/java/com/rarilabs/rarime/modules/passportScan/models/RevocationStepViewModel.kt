@@ -3,10 +3,10 @@ package com.rarilabs.rarime.modules.passportScan.models
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import androidx.lifecycle.ViewModel
-import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
 import com.rarilabs.rarime.manager.ProofGenerationManager
+import com.rarilabs.rarime.manager.RegistrationManager
 import com.rarilabs.rarime.modules.passportScan.nfc.NfcUseCase
 import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel

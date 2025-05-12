@@ -1,6 +1,7 @@
-package com.rarilabs.rarime.api.erc20
+package com.rarilabs.rarime.manager
 
 
+import com.rarilabs.rarime.api.erc20.Erc20ApiManager
 import com.rarilabs.rarime.api.erc20.models.PermitHashRequest
 import com.rarilabs.rarime.api.erc20.models.TransferErc20Request
 import javax.inject.Inject

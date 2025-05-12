@@ -3,7 +3,6 @@ package com.rarilabs.rarime.modules.digitalLikeness
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.manager.LikenessManager
-import com.rarilabs.rarime.util.data.ZkProof
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -13,7 +12,7 @@ class DigitalLikenessViewModel @Inject constructor(
     private val likenessManager: LikenessManager
 ) : ViewModel() {
 
-    val isLivenessScanned = likenessManager.isScanned
+    val isRegistered = likenessManager.isRegistered
 
     val selectedRule = likenessManager.selectedRule
 
@@ -21,14 +20,12 @@ class DigitalLikenessViewModel @Inject constructor(
 
     val setSelectedRule = likenessManager::setSelectedRule
 
-    val setIsLivenessScanned = likenessManager::setIsLikenessScanned
-
     val faceImage = likenessManager.faceImage
     val saveFaceImage = likenessManager::saveFaceImage
 
     val downloadProgress = likenessManager.downloadProgress
 
-    suspend fun processImage(bitmap: Bitmap): ZkProof {
-        return likenessManager.livenessProofGeneration(bitmap = bitmap)
+    suspend fun processImage(bitmap: Bitmap) {
+        likenessManager.livenessProofGeneration(bitmap = bitmap)
     }
 }

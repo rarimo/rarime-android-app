@@ -1,17 +1,16 @@
-package com.rarilabs.rarime.api.registration
+package com.rarilabs.rarime.manager
 
 import RegisterIdentityCircuitType
 import android.util.Log
 import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
+import com.rarilabs.rarime.api.registration.RegistrationAPIManager
+import com.rarilabs.rarime.api.registration.UserAlreadyRevoked
 import com.rarilabs.rarime.api.registration.models.LightRegistrationData
 import com.rarilabs.rarime.api.registration.models.VerifySodResponse
 import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
 import com.rarilabs.rarime.contracts.rarimo.StateKeeper
 import com.rarilabs.rarime.data.enums.PassportStatus
-import com.rarilabs.rarime.manager.IdentityManager
-import com.rarilabs.rarime.manager.PassportManager
-import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
 import com.rarilabs.rarime.util.ErrorHandler

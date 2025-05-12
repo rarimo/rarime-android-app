@@ -86,7 +86,7 @@ class IdentityManager @Inject constructor(
     }
 
     fun getNullifierForFaceLikeness(): String {
-        return getProfiler().calculateEventNullifierInt(FaceRegistry.EVENT_ID)
+        return getProfiler().calculateEventNullifierHex(FaceRegistry.EVENT_ID)
     }
 
     fun getUserAirDropNullifierHex(): String {

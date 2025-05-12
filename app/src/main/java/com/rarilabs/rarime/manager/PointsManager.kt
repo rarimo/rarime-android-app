@@ -1,11 +1,11 @@
-package com.rarilabs.rarime.api.points
+package com.rarilabs.rarime.manager
 
 import android.content.Context
 import coil.network.HttpException
 import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.auth.AuthManager
+import com.rarilabs.rarime.api.points.PointsAPIManager
 import com.rarilabs.rarime.api.points.models.BaseEvents
 import com.rarilabs.rarime.api.points.models.ClaimEventBody
 import com.rarilabs.rarime.api.points.models.ClaimEventData
@@ -26,9 +26,6 @@ import com.rarilabs.rarime.api.points.models.WithdrawPayload
 import com.rarilabs.rarime.api.points.models.WithdrawPayloadAttributes
 import com.rarilabs.rarime.config.Keys
 import com.rarilabs.rarime.data.ProofTxFull
-import com.rarilabs.rarime.manager.IdentityManager
-import com.rarilabs.rarime.manager.PassportManager
-import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ErrorHandler

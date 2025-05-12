@@ -1,4 +1,4 @@
-package com.rarilabs.rarime.api.auth
+package com.rarilabs.rarime.manager
 
 import android.content.Context
 import android.util.Log
@@ -6,11 +6,11 @@ import com.auth0.android.jwt.JWT
 import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.auth.AuthAPIManager
 import com.rarilabs.rarime.api.auth.models.RequestAuthorizeBody
 import com.rarilabs.rarime.api.auth.models.RequestAuthorizeData
 import com.rarilabs.rarime.api.auth.models.RequestAuthorizeDataAttributes
 import com.rarilabs.rarime.api.auth.models.RequestAuthorizeResponseBody
-import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil

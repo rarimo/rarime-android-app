@@ -1,5 +1,6 @@
-package com.rarilabs.rarime.api.cosmos
+package com.rarilabs.rarime.manager
 
+import com.rarilabs.rarime.api.cosmos.CosmosAPIManager
 import javax.inject.Inject
 
 class CosmosManager @Inject constructor(
