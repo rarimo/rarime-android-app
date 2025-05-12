@@ -133,6 +133,7 @@ fun DigitalLikeness(
     val faceImage by viewModel.faceImage.collectAsState()
 
     val selectedState by viewModel.livenessState.collectAsState()
+    val errorState by viewModel.errorState.collectAsState()
 
     val downloadProgress by viewModel.downloadProgress.collectAsState()
 
@@ -148,6 +149,7 @@ fun DigitalLikeness(
         isRegistered,
         viewModel.saveFaceImage,
         livenessStatus = selectedState,
+        livenessError = errorState,
         processImage = viewModel::processImage,
         faceImage = faceImage,
         downloadProgress = downloadProgress
@@ -173,6 +175,7 @@ fun DigitalLikenessContent(
     saveFaceImage: (Bitmap) -> Unit,
     processImage: suspend (Bitmap) -> Unit,
     livenessStatus: LivenessProcessingStatus,
+    livenessError: LivenessProcessingStatus?,
     faceImage: Bitmap?,
     downloadProgress: Int
 ) {
@@ -211,6 +214,7 @@ fun DigitalLikenessContent(
                     downloadProgress = downloadProgress,
                     processing = processImage,
                     currentProcessingState = livenessStatus,
+                    currentProcessingError = livenessError,
                     selectedBitmap = selectedBitmap!!,
                     onNext = {
                         saveFaceImage(selectedBitmap!!)
@@ -742,6 +746,7 @@ private fun CreateIdentityDetailsPreview() {
             },
             faceImage = null,
             livenessStatus = LivenessProcessingStatus.DOWNLOADING,
+            livenessError = null,
             downloadProgress = 0
         )
     }

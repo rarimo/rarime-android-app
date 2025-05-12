@@ -10,6 +10,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.likeness.LikenessApiManager
 import com.rarilabs.rarime.contracts.rarimo.FaceRegistry
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.FileDownloaderInternal
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
@@ -27,6 +28,7 @@ import kotlinx.coroutines.withContext
 import org.web3j.utils.Numeric
 import java.io.File
 import java.math.BigInteger
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.pow
@@ -55,10 +57,10 @@ data class FaceRegistryNoInclusionInputs(
 )
 
 enum class LivenessProcessingStatus(val title: String) {
-    DOWNLOADING("Downloading circuit data"), EXTRACTING_FEATURES("Extracting image features"), RUNNING_ZKML(
-        "Running ZKML"
-    ),
-    FINSH("")
+    DOWNLOADING("Downloading circuit data"),
+    EXTRACTING_FEATURES("Extracting image features"),
+    RUNNING_ZKML("Running ZKML"),
+    FINISH(""),
 }
 
 @Singleton
@@ -69,6 +71,8 @@ class LikenessManager @Inject constructor(
     private val identityManager: IdentityManager,
     private val likenessApiManager: LikenessApiManager
 ) {
+    // To prevent a few livenessProofGeneration invoking
+    private val isGenerating = AtomicBoolean(false)
 
     private val zkeyFileName = "likeness.zkey"
 
@@ -77,6 +81,11 @@ class LikenessManager @Inject constructor(
     private val _isRegistered = MutableStateFlow(sharedPrefsManager.getLivenessProof() != null)
 
     private var _state = MutableStateFlow(LivenessProcessingStatus.DOWNLOADING)
+
+    private var _errorState = MutableStateFlow<LivenessProcessingStatus?>(null)
+
+    val errorState: StateFlow<LivenessProcessingStatus?>
+        get() = _errorState.asStateFlow()
 
     val state: StateFlow<LivenessProcessingStatus>
         get() = _state.asStateFlow()
@@ -233,7 +242,7 @@ class LikenessManager @Inject constructor(
         val file =
             fileDownloader.downloadFileBlocking(BaseConfig.FACE_REGISTRY_ZKEY_URL, zkeyFileName) {
                 if (_downloadProgress.value != it) {
-                    Log.i("Proggress", it.toString())
+                    Log.i("Progress", it.toString())
                     _downloadProgress.value = it
                 }
             }
@@ -244,60 +253,70 @@ class LikenessManager @Inject constructor(
 
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun livenessProofGeneration(bitmap: Bitmap) {
-
-        _state.value = LivenessProcessingStatus.DOWNLOADING
-
-        val file =
-            //File("/data/data/com.rarilabs.rarime/files/likeness.zkey")//
-            downloadLivenessZkey()
-
-        _state.value = LivenessProcessingStatus.EXTRACTING_FEATURES
-
-        val bionetAnalizer = BionetAnalizer()
-
-
-        val address =
-            BigInteger(Numeric.hexStringToByteArray(identityManager.getNullifierForFaceLikeness()))
-
-        val preparedImage = bionetAnalizer.getPreparedInputForML(bitmap)!!
-
-        val faceContract = rarimoContractManager.getFaceRegistry()
-
-        val isAlreadyRegistered = withContext(Dispatchers.IO) {
-            faceContract.isUserRegistered(address).send()
-        }
-
-        if (isAlreadyRegistered) {
-            Log.i("Likeness", "Already registered")
+        if (!isGenerating.compareAndSet(false, true)) {
+            Log.i("Likeness", "livenessProofGeneration is already processing")
             return
         }
+        try {
+            _errorState.value = null
+            _state.value = LivenessProcessingStatus.DOWNLOADING
 
-        val nonce = withContext(Dispatchers.IO) {
-            faceContract.getVerificationNonce(address).send().toString()
-        }
+            // TODO: Restore option I
+            val file =
+                // Option I
+                downloadLivenessZkey()
+            // Option II
+            // File("/data/data/com.rarilabs.rarime/files/likeness.zkey")
 
-        val assetContext: Context = application.createPackageContext("com.rarilabs.rarime", 0)
-        val assetManager = assetContext.assets
+            _state.value = LivenessProcessingStatus.EXTRACTING_FEATURES
 
-        val zkp = ZKPUseCase(application, assetManager)
-
-        val tfLite = RunTFLiteFeatureExtractorUseCase(
-            context = application, modelName = "bio_net_v3.tflite"
-        )
-
-        val features = tfLite.invoke(preparedImage)
-
-        val quantizedFeatures = features.map { (it * 2.0.pow(15.0)).toInt().toString() }
-
-        val quantizedImage =
-            listOf(preparedImage.map { it.map { it2 -> (it2 * 2.0.pow(15.0)).toInt().toString() } })
-
-        _state.value = LivenessProcessingStatus.RUNNING_ZKML
+            val bionetAnalizer = BionetAnalizer()
 
 
-        val inputs =
+            val address =
+                BigInteger(Numeric.hexStringToByteArray(identityManager.getNullifierForFaceLikeness()))
 
-            LivenessInputs(
+            val preparedImage = bionetAnalizer.getPreparedInputForML(bitmap)!!
+
+            val faceContract = rarimoContractManager.getFaceRegistry()
+
+            val isAlreadyRegistered = withContext(Dispatchers.IO) {
+                faceContract.isUserRegistered(address).send()
+            }
+
+            if (isAlreadyRegistered) {
+                Log.i("Likeness", "Already registered")
+                return
+            }
+
+            val nonce = withContext(Dispatchers.IO) {
+                faceContract.getVerificationNonce(address).send().toString()
+            }
+
+            val assetContext: Context = application.createPackageContext("com.rarilabs.rarime", 0)
+            val assetManager = assetContext.assets
+
+            val zkp = ZKPUseCase(application, assetManager)
+
+            val tfLite = RunTFLiteFeatureExtractorUseCase(
+                context = application, modelName = "bio_net_v3.tflite"
+            )
+
+            val features = tfLite.invoke(preparedImage)
+
+            val quantizedFeatures = features.map { (it * 2.0.pow(15.0)).toInt().toString() }
+
+            val quantizedImage =
+                listOf(preparedImage.map {
+                    it.map { it2 ->
+                        (it2 * 2.0.pow(15.0)).toInt().toString()
+                    }
+                })
+
+            _state.value = LivenessProcessingStatus.RUNNING_ZKML
+
+
+            val inputs = LivenessInputs(
                 image = quantizedImage,
                 features = quantizedFeatures,
                 address = address.toString(),
@@ -305,40 +324,46 @@ class LikenessManager @Inject constructor(
                 nonce = nonce
             )
 
-        Log.i("Inputs", GsonBuilder().setPrettyPrinting().create().toJson(inputs))
+            Log.i("Inputs", GsonBuilder().setPrettyPrinting().create().toJson(inputs))
 
-        withContext(Dispatchers.Default) {
+            withContext(Dispatchers.Default) {
 
-            val zkproof = zkp.bioent(
-                zkeyFilePath = file.absolutePath,
-                zkeyFileLen = file.length(),
-                inputs = Gson().toJson(inputs)
-            )
-
-
-            Log.i("Tag", GsonBuilder().setPrettyPrinting().create().toJson(zkproof))
+                val zkproof = zkp.bioent(
+                    zkeyFilePath = file.absolutePath,
+                    zkeyFileLen = file.length(),
+                    inputs = Gson().toJson(inputs)
+                )
 
 
-            val callDataBuilder = CallDataBuilder()
-            val callData =
-                callDataBuilder.buildFaceRegistryRegisterUser(Gson().toJson(zkproof).toByteArray())
+                Log.i("Tag", GsonBuilder().setPrettyPrinting().create().toJson(zkproof))
 
 
-            val response = likenessApiManager.likenessRegistry("0x" + callData.toHexString())
+                val callDataBuilder = CallDataBuilder()
+                val callData =
+                    callDataBuilder.buildFaceRegistryRegisterUser(
+                        Gson().toJson(zkproof).toByteArray()
+                    )
 
-            val isSuccessful =
-                rarimoContractManager.checkIsTransactionSuccessful(response.data.attributes.tx_hash)
+                val response = likenessApiManager.likenessRegistry("0x" + callData.toHexString())
 
-            if (!isSuccessful) {
-                throw Exception("cant send registration")
+                val isSuccessful =
+                    rarimoContractManager.checkIsTransactionSuccessful(response.data.attributes.tx_hash)
+
+                if (!isSuccessful) {
+                    throw Exception("cant send registration")
+                }
+
+                sharedPrefsManager.saveLivenessProof(zkproof)
+
+                changeLikenessRule(_selectedRule.value!!)
+
+
+                _state.value = LivenessProcessingStatus.FINISH
             }
-
-            sharedPrefsManager.saveLivenessProof(zkproof)
-
-            changeLikenessRule(_selectedRule.value!!)
-
-
-            _state.value = LivenessProcessingStatus.FINSH
+        } catch (e: Exception) {
+            ErrorHandler.logError("livenessProofGeneration error", e.message.toString())
+            _errorState.value = _state.value
+            isGenerating.set(false)
         }
 
     }
