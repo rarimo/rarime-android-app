@@ -28,7 +28,6 @@ import kotlinx.coroutines.withContext
 import org.web3j.utils.Numeric
 import java.io.File
 import java.math.BigInteger
-import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.pow
@@ -71,9 +70,6 @@ class LikenessManager @Inject constructor(
     private val identityManager: IdentityManager,
     private val likenessApiManager: LikenessApiManager
 ) {
-    // To prevent a few livenessProofGeneration invoking
-    private val isGenerating = AtomicBoolean(false)
-
     private val zkeyFileName = "likeness.zkey"
 
     private val _selectedRule = MutableStateFlow(sharedPrefsManager.getSelectedLikenessRule())
@@ -236,27 +232,26 @@ class LikenessManager @Inject constructor(
         }
     }
 
+    private val fileDownloader = FileDownloaderInternal(application)
+
     private suspend fun downloadLivenessZkey(): File {
-        val fileDownloader = FileDownloaderInternal(application)
+        fileDownloader.cancel()
+        _downloadProgress.value = 0
 
-        val file =
-            fileDownloader.downloadFileBlocking(BaseConfig.FACE_REGISTRY_ZKEY_URL, zkeyFileName) {
-                if (_downloadProgress.value != it) {
-                    Log.i("Progress", it.toString())
-                    _downloadProgress.value = it
-                }
+        return fileDownloader.downloadFileBlocking(
+            BaseConfig.FACE_REGISTRY_ZKEY_URL,
+            zkeyFileName
+        ) { progress ->
+            if (_downloadProgress.value != progress) {
+                Log.i("Progress", progress.toString())
+                _downloadProgress.value = progress
             }
-
-        return file
+        }
     }
 
 
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun livenessProofGeneration(bitmap: Bitmap) {
-        if (!isGenerating.compareAndSet(false, true)) {
-            Log.i("Likeness", "livenessProofGeneration is already processing")
-            return
-        }
         try {
             _errorState.value = null
             _state.value = LivenessProcessingStatus.DOWNLOADING
@@ -363,7 +358,6 @@ class LikenessManager @Inject constructor(
         } catch (e: Exception) {
             ErrorHandler.logError("livenessProofGeneration error", e.message.toString())
             _errorState.value = _state.value
-            isGenerating.set(false)
         }
 
     }
