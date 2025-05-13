@@ -356,6 +356,8 @@ class LikenessManager @Inject constructor(
 
                 changeLikenessRule(_selectedRule.value!!)
 
+                _selectedRule.value = _selectedRule.value
+                _isRegistered.value = true
 
                 _state.value = LivenessProcessingStatus.FINISH
             }
