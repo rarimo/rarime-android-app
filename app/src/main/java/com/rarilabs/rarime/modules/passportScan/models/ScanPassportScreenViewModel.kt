@@ -1,12 +1,12 @@
 package com.rarilabs.rarime.modules.passportScan.models
 
 import androidx.lifecycle.ViewModel
-import com.rarilabs.rarime.api.points.PointsManager
-import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.api.registration.models.LightRegistrationData
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
+import com.rarilabs.rarime.manager.PointsManager
+import com.rarilabs.rarime.manager.RegistrationManager
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.data.ZkProof

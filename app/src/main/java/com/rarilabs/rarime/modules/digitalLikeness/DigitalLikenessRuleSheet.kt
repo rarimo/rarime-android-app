@@ -72,20 +72,20 @@ fun DigitalLikenessRuleSheet(
 
     val rules = listOf(
         RuleOptionData(
-            isSelected = LikenessRule.ALWAYS_ALLOW == localSelectedRule,
-            type = LikenessRule.ALWAYS_ALLOW,
+            isSelected = LikenessRule.USE_AND_PAY == localSelectedRule,
+            type = LikenessRule.USE_AND_PAY,
             title = "Use my likeness\nand pay me",
             badgeText = "Soon",
             iconRes = R.drawable.ic_money_dollar_circle_line
         ), RuleOptionData(
-            isSelected = LikenessRule.REJECT == localSelectedRule,
-            type = LikenessRule.REJECT,
+            isSelected = LikenessRule.NOT_USE == localSelectedRule,
+            type = LikenessRule.NOT_USE,
             title = "Don’t use my\nface at all",
             badgeText = "Soon",
             iconRes = R.drawable.ic_subtract_fill
         ), RuleOptionData(
-            isSelected = LikenessRule.ASK_EVERYTIME == localSelectedRule,
-            type = LikenessRule.ASK_EVERYTIME,
+            isSelected = LikenessRule.ASK_FIRST == localSelectedRule,
+            type = LikenessRule.ASK_FIRST,
             title = "Ask me\nfirst",
             badgeText = "Soon",
             iconRes = R.drawable.ic_question
@@ -244,7 +244,7 @@ fun RuleOptionPreview() {
     RuleOption(
         item = RuleOptionData(
             isSelected = false,
-            type = LikenessRule.ALWAYS_ALLOW,
+            type = LikenessRule.ASK_FIRST,
             title = "Use my likeness\nand pay me.",
             badgeText = "Soon",
             iconRes = R.drawable.ic_money_dollar_circle_line
@@ -257,6 +257,6 @@ fun DigitalLikenessRuleSheetPreview() {
     val ruleSheetState = rememberAppSheetState(true)
     DigitalLikenessRuleSheet(
         ruleSheetState,
-        selectedRule = LikenessRule.ALWAYS_ALLOW,
+        selectedRule = LikenessRule.ASK_FIRST,
         onSave = { ruleSheetState.hide() })
 }

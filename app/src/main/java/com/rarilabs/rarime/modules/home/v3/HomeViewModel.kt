@@ -3,13 +3,13 @@ package com.rarilabs.rarime.modules.home.v3
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.points.models.BaseEvents
 import com.rarilabs.rarime.api.points.models.PointsEventData
-import com.rarilabs.rarime.api.voting.VotingManager
 import com.rarilabs.rarime.api.voting.models.Poll
 import com.rarilabs.rarime.manager.NotificationManager
 import com.rarilabs.rarime.manager.PassportManager
+import com.rarilabs.rarime.manager.PointsManager
+import com.rarilabs.rarime.manager.VotingManager
 import com.rarilabs.rarime.manager.WalletManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

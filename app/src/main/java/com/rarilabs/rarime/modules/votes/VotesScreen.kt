@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -97,9 +98,10 @@ fun VotesScreen(
 
     val props = DetailsProperties(
         id = id,
-        header = "Freedomtool",
-        subTitle = "Voting",
+        header = stringResource(R.string.freedomtool),
+        subTitle = stringResource(R.string.voting),
         imageId = R.drawable.freedomtool_bg,
+        imageModifier = Modifier.padding(horizontal = 50.dp),
         backgroundGradient = Brush.linearGradient(
             colors = listOf(
                 Color(0xFFD5FEC8),
@@ -184,7 +186,7 @@ fun VotesScreenContent(
             sharedTransitionScope = sharedTransitionScope,
             animatedContentScope = animatedContentScope,
             onBack = onBack,
-            footer = {
+            body = {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(24.dp),
                 ) {
@@ -193,7 +195,6 @@ fun VotesScreenContent(
                         color = RarimeTheme.colors.baseBlackOp50,
                         text = "An identification and privacy solution that revolutionizes polling, surveying and election processes"
                     )
-
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -358,6 +359,7 @@ private fun VotesScreenPreview() {
                 header = "Freedomtool",
                 subTitle = "Voting",
                 imageId = R.drawable.freedomtool_bg,
+                imageModifier = Modifier,
                 backgroundGradient = Brush.linearGradient(
                     colors = listOf(
                         Color(0xFFD5FEC8),

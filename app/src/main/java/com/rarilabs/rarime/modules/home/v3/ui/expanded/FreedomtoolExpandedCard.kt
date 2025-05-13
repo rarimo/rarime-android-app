@@ -200,7 +200,6 @@ private fun Header(
                 .fillMaxWidth()
                 .padding(
                     top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp,
-                    bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp
                 )
                 .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.End

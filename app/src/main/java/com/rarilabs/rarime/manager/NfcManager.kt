@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
-import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

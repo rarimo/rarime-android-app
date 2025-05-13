@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.api.auth
 
+import com.rarilabs.rarime.manager.AuthManager
 import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor

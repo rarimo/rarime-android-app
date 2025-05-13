@@ -83,6 +83,7 @@ fun BaseTextButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
             )
         }
+        content()
         rightIcon?.let {
             AppIcon(
                 id = it,
@@ -91,7 +92,7 @@ fun BaseTextButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
             )
         }
-        content()
+
     }
 }
 

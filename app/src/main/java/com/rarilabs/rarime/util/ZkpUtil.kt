@@ -2,7 +2,9 @@ package com.rarilabs.rarime.util
 
 import android.content.Context
 import android.content.res.AssetManager
+import android.util.Log
 import com.google.gson.Gson
+import com.rarilabs.bionet.Bionet
 import com.rarilabs.rarime.util.ZkpUtil.groth16InternalStorage
 import com.rarilabs.rarime.util.ZkpUtil.groth16ProverBig
 import com.rarilabs.rarime.util.data.Proof
@@ -51,6 +53,17 @@ object ZkpUtil {
 
 
     external fun auth(
+        circuitBuffer: ByteArray,
+        circuitSize: Long,
+        jsonBuffer: ByteArray,
+        jsonSize: Long,
+        wtnsBuffer: ByteArray,
+        wtnsSize: LongArray,
+        errorMsg: ByteArray,
+        errorMsgMaxSize: Long
+    ): Int
+
+    external fun faceRegistryNoInclusion(
         circuitBuffer: ByteArray,
         circuitSize: Long,
         jsonBuffer: ByteArray,
@@ -459,7 +472,6 @@ object ZkpUtil {
     ): Int
 
 
-
     external fun registerIdentityLight160(
         datFilePath: String,
         datFileLen: Long,
@@ -523,6 +535,99 @@ object ZkpUtil {
 }
 
 class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
+
+
+    fun bioent(
+        zkeyFilePath: String,
+        zkeyFileLen: Long,
+        inputs: String
+    ): ZkProof {
+
+        val errBuf = ByteArray(256)
+
+        val bionet = Bionet()
+
+
+        val startProofGen = System.currentTimeMillis() / 1000
+
+        val wtnsData = bionet.bionetAndroid(
+            inputs
+        ) ?: throw ZkpException("Input is bad")
+
+        val endProofGen = System.currentTimeMillis() / 1000
+        Log.i("Wtn", "Wtn generation took ${endProofGen - startProofGen} seconds")
+
+        val pubData = ByteArray(2 * 1024 * 1024)
+
+
+        val pubLen = LongArray(1)
+        pubLen[0] = pubData.size.toLong()
+
+        val proofData = ByteArray(2 * 1024 * 1024)
+        val proofLen = LongArray(1)
+        proofLen[0] = proofData.size.toLong()
+
+
+        val startVerification = System.currentTimeMillis() / 1000
+
+        val verification = groth16InternalStorage(
+            zkeyFilePath,
+            zkeyFileLen,
+            wtnsData,
+            wtnsData.size.toLong(),
+            proofData,
+            proofLen,
+            pubData,
+            pubLen,
+            errBuf,
+            256
+        )
+
+        val endVerification = System.currentTimeMillis() / 1000
+        Log.i("groth16", "Verification took ${endVerification - startVerification} seconds")
+
+
+        if (verification == -2) {
+            throw ZkpException("Error during zkp: file reading failure")
+        }
+
+        if (verification == -1) {
+            throw ZkpException("Error during zkp: file opening failure")
+        }
+
+        if (verification == 2) {
+            throw ZkpException("Not enough memory for verification ${errBuf.decodeToString()}")
+        }
+
+        if (verification == 3) {
+            throw ZkpException("Error during verification with code 3 ${errBuf.decodeToString()}")
+        }
+
+        if (verification == 1) {
+            throw ZkpException("Error during verification ${errBuf.decodeToString()}")
+        }
+
+
+        val proofDataZip = proofData.copyOfRange(0, proofLen[0].toInt())
+
+        val index = findLastIndexOfSubstring(
+            proofDataZip.toString(Charsets.UTF_8), "\"protocol\":\"groth16\"}"
+        )
+        val indexPubData = findLastIndexOfSubstring(
+            pubData.decodeToString(), "]"
+        )
+
+        val formatedPubData = pubData.decodeToString().slice(0..indexPubData)
+
+        val foramtedProof = proofDataZip.toString(Charsets.UTF_8).slice(0..index)
+        val proof = Proof.fromJson(foramtedProof)
+
+        return ZkProof(
+            proof = proof, pub_signals = getPubSignals(formatedPubData).toList()
+        )
+    }
+
+
     fun generateRegisterZKP(
         zkeyFilePath: String,
         zkeyFileLen: Long,

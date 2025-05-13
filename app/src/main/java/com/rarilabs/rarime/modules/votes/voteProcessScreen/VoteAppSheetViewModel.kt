@@ -1,12 +1,12 @@
 package com.rarilabs.rarime.modules.votes.voteProcessScreen
 
 import androidx.lifecycle.ViewModel
-import com.rarilabs.rarime.api.registration.RegistrationManager
-import com.rarilabs.rarime.api.voting.VotingManager
 import com.rarilabs.rarime.api.voting.models.Poll
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
+import com.rarilabs.rarime.manager.RegistrationManager
 import com.rarilabs.rarime.manager.SettingsManager
+import com.rarilabs.rarime.manager.VotingManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

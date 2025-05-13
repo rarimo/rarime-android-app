@@ -12,9 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.rarilabs.rarime.api.voting.VoteError
 import com.rarilabs.rarime.api.voting.models.PollResult
 import com.rarilabs.rarime.api.voting.models.UserInPoll
+import com.rarilabs.rarime.manager.VoteError
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppSheetState
 import com.rarilabs.rarime.util.ErrorHandler

@@ -11,6 +11,8 @@ set(NORMAL_LIB_FILES
         librapidsnark.so
         libwitnesscalc_queryIdentity.so
         libwitnesscalc_auth.so
+        libwitnesscalc_faceRegistryNoInclusion.so
+
         libwitnesscalc_registerIdentity_1_256_3_5_576_248_NA.so
         libwitnesscalc_registerIdentity_1_256_3_6_576_248_1_2432_5_296.so
         libwitnesscalc_registerIdentity_2_256_3_6_336_264_21_2448_6_2008.so
@@ -63,8 +65,12 @@ set(LIGHT_LIB_FILES
 function(import_lib_normal filename)
     get_filename_component(name ${filename} NAME_WE)
     add_library(${name} SHARED IMPORTED)
-    set_target_properties(${name} PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/lib/${filename})
+    set_target_properties(${name} PROPERTIES
+            IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/lib/${filename}"
+            IMPORTED_SONAME "${filename}"
+    )
     list(APPEND LIB_TARGETS ${name})
+
     set(LIB_TARGETS ${LIB_TARGETS} PARENT_SCOPE)
 endfunction()
 

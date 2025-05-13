@@ -1,10 +1,12 @@
 package com.rarilabs.rarime.modules.home.v3
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,10 +27,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
@@ -66,10 +71,14 @@ fun HomeScreenV3(
     val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
     val notifications by viewModel.notifications.collectAsState()
     val hasVotes by viewModel.hasVotes.collectAsState()
-    val pointsBalance by viewModel.pointsToken.collectAsState()
-    val currentPointsBalance = pointsBalance?.balanceDetails?.attributes?.amount
+    val pointsBalance by viewModel.pointsEventData.collectAsState()
+    val currentPointsBalance = pointsBalance?.attributes?.balance?.attributes?.amount
     val notificationsCount by remember(notifications) {
         derivedStateOf { notifications.count { it.isActive } }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.initHomeData()
     }
 
     val visibleCards = remember(hasVotes) {
@@ -126,15 +135,15 @@ fun HomeScreenContent(
     val pagerState = rememberPagerState(pageCount = { visibleCards.size })
 
     Box(modifier = modifier) {
-        AnimatedContent(selectedCardType) { targetCardType ->
-            // Temporarily disable pager scrolling while the expand/collapse animation runs
-            var pagerScrollEnabled by remember { mutableStateOf(true) }
-            LaunchedEffect(selectedCardType) {
-                pagerScrollEnabled = false
-                delay((ANIMATION_DURATION_MS + 100).toLong())
-                pagerScrollEnabled = true
-            }
+        // Temporarily disable pager scrolling while the expand/collapse animation runs
+        var pagerScrollEnabled by remember { mutableStateOf(true) }
+        LaunchedEffect(selectedCardType) {
+            pagerScrollEnabled = false
+            delay((ANIMATION_DURATION_MS + 200).toLong())
+            pagerScrollEnabled = true
+        }
 
+        AnimatedContent(selectedCardType) { targetCardType ->
             if (targetCardType == null) {
                 Column(
                     modifier = Modifier.padding(
@@ -232,6 +241,10 @@ fun HomeScreenContent(
 
             } else {
                 // Expanded: one card is visible on top
+                BackHandler {
+                    selectedCardType = null
+                }
+
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopCenter)
@@ -279,6 +292,23 @@ fun HomeScreenContent(
                     }
                 }
             }
+        }
+
+        // Overlay which temporarily disable pager scrolling while the expand/collapse animation runs
+        if (!pagerScrollEnabled) {
+            Box(
+                modifier = Modifier
+                    .background(Color.Transparent)
+                    .zIndex(200f)
+                    .matchParentSize()
+                    .pointerInput(Unit) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                awaitPointerEvent()
+                            }
+                        }
+                    }
+            )
         }
     }
 }

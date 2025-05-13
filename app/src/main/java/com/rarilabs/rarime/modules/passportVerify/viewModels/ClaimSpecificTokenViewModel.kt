@@ -1,7 +1,7 @@
 package com.rarilabs.rarime.modules.passportVerify.viewModels
 
 import androidx.lifecycle.ViewModel
-import com.rarilabs.rarime.api.airdrop.AirDropManager
+import com.rarilabs.rarime.manager.AirDropManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

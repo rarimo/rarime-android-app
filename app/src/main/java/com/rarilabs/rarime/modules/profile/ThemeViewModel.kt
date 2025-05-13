@@ -12,7 +12,10 @@ class ThemeViewModel @Inject constructor(
 ) : ViewModel() {
     fun onColorSchemeChange(scheme: AppColorScheme) {
         settingsManager.updateColorScheme(scheme)
+
+
     }
+
 
     val colorScheme = settingsManager.colorScheme
 }

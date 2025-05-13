@@ -237,6 +237,7 @@ class RarimeColors(
     var additionalGreen by mutableStateOf(additionalGreen, structuralEqualityPolicy())
         internal set
 
+
     fun copy(
         primaryDarker: Color = this.primaryDarker,
         primaryDark: Color = this.primaryDark,
@@ -384,6 +385,10 @@ class RarimeColors(
         this.successMain = other.successMain
         this.successLight = other.successLight
         this.successLighter = other.successLighter
+        this.infoDarker = other.infoDarker
+        this.infoMain = other.infoMain
+        this.infoLighter = other.infoLighter
+        this.infoLight = other.infoLight
         this.errorDarker = other.errorDarker
         this.infoDarker = other.infoDarker
         this.infoMain = other.infoMain
