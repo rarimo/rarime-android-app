@@ -78,7 +78,7 @@ fun DigitalLikenessCamera(
         try {
             cameraProvider.unbindAll()
             cameraProvider.bindToLifecycle(
-                lifecycleOwner, CameraSelector.DEFAULT_BACK_CAMERA, previewUseCase
+                lifecycleOwner, CameraSelector.DEFAULT_FRONT_CAMERA, previewUseCase
             )
         } catch (e: Exception) {
             e.printStackTrace()

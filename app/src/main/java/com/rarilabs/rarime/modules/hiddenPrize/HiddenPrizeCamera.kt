@@ -53,6 +53,7 @@ import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 
@@ -99,7 +100,7 @@ fun HiddenPrizeCamera(
                 lifecycleOwner, CameraSelector.DEFAULT_BACK_CAMERA, previewUseCase
             )
         } catch (e: Exception) {
-            e.printStackTrace()
+            ErrorHandler.logError("CameraError",e.toString())
         }
 
         val analysisUseCase =
@@ -217,7 +218,7 @@ fun HiddenPrizeCamera(
 
         }
 
-        //CameraMask()
+
 
         Column(
             modifier = Modifier
@@ -266,7 +267,7 @@ fun HiddenPrizeCamera(
                             size = ButtonSize.Large,
                             leftIcon = R.drawable.ic_restart_line,
                             onClick = {
-                                // Unfreeze: clear captured frame
+
                                 selectedBitmap = null
                             },
                         )
@@ -278,19 +279,10 @@ fun HiddenPrizeCamera(
                             size = ButtonSize.Large,
                             text = "Continue",
                             onClick = {
-//                                val density = context.resources.displayMetrics.density
-//                                val horizontalPaddingPx = 50f * density
-//                                val topPaddingPx = 200f * density
+
 
                                 onNext(selectedBitmap!!)
 
-//                                    cropBitmapToOval(
-//                                    src = selectedBitmap!!,
-//                                    aspectRatio = 395f / 290f,
-//                                    horizontalPaddingPx = horizontalPaddingPx,
-//                                    topPaddingPx = topPaddingPx
-//                                )
-                                //onNext(bitmap)
                             })
                     }
                 }
@@ -328,37 +320,7 @@ private fun CameraMask(
     }
 }
 
-//
-//@SuppressLint("UseKtx")
-//fun cropBitmapToOval(
-//    src: Bitmap,
-//    aspectRatio: Float = 395f / 290f,
-//    horizontalPaddingPx: Float = 50f,
-//    topPaddingPx: Float = 200f
-//): Bitmap {
-//    val w = src.width
-//    val h = src.height
-//
-//    val output = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-//    val canvas = Canvas(output)
-//    val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-//
-//    canvas.drawBitmap(src, 0f, 0f, paint)
-//
-//    val ovalW = w - 2f * horizontalPaddingPx
-//    val ovalH = ovalW * aspectRatio
-//    val rectF = RectF(
-//        horizontalPaddingPx, topPaddingPx, horizontalPaddingPx + ovalW, topPaddingPx + ovalH
-//    )
-//    val maskPath = Path().apply {
-//        addOval(rectF, Path.Direction.CW)
-//    }
-//    paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
-//    canvas.drawPath(maskPath, paint)
-//    paint.xfermode = null
-//
-//    return output
-//}
+
 
 @Composable
 fun BoxWithRectBorder(rect: android.graphics.Rect) {
