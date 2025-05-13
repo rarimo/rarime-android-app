@@ -155,6 +155,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.view)
+    implementation(libs.face.mesh.detection)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

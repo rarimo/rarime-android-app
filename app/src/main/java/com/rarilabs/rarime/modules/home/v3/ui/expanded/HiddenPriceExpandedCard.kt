@@ -2,6 +2,7 @@
 
 package com.rarilabs.rarime.modules.home.v3.ui.expanded
 
+import android.Manifest
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -51,9 +52,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.voting.models.Poll
+import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeCamera
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BG_DOT_MAP_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
@@ -63,6 +68,7 @@ import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
+import com.rarilabs.rarime.modules.qr.ScanQrProcessorContent
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
 import com.rarilabs.rarime.modules.votes.ActiveVotesList
 import com.rarilabs.rarime.modules.votes.HistoryVotesList
@@ -71,6 +77,7 @@ import com.rarilabs.rarime.modules.votes.VotesScreenViewModel
 import com.rarilabs.rarime.modules.votes.voteProcessScreen.VotingAppSheet
 import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
+import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
@@ -81,6 +88,7 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun HiddenPriceExpandedCard(
     modifier: Modifier = Modifier,
@@ -101,27 +109,43 @@ fun HiddenPriceExpandedCard(
         selectedPoll = selectedPoll
     )
 
-    var showQrScan by remember { mutableStateOf(false) }
-    if (showQrScan) {
-        ScanQrScreen(
-            innerPaddings = innerPaddings,
-            onBack = { showQrScan = false },
-            onScan = {
-                mainViewModel.setExtIntDataURI(it.toUri())
-                showQrScan = false
-            }
-        )
-    } else {
-        HiddenPriceExpandedCardContent(
-            cardProps = expandedCardProps,
-            modifier = modifier,
-            innerPaddings = innerPaddings,
-            onScan = { showQrScan = true },
-            onAddScan = {
-                //TODO
-            }
-        )
+    val showQrScan = rememberAppSheetState()
+    val cameraPermissionState = rememberPermissionState(
+        Manifest.permission.CAMERA
+    )
+
+
+    AppBottomSheet(state = showQrScan) {
+
+
+        HiddenPrizeCamera {
+
+
+        }
+
     }
+
+
+
+
+
+    HiddenPriceExpandedCardContent(
+        cardProps = expandedCardProps,
+        modifier = modifier,
+        innerPaddings = innerPaddings,
+        onScan = {
+            if (!cameraPermissionState.status.isGranted)
+                cameraPermissionState.launchPermissionRequest()
+            if (cameraPermissionState.status.isGranted) {
+
+                showQrScan.show()
+            }
+        },
+        onAddScan = {
+            //TODO
+        }
+    )
+
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
