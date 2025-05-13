@@ -28,6 +28,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
@@ -68,6 +69,7 @@ import com.rarilabs.rarime.modules.votes.HistoryVotesList
 import com.rarilabs.rarime.modules.votes.VotesLoadingSkeleton
 import com.rarilabs.rarime.modules.votes.VotesScreenViewModel
 import com.rarilabs.rarime.modules.votes.voteProcessScreen.VotingAppSheet
+import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
@@ -139,6 +141,10 @@ fun HiddenPriceExpandedCardContent(
                         state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
                         animatedVisibilityScope = animatedVisibilityScope,
                         boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) }
+                    )
+                    .padding(
+                        top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp,
+                        bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp
                     ),
                 header = {
                     Header(
@@ -266,7 +272,6 @@ private fun Footer(
 
             Column(
                 modifier = Modifier
-                    .padding(horizontal = 20.dp)
                     .padding(bottom = 20.dp)
                     .sharedBounds(
                         rememberSharedContentState(HomeSharedKeys.footer(layoutId)),
@@ -279,31 +284,43 @@ private fun Footer(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom
             ) {
-
-                PrimaryButton(
+                BaseButton(
                     modifier = Modifier
                         .height(56.dp)
                         .fillMaxWidth(),
-                    size = ButtonSize.Large,
-                    onClick = onScan
-                ){
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = RarimeTheme.colors.baseBlack,
+                        contentColor = RarimeTheme.colors.baseWhite,
+                        disabledContainerColor = RarimeTheme.colors.componentDisabled,
+                        disabledContentColor = RarimeTheme.colors.textDisabled
+                    ),
+                    size = ButtonSize.Large, onClick = onScan
+
+                ) {
                     AppIcon(id = R.drawable.ic_user_focus)
-                    Text("Scan a Celebrity")
+                    Text(text = "Scan a Celebrity")
                     VerticalDivider(modifier = Modifier.height(24.dp))
                     Text("3/3")
                 }
+
                 Spacer(modifier = Modifier.height(8.dp))
                 TransparentButton(
                     modifier = Modifier
                         .height(56.dp)
                         .fillMaxWidth(),
                     size = ButtonSize.Large,
-                    onClick = onAddScan
-                ){
+                    onClick = onAddScan,
+                    //leftIcon = R.drawable.ic_flashlight_fill
+                ) {
 
-                    AppIcon(id = R.drawable.ic_flashlight_fill,
-                        tint =Color(0xFF9D4EDD))//TODO: Sync with theme
-                    Text("Get a additional Scan")
+                    AppIcon(
+                        id = R.drawable.ic_flashlight_fill,
+                        tint = Color(0xFF9D4EDD)
+                    )//TODO: Sync with theme
+                    Text(
+                        text = "Get a additional Scan",
+                        color = RarimeTheme.colors.baseBlack
+                    )
                 }
 
             }

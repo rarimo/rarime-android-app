@@ -119,7 +119,7 @@ private fun Header(
                 .fillMaxWidth()
         ) {
             BaseCardLogo(
-                resId = R.drawable.ic_check_unframed,
+                resId = R.drawable.ic_rarime,
                 backgroundColor = Color.Transparent,
                 size = 58,
                 tint = RarimeTheme.colors.baseBlackOp40,
