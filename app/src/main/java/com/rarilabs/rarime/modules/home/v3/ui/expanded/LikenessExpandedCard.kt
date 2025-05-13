@@ -57,6 +57,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.manager.LikenessRule
+import com.rarilabs.rarime.manager.LivenessProcessingStatus
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessCamera
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessProcessing
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessRuleSheet
@@ -99,8 +100,16 @@ fun LikenessExpandedCard(
     viewModel: DigitalLikenessViewModel = hiltViewModel()
 ) {
     val selectedRule by viewModel.selectedRule.collectAsState()
-    val isScanned by viewModel.isLivenessScanned.collectAsState()
+    val isRegistered by viewModel.isRegistered.collectAsState()
+
     val faceImage by viewModel.faceImage.collectAsState()
+
+    val livenessState by viewModel.livenessState.collectAsState()
+    val errorState by viewModel.errorState.collectAsState()
+
+    val downloadProgress by viewModel.downloadProgress.collectAsState()
+
+    val scope = rememberCoroutineScope()
 
     LikenessExpandedCardContent(
         modifier = modifier,
@@ -108,11 +117,21 @@ fun LikenessExpandedCard(
         innerPaddings = innerPaddings,
         navigate = navigate,
         selectedRule = selectedRule,
-        setSelectedRule = viewModel.setSelectedRule,
-        isScanned = isScanned,
-        setIsScanned = viewModel.setIsLivenessScanned,
+        setSelectedRule = {
+            scope.launch {
+                viewModel.setSelectedRule(it)
+            }
+        },
+        isRegistered = isRegistered,
+        setIsScanned = {
+
+        },
         saveFaceImage = viewModel.saveFaceImage,
-        faceImage = faceImage
+        faceImage = faceImage,
+        downloadProgress = downloadProgress,
+        processImage = viewModel::processImage,
+        livenessStatus = livenessState,
+        livenessError = errorState
     )
 }
 
@@ -128,11 +147,15 @@ fun LikenessExpandedCardContent(
     innerPaddings: Map<ScreenInsets, Number>,
     navigate: (String) -> Unit,
     selectedRule: LikenessRule?,
-    setSelectedRule: (LikenessRule) -> Unit,
-    isScanned: Boolean,
+    setSelectedRule: suspend (LikenessRule) -> Unit,
+    isRegistered: Boolean,
     setIsScanned: (Boolean) -> Unit,
     saveFaceImage: (Bitmap) -> Unit,
-    faceImage: Bitmap?
+    processImage: suspend (Bitmap) -> Unit,
+    faceImage: Bitmap?,
+    livenessStatus: LivenessProcessingStatus,
+    livenessError: LivenessProcessingStatus?,
+    downloadProgress: Int
 ) {
     val isPreview = LocalInspectionMode.current
     val appSheetState = rememberAppSheetState()
@@ -162,8 +185,12 @@ fun LikenessExpandedCardContent(
             } else {
                 DigitalLikenessProcessing(
                     modifier = Modifier.padding(vertical = 16.dp),
+                    downloadProgress = downloadProgress,
+                    processing = processImage,
+                    currentProcessingState = livenessStatus,
+                    currentProcessingError = livenessError,
+                    selectedBitmap = selectedBitmap!!,
                     onNext = {
-                        setIsScanned(true)
                         saveFaceImage(selectedBitmap!!)
                         appSheetState.hide()
                         scope.launch {
@@ -178,10 +205,14 @@ fun LikenessExpandedCardContent(
         state = ruleSheetState,
         selectedRule = selectedRule,
         onSave = { newRule ->
-            setSelectedRule(newRule)
-            ruleSheetState.hide()
-            if (!isScanned) {
-                appSheetState.show()
+            scope.launch {
+
+                setSelectedRule(newRule)
+
+                ruleSheetState.hide()
+                if (!isRegistered) {
+                    appSheetState.show()
+                }
             }
         })
 
@@ -211,7 +242,7 @@ fun LikenessExpandedCardContent(
                         animatedVisibilityScope = animatedVisibilityScope,
                         innerPaddings = innerPaddings,
                         faceImage = faceImage,
-                        isScanned = isScanned,
+                        isScanned = isRegistered,
                         selectedRule = selectedRule,
                         tooltipState = tooltipState,
                         onRuleSheetShow = { ruleSheetState.show() },
@@ -225,7 +256,7 @@ fun LikenessExpandedCardContent(
                     )
                 },
                 footer = {
-                    if (!isScanned) {
+                    if (!isRegistered) {
                         Footer(
                             layoutId = layoutId,
                             innerPaddings = innerPaddings,
@@ -426,9 +457,9 @@ private fun LikenessTitle(
                                 ),
                             title = "My rule:",
                             accentTitle = when (selectedRule) {
-                                LikenessRule.ALWAYS_ALLOW -> "Use my likeness and pay me"
-                                LikenessRule.REJECT -> "Don't use \nmy face data"
-                                LikenessRule.ASK_EVERYTIME -> "Ask me first"
+                                LikenessRule.USE_AND_PAY -> "Use my likeness and pay me"
+                                LikenessRule.NOT_USE -> "Don't use \nmy face data"
+                                LikenessRule.ASK_FIRST -> "Ask me first"
                                 else -> ""
                             },
                             titleStyle = RarimeTheme.typography.h5.copy(
@@ -581,6 +612,19 @@ private fun Footer(
 @Preview(showBackground = true)
 @Composable
 fun LikenessExpandedCardPreview() {
+
+    var selectedRule by remember {
+        mutableStateOf(
+            LikenessRule.ASK_FIRST
+        )
+    }
+
+    var isRegistered by remember {
+        mutableStateOf(
+            false
+        )
+    }
+
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
         LikenessExpandedCardContent(
             cardProps = BaseCardProps.Expanded(
@@ -589,14 +633,18 @@ fun LikenessExpandedCardPreview() {
                 sharedTransitionScope = sharedTransitionScope,
                 onCollapse = {}
             ),
+            setSelectedRule = { selectedRule = it },
+            isRegistered = isRegistered,
             innerPaddings = mapOf(ScreenInsets.TOP to 20, ScreenInsets.BOTTOM to 20),
             navigate = {},
             selectedRule = null,
-            setSelectedRule = {},
-            isScanned = false,
             setIsScanned = {},
             saveFaceImage = {},
-            faceImage = null
+            faceImage = null,
+            livenessStatus = LivenessProcessingStatus.DOWNLOADING,
+            livenessError = null,
+            processImage = {},
+            downloadProgress = 0
         )
     }
 }

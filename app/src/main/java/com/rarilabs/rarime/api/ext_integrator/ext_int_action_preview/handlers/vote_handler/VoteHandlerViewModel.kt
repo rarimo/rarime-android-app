@@ -2,10 +2,10 @@ package com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.v
 
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorApiManager
-import com.rarilabs.rarime.api.voting.VotingManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RarimoContractManager
+import com.rarilabs.rarime.manager.VotingManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

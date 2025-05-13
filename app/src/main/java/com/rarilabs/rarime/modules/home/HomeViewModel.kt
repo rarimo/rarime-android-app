@@ -2,13 +2,13 @@ package com.rarilabs.rarime.modules.home
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import com.rarilabs.rarime.api.airdrop.AirDropManager
-import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.tokens.PointsToken
+import com.rarilabs.rarime.manager.AirDropManager
 import com.rarilabs.rarime.manager.NotificationManager
 import com.rarilabs.rarime.manager.PassportManager
+import com.rarilabs.rarime.manager.RegistrationManager
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.modules.passportScan.models.EDocument

@@ -62,7 +62,7 @@ fun LikenessCollapsedCard(
     viewModel: DigitalLikenessViewModel = hiltViewModel()
 ) {
     val selectedRule by viewModel.selectedRule.collectAsState()
-    val isScanned by viewModel.isLivenessScanned.collectAsState()
+    val isScanned by viewModel.isRegistered.collectAsState()
     val faceImage by viewModel.faceImage.collectAsState()
 
     LikenessCollapsedCardContent(
@@ -295,9 +295,9 @@ private fun LikenessTitle(
                     BaseCardTitle(
                         title = "My rule:",
                         accentTitle = when (selectedRule) {
-                            LikenessRule.ALWAYS_ALLOW -> "Use my likeness and pay me"
-                            LikenessRule.REJECT -> "Don't use \nmy face data"
-                            LikenessRule.ASK_EVERYTIME -> "Ask me first"
+                            LikenessRule.USE_AND_PAY -> "Use my likeness and pay me"
+                            LikenessRule.NOT_USE -> "Don't use \nmy face data"
+                            LikenessRule.ASK_FIRST -> "Ask me first"
                             else -> ""
                         },
                         titleStyle = RarimeTheme.typography.h5.copy(

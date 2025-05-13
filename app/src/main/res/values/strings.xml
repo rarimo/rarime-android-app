@@ -453,5 +453,25 @@
     <string name="poll_voting_end_timer">Voting ends in %1$s</string>
     <string name="poll_voting_start_timer">Voting starts in %1$s</string>
     <string name="failed_to_parse_qr_code">Failed to parse QR-Code</string>
+    <string name="your_device">Your Device</string>
+    <string name="your_identity">Your Identity</string>
+    <string name="nothing_leaves_this_device">* Nothing leaves this device</string>
+    <string name="create_identity_details_description">This app is where you privately store your digital identities, enabling you to go incognito across the web.</string>
+    <string name="let_s_start">Let’s Start</string>
+    <string name="digital_likeness">Digital likeness</string>
+    <string name="set_a_rule">Set a rule</string>
+    <string name="first_human_ai_contract">First human-AI Contract</string>
+    <string name="digital_likeness_description_1">AI can now replicate your face, voice, and identity without asking for your permission. But you never agreed to that, raising a fundamental question: who owns your likeness?</string>
+    <string name="digital_likeness_description_2">Rarimo is building the infrastructure to give you back that control. With this app, you can create a private, verifiable record that defines how your likeness can and can’t be used.</string>
+    <string name="digital_likeness_description_3">Your face stays on your device. No company owns it. And over time, no AI model will be able to ignore your rule.</string>
+    <string name="digital_likeness_registered_lbl">Other already set</string>
+    <string name="freedomtool">Freedomtool</string>
+    <string name="voting">Voting</string>
+    <string name="set_the_rule">Set the rule</string>
+    <string name="save">Save</string>
+    <string name="use_my_likeness_and_pay_me">Use my likeness\nand pay me</string>
+    <string name="soon">Soon</string>
+    <string name="don_t_sell_my_face_data">Don’t use my\nface at all</string>
+    <string name="ask_me_every_time">Ask me\nfirst</string>
 
 </resources>

@@ -5,6 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,12 +16,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import com.rarilabs.rarime.R
 
 @Composable
 fun BaseCardLogo(
@@ -27,7 +27,7 @@ fun BaseCardLogo(
     iconSize: Int = size,
     contentPadding: Int = 8,
     @DrawableRes
-    resId: Int = com.rarilabs.rarime.R.drawable.ic_rarime,
+    resId: Int = R.drawable.ic_rarime,
     tint: Color = RarimeTheme.colors.textPrimary,
     shape: Shape = CircleShape,
     backgroundColor: Color = RarimeTheme.colors.backgroundBlur

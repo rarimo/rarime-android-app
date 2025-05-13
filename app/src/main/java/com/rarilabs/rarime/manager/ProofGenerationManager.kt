@@ -10,9 +10,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.BuildConfig
-import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.registration.PassportAlreadyRegisteredByOtherPK
-import com.rarilabs.rarime.api.registration.RegistrationManager
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.modules.passportScan.CircuitUseCase
 import com.rarilabs.rarime.modules.passportScan.DownloadCircuitError

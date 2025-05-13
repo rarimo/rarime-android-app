@@ -1,7 +1,7 @@
 package com.rarilabs.rarime.ui.components.enter_program.components
 
 import androidx.lifecycle.ViewModel
-import com.rarilabs.rarime.api.points.PointsManager
+import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.manager.WalletManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

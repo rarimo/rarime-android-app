@@ -3,6 +3,8 @@ package com.rarilabs.rarime.util
 import android.content.Context
 import com.rarilabs.rarime.modules.passportScan.ConnectionError
 import com.rarilabs.rarime.modules.passportScan.DownloadCircuitError
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.ResponseBody
@@ -19,14 +21,63 @@ class FileDownloaderInternal(private val context: Context) {
 
     private val client = OkHttpClient()
 
+    private var currentCall: okhttp3.Call? = null
+
+    fun cancel() {
+        currentCall?.cancel()
+    }
+
+    suspend fun downloadFileBlocking(url: String, fileName: String): File {
+        return suspendCancellableCoroutine { cont ->
+
+            downloadFile(url, fileName) { isSuccess, isFinished, _, e ->
+                if (!isSuccess && e != null) {
+                    cont.resumeWith(Result.failure(e))
+                } else if (isFinished) {
+                    val file = getFile(fileName)
+                    cont.resume(file, onCancellation = {})
+                }
+            }
+        }
+    }
+
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    suspend fun downloadFileBlocking(
+        url: String,
+        fileName: String,
+        onProgress: (progress: Int) -> Unit
+    ): File = suspendCancellableCoroutine { cont ->
+        cont.invokeOnCancellation { cancel() }
+
+        downloadFile(url, fileName) { isSuccess, isFinished, progress, e ->
+            if (!isSuccess && e != null) {
+                onProgress(progress)
+                cont.resumeWith(Result.failure(e))
+            } else if (isFinished) {
+                onProgress(100)
+                val file = getFile(fileName)
+                cont.resume(file, onCancellation = {})
+            } else {
+                onProgress(progress)
+            }
+        }
+    }
+
+
     fun downloadFile(
         url: String,
         fileName: String,
         callback: (isSuccess: Boolean, isFinished: Boolean, progress: Int, e: Exception?) -> Unit
     ) {
-        val request = Request.Builder().url(url).build()
+        val request = Request.Builder()
+            .url(url)
+            .build()
 
-        client.newCall(request).enqueue(object : okhttp3.Callback {
+        val call = client.newCall(request)
+        currentCall = call
+
+        call.enqueue(object : okhttp3.Callback {
             override fun onFailure(call: okhttp3.Call, e: IOException) {
                 ErrorHandler.logError("FileDownloader", "Download failed", e)
                 callback(false, false, 0, ConnectionError().apply { initCause(e) })

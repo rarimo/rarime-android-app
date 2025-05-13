@@ -9,6 +9,7 @@ import com.rarilabs.rarime.api.voting.models.SendTransactionRequest
 import com.rarilabs.rarime.api.voting.models.VoteRequest
 import com.rarilabs.rarime.api.voting.models.VoteResponse
 import com.rarilabs.rarime.api.voting.models.VoteV2Response
+import com.rarilabs.rarime.manager.VoteError
 import javax.inject.Inject
 
 class VotingApiManager @Inject constructor(
