@@ -117,7 +117,6 @@ fun HiddenPrizeExpandedCardContent(
                         boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) }
                     )
                     .padding(
-                        top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp,
                         bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp
                     ),
                 header = {
@@ -170,7 +169,8 @@ private fun Header(
                     resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                 )
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp)
+                .padding(top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp),
             horizontalArrangement = Arrangement.End
         ) {
             IconButton(onClick = onCollapse) {
