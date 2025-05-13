@@ -74,9 +74,8 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
             if (ageLowerBoundYears > 0 && ageLowerBoundYears > age) {
                 throw YourAgeDoesNotMeetTheRequirements()
             }
-
         } catch (e: Exception) {
-            Log.e("ageLowerBoundYears", e.message, e)
+            Log.e("age_lower_bound_years", e.message, e)
         }
 
         try {

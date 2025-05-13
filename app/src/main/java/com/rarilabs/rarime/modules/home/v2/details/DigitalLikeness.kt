@@ -196,7 +196,7 @@ fun DigitalLikenessContent(
             fullScreen = true,
             scrimColor = Color.Transparent,
             isHeaderEnabled = false,
-            disableScrollClose = true,
+            disablePullClose = true,
             isWindowInsetsEnabled = true,
         ) {
             var selectedBitmap: Bitmap? by remember { mutableStateOf(null) }

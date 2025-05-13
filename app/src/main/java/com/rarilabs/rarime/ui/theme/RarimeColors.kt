@@ -380,6 +380,10 @@ class RarimeColors(
         this.infoLighter = other.infoLighter
         this.infoLight = other.infoLight
         this.errorDarker = other.errorDarker
+        this.infoDarker = other.infoDarker
+        this.infoMain = other.infoMain
+        this.infoLighter = other.infoLighter
+        this.infoLight = other.infoLight
         this.errorDark = other.errorDark
         this.errorMain = other.errorMain
         this.errorLight = other.errorLight
@@ -490,7 +494,6 @@ fun darkColors() = RarimeColors(
     gradient4 = Brush.linearGradient(colors = listOf(Color(0xFFD3D1EF), Color(0xFFFCE3FC))),
     gradient5 = Brush.linearGradient(colors = listOf(Color(0xFF80ED99), Color(0xFFD5FEC8))),
     gradient6 = Brush.linearGradient(colors = listOf(Color(0xFF39CDA0), Color(0xFF45C45C))),
-
     gradient7 = Brush.linearGradient(
         colors = listOf(
             Color(0xFFF8F3FE), Color(0xFFEEE9FE), Color(

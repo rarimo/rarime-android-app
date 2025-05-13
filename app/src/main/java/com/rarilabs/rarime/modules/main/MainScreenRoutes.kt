@@ -25,7 +25,7 @@ import androidx.navigation.navDeepLink
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.voting.models.MOCKED_POLL_ITEM
 import com.rarilabs.rarime.data.enums.SecurityCheckState
-import com.rarilabs.rarime.modules.home.v2.HomeScreen
+import com.rarilabs.rarime.modules.home.v3.HomeScreenV3
 import com.rarilabs.rarime.modules.intro.IntroScreen
 import com.rarilabs.rarime.modules.main.guards.AuthGuard
 import com.rarilabs.rarime.modules.notifications.NotificationsScreen
@@ -231,11 +231,11 @@ fun MainScreenRoutes(
             ) {
                 composable(Screen.Main.Home.route) {
                     AuthGuard(navigate = simpleNavigate) {
-                        HomeScreen(
+                        HomeScreenV3(
                             navigate = simpleNavigate,
                             navigateWithPopUp = navigateWithPopUp,
                             sharedTransitionScope = this@SharedTransitionLayout,
-                            setVisibilityOfBottomBar = { mainViewModel.setBottomBarVisibility(it) }
+                            setVisibilityOfBottomBar = { mainViewModel.setBottomBarVisibility(it) },
                         )
                     }
                 }

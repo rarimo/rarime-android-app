@@ -74,15 +74,15 @@ fun AppBottomSheet(
     isHeaderEnabled: Boolean = true,
     scrimColor: Color = Color.Black.copy(alpha = 0.5f), // Dims the background
     isWindowInsetsEnabled: Boolean = true,
-    // When `disableScrollClose` true, prevents sheet from closing on swipe/scroll
+    // When `disableScrollPull` true, prevents sheet from closing on pull
     // without pulling in experimental APIs
-    disableScrollClose: Boolean = false,
+    disablePullClose: Boolean = false,
     content: @Composable (HideSheetFn) -> Unit,
 ) {
     val modalState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { newValue ->
-            if (disableScrollClose) newValue == SheetValue.Hidden else true
+            if (disablePullClose) newValue == SheetValue.Hidden else true
         })
     val coroutineScope = rememberCoroutineScope()
 
