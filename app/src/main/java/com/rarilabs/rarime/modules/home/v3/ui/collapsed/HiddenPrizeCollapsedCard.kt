@@ -208,7 +208,7 @@ fun HiddenPrizeCollapsedCardPreview() {
         HiddenPrizeCollapsedCard(
             collapsedCardProps = BaseCardProps.Collapsed(
                 onExpand = {},
-                layoutId = CardType.FREEDOMTOOL.layoutId,
+                layoutId = CardType.HIDDEN_PRIZE.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope
             ),

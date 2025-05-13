@@ -84,9 +84,9 @@ fun HiddenPrizeExpandedCard(
         modifier = modifier,
         innerPaddings = innerPaddings,
         onScan = {
-            if (!cameraPermissionState.status.isGranted){
+            if (!cameraPermissionState.status.isGranted) {
                 cameraPermissionState.launchPermissionRequest()
-            } else{
+            } else {
                 showQrScan.show()
             }
 
@@ -266,9 +266,15 @@ private fun Footer(
 
                 ) {
                     AppIcon(id = R.drawable.ic_user_focus)
-                    Text(text = "Scan a Celebrity")
+                    Text(
+                        text = "Scan a Celebrity",
+                        color = RarimeTheme.colors.baseWhite
+                    )
                     VerticalDivider(modifier = Modifier.height(24.dp))
-                    Text("3/3")
+                    Text(
+                        text = "3/3",
+                        color = RarimeTheme.colors.baseWhite
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
