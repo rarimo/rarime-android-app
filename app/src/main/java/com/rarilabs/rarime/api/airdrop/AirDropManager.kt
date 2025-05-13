@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.api.airdrop
 
 import android.content.Context
+import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.airdrop.models.AirDropStatuses
@@ -8,18 +9,17 @@ import com.rarilabs.rarime.api.airdrop.models.CreateAirDrop
 import com.rarilabs.rarime.api.airdrop.models.CreateAirDropAttributes
 import com.rarilabs.rarime.api.airdrop.models.CreateAirDropBody
 import com.rarilabs.rarime.data.ProofTxFull
-import com.rarilabs.rarime.store.SecureSharedPrefsManager
-import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.manager.IdentityManager
+import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.modules.wallet.models.TransactionState
+import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
 import com.rarilabs.rarime.util.data.ZkProof
 import com.rarilabs.rarime.util.decodeHexString
-import com.google.gson.Gson
 import identity.Identity
 import identity.Profile
 import kotlinx.coroutines.Dispatchers
@@ -56,7 +56,7 @@ class AirDropManager @Inject constructor(
         val registrationSmtContract = rarimoContractManager.getPoseidonSMT(BaseConfig.REGISTRATION_SMT_CONTRACT_ADDRESS)
 
         val proofIndex = Identity.calculateProofIndex(
-            registrationProof.pub_signals[0], registrationProof.pub_signals[3]
+            registrationProof.getPubSignals()[0], registrationProof.getPubSignals()[3]
         )
 
         val smtProofRaw = withContext(Dispatchers.IO) {
@@ -71,7 +71,7 @@ class AirDropManager @Inject constructor(
 
         val passportInfoRaw = withContext(Dispatchers.IO) {
             stateKeeperContract.getPassportInfo(
-                Identity.bigIntToBytes(registrationProof.pub_signals[0])
+                Identity.bigIntToBytes(registrationProof.getPubSignals()[0])
             ).send()
         }
 
@@ -79,14 +79,14 @@ class AirDropManager @Inject constructor(
         val identityInfo = passportInfoRaw.component2()
 
         val airDropParams = withContext(Dispatchers.IO) {
-            airDropAPIManager.getAirDropParams()!!
+            airDropAPIManager.getAirDropParams()
         }
 
         val queryProofInputs = profiler.buildAirdropQueryIdentityInputs(
             eDocument.dg1!!.decodeHexString(),
             smtProofJson.toByteArray(Charsets.UTF_8),
             airDropParams.data.attributes.query_selector,
-            registrationProof.pub_signals[0],
+            registrationProof.getPubSignals()[0],
             identityInfo.issueTimestamp.toString(),
             passportInfo.identityReissueCounter.toString(),
             airDropParams.data.attributes.event_id,

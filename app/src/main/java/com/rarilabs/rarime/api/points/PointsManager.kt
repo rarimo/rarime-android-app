@@ -34,6 +34,7 @@ import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
+import com.rarilabs.rarime.util.data.GrothProof
 import com.rarilabs.rarime.util.data.ZkProof
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.hmacSha256
@@ -184,16 +185,16 @@ class PointsManager @Inject constructor(
                 }
             } else {
                 if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {
-                    identityManager.registrationProof.value!!.pub_signals[1] //lightProofData.passport_hash
+                    identityManager.registrationProof.value!!.getPubSignals()[1] //lightProofData.passport_hash
                 } else {
-                    identityManager.registrationProof.value!!.pub_signals[0] //lightProofData.public_key
+                    identityManager.registrationProof.value!!.getPubSignals()[0] //lightProofData.public_key
                 }
             }
 
         val proofIndex = Identity.calculateProofIndex(
             passportInfoKey,
-            if (lightProofData == null) identityManager.registrationProof.value!!.pub_signals[3]
-            else identityManager.registrationProof.value!!.pub_signals[2]
+            if (lightProofData == null) identityManager.registrationProof.value!!.getPubSignals()[3]
+            else identityManager.registrationProof.value!!.getPubSignals()[2]
         )
 
         var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
@@ -307,7 +308,7 @@ class PointsManager @Inject constructor(
                     attributes = WithdrawPayloadAttributes(
                         amount = amount.toLong(),
                         address = identityManager.rarimoAddress(),
-                        proof = identityManager.registrationProof.value!!.proof
+                        proof = (identityManager.registrationProof.value!!.getProofString() as GrothProof).proof
                     )
                 )
             )

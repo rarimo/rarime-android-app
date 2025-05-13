@@ -5,7 +5,7 @@ import com.google.gson.Gson
 private val gson = Gson() // 1 раз на весь файл
 
 interface ZkProof {
-    fun getProof(): String
+    fun getProofString(): String
     fun getPubSignals(): List<String>
     fun preparingForSaving(): String
 
@@ -39,7 +39,7 @@ data class PlonkProof(
     val proof: String,
     val pub_signals: List<String>,
 ) : ZkProof {
-    override fun getProof(): String = proof
+    override fun getProofString(): String = proof
 
     override fun getPubSignals(): List<String> = pub_signals
 
@@ -50,7 +50,7 @@ data class GrothProof(
     val proof: Proof,
     val pub_signals: List<String>
 ) : ZkProof {
-    override fun getProof(): String = gson.toJson(proof)
+    override fun getProofString(): String = gson.toJson(proof)
 
     override fun getPubSignals(): List<String> = pub_signals
 

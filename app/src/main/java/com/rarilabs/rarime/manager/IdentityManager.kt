@@ -76,7 +76,7 @@ class IdentityManager @Inject constructor(
 
     fun getPassportNullifier(): String {
         return registrationProof.value?.let {
-            it.pub_signals.get(0)
+            it.getPubSignals()[0]
         } ?: ""
     }
 
@@ -116,9 +116,9 @@ class IdentityManager @Inject constructor(
 
         try {
             val passportInfoKey: String? = if (eDocument.dg15?.isEmpty() == true) {
-                registrationProof.value?.pub_signals?.get(1)
+                registrationProof.value?.getPubSignals()?.get(1)
             } else {
-                registrationProof.value?.pub_signals?.get(0)
+                registrationProof.value?.getPubSignals()?.get(0)
             }
 
             var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)

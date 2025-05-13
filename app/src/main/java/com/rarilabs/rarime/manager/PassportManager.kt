@@ -133,8 +133,8 @@ class PassportManager @Inject constructor(
     ): ByteArray {
         return Identity.calculateProofIndex(
             passportInfoKey,
-            if (lightProofData == null) identityManager.registrationProof.value!!.pub_signals[3]
-            else identityManager.registrationProof.value!!.pub_signals[2]
+            if (lightProofData == null) identityManager.registrationProof.value!!.getPubSignals()[3]
+            else identityManager.registrationProof.value!!.getPubSignals()[2]
         )
     }
 
@@ -153,9 +153,9 @@ class PassportManager @Inject constructor(
                 }
             } else {
                 if (eDocument.dg15.isNullOrEmpty()) {
-                    zkProof.pub_signals[1] //lightProofData.passport_hash
+                    zkProof.getPubSignals()[1] //lightProofData.passport_hash
                 } else {
-                    zkProof.pub_signals[0] //lightProofData.public_key
+                    zkProof.getPubSignals()[0] //lightProofData.public_key
                 }
             }
 
@@ -184,9 +184,9 @@ class PassportManager @Inject constructor(
                 }
             } else {
                 if (eDocument.dg15.isNullOrEmpty()) {
-                    zkProof.pub_signals[1] //lightProofData.passport_hash
+                    zkProof.getPubSignals()[1] //lightProofData.passport_hash
                 } else {
-                    zkProof.pub_signals[0] //lightProofData.public_key
+                    zkProof.getPubSignals()[0] //lightProofData.public_key
                 }
             }
 
