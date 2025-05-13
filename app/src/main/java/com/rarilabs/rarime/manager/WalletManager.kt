@@ -3,7 +3,6 @@ package com.rarilabs.rarime.manager
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.Gson
-import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.data.tokens.PointsToken
 import com.rarilabs.rarime.data.tokens.Token
 import com.rarilabs.rarime.modules.wallet.models.Transaction

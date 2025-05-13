@@ -115,7 +115,7 @@ fun HomeScreen(
 
     val notifications: List<NotificationEntityData> by viewModel.notifications.collectAsState()
 
-    val isScanned by viewModel.isScanned.collectAsState()
+    val isRegistered by viewModel.isRegistered.collectAsState()
     val selectedRule by viewModel.selectedRule.collectAsState()
 
     val faceImage by viewModel.faceImage.collectAsState()
@@ -179,7 +179,7 @@ fun HomeScreen(
         passport = passport,
         selectedLikenessRule = selectedRule,
         faceImage = faceImage,
-        isLikenessScanned = isScanned
+        isLikenessRegistered = isRegistered
     )
 }
 
@@ -198,11 +198,12 @@ fun HomeScreenContent(
     firstReferralCode: String?,
     currentPointsBalance: Long?,
     notificationsCount: Int,
-    isLikenessScanned: Boolean,
+    isLikenessRegistered: Boolean,
     selectedLikenessRule: LikenessRule?,
     faceImage: Bitmap?,
     passport: EDocument?
 ) {
+
     var selectedPageId by remember { mutableStateOf<Int?>(null) }
     val context = LocalContext.current
 
@@ -213,7 +214,7 @@ fun HomeScreenContent(
 
         val cardContent =
             mutableListOf(
-//
+
 //            CardContent(
 //                type = CardType.UNFORGETTABLE_WALLET, properties = CardProperties(
 //                    header = "An Unforgettable",
@@ -452,18 +453,18 @@ fun HomeScreenContent(
                                             )
                                         }
                                     } else null,
-                                    header = if (isLikenessScanned && cardContent[page].type == CardType.LIKENESS) { headerKey, subTitleKey ->
+                                    header = if (isLikenessRegistered && cardContent[page].type == CardType.LIKENESS) { headerKey, subTitleKey ->
                                         val selectedRuleText =
                                             when (selectedLikenessRule) {
-                                                LikenessRule.ALWAYS_ALLOW -> {
+                                                LikenessRule.USE_AND_PAY -> {
                                                     stringResource(R.string.use_my_likeness_and_pay_me)
                                                 }
 
-                                                LikenessRule.REJECT -> {
+                                                LikenessRule.NOT_USE -> {
                                                     stringResource(R.string.don_t_sell_my_face_data)
                                                 }
 
-                                                LikenessRule.ASK_EVERYTIME -> {
+                                                LikenessRule.ASK_FIRST -> {
                                                     stringResource(R.string.ask_me_every_time)
                                                 }
 
@@ -640,8 +641,8 @@ private fun HomeScreenPreview() {
                         name = "Mike"
                     )
                 ),
-                selectedLikenessRule = LikenessRule.ALWAYS_ALLOW,
-                isLikenessScanned = true,
+                selectedLikenessRule = LikenessRule.USE_AND_PAY,
+                isLikenessRegistered = true,
                 faceImage = null
             )
         }

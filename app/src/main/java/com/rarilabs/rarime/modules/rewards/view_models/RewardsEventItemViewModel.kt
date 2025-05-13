@@ -2,8 +2,8 @@ package com.rarilabs.rarime.modules.rewards.view_models
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.points.models.PointsEventData
+import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.manager.WalletManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

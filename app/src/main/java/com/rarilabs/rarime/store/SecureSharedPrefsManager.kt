@@ -93,10 +93,10 @@ interface SecureSharedPrefsManager {
     fun saveSelectedLikenessRule(likenessRule: LikenessRule)
     fun getSelectedLikenessRule(): LikenessRule?
 
-    //TODO change to actual data
-    fun saveIsLikenessScanned(flag: Boolean)
-    fun getIsLikenessScanned(): Boolean
-
     fun saveLikenessFace(face: Bitmap)
     fun getLikenessFace(): Bitmap?
+
+    fun saveLivenessProof(proof: ZkProof)
+    fun getLivenessProof(): ZkProof?
+
 }

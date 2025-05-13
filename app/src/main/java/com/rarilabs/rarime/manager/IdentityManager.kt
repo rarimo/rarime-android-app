@@ -2,6 +2,7 @@ package com.rarilabs.rarime.manager
 
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.registration.models.LightRegistrationData
+import com.rarilabs.rarime.contracts.rarimo.FaceRegistry
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ErrorHandler
@@ -82,6 +83,10 @@ class IdentityManager @Inject constructor(
 
     fun getUserAirDropNullifier(): String {
         return getProfiler().calculateEventNullifierInt(BaseConfig.AIRDROP_SVC_ID)
+    }
+
+    fun getNullifierForFaceLikeness(): String {
+        return getProfiler().calculateEventNullifierHex(FaceRegistry.EVENT_ID)
     }
 
     fun getUserAirDropNullifierHex(): String {

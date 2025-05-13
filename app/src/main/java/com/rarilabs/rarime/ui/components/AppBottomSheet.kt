@@ -82,7 +82,7 @@ fun AppBottomSheet(
     val modalState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { newValue ->
-            if (disableScrollClose) newValue == SheetValue.Hidden  else true
+            if (disableScrollClose) newValue == SheetValue.Hidden else true
         })
     val coroutineScope = rememberCoroutineScope()
 

@@ -83,6 +83,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.manager.LikenessRule
+import com.rarilabs.rarime.manager.LivenessProcessingStatus
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessCamera
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessProcessing
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessViewModel
@@ -99,6 +100,8 @@ import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.BackgroundRemover
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
+import com.rarilabs.rarime.util.data.Proof
+import com.rarilabs.rarime.util.data.ZkProof
 import kotlinx.coroutines.launch
 
 const val ALREADY_SET_AMOUNT = "49,421"
@@ -125,9 +128,14 @@ fun DigitalLikeness(
 ) {
 
     val selectedRule by viewModel.selectedRule.collectAsState()
-    val isScanned by viewModel.isLivenessScanned.collectAsState()
+    val isRegistered by viewModel.isRegistered.collectAsState()
 
     val faceImage by viewModel.faceImage.collectAsState()
+
+    val selectedState by viewModel.livenessState.collectAsState()
+    val errorState by viewModel.errorState.collectAsState()
+
+    val downloadProgress by viewModel.downloadProgress.collectAsState()
 
     DigitalLikenessContent(
         modifier,
@@ -138,10 +146,13 @@ fun DigitalLikeness(
         animatedContentScope,
         selectedRule,
         viewModel.setSelectedRule,
-        isScanned,
-        viewModel.setIsLivenessScanned,
+        isRegistered,
         viewModel.saveFaceImage,
-        faceImage,
+        livenessStatus = selectedState,
+        livenessError = errorState,
+        processImage = viewModel::processImage,
+        faceImage = faceImage,
+        downloadProgress = downloadProgress,
     )
 }
 
@@ -159,11 +170,14 @@ fun DigitalLikenessContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
     selectedRule: LikenessRule?,
-    setSelectedRule: (LikenessRule) -> Unit,
-    isScanned: Boolean,
-    setIsScanned: (Boolean) -> Unit,
+    setSelectedRule: suspend (LikenessRule) -> Unit,
+    isRegistered: Boolean,
     saveFaceImage: (Bitmap) -> Unit,
-    faceImage: Bitmap?
+    processImage: suspend (Bitmap) -> Unit,
+    livenessStatus: LivenessProcessingStatus,
+    livenessError: LivenessProcessingStatus?,
+    faceImage: Bitmap?,
+    downloadProgress: Int
 ) {
     val isPreview = LocalInspectionMode.current
     val appSheetState = rememberAppSheetState()
@@ -171,12 +185,10 @@ fun DigitalLikenessContent(
     val tooltipState = rememberTooltipState()
 
     val scope = rememberCoroutineScope()
-    var selectedBitmap: Bitmap? by remember { mutableStateOf(null) }
 
     val cameraPermissionState = if (!isPreview) rememberPermissionState(Manifest.permission.CAMERA)
     else null
     val ruleSheetState = rememberAppSheetState(false)
-
     if (isPreview || cameraPermissionState!!.status.isGranted) {
         AppBottomSheet(
             state = appSheetState,
@@ -187,6 +199,8 @@ fun DigitalLikenessContent(
             disableScrollClose = true,
             isWindowInsetsEnabled = true,
         ) {
+            var selectedBitmap: Bitmap? by remember { mutableStateOf(null) }
+
             if (selectedBitmap == null) {
                 DigitalLikenessCamera {
                     BackgroundRemover().removeBackground(it) { img ->
@@ -196,11 +210,14 @@ fun DigitalLikenessContent(
             } else {
                 DigitalLikenessProcessing(
                     modifier = Modifier.padding(vertical = 16.dp),
+                    downloadProgress = downloadProgress,
+                    processing = processImage,
+                    currentProcessingState = livenessStatus,
+                    currentProcessingError = livenessError,
+                    selectedBitmap = selectedBitmap!!,
                     onNext = {
-                        setIsScanned(true)
                         saveFaceImage(selectedBitmap!!)
                         appSheetState.hide()
-
                         scope.launch {
                             tooltipState.show()
                         }
@@ -210,10 +227,14 @@ fun DigitalLikenessContent(
     }
 
     RuleSheet(state = ruleSheetState, selectedRule = selectedRule, onSave = { newRule ->
-        setSelectedRule(newRule)
-        ruleSheetState.hide()
-        if (!isScanned) {
-            appSheetState.show()
+        scope.launch {
+
+            setSelectedRule(newRule)
+
+            ruleSheetState.hide()
+            if (!isRegistered) {
+                appSheetState.show()
+            }
         }
     })
 
@@ -229,7 +250,7 @@ fun DigitalLikenessContent(
                 ), start = Offset(0f, 0f), end = Offset(100f, 0f)
             )
         ),
-        caption = if (isScanned) null else stringResource(R.string.first_human_ai_contract),
+        caption = if (isRegistered) null else stringResource(R.string.first_human_ai_contract),
         imageId = R.drawable.drawable_digital_likeness,
         backgroundGradient = RarimeTheme.colors.gradient7,
         imageModifier = Modifier
@@ -244,7 +265,7 @@ fun DigitalLikenessContent(
         innerPaddings = innerPaddings,
         sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = animatedContentScope,
-        image = if (faceImage == null) null else {
+        image = if (faceImage != null) {
             {
                 LikenessFrame(
                     faceImage = faceImage.asImageBitmap(),
@@ -254,9 +275,26 @@ fun DigitalLikenessContent(
                     faceSize = 295.dp
                 )
             }
+        } else if (isRegistered) {
+            {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        modifier = Modifier.size(140.dp),
+                        painter = painterResource(R.drawable.ic_question),
+                        tint = RarimeTheme.colors.baseBlack.copy(alpha = 0.1f),
+                        contentDescription = null
+                    )
+                }
+            }
+        } else {
+            null
         },
         onBack = onBack,
-        header = if (isScanned) { headerKey, subTitleKey ->
+        header = if (isRegistered) { headerKey, subTitleKey ->
             with(sharedTransitionScope) {
                 Text(
                     style = RarimeTheme.typography.h5,
@@ -279,15 +317,15 @@ fun DigitalLikenessContent(
                         ))
 
                 val selectedRuleText = when (selectedRule) {
-                    LikenessRule.ALWAYS_ALLOW -> {
+                    LikenessRule.USE_AND_PAY -> {
                         stringResource(R.string.use_my_likeness_and_pay_me)
                     }
 
-                    LikenessRule.REJECT -> {
+                    LikenessRule.NOT_USE -> {
                         stringResource(R.string.don_t_sell_my_face_data)
                     }
 
-                    LikenessRule.ASK_EVERYTIME -> {
+                    LikenessRule.ASK_FIRST -> {
                         stringResource(R.string.ask_me_every_time)
                     }
 
@@ -372,7 +410,7 @@ fun DigitalLikenessContent(
                 Spacer(modifier = Modifier.height(50.dp))
             }
         },
-        footer = if (isScanned) null else {
+        footer = if (isRegistered) null else {
             {
                 HorizontalDivider()
                 Spacer(modifier = Modifier.height(24.dp))
@@ -397,8 +435,7 @@ fun DigitalLikenessContent(
                             contentColor = RarimeTheme.colors.baseWhite,
                             disabledContainerColor = RarimeTheme.colors.componentDisabled,
                             disabledContentColor = RarimeTheme.colors.textDisabled
-                        ),
-                        onClick = {
+                        ), onClick = {
                             if (cameraPermissionState!!.status.isGranted) {
                                 ruleSheetState.show()
                             } else {
@@ -415,13 +452,10 @@ fun DigitalLikenessContent(
 
 // Draw shape for face photo
 class LeafShape(
-    private val bigRadius: Dp = 100.dp,
-    private val smallRadius: Dp = 25.dp
+    private val bigRadius: Dp = 100.dp, private val smallRadius: Dp = 25.dp
 ) : Shape {
     override fun createOutline(
-        size: Size,
-        layoutDirection: LayoutDirection,
-        density: Density
+        size: Size, layoutDirection: LayoutDirection, density: Density
     ): Outline {
         val bigR = with(density) { bigRadius.toPx() }
         val smallR = with(density) { smallRadius.toPx() }
@@ -452,8 +486,7 @@ fun LikenessFrame(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(frameSize),
-        contentAlignment = Alignment.TopCenter
+            .height(frameSize), contentAlignment = Alignment.TopCenter
     ) {
         // 1) background frame (bottom)
         Image(
@@ -470,8 +503,7 @@ fun LikenessFrame(
             bitmap = faceImage,
             contentDescription = null,
             alignment = BiasAlignment(
-                horizontalBias = 0f,
-                verticalBias = 0.1f
+                horizontalBias = 0f, verticalBias = 0.1f
             ),
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -501,20 +533,20 @@ private fun RuleSheet(
 
     val rules = listOf(
         RuleOptionData(
-            isSelected = LikenessRule.ALWAYS_ALLOW == localSelectedRule,
-            type = LikenessRule.ALWAYS_ALLOW,
+            isSelected = LikenessRule.USE_AND_PAY == localSelectedRule,
+            type = LikenessRule.USE_AND_PAY,
             title = stringResource(R.string.use_my_likeness_and_pay_me),
             badgeText = stringResource(R.string.soon),
             iconRes = R.drawable.money_dollar_circle_line
         ), RuleOptionData(
-            isSelected = LikenessRule.REJECT == localSelectedRule,
-            type = LikenessRule.REJECT,
+            isSelected = LikenessRule.NOT_USE == localSelectedRule,
+            type = LikenessRule.NOT_USE,
             title = stringResource(R.string.don_t_sell_my_face_data),
             badgeText = stringResource(R.string.soon),
             iconRes = R.drawable.subtract_fill
         ), RuleOptionData(
-            isSelected = LikenessRule.ASK_EVERYTIME == localSelectedRule,
-            type = LikenessRule.ASK_EVERYTIME,
+            isSelected = LikenessRule.ASK_FIRST == localSelectedRule,
+            type = LikenessRule.ASK_FIRST,
             title = stringResource(R.string.ask_me_every_time),
             badgeText = stringResource(R.string.soon),
             iconRes = R.drawable.ic_question
@@ -541,14 +573,14 @@ private fun RuleSheet(
                     )
 
                     Text(
-                        "The rules are yours to change",
-                        color = RarimeTheme.colors.textSecondary
+                        "The rules are yours to change", color = RarimeTheme.colors.textSecondary
                     )
                 }
                 IconButton(onClick = { state.hide() }) {
                     Icon(
                         tint = RarimeTheme.colors.textPrimary,
-                        painter = painterResource(R.drawable.ic_close), contentDescription = "Close"
+                        painter = painterResource(R.drawable.ic_close),
+                        contentDescription = "Close"
                     )
                 }
             }
@@ -596,8 +628,9 @@ fun RuleOption(
         animationSpec = tween(durationMillis = 300)
     )
     val cardBorderColor by animateColorAsState(
-        targetValue = if (item.isSelected) RarimeTheme.colors.textPrimary else RarimeTheme.colors.componentPrimary.copy(alpha = 0.05f),
-        animationSpec = tween(durationMillis = 500)
+        targetValue = if (item.isSelected) RarimeTheme.colors.textPrimary else RarimeTheme.colors.componentPrimary.copy(
+            alpha = 0.05f
+        ), animationSpec = tween(durationMillis = 500)
     )
 
     Card(
@@ -673,7 +706,7 @@ fun RuleOptionPreview() {
     RuleOption(
         item = RuleOptionData(
             isSelected = false,
-            type = LikenessRule.ALWAYS_ALLOW,
+            type = LikenessRule.ASK_FIRST,
             title = "Use my likeness\nand pay me.",
             badgeText = "Soon",
             iconRes = R.drawable.money_dollar_circle_line
@@ -686,7 +719,7 @@ fun RuleSheetPreview() {
     val ruleSheetState = rememberAppSheetState(true)
     RuleSheet(
         ruleSheetState,
-        selectedRule = LikenessRule.ALWAYS_ALLOW,
+        selectedRule = LikenessRule.ASK_FIRST,
         onSave = { ruleSheetState.hide() })
 }
 
@@ -698,11 +731,11 @@ private fun CreateIdentityDetailsPreview() {
 
     var selectedRule by remember {
         mutableStateOf(
-            LikenessRule.ALWAYS_ALLOW
+            LikenessRule.ASK_FIRST
         )
     }
 
-    var isScanned by remember {
+    var isRegistered by remember {
         mutableStateOf(
             false
         )
@@ -717,10 +750,19 @@ private fun CreateIdentityDetailsPreview() {
             onBack = {},
             selectedRule = selectedRule,
             setSelectedRule = { selectedRule = it },
-            isScanned = isScanned,
-            setIsScanned = { isScanned = it },
+            isRegistered = isRegistered,
             saveFaceImage = {},
-            faceImage = null
+            processImage = {
+                ZkProof(
+                    proof = Proof(
+                        pi_a = listOf(), pi_b = listOf(listOf()), pi_c = listOf(), protocol = ""
+                    ), pub_signals = listOf()
+                )
+            },
+            faceImage = null,
+            livenessStatus = LivenessProcessingStatus.DOWNLOADING,
+            livenessError = null,
+            downloadProgress = 0
         )
     }
 }

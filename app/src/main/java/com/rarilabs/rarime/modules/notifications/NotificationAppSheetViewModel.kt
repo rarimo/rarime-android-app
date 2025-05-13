@@ -2,8 +2,8 @@ package com.rarilabs.rarime.modules.notifications
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.points.models.PointsEventBody
+import com.rarilabs.rarime.manager.PointsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

@@ -171,6 +171,12 @@ dependencies {
     //// ML-KIT ////
     implementation(libs.text.recognition)
     implementation("com.google.mlkit:segmentation-selfie:16.0.0-beta6")
+    implementation("org.tensorflow:tensorflow-lite:2.13.0")
+    implementation("org.tensorflow:tensorflow-lite-support:0.4.3")
+    implementation("org.tensorflow:tensorflow-lite-gpu:2.13.0")
+
+    implementation("com.google.mlkit:face-detection:16.1.7")
+    implementation("com.google.mlkit:face-mesh-detection:16.0.0-beta3")
 
 
     //// ACCOMPANIST ////
@@ -192,6 +198,7 @@ dependencies {
     implementation("net.sf.scuba:scuba-sc-android:0.0.20")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation(files("libs/Identity.aar"))
+    implementation(files("libs/bionet-release.aar"))
 
     // QR Code
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
@@ -247,6 +254,8 @@ dependencies {
     implementation("androidx.hilt:hilt-work:1.0.0") // ?
     implementation("androidx.work:work-runtime-ktx:2.9.1")
     implementation("com.google.firebase:firebase-messaging:24.0.1")
+
+
 
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.31.0-alpha")
