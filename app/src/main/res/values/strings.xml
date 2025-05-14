@@ -474,5 +474,9 @@
     <string name="soon">Soon</string>
     <string name="don_t_sell_my_face_data">Don’t use my\nface at all</string>
     <string name="ask_me_every_time">Ask me\nfirst</string>
+    <string name="hidden_prize_add_scans_description_enabled">Invite a friend and get 1 bonus scan for each invited friend, or share the post and get 1 bonus scan as a one-time reward.</string>
+    <string name="add_scans_bottom_sheet_title_enebled">Bonus Scan</string>
+    <string name="add_scans_bottom_sheet_title_disablet">Available scan</string>
+    <string name="hidden_prize_add_scans_description_disablet">You have 3 scan attempts every 24 hours, but you can also unlock bonus chances by inviting friends and sharing.</string>
 
 </resources>
