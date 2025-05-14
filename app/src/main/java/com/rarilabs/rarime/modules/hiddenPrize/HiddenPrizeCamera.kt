@@ -9,13 +9,20 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,10 +40,13 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -49,14 +59,15 @@ import com.google.mlkit.vision.facemesh.FaceMesh
 import com.google.mlkit.vision.facemesh.FaceMeshDetection
 import com.google.mlkit.vision.facemesh.FaceMeshDetector
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
+import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
-
 
 @OptIn(ExperimentalGetImage::class)
 @Composable
@@ -66,21 +77,14 @@ fun HiddenPrizeCamera(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-
     val meshDetector: FaceMeshDetector = remember {
         FaceMeshDetection.getClient()
     }
-
     var imageSize by remember { mutableStateOf(Size.Zero) }
-
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
-
     var detectedMeshes by remember { mutableStateOf<List<FaceMesh>>(emptyList()) }
-
     val scope = rememberCoroutineScope()
-
     var selectedBitmap by remember { mutableStateOf<Bitmap?>(null) }
-
     val previewView = remember {
         return@remember PreviewView(context).apply {
             scaleType = PreviewView.ScaleType.FILL_CENTER
@@ -100,7 +104,7 @@ fun HiddenPrizeCamera(
                 lifecycleOwner, CameraSelector.DEFAULT_BACK_CAMERA, previewUseCase
             )
         } catch (e: Exception) {
-            ErrorHandler.logError("CameraError",e.toString())
+            ErrorHandler.logError("CameraError", e.toString())
         }
 
         val analysisUseCase =
@@ -130,13 +134,11 @@ fun HiddenPrizeCamera(
                         }
                     }
                 }
-
         cameraProvider.unbindAll()
         cameraProvider.bindToLifecycle(
             lifecycleOwner, CameraSelector.DEFAULT_BACK_CAMERA, previewUseCase, analysisUseCase
         )
     }
-
 
     Box(
         modifier = modifier.fillMaxSize()
@@ -161,22 +163,17 @@ fun HiddenPrizeCamera(
 
             if (imageSize.width == 0f || imageSize.height == 0f) return@Canvas
 
-
             val scale = maxOf(
                 viewW / imageSize.width, viewH / imageSize.height
             )
             val scaledW = imageSize.width * scale
             val scaledH = imageSize.height * scale
 
-
             val dx = (scaledW - viewW) / 2f
             val dy = (scaledH - viewH) / 2f
 
-
             detectedMeshes.forEach { faceMesh ->
-
                 faceMesh.allTriangles.forEachIndexed { idx, tri ->
-
 
                     val pts = tri.allPoints
                     if (pts.size == 3) {
@@ -188,7 +185,7 @@ fun HiddenPrizeCamera(
                             Offset(viewW - rawX, rawY)
                         }
 
-                        val path = androidx.compose.ui.graphics.Path().apply {
+                        val path = Path().apply {
                             moveTo(mapped[0].x, mapped[0].y)
                             lineTo(mapped[1].x, mapped[1].y)
                             lineTo(mapped[2].x, mapped[2].y)
@@ -201,24 +198,15 @@ fun HiddenPrizeCamera(
                                 color = Color.White.copy(alpha = 0.5f)
                             )
                         }
-
-
                         drawPath(
                             path = path,
                             color = Color.White.copy(alpha = 0.5f),
                             style = Stroke(width = 1.dp.toPx())
                         )
                     }
-
                 }
-
-
             }
-
-
         }
-
-
 
         Column(
             modifier = Modifier
@@ -287,11 +275,223 @@ fun HiddenPrizeCamera(
                     }
                 }
             }
-
         }
     }
 }
 
+@Composable
+private fun WrongScreen(
+    modifier: Modifier = Modifier,
+    attemptsLeft: Int = 0,
+    tip: String? = null,
+    onRetry: () -> Unit = {}
+) {
+    val canRetry = true
+    val description = buildString {
+        append("The face you scanned is not the correct one.")
+        if (canRetry) append(" You can try again")
+    }
+    Box(Modifier.fillMaxSize()) {
+        Box(
+            Modifier
+                .matchParentSize()
+                .blur(120.dp)
+                .background(Color.Black.copy(alpha = 0.5f))
+        )
+
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .background(RarimeTheme.colors.baseBlack.copy(alpha = 0.7f)),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_wrong_face),
+                        contentDescription = null,
+                        tint = RarimeTheme.colors.baseWhite,
+                    )
+                    Spacer(Modifier.height(32.dp))
+                    Text(
+                        "Wrong face…",
+                        color = RarimeTheme.colors.baseWhite,
+                        textAlign = TextAlign.Center,
+                        style = RarimeTheme.typography.h3
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    Text(
+                        description,
+                        color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.width(230.dp),
+                    )
+                }
+            }
+
+            tip?.let {
+                Text(
+                    it,
+                    color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+            }
+
+            if (canRetry) {
+                BaseButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    size = ButtonSize.Large,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = RarimeTheme.colors.baseWhite.copy(0.1f),
+                        contentColor = RarimeTheme.colors.invertedLight,
+                        disabledContainerColor = RarimeTheme.colors.componentDisabled,
+                        disabledContentColor = RarimeTheme.colors.textDisabled
+                    ),
+                    onClick = onRetry
+                ) {
+                    Text("Scan again", color = RarimeTheme.colors.baseWhite)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SuccessScreen(
+    modifier: Modifier = Modifier,
+    prizeAmount: Float,
+    prizeSymbol: @Composable () -> Unit = {},
+    onViewWallet: () -> Unit,
+    onShareWallet: () -> Unit
+) {
+    Box(Modifier.fillMaxSize()) {
+        Box(
+            Modifier
+                .matchParentSize()
+                .blur(120.dp)
+                .background(Color.Black.copy(alpha = 0.5f))
+        )
+
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .background(RarimeTheme.colors.baseBlack.copy(alpha = 0.7f)),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    modifier = Modifier.width(230.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_success_color),
+                        contentDescription = null,
+                        tint = RarimeTheme.colors.baseWhite,
+                    )
+                    Spacer(Modifier.height(32.dp))
+                    Text(
+                        "Congrats!",
+                        color = RarimeTheme.colors.baseWhite,
+                        textAlign = TextAlign.Center,
+                        style = RarimeTheme.typography.h3
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    Text(
+                        "you've found the hidden keys",
+                        color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
+                        textAlign = TextAlign.Center,
+                    )
+                    Spacer(Modifier.height(32.dp))
+                    HorizontalDivider(
+                        modifier = Modifier.width(280.dp),
+                        color = RarimeTheme.colors.baseWhite.copy(alpha = 0.05f)
+                    )
+                    Spacer(Modifier.height(32.dp))
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier
+                            .background(
+                                RarimeTheme.colors.baseWhite.copy(0.05f),
+                                shape = RoundedCornerShape(20.dp)
+                            )
+                            .padding(vertical = 20.dp)
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("Your prize", color = RarimeTheme.colors.baseWhite.copy(0.6f))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Text(
+                                prizeAmount.toString().format(),
+                                style = RarimeTheme.typography.h3,
+                                color = RarimeTheme.colors.baseWhite
+                            )
+                            prizeSymbol()
+                        }
+                    }
+                }
+            }
+        }
+
+        Column(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            BaseButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                size = ButtonSize.Large,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = RarimeTheme.colors.baseWhite.copy(0.1f),
+                    contentColor = RarimeTheme.colors.invertedLight,
+                    disabledContainerColor = RarimeTheme.colors.componentDisabled,
+                    disabledContentColor = RarimeTheme.colors.textDisabled
+                ),
+                onClick = onViewWallet
+            ) {
+                Text("View wallet", color = RarimeTheme.colors.baseWhite)
+            }
+            BaseButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 16.dp),
+                size = ButtonSize.Large,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = RarimeTheme.colors.baseWhite,
+                    contentColor = RarimeTheme.colors.baseBlack,
+                    disabledContainerColor = RarimeTheme.colors.componentDisabled,
+                    disabledContentColor = RarimeTheme.colors.textDisabled
+                ),
+                onClick = onShareWallet
+            ) {
+                Text(
+                    "Share",
+                    color = RarimeTheme.colors.baseBlack,
+                )
+            }
+        }
+    }
+}
 
 @Composable
 private fun CameraMask(
@@ -308,7 +508,7 @@ private fun CameraMask(
         val topPx = topPadding.toPx()
 
 
-        val path = androidx.compose.ui.graphics.Path().apply {
+        val path = Path().apply {
             addOval(
                 Rect(offset = Offset(hpPx, topPx), size = Size(ovalW, ovalH))
             )
@@ -319,7 +519,6 @@ private fun CameraMask(
         }
     }
 }
-
 
 
 @Composable
@@ -349,5 +548,51 @@ fun BoxWithRectBorder(rect: android.graphics.Rect) {
 private fun HiddenPrizeCameraPreview() {
     Surface {
         HiddenPrizeCamera {}
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun WrongScreenPreview_WithBlur() {
+    Box(Modifier.fillMaxSize()) {
+        // Image for blur example
+        Image(
+            painter = painterResource(R.drawable.drawable_digital_likeness),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .blur(20.dp)
+        )
+
+        WrongScreen(
+            attemptsLeft = 2,
+            tip = "Tip: I think there's something as light as ether in that face..."
+        )
+    }
+}
+
+@Composable
+@Preview
+fun SuccessScreenPreview_WithBlur() {
+    Box(Modifier.fillMaxSize()) {
+        // Image for blur example
+        Image(
+            painter = painterResource(R.drawable.drawable_digital_likeness),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .blur(20.dp)
+        )
+
+        SuccessScreen(
+            prizeAmount = 2.2f,
+            onViewWallet = {},
+            prizeSymbol = {
+                Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
+            },
+            onShareWallet = {}
+        )
     }
 }

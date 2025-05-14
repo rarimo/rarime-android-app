@@ -64,13 +64,17 @@ fun HiddenPrizeExpandedCard(
 ) {
 
 
-    val showQrScan = rememberAppSheetState()
+    val showFaceScan = rememberAppSheetState()
     val cameraPermissionState = rememberPermissionState(
         Manifest.permission.CAMERA
     )
 
-    AppBottomSheet(state = showQrScan) {
-        HiddenPrizeCamera {}
+    AppBottomSheet(state = showFaceScan) {
+        HiddenPrizeCamera(
+            onNext = {
+                // TODO: Add on next
+            }
+        )
     }
 
     HiddenPrizeExpandedCardContent(
@@ -81,7 +85,7 @@ fun HiddenPrizeExpandedCard(
             if (!cameraPermissionState.status.isGranted) {
                 cameraPermissionState.launchPermissionRequest()
             } else {
-                showQrScan.show()
+                showFaceScan.show()
             }
 
         },
@@ -274,7 +278,7 @@ fun Body(
             Spacer(modifier = Modifier.height(BG_HAND_HIDEN_PRIZE_HEIGHT.dp))
 
             BaseCardTitle(
-                title = "Hidden Prize",
+                title = "Hidden prize",
                 accentTitle = "Scan",
                 caption = "Found hidden prize $1000",
                 titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.baseBlack),
