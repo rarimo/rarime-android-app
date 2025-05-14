@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -67,7 +68,12 @@ import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.launch
+import nl.dionsegijn.konfetti.compose.KonfettiView
+import nl.dionsegijn.konfetti.core.Party
+import nl.dionsegijn.konfetti.core.Position
+import nl.dionsegijn.konfetti.core.emitter.Emitter
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalGetImage::class)
 @Composable
@@ -211,7 +217,8 @@ fun HiddenPrizeCamera(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(horizontal = 16.dp)
+                .padding(top = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AppIcon(
@@ -267,10 +274,7 @@ fun HiddenPrizeCamera(
                             size = ButtonSize.Large,
                             text = "Continue",
                             onClick = {
-
-
                                 onNext(selectedBitmap!!)
-
                             })
                     }
                 }
@@ -280,7 +284,7 @@ fun HiddenPrizeCamera(
 }
 
 @Composable
-private fun WrongScreen(
+fun HiddenPrizeWrongScreen(
     modifier: Modifier = Modifier,
     attemptsLeft: Int = 0,
     tip: String? = null,
@@ -288,8 +292,8 @@ private fun WrongScreen(
 ) {
     val canRetry = true
     val description = buildString {
-        append("The face you scanned is not the correct one.")
-        if (canRetry) append(" You can try again")
+        append(stringResource(R.string.hidden_prize_wrong_screen_description_1))
+        if (canRetry) append(stringResource(R.string.hidden_prize_wrong_screen_description_2))
     }
     Box(Modifier.fillMaxSize()) {
         Box(
@@ -321,7 +325,7 @@ private fun WrongScreen(
                     )
                     Spacer(Modifier.height(32.dp))
                     Text(
-                        "Wrong face…",
+                        stringResource(R.string.hidden_prize_wrong_screen_title),
                         color = RarimeTheme.colors.baseWhite,
                         textAlign = TextAlign.Center,
                         style = RarimeTheme.typography.h3
@@ -360,7 +364,10 @@ private fun WrongScreen(
                     ),
                     onClick = onRetry
                 ) {
-                    Text("Scan again", color = RarimeTheme.colors.baseWhite)
+                    Text(
+                        stringResource(R.string.hidden_prize_wrong_screen_rescan_btn),
+                        color = RarimeTheme.colors.baseWhite
+                    )
                 }
             }
         }
@@ -368,7 +375,7 @@ private fun WrongScreen(
 }
 
 @Composable
-private fun SuccessScreen(
+fun HiddenPrizeSuccessScreen(
     modifier: Modifier = Modifier,
     prizeAmount: Float,
     prizeSymbol: @Composable () -> Unit = {},
@@ -395,6 +402,20 @@ private fun SuccessScreen(
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
+                KonfettiView(
+                    modifier = Modifier.fillMaxSize(),
+                    parties = listOf(
+                        Party(
+                            speed = 0f,
+                            maxSpeed = 30f,
+                            damping = 0.9f,
+                            spread = 360,
+                            colors = listOf(0x9C8CC5, 0xD0F0E5, 0xf4306d, 0xb48def),
+                            position = Position.Relative(0.5, 0.3),
+                            emitter = Emitter(duration = 100, TimeUnit.MILLISECONDS).max(100)
+                        )
+                    )
+                )
                 Column(
                     modifier = Modifier.width(230.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -406,14 +427,14 @@ private fun SuccessScreen(
                     )
                     Spacer(Modifier.height(32.dp))
                     Text(
-                        "Congrats!",
+                        stringResource(R.string.hidden_prize_success_screen_title),
                         color = RarimeTheme.colors.baseWhite,
                         textAlign = TextAlign.Center,
                         style = RarimeTheme.typography.h3
                     )
                     Spacer(Modifier.height(12.dp))
                     Text(
-                        "you've found the hidden keys",
+                        stringResource(R.string.hidden_prize_success_screen_description),
                         color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
                         textAlign = TextAlign.Center,
                     )
@@ -434,7 +455,10 @@ private fun SuccessScreen(
                             .fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("Your prize", color = RarimeTheme.colors.baseWhite.copy(0.6f))
+                        Text(
+                            stringResource(R.string.hidden_prize_success_screen_prize),
+                            color = RarimeTheme.colors.baseWhite.copy(0.6f)
+                        )
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -468,7 +492,10 @@ private fun SuccessScreen(
                 ),
                 onClick = onViewWallet
             ) {
-                Text("View wallet", color = RarimeTheme.colors.baseWhite)
+                Text(
+                    stringResource(R.string.hidden_prize_success_screen_wallet_btn),
+                    color = RarimeTheme.colors.baseWhite
+                )
             }
             BaseButton(
                 modifier = Modifier
@@ -485,7 +512,7 @@ private fun SuccessScreen(
                 onClick = onShareWallet
             ) {
                 Text(
-                    "Share",
+                    stringResource(R.string.hidden_prize_success_share_btn),
                     color = RarimeTheme.colors.baseBlack,
                 )
             }
@@ -506,7 +533,6 @@ private fun CameraMask(
         val ovalW = size.width - 2f * hpPx
         val ovalH = ovalW * aspectRatio
         val topPx = topPadding.toPx()
-
 
         val path = Path().apply {
             addOval(
@@ -565,7 +591,7 @@ fun WrongScreenPreview_WithBlur() {
                 .blur(20.dp)
         )
 
-        WrongScreen(
+        HiddenPrizeWrongScreen(
             attemptsLeft = 2,
             tip = "Tip: I think there's something as light as ether in that face..."
         )
@@ -586,7 +612,7 @@ fun SuccessScreenPreview_WithBlur() {
                 .blur(20.dp)
         )
 
-        SuccessScreen(
+        HiddenPrizeSuccessScreen(
             prizeAmount = 2.2f,
             onViewWallet = {},
             prizeSymbol = {
