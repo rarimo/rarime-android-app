@@ -9,6 +9,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,15 +19,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -35,19 +38,19 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeCamera
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
+import com.rarilabs.rarime.modules.home.v3.model.BG_HAND_HIDEN_PRIZE_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
 import com.rarilabs.rarime.modules.home.v3.model.CardType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
 import com.rarilabs.rarime.modules.main.ScreenInsets
-import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
-import com.rarilabs.rarime.ui.components.TransparentButton
-import com.rarilabs.rarime.ui.components.VerticalDivider
+import com.rarilabs.rarime.ui.components.PrimaryButton
+import com.rarilabs.rarime.ui.components.TipAlert
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
@@ -66,18 +69,9 @@ fun HiddenPrizeExpandedCard(
         Manifest.permission.CAMERA
     )
 
-
     AppBottomSheet(state = showQrScan) {
-
-        HiddenPrizeCamera {
-
-        }
-
+        HiddenPrizeCamera {}
     }
-
-
-
-
 
     HiddenPrizeExpandedCardContent(
         cardProps = expandedCardProps,
@@ -93,8 +87,7 @@ fun HiddenPrizeExpandedCard(
         },
         onAddScan = {
             //TODO
-        }
-    )
+        })
 
 }
 
@@ -114,12 +107,10 @@ fun HiddenPrizeExpandedCardContent(
                     .sharedElement(
                         state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
                         animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) }
-                    )
+                        boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) })
                     .padding(
                         bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp
-                    ),
-                header = {
+                    ), header = {
                     Header(
                         layoutId = layoutId,
                         onCollapse = onCollapse,
@@ -127,8 +118,7 @@ fun HiddenPrizeExpandedCardContent(
                         animatedVisibilityScope = animatedVisibilityScope,
                         innerPaddings = innerPaddings
                     )
-                },
-                footer = {
+                }, footer = {
                     Footer(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
@@ -137,14 +127,22 @@ fun HiddenPrizeExpandedCardContent(
                         onScan = onScan
                     )
                 },
+
+                body = {
+                    Body(
+                        layoutId = layoutId,
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
+                },
+
                 background = {
                     Background(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope
                     )
-                }
-            )
+                })
         }
     }
 }
@@ -181,6 +179,7 @@ private fun Header(
 }
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun Footer(
     layoutId: Int,
@@ -192,7 +191,74 @@ private fun Footer(
 
     with(sharedTransitionScope) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(24.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .sharedBounds(
+                    rememberSharedContentState(HomeSharedKeys.footer(layoutId)),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                )
+                .padding(bottom = 20.dp, start = 20.dp, end = 20.dp)
+
+        ) {
+            HorizontalDivider()
+            Spacer(Modifier.height(24.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            "Available",
+                            style = RarimeTheme.typography.subtitle6,
+                            color = RarimeTheme.colors.textPrimary
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        AppIcon(id = R.drawable.ic_info)
+                    }
+
+                    Row(verticalAlignment = Alignment.Bottom) {
+                        Text(
+                            "3",
+                            color = RarimeTheme.colors.textPrimary,
+                            style = TextStyle(
+                                brush = RarimeTheme.colors.gradient8,
+                                fontSize = RarimeTheme.typography.h4.fontSize,
+                                fontWeight = RarimeTheme.typography.h4.fontWeight
+                            ),
+                        )
+                        Text(
+                            "/3 daily scans",
+                            style = RarimeTheme.typography.body3,
+                            color = RarimeTheme.colors.textSecondary
+                        )
+                    }
+                }
+
+                PrimaryButton(
+                    text = "Scan",
+                    onClick = onScan,
+                    size = ButtonSize.Large,
+                    leftIcon = R.drawable.ic_user_focus
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
+fun Body(
+    layoutId: Int,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
+) {
+
+    with(sharedTransitionScope) {
+        Column(
             modifier = Modifier
                 .padding(horizontal = 20.dp)
                 .sharedBounds(
@@ -204,6 +270,8 @@ private fun Footer(
                     resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
                 )
         ) {
+
+            Spacer(modifier = Modifier.height(BG_HAND_HIDEN_PRIZE_HEIGHT.dp))
 
             BaseCardTitle(
                 title = "Hidden Prize",
@@ -230,82 +298,25 @@ private fun Footer(
                     resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                 )
             )
+            Spacer(modifier = Modifier.height(12.dp))
+
             Text(
                 stringResource(R.string.hidden_price_expanded_cart_description),
                 style = RarimeTheme.typography.body3,
                 color = RarimeTheme.colors.baseBlackOp50
             )
-            HorizontalDivider()
 
+            Spacer(modifier = Modifier.height(24.dp))
 
-            Column(
-                modifier = Modifier
-                    .padding(bottom = 20.dp)
-                    .sharedBounds(
-                        rememberSharedContentState(HomeSharedKeys.footer(layoutId)),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        renderInOverlayDuringTransition = false,
-                        enter = fadeIn(),
-                        exit = fadeOut(),
-                        resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
-                    ),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Bottom
-            ) {
-                BaseButton(
-                    modifier = Modifier
-                        .height(56.dp)
-                        .fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = RarimeTheme.colors.baseBlack,
-                        contentColor = RarimeTheme.colors.baseWhite,
-                        disabledContainerColor = RarimeTheme.colors.componentDisabled,
-                        disabledContentColor = RarimeTheme.colors.textDisabled
-                    ),
-                    size = ButtonSize.Large, onClick = onScan
+            TipAlert(
+                text = "I think there's something as light as ether\n" + "in that face..."
+            )
 
-                ) {
-                    AppIcon(id = R.drawable.ic_user_focus)
-                    Text(
-                        text = "Scan a Celebrity",
-                        color = RarimeTheme.colors.baseWhite
-                    )
-                    VerticalDivider(modifier = Modifier.height(24.dp))
-                    Text(
-                        text = "3/3",
-                        color = RarimeTheme.colors.baseWhite
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-                TransparentButton(
-                    modifier = Modifier
-                        .height(56.dp)
-                        .fillMaxWidth(),
-                    size = ButtonSize.Large,
-                    onClick = onAddScan,
-                ) {
-
-                    AppIcon(
-                        id = R.drawable.ic_flashlight_fill,
-                        tint = Color(0xFF9D4EDD)//TODO: Sync with theme
-                    )
-                    Text(
-                        text = "Get a additional Scan",
-                        color = RarimeTheme.colors.baseBlack
-                    )
-                }
-
-            }
-
-
+            Spacer(modifier = Modifier.height(24.dp))
         }
-
     }
 
-
 }
-
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -320,7 +331,24 @@ private fun Background(
                 .fillMaxSize()
                 .background(RarimeTheme.colors.gradient9)
         ) {
-
+            Image(
+                painter = painterResource(R.drawable.drawable_hidden_prize_hand),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(BG_HAND_HIDEN_PRIZE_HEIGHT.dp)
+                    .offset(y = 40.dp)
+                    .sharedBounds(
+                        rememberSharedContentState(
+                            HomeSharedKeys.image(
+                                layoutId
+                            )
+                        ),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    )
+            )
         }
     }
 }
