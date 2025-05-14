@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -64,13 +65,43 @@ fun HiddenPrizeExpandedCard(
 ) {
 
 
-    val showQrScan = rememberAppSheetState()
+    val showFaceScan = rememberAppSheetState()
     val cameraPermissionState = rememberPermissionState(
         Manifest.permission.CAMERA
     )
 
-    AppBottomSheet(state = showQrScan) {
-        HiddenPrizeCamera {}
+    // TODO: Add isWrong & isSuccess flags
+    AppBottomSheet(state = showFaceScan, shape = RectangleShape, isHeaderEnabled = false) {
+        Box(Modifier.fillMaxSize()) {
+//            TODO: Put blurred image here
+//            Image(
+//                painter = painterResource(R.drawable.drawable_digital_likeness),
+//                contentDescription = null,
+//                contentScale = ContentScale.Crop,
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .blur(20.dp)
+//            )
+//
+//            HiddenPrizeSuccessScreen(
+//                prizeAmount = 0.0f,
+//                prizeSymbol = {
+//                    Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
+//                },
+//                onViewWallet = {},
+//                onShareWallet = {}
+//            )
+//            HiddenPrizeWrongScreen(
+//                attemptsLeft = 2,
+//                tip = "Tip",
+//                onRetry = {}
+//            )
+            HiddenPrizeCamera(
+                onNext = {
+                    // TODO: Add on next
+                }
+            )
+        }
     }
 
     HiddenPrizeExpandedCardContent(
@@ -81,7 +112,7 @@ fun HiddenPrizeExpandedCard(
             if (!cameraPermissionState.status.isGranted) {
                 cameraPermissionState.launchPermissionRequest()
             } else {
-                showQrScan.show()
+                showFaceScan.show()
             }
 
         },
@@ -274,7 +305,7 @@ fun Body(
             Spacer(modifier = Modifier.height(BG_HAND_HIDEN_PRIZE_HEIGHT.dp))
 
             BaseCardTitle(
-                title = "Hidden Prize",
+                title = "Hidden prize",
                 accentTitle = "Scan",
                 caption = "Found hidden prize $1000",
                 titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.baseBlack),

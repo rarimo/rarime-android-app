@@ -266,4 +266,5 @@ dependencies {
 
     implementation("io.coil-kt:coil-compose:2.0.0-rc01")
 
+    implementation("nl.dionsegijn:konfetti-compose:2.0.5")
 }
