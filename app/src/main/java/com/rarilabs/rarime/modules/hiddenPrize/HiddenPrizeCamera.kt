@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.modules.hiddenPrize
 
 import android.graphics.Bitmap
+import android.graphics.Color.toArgb
 import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
@@ -44,6 +45,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -410,7 +412,12 @@ fun HiddenPrizeSuccessScreen(
                             maxSpeed = 30f,
                             damping = 0.9f,
                             spread = 360,
-                            colors = listOf(0x9C8CC5, 0xD0F0E5, 0xf4306d, 0xb48def),
+                            colors = listOf(
+                                RarimeTheme.colors.errorLighter.toArgb(),
+                                RarimeTheme.colors.warningLighter.toArgb(),
+                                RarimeTheme.colors.successLighter.toArgb(),
+                                RarimeTheme.colors.primaryLighter.toArgb()
+                            ),
                             position = Position.Relative(0.5, 0.3),
                             emitter = Emitter(duration = 100, TimeUnit.MILLISECONDS).max(100)
                         )
@@ -569,13 +576,13 @@ fun BoxWithRectBorder(rect: android.graphics.Rect) {
     }
 }
 
-@Preview
-@Composable
-private fun HiddenPrizeCameraPreview() {
-    Surface {
-        HiddenPrizeCamera {}
-    }
-}
+//@Preview
+//@Composable
+//private fun HiddenPrizeCameraPreview() {
+//    Surface {
+//        HiddenPrizeCamera {}
+//    }
+//}
 
 @Composable
 @Preview(showBackground = true)
