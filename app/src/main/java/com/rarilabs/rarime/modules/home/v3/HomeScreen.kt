@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.home.v3
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -81,18 +82,13 @@ fun HomeScreenV3(
 
     val visibleCards = remember(hasVotes) {
         buildList {
-//            if (hasVotes) {
-//                add(CardType.FREEDOMTOOL)
-//            }
-//            add(CardType.IDENTITY)
-//            if (currentPointsBalance != null && currentPointsBalance != 0L) {
-//                add(CardType.CLAIM)
-//            }
-//            add(CardType.CLAIM)
-            // TODO: Remove after tests and uncomment code above
-            add(CardType.FREEDOMTOOL)
+            if (hasVotes) {
+                add(CardType.FREEDOMTOOL)
+            }
             add(CardType.IDENTITY)
-            add(CardType.LIKENESS)
+            if (currentPointsBalance != null && currentPointsBalance != 0L) {
+                add(CardType.CLAIM)
+            }
             add(CardType.CLAIM)
         }
     }
