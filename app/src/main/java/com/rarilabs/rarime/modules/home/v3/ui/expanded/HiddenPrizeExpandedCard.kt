@@ -2,6 +2,7 @@
 
 package com.rarilabs.rarime.modules.home.v3.ui.expanded
 
+import WinningFaceCard
 import android.Manifest
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -37,6 +38,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.hiddenPrize.models.CelebrityStatus
 import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeCamera
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BG_HAND_HIDEN_PRIZE_HEIGHT
@@ -63,8 +65,6 @@ fun HiddenPrizeExpandedCard(
     expandedCardProps: BaseCardProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
 ) {
-
-
     val showFaceScan = rememberAppSheetState()
     val cameraPermissionState = rememberPermissionState(
         Manifest.permission.CAMERA
@@ -164,6 +164,7 @@ fun HiddenPrizeExpandedCardContent(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope
+                        // TODO: Add props
                     )
                 },
 
@@ -285,9 +286,9 @@ private fun Footer(
 fun Body(
     layoutId: Int,
     sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    celebrityStatus: CelebrityStatus = CelebrityStatus.ACTIVE
 ) {
-
     with(sharedTransitionScope) {
         Column(
             modifier = Modifier
@@ -301,7 +302,6 @@ fun Body(
                     resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
                 )
         ) {
-
             Spacer(modifier = Modifier.height(BG_HAND_HIDEN_PRIZE_HEIGHT.dp))
 
             BaseCardTitle(
@@ -331,22 +331,45 @@ fun Body(
             )
             Spacer(modifier = Modifier.height(12.dp))
 
-            Text(
-                stringResource(R.string.hidden_price_expanded_cart_description),
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.baseBlackOp50
-            )
+            when (celebrityStatus) {
+                CelebrityStatus.ACTIVE -> {
+                    Text(
+                        stringResource(R.string.hidden_price_expanded_cart_description),
+                        style = RarimeTheme.typography.body3,
+                        color = RarimeTheme.colors.baseBlackOp50
+                    )
 
-            Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-            TipAlert(
-                text = "I think there's something as light as ether\n" + "in that face..."
-            )
+                    TipAlert(
+                        text = "I think there's something as light as ether\n" + "in that face..."
+                    )
 
-            Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+
+                CelebrityStatus.COMPLETED -> {
+                    // TODO: Replace with real content
+                    WinningFaceCard(
+                        imageSrc = "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg",
+                        placeholderRes = R.drawable.drawable_digital_likeness,
+                        name = "Vitalik Baturin",
+                        description = "Ethereum co-founder",
+                        winnerAddress = "0x00000...0000",
+                        prizeAmount = 0.3F,
+                        prizeSymbol = {
+                            Image(
+                                painterResource(R.drawable.ic_ethereum),
+                                contentDescription = "ETH"
+                            )
+                        },
+                    )
+                }
+
+                CelebrityStatus.MAINTENANCE -> {}
+            }
         }
     }
-
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
