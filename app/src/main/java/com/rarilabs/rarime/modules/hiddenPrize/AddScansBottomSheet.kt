@@ -1,6 +1,10 @@
 package com.rarilabs.rarime.modules.hiddenPrize
 
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +16,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,15 +50,18 @@ data class AddScanProps(
 )
 
 
+
 @Composable
 fun AddScanBottomSheet(
-    modifier: Modifier = Modifier,
     isInviteEnable: Boolean = true,
-    isShareEnable: Boolean = true
+    isShareEnable: Boolean = true,
+    onShare: () -> Unit,
+    onInvite: () -> Unit
 ) {
+
     val enabledColor = RarimeTheme.colors.textPrimary
     val disabletColor = RarimeTheme.colors.textDisabled
-    val enabletIconTitleColor = Color(0xFF9D4EDD)  //TODO: sync with theme
+    val enabletIconTitleColor = RarimeTheme.colors.hiddenPrizeAccent
     val enabledIconBackgroundTitleColor = Color(0xFFF5EDFC) //TODO: sync with theme
     val disabledIconTitleColor = RarimeTheme.colors.textSecondary
     val disabledIconBackgroundTitleColor = RarimeTheme.colors.componentPrimary
@@ -81,75 +91,89 @@ fun AddScanBottomSheet(
     }
 
 
-    Column {
+    Box(
+        modifier = Modifier.background( color = RarimeTheme.colors.backgroundPrimary )
+    ) {
+        Column {
 
-            Box(modifier = Modifier.padding(
-                start = 24.dp,
-                bottom = 20.dp
-            )) {
+            Box(
+                modifier = Modifier.padding(
+                    start = 24.dp,
+                    bottom = 20.dp
+                )
+            ) {
                 CircledBadge(
                     iconId = props.idIcon,
                     containerSize = 56,
                     contentColor = props.iconTitleColor,
                     contentSize = 24,
                     containerColor = props.iconBackgroundTitleColor,
-                    )
+                )
             }
 
 
 
 
 
-        Text(
-            text = stringResource(props.idTitle),
-            style = RarimeTheme.typography.h3,
-            color = RarimeTheme.colors.textPrimary,
-            modifier = Modifier.padding(
-                bottom = 8.dp,
-                start =24.dp
+            Text(
+                text = stringResource(props.idTitle),
+                style = RarimeTheme.typography.h3,
+                color = RarimeTheme.colors.textPrimary,
+                modifier = Modifier.padding(
+                    bottom = 8.dp,
+                    start = 24.dp
+                )
             )
-        )
-        Text(
-            text = stringResource(props.idDescription),
-            style = RarimeTheme.typography.body3,
-            color = RarimeTheme.colors.textSecondary,
-            modifier = Modifier.padding(
-                horizontal =24.dp
+            Text(
+                text = stringResource(props.idDescription),
+                style = RarimeTheme.typography.body3,
+                color = RarimeTheme.colors.textSecondary,
+                modifier = Modifier.padding(
+                    horizontal = 24.dp
+                )
             )
-        )
-        HorizontalDivider(modifier = Modifier.padding(
-            horizontal = 24.dp,
-            vertical = 32.dp
-        ))
+            HorizontalDivider(
+                modifier = Modifier.padding(
+                    horizontal = 24.dp,
+                    vertical = 32.dp
+                )
+            )
 
-        RowAddScans(
-            isEnabled = isShareEnable,
-            props = props,
-            rowTitle = "Share on socials",
-            rowDescription = "+1 scan",
-            modifier = Modifier,
-            buttonLabel = "Share",
-            idIcon = R.drawable.ic_share_line
-        )
+            RowAddScans(
+                isEnabled = isShareEnable,
+                props = props,
+                rowTitle = "Share on socials",
+                rowDescription = "+1 scan",
+                modifier = Modifier,
+                buttonLabel = "Share",
+                idIcon = R.drawable.ic_share_line,
+                onClick = onShare
+            )
 
-        Spacer(Modifier
-            .fillMaxWidth()
-            .size(20.dp))
+            Spacer(
+                Modifier
+                    .fillMaxWidth()
+                    .size(20.dp)
+            )
 
-        RowAddScans(
-            isEnabled = isShareEnable,
-            props = props,
-            rowTitle = "Invite a friend",
-            rowDescription = "+1 scan",
-            modifier = Modifier,
-            buttonLabel = "Invite",
-            idIcon = R.drawable.ic_user_add_line
-        )
-        Spacer(Modifier
-            .fillMaxWidth()
-            .size(20.dp))
+            RowAddScans(
+                isEnabled = isShareEnable,
+                props = props,
+                rowTitle = "Invite a friend",
+                rowDescription = "+1 scan",
+                modifier = Modifier,
+                buttonLabel = "Invite",
+                idIcon = R.drawable.ic_user_add_line,
+                onClick = onInvite
+            )
+            Spacer(
+                Modifier
+                    .fillMaxWidth()
+                    .size(20.dp)
+            )
 
 
+        }
     }
 
 }
@@ -163,6 +187,7 @@ private fun RowAddScans(
   rowDescription:String,
   buttonLabel:String,
   modifier: Modifier,
+  onClick: () -> Unit
 
 
 
@@ -202,7 +227,7 @@ private fun RowAddScans(
 
 
         PrimaryButton(
-            onClick = {},
+            onClick = onClick,
             enabled = isEnabled,
             modifier = Modifier,
             text = buttonLabel,
@@ -216,7 +241,10 @@ private fun RowAddScans(
 @Composable
 fun AddScansBottomSheetEnabledPreview() {
     Box(modifier = Modifier) {
-        AddScanBottomSheet()
+        AddScanBottomSheet(
+            onShare = {},
+            onInvite = {}
+        )
     }
 
 }
@@ -227,8 +255,11 @@ fun AddScansBottomSheetDisabledPreview() {
     Box(modifier = Modifier) {
         AddScanBottomSheet(
             isInviteEnable = false,
-            isShareEnable = false
+            isShareEnable = false,
+            onShare = {},
+            onInvite = {}
         )
     }
 
 }
+

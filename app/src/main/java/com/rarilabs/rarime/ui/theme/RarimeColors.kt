@@ -99,7 +99,9 @@ class RarimeColors(
     gradient8: Brush,
     gradient9: Brush,
 
-    additionalGreen: Color
+    additionalGreen: Color,
+    hiddenPrizeAccent: Color
+
 ) {
     var primaryDarker by mutableStateOf(primaryDarker, structuralEqualityPolicy())
         internal set
@@ -199,7 +201,6 @@ class RarimeColors(
 
     var baseBlackOp40 by mutableStateOf(baseBlackOp40, structuralEqualityPolicy())
         internal set
-
     var baseWhite by mutableStateOf(baseWhite, structuralEqualityPolicy())
         internal set
     var invertedDark by mutableStateOf(invertedDark, structuralEqualityPolicy())
@@ -236,6 +237,8 @@ class RarimeColors(
 
     var additionalGreen by mutableStateOf(additionalGreen, structuralEqualityPolicy())
         internal set
+
+    var hiddenPrizeAccent by mutableStateOf(hiddenPrizeAccent, structuralEqualityPolicy())
 
 
     fun copy(
@@ -366,7 +369,8 @@ class RarimeColors(
         gradient8 = gradient8,
         gradient9 = gradient9,
         additionalGreen = additionalGreen,
-        inverted = inverted
+        inverted = inverted,
+        hiddenPrizeAccent = hiddenPrizeAccent
     )
 
     fun updateColorsFrom(other: RarimeColors) {
@@ -421,6 +425,8 @@ class RarimeColors(
         this.invertedLight = other.invertedLight
         this.inverted = other.inverted
         this.backgroundSurface1 = other.backgroundSurface1
+
+        this.hiddenPrizeAccent = other.hiddenPrizeAccent
     }
 }
 
@@ -519,7 +525,8 @@ fun darkColors() = RarimeColors(
 
     baseBlackOp40 = Color(0x66141614),
     baseBlackOp50 = Color(0x80141614),
-    inverted = Color(0xFF000000)
+    inverted = Color(0xFF000000),
+    hiddenPrizeAccent = Color(0xFF9D4EDD)
 )
 
 fun lightColors() = RarimeColors(
@@ -615,7 +622,9 @@ fun lightColors() = RarimeColors(
     baseBlackOp50 = Color(0x80141614),
 
     additionalGreen = Color(0xFFF1F7F1),
-    inverted = Color(0xFFFFFFFF)
+    inverted = Color(0xFFFFFFFF),
+
+    hiddenPrizeAccent = Color(0xFF9D4EDD)
 
 )
 
