@@ -2,6 +2,7 @@
 
 package com.rarilabs.rarime.modules.home.v3.ui.expanded
 
+import WinningFaceCard
 import android.Manifest
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -30,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -40,6 +42,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.hiddenPrize.AddScanBottomSheet
+import com.rarilabs.rarime.api.hiddenPrize.models.CelebrityStatus
 import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeCamera
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BG_HAND_HIDEN_PRIZE_HEIGHT
@@ -66,17 +69,50 @@ fun HiddenPrizeExpandedCard(
     expandedCardProps: BaseCardProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
 ) {
+
     val inviteLink: String = "invite link" //TODO add in viewModel
 
 
-    val showQrScan = rememberAppSheetState()
+    
+    val showFaceScan = rememberAppSheetState()
+
     val cameraPermissionState = rememberPermissionState(
         Manifest.permission.CAMERA
     )
     val showAddScan = rememberAppSheetState()
 
-    AppBottomSheet(state = showQrScan) {
-        HiddenPrizeCamera {}
+    // TODO: Add isWrong & isSuccess flags
+    AppBottomSheet(state = showFaceScan, shape = RectangleShape, isHeaderEnabled = false) {
+        Box(Modifier.fillMaxSize()) {
+//            TODO: Put blurred image here
+//            Image(
+//                painter = painterResource(R.drawable.drawable_digital_likeness),
+//                contentDescription = null,
+//                contentScale = ContentScale.Crop,
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .blur(20.dp)
+//            )
+//
+//            HiddenPrizeSuccessScreen(
+//                prizeAmount = 0.0f,
+//                prizeSymbol = {
+//                    Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
+//                },
+//                onViewWallet = {},
+//                onShareWallet = {}
+//            )
+//            HiddenPrizeWrongScreen(
+//                attemptsLeft = 2,
+//                tip = "Tip",
+//                onRetry = {}
+//            )
+            HiddenPrizeCamera(
+                onNext = {
+                    // TODO: Add on next
+                }
+            )
+        }
     }
 
 
@@ -108,7 +144,7 @@ fun HiddenPrizeExpandedCard(
             if (!cameraPermissionState.status.isGranted) {
                 cameraPermissionState.launchPermissionRequest()
             } else {
-                showQrScan.show()
+                showFaceScan.show()
             }
         },
         onAddScan = {
@@ -160,6 +196,7 @@ fun HiddenPrizeExpandedCardContent(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope
+                        // TODO: Add props
                     )
                 },
 
@@ -280,9 +317,9 @@ private fun Footer(
 fun Body(
     layoutId: Int,
     sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    celebrityStatus: CelebrityStatus = CelebrityStatus.ACTIVE
 ) {
-
     with(sharedTransitionScope) {
         Column(
             modifier = Modifier
@@ -296,11 +333,10 @@ fun Body(
                     resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
                 )
         ) {
-
             Spacer(modifier = Modifier.height(BG_HAND_HIDEN_PRIZE_HEIGHT.dp))
 
             BaseCardTitle(
-                title = "Hidden Prize",
+                title = "Hidden prize",
                 accentTitle = "Scan",
                 caption = "Found hidden prize $1000",
                 titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.baseBlack),
@@ -326,22 +362,45 @@ fun Body(
             )
             Spacer(modifier = Modifier.height(12.dp))
 
-            Text(
-                stringResource(R.string.hidden_price_expanded_cart_description),
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.baseBlackOp50
-            )
+            when (celebrityStatus) {
+                CelebrityStatus.ACTIVE -> {
+                    Text(
+                        stringResource(R.string.hidden_price_expanded_cart_description),
+                        style = RarimeTheme.typography.body3,
+                        color = RarimeTheme.colors.baseBlackOp50
+                    )
 
-            Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-            TipAlert(
-                text = "I think there's something as light as ether\n" + "in that face..."
-            )
+                    TipAlert(
+                        text = "I think there's something as light as ether\n" + "in that face..."
+                    )
 
-            Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+
+                CelebrityStatus.COMPLETED -> {
+                    // TODO: Replace with real content
+                    WinningFaceCard(
+                        imageSrc = "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg",
+                        placeholderRes = R.drawable.drawable_digital_likeness,
+                        name = "Vitalik Baturin",
+                        description = "Ethereum co-founder",
+                        winnerAddress = "0x00000...0000",
+                        prizeAmount = 0.3F,
+                        prizeSymbol = {
+                            Image(
+                                painterResource(R.drawable.ic_ethereum),
+                                contentDescription = "ETH"
+                            )
+                        },
+                    )
+                }
+
+                CelebrityStatus.MAINTENANCE -> {}
+            }
         }
     }
-
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
