@@ -4,7 +4,6 @@ package com.rarilabs.rarime.modules.home.v3.ui.expanded
 
 import android.Manifest
 import android.content.Intent
-import android.icu.text.CaseMap.Title
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -26,14 +25,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -52,18 +46,15 @@ import com.rarilabs.rarime.modules.home.v3.model.BG_HAND_HIDEN_PRIZE_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
 import com.rarilabs.rarime.modules.home.v3.model.CardType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardLogo
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.components.AppLogo
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.TipAlert
-import com.rarilabs.rarime.ui.components.VerticalDivider
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
@@ -75,7 +66,7 @@ fun HiddenPrizeExpandedCard(
     expandedCardProps: BaseCardProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
 ) {
-    val inviteLink:String = "invite link" //TODO add in viewModel
+    val inviteLink: String = "invite link" //TODO add in viewModel
 
 
     val showQrScan = rememberAppSheetState()
@@ -93,22 +84,19 @@ fun HiddenPrizeExpandedCard(
         contract = ActivityResultContracts.StartActivityForResult(), onResult = {})
 
     AppBottomSheet(state = showAddScan) {
-        AddScanBottomSheet(
-            onShare = {
-                val intent = Intent(Intent.ACTION_SEND).apply {
-                    type = "text/plain"
-                    putExtra(Intent.EXTRA_TEXT, "I use RareMe")
-                }
-                launcher.launch(Intent.createChooser(intent, "Share via"))
-            },
-            onInvite = {
-                val intent = Intent(Intent.ACTION_SEND).apply {
-                    type = "text/plain"
-                    putExtra(Intent.EXTRA_TEXT, inviteLink)
-                }
-                launcher.launch(Intent.createChooser(intent, "Invite via"))
+        AddScanBottomSheet(onShare = {
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, "I use RareMe")
             }
-        )
+            launcher.launch(Intent.createChooser(intent, "Share via"))
+        }, onInvite = {
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, inviteLink)
+            }
+            launcher.launch(Intent.createChooser(intent, "Invite via"))
+        })
 
     }
 
@@ -117,12 +105,11 @@ fun HiddenPrizeExpandedCard(
         modifier = modifier,
         innerPaddings = innerPaddings,
         onScan = {
-//            if (!cameraPermissionState.status.isGranted) {
-//                cameraPermissionState.launchPermissionRequest()
-//            } else {
-//                showQrScan.show()
-//            }
-            showAddScan.show() //TODO Delete this
+            if (!cameraPermissionState.status.isGranted) {
+                cameraPermissionState.launchPermissionRequest()
+            } else {
+                showQrScan.show()
+            }
         },
         onAddScan = {
             showAddScan.show()
@@ -289,7 +276,6 @@ private fun Footer(
     }
 }
 
-
 @Composable
 fun Body(
     layoutId: Int,
@@ -392,8 +378,6 @@ private fun Background(
         }
     }
 }
-
-
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true)

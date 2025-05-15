@@ -9,6 +9,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import com.google.firebase.annotations.concurrent.Background
 
 @Stable
 class RarimeColors(
@@ -100,7 +101,8 @@ class RarimeColors(
     gradient9: Brush,
 
     additionalGreen: Color,
-    hiddenPrizeAccent: Color
+    hiddenPrizeAccent: Color,
+    hiddenPrizeBackground: Color
 
 ) {
     var primaryDarker by mutableStateOf(primaryDarker, structuralEqualityPolicy())
@@ -240,6 +242,8 @@ class RarimeColors(
 
     var hiddenPrizeAccent by mutableStateOf(hiddenPrizeAccent, structuralEqualityPolicy())
 
+    var hiddenPrizeBackground by mutableStateOf(hiddenPrizeBackground, structuralEqualityPolicy())
+
 
     fun copy(
         primaryDarker: Color = this.primaryDarker,
@@ -370,7 +374,8 @@ class RarimeColors(
         gradient9 = gradient9,
         additionalGreen = additionalGreen,
         inverted = inverted,
-        hiddenPrizeAccent = hiddenPrizeAccent
+        hiddenPrizeAccent = hiddenPrizeAccent,
+        hiddenPrizeBackground =hiddenPrizeBackground
     )
 
     fun updateColorsFrom(other: RarimeColors) {
@@ -427,6 +432,7 @@ class RarimeColors(
         this.backgroundSurface1 = other.backgroundSurface1
 
         this.hiddenPrizeAccent = other.hiddenPrizeAccent
+        this.hiddenPrizeBackground = other.hiddenPrizeBackground
     }
 }
 
@@ -526,7 +532,8 @@ fun darkColors() = RarimeColors(
     baseBlackOp40 = Color(0x66141614),
     baseBlackOp50 = Color(0x80141614),
     inverted = Color(0xFF000000),
-    hiddenPrizeAccent = Color(0xFF9D4EDD)
+    hiddenPrizeAccent = Color(0xFF9D4EDD),
+    hiddenPrizeBackground = Color(0xFFF5EDFC)
 )
 
 fun lightColors() = RarimeColors(
@@ -624,7 +631,8 @@ fun lightColors() = RarimeColors(
     additionalGreen = Color(0xFFF1F7F1),
     inverted = Color(0xFFFFFFFF),
 
-    hiddenPrizeAccent = Color(0xFF9D4EDD)
+    hiddenPrizeAccent = Color(0xFF9D4EDD),
+    hiddenPrizeBackground = Color(0xFFF5EDFC)
 
 )
 

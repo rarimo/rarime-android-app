@@ -478,5 +478,11 @@
     <string name="add_scans_bottom_sheet_title_enebled">Bonus Scan</string>
     <string name="add_scans_bottom_sheet_title_disablet">Available scan</string>
     <string name="hidden_prize_add_scans_description_disablet">You have 3 scan attempts every 24 hours, but you can also unlock bonus chances by inviting friends and sharing.</string>
+    <string name="hidden_prize_title_share_row">Share on socials</string>
+    <string name="hidden_prize_share_row_description">+1 scan</string>
+    <string name="hidden_prize_share_row_button_label">Share</string>
+    <string name="hidden_prize_invite_row_title">Invite a friend</string>
+    <string name="hidden_prize_invite_row_description">+1 scan</string>
+    <string name="hidden_prize_invite_row_button_label">Invite</string>
 
 </resources>
