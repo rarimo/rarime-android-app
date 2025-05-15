@@ -4,6 +4,9 @@ package com.rarilabs.rarime.modules.home.v3.ui.expanded
 
 import WinningFaceCard
 import android.Manifest
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -38,6 +41,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.modules.hiddenPrize.AddScanBottomSheet
 import com.rarilabs.rarime.api.hiddenPrize.models.CelebrityStatus
 import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeCamera
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
@@ -65,10 +69,17 @@ fun HiddenPrizeExpandedCard(
     expandedCardProps: BaseCardProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
 ) {
+
+    val inviteLink: String = "invite link" //TODO add in viewModel
+
+
+    
     val showFaceScan = rememberAppSheetState()
+
     val cameraPermissionState = rememberPermissionState(
         Manifest.permission.CAMERA
     )
+    val showAddScan = rememberAppSheetState()
 
     // TODO: Add isWrong & isSuccess flags
     AppBottomSheet(state = showFaceScan, shape = RectangleShape, isHeaderEnabled = false) {
@@ -104,6 +115,27 @@ fun HiddenPrizeExpandedCard(
         }
     }
 
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(), onResult = {})
+
+    AppBottomSheet(state = showAddScan) {
+        AddScanBottomSheet(onShare = {
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, "I use RareMe")
+            }
+            launcher.launch(Intent.createChooser(intent, "Share via"))
+        }, onInvite = {
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, inviteLink)
+            }
+            launcher.launch(Intent.createChooser(intent, "Invite via"))
+        })
+
+    }
+
     HiddenPrizeExpandedCardContent(
         cardProps = expandedCardProps,
         modifier = modifier,
@@ -114,13 +146,13 @@ fun HiddenPrizeExpandedCard(
             } else {
                 showFaceScan.show()
             }
-
         },
         onAddScan = {
-            //TODO
+            showAddScan.show()
         })
 
 }
+
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -280,7 +312,6 @@ private fun Footer(
         }
     }
 }
-
 
 @Composable
 fun Body(
