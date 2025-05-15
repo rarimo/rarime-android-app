@@ -211,11 +211,7 @@ fun DigitalLikenessCamera(
                     }
 
                 }
-
-
             }
-
-
         }
 
         //CameraMask()
@@ -279,19 +275,7 @@ fun DigitalLikenessCamera(
                             size = ButtonSize.Large,
                             text = "Continue",
                             onClick = {
-//                                val density = context.resources.displayMetrics.density
-//                                val horizontalPaddingPx = 50f * density
-//                                val topPaddingPx = 200f * density
-
                                 onNext(selectedBitmap!!)
-
-//                                    cropBitmapToOval(
-//                                    src = selectedBitmap!!,
-//                                    aspectRatio = 395f / 290f,
-//                                    horizontalPaddingPx = horizontalPaddingPx,
-//                                    topPaddingPx = topPaddingPx
-//                                )
-                                //onNext(bitmap)
                             })
                     }
                 }

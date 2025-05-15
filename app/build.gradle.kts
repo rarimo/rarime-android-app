@@ -155,6 +155,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.view)
+    implementation(libs.face.mesh.detection)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -265,4 +266,5 @@ dependencies {
 
     implementation("io.coil-kt:coil-compose:2.0.0-rc01")
 
+    implementation("nl.dionsegijn:konfetti-compose:2.0.5")
 }

@@ -41,12 +41,14 @@ import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
 import com.rarilabs.rarime.modules.home.v3.model.CardType
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.ClaimCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.FreedomtoolCollapsedCard
+import com.rarilabs.rarime.modules.home.v3.ui.collapsed.HiddenPrizeCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.IdentityCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.LikenessCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.components.HomeHeader
 import com.rarilabs.rarime.modules.home.v3.ui.components.VerticalPageIndicator
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.ClaimExpandedCard
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.FreedomtoolExpandedCard
+import com.rarilabs.rarime.modules.home.v3.ui.expanded.HiddenPrizeExpandedCard
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.IdentityExpandedCard
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.LikenessExpandedCard
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
@@ -90,6 +92,7 @@ fun HomeScreenV3(
                 add(CardType.CLAIM)
             }
             add(CardType.CLAIM)
+            add(CardType.HIDDEN_PRIZE)
         }
     }
 
@@ -211,6 +214,11 @@ fun HomeScreenContent(
                                     modifier = baseCollapsedModifier,
                                     currentPointsBalance = currentPointsBalance
                                 )
+                                CardType.HIDDEN_PRIZE -> HiddenPrizeCollapsedCard(
+                                    collapsedCardProps = collapsedCardProps,
+                                    modifier = baseCollapsedModifier,
+
+                                )
                                 // TODO: Implement rest collapsed cards here
                             }
                         }
@@ -270,6 +278,11 @@ fun HomeScreenContent(
                             innerPaddings = innerPaddings,
                             navigate = navigate,
                             currentPointsBalance = currentPointsBalance
+                        )
+
+                        CardType.HIDDEN_PRIZE -> HiddenPrizeExpandedCard(
+                            expandedCardProps = expandedCardProps,
+                            innerPaddings = innerPaddings
                         )
                         // TODO: Implement rest expanded cards here
                     }

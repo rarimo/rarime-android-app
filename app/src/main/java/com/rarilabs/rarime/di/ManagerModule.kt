@@ -13,6 +13,8 @@ import com.rarilabs.rarime.api.erc20.Erc20API
 import com.rarilabs.rarime.api.erc20.Erc20ApiManager
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorAPI
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorApiManager
+import com.rarilabs.rarime.api.hiddenPrize.HiddenPrizeApi
+import com.rarilabs.rarime.api.hiddenPrize.HiddenPrizeApiManager
 import com.rarilabs.rarime.api.likeness.LikenessApi
 import com.rarilabs.rarime.api.likeness.LikenessApiManager
 import com.rarilabs.rarime.api.points.PointsAPI
@@ -78,8 +80,7 @@ class APIModule {
     @Provides
     @Singleton
     fun provideNfcManager(
-        @ApplicationContext context: Context,
-        pointsManager: PointsManager
+        @ApplicationContext context: Context, pointsManager: PointsManager
     ): NfcManager {
         return NfcManager(context, pointsManager)
     }
@@ -139,25 +140,18 @@ class APIModule {
         authManager: dagger.Lazy<AuthManager>, // Use Lazy injection to break the cycle
         @Named("authRetrofit") authRetrofit: Retrofit
     ): Retrofit {
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(
-                RefreshTokenInterceptor(
-                    authManager,
-                    authRetrofit
-                )
+        val okHttpClient = OkHttpClient.Builder().addInterceptor(
+            RefreshTokenInterceptor(
+                authManager, authRetrofit
             )
-            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+        ).addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .build()
 
-        return Retrofit.Builder()
-            .addConverterFactory(
-                MoshiConverterFactory.create(
-                    Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-                )
+        return Retrofit.Builder().addConverterFactory(
+            MoshiConverterFactory.create(
+                Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
             )
-            .baseUrl(BaseConfig.RELAYER_URL)
-            .client(okHttpClient)
-            .build()
+        ).baseUrl(BaseConfig.RELAYER_URL).client(okHttpClient).build()
     }
 
     @Provides
@@ -242,14 +236,13 @@ class APIModule {
         sharedPreferences: SecureSharedPrefsManager,
         passportManager: PassportManager,
         identityManager: IdentityManager,
-    ): ExtIntegratorApiManager =
-        ExtIntegratorApiManager(
-            retrofit.create(ExtIntegratorAPI::class.java),
-            contractManager,
-            sharedPreferences,
-            passportManager,
-            identityManager,
-        )
+    ): ExtIntegratorApiManager = ExtIntegratorApiManager(
+        retrofit.create(ExtIntegratorAPI::class.java),
+        contractManager,
+        sharedPreferences,
+        passportManager,
+        identityManager,
+    )
 
     @Provides
     @Singleton
@@ -293,8 +286,7 @@ class APIModule {
     @Provides
     @Singleton
     fun providePassportManager(
-        dataStoreManager: SecureSharedPrefsManager,
-        identityManager: IdentityManager
+        dataStoreManager: SecureSharedPrefsManager, identityManager: IdentityManager
     ): PassportManager = PassportManager(dataStoreManager, identityManager)
 
 
@@ -307,15 +299,14 @@ class APIModule {
         rarimoContractManager: RarimoContractManager,
         passportManager: PassportManager,
         pointsManager: PointsManager
-    ): ProofGenerationManager =
-        ProofGenerationManager(
-            context,
-            identityManager,
-            registrationManager,
-            passportManager,
-            rarimoContractManager,
-            pointsManager
-        )
+    ): ProofGenerationManager = ProofGenerationManager(
+        context,
+        identityManager,
+        registrationManager,
+        passportManager,
+        rarimoContractManager,
+        pointsManager
+    )
 
 
     @Provides
@@ -345,25 +336,18 @@ class APIModule {
         authManager: dagger.Lazy<AuthManager>, // Use Lazy injection to break the cycle
         @Named("authRetrofit") authRetrofit: Retrofit
     ): Retrofit {
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(
-                RefreshTokenInterceptor(
-                    authManager,
-                    authRetrofit
-                )
+        val okHttpClient = OkHttpClient.Builder().addInterceptor(
+            RefreshTokenInterceptor(
+                authManager, authRetrofit
             )
-            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+        ).addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .build()
 
-        return Retrofit.Builder()
-            .addConverterFactory(
-                MoshiConverterFactory.create(
-                    Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-                )
+        return Retrofit.Builder().addConverterFactory(
+            MoshiConverterFactory.create(
+                Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
             )
-            .baseUrl(BaseConfig.COSMOS_RPC_URL)
-            .client(okHttpClient)
-            .build()
+        ).baseUrl(BaseConfig.COSMOS_RPC_URL).client(okHttpClient).build()
     }
 
     @Provides
@@ -423,8 +407,7 @@ class APIModule {
     @Provides
     @Singleton
     fun provideIdentityManager(
-        dataStoreManager: SecureSharedPrefsManager,
-        rarimoContractManager: RarimoContractManager
+        dataStoreManager: SecureSharedPrefsManager, rarimoContractManager: RarimoContractManager
     ): IdentityManager {
         return IdentityManager(dataStoreManager, rarimoContractManager)
     }
@@ -443,7 +426,6 @@ class APIModule {
     fun web3Test(): Web3j {
         return Web3j.build(HttpService(BaseConfig.VOTING_RPC_URL))
     }
-
 
     @Provides
     @Singleton
@@ -468,6 +450,12 @@ class APIModule {
     @Singleton
     fun provideLikenessApiManager(@Named("jsonApiRetrofit") retrofit: Retrofit): LikenessApiManager {
         return LikenessApiManager(retrofit.create(LikenessApi::class.java))
+    }
+
+    @Provides
+    @Singleton
+    fun provideHiddenPrizeApiManager(@Named("jsonApiRetrofit") retrofit: Retrofit): HiddenPrizeApiManager {
+        return HiddenPrizeApiManager(retrofit.create(HiddenPrizeApi::class.java))
     }
 
     @Provides
@@ -498,9 +486,10 @@ class APIModule {
     @Provides
     @Singleton
     fun provideNotificationManager(
-        notificationsRepository: NotificationsRepository,
-        passportManager: PassportManager
+        notificationsRepository: NotificationsRepository, passportManager: PassportManager
     ): NotificationManager {
         return NotificationManager(notificationsRepository, passportManager)
     }
+
+
 }
