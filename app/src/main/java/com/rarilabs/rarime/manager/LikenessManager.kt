@@ -80,6 +80,7 @@ class LikenessManager @Inject constructor(
 
     private var _errorState = MutableStateFlow<LivenessProcessingStatus?>(null)
 
+
     val errorState: StateFlow<LivenessProcessingStatus?>
         get() = _errorState.asStateFlow()
 
