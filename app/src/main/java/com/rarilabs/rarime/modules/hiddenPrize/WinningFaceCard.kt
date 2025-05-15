@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -59,7 +60,7 @@ fun WinningFaceCard(
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "Winning face:",
+                    text = stringResource(R.string.winner_face_card_title),
                     style = RarimeTheme.typography.subtitle6
                 )
 
@@ -77,7 +78,7 @@ fun WinningFaceCard(
                                     placeholder(placeholderRes)
                                 }).build()
                         ),
-                        contentDescription = "Winner face",
+                        contentDescription = stringResource(R.string.winner_face_card_image_description),
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
@@ -107,7 +108,7 @@ fun WinningFaceCard(
                 ) {
                     Row(horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(
-                            text = "Winner:",
+                            text = stringResource(R.string.winner_face_card_winner_lbl),
                             style = RarimeTheme.typography.subtitle6
                         )
                         Spacer(Modifier.weight(1f))
@@ -120,7 +121,7 @@ fun WinningFaceCard(
 
                     Row(horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(
-                            text = "Prize:",
+                            text = stringResource(R.string.winner_face_card_prize_lbl),
                             style = RarimeTheme.typography.subtitle6
                         )
                         Spacer(Modifier.weight(1f))
