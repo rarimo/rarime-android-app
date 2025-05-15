@@ -7,8 +7,11 @@ import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -56,7 +59,7 @@ import java.util.concurrent.Executors
 
 
 enum class HiddenPrizeCameraStep {
-    CAMERA, CONGRATS, WRONG, PROCESSING_ML, PROCESSING_ZKP
+    CAMERA, CONGRATS, WRONG, PROCESSING_ML, PROCESSING_ZKP, FINISH
 }
 
 
@@ -96,19 +99,14 @@ fun HiddenPrizeCamera(
         onMeshDetected = { detectedMeshes = it })
 
     RenderPreviewOrImage(
-        previewView,
-        selectedBitmap,
-        isBlurred = (currentStep != HiddenPrizeCameraStep.CAMERA)
+        previewView, selectedBitmap, isBlurred = (currentStep != HiddenPrizeCameraStep.CAMERA)
     )
 
     when (currentStep) {
         HiddenPrizeCameraStep.CAMERA -> {
             Box(modifier = modifier.fillMaxSize()) {
-                "feature/hidden-prize-processing"
-
                 FaceMeshCanvas(
-                    imageSize = imageSize,
-                    detectedMeshes = detectedMeshes
+                    imageSize = imageSize, detectedMeshes = detectedMeshes
                 )
 
                 OverlayControls(
@@ -121,31 +119,64 @@ fun HiddenPrizeCamera(
             }
         }
 
+        HiddenPrizeCameraStep.PROCESSING_ZKP -> {
+            HiddenPrizeLoadingZK(processingValue = 0.3f) {}
+        }
+
+        HiddenPrizeCameraStep.WRONG -> {
+            HiddenPrizeWrongScreen()
+        }
+
         HiddenPrizeCameraStep.CONGRATS -> {
-            HiddenPrizeSuccessScreen(
+            HiddenPrizeCongratsScreen(
+                prizeAmount = 2.0f,
+                prizeSymbol = { AppIcon(id = R.drawable.ic_restart_line) },
+                onClaim = { currentStep = HiddenPrizeCameraStep.PROCESSING_ZKP })
+        }
+
+        HiddenPrizeCameraStep.PROCESSING_ML -> {
+            HiddenPrizeLoadingML(processingValue = 0.5f)
+        }
+
+        HiddenPrizeCameraStep.FINISH -> {
+            HiddenPrizeFinish(
                 prizeAmount = 2.0f,
                 prizeSymbol = { AppIcon(id = R.drawable.ic_restart_line) },
                 onViewWallet = {},
                 onShareWallet = {})
         }
-
-        HiddenPrizeCameraStep.WRONG -> HiddenPrizeWrongScreen()
-        HiddenPrizeCameraStep.PROCESSING_ML -> TODO()
-        HiddenPrizeCameraStep.PROCESSING_ZKP -> TODO()
     }
 
 }
 
 
 @Composable
-fun RenderPreviewOrImage(previewView: PreviewView, selectedBitmap: Bitmap?, isBlurred: Boolean) {
+fun RenderPreviewOrImage(
+    previewView: PreviewView, selectedBitmap: Bitmap?, isBlurred: Boolean
+) {
+    val targetBlur = if (isBlurred) 50f else 0f
+    val targetShadow = if (isBlurred) 0.5f else 0f
+
+    val blurValue by animateFloatAsState(
+        targetValue = targetBlur,
+        animationSpec = tween(durationMillis = 500), // Adjust duration for smoothness
+        label = "blurAnimation"
+    )
+
+    val shadowValue by animateFloatAsState(
+        targetValue = targetShadow,
+        animationSpec = tween(durationMillis = 1000), // Adjust duration for smoothness
+        label = "ShadowAnimation"
+    )
+
     if (selectedBitmap != null) {
         Image(
             bitmap = selectedBitmap.asImageBitmap(),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxSize()
-                .blur(if (isBlurred) 20.dp else 0.dp)
+                .background(Color.Black.copy(alpha = shadowValue))
+                .blur(blurValue.dp)
         )
     } else {
         AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())

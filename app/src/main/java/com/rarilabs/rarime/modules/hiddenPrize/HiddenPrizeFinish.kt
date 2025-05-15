@@ -1,18 +1,15 @@
 package com.rarilabs.rarime.modules.hiddenPrize
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -31,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
-import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import nl.dionsegijn.konfetti.compose.KonfettiView
 import nl.dionsegijn.konfetti.core.Party
@@ -40,7 +36,7 @@ import nl.dionsegijn.konfetti.core.emitter.Emitter
 import java.util.concurrent.TimeUnit
 
 @Composable
-fun HiddenPrizeSuccessScreen(
+fun HiddenPrizeFinish(
     modifier: Modifier = Modifier,
     prizeAmount: Float,
     prizeSymbol: @Composable () -> Unit = {},
@@ -48,17 +44,9 @@ fun HiddenPrizeSuccessScreen(
     onShareWallet: () -> Unit
 ) {
     Box(Modifier.fillMaxSize()) {
-        Box(
-            Modifier
-                .matchParentSize()
-                .blur(120.dp)
-                .background(Color.Black.copy(alpha = 0.5f))
-        )
-
         Column(
             modifier = modifier
-                .fillMaxSize()
-                .background(RarimeTheme.colors.baseBlack.copy(alpha = 0.7f)),
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
@@ -93,50 +81,18 @@ fun HiddenPrizeSuccessScreen(
                     )
                     Spacer(Modifier.height(32.dp))
                     Text(
-                        stringResource(R.string.hidden_prize_success_screen_title),
+                        stringResource(R.string.hidden_prize_finish_screen_title),
                         color = RarimeTheme.colors.baseWhite,
                         textAlign = TextAlign.Center,
                         style = RarimeTheme.typography.h3
                     )
                     Spacer(Modifier.height(12.dp))
                     Text(
-                        stringResource(R.string.hidden_prize_success_screen_description),
+                        stringResource(R.string.hidden_prize_finish_screen_description),
                         color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
                         textAlign = TextAlign.Center,
                     )
-                    Spacer(Modifier.height(32.dp))
-                    HorizontalDivider(
-                        modifier = Modifier.width(280.dp),
-                        color = RarimeTheme.colors.baseWhite.copy(alpha = 0.05f)
-                    )
-                    Spacer(Modifier.height(32.dp))
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier
-                            .background(
-                                RarimeTheme.colors.baseWhite.copy(0.05f),
-                                shape = RoundedCornerShape(20.dp)
-                            )
-                            .padding(vertical = 20.dp)
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            stringResource(R.string.hidden_prize_success_screen_prize),
-                            color = RarimeTheme.colors.baseWhite.copy(0.6f)
-                        )
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            Text(
-                                prizeAmount.toString().format(),
-                                style = RarimeTheme.typography.h3,
-                                color = RarimeTheme.colors.baseWhite
-                            )
-                            prizeSymbol()
-                        }
-                    }
+
                 }
             }
         }
@@ -189,7 +145,7 @@ fun HiddenPrizeSuccessScreen(
 
 @Composable
 @Preview
-fun SuccessScreenPreview_WithBlur() {
+fun HiddenPrizeFinishPreview() {
     Box(Modifier.fillMaxSize()) {
         // Image for blur example
         Image(
@@ -201,7 +157,7 @@ fun SuccessScreenPreview_WithBlur() {
                 .blur(20.dp)
         )
 
-        HiddenPrizeSuccessScreen(prizeAmount = 2.2f, onViewWallet = {}, prizeSymbol = {
+        HiddenPrizeFinish(prizeAmount = 2.2f, onViewWallet = {}, prizeSymbol = {
             Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
         }, onShareWallet = {})
     }

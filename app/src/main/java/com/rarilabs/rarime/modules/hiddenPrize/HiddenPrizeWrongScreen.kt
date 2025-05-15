@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.modules.hiddenPrize
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -42,17 +40,10 @@ fun HiddenPrizeWrongScreen(
         if (canRetry) append(stringResource(R.string.hidden_prize_wrong_screen_description_2))
     }
     Box(Modifier.fillMaxSize()) {
-        Box(
-            Modifier
-                .matchParentSize()
-                .blur(120.dp)
-                .background(Color.Black.copy(alpha = 0.5f))
-        )
 
         Column(
             modifier = modifier
-                .fillMaxSize()
-                .background(RarimeTheme.colors.baseBlack.copy(alpha = 0.7f)),
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
