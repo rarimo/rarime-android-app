@@ -95,7 +95,6 @@ fun HiddenPrizeExpandedCard(
             } else {
                 showQrScan.show()
             }
-
         },
         onAddScan = {
             showAddScan.show()
