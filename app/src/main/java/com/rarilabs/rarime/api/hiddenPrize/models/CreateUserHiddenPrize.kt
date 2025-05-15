@@ -15,7 +15,8 @@ data class CreateUserRequest(
 
 data class CreateUserResponse(
     val data: User,
-    val included: List<UserStats>? = null
+    val included: List<UserStats>? = null,
+    val relationships: CreateUserRelationships
 )
 
 data class User(
@@ -43,3 +44,18 @@ data class UserStats(
         val reset_time: Long
     )
 }
+
+sealed class CreateUserRelationships(
+    val user_stats: UserStatsRelationship,
+    val celebrity: CelebrityRelationship
+)
+
+data class UserStatsRelationship(
+    val type: String = "user_stats",
+    val id: Int
+)
+
+data class CelebrityRelationship(
+    val type: String = "celebrity",
+    val id: Int
+)

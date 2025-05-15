@@ -15,7 +15,8 @@ data class SubmitGuessRequest(
 
 data class SubmitGuessResponse(
     val data: GuessResult,
-    val included: List<Included>
+    val included: List<Included>,
+    val relationships: SubmitGuessRelationship
 )
 
 data class GuessResult(
@@ -28,15 +29,12 @@ data class GuessAttributes(
     val original_feature_vector: List<Float>
 )
 
-data class Included(
-    val id: Int,
-    val type: String,
-    val attributes: UserStatsAttributes
-)
+sealed class Included {
+    data class Stats(val userStats: UserStats) : Included()
+    data class CelebrityItem(val celebrity: Celebrity) : IncludedItem()
+}
 
-data class UserStatsAttributes(
-    val attempts_left: Int,
-    val extra_attempts_left: Int,
-    val total_attempts_count: Int,
-    val reset_time: Long
+sealed class SubmitGuessRelationship(
+    val user_stats: UserStatsRelationship,
+    val celebrity: CelebrityRelationship
 )
