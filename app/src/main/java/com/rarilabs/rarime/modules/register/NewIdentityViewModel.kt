@@ -14,8 +14,8 @@ import com.google.api.services.drive.DriveScopes
 import com.google.api.services.drive.model.File
 import com.google.api.services.drive.model.FileList
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.manager.IdentityManager
+import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.store
 
+import android.graphics.Bitmap
 import com.rarilabs.rarime.api.registration.models.LightRegistrationData
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.data.enums.AppLanguage
@@ -7,6 +8,7 @@ import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.data.enums.SecurityCheckState
+import com.rarilabs.rarime.manager.LikenessRule
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.wallet.models.Transaction
@@ -87,4 +89,14 @@ interface SecureSharedPrefsManager {
 
     fun saveIsAlreadyReserved(isAlreadyReserved: Boolean)
     fun getIsAlreadyReserved(): Boolean
+
+    fun saveSelectedLikenessRule(likenessRule: LikenessRule)
+    fun getSelectedLikenessRule(): LikenessRule?
+
+    fun saveLikenessFace(face: Bitmap)
+    fun getLikenessFace(): Bitmap?
+
+    fun saveLivenessProof(proof: ZkProof)
+    fun getLivenessProof(): ZkProof?
+
 }

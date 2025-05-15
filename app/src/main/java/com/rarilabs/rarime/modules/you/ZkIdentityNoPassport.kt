@@ -68,7 +68,6 @@ fun ZkIdentityNoPassport(
     var currentScreen by remember { mutableStateOf(IdentityScreenType.NONE) }
     val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
 
-
     val context = LocalContext.current
 
     val filePicker =

@@ -70,7 +70,6 @@ fun ScanQrScreenContent(
         ) {
             CameraMask(boxSize = 300.dp)
             AppIcon(
-
                 id = R.drawable.ic_caret_left,
                 size = 20.dp,
                 tint = RarimeTheme.colors.baseWhite,
@@ -148,6 +147,6 @@ fun PreviewScanQrScreen() {
             .fillMaxWidth()
             .background(Color.White)
     ) {
-
+        ScanQrScreen(onScan = {}, onBack = {})
     }
 }

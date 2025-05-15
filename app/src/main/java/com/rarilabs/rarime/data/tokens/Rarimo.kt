@@ -3,8 +3,8 @@ package com.rarilabs.rarime.data.tokens
 import android.util.Log
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.cosmos.CosmosManager
 import com.rarilabs.rarime.data.ChainInfo
+import com.rarilabs.rarime.manager.CosmosManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.modules.wallet.models.TransactionState

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -48,12 +49,10 @@ class AppSheetState(initialShowSheet: Boolean = false) {
     }
 
     companion object {
-        val Saver: Saver<AppSheetState, *> = listSaver(
-            save = { listOf(it.showSheet) },
-            restore = { list ->
+        val Saver: Saver<AppSheetState, *> =
+            listSaver(save = { listOf(it.showSheet) }, restore = { list ->
                 AppSheetState(initialShowSheet = list[0])
-            }
-        )
+            })
     }
 }
 
@@ -75,21 +74,27 @@ fun AppBottomSheet(
     isHeaderEnabled: Boolean = true,
     scrimColor: Color = Color.Black.copy(alpha = 0.5f), // Dims the background
     isWindowInsetsEnabled: Boolean = true,
+    // When `disableScrollPull` true, prevents sheet from closing on pull
+    // without pulling in experimental APIs
+    disablePullClose: Boolean = false,
     content: @Composable (HideSheetFn) -> Unit,
 ) {
-    val modalState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val modalState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        confirmValueChange = { newValue ->
+            if (disablePullClose) newValue == SheetValue.Hidden else true
+        })
     val coroutineScope = rememberCoroutineScope()
 
     // Remove the windowInsetsPadding from the sheet container so the scrim covers the full screen.
     // Instead, we'll apply insets on the inner content.
     fun hide(callback: () -> Unit = {}) {
-        coroutineScope.launch { modalState.hide() }
-            .invokeOnCompletion {
-                if (!modalState.isVisible) {
-                    state.hide()
-                    callback()
-                }
+        coroutineScope.launch { modalState.hide() }.invokeOnCompletion {
+            if (!modalState.isVisible) {
+                state.hide()
+                callback()
             }
+        }
     }
 
     if (state.showSheet) {
@@ -104,9 +109,8 @@ fun AppBottomSheet(
             windowInsets = if (isWindowInsetsEnabled) {
                 BottomSheetDefaults.windowInsets
             } else {
-                val topPaddingDp = BottomSheetDefaults.windowInsets
-                    .asPaddingValues()
-                    .calculateTopPadding()
+                val topPaddingDp =
+                    BottomSheetDefaults.windowInsets.asPaddingValues().calculateTopPadding()
                 WindowInsets(0.dp, topPaddingDp, 0.dp, 0.dp)
 
             }
@@ -128,9 +132,7 @@ fun AppBottomSheet(
                             horizontalArrangement = Arrangement.End
                         ) {
                             PrimaryTextButton(
-                                leftIcon = R.drawable.ic_close,
-                                onClick = { hide() }
-                            )
+                                leftIcon = R.drawable.ic_close, onClick = { hide() })
                         }
                     }
                     content { callback -> hide(callback) }
@@ -148,9 +150,7 @@ private fun AppBottomSheetPreview() {
     Surface(modifier = Modifier.fillMaxSize()) {
         Box {
             PrimaryButton(
-                text = "Show bottom sheet",
-                onClick = { sheetState.show() }
-            )
+                text = "Show bottom sheet", onClick = { sheetState.show() })
         }
         AppBottomSheet(
             state = sheetState,

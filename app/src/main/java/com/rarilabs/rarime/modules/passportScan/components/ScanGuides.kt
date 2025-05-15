@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
@@ -104,6 +105,7 @@ fun ScanGuidesTrigger(
 
     AppBottomSheet(
         state = guideSheetState,
+        fullScreen = true,
     ) { hide ->
         var step by remember { mutableStateOf(1) }
 
@@ -157,8 +159,8 @@ fun ScanGuides(
     Column(
         modifier = Modifier
             .padding(24.dp)
+            .fillMaxSize()
             .verticalScroll(rememberScrollState()),
-
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(modifier = Modifier.height(48.dp))

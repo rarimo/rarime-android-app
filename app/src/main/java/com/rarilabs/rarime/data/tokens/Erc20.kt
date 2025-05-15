@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.data.tokens
 
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.erc20.Erc20Manager
 import com.rarilabs.rarime.api.erc20.models.Attributes
 import com.rarilabs.rarime.api.erc20.models.Data
 import com.rarilabs.rarime.api.erc20.models.PermitHashAttributesRequest
@@ -9,6 +8,7 @@ import com.rarilabs.rarime.api.erc20.models.PermitHashDataRequest
 import com.rarilabs.rarime.api.erc20.models.PermitHashRequest
 import com.rarilabs.rarime.api.erc20.models.TransferErc20Request
 import com.rarilabs.rarime.contracts.Erc20Contract
+import com.rarilabs.rarime.manager.Erc20Manager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.StableCoinContractManager
 import com.rarilabs.rarime.modules.wallet.models.Transaction
@@ -62,7 +62,7 @@ class Erc20Token(
         val permitHashRequest = PermitHashRequest(
             data = PermitHashDataRequest(
                 type = "transfer_erc20", attributes = PermitHashAttributesRequest(
-                    sender = identityManager.evmAddress()!!,
+                    sender = identityManager.evmAddress(),
                     amount = amount.toLong(),
                     deadline = deadLine
                 )

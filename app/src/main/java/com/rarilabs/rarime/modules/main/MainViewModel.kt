@@ -6,12 +6,12 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.rarilabs.rarime.api.airdrop.AirDropManager
-import com.rarilabs.rarime.api.auth.AuthManager
-import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.data.enums.SecurityCheckState
+import com.rarilabs.rarime.manager.AirDropManager
+import com.rarilabs.rarime.manager.AuthManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
+import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.manager.SecurityManager
 import com.rarilabs.rarime.manager.SettingsManager
 import com.rarilabs.rarime.manager.WalletManager

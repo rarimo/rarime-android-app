@@ -3,8 +3,6 @@ package com.rarilabs.rarime.modules.rewards.view_models
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.auth.AuthManager
-import com.rarilabs.rarime.api.points.PointsManager
 import com.rarilabs.rarime.api.points.models.BaseEvents
 import com.rarilabs.rarime.api.points.models.PointsEventAttributes
 import com.rarilabs.rarime.api.points.models.PointsEventBody
@@ -14,7 +12,9 @@ import com.rarilabs.rarime.api.points.models.PointsEventMetaDynamic
 import com.rarilabs.rarime.api.points.models.PointsEventMetaStatic
 import com.rarilabs.rarime.api.points.models.PointsEventStatuses
 import com.rarilabs.rarime.data.tokens.PointsToken
+import com.rarilabs.rarime.manager.AuthManager
 import com.rarilabs.rarime.manager.PassportManager
+import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.ui.components.MARKDOWN_CONTENT
