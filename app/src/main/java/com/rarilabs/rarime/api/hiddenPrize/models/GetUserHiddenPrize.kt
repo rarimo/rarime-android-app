@@ -2,7 +2,8 @@ package com.rarilabs.rarime.api.hiddenPrize.models
 
 data class GetUserResponse(
     val data: User,
-    val included: List<IncludedItem>
+    val included: List<IncludedItem>,
+    val relationships: GetUserRelationship
 )
 
 sealed class IncludedItem {
@@ -43,3 +44,8 @@ data class Celebrity(
         val hint: String
     )
 }
+
+sealed class GetUserRelationship(
+    val user_stats: UserStatsRelationship,
+    val celebrity: CelebrityRelationship
+)

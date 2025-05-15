@@ -15,7 +15,8 @@ data class SubmitGuessRequest(
 
 data class SubmitGuessResponse(
     val data: GuessResult,
-    val included: List<Included>
+    val included: List<Included>,
+    val relationships: SubmitGuessRelationship
 )
 
 data class GuessResult(
@@ -32,3 +33,8 @@ sealed class Included {
     data class Stats(val userStats: UserStats) : Included()
     data class CelebrityItem(val celebrity: Celebrity) : IncludedItem()
 }
+
+sealed class SubmitGuessRelationship(
+    val user_stats: UserStatsRelationship,
+    val celebrity: CelebrityRelationship
+)
