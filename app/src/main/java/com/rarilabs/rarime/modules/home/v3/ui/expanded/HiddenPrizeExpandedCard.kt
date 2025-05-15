@@ -33,11 +33,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeCamera
+import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeViewModel
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BG_HAND_HIDEN_PRIZE_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
@@ -62,6 +64,7 @@ fun HiddenPrizeExpandedCard(
     modifier: Modifier = Modifier,
     expandedCardProps: BaseCardProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
+    viewModel: HiddenPrizeViewModel = hiltViewModel()
 ) {
 
 
@@ -74,10 +77,8 @@ fun HiddenPrizeExpandedCard(
     AppBottomSheet(state = showFaceScan, shape = RectangleShape, isHeaderEnabled = false) {
         Box(Modifier.fillMaxSize()) {
             HiddenPrizeCamera(
-                onNext = {
-
-                }
-            )
+                processML = { viewModel.getFaceFeatures(it) },
+                processZK = { features, bitmap -> viewModel.claimTokens(features, bitmap) })
         }
     }
 

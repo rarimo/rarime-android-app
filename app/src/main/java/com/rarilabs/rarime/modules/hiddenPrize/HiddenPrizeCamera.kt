@@ -67,7 +67,8 @@ enum class HiddenPrizeCameraStep {
 @Composable
 fun HiddenPrizeCamera(
     modifier: Modifier = Modifier,
-    onNext: (Bitmap) -> Unit,
+    processZK: suspend (List<Float>, Bitmap) -> Unit,
+    processML: suspend (Bitmap) -> Unit,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -120,7 +121,9 @@ fun HiddenPrizeCamera(
         }
 
         HiddenPrizeCameraStep.PROCESSING_ZKP -> {
-            HiddenPrizeLoadingZK(processingValue = 0.3f) {}
+            HiddenPrizeLoadingZK(processingValue = 0.3f) {
+                processZK()
+            }
         }
 
         HiddenPrizeCameraStep.WRONG -> {
@@ -135,7 +138,9 @@ fun HiddenPrizeCamera(
         }
 
         HiddenPrizeCameraStep.PROCESSING_ML -> {
-            HiddenPrizeLoadingML(processingValue = 0.5f)
+            HiddenPrizeLoadingML(processingValue = 0.5f) {
+                processML(selectedBitmap!!)
+            }
         }
 
         HiddenPrizeCameraStep.FINISH -> {
@@ -358,7 +363,7 @@ fun SetupCamera(
 @Preview
 @Composable
 private fun HiddenPrizeCameraPreview() {
-    HiddenPrizeCamera {
+    HiddenPrizeCamera(processML = {}, processZK = {}) {
 
     }
 }

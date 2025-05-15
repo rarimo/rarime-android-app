@@ -11,6 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -22,7 +23,16 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun HiddenPrizeLoadingML(modifier: Modifier = Modifier, processingValue: Float) {
+fun HiddenPrizeLoadingML(
+    modifier: Modifier = Modifier,
+    processingValue: Float,
+    processing: suspend () -> Unit
+) {
+
+    LaunchedEffect(Unit) {
+        processing()
+    }
+
 
     Box(Modifier.fillMaxSize()) {
         Column(
@@ -84,5 +94,5 @@ fun HiddenPrizeLoadingML(modifier: Modifier = Modifier, processingValue: Float) 
 @Preview
 @Composable
 private fun HiddenPrizeLoadingMLPreview() {
-    HiddenPrizeLoadingML(processingValue = 0.64f)
+    HiddenPrizeLoadingML(processingValue = 0.64f) {}
 }

@@ -2,6 +2,7 @@ package com.rarilabs.rarime.manager
 
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.contracts.rarimo.FaceRegistry
+import com.rarilabs.rarime.contracts.rarimo.GuessCelebrity
 import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT
 import com.rarilabs.rarime.contracts.rarimo.StateKeeper
 import kotlinx.coroutines.Dispatchers
@@ -45,6 +46,18 @@ class RarimoContractManager @Inject constructor(@Named("RARIMO") private val web
         val address = BaseConfig.FACE_REGISTRY_ADDRESS
 
         return FaceRegistry.load(
+            address, web3j, credentials, gasProvider
+        )
+    }
+
+
+    fun getGuessCelebrity(): GuessCelebrity {
+        val ecKeyPair = Keys.createEcKeyPair()
+        val credentials = Credentials.create(ecKeyPair)
+        val gasProvider = DefaultGasProvider()
+        val address = BaseConfig.GUESS_CELEBRITY_CONTRACT_ADDRESS
+
+        return GuessCelebrity.load(
             address, web3j, credentials, gasProvider
         )
     }

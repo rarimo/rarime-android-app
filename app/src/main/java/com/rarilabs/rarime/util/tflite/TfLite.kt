@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.AssetFileDescriptor
 import android.content.res.AssetManager
 import org.tensorflow.lite.Interpreter
+import java.io.File
 import java.io.FileInputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -21,7 +22,7 @@ import java.nio.channels.FileChannel
  * @param featureSize Number of output features (default: 64).
  * @param numThreads  Number of threads for inference (default: 4).
  */
-class RunTFLiteFeatureExtractorUseCase(
+class RunTFLiteFeatureGrayscaleExtractorUseCase(
     context: Context,
     private val modelName: String = "model.tflite",
     private val inputWidth: Int = 40,
@@ -75,14 +76,82 @@ class RunTFLiteFeatureExtractorUseCase(
     }
 
     private fun preprocess(inputArray: Array<FloatArray>): ByteBuffer {
-        val byteBuffer = ByteBuffer
-            .allocateDirect(4 * inputWidth * inputHeight)
-            .order(ByteOrder.nativeOrder())
+        val byteBuffer =
+            ByteBuffer.allocateDirect(4 * inputWidth * inputHeight).order(ByteOrder.nativeOrder())
 
         for (y in 0 until inputHeight) {
             for (x in 0 until inputWidth) {
                 // value already normalized in [0.0f,1.0f]
                 byteBuffer.putFloat(inputArray[y][x])
+            }
+        }
+        byteBuffer.rewind()
+        return byteBuffer
+    }
+}
+
+/**
+ * Use-case for running a TensorFlow Lite model that maps a 224×224×3 RGB input
+ * (values from 0..255) to a 64-dimensional feature vector.
+ */
+class RunTFLiteFeatureRGBExtractorUseCase(
+    private val modelFile: File,
+    private val inputWidth: Int = 112,
+    private val inputHeight: Int = 112,
+    private val inputChannels: Int = 3,
+    private val featureSize: Int = 64,
+    numThreads: Int = 4
+) {
+    private val interpreter: Interpreter
+
+    init {
+        val modelBuffer = loadModelFile(modelFile)
+        val options = Interpreter.Options().apply {
+            setNumThreads(numThreads)
+        }
+        interpreter = Interpreter(modelBuffer, options)
+    }
+
+    /**
+     * Runs inference on the given RGB input array and returns a FloatArray
+     * of length [featureSize].
+     *
+     * @param inputArray 3D Int array [inputHeight][inputWidth][inputChannels], values in 0..255
+     */
+    operator fun invoke(inputArray: Array<Array<IntArray>>): IntArray {
+        require(inputArray.size == inputHeight && inputArray.all { it.size == inputWidth } && inputArray.all { row -> row.all { it.size == inputChannels } }) {
+            "Input array must be of shape [$inputHeight][$inputWidth][$inputChannels]"
+        }
+
+        val inputBuffer = preprocess(inputArray)
+        val output = Array(1) { IntArray(featureSize) }
+        interpreter.run(inputBuffer, output)
+        return output[0]
+    }
+
+    fun close() {
+        interpreter.close()
+    }
+
+    private fun loadModelFile(file: File): ByteBuffer {
+        FileInputStream(file).channel.use { channel ->
+            return channel.map(
+                FileChannel.MapMode.READ_ONLY, 0, file.length()
+            )
+        }
+    }
+
+    private fun preprocess(inputArray: Array<Array<IntArray>>): ByteBuffer {
+        val byteBuffer = ByteBuffer.allocateDirect(4 * inputWidth * inputHeight * inputChannels)
+            .order(ByteOrder.nativeOrder())
+
+        for (y in 0 until inputHeight) {
+            for (x in 0 until inputWidth) {
+                val pixel = inputArray[y][x]
+                for (c in 0 until inputChannels) {
+                    val normalized = pixel[c] / 255.0f
+                    byteBuffer.putFloat(normalized)
+                }
             }
         }
         byteBuffer.rewind()
