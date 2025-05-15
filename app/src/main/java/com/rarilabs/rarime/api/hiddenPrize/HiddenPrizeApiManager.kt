@@ -10,8 +10,6 @@ import javax.inject.Inject
 class HiddenPrizeApiManager @Inject constructor(
     private val api: HiddenPrizeApi
 ) {
-
-
     suspend fun createNewUser(referredBy: String): CreateUserResponse {
         val response = api.createNewUser(
             body = CreateUserRequest(
@@ -29,7 +27,6 @@ class HiddenPrizeApiManager @Inject constructor(
 
         throw Exception(response.errorBody()!!.string())
     }
-
 
     suspend fun getUserInfo(nullifier: String): GetUserResponse {
         val response = api.getUserInfo(nullifier)
@@ -67,8 +64,6 @@ class HiddenPrizeApiManager @Inject constructor(
         if (response.isSuccessful) {
             return response.body()!!
         }
-
-
 
         throw Exception(response.errorBody()!!.string())
     }

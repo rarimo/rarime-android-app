@@ -7,8 +7,7 @@ data class GetUserResponse(
 
 sealed class IncludedItem {
     data class Stats(val userStats: UserStats) : IncludedItem()
-    data class Status(val serviceStatus: ServiceStatus) : IncludedItem()
-    data class HintItem(val hint: Hint) : IncludedItem()
+    data class CelebrityItem(val celebrity: Celebrity) : IncludedItem()
 }
 
 data class ServiceStatus(
@@ -29,5 +28,18 @@ data class Hint(
 ) {
     data class Attributes(
         val hint_message: String
+    )
+}
+
+data class Celebrity(
+    val type: String = "celebrity",
+    val attributes: Attributes
+) {
+    data class Attributes(
+        val title: String,
+        val description: String,
+        val status: String,
+        val image: String,
+        val hint: String
     )
 }

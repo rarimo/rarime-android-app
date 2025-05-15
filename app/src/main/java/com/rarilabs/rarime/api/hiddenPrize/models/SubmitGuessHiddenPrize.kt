@@ -28,15 +28,7 @@ data class GuessAttributes(
     val original_feature_vector: List<Float>
 )
 
-data class Included(
-    val id: Int,
-    val type: String,
-    val attributes: UserStatsAttributes
-)
-
-data class UserStatsAttributes(
-    val attempts_left: Int,
-    val extra_attempts_left: Int,
-    val total_attempts_count: Int,
-    val reset_time: Long
-)
+sealed class Included {
+    data class Stats(val userStats: UserStats) : Included()
+    data class CelebrityItem(val celebrity: Celebrity) : IncludedItem()
+}
