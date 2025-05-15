@@ -32,6 +32,12 @@ data class Hint(
     )
 }
 
+enum class CelebrityStatus(status: String) {
+    ACTIVE("active"),
+    COMPLETED("completed"),
+    MAINTENANCE("maintenance")
+}
+
 data class Celebrity(
     val type: String = "celebrity",
     val attributes: Attributes
@@ -39,7 +45,7 @@ data class Celebrity(
     data class Attributes(
         val title: String,
         val description: String,
-        val status: String,
+        val status: CelebrityStatus,
         val image: String,
         val hint: String
     )

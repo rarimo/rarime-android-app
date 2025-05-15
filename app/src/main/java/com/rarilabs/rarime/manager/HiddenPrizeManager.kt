@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.rarilabs.rarime.api.hiddenPrize.HiddenPrizeApiManager
+import com.rarilabs.rarime.api.hiddenPrize.models.CelebrityStatus
 import com.rarilabs.rarime.api.hiddenPrize.models.IncludedItem
 import javax.inject.Inject
 
@@ -15,7 +16,7 @@ data class UserStats(
 data class Celebrity(
     val title: String,
     val description: String,
-    val status: String,
+    val status: CelebrityStatus,
     val image: String,
     val hint: String
 )
