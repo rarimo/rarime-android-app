@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,7 +42,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeCamera
 import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeViewModel
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
-import com.rarilabs.rarime.modules.home.v3.model.BG_HAND_HIDEN_PRIZE_HEIGHT
+import com.rarilabs.rarime.modules.home.v3.model.BG_HAND_HIDDEN_PRIZE_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
 import com.rarilabs.rarime.modules.home.v3.model.CardType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
@@ -66,13 +67,10 @@ fun HiddenPrizeExpandedCard(
     innerPaddings: Map<ScreenInsets, Number>,
     viewModel: HiddenPrizeViewModel = hiltViewModel()
 ) {
-
-
     val showFaceScan = rememberAppSheetState()
     val cameraPermissionState = rememberPermissionState(
         Manifest.permission.CAMERA
     )
-
 
     AppBottomSheet(state = showFaceScan, shape = RectangleShape, isHeaderEnabled = false) {
         Box(Modifier.fillMaxSize()) {
@@ -136,7 +134,6 @@ fun HiddenPrizeExpandedCardContent(
                         onScan = onScan
                     )
                 },
-
                 body = {
                     Body(
                         layoutId = layoutId,
@@ -144,7 +141,6 @@ fun HiddenPrizeExpandedCardContent(
                         animatedVisibilityScope = animatedVisibilityScope
                     )
                 },
-
                 background = {
                     Background(
                         layoutId = layoutId,
@@ -181,7 +177,7 @@ private fun Header(
             horizontalArrangement = Arrangement.End
         ) {
             IconButton(onClick = onCollapse) {
-                AppIcon(id = R.drawable.ic_close)
+                AppIcon(id = R.drawable.ic_close, tint = RarimeTheme.colors.textSecondary)
             }
         }
     }
@@ -208,6 +204,7 @@ private fun Footer(
                     boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                     resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                 )
+                .background(RarimeTheme.colors.backgroundPrimary)
                 .padding(bottom = 20.dp, start = 20.dp, end = 20.dp)
 
         ) {
@@ -269,7 +266,6 @@ fun Body(
     with(sharedTransitionScope) {
         Column(
             modifier = Modifier
-                .padding(horizontal = 20.dp)
                 .sharedBounds(
                     rememberSharedContentState(HomeSharedKeys.content(layoutId)),
                     animatedVisibilityScope = animatedVisibilityScope,
@@ -280,48 +276,65 @@ fun Body(
                 )
         ) {
 
-            Spacer(modifier = Modifier.height(BG_HAND_HIDEN_PRIZE_HEIGHT.dp))
-
-            BaseCardTitle(
-                title = "Hidden prize",
-                accentTitle = "Scan",
-                caption = "Found hidden prize $1000",
-                titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.baseBlack),
-                accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient8),
-                titleModifier = Modifier.sharedBounds(
-                    rememberSharedContentState(HomeSharedKeys.title(layoutId)),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
-                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                ),
-                accentTitleModifier = Modifier.sharedBounds(
-                    rememberSharedContentState(HomeSharedKeys.accentTitle(layoutId)),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
-                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                ),
-                captionModifier = Modifier.sharedBounds(
-                    rememberSharedContentState(HomeSharedKeys.caption(layoutId)),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
-                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+            Spacer(modifier = Modifier.height((BG_HAND_HIDDEN_PRIZE_HEIGHT - 42).dp))
+            Box(
+                modifier = Modifier
+                    .offset(y = (-5).dp)
+                    .width(36.dp)
+                    .height(5.dp)
+                    .background(
+                        RarimeTheme.colors.componentPressed,
+                        shape = RoundedCornerShape(100.dp)
+                    )
+                    .align(Alignment.CenterHorizontally)
+            )
+            Column(
+                modifier = Modifier
+                    .background(
+                        RarimeTheme.colors.backgroundPrimary,
+                        shape = RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
+                    )
+                    .padding(20.dp)
+            ) {
+                BaseCardTitle(
+                    title = "Hidden keys",
+                    accentTitle = "Find a face",
+                    caption = "Found hidden prize $1000",
+                    titleStyle = RarimeTheme.typography.h1.copy(RarimeTheme.colors.textPrimary),
+                    accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient8),
+                    titleModifier = Modifier.sharedBounds(
+                        rememberSharedContentState(HomeSharedKeys.title(layoutId)),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    ),
+                    accentTitleModifier = Modifier.sharedBounds(
+                        rememberSharedContentState(HomeSharedKeys.accentTitle(layoutId)),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    ),
+                    captionModifier = Modifier.sharedBounds(
+                        rememberSharedContentState(HomeSharedKeys.caption(layoutId)),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    )
                 )
-            )
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            Text(
-                stringResource(R.string.hidden_price_expanded_cart_description),
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.baseBlackOp50
-            )
+                Text(
+                    stringResource(R.string.hidden_price_expanded_cart_description),
+                    style = RarimeTheme.typography.body3,
+                    color = RarimeTheme.colors.textSecondary
+                )
 
-            Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-            TipAlert(
-                text = "I think there's something as light as ether\n" + "in that face..."
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
+                TipAlert(
+                    text = "I think there's something as light as ether\n" + "in that face..."
+                )
+            }
         }
     }
 
@@ -345,8 +358,8 @@ private fun Background(
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(BG_HAND_HIDEN_PRIZE_HEIGHT.dp)
-                    .offset(y = 40.dp)
+                    .height(BG_HAND_HIDDEN_PRIZE_HEIGHT.dp)
+                    .offset(y = 80.dp, x = 30.dp)
                     .sharedBounds(
                         rememberSharedContentState(
                             HomeSharedKeys.image(
