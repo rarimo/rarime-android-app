@@ -38,7 +38,6 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
@@ -68,7 +67,7 @@ enum class HiddenPrizeCameraStep {
 fun HiddenPrizeCamera(
     modifier: Modifier = Modifier,
     processZK: suspend (List<Float>, Bitmap) -> Unit,
-    processML: suspend (Bitmap) -> Unit,
+    processML: suspend (Bitmap) -> List<Float>,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -120,11 +119,6 @@ fun HiddenPrizeCamera(
             }
         }
 
-        HiddenPrizeCameraStep.PROCESSING_ZKP -> {
-            HiddenPrizeLoadingZK(processingValue = 0.3f) {
-                processZK()
-            }
-        }
 
         HiddenPrizeCameraStep.WRONG -> {
             HiddenPrizeWrongScreen()
@@ -134,12 +128,21 @@ fun HiddenPrizeCamera(
             HiddenPrizeCongratsScreen(
                 prizeAmount = 2.0f,
                 prizeSymbol = { AppIcon(id = R.drawable.ic_restart_line) },
-                onClaim = { currentStep = HiddenPrizeCameraStep.PROCESSING_ZKP })
+                onClaim = {
+
+                    currentStep = HiddenPrizeCameraStep.PROCESSING_ZKP
+                })
         }
 
         HiddenPrizeCameraStep.PROCESSING_ML -> {
             HiddenPrizeLoadingML(processingValue = 0.5f) {
                 processML(selectedBitmap!!)
+            }
+        }
+
+        HiddenPrizeCameraStep.PROCESSING_ZKP -> {
+            HiddenPrizeLoadingZK(processingValue = 0.3f) {
+                //processZK()
             }
         }
 
@@ -275,6 +278,7 @@ fun FaceMeshCanvas(
         val dy = (scaledH - viewH) / 2f
 
         detectedMeshes.forEach { faceMesh ->
+
             faceMesh.allTriangles.forEach { tri ->
                 val pts = tri.allPoints
                 if (pts.size == 3) {
@@ -360,10 +364,10 @@ fun SetupCamera(
     }
 }
 
-@Preview
-@Composable
-private fun HiddenPrizeCameraPreview() {
-    HiddenPrizeCamera(processML = {}, processZK = {}) {
-
-    }
-}
+//@Preview
+//@Composable
+//private fun HiddenPrizeCameraPreview() {
+//    HiddenPrizeCamera(processML = {}, processZK = {}) {
+//
+//    }
+//}

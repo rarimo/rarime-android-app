@@ -182,7 +182,7 @@ class HiddenPrizeManager @Inject constructor(
         val backendFeatures = submitCelebrityGuess(features.toList())
 
         if (backendFeatures == null) {
-            throw Exception("SOSAL?")
+            throw Exception("no")
         } else {
             return backendFeatures
         }
