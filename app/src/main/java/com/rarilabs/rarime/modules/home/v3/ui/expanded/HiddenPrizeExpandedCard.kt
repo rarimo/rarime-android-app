@@ -56,6 +56,7 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.TipAlert
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
+import com.rarilabs.rarime.ui.theme.AppTheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
@@ -276,7 +277,7 @@ fun Body(
                 )
         ) {
 
-            Spacer(modifier = Modifier.height((BG_HAND_HIDDEN_PRIZE_HEIGHT - 42).dp))
+            Spacer(modifier = Modifier.height((BG_HAND_HIDDEN_PRIZE_HEIGHT - 50).dp))
             Box(
                 modifier = Modifier
                     .offset(y = (-5).dp)
@@ -330,10 +331,10 @@ fun Body(
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
-
                 TipAlert(
                     text = "I think there's something as light as ether\n" + "in that face..."
                 )
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }
@@ -376,22 +377,45 @@ private fun Background(
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO)
 @Composable
-fun HiddenPriceExpandedCardPreview() {
-    PrevireSharedAnimationProvider { sts, avs ->
-        HiddenPrizeExpandedCardContent(
-            cardProps = BaseCardProps.Expanded(
-                onCollapse = {},
-                layoutId = CardType.HIDDEN_PRIZE.layoutId,
-                animatedVisibilityScope = avs,
-                sharedTransitionScope = sts
-            ),
-            modifier = Modifier.fillMaxSize(),
-            innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
-            onScan = {},
-            onAddScan = {}
+fun HiddenPriceExpandedCardPreview_LightMode() {
+    AppTheme {
+        PrevireSharedAnimationProvider { sts, avs ->
+            HiddenPrizeExpandedCardContent(
+                cardProps = BaseCardProps.Expanded(
+                    onCollapse = {},
+                    layoutId = CardType.HIDDEN_PRIZE.layoutId,
+                    animatedVisibilityScope = avs,
+                    sharedTransitionScope = sts
+                ),
+                modifier = Modifier.height(820.dp),
+                innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
+                onScan = {},
+                onAddScan = {}
+            )
+        }
+    }
+}
 
-        )
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun HiddenPriceExpandedCardPreview_DarkMode() {
+    AppTheme {
+        PrevireSharedAnimationProvider { sts, avs ->
+            HiddenPrizeExpandedCardContent(
+                cardProps = BaseCardProps.Expanded(
+                    onCollapse = {},
+                    layoutId = CardType.HIDDEN_PRIZE.layoutId,
+                    animatedVisibilityScope = avs,
+                    sharedTransitionScope = sts
+                ),
+                modifier = Modifier.height(820.dp),
+                innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
+                onScan = {},
+                onAddScan = {}
+            )
+        }
     }
 }

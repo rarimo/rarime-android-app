@@ -41,6 +41,7 @@ import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardLogo
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCollapsedCard
 import com.rarilabs.rarime.ui.components.AppIcon
+import com.rarilabs.rarime.ui.theme.AppTheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
@@ -243,20 +244,43 @@ private fun Background(
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-@Preview
+@Preview(uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun HiddenPrizeCollapsedCardPreview() {
-    PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
-        HiddenPrizeCollapsedCard(
-            collapsedCardProps = BaseCardProps.Collapsed(
-                onExpand = {},
-                layoutId = CardType.HIDDEN_PRIZE.layoutId,
-                animatedVisibilityScope = animatedVisibilityScope,
-                sharedTransitionScope = sharedTransitionScope
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(600.dp)
-        )
+fun HiddenPrizeCollapsedCardPreview_DarkMode() {
+    AppTheme {
+        PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
+            HiddenPrizeCollapsedCard(
+                collapsedCardProps = BaseCardProps.Collapsed(
+                    onExpand = {},
+                    layoutId = CardType.HIDDEN_PRIZE.layoutId,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    sharedTransitionScope = sharedTransitionScope
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(500.dp)
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Preview(uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO)
+@Composable
+fun HiddenPrizeCollapsedCardPreview_LightMode() {
+    AppTheme {
+        PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
+            HiddenPrizeCollapsedCard(
+                collapsedCardProps = BaseCardProps.Collapsed(
+                    onExpand = {},
+                    layoutId = CardType.HIDDEN_PRIZE.layoutId,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    sharedTransitionScope = sharedTransitionScope
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(500.dp)
+            )
+        }
     }
 }
