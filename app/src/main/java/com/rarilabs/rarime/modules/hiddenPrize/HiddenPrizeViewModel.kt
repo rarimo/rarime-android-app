@@ -16,6 +16,7 @@ class HiddenPrizeViewModel @Inject constructor(
 
 
     val downloadProgress = hiddenPrizeManager.downloadProgressZkey
+    val celebrity = hiddenPrizeManager.celebrity
 
 
     init {

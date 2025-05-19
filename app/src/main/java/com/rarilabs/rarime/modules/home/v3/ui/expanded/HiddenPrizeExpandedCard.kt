@@ -37,10 +37,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.manager.Celebrity
 import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeCamera
 import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeViewModel
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
@@ -72,7 +74,7 @@ fun HiddenPrizeExpandedCard(
 ) {
 
     val downloadProgress by viewModel.downloadProgress.collectAsState()
-
+    val celebrity by viewModel.celebrity.collectAsState()
     val showFaceScan = rememberAppSheetState()
     val cameraPermissionState = rememberPermissionState(
         Manifest.permission.CAMERA
@@ -102,7 +104,10 @@ fun HiddenPrizeExpandedCard(
         },
         onAddScan = {
             //TODO
-        })
+        },
+        celebrity = celebrity
+    )
+
 
 }
 
@@ -113,7 +118,8 @@ fun HiddenPrizeExpandedCardContent(
     cardProps: BaseCardProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
     onScan: () -> Unit,
-    onAddScan: () -> Unit
+    onAddScan: () -> Unit,
+    celebrity: Celebrity?
 ) {
     with(cardProps) {
         with(sharedTransitionScope) {
@@ -146,7 +152,8 @@ fun HiddenPrizeExpandedCardContent(
                     Body(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
-                        animatedVisibilityScope = animatedVisibilityScope
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        tip = celebrity?.hint.toString()
                     )
                 },
                 background = {
@@ -268,7 +275,8 @@ private fun Footer(
 fun Body(
     layoutId: Int,
     sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    tip: String?
 ) {
 
     with(sharedTransitionScope) {
@@ -338,9 +346,13 @@ fun Body(
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
-                TipAlert(
-                    text = "I think there's something as light as ether\n" + "in that face..."
-                )
+
+                if (tip !=null) {
+                    TipAlert(
+                        text = tip
+                    )
+
+                }
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
@@ -399,7 +411,8 @@ fun HiddenPriceExpandedCardPreview_LightMode() {
                 modifier = Modifier.height(820.dp),
                 innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
                 onScan = {},
-                onAddScan = {}
+                onAddScan = {},
+                celebrity = null
             )
         }
     }
@@ -421,7 +434,8 @@ fun HiddenPriceExpandedCardPreview_DarkMode() {
                 modifier = Modifier.height(820.dp),
                 innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
                 onScan = {},
-                onAddScan = {}
+                onAddScan = {},
+                celebrity = null
             )
         }
     }

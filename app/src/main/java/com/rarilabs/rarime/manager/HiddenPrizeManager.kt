@@ -54,24 +54,35 @@ class HiddenPrizeManager @Inject constructor(
     val downloadProgressZkey: StateFlow<Int>
         get() = _downloadProgressZkey.asStateFlow()
 
+    private val _referralsLimit = MutableStateFlow(0)
 
-    var referralsLimit by mutableIntStateOf(0)
-        private set
+    val referralsLimit: StateFlow<Int>
+        get () = _referralsLimit.asStateFlow()
 
-    var referralsCount by mutableIntStateOf(0)
-        private set
+    private val _referralsCount= MutableStateFlow(0)
 
-    var socialShare by mutableStateOf(false)
-        private set
+    val referralsCount : StateFlow<Int>
+        get () = _referralsCount.asStateFlow()
 
-    var referralCode by mutableStateOf<String?>(null)
-        private set
+    private val _socialShare = MutableStateFlow(false)
 
-    var userStats by mutableStateOf<UserStats?>(null)
-        private set
+    val socialShare :StateFlow<Boolean>
+        get () = _socialShare.asStateFlow()
 
-    var celebrity by mutableStateOf<Celebrity?>(null)
-        private set
+    private val _referralCode = MutableStateFlow("")
+
+    val referralCode : StateFlow<String>
+        get () =_referralCode.asStateFlow()
+
+    private val _userStats = MutableStateFlow<UserStats?>(null)
+
+    val userStats :StateFlow<UserStats?>
+        get () = _userStats.asStateFlow()
+
+    private var _celebrity: MutableStateFlow<Celebrity?> = MutableStateFlow(null)
+
+    val celebrity: StateFlow<Celebrity?>
+        get() = _celebrity.asStateFlow()
 
 
     suspend fun createUser(referredBy: String? = null) {
@@ -82,9 +93,9 @@ class HiddenPrizeManager @Inject constructor(
         val res = apiManager.createNewUser(referredBy, nullifier)
         val attrs = res.data.attributes
 
-        referralsLimit = attrs.referrals_limit
-        referralsCount = attrs.referrals_count
-        socialShare = attrs.social_share
+        _referralsLimit.value = attrs.referrals_limit
+        _referralsCount.value = attrs.referrals_count
+        _socialShare.value = attrs.social_share
     }
 
     suspend fun loadUserInfo() {
@@ -92,12 +103,12 @@ class HiddenPrizeManager @Inject constructor(
         val res = apiManager.getUserInfo(nullifier)
         val a = res.data.attributes
 
-        socialShare = a.social_share
-        referralsCount = a.referrals_count
-        referralsLimit = a.referrals_limit
-        referralCode = a.referral_code
+        _socialShare.value = a.social_share
+        _referralsCount.value = a.referrals_count
+        _referralsLimit.value = a.referrals_limit
+        _referralCode.value = a.referral_code
 
-        userStats = res.included?.filterIsInstance<Included.UserStats>()?.firstOrNull()?.let {
+        _userStats.value = res.included?.filterIsInstance<Included.UserStats>()?.firstOrNull()?.let {
             UserStats(
                 resetTime = it.attributes?.reset_time ?: 0,
                 extraAttemptsLeft = it.attributes?.extra_attempts_left ?: 0,
@@ -105,7 +116,7 @@ class HiddenPrizeManager @Inject constructor(
             )
         }
 
-        celebrity =
+        _celebrity.value =
             res.included?.filterIsInstance<Included.Celebrity>()?.firstOrNull()?.attributes?.let {
                 Celebrity(
                     title = it.title,
@@ -121,7 +132,7 @@ class HiddenPrizeManager @Inject constructor(
         val nullifier = identityManager.getUserPointsNullifierHex()
         val res = apiManager.submitCelebrityGuess(faceFeatures, nullifier)
 
-        userStats =
+        _userStats.value =
             res.included?.filterIsInstance<Included.UserStats>()?.firstOrNull()?.attributes?.let {
                 UserStats(
                     resetTime = it.reset_time,
@@ -135,7 +146,7 @@ class HiddenPrizeManager @Inject constructor(
         }
 
 
-        celebrity =
+        _celebrity.value =
             res.included?.filterIsInstance<Included.Celebrity>()?.firstOrNull()?.attributes?.let {
                 Celebrity(
                     title = it.title,
@@ -181,7 +192,6 @@ class HiddenPrizeManager @Inject constructor(
         )
 
         val features = tfLite.compute(preparedRGB)
-
 
 
         val backendFeatures = submitCelebrityGuess(features.toList())
