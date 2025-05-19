@@ -77,7 +77,7 @@ fun HiddenPrizeLoadingZK(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Text(
-                        text = "${processingValue * 100f}%",
+                        text = "${(processingValue * 100f).toInt()}%",
                         color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
                         textAlign = TextAlign.Center,
                         style = RarimeTheme.typography.body3,

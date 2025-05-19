@@ -15,6 +15,8 @@ import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorAPI
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorApiManager
 import com.rarilabs.rarime.api.hiddenPrize.HiddenPrizeApi
 import com.rarilabs.rarime.api.hiddenPrize.HiddenPrizeApiManager
+import com.rarilabs.rarime.api.hiddenPrize.models.Included
+import com.rarilabs.rarime.api.hiddenPrize.models.IncludedJsonAdapter
 import com.rarilabs.rarime.api.likeness.LikenessApi
 import com.rarilabs.rarime.api.likeness.LikenessApiManager
 import com.rarilabs.rarime.api.points.PointsAPI
@@ -140,18 +142,26 @@ class APIModule {
         authManager: dagger.Lazy<AuthManager>, // Use Lazy injection to break the cycle
         @Named("authRetrofit") authRetrofit: Retrofit
     ): Retrofit {
-        val okHttpClient = OkHttpClient.Builder().addInterceptor(
-            RefreshTokenInterceptor(
-                authManager, authRetrofit
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(
+                RefreshTokenInterceptor(authManager, authRetrofit)
             )
-        ).addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .build()
 
-        return Retrofit.Builder().addConverterFactory(
-            MoshiConverterFactory.create(
-                Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-            )
-        ).baseUrl(BaseConfig.RELAYER_URL).client(okHttpClient).build()
+
+        val moshi = Moshi.Builder()
+            .add { type, _, moshi ->
+                if (type == Included::class.java) IncludedJsonAdapter(moshi) else null
+            }
+            .add(KotlinJsonAdapterFactory())
+            .build()
+
+        return Retrofit.Builder()
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .baseUrl(BaseConfig.RELAYER_URL)
+            .client(okHttpClient)
+            .build()
     }
 
     @Provides
@@ -454,8 +464,11 @@ class APIModule {
 
     @Provides
     @Singleton
-    fun provideHiddenPrizeApiManager(@Named("jsonApiRetrofit") retrofit: Retrofit): HiddenPrizeApiManager {
-        return HiddenPrizeApiManager(retrofit.create(HiddenPrizeApi::class.java))
+    fun provideHiddenPrizeApiManager(
+        @Named("jsonApiRetrofit") retrofit: Retrofit,
+        authManager: AuthManager
+    ): HiddenPrizeApiManager {
+        return HiddenPrizeApiManager(retrofit.create(HiddenPrizeApi::class.java), authManager)
     }
 
     @Provides

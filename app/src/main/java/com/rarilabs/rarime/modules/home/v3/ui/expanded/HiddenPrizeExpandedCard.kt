@@ -26,6 +26,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -68,6 +70,9 @@ fun HiddenPrizeExpandedCard(
     innerPaddings: Map<ScreenInsets, Number>,
     viewModel: HiddenPrizeViewModel = hiltViewModel()
 ) {
+
+    val downloadProgress by viewModel.downloadProgress.collectAsState()
+
     val showFaceScan = rememberAppSheetState()
     val cameraPermissionState = rememberPermissionState(
         Manifest.permission.CAMERA
@@ -76,8 +81,10 @@ fun HiddenPrizeExpandedCard(
     AppBottomSheet(state = showFaceScan, shape = RectangleShape, isHeaderEnabled = false) {
         Box(Modifier.fillMaxSize()) {
             HiddenPrizeCamera(
-                processML = { viewModel.getFaceFeatures(it) },
-                processZK = { features, bitmap -> viewModel.claimTokens(features, bitmap) })
+                processML = { viewModel.generateFaceFeatures(it) },
+                processZK = { bitmap, features -> viewModel.claimTokens(bitmap, features) },
+                downloadProgress = downloadProgress
+            )
         }
     }
 

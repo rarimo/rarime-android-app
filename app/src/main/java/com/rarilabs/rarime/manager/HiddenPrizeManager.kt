@@ -2,6 +2,7 @@ package com.rarilabs.rarime.manager
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Matrix
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -11,7 +12,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.hiddenPrize.HiddenPrizeApiManager
-import com.rarilabs.rarime.api.hiddenPrize.models.IncludedItem
+import com.rarilabs.rarime.api.hiddenPrize.models.Included
 import com.rarilabs.rarime.util.FileDownloaderInternal
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.bionet.BionetAnalizer
@@ -46,8 +47,7 @@ class HiddenPrizeManager @Inject constructor(
     private val rarimoContractManager: RarimoContractManager
 ) {
 
-
-    private val tfLiteFileName: String = "rflite.rfloit"
+    private val tfLiteFileName: String = "face-recognition.tflite"
 
     private val _downloadProgressZkey = MutableStateFlow(0)
 
@@ -74,8 +74,12 @@ class HiddenPrizeManager @Inject constructor(
         private set
 
 
-    private suspend fun createUser(referredBy: String = "") {
-        val res = apiManager.createNewUser(referredBy)
+    suspend fun createUser(referredBy: String? = null) {
+
+        val nullifier = identityManager.getUserPointsNullifierHex()
+
+
+        val res = apiManager.createNewUser(referredBy, nullifier)
         val attrs = res.data.attributes
 
         referralsLimit = attrs.referrals_limit
@@ -83,8 +87,8 @@ class HiddenPrizeManager @Inject constructor(
         socialShare = attrs.social_share
     }
 
-    private suspend fun loadUserInfo() {
-        val nullifier = identityManager.getNullifierForFaceLikeness()
+    suspend fun loadUserInfo() {
+        val nullifier = identityManager.getUserPointsNullifierHex()
         val res = apiManager.getUserInfo(nullifier)
         val a = res.data.attributes
 
@@ -93,54 +97,52 @@ class HiddenPrizeManager @Inject constructor(
         referralsLimit = a.referrals_limit
         referralCode = a.referral_code
 
-        userStats =
-            res.included.filterIsInstance<IncludedItem.Stats>().firstOrNull()?.userStats?.let {
-                UserStats(
-                    resetTime = it.attributes.reset_time,
-                    extraAttemptsLeft = it.attributes.extra_attempts_left,
-                    totalAttemptsCount = it.attributes.total_attempts_count
-                )
-            }
+        userStats = res.included?.filterIsInstance<Included.UserStats>()?.firstOrNull()?.let {
+            UserStats(
+                resetTime = it.attributes?.reset_time ?: 0,
+                extraAttemptsLeft = it.attributes?.extra_attempts_left ?: 0,
+                totalAttemptsCount = it.attributes?.total_attempts_count ?: 0
+            )
+        }
 
-        celebrity = res.included.filterIsInstance<IncludedItem.CelebrityItem>()
-            .firstOrNull()?.celebrity?.attributes?.let {
+        celebrity =
+            res.included?.filterIsInstance<Included.Celebrity>()?.firstOrNull()?.attributes?.let {
                 Celebrity(
                     title = it.title,
                     description = it.description,
                     status = it.status,
-                    image = it.image,
-                    hint = it.hint
+                    image = it.image ?: "",
+                    hint = it.hint ?: ""
                 )
             }
     }
 
-    private suspend fun submitCelebrityGuess(faceFeatures: List<Int>): List<Float>? {
-        val nullifier = identityManager.getNullifierForFaceLikeness()
+    private suspend fun submitCelebrityGuess(faceFeatures: List<Float>): List<Float>? {
+        val nullifier = identityManager.getUserPointsNullifierHex()
         val res = apiManager.submitCelebrityGuess(faceFeatures, nullifier)
 
         userStats =
-            res.included.filterIsInstance<IncludedItem.Stats>().firstOrNull()?.userStats?.let {
+            res.included?.filterIsInstance<Included.UserStats>()?.firstOrNull()?.attributes?.let {
                 UserStats(
-                    resetTime = it.attributes.reset_time,
-                    extraAttemptsLeft = it.attributes.extra_attempts_left,
-                    totalAttemptsCount = it.attributes.total_attempts_count
+                    resetTime = it.reset_time,
+                    extraAttemptsLeft = it.extra_attempts_left,
+                    totalAttemptsCount = it.total_attempts_count
                 )
             }
-
 
         if (!res.data.attributes.success) {
             return null
         }
 
 
-        celebrity = res.included.filterIsInstance<IncludedItem.CelebrityItem>()
-            .firstOrNull()?.celebrity?.attributes?.let {
+        celebrity =
+            res.included?.filterIsInstance<Included.Celebrity>()?.firstOrNull()?.attributes?.let {
                 Celebrity(
                     title = it.title,
                     description = it.description,
                     status = it.status,
-                    image = it.image,
-                    hint = it.hint
+                    image = it.image ?: "",
+                    hint = it.hint ?: ""
                 )
             }
 
@@ -152,10 +154,11 @@ class HiddenPrizeManager @Inject constructor(
 
     private suspend fun downloadFile(url: String): File {
         fileDownloader.cancel()
-        //_downloadProgress.value = 0
+
+        val faceRecognitionTFileHash = "3814d30ed40b217e18d321c9c0f13d1b"
 
         return fileDownloader.downloadFileBlocking(
-            url, tfLiteFileName
+            url, tfLiteFileName, fileHash = faceRecognitionTFileHash
         ) { progress ->
             if (_downloadProgressZkey.value != progress) {
                 Log.i("Progress", progress.toString())
@@ -171,13 +174,15 @@ class HiddenPrizeManager @Inject constructor(
 
         val bionetAnalizer = BionetAnalizer()
 
-        val preparedImage = bionetAnalizer.getPreparedInputForML(bitmap)!!
+        val preparedRGB = bionetAnalizer.getPreparedInputForML(bitmap)!!
 
         val tfLite = RunTFLiteFeatureRGBExtractorUseCase(
             modelFile = tfLiteFile
         )
 
-        val features = tfLite.invoke(preparedImage)
+        val features = tfLite.compute(preparedRGB)
+
+
 
         val backendFeatures = submitCelebrityGuess(features.toList())
 
@@ -195,9 +200,7 @@ class HiddenPrizeManager @Inject constructor(
 
         val bionetAnalizer = BionetAnalizer()
 
-
-        val address =
-            identityManager.evmAddress()
+        val address = identityManager.evmAddress()
 
         val preparedImage = bionetAnalizer.getPreparedInputForZKML(bitmap)!!
 
@@ -214,13 +217,11 @@ class HiddenPrizeManager @Inject constructor(
 
         val quantizedFeatures = features.map { (it * 2.0.pow(15.0)).toInt().toString() }
 
-        val quantizedImage =
-            listOf(preparedImage.map {
-                it.map { it2 ->
-                    (it2 * 2.0.pow(15.0)).toInt().toString()
-                }
-            })
-
+        val quantizedImage = listOf(preparedImage.map {
+            it.map { it2 ->
+                (it2 * 2.0.pow(15.0)).toInt().toString()
+            }
+        })
 
         val inputs = LivenessInputs(
             image = quantizedImage,
@@ -243,10 +244,9 @@ class HiddenPrizeManager @Inject constructor(
 
 
             val callDataBuilder = CallDataBuilder()
-            val callData =
-                callDataBuilder.buildFaceRegistryRegisterUser(
-                    Gson().toJson(zkproof).toByteArray()
-                )
+            val callData = callDataBuilder.buildFaceRegistryRegisterUser(
+                Gson().toJson(zkproof).toByteArray()
+            )
 
             val response = apiManager.claimTokens("0x" + callData.toHexString())
 
@@ -259,5 +259,14 @@ class HiddenPrizeManager @Inject constructor(
 
         }
 
+    }
+
+    fun Bitmap.flipVertically(): Bitmap {
+        val matrix = Matrix().apply { postScale(1f, -1f, width / 2f, height / 2f) }
+        return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
+    }
+
+    fun normalizeInput(rgb: FloatArray): FloatArray {
+        return rgb.map { it / 255f }.toFloatArray()
     }
 }

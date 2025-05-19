@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.modules.hiddenPrize
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
@@ -67,8 +68,9 @@ enum class HiddenPrizeCameraStep {
 @Composable
 fun HiddenPrizeCamera(
     modifier: Modifier = Modifier,
-    processZK: suspend (List<Float>, Bitmap) -> Unit,
+    processZK: suspend (Bitmap, List<Float>) -> Unit,
     processML: suspend (Bitmap) -> List<Float>,
+    downloadProgress: Int
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -82,6 +84,12 @@ fun HiddenPrizeCamera(
 
     val cameraProvider = remember { ProcessCameraProvider.getInstance(context).get() }
 
+    var featuresBackend: List<Float> by remember {
+        mutableStateOf(
+            listOf()
+        )
+    }
+
     var imageSize by remember { mutableStateOf(Size.Zero) }
     var detectedMeshes by remember { mutableStateOf<List<FaceMesh>>(emptyList()) }
     var selectedBitmap by remember { mutableStateOf<Bitmap?>(null) }
@@ -89,6 +97,7 @@ fun HiddenPrizeCamera(
     var currentStep by remember {
         mutableStateOf(HiddenPrizeCameraStep.CAMERA)
     }
+
 
     SetupCamera(
         cameraProvider = cameraProvider,
@@ -114,7 +123,9 @@ fun HiddenPrizeCamera(
                     selectedBitmap = selectedBitmap,
                     onSelectBitmap = { selectedBitmap = it },
                     onClearBitmap = { selectedBitmap = null },
-                    onNext = { currentStep = HiddenPrizeCameraStep.CONGRATS },
+                    onNext = {
+                        currentStep = HiddenPrizeCameraStep.PROCESSING_ML
+                    },
                     previewView = previewView
                 )
             }
@@ -122,7 +133,13 @@ fun HiddenPrizeCamera(
 
 
         HiddenPrizeCameraStep.WRONG -> {
-            HiddenPrizeWrongScreen()
+            HiddenPrizeWrongScreen(
+                onRetry = {
+                    selectedBitmap = null
+
+                    currentStep = HiddenPrizeCameraStep.CAMERA
+                }
+            )
         }
 
         HiddenPrizeCameraStep.CONGRATS -> {
@@ -137,14 +154,26 @@ fun HiddenPrizeCamera(
         }
 
         HiddenPrizeCameraStep.PROCESSING_ML -> {
-            HiddenPrizeLoadingML(processingValue = 0.5f) {
-                processML(selectedBitmap!!)
+            HiddenPrizeLoadingML(processingValue = (downloadProgress.toFloat() / 100.0f)) {
+                try {
+                    featuresBackend = processML(selectedBitmap!!)
+                    currentStep = HiddenPrizeCameraStep.CONGRATS
+                } catch (e: Exception) {
+                    Log.e("PROCESSING_ML", "smth went wrong", e)
+                    currentStep = HiddenPrizeCameraStep.WRONG
+                }
             }
         }
 
         HiddenPrizeCameraStep.PROCESSING_ZKP -> {
-            HiddenPrizeLoadingZK(processingValue = 0.3f) {
-                //processZK()
+            HiddenPrizeLoadingZK(processingValue = (downloadProgress.toFloat() / 100.0f)) {
+                try {
+                    processZK(selectedBitmap!!, featuresBackend)
+                    currentStep = HiddenPrizeCameraStep.FINISH
+                } catch (e: Exception) {
+                    Log.e("PROCESSING_ZKP", "smth went wrong", e)
+
+                }
             }
         }
 

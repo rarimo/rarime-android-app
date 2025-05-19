@@ -63,8 +63,7 @@ class BionetAnalizer {
                 val faceBmp = Bitmap.createBitmap(
                     bitmap, squareRect.left, squareRect.top, cropSize, cropSize
                 ).let { bmp ->
-                    Bitmap.createScaledBitmap(bmp, 40, 40, true)
-                        .copy(Bitmap.Config.ARGB_8888, false)
+                    bmp.scale(40, 40).copy(Bitmap.Config.ARGB_8888, false)
                 }
 
                 // --- в серую шкалу ---
@@ -137,7 +136,7 @@ class BionetAnalizer {
 
 
     @OptIn(ExperimentalGetImage::class)
-    suspend fun getPreparedInputForML(bitmap: Bitmap): Array<Array<IntArray>>? =
+    suspend fun getPreparedInputForML(bitmap: Bitmap): FloatArray? =
         suspendCancellableCoroutine { cont ->
 
             val detector = FaceDetection.getClient(highAccuracyOpts)
@@ -158,45 +157,42 @@ class BionetAnalizer {
                 val halfSide = side / 2
 
                 val squareRect = Rect(
-                    (centerX - halfSide).coerceAtLeast(0),
-                    (centerY - halfSide).coerceAtLeast(0),
-                    (centerX + halfSide).coerceAtMost(bitmap.width),
-                    (centerY + halfSide).coerceAtMost(bitmap.height)
+                    centerX - halfSide, centerY - halfSide, centerX + halfSide, centerY + halfSide
                 )
 
                 val cropSize = min(squareRect.width(), squareRect.height())
+
+
                 if (cropSize <= 0) {
                     cont.resume(null); return@addOnSuccessListener
                 }
 
                 val faceBmp = Bitmap.createBitmap(
                     bitmap, squareRect.left, squareRect.top, cropSize, cropSize
-                ).let { bmp ->
-                    bmp.scale(112, 112).copy(Bitmap.Config.ARGB_8888, false)
-                }
+                ).scale(112, 112).copy(Bitmap.Config.ARGB_8888, false)
 
+                val imageData = bitmapToNormalizedRgbFloatArray(faceBmp)
 
-                val w = faceBmp.width
-                val h = faceBmp.height
-                val pixels = IntArray(w * h)
-                faceBmp.getPixels(pixels, 0, w, 0, 0, w, h)
-
-                val result = Array(h) { Array(w) { IntArray(3) } }
-                for (y in 0 until h) {
-                    val row = y * w
-                    for (x in 0 until w) {
-                        val c = pixels[row + x]
-                        val r = Color.red(c)
-                        val g = Color.green(c)
-                        val b = Color.blue(c)
-                        result[y][x] = listOf(r, g, b).toIntArray()
-                    }
-                }
-
-                cont.resume(result)
+                cont.resume(imageData)
             }.addOnFailureListener { cont.resume(null) }
 
             cont.invokeOnCancellation { detector.close() }
         }
 
+
+    private fun bitmapToNormalizedRgbFloatArray(bitmap: Bitmap): FloatArray {
+        val width = bitmap.width
+        val height = bitmap.height
+        val pixels = IntArray(width * height)
+        bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
+
+        val floatArray = FloatArray(width * height * 3)
+        for (i in pixels.indices) {
+            val idx = i * 3
+            floatArray[idx] = (Color.red(pixels[i]) / 255f)
+            floatArray[idx + 1] = (Color.green(pixels[i]) / 255f)
+            floatArray[idx + 2] = (Color.blue(pixels[i]) / 255f)
+        }
+        return floatArray
+    }
 }

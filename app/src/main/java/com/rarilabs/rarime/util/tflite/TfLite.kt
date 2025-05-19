@@ -10,6 +10,7 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
+import kotlin.math.sqrt
 
 /**
  * Use-case for running a TensorFlow Lite model that maps a 40×40 grayscale input
@@ -96,11 +97,7 @@ class RunTFLiteFeatureGrayscaleExtractorUseCase(
  */
 class RunTFLiteFeatureRGBExtractorUseCase(
     private val modelFile: File,
-    private val inputWidth: Int = 112,
-    private val inputHeight: Int = 112,
-    private val inputChannels: Int = 3,
-    private val featureSize: Int = 64,
-    numThreads: Int = 4
+    numThreads: Int = 1
 ) {
     private val interpreter: Interpreter
 
@@ -112,21 +109,22 @@ class RunTFLiteFeatureRGBExtractorUseCase(
         interpreter = Interpreter(modelBuffer, options)
     }
 
-    /**
-     * Runs inference on the given RGB input array and returns a FloatArray
-     * of length [featureSize].
-     *
-     * @param inputArray 3D Int array [inputHeight][inputWidth][inputChannels], values in 0..255
-     */
-    operator fun invoke(inputArray: Array<Array<IntArray>>): IntArray {
-        require(inputArray.size == inputHeight && inputArray.all { it.size == inputWidth } && inputArray.all { row -> row.all { it.size == inputChannels } }) {
-            "Input array must be of shape [$inputHeight][$inputWidth][$inputChannels]"
-        }
+    fun compute(inputs: FloatArray): FloatArray {
+        val inputBuffer = floatArrayToByteBuffer(inputs)
 
-        val inputBuffer = preprocess(inputArray)
-        val output = Array(1) { IntArray(featureSize) }
+        // output is [1, 512]
+        val output = Array(1) { FloatArray(512) }
         interpreter.run(inputBuffer, output)
-        return output[0]
+        val outputData = output[0]
+
+        // Normalize (L2)
+        val sumOfSquares = outputData.fold(0f) { acc, value -> acc + value * value }
+        val norm = sqrt(sumOfSquares)
+        return if (norm != 0f) {
+            outputData.map { it / norm }.toFloatArray()
+        } else {
+            outputData
+        }
     }
 
     fun close() {
@@ -141,18 +139,11 @@ class RunTFLiteFeatureRGBExtractorUseCase(
         }
     }
 
-    private fun preprocess(inputArray: Array<Array<IntArray>>): ByteBuffer {
-        val byteBuffer = ByteBuffer.allocateDirect(4 * inputWidth * inputHeight * inputChannels)
-            .order(ByteOrder.nativeOrder())
 
-        for (y in 0 until inputHeight) {
-            for (x in 0 until inputWidth) {
-                val pixel = inputArray[y][x]
-                for (c in 0 until inputChannels) {
-                    val normalized = pixel[c] / 255.0f
-                    byteBuffer.putFloat(normalized)
-                }
-            }
+    private fun floatArrayToByteBuffer(array: FloatArray): ByteBuffer {
+        val byteBuffer = ByteBuffer.allocateDirect(4 * array.size).order(ByteOrder.nativeOrder())
+        for (f in array) {
+            byteBuffer.putFloat(f)
         }
         byteBuffer.rewind()
         return byteBuffer
