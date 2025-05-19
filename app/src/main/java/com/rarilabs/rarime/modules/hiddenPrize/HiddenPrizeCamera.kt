@@ -263,56 +263,74 @@ fun OverlayControls(
 
 @Composable
 fun FaceMeshCanvas(
-    imageSize: Size, detectedMeshes: List<FaceMesh>
+    imageSize: Size,
+    detectedMeshes: List<FaceMesh>,
 ) {
     Canvas(modifier = Modifier.fillMaxSize()) {
+
         val viewW = size.width
         val viewH = size.height
-
         if (imageSize.width == 0f || imageSize.height == 0f) return@Canvas
 
-        val scale = maxOf(viewW / imageSize.width, viewH / imageSize.height)
-        val scaledW = imageSize.width * scale
-        val scaledH = imageSize.height * scale
-        val dx = (scaledW - viewW) / 2f
-        val dy = (scaledH - viewH) / 2f
+        val scale  = maxOf(viewW / imageSize.width, viewH / imageSize.height)
+        val dx     = (imageSize.width  * scale - viewW)  / 2f
+        val dy     = (imageSize.height * scale - viewH) / 2f
 
-        detectedMeshes.forEach { faceMesh ->
 
-            faceMesh.allTriangles.forEach { tri ->
-                val pts = tri.allPoints
-                if (pts.size == 3) {
-                    val mapped = pts.map { p ->
-                        val rawX = p.position.x * scale - dx
-                        val rawY = p.position.y * scale - dy
-                        Offset(rawX, rawY)
-                    }
+        val contours: List<List<Int>> = listOf(
+            listOf(57,185,40,39,37,0,267,269,270,409,287,291,292,308,415,310,311,312,13,82,81,80,191,78,62,76,61,57), // up lib
+            listOf(57,146,91,181,84,17,314,405,321,375,287,291,292,324,318,402,317,14,87,178,88,95,78,62,76,61,57), // down lib
+            listOf(152,148,176,149,150,136,172,58,132,93,234,127,162,21,54,103,67,109,10,338,297,332,284,251,389,356,454,323,361,288,397,365,379,378,400,377,152),//circuit face
+            listOf(97,2,326,393,267,0,37,167,97),//philtrum
+            listOf(),//nose in 6пш
 
-                    val path = Path().apply {
-                        moveTo(mapped[0].x, mapped[0].y)
-                        lineTo(mapped[1].x, mapped[1].y)
-                        lineTo(mapped[2].x, mapped[2].y)
-                        close()
-                    }
 
-                    mapped.forEach { vertex ->
-                        drawCircle(
-                            center = vertex,
-                            radius = 2.dp.toPx(),
-                            color = Color.White.copy(alpha = 0.5f)
-                        )
-                    }
 
-                    drawPath(
-                        path = path,
-                        color = Color.White.copy(alpha = 0.5f),
-                        style = Stroke(width = 1.dp.toPx())
+        )
+
+
+
+
+
+
+        detectedMeshes.forEach { mesh ->
+
+
+            contours.forEach { pathIndices ->
+
+                for (i in 0 until pathIndices.size - 1) {
+                    val startIdx = pathIndices[i]
+                    val endIdx   = pathIndices[i + 1]
+
+                    val startP = mesh.allPoints[startIdx].position
+                    val endP   = mesh.allPoints[endIdx].position
+
+                    val start = Offset(startP.x * scale - dx, startP.y * scale - dy)
+                    val end   = Offset(endP.x   * scale - dx, endP.y   * scale - dy)
+
+                    drawLine(
+                        color       = Color.White.copy(alpha = 0.9f),
+                        start       = start,
+                        end         = end,
+                        strokeWidth = 1.5.dp.toPx()
                     )
                 }
+            }
+
+
+            mesh.allPoints.forEach { p ->
+                val cx = p.position.x * scale - dx
+                val cy = p.position.y * scale - dy
+                drawCircle(
+                    center = Offset(cx, cy),
+                    radius = 1.8.dp.toPx(),
+                    color  = Color.White.copy(alpha = 0.25f)
+                )
             }
         }
     }
 }
+
 
 
 @OptIn(ExperimentalGetImage::class)
