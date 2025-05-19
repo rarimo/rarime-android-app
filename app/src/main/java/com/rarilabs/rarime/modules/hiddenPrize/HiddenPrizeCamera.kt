@@ -265,56 +265,74 @@ fun OverlayControls(
 
 @Composable
 fun FaceMeshCanvas(
-    imageSize: Size, detectedMeshes: List<FaceMesh>
+    imageSize: Size,
+    detectedMeshes: List<FaceMesh>,
 ) {
     Canvas(modifier = Modifier.fillMaxSize()) {
+
         val viewW = size.width
         val viewH = size.height
-
         if (imageSize.width == 0f || imageSize.height == 0f) return@Canvas
 
-        val scale = maxOf(viewW / imageSize.width, viewH / imageSize.height)
-        val scaledW = imageSize.width * scale
-        val scaledH = imageSize.height * scale
-        val dx = (scaledW - viewW) / 2f
-        val dy = (scaledH - viewH) / 2f
+        val scale  = maxOf(viewW / imageSize.width, viewH / imageSize.height)
+        val dx     = (imageSize.width  * scale - viewW)  / 2f
+        val dy     = (imageSize.height * scale - viewH) / 2f
 
-        detectedMeshes.forEach { faceMesh ->
 
-            faceMesh.allTriangles.forEach { tri ->
-                val pts = tri.allPoints
-                if (pts.size == 3) {
-                    val mapped = pts.map { p ->
-                        val rawX = p.position.x * scale - dx
-                        val rawY = p.position.y * scale - dy
-                        Offset(rawX, rawY)
-                    }
+        val contours: List<List<Int>> = listOf(
+            listOf(57,84,314,287,311,13,81,57,37,0,267,287),//libs
+            listOf(152,150,172,132,234,162,54,67,10,297,284,389,454,361,397,379,152),//circuit face
+            listOf(97,129,5,358,326,97,129,193,417,358,417,336,107,193), //nose
+            listOf(70, 105, 107),//left eyebrows
+            listOf(336, 334, 300),//right eyebrows
+            listOf(33,144,153,133,159,33), //left eye
+            listOf(362,386,263,373,380, 362), //right eye
+            listOf(150,84,314,379,397,314,287,397,287, 426, 358, 5, 129,206,57,172,84,150,172,132,234,206,129,5,358,426,454)//additional line
+        )
+        detectedMeshes.forEach { mesh ->
+            contours.forEach { pathIndices ->
 
-                    val path = Path().apply {
-                        moveTo(mapped[0].x, mapped[0].y)
-                        lineTo(mapped[1].x, mapped[1].y)
-                        lineTo(mapped[2].x, mapped[2].y)
-                        close()
-                    }
+                for (i in 0 until pathIndices.size - 1) {
+                    val startIdx = pathIndices[i]
+                    val endIdx   = pathIndices[i + 1]
 
-                    mapped.forEach { vertex ->
-                        drawCircle(
-                            center = vertex,
-                            radius = 2.dp.toPx(),
-                            color = Color.White.copy(alpha = 0.5f)
-                        )
-                    }
+                    val startP = mesh.allPoints[startIdx].position
+                    val endP   = mesh.allPoints[endIdx].position
 
-                    drawPath(
-                        path = path,
-                        color = Color.White.copy(alpha = 0.5f),
-                        style = Stroke(width = 1.dp.toPx())
+                    val start = Offset(startP.x * scale - dx, startP.y * scale - dy)
+                    val end   = Offset(endP.x   * scale - dx, endP.y   * scale - dy)
+                    drawCircle(
+                        center =start,
+                        radius = 4.dp.toPx(),
+                        color = Color.White
+                    )
+                    drawCircle(
+                        center =end,
+                        radius = 4.dp.toPx(),
+                        color = Color.White
+                    )
+                    drawLine(
+                        color       = Color.White.copy(alpha = 0.9f),
+                        start       = start,
+                        end         = end,
+                        strokeWidth = 1.5.dp.toPx()
                     )
                 }
+            }
+
+            mesh.allPoints.forEach { p ->
+                val cx = p.position.x * scale - dx
+                val cy = p.position.y * scale - dy
+                drawCircle(
+                    center = Offset(cx, cy),
+                    radius = 1.8.dp.toPx(),
+                    color  = Color.White.copy(alpha = 0.25f)
+                )
             }
         }
     }
 }
+
 
 
 @OptIn(ExperimentalGetImage::class)
