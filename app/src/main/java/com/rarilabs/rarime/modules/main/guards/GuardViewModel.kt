@@ -12,7 +12,7 @@ class GuardViewModel @Inject constructor(
     private val authManager: AuthManager,
     private val securityManager: SecurityManager,
     private val identityManager: IdentityManager,
-): ViewModel() {
+) : ViewModel() {
     val privateKey = identityManager.privateKey
 
     val isScreenLocked = securityManager.isScreenLocked

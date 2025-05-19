@@ -31,9 +31,10 @@ fun LanguageScreen(
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             AppLanguage.entries.forEach { lang ->
-                LanguageItem(language = lang,
+                LanguageItem(
+                    language = lang,
                     isSelected = lang == language,
-                    onClick = {onLanguageChange.invoke(lang); viewModel.updateLanguage(lang)  })
+                    onClick = { onLanguageChange.invoke(lang); viewModel.updateLanguage(lang) })
             }
         }
     }

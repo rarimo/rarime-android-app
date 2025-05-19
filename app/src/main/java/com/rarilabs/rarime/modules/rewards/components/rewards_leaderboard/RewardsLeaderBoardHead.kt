@@ -17,16 +17,18 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
 fun RewardsLeaderBoardHead() {
-    Row (
-        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Row (
+        Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Column (
+            Column(
                 modifier = Modifier.requiredWidth(64.dp)
             ) {
                 Text(
@@ -36,7 +38,7 @@ fun RewardsLeaderBoardHead() {
                 )
             }
 
-            Column (
+            Column(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
@@ -46,7 +48,7 @@ fun RewardsLeaderBoardHead() {
                 )
             }
 
-            Column (
+            Column(
                 horizontalAlignment = Alignment.End
             ) {
                 Text(
@@ -62,7 +64,7 @@ fun RewardsLeaderBoardHead() {
 @Preview
 @Composable
 fun RewardsLeaderBoardHeadPreview() {
-    Row (
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(RarimeTheme.colors.backgroundPrimary)

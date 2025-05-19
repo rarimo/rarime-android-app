@@ -34,9 +34,7 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -303,47 +301,93 @@ fun FaceMeshCanvas(
         val viewH = size.height
         if (imageSize.width == 0f || imageSize.height == 0f) return@Canvas
 
-        val scale  = maxOf(viewW / imageSize.width, viewH / imageSize.height)
-        val dx     = (imageSize.width  * scale - viewW)  / 2f
-        val dy     = (imageSize.height * scale - viewH) / 2f
+        val scale = maxOf(viewW / imageSize.width, viewH / imageSize.height)
+        val dx = (imageSize.width * scale - viewW) / 2f
+        val dy = (imageSize.height * scale - viewH) / 2f
 
 
         val contours: List<List<Int>> = listOf(
-            listOf(57,84,314,287,311,13,81,57,37,0,267,287),//libs
-            listOf(152,150,172,132,234,162,54,67,10,297,284,389,454,361,397,379,152),//circuit face
-            listOf(97,129,5,358,326,97,129,193,417,358,417,336,107,193), //nose
+            listOf(57, 84, 314, 287, 311, 13, 81, 57, 37, 0, 267, 287),//libs
+            listOf(
+                152,
+                150,
+                172,
+                132,
+                234,
+                162,
+                54,
+                67,
+                10,
+                297,
+                284,
+                389,
+                454,
+                361,
+                397,
+                379,
+                152
+            ),//circuit face
+            listOf(97, 129, 5, 358, 326, 97, 129, 193, 417, 358, 417, 336, 107, 193), //nose
             listOf(70, 105, 107),//left eyebrows
             listOf(336, 334, 300),//right eyebrows
-            listOf(33,144,153,133,159,33), //left eye
-            listOf(362,386,263,373,380, 362), //right eye
-            listOf(150,84,314,379,397,314,287,397,287, 426, 358, 5, 129,206,57,172,84,150,172,132,234,206,129,5,358,426,454)//additional line
+            listOf(33, 144, 153, 133, 159, 33), //left eye
+            listOf(362, 386, 263, 373, 380, 362), //right eye
+            listOf(
+                150,
+                84,
+                314,
+                379,
+                397,
+                314,
+                287,
+                397,
+                287,
+                426,
+                358,
+                5,
+                129,
+                206,
+                57,
+                172,
+                84,
+                150,
+                172,
+                132,
+                234,
+                206,
+                129,
+                5,
+                358,
+                426,
+                454
+            )//additional line
         )
         detectedMeshes.forEach { mesh ->
             contours.forEach { pathIndices ->
 
                 for (i in 0 until pathIndices.size - 1) {
                     val startIdx = pathIndices[i]
-                    val endIdx   = pathIndices[i + 1]
+                    val endIdx = pathIndices[i + 1]
 
                     val startP = mesh.allPoints[startIdx].position
-                    val endP   = mesh.allPoints[endIdx].position
+                    val endP = mesh.allPoints[endIdx].position
 
                     val start = Offset(startP.x * scale - dx, startP.y * scale - dy)
-                    val end   = Offset(endP.x   * scale - dx, endP.y   * scale - dy)
+                    val end = Offset(endP.x * scale - dx, endP.y * scale - dy)
                     drawCircle(
-                        center =start,
+                        center = start,
                         radius = 4.dp.toPx(),
                         color = Color.White
                     )
                     drawCircle(
-                        center =end,
+                        center = end,
                         radius = 4.dp.toPx(),
                         color = Color.White
                     )
                     drawLine(
-                        color       = Color.White.copy(alpha = 0.9f),
-                        start       = start,
-                        end         = end,
+                        color = Color.White.copy(alpha = 0.9f),
+                        start = start,
+                        end = end,
                         strokeWidth = 1.5.dp.toPx()
                     )
                 }
@@ -355,13 +399,12 @@ fun FaceMeshCanvas(
                 drawCircle(
                     center = Offset(cx, cy),
                     radius = 1.8.dp.toPx(),
-                    color  = Color.White.copy(alpha = 0.25f)
+                    color = Color.White.copy(alpha = 0.25f)
                 )
             }
         }
     }
 }
-
 
 
 @OptIn(ExperimentalGetImage::class)

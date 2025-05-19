@@ -92,7 +92,7 @@ fun JoinWaitlistCongratsModalContent(onClose: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 private fun NonSpecificCongratsModalContentPreview() {
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary)

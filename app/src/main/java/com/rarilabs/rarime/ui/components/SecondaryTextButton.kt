@@ -56,7 +56,8 @@ private fun SecondaryTextButtonPreview() {
             rightIcon = R.drawable.ic_arrow_right,
             text = "Large",
             onClick = { })
-        SecondaryTextButton(enabled = false,
+        SecondaryTextButton(
+            enabled = false,
             size = ButtonSize.Large,
             leftIcon = R.drawable.ic_arrow_left,
             text = "Disabled",

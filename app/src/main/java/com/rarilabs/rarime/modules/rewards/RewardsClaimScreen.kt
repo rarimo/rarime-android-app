@@ -37,7 +37,6 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.SecondaryTextButton
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldNumberState
-import com.rarilabs.rarime.ui.components.rememberAppTextFieldState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.NumberUtil

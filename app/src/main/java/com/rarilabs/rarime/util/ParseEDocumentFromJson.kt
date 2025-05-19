@@ -29,7 +29,7 @@ class ParseEDocumentFromJson {
             val eDocument = convertToEDocument(struct)
             return eDocument
 
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             Log.i("Error parsing", "Not IOS EDocument type", e)
         }
         val androidEDocument: EDocument = Gson().fromJson(json, EDocument::class.java)

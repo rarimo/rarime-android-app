@@ -45,7 +45,8 @@ fun AuthMethodScreen(
     }
 
     fun handleBiometricsStateChange(isEnabled: Boolean) {
-        BiometricUtil.authenticate(context,
+        BiometricUtil.authenticate(
+            context,
             title = context.getString(R.string.biometric_authentication_title),
             subtitle = context.getString(R.string.biometric_authentication_subtitle),
             negativeButtonText = context.getString(R.string.cancel_btn),
@@ -58,7 +59,8 @@ fun AuthMethodScreen(
     }
 
     if (isPasscodeShown) {
-        PasscodeScreen(passcodeState = passcodeState,
+        PasscodeScreen(
+            passcodeState = passcodeState,
             passcode = passcode,
             onPasscodeChange = viewModel::setPasscode,
             onPasscodeStateChange = {
@@ -71,17 +73,20 @@ fun AuthMethodScreen(
             title = stringResource(R.string.auth_method), onBack = onBack
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                AuthMethodItem(iconId = R.drawable.ic_password,
+                AuthMethodItem(
+                    iconId = R.drawable.ic_password,
                     label = stringResource(R.string.passcode),
                     checked = passcodeState == SecurityCheckState.ENABLED,
                     onCheckedChange = { isPasscodeShown = true })
 
                 if (isBiometricsAvailable) {
-                    AuthMethodItem(iconId = R.drawable.ic_fingerprint,
+                    AuthMethodItem(
+                        iconId = R.drawable.ic_fingerprint,
                         label = stringResource(R.string.biometrics),
                         checked = biometricsState == SecurityCheckState.ENABLED,
                         onCheckedChange = { handleBiometricsStateChange(it) },
-                        enabled = passcodeState == SecurityCheckState.ENABLED)
+                        enabled = passcodeState == SecurityCheckState.ENABLED
+                    )
                 }
             }
         }
@@ -90,7 +95,11 @@ fun AuthMethodScreen(
 
 @Composable
 private fun AuthMethodItem(
-    @DrawableRes iconId: Int, label: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit, enabled: Boolean = true
+    @DrawableRes iconId: Int,
+    label: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    enabled: Boolean = true
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,

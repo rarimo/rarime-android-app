@@ -46,7 +46,11 @@ class RefreshTokenInterceptor @Inject constructor(
                                     refresh()
                                 }
                             } catch (e: Exception) {
-                                ErrorHandler.logError("RefreshTokenInterceptor", "Error refreshing token", e)
+                                ErrorHandler.logError(
+                                    "RefreshTokenInterceptor",
+                                    "Error refreshing token",
+                                    e
+                                )
 
                                 authManager.get().updateTokens("", "")
                             } finally {

@@ -24,7 +24,11 @@ object CircuitUtil {
         return result
     }
 
-    fun smartChunking2(bytes: ByteArray, blockNumber: Long, smartChunking2BlockSize: Long): List<Long> {
+    fun smartChunking2(
+        bytes: ByteArray,
+        blockNumber: Long,
+        smartChunking2BlockSize: Long
+    ): List<Long> {
         val bits = bytes.toBits()
 
         val dataBitsNumber = (bits.size + 1 + 64).toLong()
@@ -82,7 +86,10 @@ object CircuitUtil {
     // Helper function to normalize a byte array to exactly 32 bytes
     private fun normalizeTo32Bytes(input: ByteArray): ByteArray {
         return when {
-            input.size > 32 -> input.copyOfRange(input.size - 32, input.size) // Truncate leading bytes
+            input.size > 32 -> input.copyOfRange(
+                input.size - 32,
+                input.size
+            ) // Truncate leading bytes
             input.size < 32 -> ByteArray(32 - input.size) + input // Pad with leading zeros
             else -> input // Already 32 bytes
         }

@@ -60,7 +60,7 @@ fun UnSupportedPassport(
                     .border(2.dp, RarimeTheme.colors.backgroundPrimary, CircleShape)
             ) {
                 Text(
-                    text = Country.fromISOCode(nationality)!!.flag,
+                    text = Country.fromISOCode(nationality).flag,
                     style = RarimeTheme.typography.h3,
                     color = RarimeTheme.colors.textPrimary,
                 )

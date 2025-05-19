@@ -15,12 +15,14 @@ import com.rarilabs.rarime.ui.components.AppAlertDialog
 
 @Composable
 fun SetupPasscode(
-    onClose: () -> Unit, viewModel: SetupPasscodeViewModel = hiltViewModel(), onPasscodeChange: () -> Unit
+    onClose: () -> Unit,
+    viewModel: SetupPasscodeViewModel = hiltViewModel(),
+    onPasscodeChange: () -> Unit
 ) {
     PasscodeScreen(
         passcodeState = SecurityCheckState.UNSET,
         onPasscodeStateChange = { viewModel.updatePasscodeState(it) },
-        onPasscodeChange = {viewModel.onPasscodeChange(it); onPasscodeChange.invoke() },
+        onPasscodeChange = { viewModel.onPasscodeChange(it); onPasscodeChange.invoke() },
         onClose = onClose
     )
 }
@@ -76,7 +78,8 @@ fun PasscodeScreen(
             newPasscode = ""
         }, onClose = { onClose() })
     } else {
-        EnterPasscodeScreen(passcode = newPasscode,
+        EnterPasscodeScreen(
+            passcode = newPasscode,
             onNext = { handleEnterPasscode(it) },
             onBack = { onClose() })
     }
@@ -85,7 +88,8 @@ fun PasscodeScreen(
 @Preview
 @Composable
 private fun PasscodeScreenPreview() {
-    PasscodeScreen(passcode = "1234",
+    PasscodeScreen(
+        passcode = "1234",
         passcodeState = SecurityCheckState.DISABLED,
         onPasscodeChange = {},
         onPasscodeStateChange = {},

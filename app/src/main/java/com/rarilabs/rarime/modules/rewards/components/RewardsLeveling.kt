@@ -238,7 +238,7 @@ fun LevelingProgress(
             leadingContent()
         }
 
-        Row (
+        Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
@@ -247,7 +247,11 @@ fun LevelingProgress(
                 color = RarimeTheme.colors.textPrimary,
             )
             Text(
-                text = " / " + (level.maxAmount?.let { maxAmount -> NumberUtil.formatAmount(maxAmount) }
+                text = " / " + (level.maxAmount?.let { maxAmount ->
+                    NumberUtil.formatAmount(
+                        maxAmount
+                    )
+                }
                     ?: "∞"),
                 color = RarimeTheme.colors.textSecondary,
             )
@@ -285,7 +289,8 @@ fun RewardsLeveling(pointsBalance: PointsBalanceData) {
     val leveling = getNormalizeLeveling(balance)
 
     var selectedLevelingCardId by remember {
-        mutableStateOf(leveling.indexOf(
+        mutableStateOf(
+            leveling.indexOf(
             leveling.find { it.amount == balance }
         ))
     }

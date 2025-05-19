@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,12 +38,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.manager.Celebrity
+import com.rarilabs.rarime.manager.UserStats
 import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeCamera
 import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeViewModel
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
@@ -53,6 +54,7 @@ import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
 import com.rarilabs.rarime.modules.main.ScreenInsets
+import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
@@ -79,6 +81,8 @@ fun HiddenPrizeExpandedCard(
     val cameraPermissionState = rememberPermissionState(
         Manifest.permission.CAMERA
     )
+    val userData by viewModel.userStats.collectAsState()
+
 
     AppBottomSheet(state = showFaceScan, shape = RectangleShape, isHeaderEnabled = false) {
         Box(Modifier.fillMaxSize()) {
@@ -105,7 +109,8 @@ fun HiddenPrizeExpandedCard(
         onAddScan = {
             //TODO
         },
-        celebrity = celebrity
+        celebrity = celebrity,
+        userData = userData
     )
 
 
@@ -119,7 +124,8 @@ fun HiddenPrizeExpandedCardContent(
     innerPaddings: Map<ScreenInsets, Number>,
     onScan: () -> Unit,
     onAddScan: () -> Unit,
-    celebrity: Celebrity?
+    celebrity: Celebrity?,
+    userData: UserStats?
 ) {
     with(cardProps) {
         with(sharedTransitionScope) {
@@ -145,7 +151,9 @@ fun HiddenPrizeExpandedCardContent(
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope,
                         onAddScan = onAddScan,
-                        onScan = onScan
+                        onScan = onScan,
+                        attendsCount = if(userData?.totalAttemptsCount != null) userData.totalAttemptsCount else 0,
+                        userStats = userData
                     )
                 },
                 body = {
@@ -206,7 +214,10 @@ private fun Footer(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     onAddScan: () -> Unit,
-    onScan: () -> Unit
+    onScan: () -> Unit,
+    attendsCount :Int = 0,
+    userStats: UserStats?
+
 ) {
 
     with(sharedTransitionScope) {
@@ -243,7 +254,7 @@ private fun Footer(
 
                     Row(verticalAlignment = Alignment.Bottom) {
                         Text(
-                            "3",
+                            text = attendsCount.toString(),
                             color = RarimeTheme.colors.textPrimary,
                             style = TextStyle(
                                 brush = RarimeTheme.colors.gradient8,
@@ -258,13 +269,30 @@ private fun Footer(
                         )
                     }
                 }
+                if(attendsCount > 0 && userStats!!.extraAttemptsLeft <= 10 ){
+                    PrimaryButton(
+                        text = "Scan",
+                        onClick = onScan,
+                        size = ButtonSize.Large,
+                        leftIcon = R.drawable.ic_user_focus
+                    )
+                }else{
+                    BaseButton(
+                        modifier = Modifier,
+                        onClick = onAddScan,
+                        enabled = true,
+                        size = ButtonSize.Large,
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = RarimeTheme.colors.invertedLight,
+                            disabledContainerColor = RarimeTheme.colors.componentDisabled,
+                            disabledContentColor = RarimeTheme.colors.textDisabled
+                        ),
+                        text = "Bonus scan",
+                        leftIcon = R.drawable.ic_flashlight_fill,
+                    )
+                }
 
-                PrimaryButton(
-                    text = "Scan",
-                    onClick = onScan,
-                    size = ButtonSize.Large,
-                    leftIcon = R.drawable.ic_user_focus
-                )
+
             }
         }
     }
@@ -278,7 +306,6 @@ fun Body(
     animatedVisibilityScope: AnimatedVisibilityScope,
     tip: String?
 ) {
-
     with(sharedTransitionScope) {
         Column(
             modifier = Modifier
@@ -345,15 +372,16 @@ fun Body(
                     color = RarimeTheme.colors.textSecondary
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
 
-                if (tip !=null) {
+
+                if (tip != null) {
+                    Spacer(modifier = Modifier.height(24.dp))
                     TipAlert(
                         text = tip
                     )
-
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
-                Spacer(modifier = Modifier.height(24.dp))
+
             }
         }
     }
@@ -395,48 +423,50 @@ private fun Background(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO)
-@Composable
-fun HiddenPriceExpandedCardPreview_LightMode() {
-    AppTheme {
-        PrevireSharedAnimationProvider { sts, avs ->
-            HiddenPrizeExpandedCardContent(
-                cardProps = BaseCardProps.Expanded(
-                    onCollapse = {},
-                    layoutId = CardType.HIDDEN_PRIZE.layoutId,
-                    animatedVisibilityScope = avs,
-                    sharedTransitionScope = sts
-                ),
-                modifier = Modifier.height(820.dp),
-                innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
-                onScan = {},
-                onAddScan = {},
-                celebrity = null
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun HiddenPriceExpandedCardPreview_DarkMode() {
-    AppTheme {
-        PrevireSharedAnimationProvider { sts, avs ->
-            HiddenPrizeExpandedCardContent(
-                cardProps = BaseCardProps.Expanded(
-                    onCollapse = {},
-                    layoutId = CardType.HIDDEN_PRIZE.layoutId,
-                    animatedVisibilityScope = avs,
-                    sharedTransitionScope = sts
-                ),
-                modifier = Modifier.height(820.dp),
-                innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
-                onScan = {},
-                onAddScan = {},
-                celebrity = null
-            )
-        }
-    }
-}
+//@OptIn(ExperimentalSharedTransitionApi::class)
+//@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO)
+//@Composable
+//fun HiddenPriceExpandedCardPreview_LightMode() {
+//    AppTheme {
+//        PrevireSharedAnimationProvider { sts, avs ->
+//            HiddenPrizeExpandedCardContent(
+//                cardProps = BaseCardProps.Expanded(
+//                    onCollapse = {},
+//                    layoutId = CardType.HIDDEN_PRIZE.layoutId,
+//                    animatedVisibilityScope = avs,
+//                    sharedTransitionScope = sts
+//                ),
+//                modifier = Modifier.height(820.dp),
+//                innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
+//                onScan = {},
+//                onAddScan = {},
+//                celebrity = null,
+//                userData = null
+//            )
+//        }
+//    }
+//}
+//
+//@OptIn(ExperimentalSharedTransitionApi::class)
+//@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+//@Composable
+//fun HiddenPriceExpandedCardPreview_DarkMode() {
+//    AppTheme {
+//        PrevireSharedAnimationProvider { sts, avs ->
+//            HiddenPrizeExpandedCardContent(
+//                cardProps = BaseCardProps.Expanded(
+//                    onCollapse = {},
+//                    layoutId = CardType.HIDDEN_PRIZE.layoutId,
+//                    animatedVisibilityScope = avs,
+//                    sharedTransitionScope = sts
+//                ),
+//                modifier = Modifier.height(820.dp),
+//                innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
+//                onScan = {},
+//                onAddScan = {},
+//                celebrity = null,
+//                userData = null
+//            )
+//        }
+//    }
+//}

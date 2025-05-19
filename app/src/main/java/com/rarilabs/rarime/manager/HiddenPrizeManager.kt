@@ -4,10 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.rarilabs.rarime.BaseConfig
@@ -57,27 +53,27 @@ class HiddenPrizeManager @Inject constructor(
     private val _referralsLimit = MutableStateFlow(0)
 
     val referralsLimit: StateFlow<Int>
-        get () = _referralsLimit.asStateFlow()
+        get() = _referralsLimit.asStateFlow()
 
-    private val _referralsCount= MutableStateFlow(0)
+    private val _referralsCount = MutableStateFlow(0)
 
-    val referralsCount : StateFlow<Int>
-        get () = _referralsCount.asStateFlow()
+    val referralsCount: StateFlow<Int>
+        get() = _referralsCount.asStateFlow()
 
     private val _socialShare = MutableStateFlow(false)
 
-    val socialShare :StateFlow<Boolean>
-        get () = _socialShare.asStateFlow()
+    val socialShare: StateFlow<Boolean>
+        get() = _socialShare.asStateFlow()
 
     private val _referralCode = MutableStateFlow("")
 
-    val referralCode : StateFlow<String>
-        get () =_referralCode.asStateFlow()
+    val referralCode: StateFlow<String>
+        get() = _referralCode.asStateFlow()
 
     private val _userStats = MutableStateFlow<UserStats?>(null)
 
-    val userStats :StateFlow<UserStats?>
-        get () = _userStats.asStateFlow()
+    val userStats: StateFlow<UserStats?>
+        get() = _userStats.asStateFlow()
 
     private var _celebrity: MutableStateFlow<Celebrity?> = MutableStateFlow(null)
 
@@ -108,13 +104,14 @@ class HiddenPrizeManager @Inject constructor(
         _referralsLimit.value = a.referrals_limit
         _referralCode.value = a.referral_code
 
-        _userStats.value = res.included?.filterIsInstance<Included.UserStats>()?.firstOrNull()?.let {
-            UserStats(
-                resetTime = it.attributes?.reset_time ?: 0,
-                extraAttemptsLeft = it.attributes?.extra_attempts_left ?: 0,
-                totalAttemptsCount = it.attributes?.total_attempts_count ?: 0
-            )
-        }
+        _userStats.value =
+            res.included?.filterIsInstance<Included.UserStats>()?.firstOrNull()?.let {
+                UserStats(
+                    resetTime = it.attributes?.reset_time ?: 0,
+                    extraAttemptsLeft = it.attributes?.extra_attempts_left ?: 0,
+                    totalAttemptsCount = it.attributes?.total_attempts_count ?: 0
+                )
+            }
 
         _celebrity.value =
             res.included?.filterIsInstance<Included.Celebrity>()?.firstOrNull()?.attributes?.let {

@@ -19,7 +19,7 @@ fun TimeEventsList(
     navigate: (String) -> Unit,
     pointsEventData: List<PointsEventData>
 ) {
-    Column (
+    Column(
         modifier = modifier
     ) {
         pointsEventData.forEachIndexed { idx, item ->
@@ -52,8 +52,8 @@ fun TimeEventsListSkeleton() {
 
 @Preview
 @Composable
-private fun TimeEventsListPreview () {
-    Column (
+private fun TimeEventsListPreview() {
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(RarimeTheme.colors.backgroundPrimary)
@@ -69,7 +69,7 @@ private fun TimeEventsListPreview () {
 @Preview
 @Composable
 private fun TimeEventsListSkeletonPreview() {
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(RarimeTheme.colors.backgroundPrimary)

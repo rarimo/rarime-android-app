@@ -51,31 +51,31 @@ fun RewardsEventItemCommon(
             AppIcon(id = R.drawable.ic_share, size = 18.dp, tint = RarimeTheme.colors.textPrimary)
         }
     ) {
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Column (
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
                     .padding(horizontal = 20.dp),
             ) {
-                Row (
+                Row(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
-                    Column (
+                    Column(
                         modifier = Modifier.fillMaxWidth(0.75f),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Text (
+                        Text(
                             text = pointsEvent.attributes.meta.static.title,
                             style = RarimeTheme.typography.subtitle2,
                             color = RarimeTheme.colors.textPrimary,
                         )
 
-                        Row (
+                        Row(
                             horizontalArrangement = Arrangement.spacedBy(16.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
@@ -91,7 +91,7 @@ fun RewardsEventItemCommon(
                         }
                     }
 
-                    Column (
+                    Column(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Image(
@@ -104,15 +104,14 @@ fun RewardsEventItemCommon(
                             modifier = Modifier
                                 .width(64.dp)
                                 .height(64.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                            ,
+                                .clip(RoundedCornerShape(8.dp)),
                         )
                     }
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 24.dp))
 
-                Column (
+                Column(
                     modifier = Modifier
                         .weight(1f)
                         .verticalScroll(rememberScrollState())
@@ -123,13 +122,13 @@ fun RewardsEventItemCommon(
                 }
             }
 
-            Column (
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
                 HorizontalDivider()
 
-                Column (
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 16.dp, horizontal = 20.dp)
@@ -138,7 +137,11 @@ fun RewardsEventItemCommon(
                         modifier = Modifier.fillMaxWidth(),
                         text = "Let's start",
                         onClick = {
-                            pointsEvent.attributes.meta.static.actionUrl?.let { uriHandler.openUri(it) }
+                            pointsEvent.attributes.meta.static.actionUrl?.let {
+                                uriHandler.openUri(
+                                    it
+                                )
+                            }
                         }
                     )
                 }

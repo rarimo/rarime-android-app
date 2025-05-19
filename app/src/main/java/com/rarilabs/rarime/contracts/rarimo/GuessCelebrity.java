@@ -209,18 +209,6 @@ public class GuessCelebrity extends Contract {
         return typedResponse;
     }
 
-    public Flowable<CelebFeatureUpdatedEventResponse> celebFeatureUpdatedEventFlowable(
-            EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getCelebFeatureUpdatedEventFromLog(log));
-    }
-
-    public Flowable<CelebFeatureUpdatedEventResponse> celebFeatureUpdatedEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(CELEBFEATUREUPDATED_EVENT));
-        return celebFeatureUpdatedEventFlowable(filter);
-    }
-
     public static List<FundsReceivedEventResponse> getFundsReceivedEvents(
             TransactionReceipt transactionReceipt) {
         List<EventValuesWithLog> valueList = staticExtractEventParametersWithLog(FUNDSRECEIVED_EVENT, transactionReceipt);
@@ -244,17 +232,6 @@ public class GuessCelebrity extends Contract {
         return typedResponse;
     }
 
-    public Flowable<FundsReceivedEventResponse> fundsReceivedEventFlowable(EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getFundsReceivedEventFromLog(log));
-    }
-
-    public Flowable<FundsReceivedEventResponse> fundsReceivedEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(FUNDSRECEIVED_EVENT));
-        return fundsReceivedEventFlowable(filter);
-    }
-
     public static List<InitializedEventResponse> getInitializedEvents(
             TransactionReceipt transactionReceipt) {
         List<EventValuesWithLog> valueList = staticExtractEventParametersWithLog(INITIALIZED_EVENT, transactionReceipt);
@@ -274,17 +251,6 @@ public class GuessCelebrity extends Contract {
         typedResponse.log = log;
         typedResponse.version = (BigInteger) eventValues.getNonIndexedValues().get(0).getValue();
         return typedResponse;
-    }
-
-    public Flowable<InitializedEventResponse> initializedEventFlowable(EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getInitializedEventFromLog(log));
-    }
-
-    public Flowable<InitializedEventResponse> initializedEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(INITIALIZED_EVENT));
-        return initializedEventFlowable(filter);
     }
 
     public static List<MinThresholdUpdatedEventResponse> getMinThresholdUpdatedEvents(
@@ -310,18 +276,6 @@ public class GuessCelebrity extends Contract {
         return typedResponse;
     }
 
-    public Flowable<MinThresholdUpdatedEventResponse> minThresholdUpdatedEventFlowable(
-            EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getMinThresholdUpdatedEventFromLog(log));
-    }
-
-    public Flowable<MinThresholdUpdatedEventResponse> minThresholdUpdatedEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(MINTHRESHOLDUPDATED_EVENT));
-        return minThresholdUpdatedEventFlowable(filter);
-    }
-
     public static List<OwnersAddedEventResponse> getOwnersAddedEvents(
             TransactionReceipt transactionReceipt) {
         List<EventValuesWithLog> valueList = staticExtractEventParametersWithLog(OWNERSADDED_EVENT, transactionReceipt);
@@ -341,17 +295,6 @@ public class GuessCelebrity extends Contract {
         typedResponse.log = log;
         typedResponse.newOwners = (List<String>) ((Array) eventValues.getNonIndexedValues().get(0)).getNativeValueCopy();
         return typedResponse;
-    }
-
-    public Flowable<OwnersAddedEventResponse> ownersAddedEventFlowable(EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getOwnersAddedEventFromLog(log));
-    }
-
-    public Flowable<OwnersAddedEventResponse> ownersAddedEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(OWNERSADDED_EVENT));
-        return ownersAddedEventFlowable(filter);
     }
 
     public static List<OwnersRemovedEventResponse> getOwnersRemovedEvents(
@@ -375,17 +318,6 @@ public class GuessCelebrity extends Contract {
         return typedResponse;
     }
 
-    public Flowable<OwnersRemovedEventResponse> ownersRemovedEventFlowable(EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getOwnersRemovedEventFromLog(log));
-    }
-
-    public Flowable<OwnersRemovedEventResponse> ownersRemovedEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(OWNERSREMOVED_EVENT));
-        return ownersRemovedEventFlowable(filter);
-    }
-
     public static List<PausedEventResponse> getPausedEvents(TransactionReceipt transactionReceipt) {
         List<EventValuesWithLog> valueList = staticExtractEventParametersWithLog(PAUSED_EVENT, transactionReceipt);
         ArrayList<PausedEventResponse> responses = new ArrayList<PausedEventResponse>(valueList.size());
@@ -404,17 +336,6 @@ public class GuessCelebrity extends Contract {
         typedResponse.log = log;
         typedResponse.account = (String) eventValues.getNonIndexedValues().get(0).getValue();
         return typedResponse;
-    }
-
-    public Flowable<PausedEventResponse> pausedEventFlowable(EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getPausedEventFromLog(log));
-    }
-
-    public Flowable<PausedEventResponse> pausedEventFlowable(DefaultBlockParameter startBlock,
-                                                             DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(PAUSED_EVENT));
-        return pausedEventFlowable(filter);
     }
 
     public static List<RewardClaimedEventResponse> getRewardClaimedEvents(
@@ -440,17 +361,6 @@ public class GuessCelebrity extends Contract {
         return typedResponse;
     }
 
-    public Flowable<RewardClaimedEventResponse> rewardClaimedEventFlowable(EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getRewardClaimedEventFromLog(log));
-    }
-
-    public Flowable<RewardClaimedEventResponse> rewardClaimedEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(REWARDCLAIMED_EVENT));
-        return rewardClaimedEventFlowable(filter);
-    }
-
     public static List<RewardUpdatedEventResponse> getRewardUpdatedEvents(
             TransactionReceipt transactionReceipt) {
         List<EventValuesWithLog> valueList = staticExtractEventParametersWithLog(REWARDUPDATED_EVENT, transactionReceipt);
@@ -474,17 +384,6 @@ public class GuessCelebrity extends Contract {
         return typedResponse;
     }
 
-    public Flowable<RewardUpdatedEventResponse> rewardUpdatedEventFlowable(EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getRewardUpdatedEventFromLog(log));
-    }
-
-    public Flowable<RewardUpdatedEventResponse> rewardUpdatedEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(REWARDUPDATED_EVENT));
-        return rewardUpdatedEventFlowable(filter);
-    }
-
     public static List<UnpausedEventResponse> getUnpausedEvents(
             TransactionReceipt transactionReceipt) {
         List<EventValuesWithLog> valueList = staticExtractEventParametersWithLog(UNPAUSED_EVENT, transactionReceipt);
@@ -504,17 +403,6 @@ public class GuessCelebrity extends Contract {
         typedResponse.log = log;
         typedResponse.account = (String) eventValues.getNonIndexedValues().get(0).getValue();
         return typedResponse;
-    }
-
-    public Flowable<UnpausedEventResponse> unpausedEventFlowable(EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getUnpausedEventFromLog(log));
-    }
-
-    public Flowable<UnpausedEventResponse> unpausedEventFlowable(DefaultBlockParameter startBlock,
-                                                                 DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(UNPAUSED_EVENT));
-        return unpausedEventFlowable(filter);
     }
 
     public static List<UpgradedEventResponse> getUpgradedEvents(
@@ -538,17 +426,6 @@ public class GuessCelebrity extends Contract {
         return typedResponse;
     }
 
-    public Flowable<UpgradedEventResponse> upgradedEventFlowable(EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getUpgradedEventFromLog(log));
-    }
-
-    public Flowable<UpgradedEventResponse> upgradedEventFlowable(DefaultBlockParameter startBlock,
-                                                                 DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(UPGRADED_EVENT));
-        return upgradedEventFlowable(filter);
-    }
-
     public static List<VerifierUpdatedEventResponse> getVerifierUpdatedEvents(
             TransactionReceipt transactionReceipt) {
         List<EventValuesWithLog> valueList = staticExtractEventParametersWithLog(VERIFIERUPDATED_EVENT, transactionReceipt);
@@ -570,6 +447,151 @@ public class GuessCelebrity extends Contract {
         typedResponse.oldVerifier = (String) eventValues.getNonIndexedValues().get(0).getValue();
         typedResponse.newVerifier = (String) eventValues.getNonIndexedValues().get(1).getValue();
         return typedResponse;
+    }
+
+    @Deprecated
+    public static GuessCelebrity load(String contractAddress, Web3j web3j, Credentials credentials,
+                                      BigInteger gasPrice, BigInteger gasLimit) {
+        return new GuessCelebrity(contractAddress, web3j, credentials, gasPrice, gasLimit);
+    }
+
+    @Deprecated
+    public static GuessCelebrity load(String contractAddress, Web3j web3j,
+                                      TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit) {
+        return new GuessCelebrity(contractAddress, web3j, transactionManager, gasPrice, gasLimit);
+    }
+
+    public static GuessCelebrity load(String contractAddress, Web3j web3j, Credentials credentials,
+                                      ContractGasProvider contractGasProvider) {
+        return new GuessCelebrity(contractAddress, web3j, credentials, contractGasProvider);
+    }
+
+    public static GuessCelebrity load(String contractAddress, Web3j web3j,
+                                      TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
+        return new GuessCelebrity(contractAddress, web3j, transactionManager, contractGasProvider);
+    }
+
+    public Flowable<CelebFeatureUpdatedEventResponse> celebFeatureUpdatedEventFlowable(
+            EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getCelebFeatureUpdatedEventFromLog(log));
+    }
+
+    public Flowable<CelebFeatureUpdatedEventResponse> celebFeatureUpdatedEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(CELEBFEATUREUPDATED_EVENT));
+        return celebFeatureUpdatedEventFlowable(filter);
+    }
+
+    public Flowable<FundsReceivedEventResponse> fundsReceivedEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getFundsReceivedEventFromLog(log));
+    }
+
+    public Flowable<FundsReceivedEventResponse> fundsReceivedEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(FUNDSRECEIVED_EVENT));
+        return fundsReceivedEventFlowable(filter);
+    }
+
+    public Flowable<InitializedEventResponse> initializedEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getInitializedEventFromLog(log));
+    }
+
+    public Flowable<InitializedEventResponse> initializedEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(INITIALIZED_EVENT));
+        return initializedEventFlowable(filter);
+    }
+
+    public Flowable<MinThresholdUpdatedEventResponse> minThresholdUpdatedEventFlowable(
+            EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getMinThresholdUpdatedEventFromLog(log));
+    }
+
+    public Flowable<MinThresholdUpdatedEventResponse> minThresholdUpdatedEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(MINTHRESHOLDUPDATED_EVENT));
+        return minThresholdUpdatedEventFlowable(filter);
+    }
+
+    public Flowable<OwnersAddedEventResponse> ownersAddedEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getOwnersAddedEventFromLog(log));
+    }
+
+    public Flowable<OwnersAddedEventResponse> ownersAddedEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(OWNERSADDED_EVENT));
+        return ownersAddedEventFlowable(filter);
+    }
+
+    public Flowable<OwnersRemovedEventResponse> ownersRemovedEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getOwnersRemovedEventFromLog(log));
+    }
+
+    public Flowable<OwnersRemovedEventResponse> ownersRemovedEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(OWNERSREMOVED_EVENT));
+        return ownersRemovedEventFlowable(filter);
+    }
+
+    public Flowable<PausedEventResponse> pausedEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getPausedEventFromLog(log));
+    }
+
+    public Flowable<PausedEventResponse> pausedEventFlowable(DefaultBlockParameter startBlock,
+                                                             DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(PAUSED_EVENT));
+        return pausedEventFlowable(filter);
+    }
+
+    public Flowable<RewardClaimedEventResponse> rewardClaimedEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getRewardClaimedEventFromLog(log));
+    }
+
+    public Flowable<RewardClaimedEventResponse> rewardClaimedEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(REWARDCLAIMED_EVENT));
+        return rewardClaimedEventFlowable(filter);
+    }
+
+    public Flowable<RewardUpdatedEventResponse> rewardUpdatedEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getRewardUpdatedEventFromLog(log));
+    }
+
+    public Flowable<RewardUpdatedEventResponse> rewardUpdatedEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(REWARDUPDATED_EVENT));
+        return rewardUpdatedEventFlowable(filter);
+    }
+
+    public Flowable<UnpausedEventResponse> unpausedEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getUnpausedEventFromLog(log));
+    }
+
+    public Flowable<UnpausedEventResponse> unpausedEventFlowable(DefaultBlockParameter startBlock,
+                                                                 DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(UNPAUSED_EVENT));
+        return unpausedEventFlowable(filter);
+    }
+
+    public Flowable<UpgradedEventResponse> upgradedEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getUpgradedEventFromLog(log));
+    }
+
+    public Flowable<UpgradedEventResponse> upgradedEventFlowable(DefaultBlockParameter startBlock,
+                                                                 DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(UPGRADED_EVENT));
+        return upgradedEventFlowable(filter);
     }
 
     public Flowable<VerifierUpdatedEventResponse> verifierUpdatedEventFlowable(EthFilter filter) {
@@ -833,28 +855,6 @@ public class GuessCelebrity extends Contract {
                 List.of(new Uint256(amount_)),
                 Collections.emptyList());
         return executeRemoteCallTransaction(function);
-    }
-
-    @Deprecated
-    public static GuessCelebrity load(String contractAddress, Web3j web3j, Credentials credentials,
-                                      BigInteger gasPrice, BigInteger gasLimit) {
-        return new GuessCelebrity(contractAddress, web3j, credentials, gasPrice, gasLimit);
-    }
-
-    @Deprecated
-    public static GuessCelebrity load(String contractAddress, Web3j web3j,
-                                      TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit) {
-        return new GuessCelebrity(contractAddress, web3j, transactionManager, gasPrice, gasLimit);
-    }
-
-    public static GuessCelebrity load(String contractAddress, Web3j web3j, Credentials credentials,
-                                      ContractGasProvider contractGasProvider) {
-        return new GuessCelebrity(contractAddress, web3j, credentials, contractGasProvider);
-    }
-
-    public static GuessCelebrity load(String contractAddress, Web3j web3j,
-                                      TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
-        return new GuessCelebrity(contractAddress, web3j, transactionManager, contractGasProvider);
     }
 
     public static class ProofPoints extends StaticStruct {

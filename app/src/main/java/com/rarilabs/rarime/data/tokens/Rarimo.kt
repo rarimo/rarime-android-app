@@ -63,9 +63,9 @@ class RarimoToken @Inject constructor(
 
         val rarimoChain = RARIMO_CHAINS[BaseConfig.CHAIN.chainId]
 
-        Log.i("ChainId",rarimoChain?.chainId.toString())
-        Log.i("coinMinimalDenom",rarimoChain?.stakeCurrency?.coinMinimalDenom.toString())
-        Log.i("rpc",rarimoChain?.rpc.toString())
+        Log.i("ChainId", rarimoChain?.chainId.toString())
+        Log.i("coinMinimalDenom", rarimoChain?.stakeCurrency?.coinMinimalDenom.toString())
+        Log.i("rpc", rarimoChain?.rpc.toString())
 
         withContext(Dispatchers.IO) {
             profiler.walletSend(

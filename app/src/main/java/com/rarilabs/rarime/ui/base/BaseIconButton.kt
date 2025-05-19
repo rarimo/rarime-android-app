@@ -85,7 +85,8 @@ private fun BaseIconButtonPreview() {
             size = ButtonIconSize.Large,
             icon = R.drawable.ic_arrow_left,
             onClick = { })
-        BaseIconButton(enabled = false,
+        BaseIconButton(
+            enabled = false,
             size = ButtonIconSize.Large,
             modifier = Modifier.fillMaxWidth(),
             icon = R.drawable.ic_arrow_left,

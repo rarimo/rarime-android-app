@@ -30,7 +30,7 @@ fun AboutProgram(
         verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
         val localizedBannedCountries = NOT_ALLOWED_COUNTRIES.map {
-            Country.fromISOCode(it)?.localizedName ?: it
+            Country.fromISOCode(it).localizedName
         }
 
         // TODO: implement real text
@@ -40,7 +40,11 @@ fun AboutProgram(
                 
                 If you are added to the waitlist it means that you are eligible to claim tokens in the next wave of airdrops. The app will notify you when you are added.
                 
-                Certain jurisdictions are excluded from the reward program: ${localizedBannedCountries.joinToString(", ")}
+                Certain jurisdictions are excluded from the reward program: ${
+                localizedBannedCountries.joinToString(
+                    ", "
+                )
+            }
             """.trimIndent(),
             style = RarimeTheme.typography.body3,
             color = RarimeTheme.colors.textPrimary,

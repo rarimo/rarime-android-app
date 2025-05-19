@@ -20,7 +20,7 @@ class ScanPassportScreenViewModel @Inject constructor(
     private val registrationManager: RegistrationManager,
     private val walletManager: WalletManager,
     private val pointsManager: PointsManager
-): ViewModel() {
+) : ViewModel() {
     val eDocument = registrationManager.eDocument
     val pointsToken = walletManager.pointsToken
 

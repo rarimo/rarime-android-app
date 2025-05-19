@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.ui.components
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,7 +21,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.theme.AppTheme
-import com.rarilabs.rarime.ui.theme.RarimeColors
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 class AppCheckboxState(initialChecked: Boolean = false) {
@@ -71,13 +68,17 @@ fun AppCheckbox(
         }
     }
 
-    Box(modifier = modifier
-        .then(backgroundModifier)
-        .border(1.dp, colors.componentPrimary, RoundedCornerShape(4.dp))
-        .padding(2.dp)
-        .clickable(interactionSource = interactionSource,
-            indication = null,
-            onClick = onClickAction))
+    Box(
+        modifier = modifier
+            .then(backgroundModifier)
+            .border(1.dp, colors.componentPrimary, RoundedCornerShape(4.dp))
+            .padding(2.dp)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClickAction
+            )
+    )
     {
 
         AppIcon(
@@ -87,6 +88,7 @@ fun AppCheckbox(
         )
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 private fun AppCheckboxPreview() {

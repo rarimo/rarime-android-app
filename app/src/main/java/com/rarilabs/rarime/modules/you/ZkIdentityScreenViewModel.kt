@@ -75,6 +75,7 @@ class ZkIdentityScreenViewModel @Inject constructor(
     fun onIncognitoChange(isIncognito: Boolean) {
         passportManager.updateIsIncognitoMode(isIncognito)
     }
+
     fun onPassportIdentifiersChange(passportIdentifier: PassportIdentifier) {
         val passportIdentifiers = listOf(passportIdentifier)
         passportManager.updatePassportIdentifiers(passportIdentifiers)

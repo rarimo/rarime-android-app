@@ -60,11 +60,11 @@ object SendEmailUtil {
 
     fun deleteEdocumentFile(context: Context) {
         try {
-            val file = File(context.filesDir, "eDocument.json" )
-            if (file.exists()){
+            val file = File(context.filesDir, "eDocument.json")
+            if (file.exists()) {
                 file.delete()
             }
-        }catch (e:Exception) {
+        } catch (e: Exception) {
             ErrorHandler.logError("Send Edocument", "Cant delete eDocument file", e)
         }
 

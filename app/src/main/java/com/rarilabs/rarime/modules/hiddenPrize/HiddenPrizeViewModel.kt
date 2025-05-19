@@ -17,11 +17,14 @@ class HiddenPrizeViewModel @Inject constructor(
 
     val downloadProgress = hiddenPrizeManager.downloadProgressZkey
     val celebrity = hiddenPrizeManager.celebrity
+    val userStats = hiddenPrizeManager.userStats
+
 
 
     init {
         viewModelScope.launch {
             loadUserInfo()
+
         }
     }
 

@@ -138,9 +138,10 @@ fun ClaimAirdropScreen(
                     .padding(horizontal = 24.dp)
             ) {
                 UiPrivacyCheckbox(termsAcceptedState = termsAcceptedState, enabled = !isClaiming)
-                PrimaryButton(text = if (isClaiming) stringResource(R.string.claiming_btn) else stringResource(
-                    R.string.claim_btn
-                ),
+                PrimaryButton(
+                    text = if (isClaiming) stringResource(R.string.claiming_btn) else stringResource(
+                        R.string.claim_btn
+                    ),
                     modifier = Modifier.fillMaxWidth(),
                     enabled = termsAcceptedState.checked && !isClaiming,
                     size = ButtonSize.Large,

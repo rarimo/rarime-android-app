@@ -146,10 +146,12 @@ fun ProfileScreenContent(
                     .padding(16.dp)
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                    ProfileRow(iconId = R.drawable.ic_user_focus,
+                    ProfileRow(
+                        iconId = R.drawable.ic_user_focus,
                         title = stringResource(R.string.auth_method),
                         onClick = { navigate(Screen.Main.Profile.AuthMethod.route) })
-                    ProfileRow(iconId = R.drawable.ic_key,
+                    ProfileRow(
+                        iconId = R.drawable.ic_key,
                         title = stringResource(R.string.export_keys),
                         onClick = { navigate(Screen.Main.Profile.ExportKeys.route) })
                 }
@@ -160,18 +162,22 @@ fun ProfileScreenContent(
                     .padding(16.dp)
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                    ProfileRow(iconId = R.drawable.ic_sun,
+                    ProfileRow(
+                        iconId = R.drawable.ic_sun,
                         title = stringResource(R.string.theme),
                         value = colorScheme.toLocalizedString(),
                         onClick = { navigate(Screen.Main.Profile.Theme.route) })
-                    ProfileRow(iconId = R.drawable.ic_rarime,
+                    ProfileRow(
+                        iconId = R.drawable.ic_rarime,
                         title = stringResource(R.string.app_icon),
                         value = appIcon.toLocalizedString(),
                         onClick = { navigate(Screen.Main.Profile.AppIcon.route) })
-                    ProfileRow(iconId = R.drawable.ic_question,
+                    ProfileRow(
+                        iconId = R.drawable.ic_question,
                         title = stringResource(R.string.privacy_policy),
                         onClick = { navigate(Screen.Main.Profile.Privacy.route) })
-                    ProfileRow(iconId = R.drawable.ic_flag,
+                    ProfileRow(
+                        iconId = R.drawable.ic_flag,
                         title = stringResource(R.string.terms_of_use),
                         onClick = { navigate(Screen.Main.Profile.Terms.route) })
                     ProfileRow(

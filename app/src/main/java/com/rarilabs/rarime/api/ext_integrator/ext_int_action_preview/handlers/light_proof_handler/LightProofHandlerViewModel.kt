@@ -26,6 +26,7 @@ import java.math.BigInteger
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import javax.inject.Inject
+
 @HiltViewModel
 class LightProofHandlerViewModel @Inject constructor(
     private val extIntegratorApiManager: ExtIntegratorApiManager,
