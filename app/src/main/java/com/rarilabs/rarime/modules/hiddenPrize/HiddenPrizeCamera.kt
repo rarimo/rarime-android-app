@@ -278,7 +278,7 @@ fun FaceMeshCanvas(
 
 
         val contours: List<List<Int>> = listOf(
-            listOf(57,84,314,287,311,317,13,87,81,57,37,0,267,287),//libs
+            listOf(57,84,314,287,311,13,81,57,37,0,267,287),//libs
             listOf(152,150,172,132,234,162,54,67,10,297,284,389,454,361,397,379,152),//circuit face
             listOf(97,129,5,358,326,97,129,193,417,358,417,336,107,193), //nose
             listOf(70, 105, 107),//left eyebrows
@@ -312,7 +312,16 @@ fun FaceMeshCanvas(
 
                     val start = Offset(startP.x * scale - dx, startP.y * scale - dy)
                     val end   = Offset(endP.x   * scale - dx, endP.y   * scale - dy)
-
+                    drawCircle(
+                        center =start,
+                        radius = 4.dp.toPx(),
+                        color = Color.White
+                    )
+                    drawCircle(
+                        center =end,
+                        radius = 4.dp.toPx(),
+                        color = Color.White
+                    )
                     drawLine(
                         color       = Color.White.copy(alpha = 0.9f),
                         start       = start,
