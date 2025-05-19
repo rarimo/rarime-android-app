@@ -63,7 +63,8 @@ class BionetAnalizer {
                 val faceBmp = Bitmap.createBitmap(
                     bitmap, squareRect.left, squareRect.top, cropSize, cropSize
                 ).let { bmp ->
-                    bmp.scale(40, 40).copy(Bitmap.Config.ARGB_8888, false)
+                    bmp.scale(40, 40)
+                        .copy(Bitmap.Config.ARGB_8888, false)
                 }
 
                 // --- в серую шкалу ---
@@ -157,7 +158,10 @@ class BionetAnalizer {
                 val halfSide = side / 2
 
                 val squareRect = Rect(
-                    centerX - halfSide, centerY - halfSide, centerX + halfSide, centerY + halfSide
+                    (centerX - halfSide).coerceAtLeast(0),
+                    (centerY - halfSide).coerceAtLeast(0),
+                    (centerX + halfSide).coerceAtMost(bitmap.width),
+                    (centerY + halfSide).coerceAtMost(bitmap.height)
                 )
 
                 val cropSize = min(squareRect.width(), squareRect.height())
@@ -169,7 +173,9 @@ class BionetAnalizer {
 
                 val faceBmp = Bitmap.createBitmap(
                     bitmap, squareRect.left, squareRect.top, cropSize, cropSize
-                ).scale(112, 112).copy(Bitmap.Config.ARGB_8888, false)
+                ).let { bmp ->
+                    bmp.scale(112, 112).copy(Bitmap.Config.ARGB_8888, false)
+                }
 
                 val imageData = bitmapToNormalizedRgbFloatArray(faceBmp)
 
