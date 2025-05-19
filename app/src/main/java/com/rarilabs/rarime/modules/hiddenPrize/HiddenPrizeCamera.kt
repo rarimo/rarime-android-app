@@ -286,21 +286,8 @@ fun FaceMeshCanvas(
             listOf(33,144,153,133,159,33), //left eye
             listOf(362,386,263,373,380, 362), //right eye
             listOf(150,84,314,379,397,314,287,397,287, 426, 358, 5, 129,206,57,172,84,150,172,132,234,206,129,5,358,426,454)//additional line
-
-
-
-
-
         )
-
-
-
-
-
-
         detectedMeshes.forEach { mesh ->
-
-
             contours.forEach { pathIndices ->
 
                 for (i in 0 until pathIndices.size - 1) {
@@ -330,7 +317,6 @@ fun FaceMeshCanvas(
                     )
                 }
             }
-
 
             mesh.allPoints.forEach { p ->
                 val cx = p.position.x * scale - dx
