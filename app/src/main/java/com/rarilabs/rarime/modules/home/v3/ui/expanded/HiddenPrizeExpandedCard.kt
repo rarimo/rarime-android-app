@@ -98,8 +98,8 @@ fun HiddenPrizeExpandedCard(
     }
     val isAddScanEnabled by remember {
         derivedStateOf {
-            (shares?.isSocialShare == true) == false &&
-                    ((shares?.referralsCount ?: 0) < (shares?.referralsLimit ?: 0))
+            (shares?.isSocialShare == true) == false && ((shares?.referralsCount
+                ?: 0) < (shares?.referralsLimit ?: 0))
         }
 
     }
@@ -200,16 +200,14 @@ fun HiddenPrizeExpandedCardContent(
                         isAddScanEnabled = isAddScanEnabled,
                         dayAttemptsCount = dayAttemptsCount
                     )
-                },
-                body = {
+                }, body = {
                     Body(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope,
                         tip = celebrity?.hint
                     )
-                },
-                background = {
+                }, background = {
                     Background(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
@@ -314,14 +312,7 @@ private fun Footer(
                         )
                     }
                 }
-                if (attendsCount > 0 && isAddScanEnabled) {
-                    PrimaryButton(
-                        text = "Scan",
-                        onClick = onScan,
-                        size = ButtonSize.Large,
-                        leftIcon = R.drawable.ic_user_focus
-                    )
-                } else {
+                if (attendsCount <= 0 && isAddScanEnabled) {
                     BaseButton(
                         modifier = Modifier,
                         onClick = onAddScan,
@@ -335,6 +326,14 @@ private fun Footer(
                         text = "Bonus scan",
                         leftIcon = R.drawable.ic_flashlight_fill,
                     )
+                } else {
+                    PrimaryButton(
+                        text = "Scan",
+                        onClick = onScan,
+                        size = ButtonSize.Large,
+                        leftIcon = R.drawable.ic_user_focus
+                    )
+
                 }
 
 
@@ -353,15 +352,14 @@ fun Body(
 ) {
     with(sharedTransitionScope) {
         Column(
-            modifier = Modifier
-                .sharedBounds(
-                    rememberSharedContentState(HomeSharedKeys.content(layoutId)),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    renderInOverlayDuringTransition = false,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
-                )
+            modifier = Modifier.sharedBounds(
+                rememberSharedContentState(HomeSharedKeys.content(layoutId)),
+                animatedVisibilityScope = animatedVisibilityScope,
+                renderInOverlayDuringTransition = false,
+                enter = fadeIn(),
+                exit = fadeOut(),
+                resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+            )
         ) {
 
             Spacer(modifier = Modifier.height((BG_HAND_HIDDEN_PRIZE_HEIGHT - 50).dp))
@@ -371,8 +369,7 @@ fun Body(
                     .width(36.dp)
                     .height(5.dp)
                     .background(
-                        RarimeTheme.colors.componentPressed,
-                        shape = RoundedCornerShape(100.dp)
+                        RarimeTheme.colors.componentPressed, shape = RoundedCornerShape(100.dp)
                     )
                     .align(Alignment.CenterHorizontally)
             )
