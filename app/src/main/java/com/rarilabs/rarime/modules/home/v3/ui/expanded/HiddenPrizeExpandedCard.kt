@@ -30,8 +30,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -44,6 +48,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.manager.Celebrity
 import com.rarilabs.rarime.manager.UserStats
@@ -85,9 +90,16 @@ fun HiddenPrizeExpandedCard(
     val cameraPermissionState = rememberPermissionState(
         Manifest.permission.CAMERA
     )
+    var requested by remember { mutableStateOf(false) }
     val userData by viewModel.userStats.collectAsState()
     val showAddScan = rememberAppSheetState()
-
+    val referalCode by viewModel.referalCode.collectAsState()
+    LaunchedEffect(cameraPermissionState.status.isGranted, requested) {
+        if (cameraPermissionState.status.isGranted && requested) {
+            showFaceScan.show()
+            requested = false // сбрасываем флаг, если нужно
+        }
+    }
 
     AppBottomSheet(state = showFaceScan, shape = RectangleShape, isHeaderEnabled = false) {
         Box(Modifier.fillMaxSize()) {
@@ -113,7 +125,7 @@ fun HiddenPrizeExpandedCard(
         }, onInvite = {
             val intent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, "")
+                putExtra(Intent.EXTRA_TEXT, "https://app.rarime.com/r/$referalCode")
             }
             launcher.launch(Intent.createChooser(intent, "Invite via"))
         })
@@ -127,9 +139,8 @@ fun HiddenPrizeExpandedCard(
         onScan = {
             if (!cameraPermissionState.status.isGranted) {
                 cameraPermissionState.launchPermissionRequest()
-            } else {
-                showFaceScan.show()
             }
+                showFaceScan.show()
 
         },
         onAddScan = {
@@ -187,7 +198,7 @@ fun HiddenPrizeExpandedCardContent(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope,
-                        tip = celebrity?.hint.toString()
+                        tip = celebrity?.hint
                     )
                 },
                 background = {
@@ -295,7 +306,7 @@ private fun Footer(
                         )
                     }
                 }
-                if(attendsCount > 0 && userStats!!.extraAttemptsLeft <= 10 ){
+                if(attendsCount >=0 ){
                     PrimaryButton(
                         text = "Scan",
                         onClick = onScan,
@@ -399,14 +410,14 @@ fun Body(
                 )
 
 
-
+                Spacer(modifier = Modifier.height(24.dp))
                 if (tip != null) {
-                    Spacer(modifier = Modifier.height(24.dp))
                     TipAlert(
                         text = tip
                     )
-                    Spacer(modifier = Modifier.height(24.dp))
+
                 }
+                Spacer(modifier = Modifier.height(24.dp))
 
             }
         }

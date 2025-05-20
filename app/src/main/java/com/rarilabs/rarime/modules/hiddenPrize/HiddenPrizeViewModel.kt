@@ -18,6 +18,7 @@ class HiddenPrizeViewModel @Inject constructor(
     val downloadProgress = hiddenPrizeManager.downloadProgressZkey
     val celebrity = hiddenPrizeManager.celebrity
     val userStats = hiddenPrizeManager.userStats
+    val referalCode =hiddenPrizeManager.referralCode
 
 
 
