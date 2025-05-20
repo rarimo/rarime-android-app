@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rarilabs.rarime.api.hiddenPrize.HiddenPrizeApiError
 import com.rarilabs.rarime.manager.HiddenPrizeManager
+import com.rarilabs.rarime.util.bionet.BinetAnalyzer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -14,14 +15,18 @@ class HiddenPrizeViewModel @Inject constructor(
     private val hiddenPrizeManager: HiddenPrizeManager
 ) : ViewModel() {
 
-
     val downloadProgress = hiddenPrizeManager.downloadProgressZkey
-
 
     init {
         viewModelScope.launch {
             loadUserInfo()
         }
+    }
+
+    suspend fun checkCrop(bitmap: Bitmap): Bitmap? {
+        val bionet = BinetAnalyzer()
+
+        return bionet.checkBound(bitmap)
     }
 
     suspend fun generateFaceFeatures(bitmap: Bitmap): List<Float> {

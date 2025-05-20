@@ -3,6 +3,7 @@ package com.rarilabs.rarime.manager
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.Gson
+import com.rarilabs.rarime.data.tokens.NativeToken
 import com.rarilabs.rarime.data.tokens.PointsToken
 import com.rarilabs.rarime.data.tokens.Token
 import com.rarilabs.rarime.modules.wallet.models.Transaction
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
+import org.web3j.protocol.Web3j
 import java.math.BigInteger
 import javax.inject.Inject
 import kotlin.math.pow
@@ -55,6 +57,7 @@ class WalletManager @Inject constructor(
     private val dataStoreManager: SecureSharedPrefsManager,
     private val identityManager: IdentityManager,
     private val pointsManager: PointsManager,
+    private val web3j: Web3j
 ) {
     private fun getWalletAssets(): List<WalletAsset> {
         return dataStoreManager.readWalletAssets(
@@ -70,6 +73,13 @@ class WalletManager @Inject constructor(
                         pointsManager = pointsManager
                     )
                 ),
+
+                WalletAsset(
+                    identityManager.evmAddress(), NativeToken(
+                        web3j,
+                        identityManager = identityManager
+                    )
+                )
 //                WalletAsset(
 //                    identityManager.evmAddress(),
 //                    Erc20Token(

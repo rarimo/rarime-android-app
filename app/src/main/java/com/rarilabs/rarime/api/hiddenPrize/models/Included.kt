@@ -8,13 +8,13 @@ import com.squareup.moshi.Moshi
 sealed class Included {
     data class UserStats(
         val id: Long,
-        val type: String, // should be "user_stats"
+        val type: String = "user_stats", // should be "user_stats"
         val attributes: UserStatsAttributes?
     ) : Included()
 
     data class Celebrity(
         val id: Long,
-        val type: String, // should be "celebrity"
+        val type: String = "celebrity", // should be "celebrity"
         val attributes: CelebrityAttributes?
     ) : Included()
 }
