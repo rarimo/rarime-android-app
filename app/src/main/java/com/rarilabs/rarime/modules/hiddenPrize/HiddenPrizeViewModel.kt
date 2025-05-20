@@ -17,37 +17,28 @@ class HiddenPrizeViewModel @Inject constructor(
     private val hiddenPrizeManager: HiddenPrizeManager
 ) : ViewModel() {
 
-
     val downloadProgress = hiddenPrizeManager.downloadProgressZkey
     val celebrity = hiddenPrizeManager.celebrity
-
-    val referalCode =hiddenPrizeManager.referralCode
+    val referalCode = hiddenPrizeManager.referralCode
     private val _isAddScanEnabled = MutableStateFlow(false)
-    val totalAttemptsCount = hiddenPrizeManager.userStats.value!!.extraAttemptsLeft + hiddenPrizeManager.userStats.value!!.attemptsLeft
-
+    val totalAttemptsCount =
+        hiddenPrizeManager.userStats.value!!.extraAttemptsLeft + hiddenPrizeManager.userStats.value!!.attemptsLeft
+    val dayAttemptsCount = hiddenPrizeManager.userStats.value!!.totalAttemptsCount
 
     val isAddScanEnabled: StateFlow<Boolean>
         get() = _isAddScanEnabled.asStateFlow()
 
-
-
     init {
         viewModelScope.launch {
             loadUserInfo()
-            if(hiddenPrizeManager.socialShare.value == false && hiddenPrizeManager.referralsCount.value < hiddenPrizeManager.referralsLimit.value){
-                _isAddScanEnabled.value=true
-            }else{
-                _isAddScanEnabled.value=false
-            }
-
-
+            _isAddScanEnabled.value =
+                hiddenPrizeManager.socialShare.value == false && hiddenPrizeManager.referralsCount.value < hiddenPrizeManager.referralsLimit.value
         }
     }
 
     suspend fun generateFaceFeatures(bitmap: Bitmap): List<Float> {
         return hiddenPrizeManager.generateFaceFeatures(bitmap)
     }
-
 
     suspend fun claimTokens(bitmap: Bitmap, features: List<Float>) {
         hiddenPrizeManager.claimTokens(features, bitmap)

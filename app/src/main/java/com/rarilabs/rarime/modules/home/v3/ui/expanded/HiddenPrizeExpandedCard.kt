@@ -30,35 +30,27 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.manager.Celebrity
-import com.rarilabs.rarime.manager.UserStats
 import com.rarilabs.rarime.modules.hiddenPrize.AddScanBottomSheet
 import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeCamera
 import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeViewModel
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BG_HAND_HIDDEN_PRIZE_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
-import com.rarilabs.rarime.modules.home.v3.model.CardType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
@@ -71,9 +63,7 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.TipAlert
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
-import com.rarilabs.rarime.ui.theme.AppTheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
-import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -83,7 +73,6 @@ fun HiddenPrizeExpandedCard(
     innerPaddings: Map<ScreenInsets, Number>,
     viewModel: HiddenPrizeViewModel = hiltViewModel()
 ) {
-
     val downloadProgress by viewModel.downloadProgress.collectAsState()
     val celebrity by viewModel.celebrity.collectAsState()
     val showFaceScan = rememberAppSheetState()
@@ -92,8 +81,9 @@ fun HiddenPrizeExpandedCard(
     )
     val isAddScanEnabled by viewModel.isAddScanEnabled.collectAsState()
     val showAddScan = rememberAppSheetState()
-    val referalCode by viewModel.referalCode.collectAsState()
+    val referralCode by viewModel.referalCode.collectAsState()
     val attendsCount = viewModel.totalAttemptsCount
+    val dayAttemptsCount = viewModel.dayAttemptsCount
     AppBottomSheet(state = showFaceScan, shape = RectangleShape, isHeaderEnabled = false) {
         Box(Modifier.fillMaxSize()) {
             HiddenPrizeCamera(
@@ -103,7 +93,6 @@ fun HiddenPrizeExpandedCard(
             )
         }
     }
-
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(), onResult = {})
@@ -118,7 +107,7 @@ fun HiddenPrizeExpandedCard(
         }, onInvite = {
             val intent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, "https://app.rarime.com/r/$referalCode")
+                putExtra(Intent.EXTRA_TEXT, "https://app.rarime.com/r/$referralCode")
             }
             launcher.launch(Intent.createChooser(intent, "Invite via"))
         })
@@ -133,7 +122,7 @@ fun HiddenPrizeExpandedCard(
             if (!cameraPermissionState.status.isGranted) {
                 cameraPermissionState.launchPermissionRequest()
             }
-                showFaceScan.show()
+            showFaceScan.show()
 
         },
         onAddScan = {
@@ -141,7 +130,9 @@ fun HiddenPrizeExpandedCard(
         },
         celebrity = celebrity,
         isAddScanEnabled = isAddScanEnabled,
-        attendsCount = attendsCount
+        attendsCount = attendsCount,
+        dayAttemptsCount = dayAttemptsCount
+
 
     )
 
@@ -158,7 +149,8 @@ fun HiddenPrizeExpandedCardContent(
     onAddScan: () -> Unit,
     celebrity: Celebrity?,
     isAddScanEnabled: Boolean,
-    attendsCount:Int
+    attendsCount: Int,
+    dayAttemptsCount: Int
 ) {
     with(cardProps) {
         with(sharedTransitionScope) {
@@ -186,7 +178,8 @@ fun HiddenPrizeExpandedCardContent(
                         onAddScan = onAddScan,
                         onScan = onScan,
                         attendsCount = attendsCount,
-                        isAddScanEnabled = isAddScanEnabled
+                        isAddScanEnabled = isAddScanEnabled,
+                        dayAttemptsCount = dayAttemptsCount
                     )
                 },
                 body = {
@@ -248,9 +241,9 @@ private fun Footer(
     animatedVisibilityScope: AnimatedVisibilityScope,
     onAddScan: () -> Unit,
     onScan: () -> Unit,
-    attendsCount :Int = 0,
-    isAddScanEnabled: Boolean
-
+    attendsCount: Int = 0,
+    isAddScanEnabled: Boolean,
+    dayAttemptsCount: Int
 ) {
 
     with(sharedTransitionScope) {
@@ -296,20 +289,20 @@ private fun Footer(
                             ),
                         )
                         Text(
-                            "/3 daily scans",
+                            text = "/$dayAttemptsCount daily scans",
                             style = RarimeTheme.typography.body3,
                             color = RarimeTheme.colors.textSecondary
                         )
                     }
                 }
-                if(attendsCount > 0 && isAddScanEnabled ){
+                if (attendsCount > 0 && isAddScanEnabled) {
                     PrimaryButton(
                         text = "Scan",
                         onClick = onScan,
                         size = ButtonSize.Large,
                         leftIcon = R.drawable.ic_user_focus
                     )
-                }else{
+                } else {
                     BaseButton(
                         modifier = Modifier,
                         onClick = onAddScan,
@@ -411,7 +404,6 @@ fun Body(
                     TipAlert(
                         text = tip
                     )
-
                 }
                 Spacer(modifier = Modifier.height(24.dp))
 
