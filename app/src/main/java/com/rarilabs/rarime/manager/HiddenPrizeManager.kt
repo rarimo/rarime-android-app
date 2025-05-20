@@ -26,9 +26,13 @@ import kotlin.math.pow
 
 data class UserStats(
     val resetTime: Long,
-    val attemptsLeft : Int,
+    val attemptsLeft: Int,
     val extraAttemptsLeft: Int,
     val totalAttemptsCount: Int
+)
+
+data class Shares(
+    val isSocialShare: Boolean, val referralsCount: Int, val referralsLimit: Int
 )
 
 data class Celebrity(
@@ -53,21 +57,6 @@ class HiddenPrizeManager @Inject constructor(
     val downloadProgressZkey: StateFlow<Int>
         get() = _downloadProgressZkey.asStateFlow()
 
-    private val _referralsLimit = MutableStateFlow(0)
-
-    val referralsLimit: StateFlow<Int>
-        get() = _referralsLimit.asStateFlow()
-
-    private val _referralsCount = MutableStateFlow(0)
-
-    val referralsCount: StateFlow<Int>
-        get() = _referralsCount.asStateFlow()
-
-    private val _socialShare = MutableStateFlow(false)
-
-    val socialShare: StateFlow<Boolean>
-        get() = _socialShare.asStateFlow()
-
     private val _referralCode = MutableStateFlow("")
 
     val referralCode: StateFlow<String>
@@ -83,7 +72,10 @@ class HiddenPrizeManager @Inject constructor(
     val celebrity: StateFlow<Celebrity?>
         get() = _celebrity.asStateFlow()
 
+    private val _shares = MutableStateFlow<Shares?>(null)
 
+    val shares: StateFlow<Shares?>
+        get() = _shares.asStateFlow()
 
 
     suspend fun createUser(referredBy: String? = null) {
@@ -94,21 +86,26 @@ class HiddenPrizeManager @Inject constructor(
         val res = apiManager.createNewUser(referredBy, nullifier)
         val attrs = res.data.attributes
         val included = res.included
+        _shares.value = Shares(
+            isSocialShare = attrs.social_share,
+            referralsLimit = attrs.referrals_limit,
+            referralsCount = attrs.referrals_count
+        )
 
-        _referralsLimit.value = attrs.referrals_limit
-        _referralsCount.value = attrs.referrals_count
-        _socialShare.value = attrs.social_share
     }
 
     suspend fun loadUserInfo() {
         val nullifier = identityManager.getUserPointsNullifierHex()
         val res = apiManager.getUserInfo(nullifier)
-        val a = res.data.attributes
+        val attributes = res.data.attributes
 
-        _socialShare.value = a.social_share
-        _referralsCount.value = a.referrals_count
-        _referralsLimit.value = a.referrals_limit
-        _referralCode.value = a.referral_code
+
+        _shares.value = Shares(
+            isSocialShare = attributes.social_share,
+            referralsCount = attributes.referrals_count,
+            referralsLimit = attributes.referrals_limit
+        )
+        _referralCode.value = attributes.referral_code
 
         _userStats.value =
             res.included?.filterIsInstance<Included.UserStats>()?.firstOrNull()?.let {
@@ -132,11 +129,14 @@ class HiddenPrizeManager @Inject constructor(
                     hint = it.hint ?: ""
                 )
             }
+
     }
 
     private suspend fun submitCelebrityGuess(faceFeatures: List<Float>): List<Float>? {
         val nullifier = identityManager.getUserPointsNullifierHex()
         val res = apiManager.submitCelebrityGuess(faceFeatures, nullifier)
+
+
 
         _userStats.value =
             res.included?.filterIsInstance<Included.UserStats>()?.firstOrNull()?.attributes?.let {

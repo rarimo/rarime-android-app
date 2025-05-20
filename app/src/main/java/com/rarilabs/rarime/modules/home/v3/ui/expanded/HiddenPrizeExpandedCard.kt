@@ -31,7 +31,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -79,11 +81,28 @@ fun HiddenPrizeExpandedCard(
     val cameraPermissionState = rememberPermissionState(
         Manifest.permission.CAMERA
     )
-    val isAddScanEnabled by viewModel.isAddScanEnabled.collectAsState()
     val showAddScan = rememberAppSheetState()
     val referralCode by viewModel.referalCode.collectAsState()
-    val attendsCount = viewModel.totalAttemptsCount
-    val dayAttemptsCount = viewModel.dayAttemptsCount
+    val userStats by viewModel.userStats.collectAsState()
+    val shares by viewModel.shares.collectAsState()
+
+    val dayAttemptsCount by remember {
+        derivedStateOf {
+            userStats?.totalAttemptsCount ?: 0
+        }
+    }
+    val totalAttemptsCount by remember {
+        derivedStateOf {
+            (userStats?.attemptsLeft ?: 0) + (userStats?.extraAttemptsLeft ?: 0)
+        }
+    }
+    val isAddScanEnabled by remember {
+        derivedStateOf {
+            shares?.isSocialShare ?: false == false &&
+                    ((shares?.referralsCount ?: 0) < (shares?.referralsLimit ?: 0))
+        }
+
+    }
     AppBottomSheet(state = showFaceScan, shape = RectangleShape, isHeaderEnabled = false) {
         Box(Modifier.fillMaxSize()) {
             HiddenPrizeCamera(
@@ -130,7 +149,7 @@ fun HiddenPrizeExpandedCard(
         },
         celebrity = celebrity,
         isAddScanEnabled = isAddScanEnabled,
-        attendsCount = attendsCount,
+        attendsCount = totalAttemptsCount,
         dayAttemptsCount = dayAttemptsCount
 
 

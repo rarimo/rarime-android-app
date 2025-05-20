@@ -6,9 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.rarilabs.rarime.api.hiddenPrize.HiddenPrizeApiError
 import com.rarilabs.rarime.manager.HiddenPrizeManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,19 +17,14 @@ class HiddenPrizeViewModel @Inject constructor(
     val downloadProgress = hiddenPrizeManager.downloadProgressZkey
     val celebrity = hiddenPrizeManager.celebrity
     val referalCode = hiddenPrizeManager.referralCode
-    private val _isAddScanEnabled = MutableStateFlow(false)
-    val totalAttemptsCount =
-        hiddenPrizeManager.userStats.value!!.extraAttemptsLeft + hiddenPrizeManager.userStats.value!!.attemptsLeft
-    val dayAttemptsCount = hiddenPrizeManager.userStats.value!!.totalAttemptsCount
+    val userStats = hiddenPrizeManager.userStats
+    val shares = hiddenPrizeManager.shares
 
-    val isAddScanEnabled: StateFlow<Boolean>
-        get() = _isAddScanEnabled.asStateFlow()
 
     init {
         viewModelScope.launch {
             loadUserInfo()
-            _isAddScanEnabled.value =
-                hiddenPrizeManager.socialShare.value == false && hiddenPrizeManager.referralsCount.value < hiddenPrizeManager.referralsLimit.value
+
         }
     }
 
