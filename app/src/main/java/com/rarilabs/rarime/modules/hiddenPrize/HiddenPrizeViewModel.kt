@@ -20,7 +20,6 @@ class HiddenPrizeViewModel @Inject constructor(
     val userStats = hiddenPrizeManager.userStats
     val shares = hiddenPrizeManager.shares
 
-
     init {
         viewModelScope.launch {
             loadUserInfo()

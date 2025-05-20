@@ -98,7 +98,7 @@ fun HiddenPrizeExpandedCard(
     }
     val isAddScanEnabled by remember {
         derivedStateOf {
-            shares?.isSocialShare ?: false == false &&
+            (shares?.isSocialShare == true) == false &&
                     ((shares?.referralsCount ?: 0) < (shares?.referralsLimit ?: 0))
         }
 
