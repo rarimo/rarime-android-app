@@ -25,7 +25,10 @@ import javax.inject.Inject
 import kotlin.math.pow
 
 data class UserStats(
-    val resetTime: Long, val extraAttemptsLeft: Int, val totalAttemptsCount: Int
+    val resetTime: Long,
+    val attemptsLeft : Int,
+    val extraAttemptsLeft: Int,
+    val totalAttemptsCount: Int
 )
 
 data class Celebrity(
@@ -81,6 +84,8 @@ class HiddenPrizeManager @Inject constructor(
         get() = _celebrity.asStateFlow()
 
 
+
+
     suspend fun createUser(referredBy: String? = null) {
 
         val nullifier = identityManager.getUserPointsNullifierHex()
@@ -88,6 +93,7 @@ class HiddenPrizeManager @Inject constructor(
 
         val res = apiManager.createNewUser(referredBy, nullifier)
         val attrs = res.data.attributes
+        val included = res.included
 
         _referralsLimit.value = attrs.referrals_limit
         _referralsCount.value = attrs.referrals_count
@@ -107,9 +113,12 @@ class HiddenPrizeManager @Inject constructor(
         _userStats.value =
             res.included?.filterIsInstance<Included.UserStats>()?.firstOrNull()?.let {
                 UserStats(
+
                     resetTime = it.attributes?.reset_time ?: 0,
+                    attemptsLeft = it.attributes?.attempts_left ?: 0,
                     extraAttemptsLeft = it.attributes?.extra_attempts_left ?: 0,
                     totalAttemptsCount = it.attributes?.total_attempts_count ?: 0
+
                 )
             }
 
@@ -133,6 +142,7 @@ class HiddenPrizeManager @Inject constructor(
             res.included?.filterIsInstance<Included.UserStats>()?.firstOrNull()?.attributes?.let {
                 UserStats(
                     resetTime = it.reset_time,
+                    attemptsLeft = it.attempts_left,
                     extraAttemptsLeft = it.extra_attempts_left,
                     totalAttemptsCount = it.total_attempts_count
                 )

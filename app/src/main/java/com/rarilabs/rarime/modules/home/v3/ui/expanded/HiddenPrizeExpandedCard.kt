@@ -90,17 +90,10 @@ fun HiddenPrizeExpandedCard(
     val cameraPermissionState = rememberPermissionState(
         Manifest.permission.CAMERA
     )
-    var requested by remember { mutableStateOf(false) }
-    val userData by viewModel.userStats.collectAsState()
+    val isAddScanEnabled by viewModel.isAddScanEnabled.collectAsState()
     val showAddScan = rememberAppSheetState()
     val referalCode by viewModel.referalCode.collectAsState()
-    LaunchedEffect(cameraPermissionState.status.isGranted, requested) {
-        if (cameraPermissionState.status.isGranted && requested) {
-            showFaceScan.show()
-            requested = false // сбрасываем флаг, если нужно
-        }
-    }
-
+    val attendsCount = viewModel.totalAttemptsCount
     AppBottomSheet(state = showFaceScan, shape = RectangleShape, isHeaderEnabled = false) {
         Box(Modifier.fillMaxSize()) {
             HiddenPrizeCamera(
@@ -147,7 +140,9 @@ fun HiddenPrizeExpandedCard(
             showAddScan.show()
         },
         celebrity = celebrity,
-        userData = userData
+        isAddScanEnabled = isAddScanEnabled,
+        attendsCount = attendsCount
+
     )
 
 
@@ -162,7 +157,8 @@ fun HiddenPrizeExpandedCardContent(
     onScan: () -> Unit,
     onAddScan: () -> Unit,
     celebrity: Celebrity?,
-    userData: UserStats?
+    isAddScanEnabled: Boolean,
+    attendsCount:Int
 ) {
     with(cardProps) {
         with(sharedTransitionScope) {
@@ -189,8 +185,8 @@ fun HiddenPrizeExpandedCardContent(
                         animatedVisibilityScope = animatedVisibilityScope,
                         onAddScan = onAddScan,
                         onScan = onScan,
-                        attendsCount = if(userData?.totalAttemptsCount != null) userData.totalAttemptsCount else 0,
-                        userStats = userData
+                        attendsCount = attendsCount,
+                        isAddScanEnabled = isAddScanEnabled
                     )
                 },
                 body = {
@@ -253,7 +249,7 @@ private fun Footer(
     onAddScan: () -> Unit,
     onScan: () -> Unit,
     attendsCount :Int = 0,
-    userStats: UserStats?
+    isAddScanEnabled: Boolean
 
 ) {
 
@@ -306,7 +302,7 @@ private fun Footer(
                         )
                     }
                 }
-                if(attendsCount >=0 ){
+                if(attendsCount > 0 && isAddScanEnabled ){
                     PrimaryButton(
                         text = "Scan",
                         onClick = onScan,
