@@ -10,15 +10,16 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -27,13 +28,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
-import com.rarilabs.rarime.modules.home.v3.model.BG_HAND_HIDDEN_PRIZE_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
 import com.rarilabs.rarime.modules.home.v3.model.CardType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
@@ -50,6 +51,7 @@ import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 fun HiddenPrizeCollapsedCard(
     collapsedCardProps: BaseCardProps.Collapsed,
     modifier: Modifier = Modifier,
+    colorScheme: AppColorScheme
 ) {
     with(collapsedCardProps) {
         with(sharedTransitionScope) {
@@ -59,8 +61,7 @@ fun HiddenPrizeCollapsedCard(
                     .sharedElement(
                         state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
                         animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) }
-                    )
+                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) })
                     .clip(RoundedCornerShape(16.dp))
                     .padding(vertical = 8.dp)
                     .padding(horizontal = 16.dp)
@@ -71,29 +72,26 @@ fun HiddenPrizeCollapsedCard(
                     ) {
                         onExpand()
                     }
-                    .then(modifier),
-                header = {
+                    .then(modifier), header = {
                     Header(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope
                     )
-                },
-                footer = {
+                }, footer = {
                     Footer(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope
                     )
-                },
-                background = {
+                }, background = {
                     Background(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
-                        animatedVisibilityScope = animatedVisibilityScope
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        colorScheme = colorScheme
                     )
-                }
-            )
+                })
         }
     }
 }
@@ -107,8 +105,7 @@ private fun Header(
 ) {
     with(sharedTransitionScope) {
         Row(
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier
+            horizontalArrangement = Arrangement.Start, modifier = Modifier
                 .sharedBounds(
                     rememberSharedContentState(HomeSharedKeys.header(layoutId)),
                     animatedVisibilityScope = animatedVisibilityScope,
@@ -153,38 +150,35 @@ private fun Footer(
                 title = "Hidden keys",
                 accentTitle = "Find a face",
                 caption = "Found hidden prize $1000",
-                titleModifier =
-                    Modifier.sharedBounds(
-                        rememberSharedContentState(HomeSharedKeys.title(layoutId)),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                    ),
+                titleModifier = Modifier.sharedBounds(
+                    rememberSharedContentState(HomeSharedKeys.title(layoutId)),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                ),
                 titleStyle = RarimeTheme.typography.h2.copy(RarimeTheme.colors.textPrimary),
                 accentTitleStyle = RarimeTheme.typography.additional2.copy(brush = RarimeTheme.colors.gradient8),
-                accentTitleModifier =
-                    Modifier.sharedBounds(
-                        rememberSharedContentState(
-                            HomeSharedKeys.accentTitle(
-                                layoutId
-                            )
-                        ),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                accentTitleModifier = Modifier.sharedBounds(
+                    rememberSharedContentState(
+                        HomeSharedKeys.accentTitle(
+                            layoutId
+                        )
                     ),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                ),
                 captionStyle = RarimeTheme.typography.body4.copy(RarimeTheme.colors.textSecondary),
-                captionModifier =
-                    Modifier.sharedBounds(
-                        rememberSharedContentState(
-                            HomeSharedKeys.caption(
-                                layoutId
-                            )
-                        ),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                    )
+                captionModifier = Modifier.sharedBounds(
+                    rememberSharedContentState(
+                        HomeSharedKeys.caption(
+                            layoutId
+                        )
+                    ),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                )
             )
             Spacer(modifier = Modifier.weight(1f))
             AppIcon(id = R.drawable.ic_arrow_right_up_line)
@@ -209,23 +203,33 @@ private fun Background(
     layoutId: Int,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
+    colorScheme: AppColorScheme
 ) {
+    val backgroundImage = when (colorScheme) {
+        AppColorScheme.SYSTEM -> {
+            if (isSystemInDarkTheme()) {
+                R.drawable.ic_bg_hidden_prize_dark
+            } else {
+                R.drawable.ic_bg_hidden_prize_light
+            }
+        }
+
+        AppColorScheme.DARK -> R.drawable.ic_bg_hidden_prize_dark
+
+        AppColorScheme.LIGHT -> R.drawable.ic_bg_hidden_prize_light
+    }
     with(sharedTransitionScope) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(RarimeTheme.colors.gradient9)
         ) {
-            val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-            val yOffset = if (screenHeight < 700.dp) (-50).dp else (50).dp
-
             Image(
-                painter = painterResource(R.drawable.drawable_hidden_prize_hand),
+                painter = painterResource(backgroundImage),
                 contentDescription = null,
+                contentScale = ContentScale.FillWidth,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(BG_HAND_HIDDEN_PRIZE_HEIGHT.dp)
-                    .offset(y = yOffset, x = 30.dp)
+                    .fillMaxHeight()
                     .sharedBounds(
                         rememberSharedContentState(
                             HomeSharedKeys.image(
@@ -237,6 +241,8 @@ private fun Background(
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     )
             )
+
+
         }
 
     }
@@ -250,6 +256,7 @@ fun HiddenPrizeCollapsedCardPreview_DarkMode() {
     AppTheme {
         PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
             HiddenPrizeCollapsedCard(
+                colorScheme = AppColorScheme.DARK,
                 collapsedCardProps = BaseCardProps.Collapsed(
                     onExpand = {},
                     layoutId = CardType.HIDDEN_PRIZE.layoutId,
@@ -258,8 +265,9 @@ fun HiddenPrizeCollapsedCardPreview_DarkMode() {
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(500.dp)
-            )
+                    .height(500.dp),
+
+                )
         }
     }
 }
@@ -271,13 +279,13 @@ fun HiddenPrizeCollapsedCardPreview_LightMode() {
     AppTheme {
         PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
             HiddenPrizeCollapsedCard(
+                colorScheme = AppColorScheme.LIGHT,
                 collapsedCardProps = BaseCardProps.Collapsed(
                     onExpand = {},
                     layoutId = CardType.HIDDEN_PRIZE.layoutId,
                     animatedVisibilityScope = animatedVisibilityScope,
                     sharedTransitionScope = sharedTransitionScope
-                ),
-                modifier = Modifier
+                ), modifier = Modifier
                     .fillMaxWidth()
                     .height(500.dp)
             )

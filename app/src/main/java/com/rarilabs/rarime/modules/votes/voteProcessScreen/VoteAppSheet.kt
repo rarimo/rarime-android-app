@@ -3,6 +3,7 @@ package com.rarilabs.rarime.modules.votes.voteProcessScreen
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +43,7 @@ fun VotingAppSheet(
         mutableStateOf(if (selectedPoll == null) VoteAppSheetState.LOADING_VOTE else VoteAppSheetState.INFO_VOTE)
     }
 
-    val currentSchema by viewModel.currentSchema
+    val currentSchema by viewModel.currentSchema.collectAsState()
 
     LaunchedEffect(selectedPoll) {
         if (selectedPoll != null && currentState == VoteAppSheetState.LOADING_VOTE) {
