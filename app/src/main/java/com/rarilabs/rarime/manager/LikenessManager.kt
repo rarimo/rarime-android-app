@@ -14,7 +14,7 @@ import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.FileDownloaderInternal
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
-import com.rarilabs.rarime.util.bionet.BionetAnalizer
+import com.rarilabs.rarime.util.bionet.BinetAnalyzer
 import com.rarilabs.rarime.util.tflite.RunTFLiteFeatureGrayscaleExtractorUseCase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import identity.CallDataBuilder
@@ -162,8 +162,6 @@ class LikenessManager @Inject constructor(
         val address =
             BigInteger(Numeric.hexStringToByteArray(identityManager.getNullifierForFaceLikeness()))
 
-        Log.i("Nullifier", address.toString())
-
         val faceContract = rarimoContractManager.getFaceRegistry()
 
         val nonce = withContext(Dispatchers.IO) {
@@ -270,13 +268,13 @@ class LikenessManager @Inject constructor(
 
             _state.value = LivenessProcessingStatus.EXTRACTING_FEATURES
 
-            val bionetAnalizer = BionetAnalizer()
+            val binetAnalyzer = BinetAnalyzer()
 
 
             val address =
                 BigInteger(Numeric.hexStringToByteArray(identityManager.getNullifierForFaceLikeness()))
 
-            val preparedImage = bionetAnalizer.getPreparedInputForZKML(bitmap)!!
+            val preparedImage = binetAnalyzer.getPreparedInputForZKML(bitmap)!!
 
             val faceContract = rarimoContractManager.getFaceRegistry()
 

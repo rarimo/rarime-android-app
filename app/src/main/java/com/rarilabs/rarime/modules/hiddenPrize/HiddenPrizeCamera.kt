@@ -68,6 +68,7 @@ fun HiddenPrizeCamera(
     modifier: Modifier = Modifier,
     processZK: suspend (Bitmap, List<Float>) -> Unit,
     processML: suspend (Bitmap) -> List<Float>,
+    checkCrop: suspend (Bitmap) -> Bitmap?,
     downloadProgress: Int
 ) {
     val context = LocalContext.current
@@ -79,6 +80,8 @@ fun HiddenPrizeCamera(
             scaleType = PreviewView.ScaleType.FILL_CENTER
         }
     }
+
+    val scope = rememberCoroutineScope()
 
     val cameraProvider = remember { ProcessCameraProvider.getInstance(context).get() }
 
@@ -96,7 +99,6 @@ fun HiddenPrizeCamera(
         mutableStateOf(HiddenPrizeCameraStep.CAMERA)
     }
 
-
     SetupCamera(
         cameraProvider = cameraProvider,
         lifecycleOwner = lifecycleOwner,
@@ -113,16 +115,20 @@ fun HiddenPrizeCamera(
     when (currentStep) {
         HiddenPrizeCameraStep.CAMERA -> {
             Box(modifier = modifier.fillMaxSize()) {
-                FaceMeshCanvas(
-                    imageSize = imageSize, detectedMeshes = detectedMeshes
-                )
+//                FaceMeshCanvas(
+//                    imageSize = imageSize, detectedMeshes = detectedMeshes
+//                )
 
                 OverlayControls(
                     selectedBitmap = selectedBitmap,
-                    onSelectBitmap = { selectedBitmap = it },
+                    onSelectBitmap = {
+                        scope.launch {
+                            selectedBitmap = checkCrop(it)
+                        }
+                    },
                     onClearBitmap = { selectedBitmap = null },
                     onNext = {
-                        currentStep = HiddenPrizeCameraStep.PROCESSING_ML
+                        currentStep = HiddenPrizeCameraStep.PROCESSING_ZKP //TODO: rename
                     },
                     previewView = previewView
                 )
@@ -136,19 +142,15 @@ fun HiddenPrizeCamera(
                     selectedBitmap = null
 
                     currentStep = HiddenPrizeCameraStep.CAMERA
-                }
-            )
+                })
         }
 
         HiddenPrizeCameraStep.CONGRATS -> {
-            HiddenPrizeCongratsScreen(
-                prizeAmount = 2.0f,
-                prizeSymbol = {
-                    Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
-                },
-                onClaim = {
-                    currentStep = HiddenPrizeCameraStep.PROCESSING_ZKP
-                })
+            HiddenPrizeCongratsScreen(prizeAmount = 2.0f, prizeSymbol = {
+                Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
+            }, onClaim = {
+                currentStep = HiddenPrizeCameraStep.PROCESSING_ZKP
+            })
         }
 
         HiddenPrizeCameraStep.PROCESSING_ML -> {
@@ -166,6 +168,9 @@ fun HiddenPrizeCamera(
         HiddenPrizeCameraStep.PROCESSING_ZKP -> {
             HiddenPrizeLoadingZK(processingValue = (downloadProgress.toFloat() / 100.0f)) {
                 try {
+
+                    featuresBackend = originalFeaturesDev.map { it.toFloat() }
+
                     processZK(selectedBitmap!!, featuresBackend)
                     currentStep = HiddenPrizeCameraStep.FINISH
                 } catch (e: Exception) {
@@ -176,11 +181,9 @@ fun HiddenPrizeCamera(
         }
 
         HiddenPrizeCameraStep.FINISH -> {
-            HiddenPrizeFinish(
-                prizeAmount = 2.0f,
-                prizeSymbol = { AppIcon(id = R.drawable.ic_restart_line) },
-                onViewWallet = {},
-                onShareWallet = {})
+            HiddenPrizeFinish(prizeAmount = 2.0f, prizeSymbol = {
+                Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
+            }, onViewWallet = {}, onShareWallet = {})
         }
     }
 
@@ -264,7 +267,9 @@ fun OverlayControls(
                         .padding(horizontal = 8.dp),
                     onClick = {
                         scope.launch {
-                            previewView.bitmap?.let { onSelectBitmap(it) }
+                            previewView.bitmap?.let {
+                                onSelectBitmap(it)
+                            }
                         }
                     },
                     text = "Photo"
@@ -309,23 +314,8 @@ fun FaceMeshCanvas(
         val contours: List<List<Int>> = listOf(
             listOf(57, 84, 314, 287, 311, 13, 81, 57, 37, 0, 267, 287),//libs
             listOf(
-                152,
-                150,
-                172,
-                132,
-                234,
-                162,
-                54,
-                67,
-                10,
-                297,
-                284,
-                389,
-                454,
-                361,
-                397,
-                379,
-                152
+                152, 150, 172, 132, 234, 162, 54, 67, 10, 297, 284, 389, 454, 361, 397, 379, 152
+
             ),//circuit face
             listOf(97, 129, 5, 358, 326, 97, 129, 193, 417, 358, 417, 336, 107, 193), //nose
             listOf(70, 105, 107),//left eyebrows
@@ -424,25 +414,28 @@ fun SetupCamera(
         }
 
         val analysisUseCase =
-            ImageAnalysis.Builder().setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .build().also {
-                    it.setAnalyzer(cameraExecutor) { imageProxy ->
-                        val mediaImage = imageProxy.image
-                        if (mediaImage != null) {
-                            val rotation = imageProxy.imageInfo.rotationDegrees
-                            val origW = mediaImage.width
-                            val origH = mediaImage.height
-                            val (rotW, rotH) = if (rotation == 90 || rotation == 270) origH to origW else origW to origH
-                            onImageSizeUpdated(Size(rotW.toFloat(), rotH.toFloat()))
+            ImageAnalysis.Builder()
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
 
-                            val inputImage = InputImage.fromMediaImage(mediaImage, rotation)
-                            meshDetector.process(inputImage)
-                                .addOnSuccessListener { onMeshDetected(it) }
-                                .addOnCompleteListener { imageProxy.close() }
-                        } else {
-                            imageProxy.close()
+                .build().also {
+                    it
+                        .setAnalyzer(cameraExecutor) { imageProxy ->
+                            val mediaImage = imageProxy.image
+                            if (mediaImage != null) {
+                                val rotation = imageProxy.imageInfo.rotationDegrees
+                                val origW = mediaImage.width
+                                val origH = mediaImage.height
+                                val (rotW, rotH) = if (rotation == 90 || rotation == 270) origH to origW else origW to origH
+                                onImageSizeUpdated(Size(rotW.toFloat(), rotH.toFloat()))
+
+                                val inputImage = InputImage.fromMediaImage(mediaImage, rotation)
+                                meshDetector.process(inputImage)
+                                    .addOnSuccessListener { onMeshDetected(it) }
+                                    .addOnCompleteListener { imageProxy.close() }
+                            } else {
+                                imageProxy.close()
+                            }
                         }
-                    }
                 }
 
         try {

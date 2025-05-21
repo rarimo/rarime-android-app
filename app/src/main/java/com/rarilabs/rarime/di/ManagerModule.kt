@@ -390,11 +390,13 @@ class APIModule {
         dataStoreManager: SecureSharedPrefsManager,
         identityManager: IdentityManager,
         pointsManager: PointsManager,
+        @Named("RARIMO") web3j: Web3j
     ): WalletManager {
         return WalletManager(
             dataStoreManager = dataStoreManager,
             identityManager = identityManager,
             pointsManager = pointsManager,
+            web3j = web3j
         )
     }
 

@@ -108,7 +108,8 @@ fun HiddenPrizeExpandedCard(
             HiddenPrizeCamera(
                 processML = { viewModel.generateFaceFeatures(it) },
                 processZK = { bitmap, features -> viewModel.claimTokens(bitmap, features) },
-                downloadProgress = downloadProgress
+                downloadProgress = downloadProgress,
+                checkCrop = { viewModel.checkCrop(it) }
             )
         }
     }

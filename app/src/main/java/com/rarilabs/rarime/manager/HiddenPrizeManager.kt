@@ -2,7 +2,6 @@ package com.rarilabs.rarime.manager
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Matrix
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -11,7 +10,7 @@ import com.rarilabs.rarime.api.hiddenPrize.HiddenPrizeApiManager
 import com.rarilabs.rarime.api.hiddenPrize.models.Included
 import com.rarilabs.rarime.util.FileDownloaderInternal
 import com.rarilabs.rarime.util.ZKPUseCase
-import com.rarilabs.rarime.util.bionet.BionetAnalizer
+import com.rarilabs.rarime.util.bionet.BinetAnalyzer
 import com.rarilabs.rarime.util.tflite.RunTFLiteFeatureRGBExtractorUseCase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import identity.CallDataBuilder
@@ -20,7 +19,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
+import org.web3j.crypto.Credentials
+import org.web3j.utils.Numeric
 import java.io.File
+import java.math.BigInteger
 import javax.inject.Inject
 import kotlin.math.pow
 
@@ -51,6 +53,8 @@ class HiddenPrizeManager @Inject constructor(
 ) {
 
     private val tfLiteFileName: String = "face-recognition.tflite"
+
+    private val faceRecognitionTFileHash = "3814d30ed40b217e18d321c9c0f13d1b"
 
     private val _downloadProgressZkey = MutableStateFlow(0)
 
@@ -170,13 +174,12 @@ class HiddenPrizeManager @Inject constructor(
 
     private val fileDownloader = FileDownloaderInternal(application)
 
-    private suspend fun downloadFile(url: String): File {
+    private suspend fun downloadFile(url: String, hash: String): File {
         fileDownloader.cancel()
 
-        val faceRecognitionTFileHash = "3814d30ed40b217e18d321c9c0f13d1b"
 
         return fileDownloader.downloadFileBlocking(
-            url, tfLiteFileName, fileHash = faceRecognitionTFileHash
+            url, tfLiteFileName, fileHash = hash
         ) { progress ->
             if (_downloadProgressZkey.value != progress) {
                 Log.i("Progress", progress.toString())
@@ -185,21 +188,21 @@ class HiddenPrizeManager @Inject constructor(
         }
     }
 
-
     suspend fun generateFaceFeatures(bitmap: Bitmap): List<Float> {
 
-        val tfLiteFile = downloadFile(BaseConfig.FACE_RECOGNITION_MODEL_URL)
+        val tfLiteFile =
+            downloadFile(BaseConfig.FACE_RECOGNITION_MODEL_URL, hash = faceRecognitionTFileHash)
 
-        val bionetAnalizer = BionetAnalizer()
+        val binetAnalyzer = BinetAnalyzer()
 
-        val preparedRGB = bionetAnalizer.getPreparedInputForML(bitmap)!!
+        val preparedRGB = binetAnalyzer.getPreparedInputForML(bitmap)!!
+
 
         val tfLite = RunTFLiteFeatureRGBExtractorUseCase(
             modelFile = tfLiteFile
         )
 
         val features = tfLite.compute(preparedRGB)
-
 
         val backendFeatures = submitCelebrityGuess(features.toList())
 
@@ -213,18 +216,22 @@ class HiddenPrizeManager @Inject constructor(
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun claimTokens(features: List<Float>, bitmap: Bitmap) {
 
-        val zkeyFile = downloadFile(BaseConfig.FACE_REGISTRY_ZKEY_URL)
+        val zkeyFile = downloadFile(BaseConfig.FACE_REGISTRY_ZKEY_URL, "")
 
-        val bionetAnalizer = BionetAnalizer()
+        val binetAnalyzer = BinetAnalyzer()
 
-        val address = identityManager.evmAddress()
+        val credentials = Credentials.create(Numeric.toHexString(identityManager.privateKeyBytes))
 
-        val preparedImage = bionetAnalizer.getPreparedInputForZKML(bitmap)!!
 
-        val faceContract = rarimoContractManager.getGuessCelebrity()
+        val address = credentials.address
+
+        val preparedImage = binetAnalyzer.getPreparedInputForZKML(bitmap)!!
+
+        val faceContract = rarimoContractManager.getFaceRegistry()
 
         val nonce = withContext(Dispatchers.IO) {
-            faceContract.getVerificationNonce(address).send().toString()
+            faceContract.getVerificationNonce(BigInteger(address.drop(2), 16))
+                .send().toString()
         }
 
         val assetContext: Context = application.createPackageContext("com.rarilabs.rarime", 0)
@@ -234,11 +241,12 @@ class HiddenPrizeManager @Inject constructor(
 
         val quantizedFeatures = features.map { (it * 2.0.pow(15.0)).toInt().toString() }
 
-        val quantizedImage = listOf(preparedImage.map {
-            it.map { it2 ->
-                (it2 * 2.0.pow(15.0)).toInt().toString()
-            }
-        })
+        val quantizedImage =
+            listOf(preparedImage.map {
+                it.map { it2 ->
+                    (it2 * 2.0.pow(15.0)).toInt().toString()
+                }
+            })
 
         val inputs = LivenessInputs(
             image = quantizedImage,
@@ -273,17 +281,6 @@ class HiddenPrizeManager @Inject constructor(
             if (!isSuccessful) {
                 throw Exception("cant send registration")
             }
-
         }
-
-    }
-
-    fun Bitmap.flipVertically(): Bitmap {
-        val matrix = Matrix().apply { postScale(1f, -1f, width / 2f, height / 2f) }
-        return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
-    }
-
-    fun normalizeInput(rgb: FloatArray): FloatArray {
-        return rgb.map { it / 255f }.toFloatArray()
     }
 }
