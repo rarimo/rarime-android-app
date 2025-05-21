@@ -61,7 +61,8 @@ private fun SecondaryButtonPreview() {
             rightIcon = R.drawable.ic_arrow_right,
             text = "Large",
             onClick = { })
-        SecondaryButton(enabled = false,
+        SecondaryButton(
+            enabled = false,
             size = ButtonSize.Large,
             modifier = Modifier.fillMaxWidth(),
             leftIcon = R.drawable.ic_arrow_left,

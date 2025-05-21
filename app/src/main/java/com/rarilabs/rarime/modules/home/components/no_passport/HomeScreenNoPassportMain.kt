@@ -66,7 +66,8 @@ fun HomeScreenNoPassportMainContent(
     val nonSpecificAppSheetState = rememberAppSheetState()
 
     val filePicker =
-        rememberLauncherForActivityResult(contract = GetCustomContents(isMultiple = false),
+        rememberLauncherForActivityResult(
+            contract = GetCustomContents(isMultiple = false),
             onResult = { uris ->
                 try {
                     if (uris.isEmpty()) {
@@ -105,18 +106,19 @@ fun HomeScreenNoPassportMainContent(
         Column(
             modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            GreetCommonActionCard(mediaContent = {
-                if (BuildConfig.isTestnet) {
-                    PrimaryButton(modifier = Modifier.fillMaxWidth(), onClick = {
-                        filePicker.launch("application/json")
-                    }, text = "Import from JSON")
-                }
-                Image(
-                    modifier = Modifier.size(110.dp),
-                    painter = painterResource(id = R.drawable.reward_coin),
-                    contentDescription = "decor",
-                )
-            },
+            GreetCommonActionCard(
+                mediaContent = {
+                    if (BuildConfig.isTestnet) {
+                        PrimaryButton(modifier = Modifier.fillMaxWidth(), onClick = {
+                            filePicker.launch("application/json")
+                        }, text = "Import from JSON")
+                    }
+                    Image(
+                        modifier = Modifier.size(110.dp),
+                        painter = painterResource(id = R.drawable.reward_coin),
+                        contentDescription = "decor",
+                    )
+                },
                 title = stringResource(id = R.string.other_passport_card_title),
                 subtitle = stringResource(id = R.string.other_passport_card_description),
                 btnText = stringResource(id = R.string.greet_common_action_card_btn_text),
@@ -134,10 +136,15 @@ fun HomeScreenNoPassportMainContent(
 //                },
 //                onClick = { specificAppSheetState.show() })
 
-            ActionCard(title = stringResource(id = R.string.app_name),
+            ActionCard(
+                title = stringResource(id = R.string.app_name),
                 description = stringResource(R.string.learn_more_about_the_app),
                 leadingContent = {
-                    AppIcon(id = R.drawable.ic_info, size = 24.dp, tint = RarimeTheme.colors.textPrimary)
+                    AppIcon(
+                        id = R.drawable.ic_info,
+                        size = 24.dp,
+                        tint = RarimeTheme.colors.textPrimary
+                    )
                 },
                 variant = ActionCardVariants.Outlined,
                 onClick = {

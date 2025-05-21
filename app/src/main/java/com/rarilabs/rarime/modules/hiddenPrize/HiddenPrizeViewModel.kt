@@ -16,10 +16,15 @@ class HiddenPrizeViewModel @Inject constructor(
 ) : ViewModel() {
 
     val downloadProgress = hiddenPrizeManager.downloadProgressZkey
+    val celebrity = hiddenPrizeManager.celebrity
+    val referalCode = hiddenPrizeManager.referralCode
+    val userStats = hiddenPrizeManager.userStats
+    val shares = hiddenPrizeManager.shares
 
     init {
         viewModelScope.launch {
             loadUserInfo()
+
         }
     }
 
@@ -32,7 +37,6 @@ class HiddenPrizeViewModel @Inject constructor(
     suspend fun generateFaceFeatures(bitmap: Bitmap): List<Float> {
         return hiddenPrizeManager.generateFaceFeatures(bitmap)
     }
-
 
     suspend fun claimTokens(bitmap: Bitmap, features: List<Float>) {
         hiddenPrizeManager.claimTokens(features, bitmap)

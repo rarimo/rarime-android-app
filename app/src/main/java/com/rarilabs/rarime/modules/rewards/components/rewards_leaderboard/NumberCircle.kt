@@ -20,7 +20,7 @@ import androidx.compose.ui.zIndex
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun NumberCircle (
+fun NumberCircle(
     modifier: Modifier = Modifier,
     number: Int
 ) {
@@ -53,7 +53,7 @@ fun NumberCircle (
 @Preview
 @Composable
 fun NumberCirclePreview() {
-    Row (
+    Row(
         modifier = Modifier
             .background(RarimeTheme.colors.backgroundPrimary)
             .padding(24.dp)

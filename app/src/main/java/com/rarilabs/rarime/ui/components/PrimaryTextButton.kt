@@ -56,7 +56,8 @@ private fun PrimaryTextButtonPreview() {
             rightIcon = R.drawable.ic_arrow_right,
             text = "Large",
             onClick = { })
-        PrimaryTextButton(enabled = false,
+        PrimaryTextButton(
+            enabled = false,
             size = ButtonSize.Large,
             leftIcon = R.drawable.ic_arrow_left,
             text = "Disabled",

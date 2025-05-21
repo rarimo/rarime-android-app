@@ -9,12 +9,12 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.rarilabs.rarime.manager.NotificationManager
+import com.rarilabs.rarime.store.room.notifications.models.NotificationEntityData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import com.rarilabs.rarime.manager.NotificationManager
-import com.rarilabs.rarime.store.room.notifications.models.NotificationEntityData
 import java.util.Calendar
 
 // TODO: Doesn't work with hilt
@@ -30,7 +30,8 @@ class NotificationWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         return withContext(Dispatchers.IO) {
             val title = inputData.getString("title") ?: return@withContext Result.failure()
-            val description = inputData.getString("description") ?: return@withContext Result.failure()
+            val description =
+                inputData.getString("description") ?: return@withContext Result.failure()
 
             // Create the notification data entity
             val notificationEntityData = NotificationEntityData(
@@ -44,7 +45,7 @@ class NotificationWorker @AssistedInject constructor(
             try {
 
                 notificationManager.addNotification(notificationEntityData)
-            }catch (e: Exception) {
+            } catch (e: Exception) {
                 Log.i("CoroutineWorker", "smt wrong with worker", e)
                 Result.failure()
             }
@@ -64,13 +65,14 @@ class NotificationWorker @AssistedInject constructor(
                 )
             }
 
-        private fun startupDatabaseShare(notificationEntityData: NotificationEntityData) = OneTimeWorkRequestBuilder<NotificationWorker>()
-            .setInputData(
-                workDataOf(
-                    "title" to (notificationEntityData.header),
-                    "description" to (notificationEntityData.description)
+        private fun startupDatabaseShare(notificationEntityData: NotificationEntityData) =
+            OneTimeWorkRequestBuilder<NotificationWorker>()
+                .setInputData(
+                    workDataOf(
+                        "title" to (notificationEntityData.header),
+                        "description" to (notificationEntityData.description)
+                    )
                 )
-            )
-            .build()
+                .build()
     }
 }

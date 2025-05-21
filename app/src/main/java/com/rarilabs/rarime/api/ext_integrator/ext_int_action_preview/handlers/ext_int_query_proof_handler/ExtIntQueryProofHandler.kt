@@ -171,7 +171,7 @@ private fun ExtIntQueryProofHandlerContent(
     handleAccept: () -> Unit = {},
     onCancel: () -> Unit = {},
     innerPaddings: Map<ScreenInsets, Number>,
-    ) {
+) {
     AppBottomSheet(
         state = sheetState,
         isHeaderEnabled = false,
@@ -233,9 +233,11 @@ private fun ExtIntQueryProofHandlerContent(
                 }
             }
 
-            Spacer(modifier = Modifier
-                .weight(1f)
-                .height(50.dp))
+            Spacer(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(50.dp)
+            )
 
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),

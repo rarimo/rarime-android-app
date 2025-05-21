@@ -22,7 +22,6 @@ interface VotingApi {
     suspend fun countRemainingVotes(@Path("voting_id") voteId: String): Response<VoteCountResponse>
 
 
-
     @POST("/integrations/proof-verification-relayer/v2/vote")
     suspend fun voteV2(@Body body: SendTransactionRequest): Response<VoteV2Response>
 

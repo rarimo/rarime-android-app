@@ -24,7 +24,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.PassportStatus
-import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppSheetState
 import com.rarilabs.rarime.ui.components.HideSheetFn
 import com.rarilabs.rarime.ui.components.PrimaryButton
@@ -81,10 +80,11 @@ fun EnterProgramFlow(
             ) {
                 Invitation(
                     onNext = {
-                        when(passportStatus) {
+                        when (passportStatus) {
                             PassportStatus.WAITLIST -> {
                                 onFinish()
                             }
+
                             else -> {
                                 onFinish()
                             }
@@ -213,10 +213,10 @@ private fun EnterProgramFlowPreview() {
     }
 
 
-        EnterProgramFlow(
-            onFinish = {},
-            sheetState = nonSpecificAppSheetState,
-            hide = {}
-        )
+    EnterProgramFlow(
+        onFinish = {},
+        sheetState = nonSpecificAppSheetState,
+        hide = {}
+    )
 
 }

@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.ui.components
 
-import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -64,7 +63,8 @@ private fun PrimaryButtonPreview() {
             rightIcon = R.drawable.ic_arrow_right,
             text = "Large",
             onClick = { })
-        PrimaryButton(enabled = false,
+        PrimaryButton(
+            enabled = false,
             size = ButtonSize.Large,
             modifier = Modifier.fillMaxWidth(),
             leftIcon = R.drawable.ic_arrow_left,

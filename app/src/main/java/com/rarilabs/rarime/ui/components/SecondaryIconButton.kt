@@ -65,7 +65,9 @@ private fun SecondaryIconButtonPreview() {
             icon = R.drawable.ic_arrow_right,
             onClick = { })
         SecondaryIconButton(
-            modifier = Modifier.height(64.dp).width(220.dp),
+            modifier = Modifier
+                .height(64.dp)
+                .width(220.dp),
             onClick = { },
             icon = R.drawable.ic_arrow_right,
         )

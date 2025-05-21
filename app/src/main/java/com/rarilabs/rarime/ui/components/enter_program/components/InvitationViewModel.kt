@@ -10,7 +10,7 @@ import javax.inject.Inject
 class InvitationViewModel @Inject constructor(
     private val pointsManager: PointsManager,
     private val walletManager: WalletManager
-): ViewModel() {
+) : ViewModel() {
     suspend fun createNLoadBalance(referralCode: String) {
         pointsManager.createPointsBalance(referralCode)
         walletManager.loadBalances()

@@ -3,10 +3,6 @@ package com.rarilabs.rarime.manager
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.rarilabs.rarime.BaseConfig
@@ -31,7 +27,14 @@ import javax.inject.Inject
 import kotlin.math.pow
 
 data class UserStats(
-    val resetTime: Long, val extraAttemptsLeft: Int, val totalAttemptsCount: Int
+    val resetTime: Long,
+    val attemptsLeft: Int,
+    val extraAttemptsLeft: Int,
+    val totalAttemptsCount: Int
+)
+
+data class Shares(
+    val isSocialShare: Boolean, val referralsCount: Int, val referralsLimit: Int
 )
 
 data class Celebrity(
@@ -58,24 +61,25 @@ class HiddenPrizeManager @Inject constructor(
     val downloadProgressZkey: StateFlow<Int>
         get() = _downloadProgressZkey.asStateFlow()
 
+    private val _referralCode = MutableStateFlow("")
 
-    var referralsLimit by mutableIntStateOf(0)
-        private set
+    val referralCode: StateFlow<String>
+        get() = _referralCode.asStateFlow()
 
-    var referralsCount by mutableIntStateOf(0)
-        private set
+    private val _userStats = MutableStateFlow<UserStats?>(null)
 
-    var socialShare by mutableStateOf(false)
-        private set
+    val userStats: StateFlow<UserStats?>
+        get() = _userStats.asStateFlow()
 
-    var referralCode by mutableStateOf<String?>(null)
-        private set
+    private var _celebrity: MutableStateFlow<Celebrity?> = MutableStateFlow(null)
 
-    var userStats by mutableStateOf<UserStats?>(null)
-        private set
+    val celebrity: StateFlow<Celebrity?>
+        get() = _celebrity.asStateFlow()
 
-    var celebrity by mutableStateOf<Celebrity?>(null)
-        private set
+    private val _shares = MutableStateFlow<Shares?>(null)
+
+    val shares: StateFlow<Shares?>
+        get() = _shares.asStateFlow()
 
 
     suspend fun createUser(referredBy: String? = null) {
@@ -85,31 +89,41 @@ class HiddenPrizeManager @Inject constructor(
 
         val res = apiManager.createNewUser(referredBy, nullifier)
         val attrs = res.data.attributes
+        val included = res.included
+        _shares.value = Shares(
+            isSocialShare = attrs.social_share,
+            referralsLimit = attrs.referrals_limit,
+            referralsCount = attrs.referrals_count
+        )
 
-        referralsLimit = attrs.referrals_limit
-        referralsCount = attrs.referrals_count
-        socialShare = attrs.social_share
     }
 
     suspend fun loadUserInfo() {
         val nullifier = identityManager.getUserPointsNullifierHex()
         val res = apiManager.getUserInfo(nullifier)
-        val a = res.data.attributes
+        val attributes = res.data.attributes
 
-        socialShare = a.social_share
-        referralsCount = a.referrals_count
-        referralsLimit = a.referrals_limit
-        referralCode = a.referral_code
 
-        userStats = res.included?.filterIsInstance<Included.UserStats>()?.firstOrNull()?.let {
-            UserStats(
-                resetTime = it.attributes?.reset_time ?: 0,
-                extraAttemptsLeft = it.attributes?.extra_attempts_left ?: 0,
-                totalAttemptsCount = it.attributes?.total_attempts_count ?: 0
-            )
-        }
+        _shares.value = Shares(
+            isSocialShare = attributes.social_share,
+            referralsCount = attributes.referrals_count,
+            referralsLimit = attributes.referrals_limit
+        )
+        _referralCode.value = attributes.referral_code
 
-        celebrity =
+        _userStats.value =
+            res.included?.filterIsInstance<Included.UserStats>()?.firstOrNull()?.let {
+                UserStats(
+
+                    resetTime = it.attributes?.reset_time ?: 0,
+                    attemptsLeft = it.attributes?.attempts_left ?: 0,
+                    extraAttemptsLeft = it.attributes?.extra_attempts_left ?: 0,
+                    totalAttemptsCount = it.attributes?.total_attempts_count ?: 0
+
+                )
+            }
+
+        _celebrity.value =
             res.included?.filterIsInstance<Included.Celebrity>()?.firstOrNull()?.attributes?.let {
                 Celebrity(
                     title = it.title,
@@ -119,16 +133,20 @@ class HiddenPrizeManager @Inject constructor(
                     hint = it.hint ?: ""
                 )
             }
+
     }
 
     private suspend fun submitCelebrityGuess(faceFeatures: List<Float>): List<Float>? {
         val nullifier = identityManager.getUserPointsNullifierHex()
         val res = apiManager.submitCelebrityGuess(faceFeatures, nullifier)
 
-        userStats =
+
+
+        _userStats.value =
             res.included?.filterIsInstance<Included.UserStats>()?.firstOrNull()?.attributes?.let {
                 UserStats(
                     resetTime = it.reset_time,
+                    attemptsLeft = it.attempts_left,
                     extraAttemptsLeft = it.extra_attempts_left,
                     totalAttemptsCount = it.total_attempts_count
                 )
@@ -139,7 +157,7 @@ class HiddenPrizeManager @Inject constructor(
         }
 
 
-        celebrity =
+        _celebrity.value =
             res.included?.filterIsInstance<Included.Celebrity>()?.firstOrNull()?.attributes?.let {
                 Celebrity(
                     title = it.title,

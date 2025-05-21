@@ -218,11 +218,12 @@ fun HomeScreenContent(
                                     modifier = baseCollapsedModifier,
                                     currentPointsBalance = currentPointsBalance
                                 )
+
                                 CardType.HIDDEN_PRIZE -> HiddenPrizeCollapsedCard(
                                     collapsedCardProps = collapsedCardProps,
                                     modifier = baseCollapsedModifier,
 
-                                )
+                                    )
                                 // TODO: Implement rest collapsed cards here
                             }
                         }

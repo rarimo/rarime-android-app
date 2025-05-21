@@ -1,6 +1,8 @@
 package com.rarilabs.rarime.api.hiddenPrize
 
 import com.rarilabs.rarime.api.hiddenPrize.models.CreateUserRequest
+import com.rarilabs.rarime.api.hiddenPrize.models.CreateUserRequestData
+import com.rarilabs.rarime.api.hiddenPrize.models.CreateUserRequestData.CreateUserAttributes
 import com.rarilabs.rarime.api.hiddenPrize.models.CreateUserResponse
 import com.rarilabs.rarime.api.hiddenPrize.models.HiddenPrizeClaimData
 import com.rarilabs.rarime.api.hiddenPrize.models.HiddenPrizeClaimRequest
@@ -43,9 +45,10 @@ class HiddenPrizeApiManager @Inject constructor(
     suspend fun createNewUser(referredBy: String?, nullifier: String): CreateUserResponse {
         val response = api.createNewUser(
             body = CreateUserRequest(
-                id = nullifier, attributes = CreateUserRequest.CreateUserAttributes(
-                    referred_by = referredBy
-
+                data = CreateUserRequestData(
+                    id = nullifier, attributes = CreateUserAttributes(
+                        referred_by = referredBy
+                ),
                 )
             ), "Bearer ${authManager.accessToken}"
         )

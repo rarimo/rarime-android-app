@@ -1,7 +1,10 @@
 package com.rarilabs.rarime.api.hiddenPrize.models
 
-
 data class CreateUserRequest(
+    val data: CreateUserRequestData
+)
+
+data class CreateUserRequestData(
     val id: String,
     val type: String = "users",
     val attributes: CreateUserAttributes

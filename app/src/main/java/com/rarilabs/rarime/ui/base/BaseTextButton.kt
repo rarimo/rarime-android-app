@@ -111,7 +111,8 @@ fun TextButtonPreview() {
             onClick = {
                 println("Button clicked")
             })
-        BaseTextButton(enabled = false,
+        BaseTextButton(
+            enabled = false,
             size = ButtonSize.Large,
             leftIcon = R.drawable.ic_arrow_left,
             text = "Disabled",

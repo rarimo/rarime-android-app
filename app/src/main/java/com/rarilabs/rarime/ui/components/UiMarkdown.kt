@@ -283,7 +283,7 @@ fun UiMarkdown(markdown: String) {
 @Preview
 @Composable
 fun UiMarkdownPreview() {
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary)

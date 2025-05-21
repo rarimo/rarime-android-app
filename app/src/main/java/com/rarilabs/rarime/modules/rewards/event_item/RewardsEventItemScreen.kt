@@ -56,6 +56,7 @@ fun RewardsEventItemScreen(
                     )
                 }
             }
+
             else -> {
                 RewardsEventItemCommon(pointsEvent = pointsEvent, onBack = onBack)
             }
@@ -76,18 +77,24 @@ private fun PageSkeleton() {
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            AppSkeleton(modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .height(32.dp))
-            AppSkeleton(modifier = Modifier
-                .fillMaxWidth(0.75f)
-                .height(16.dp))
+            AppSkeleton(
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .height(32.dp)
+            )
+            AppSkeleton(
+                modifier = Modifier
+                    .fillMaxWidth(0.75f)
+                    .height(16.dp)
+            )
 
             HorizontalDivider()
 
-            AppSkeleton(modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f))
+            AppSkeleton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
 
             repeat(7) {
                 AppSkeleton(
@@ -97,9 +104,11 @@ private fun PageSkeleton() {
                 )
             }
 
-            AppSkeleton(modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp))
+            AppSkeleton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp)
+            )
         }
     }
 }

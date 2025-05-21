@@ -186,7 +186,8 @@ fun ScanGuides(
         )
         Spacer(modifier = Modifier.weight(1f))
         Spacer(modifier = Modifier.height(16.dp))
-        PrimaryButton(modifier = Modifier.fillMaxWidth(),
+        PrimaryButton(
+            modifier = Modifier.fillMaxWidth(),
             size = ButtonSize.Large,
             text = btnText,
             onClick = { onPress() })

@@ -9,12 +9,17 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.util.BiometricUtil
 
 @Composable
-fun EnableBiometricsScreen(onNext: () -> Unit, onSkip: () -> Unit, viewModel: BiometricViewModel = hiltViewModel()) {
+fun EnableBiometricsScreen(
+    onNext: () -> Unit,
+    onSkip: () -> Unit,
+    viewModel: BiometricViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
 
     EnableBiometricsScreenContent(
         onEnable = {
-            BiometricUtil.authenticate(context = context,
+            BiometricUtil.authenticate(
+                context = context,
                 title = context.getString(R.string.biometric_authentication_title),
                 subtitle = context.getString(R.string.biometric_authentication_subtitle),
                 negativeButtonText = context.getString(R.string.cancel_btn),
@@ -32,7 +37,8 @@ fun EnableBiometricsScreenContent(
     onEnable: () -> Unit,
     onSkip: () -> Unit
 ) {
-    EnableScreenLayout(title = stringResource(R.string.enable_biometrics_title),
+    EnableScreenLayout(
+        title = stringResource(R.string.enable_biometrics_title),
         text = stringResource(R.string.enable_biometrics_text),
         icon = R.drawable.ic_fingerprint,
         onEnable = {

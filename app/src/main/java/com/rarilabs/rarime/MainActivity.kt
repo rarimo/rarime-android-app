@@ -108,6 +108,7 @@ class MainActivity : AppCompatActivity() {
 
         AppsFlyerLib.getInstance().start(application.applicationContext)
     }
+
     private fun handleDeepLink(uri: Uri?) {
         if (uri == null) {
             Log.i("uri", "uri is null")

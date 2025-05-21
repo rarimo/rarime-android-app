@@ -29,20 +29,20 @@ fun RewardsLeaderBoardItem(
     item: LeaderBoardItem,
     isCurrentUser: Boolean = false,
 ) {
-    Row (
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Row (
+        Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Column (
+            Column(
                 modifier = Modifier.requiredWidth(64.dp)
-            )  {
+            ) {
                 NumberCircle(
                     modifier = Modifier
                         .border(
@@ -54,10 +54,10 @@ fun RewardsLeaderBoardItem(
                 )
             }
 
-            Column (
+            Column(
                 modifier = Modifier.weight(1f)
             ) {
-                Row (
+                Row(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -68,13 +68,13 @@ fun RewardsLeaderBoardItem(
                     )
 
                     if (isCurrentUser) {
-                        Box (
+                        Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(100.dp))
                                 .background(RarimeTheme.colors.componentPrimary)
                                 .padding(vertical = 2.dp, horizontal = 10.dp)
                         ) {
-                            Text (
+                            Text(
                                 text = "You",
                                 style = RarimeTheme.typography.overline3,
                                 color = RarimeTheme.colors.textSecondary
@@ -84,10 +84,10 @@ fun RewardsLeaderBoardItem(
                 }
             }
 
-            Column (
+            Column(
                 horizontalAlignment = Alignment.End
             ) {
-                Row (
+                Row(
                     modifier = Modifier
                         .clip(RoundedCornerShape(48.dp))
                         .background(RarimeTheme.colors.componentPrimary)
@@ -100,7 +100,11 @@ fun RewardsLeaderBoardItem(
                         style = RarimeTheme.typography.subtitle5,
                         color = RarimeTheme.colors.textPrimary
                     )
-                    AppIcon(id = item.tokenIcon, size = 14.dp, tint = RarimeTheme.colors.textPrimary)
+                    AppIcon(
+                        id = item.tokenIcon,
+                        size = 14.dp,
+                        tint = RarimeTheme.colors.textPrimary
+                    )
                 }
 
             }
@@ -111,7 +115,7 @@ fun RewardsLeaderBoardItem(
 @Preview
 @Composable
 fun RewardsLeaderBoardItemPreview() {
-    Column (
+    Column(
         modifier = Modifier
             .background(RarimeTheme.colors.backgroundPrimary)
             .padding(16.dp),

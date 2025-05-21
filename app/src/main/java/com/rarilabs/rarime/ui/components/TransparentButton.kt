@@ -31,7 +31,12 @@ fun TransparentButton(
     content: @Composable RowScope.() -> Unit = {}
 ) {
     BaseButton(
-        modifier = Modifier.background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)).then(modifier),
+        modifier = Modifier
+            .background(
+                RarimeTheme.colors.componentPrimary,
+                RoundedCornerShape(20.dp)
+            )
+            .then(modifier),
         onClick = onClick,
         enabled = enabled,
         size = size,
@@ -54,7 +59,8 @@ private fun TransparentButtonPreview() {
     Column(
         modifier = Modifier.padding(12.dp, 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        TransparentButton(enabled = true,
+        TransparentButton(
+            enabled = true,
             size = ButtonSize.Large,
             modifier = Modifier.fillMaxWidth(),
             leftIcon = R.drawable.ic_arrow_left,

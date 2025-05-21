@@ -69,7 +69,11 @@ fun ReservedCongratsModalContent(onClose: () -> Unit) {
                     color = RarimeTheme.colors.textPrimary
                 )
                 Text(
-                    text = stringResource(R.string.congrats_reserved_subtitle, Constants.SCAN_PASSPORT_REWARD.toInt(), "RMO"),
+                    text = stringResource(
+                        R.string.congrats_reserved_subtitle,
+                        Constants.SCAN_PASSPORT_REWARD.toInt(),
+                        "RMO"
+                    ),
                     style = RarimeTheme.typography.body2,
                     color = RarimeTheme.colors.textSecondary,
                     textAlign = TextAlign.Center,
@@ -77,7 +81,7 @@ fun ReservedCongratsModalContent(onClose: () -> Unit) {
                 )
             }
             HorizontalDivider()
-            Column (
+            Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 PrimaryButton(
@@ -114,7 +118,7 @@ private fun shareAchievement(context: Context, text: String) {
 @Preview(showBackground = true)
 @Composable
 private fun SpecificCongratsModalContentPreview() {
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary)

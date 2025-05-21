@@ -207,17 +207,6 @@ public class ProposalsState extends Contract {
         return typedResponse;
     }
 
-    public Flowable<AdminChangedEventResponse> adminChangedEventFlowable(EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getAdminChangedEventFromLog(log));
-    }
-
-    public Flowable<AdminChangedEventResponse> adminChangedEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(ADMINCHANGED_EVENT));
-        return adminChangedEventFlowable(filter);
-    }
-
     public static List<BeaconUpgradedEventResponse> getBeaconUpgradedEvents(
             TransactionReceipt transactionReceipt) {
         List<EventValuesWithLog> valueList = staticExtractEventParametersWithLog(BEACONUPGRADED_EVENT, transactionReceipt);
@@ -239,17 +228,6 @@ public class ProposalsState extends Contract {
         return typedResponse;
     }
 
-    public Flowable<BeaconUpgradedEventResponse> beaconUpgradedEventFlowable(EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getBeaconUpgradedEventFromLog(log));
-    }
-
-    public Flowable<BeaconUpgradedEventResponse> beaconUpgradedEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(BEACONUPGRADED_EVENT));
-        return beaconUpgradedEventFlowable(filter);
-    }
-
     public static List<InitializedEventResponse> getInitializedEvents(
             TransactionReceipt transactionReceipt) {
         List<EventValuesWithLog> valueList = staticExtractEventParametersWithLog(INITIALIZED_EVENT, transactionReceipt);
@@ -269,17 +247,6 @@ public class ProposalsState extends Contract {
         typedResponse.log = log;
         typedResponse.version = (BigInteger) eventValues.getNonIndexedValues().get(0).getValue();
         return typedResponse;
-    }
-
-    public Flowable<InitializedEventResponse> initializedEventFlowable(EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getInitializedEventFromLog(log));
-    }
-
-    public Flowable<InitializedEventResponse> initializedEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(INITIALIZED_EVENT));
-        return initializedEventFlowable(filter);
     }
 
     public static List<OwnershipTransferredEventResponse> getOwnershipTransferredEvents(
@@ -305,18 +272,6 @@ public class ProposalsState extends Contract {
         return typedResponse;
     }
 
-    public Flowable<OwnershipTransferredEventResponse> ownershipTransferredEventFlowable(
-            EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getOwnershipTransferredEventFromLog(log));
-    }
-
-    public Flowable<OwnershipTransferredEventResponse> ownershipTransferredEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(OWNERSHIPTRANSFERRED_EVENT));
-        return ownershipTransferredEventFlowable(filter);
-    }
-
     public static List<ProposalConfigChangedEventResponse> getProposalConfigChangedEvents(
             TransactionReceipt transactionReceipt) {
         List<EventValuesWithLog> valueList = staticExtractEventParametersWithLog(PROPOSALCONFIGCHANGED_EVENT, transactionReceipt);
@@ -336,18 +291,6 @@ public class ProposalsState extends Contract {
         typedResponse.log = log;
         typedResponse.proposalId = (BigInteger) eventValues.getIndexedValues().get(0).getValue();
         return typedResponse;
-    }
-
-    public Flowable<ProposalConfigChangedEventResponse> proposalConfigChangedEventFlowable(
-            EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getProposalConfigChangedEventFromLog(log));
-    }
-
-    public Flowable<ProposalConfigChangedEventResponse> proposalConfigChangedEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(PROPOSALCONFIGCHANGED_EVENT));
-        return proposalConfigChangedEventFlowable(filter);
     }
 
     public static List<ProposalCreatedEventResponse> getProposalCreatedEvents(
@@ -373,17 +316,6 @@ public class ProposalsState extends Contract {
         return typedResponse;
     }
 
-    public Flowable<ProposalCreatedEventResponse> proposalCreatedEventFlowable(EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getProposalCreatedEventFromLog(log));
-    }
-
-    public Flowable<ProposalCreatedEventResponse> proposalCreatedEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(PROPOSALCREATED_EVENT));
-        return proposalCreatedEventFlowable(filter);
-    }
-
     public static List<ProposalHiddenEventResponse> getProposalHiddenEvents(
             TransactionReceipt transactionReceipt) {
         List<EventValuesWithLog> valueList = staticExtractEventParametersWithLog(PROPOSALHIDDEN_EVENT, transactionReceipt);
@@ -407,17 +339,6 @@ public class ProposalsState extends Contract {
         return typedResponse;
     }
 
-    public Flowable<ProposalHiddenEventResponse> proposalHiddenEventFlowable(EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getProposalHiddenEventFromLog(log));
-    }
-
-    public Flowable<ProposalHiddenEventResponse> proposalHiddenEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(PROPOSALHIDDEN_EVENT));
-        return proposalHiddenEventFlowable(filter);
-    }
-
     public static List<UpgradedEventResponse> getUpgradedEvents(
             TransactionReceipt transactionReceipt) {
         List<EventValuesWithLog> valueList = staticExtractEventParametersWithLog(UPGRADED_EVENT, transactionReceipt);
@@ -437,17 +358,6 @@ public class ProposalsState extends Contract {
         typedResponse.log = log;
         typedResponse.implementation = (String) eventValues.getIndexedValues().get(0).getValue();
         return typedResponse;
-    }
-
-    public Flowable<UpgradedEventResponse> upgradedEventFlowable(EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getUpgradedEventFromLog(log));
-    }
-
-    public Flowable<UpgradedEventResponse> upgradedEventFlowable(DefaultBlockParameter startBlock,
-                                                                 DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(UPGRADED_EVENT));
-        return upgradedEventFlowable(filter);
     }
 
     public static List<VoteCastEventResponse> getVoteCastEvents(
@@ -473,6 +383,118 @@ public class ProposalsState extends Contract {
         typedResponse.userNullifier = (BigInteger) eventValues.getNonIndexedValues().get(0).getValue();
         typedResponse.vote = (List<BigInteger>) ((Array) eventValues.getNonIndexedValues().get(1)).getNativeValueCopy();
         return typedResponse;
+    }
+
+    @Deprecated
+    public static ProposalsState load(String contractAddress, Web3j web3j, Credentials credentials,
+                                      BigInteger gasPrice, BigInteger gasLimit) {
+        return new ProposalsState(contractAddress, web3j, credentials, gasPrice, gasLimit);
+    }
+
+    @Deprecated
+    public static ProposalsState load(String contractAddress, Web3j web3j,
+                                      TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit) {
+        return new ProposalsState(contractAddress, web3j, transactionManager, gasPrice, gasLimit);
+    }
+
+    public static ProposalsState load(String contractAddress, Web3j web3j, Credentials credentials,
+                                      ContractGasProvider contractGasProvider) {
+        return new ProposalsState(contractAddress, web3j, credentials, contractGasProvider);
+    }
+
+    public static ProposalsState load(String contractAddress, Web3j web3j,
+                                      TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
+        return new ProposalsState(contractAddress, web3j, transactionManager, contractGasProvider);
+    }
+
+    public Flowable<AdminChangedEventResponse> adminChangedEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getAdminChangedEventFromLog(log));
+    }
+
+    public Flowable<AdminChangedEventResponse> adminChangedEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(ADMINCHANGED_EVENT));
+        return adminChangedEventFlowable(filter);
+    }
+
+    public Flowable<BeaconUpgradedEventResponse> beaconUpgradedEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getBeaconUpgradedEventFromLog(log));
+    }
+
+    public Flowable<BeaconUpgradedEventResponse> beaconUpgradedEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(BEACONUPGRADED_EVENT));
+        return beaconUpgradedEventFlowable(filter);
+    }
+
+    public Flowable<InitializedEventResponse> initializedEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getInitializedEventFromLog(log));
+    }
+
+    public Flowable<InitializedEventResponse> initializedEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(INITIALIZED_EVENT));
+        return initializedEventFlowable(filter);
+    }
+
+    public Flowable<OwnershipTransferredEventResponse> ownershipTransferredEventFlowable(
+            EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getOwnershipTransferredEventFromLog(log));
+    }
+
+    public Flowable<OwnershipTransferredEventResponse> ownershipTransferredEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(OWNERSHIPTRANSFERRED_EVENT));
+        return ownershipTransferredEventFlowable(filter);
+    }
+
+    public Flowable<ProposalConfigChangedEventResponse> proposalConfigChangedEventFlowable(
+            EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getProposalConfigChangedEventFromLog(log));
+    }
+
+    public Flowable<ProposalConfigChangedEventResponse> proposalConfigChangedEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(PROPOSALCONFIGCHANGED_EVENT));
+        return proposalConfigChangedEventFlowable(filter);
+    }
+
+    public Flowable<ProposalCreatedEventResponse> proposalCreatedEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getProposalCreatedEventFromLog(log));
+    }
+
+    public Flowable<ProposalCreatedEventResponse> proposalCreatedEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(PROPOSALCREATED_EVENT));
+        return proposalCreatedEventFlowable(filter);
+    }
+
+    public Flowable<ProposalHiddenEventResponse> proposalHiddenEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getProposalHiddenEventFromLog(log));
+    }
+
+    public Flowable<ProposalHiddenEventResponse> proposalHiddenEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(PROPOSALHIDDEN_EVENT));
+        return proposalHiddenEventFlowable(filter);
+    }
+
+    public Flowable<UpgradedEventResponse> upgradedEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getUpgradedEventFromLog(log));
+    }
+
+    public Flowable<UpgradedEventResponse> upgradedEventFlowable(DefaultBlockParameter startBlock,
+                                                                 DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(UPGRADED_EVENT));
+        return upgradedEventFlowable(filter);
     }
 
     public Flowable<VoteCastEventResponse> voteCastEventFlowable(EthFilter filter) {
@@ -773,26 +795,10 @@ public class ProposalsState extends Contract {
         return executeRemoteCallTransaction(function);
     }
 
-    @Deprecated
-    public static ProposalsState load(String contractAddress, Web3j web3j, Credentials credentials,
-                                      BigInteger gasPrice, BigInteger gasLimit) {
-        return new ProposalsState(contractAddress, web3j, credentials, gasPrice, gasLimit);
-    }
-
-    @Deprecated
-    public static ProposalsState load(String contractAddress, Web3j web3j,
-                                      TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit) {
-        return new ProposalsState(contractAddress, web3j, transactionManager, gasPrice, gasLimit);
-    }
-
-    public static ProposalsState load(String contractAddress, Web3j web3j, Credentials credentials,
-                                      ContractGasProvider contractGasProvider) {
-        return new ProposalsState(contractAddress, web3j, credentials, contractGasProvider);
-    }
-
-    public static ProposalsState load(String contractAddress, Web3j web3j,
-                                      TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
-        return new ProposalsState(contractAddress, web3j, transactionManager, contractGasProvider);
+    public RemoteCall<ProposalInfo> getProposalInfo(BigInteger proposalId) {
+        final Function function = new Function(FUNC_GETPROPOSALINFO, List.of(new Uint256(proposalId)), List.of(new TypeReference<ProposalInfo>() {
+        }));
+        return executeRemoteCallSingleValueReturn(function, ProposalInfo.class);
     }
 
     public static class ProposalConfig extends DynamicStruct {
@@ -897,13 +903,6 @@ public class ProposalsState extends Contract {
         public BigInteger userNullifier;
 
         public List<BigInteger> vote;
-    }
-
-
-    public RemoteCall<ProposalInfo> getProposalInfo(BigInteger proposalId) {
-        final Function function = new Function(FUNC_GETPROPOSALINFO, List.of(new Uint256(proposalId)), List.of(new TypeReference<ProposalInfo>() {
-        }));
-        return executeRemoteCallSingleValueReturn(function, ProposalInfo.class);
     }
 
     public static class ProposalInfo extends DynamicStruct {

@@ -101,7 +101,7 @@ fun ClaimAirdropCongratsModalContent(onClose: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 private fun ClaimAirdropCongratsModalContentPreview() {
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary)

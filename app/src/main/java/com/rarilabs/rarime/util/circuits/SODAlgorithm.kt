@@ -16,9 +16,9 @@ enum class SODAlgorithm(val value: String) {
 
     fun getCircuitSignatureAlgorithm(): CircuitAlgorithmType {
         return when (this) {
-            SHA256WithRSAEncryption, SHA1WithRSAEncryption,RSA -> CircuitAlgorithmType.RSA
+            SHA256WithRSAEncryption, SHA1WithRSAEncryption, RSA -> CircuitAlgorithmType.RSA
             RSASSAPSS -> CircuitAlgorithmType.RSAPSS
-            ECDSA_WITH_SHA1, ECDSA_WITH_SHA224,ECDSA_WITH_SHA256, ECDSA_WITH_SHA384, SHA512withECDSA -> CircuitAlgorithmType.ECDSA
+            ECDSA_WITH_SHA1, ECDSA_WITH_SHA224, ECDSA_WITH_SHA256, ECDSA_WITH_SHA384, SHA512withECDSA -> CircuitAlgorithmType.ECDSA
         }
     }
 
