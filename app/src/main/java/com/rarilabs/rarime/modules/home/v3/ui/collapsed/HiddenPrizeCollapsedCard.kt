@@ -205,18 +205,15 @@ private fun Background(
     animatedVisibilityScope: AnimatedVisibilityScope,
     colorScheme: AppColorScheme
 ) {
-    val backgroundImage = when (colorScheme) {
-        AppColorScheme.SYSTEM -> {
-            if (isSystemInDarkTheme()) {
-                R.drawable.ic_bg_hidden_prize_dark
-            } else {
-                R.drawable.ic_bg_hidden_prize_light
-            }
-        }
+    val isDark = when (colorScheme) {
+        AppColorScheme.SYSTEM -> isSystemInDarkTheme()
+        AppColorScheme.DARK -> true
+        AppColorScheme.LIGHT -> false
+    }
 
-        AppColorScheme.DARK -> R.drawable.ic_bg_hidden_prize_dark
-
-        AppColorScheme.LIGHT -> R.drawable.ic_bg_hidden_prize_light
+    val backgroundRes = remember(isDark) {
+        if (isDark) R.drawable.ic_bg_hidden_prize_dark
+        else R.drawable.ic_bg_hidden_prize_light
     }
     with(sharedTransitionScope) {
         Box(
@@ -225,7 +222,7 @@ private fun Background(
                 .background(RarimeTheme.colors.gradient9)
         ) {
             Image(
-                painter = painterResource(backgroundImage),
+                painter = painterResource(backgroundRes),
                 contentDescription = null,
                 contentScale = ContentScale.FillWidth,
                 modifier = Modifier
