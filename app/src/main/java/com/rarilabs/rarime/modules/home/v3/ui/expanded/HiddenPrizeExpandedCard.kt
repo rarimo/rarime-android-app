@@ -113,7 +113,9 @@ fun HiddenPrizeExpandedCard(
                 processML = { viewModel.generateFaceFeatures(it) },
                 processZK = { bitmap, features -> viewModel.claimTokens(bitmap, features) },
                 downloadProgress = downloadProgress,
-                checkCrop = { viewModel.checkCrop(it) })
+                checkCrop = { viewModel.checkCrop(it) },
+                imageLink = celebrity?.image ?: "",
+                colorScheme = colorScheme)
         }
     }
 

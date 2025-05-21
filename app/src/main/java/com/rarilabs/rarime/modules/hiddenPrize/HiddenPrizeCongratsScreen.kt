@@ -2,6 +2,7 @@ package com.rarilabs.rarime.modules.hiddenPrize
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,15 +12,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
+import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
@@ -28,7 +30,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.HorizontalDivider
@@ -44,138 +48,163 @@ fun HiddenPrizeCongratsScreen(
     modifier: Modifier = Modifier,
     prizeAmount: Float,
     prizeSymbol: @Composable () -> Unit = {},
-    onClaim: () -> Unit
+    onClaim: () -> Unit,
+    imageLink: String,
+    colorScheme: AppColorScheme
 ) {
-    Box(Modifier.fillMaxSize()) {
-        Column(
-            modifier = modifier
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+    val isDark = when (colorScheme) {
+        AppColorScheme.SYSTEM -> isSystemInDarkTheme()
+        AppColorScheme.DARK -> true
+        AppColorScheme.LIGHT -> false
+    }
+
+    val bgColor = remember(isDark) {
+        if (isDark) Color.Black
+        else Color.White
+    }
+
+    val backgroundRes = remember(isDark) {
+        if (isDark) R.drawable.ic_bg_winner_screen_dark
+        else R.drawable.ic_bg_winner_screen_light
+    }
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(bgColor)
+    ) {
+        Image(
+            painter = painterResource(backgroundRes),
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier.fillMaxWidth()
+
+        )
+
+    }
+
+        Box(
+            modifier = Modifier
+                //.weight(1f)
+                .fillMaxWidth()
+                .padding(vertical = 96.dp),
+            //contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(), contentAlignment = Alignment.Center
-            ) {
-                KonfettiView(
-                    modifier = Modifier.fillMaxSize(), parties = listOf(
-                        Party(
-                            speed = 0f,
-                            maxSpeed = 30f,
-                            damping = 0.9f,
-                            spread = 360,
-                            colors = listOf(
-                                Color(0xB4AEA2E2).toArgb(),
-                                Color(0xF1EDD9FF).toArgb(),
-                            ),
-                            position = Position.Relative(0.5, 0.3),
-                            emitter = Emitter(duration = 100, TimeUnit.MILLISECONDS).max(100)
-                        )
+            KonfettiView(
+                modifier = Modifier.fillMaxSize(), parties = listOf(
+                    Party(
+                        speed = 0f, maxSpeed = 30f, damping = 0.9f, spread = 360, colors = listOf(
+                            Color(0xB4AEA2E2).toArgb(),
+                            Color(0xF1EDD9FF).toArgb(),
+                        ), position = Position.Relative(0.5, 0.3), emitter = Emitter(
+                            duration = 100, TimeUnit.MILLISECONDS
+                        ).max(100)
                     )
                 )
-                Column(
-                    modifier = Modifier.width(230.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+            )
+            Column(
+                modifier = Modifier,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                AsyncImage(
+                    model = imageLink,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(
+                        width = 118.dp, height = 135.dp
+                    )
+
+
+                )
+
+                Text(
+                    stringResource(R.string.hidden_prize_success_screen_title),
+                    color = RarimeTheme.colors.baseBlack,
+                    textAlign = TextAlign.Center,
+                    style = RarimeTheme.typography.h3
+                )
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    stringResource(R.string.hidden_prize_success_screen_description),
+                    color = RarimeTheme.colors.textSecondary,
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(Modifier.height(32.dp))
+                Card(
+                    modifier = Modifier
+                        .background(
+                            bgColor,
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                        .padding(vertical = 20.dp, horizontal = 20.dp),
+
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_success_color),
-                        contentDescription = null,
-                        tint = RarimeTheme.colors.baseWhite,
-                    )
-                    Spacer(Modifier.height(32.dp))
-                    Text(
-                        stringResource(R.string.hidden_prize_success_screen_title),
-                        color = RarimeTheme.colors.baseWhite,
-                        textAlign = TextAlign.Center,
-                        style = RarimeTheme.typography.h3
-                    )
-                    Spacer(Modifier.height(12.dp))
-                    Text(
-                        stringResource(R.string.hidden_prize_success_screen_description),
-                        color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
-                        textAlign = TextAlign.Center,
-                    )
-                    Spacer(Modifier.height(32.dp))
-                    HorizontalDivider(
-                        modifier = Modifier.width(280.dp),
-                        color = RarimeTheme.colors.baseWhite.copy(alpha = 0.05f)
-                    )
-                    Spacer(Modifier.height(32.dp))
                     Column(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier
-                            .background(
-                                RarimeTheme.colors.baseWhite.copy(0.05f),
-                                shape = RoundedCornerShape(20.dp)
-                            )
-                            .padding(vertical = 20.dp)
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.background(bgColor)
+
+                    ) {
+                    Text(
+                        stringResource(R.string.hidden_prize_success_screen_prize),
+                        color = RarimeTheme.colors.textSecondary
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Text(
-                            stringResource(R.string.hidden_prize_success_screen_prize),
-                            color = RarimeTheme.colors.baseWhite.copy(0.6f)
+                            prizeAmount.toString().format(),
+                            style = RarimeTheme.typography.h3,
+                            color = RarimeTheme.colors.textPrimary
                         )
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            Text(
-                                prizeAmount.toString().format(),
-                                style = RarimeTheme.typography.h3,
-                                color = RarimeTheme.colors.baseWhite
-                            )
-                            prizeSymbol()
-                        }
+                        prizeSymbol()
                     }
+                    BaseButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 16.dp),
+                        size = ButtonSize.Large,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = RarimeTheme.colors.baseBlack,
+                            contentColor = RarimeTheme.colors.baseWhite,
+                            disabledContainerColor = RarimeTheme.colors.componentDisabled,
+                            disabledContentColor = RarimeTheme.colors.textDisabled
+                        ),
+                        onClick = onClaim
+                    ) {
+                        Text(
+                            stringResource(R.string.hidden_prize_congrats_share_btn),
+                            color = RarimeTheme.colors.baseWhite,
+                        )
+                    }
+                }
                 }
             }
         }
 
-        Column(
-            modifier = Modifier.align(Alignment.BottomCenter),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            BaseButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 16.dp),
-                size = ButtonSize.Large,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = RarimeTheme.colors.baseWhite,
-                    contentColor = RarimeTheme.colors.baseBlack,
-                    disabledContainerColor = RarimeTheme.colors.componentDisabled,
-                    disabledContentColor = RarimeTheme.colors.textDisabled
-                ),
-                onClick = onClaim
-            ) {
-                Text(
-                    stringResource(R.string.hidden_prize_congrats_share_btn),
-                    color = RarimeTheme.colors.baseBlack,
-                )
-            }
-        }
-    }
+
+
+
+
+
+
+
 }
 
 
 @Composable
 @Preview
-fun HiddenPrizeCongratsScreenPreview_WithBlur() {
+fun HiddenPrizeCongratsScreenPreview() {
     Box(Modifier.fillMaxSize()) {
         // Image for blur example
-        Image(
-            painter = painterResource(R.drawable.drawable_digital_likeness),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-                .blur(20.dp)
-        )
 
-        HiddenPrizeCongratsScreen(prizeAmount = 2.2f, onClaim = {}, prizeSymbol = {
-            Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
-        })
+
+        HiddenPrizeCongratsScreen(
+            prizeAmount = 2.2f, onClaim = {}, prizeSymbol = {
+                Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
+            }, imageLink = "", colorScheme = AppColorScheme.SYSTEM
+        )
     }
 }
