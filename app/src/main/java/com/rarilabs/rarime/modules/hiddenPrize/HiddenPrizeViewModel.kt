@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rarilabs.rarime.api.hiddenPrize.HiddenPrizeApiError
 import com.rarilabs.rarime.manager.HiddenPrizeManager
+import com.rarilabs.rarime.manager.SettingsManager
 import com.rarilabs.rarime.util.bionet.BinetAnalyzer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -12,14 +13,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HiddenPrizeViewModel @Inject constructor(
-    private val hiddenPrizeManager: HiddenPrizeManager
+    private val hiddenPrizeManager: HiddenPrizeManager, private val settingsManager: SettingsManager
 ) : ViewModel() {
 
     val downloadProgress = hiddenPrizeManager.downloadProgressZkey
     val celebrity = hiddenPrizeManager.celebrity
-    val referalCode = hiddenPrizeManager.referralCode
+    val referralCode = hiddenPrizeManager.referralCode
     val userStats = hiddenPrizeManager.userStats
     val shares = hiddenPrizeManager.shares
+
+    val colorScheme = settingsManager.colorScheme
 
     init {
         viewModelScope.launch {

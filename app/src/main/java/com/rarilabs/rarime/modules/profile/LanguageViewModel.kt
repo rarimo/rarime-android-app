@@ -12,6 +12,8 @@ class LanguageViewModel @Inject constructor(
     private val settingsManager: SettingsManager
 ) : ViewModel() {
     val language = settingsManager.language
+
+
     fun updateLanguage(appLanguage: AppLanguage) {
         settingsManager.updateLanguage(appLanguage)
     }
