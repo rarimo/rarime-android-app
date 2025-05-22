@@ -14,6 +14,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -46,6 +48,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.manager.Celebrity
 import com.rarilabs.rarime.modules.hiddenPrize.AddScanBottomSheet
 import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeCamera
@@ -82,9 +85,10 @@ fun HiddenPrizeExpandedCard(
         Manifest.permission.CAMERA
     )
     val showAddScan = rememberAppSheetState()
-    val referralCode by viewModel.referalCode.collectAsState()
+    val referralCode by viewModel.referralCode.collectAsState()
     val userStats by viewModel.userStats.collectAsState()
     val shares by viewModel.shares.collectAsState()
+    val colorScheme by viewModel.colorScheme.collectAsState()
 
     val dayAttemptsCount by remember {
         derivedStateOf {
@@ -108,6 +112,8 @@ fun HiddenPrizeExpandedCard(
                 processML = { viewModel.generateFaceFeatures(it) },
                 processZK = { bitmap, features -> viewModel.claimTokens(bitmap, features) },
                 downloadProgress = downloadProgress,
+                imageLink = celebrity?.image ?: "",
+                colorScheme = colorScheme
             )
         }
     }
@@ -149,7 +155,8 @@ fun HiddenPrizeExpandedCard(
         celebrity = celebrity,
         isAddScanEnabled = isAddScanEnabled,
         attendsCount = totalAttemptsCount,
-        dayAttemptsCount = dayAttemptsCount
+        dayAttemptsCount = dayAttemptsCount,
+        colorScheme = colorScheme
 
 
     )
@@ -168,7 +175,8 @@ fun HiddenPrizeExpandedCardContent(
     celebrity: Celebrity?,
     isAddScanEnabled: Boolean,
     attendsCount: Int,
-    dayAttemptsCount: Int
+    dayAttemptsCount: Int,
+    colorScheme: AppColorScheme
 ) {
     with(cardProps) {
         with(sharedTransitionScope) {
@@ -210,7 +218,8 @@ fun HiddenPrizeExpandedCardContent(
                     Background(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
-                        animatedVisibilityScope = animatedVisibilityScope
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        colorScheme = colorScheme
                     )
                 })
         }
@@ -433,8 +442,20 @@ fun Body(
 private fun Background(
     layoutId: Int,
     sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    colorScheme: AppColorScheme
 ) {
+    val isDark = when (colorScheme) {
+        AppColorScheme.SYSTEM -> isSystemInDarkTheme()
+        AppColorScheme.DARK -> true
+        AppColorScheme.LIGHT -> false
+    }
+
+    val backgroundRes = remember(isDark) {
+        if (isDark) R.drawable.ic_bg_hidden_prize_dark
+        else R.drawable.ic_bg_hidden_prize_light
+    }
+
     with(sharedTransitionScope) {
         Box(
             modifier = Modifier
@@ -442,12 +463,11 @@ private fun Background(
                 .background(RarimeTheme.colors.gradient9)
         ) {
             Image(
-                painter = painterResource(R.drawable.drawable_hidden_prize_hand),
+                painter = painterResource(backgroundRes),
                 contentDescription = null,
+                contentScale = ContentScale.FillWidth,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(BG_HAND_HIDDEN_PRIZE_HEIGHT.dp)
-                    .offset(y = 80.dp, x = 30.dp)
                     .sharedBounds(
                         rememberSharedContentState(
                             HomeSharedKeys.image(

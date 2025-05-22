@@ -47,6 +47,7 @@ import com.google.mlkit.vision.facemesh.FaceMesh
 import com.google.mlkit.vision.facemesh.FaceMeshDetection
 import com.google.mlkit.vision.facemesh.FaceMeshDetector
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
@@ -68,7 +69,9 @@ fun HiddenPrizeCamera(
     modifier: Modifier = Modifier,
     processZK: suspend (Bitmap, List<Float>) -> Unit,
     processML: suspend (Bitmap) -> List<Float>,
-    downloadProgress: Int
+    downloadProgress: Int,
+    imageLink: String,
+    colorScheme: AppColorScheme
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -141,11 +144,25 @@ fun HiddenPrizeCamera(
         }
 
         HiddenPrizeCameraStep.CONGRATS -> {
-            HiddenPrizeCongratsScreen(prizeAmount = 2.0f, prizeSymbol = {
-                Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
-            }, onClaim = {
-                currentStep = HiddenPrizeCameraStep.PROCESSING_ZKP
-            })
+            HiddenPrizeCongratsScreen(
+                prizeAmount = 2.0f,
+                prizeSymbol = {
+                    Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
+                },
+                onClaim = {
+                    try {
+                        processZK(selectedBitmap!!, featuresBackend)
+                        currentStep = HiddenPrizeCameraStep.FINISH
+                    } catch (e: Exception) {
+                        Log.e("PROCESSING_ZKP", "smth went wrong", e)
+                    }
+                },
+                imageLink = imageLink,
+                colorScheme = colorScheme,
+                downloadProgress = downloadProgress,
+                onShare = {},
+                onViewWallet = {}
+            )
         }
 
         HiddenPrizeCameraStep.PROCESSING_ML -> {
@@ -405,22 +422,22 @@ fun SetupCamera(
 
                 .build().also {
                     it.setAnalyzer(cameraExecutor) { imageProxy ->
-                            val mediaImage = imageProxy.image
-                            if (mediaImage != null) {
-                                val rotation = imageProxy.imageInfo.rotationDegrees
-                                val origW = mediaImage.width
-                                val origH = mediaImage.height
-                                val (rotW, rotH) = if (rotation == 90 || rotation == 270) origH to origW else origW to origH
-                                onImageSizeUpdated(Size(rotW.toFloat(), rotH.toFloat()))
+                        val mediaImage = imageProxy.image
+                        if (mediaImage != null) {
+                            val rotation = imageProxy.imageInfo.rotationDegrees
+                            val origW = mediaImage.width
+                            val origH = mediaImage.height
+                            val (rotW, rotH) = if (rotation == 90 || rotation == 270) origH to origW else origW to origH
+                            onImageSizeUpdated(Size(rotW.toFloat(), rotH.toFloat()))
 
-                                val inputImage = InputImage.fromMediaImage(mediaImage, rotation)
-                                meshDetector.process(inputImage)
-                                    .addOnSuccessListener { onMeshDetected(it) }
-                                    .addOnCompleteListener { imageProxy.close() }
-                            } else {
-                                imageProxy.close()
-                            }
+                            val inputImage = InputImage.fromMediaImage(mediaImage, rotation)
+                            meshDetector.process(inputImage)
+                                .addOnSuccessListener { onMeshDetected(it) }
+                                .addOnCompleteListener { imageProxy.close() }
+                        } else {
+                            imageProxy.close()
                         }
+                    }
                 }
 
         try {
