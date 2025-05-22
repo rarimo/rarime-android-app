@@ -82,6 +82,7 @@ fun HiddenPrizeCongratsScreen(
             .fillMaxSize()
             .background(bgColor)
     ) {
+
         Image(
             painter = painterResource(backgroundRes),
             contentDescription = null,
@@ -96,7 +97,7 @@ fun HiddenPrizeCongratsScreen(
         modifier = Modifier
 
             .fillMaxWidth()
-            .padding(top = 96.dp),
+            .padding(top = 90.dp),
 
         ) {
         KonfettiView(
@@ -111,6 +112,7 @@ fun HiddenPrizeCongratsScreen(
                 )
             )
         )
+
         Column(
             modifier = Modifier,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -121,7 +123,7 @@ fun HiddenPrizeCongratsScreen(
                     width = 118.dp, height = 135.dp
                 )
             )
-
+            Spacer(modifier = Modifier.size(62.dp))
             Text(
                 stringResource(R.string.hidden_prize_success_screen_title),
                 color = RarimeTheme.colors.baseBlack,
