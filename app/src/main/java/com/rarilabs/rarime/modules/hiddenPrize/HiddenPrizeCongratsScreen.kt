@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
@@ -115,7 +117,6 @@ fun HiddenPrizeCongratsScreen(
         )
 
         Column(
-            modifier = Modifier,
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -138,23 +139,33 @@ fun HiddenPrizeCongratsScreen(
                 textAlign = TextAlign.Center,
             )
             Spacer(Modifier.height(32.dp))
+
             Card(
                 modifier = Modifier
-                    .background(
-                        bgColor, shape = RoundedCornerShape(20.dp)
+                    .shadow(
+                        elevation = 60.dp,
+                        shape = RoundedCornerShape(20.dp),
+                        ambientColor = Color(0xFF9D4EDD),
+                        spotColor = Color(0xFF9D4EDD)
                     )
-                    .padding(vertical = 20.dp, horizontal = 20.dp),
+                    .padding(vertical = 20.dp, horizontal = 23.dp),
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(0.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = bgColor,
+                )
 
-                ) {
+            ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.background(bgColor)
+                    modifier = Modifier.background(bgColor, shape = RoundedCornerShape(20.dp))
 
                 ) {
                     Text(
                         stringResource(R.string.hidden_prize_success_screen_prize),
-                        color = RarimeTheme.colors.textSecondary
+                        color = RarimeTheme.colors.textSecondary,
+                        modifier = Modifier.padding(top = 20.dp)
                     )
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -179,6 +190,7 @@ fun HiddenPrizeCongratsScreen(
                     )
 
                 }
+
 
             }
 
