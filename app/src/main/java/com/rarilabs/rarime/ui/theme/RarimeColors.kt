@@ -9,7 +9,6 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import com.google.firebase.annotations.concurrent.Background
 
 @Stable
 class RarimeColors(
