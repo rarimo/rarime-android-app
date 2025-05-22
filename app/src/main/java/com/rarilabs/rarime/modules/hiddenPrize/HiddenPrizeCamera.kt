@@ -152,7 +152,6 @@ fun HiddenPrizeCamera(
                 onClaim = {
                     try {
                         processZK(selectedBitmap!!, featuresBackend)
-                        currentStep = HiddenPrizeCameraStep.FINISH
                     } catch (e: Exception) {
                         Log.e("PROCESSING_ZKP", "smth went wrong", e)
                     }
