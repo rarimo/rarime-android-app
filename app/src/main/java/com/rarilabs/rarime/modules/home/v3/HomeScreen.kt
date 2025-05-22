@@ -288,7 +288,9 @@ fun HomeScreenContent(
                         )
 
                         CardType.HIDDEN_PRIZE -> HiddenPrizeExpandedCard(
-                            expandedCardProps = expandedCardProps, innerPaddings = innerPaddings
+                            expandedCardProps = expandedCardProps,
+                            innerPaddings = innerPaddings,
+                            navigate = navigate
                         )
                         // TODO: Implement rest expanded cards here
                     }

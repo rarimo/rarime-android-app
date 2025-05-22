@@ -13,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HiddenPrizeViewModel @Inject constructor(
-    private val hiddenPrizeManager: HiddenPrizeManager, private val settingsManager: SettingsManager
+    private val hiddenPrizeManager: HiddenPrizeManager,
+    private val settingsManager: SettingsManager
 ) : ViewModel() {
 
     val downloadProgress = hiddenPrizeManager.downloadProgressZkey
@@ -23,6 +24,10 @@ class HiddenPrizeViewModel @Inject constructor(
     val shares = hiddenPrizeManager.shares
 
     val colorScheme = settingsManager.colorScheme
+
+    suspend fun addExtraAttempt() {
+        hiddenPrizeManager.addExtraAttempts()
+    }
 
     init {
         viewModelScope.launch {

@@ -83,7 +83,9 @@ class HiddenPrizeApiManager @Inject constructor(
     }
 
     suspend fun addExtraAttemptSocialShare(nullifier: String) {
-        val response = api.getUserInfo(nullifier, "Bearer ${authManager.accessToken}")
+
+        val response =
+            api.addExtraAttemptSocialShare(nullifier, "Bearer ${authManager.accessToken}")
 
         if (!response.isSuccessful) {
             throw Exception(response.errorBody()!!.string())

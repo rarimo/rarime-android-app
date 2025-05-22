@@ -32,9 +32,10 @@ fun HiddenPrizeWrongScreen(
     modifier: Modifier = Modifier,
     attemptsLeft: Int = 0,
     tip: String? = null,
-    onRetry: () -> Unit = {}
+    onRetry: () -> Unit = {},
+    onClose: () -> Unit
 ) {
-    val canRetry = true
+    val canRetry = attemptsLeft > 0
     val description = buildString {
         append(stringResource(R.string.hidden_prize_wrong_screen_description_1))
         if (canRetry) append(stringResource(R.string.hidden_prize_wrong_screen_description_2))
@@ -42,9 +43,7 @@ fun HiddenPrizeWrongScreen(
     Box(Modifier.fillMaxSize()) {
 
         Column(
-            modifier = modifier
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
                 modifier = Modifier
@@ -104,6 +103,25 @@ fun HiddenPrizeWrongScreen(
                         color = RarimeTheme.colors.baseWhite
                     )
                 }
+            } else {
+                BaseButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    size = ButtonSize.Large,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = RarimeTheme.colors.baseWhite.copy(0.1f),
+                        contentColor = RarimeTheme.colors.invertedLight,
+                        disabledContainerColor = RarimeTheme.colors.componentDisabled,
+                        disabledContentColor = RarimeTheme.colors.textDisabled
+                    ),
+                    onClick = onClose
+                ) {
+                    Text(
+                        stringResource(R.string.hidden_prize_wrong_screen_back_home),
+                        color = RarimeTheme.colors.baseWhite
+                    )
+                }
             }
         }
     }
@@ -126,7 +144,8 @@ fun WrongScreenPreview_WithBlur() {
 
         HiddenPrizeWrongScreen(
             attemptsLeft = 2,
-            tip = "Tip: I think there's something as light as ether in that face..."
+            tip = "Tip: I think there's something as light as ether in that face...",
+            onClose = {}
         )
     }
 }

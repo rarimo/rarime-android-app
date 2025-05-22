@@ -35,6 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -69,6 +70,7 @@ import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.TipAlert
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -76,7 +78,8 @@ fun HiddenPrizeExpandedCard(
     modifier: Modifier = Modifier,
     expandedCardProps: BaseCardProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
-    viewModel: HiddenPrizeViewModel = hiltViewModel()
+    viewModel: HiddenPrizeViewModel = hiltViewModel(),
+    navigate: (String) -> Unit
 ) {
     val downloadProgress by viewModel.downloadProgress.collectAsState()
     val celebrity by viewModel.celebrity.collectAsState()
@@ -84,6 +87,8 @@ fun HiddenPrizeExpandedCard(
     val cameraPermissionState = rememberPermissionState(
         Manifest.permission.CAMERA
     )
+
+    val scope = rememberCoroutineScope()
     val showAddScan = rememberAppSheetState()
     val referralCode by viewModel.referralCode.collectAsState()
     val userStats by viewModel.userStats.collectAsState()
@@ -102,7 +107,7 @@ fun HiddenPrizeExpandedCard(
     }
     val isAddScanEnabled by remember {
         derivedStateOf {
-            shares?.isSocialShare != true && ((shares?.referralsCount
+            shares?.isSocialShare != true || ((shares?.referralsCount
                 ?: 0) < (shares?.referralsLimit ?: 0))
         }
     }
@@ -113,7 +118,9 @@ fun HiddenPrizeExpandedCard(
                 processZK = { bitmap, features -> viewModel.claimTokens(bitmap, features) },
                 downloadProgress = downloadProgress,
                 imageLink = celebrity?.image ?: "",
-                colorScheme = colorScheme
+                colorScheme = colorScheme,
+                navigate = navigate,
+                attemptsLeft = totalAttemptsCount
             )
         }
     }
@@ -128,6 +135,9 @@ fun HiddenPrizeExpandedCard(
                 putExtra(Intent.EXTRA_TEXT, "I use RareMe")
             }
             launcher.launch(Intent.createChooser(intent, "Share via"))
+            scope.launch {
+                viewModel.addExtraAttempt()
+            }
         }, onInvite = {
             val intent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"

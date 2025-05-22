@@ -504,5 +504,6 @@
     <string name="hidden_prize_finish_screen_title">Finished</string>
     <string name="hidden_prize_finish_screen_description">The prize has been successfully credited to your wallet.</string>
     <string name="hidden_prize_congrats_share_btn">Claim</string>
+    <string name="hidden_prize_wrong_screen_back_home">Home</string>
 
 </resources>

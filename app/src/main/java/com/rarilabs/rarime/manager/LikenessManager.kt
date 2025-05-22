@@ -156,7 +156,7 @@ class LikenessManager @Inject constructor(
         return isAlreadyRegistered
     }
 
-    suspend fun changeLikenessRule(newRule: LikenessRule) {
+    private suspend fun changeLikenessRule(newRule: LikenessRule) {
         val ruleValue = newRule.value
 
         val address =
@@ -246,7 +246,6 @@ class LikenessManager @Inject constructor(
             zkeyFileName
         ) { progress ->
             if (_downloadProgress.value != progress) {
-                Log.i("Progress", progress.toString())
                 _downloadProgress.value = progress
             }
         }

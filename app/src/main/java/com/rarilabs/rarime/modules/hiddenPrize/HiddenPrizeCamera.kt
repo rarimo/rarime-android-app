@@ -53,13 +53,14 @@ import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
+import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
 
 enum class HiddenPrizeCameraStep {
-    CAMERA, CONGRATS, WRONG, PROCESSING_ML, PROCESSING_ZKP, FINISH
+    CAMERA, CONGRATS, WRONG, PROCESSING_ML, PROCESSING_ZKP, FINISH, ERROR
 }
 
 
@@ -71,7 +72,9 @@ fun HiddenPrizeCamera(
     processML: suspend (Bitmap) -> List<Float>,
     downloadProgress: Int,
     imageLink: String,
-    colorScheme: AppColorScheme
+    colorScheme: AppColorScheme,
+    navigate: (String) -> Unit,
+    attemptsLeft: Int
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -136,6 +139,8 @@ fun HiddenPrizeCamera(
 
         HiddenPrizeCameraStep.WRONG -> {
             HiddenPrizeWrongScreen(
+                attemptsLeft = attemptsLeft,
+                onClose = { navigate(Screen.Main.Home.route) },
                 onRetry = {
                     selectedBitmap = null
 
@@ -154,14 +159,17 @@ fun HiddenPrizeCamera(
                         processZK(selectedBitmap!!, featuresBackend)
                         currentStep = HiddenPrizeCameraStep.FINISH
                     } catch (e: Exception) {
+                        currentStep = HiddenPrizeCameraStep.ERROR
                         Log.e("PROCESSING_ZKP", "smth went wrong", e)
                     }
                 },
                 imageLink = imageLink,
                 colorScheme = colorScheme,
                 downloadProgress = downloadProgress,
-                onShare = {},
-                onViewWallet = {}
+                onShare = {
+
+                },
+                onViewWallet = { navigate(Screen.Main.Wallet.route) }
             )
         }
 
@@ -175,6 +183,14 @@ fun HiddenPrizeCamera(
                     currentStep = HiddenPrizeCameraStep.WRONG
                 }
             }
+        }
+
+        HiddenPrizeCameraStep.ERROR -> {
+            HiddenPrizeError(
+                onBack = {
+                    navigate(Screen.Main.Home.route)
+                }
+            )
         }
 
         HiddenPrizeCameraStep.PROCESSING_ZKP -> {

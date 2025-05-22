@@ -94,7 +94,6 @@ fun HiddenPrizeCongratsScreen(
 
     Box(
         modifier = Modifier
-
             .fillMaxWidth()
             .padding(top = 96.dp),
 
