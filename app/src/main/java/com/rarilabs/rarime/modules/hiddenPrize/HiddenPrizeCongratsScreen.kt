@@ -284,7 +284,7 @@ private fun LoadingButton(
                 )
             } else {
                 Text(
-                    text = "Claiming $progress", color = RarimeTheme.colors.textDisabled
+                    text = "Claiming ($progress%)", color = RarimeTheme.colors.textDisabled
                 )
 
             }
