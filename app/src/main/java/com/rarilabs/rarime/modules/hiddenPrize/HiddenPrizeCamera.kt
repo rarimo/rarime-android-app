@@ -47,6 +47,7 @@ import com.google.mlkit.vision.facemesh.FaceMesh
 import com.google.mlkit.vision.facemesh.FaceMeshDetection
 import com.google.mlkit.vision.facemesh.FaceMeshDetector
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
@@ -69,7 +70,9 @@ fun HiddenPrizeCamera(
     processZK: suspend (Bitmap, List<Float>) -> Unit,
     processML: suspend (Bitmap) -> List<Float>,
     checkCrop: suspend (Bitmap) -> Bitmap?,
-    downloadProgress: Int
+    downloadProgress: Int,
+    imageLink: String,
+    colorScheme: AppColorScheme
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -125,7 +128,7 @@ fun HiddenPrizeCamera(
                         selectedBitmap = checkCrop(it)
                     }
                 }, onClearBitmap = { selectedBitmap = null }, onNext = {
-                    currentStep = HiddenPrizeCameraStep.PROCESSING_ZKP //TODO: rename
+                    currentStep = HiddenPrizeCameraStep.PROCESSING_ML //TODO: rename
                 }, previewView = previewView
                 )
             }
@@ -142,11 +145,23 @@ fun HiddenPrizeCamera(
         }
 
         HiddenPrizeCameraStep.CONGRATS -> {
-            HiddenPrizeCongratsScreen(prizeAmount = 2.0f, prizeSymbol = {
-                Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
-            }, onClaim = {
-                currentStep = HiddenPrizeCameraStep.PROCESSING_ZKP
-            })
+            HiddenPrizeCongratsScreen(
+                prizeAmount = 2.0f,
+                prizeSymbol = {
+                    Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
+                },
+                onClaim = {
+                    try {
+                        processZK(selectedBitmap!!, featuresBackend)
+                        currentStep = HiddenPrizeCameraStep.FINISH
+                    } catch (e: Exception) {
+                        Log.e("PROCESSING_ZKP", "smth went wrong", e)
+                    }
+                },
+                imageLink = imageLink,
+                colorScheme = colorScheme,
+                downloadProgress = downloadProgress
+            )
         }
 
         HiddenPrizeCameraStep.PROCESSING_ML -> {
