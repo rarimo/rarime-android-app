@@ -497,5 +497,12 @@
     <string name="winner_face_card_title">Winning face:</string>
     <string name="winner_face_card_winner_lbl">Winner:</string>
     <string name="winner_face_card_prize_lbl">Prize:</string>
+    <string name="hidden_prize_loading_ml_title">Processing</string>
+    <string name="hidden_prize_loading_ml_description">"Downloading some data for the ml generation "</string>
+    <string name="hidden_prize_loading_zk_title">Claiming</string>
+    <string name="hidden_prize_loading_zk_description">"Downloading some data for the proof generation and send the proof on chain "</string>
+    <string name="hidden_prize_finish_screen_title">Finished</string>
+    <string name="hidden_prize_finish_screen_description">The prize has been successfully credited to your wallet.</string>
+    <string name="hidden_prize_congrats_share_btn">Claim</string>
 
 </resources>

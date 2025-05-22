@@ -22,15 +22,15 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
 fun TipAlert(
-    title: String = "Top:",
+    title: String = "Tip:",
     text: String,
     actionBar: @Composable () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFFF5F2F9), RoundedCornerShape(8.dp))
-            .padding(8.dp)
+            .background(RarimeTheme.colors.gradient10, RoundedCornerShape(8.dp))
+            .padding(vertical = 8.dp, horizontal = 12.dp)
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -50,7 +50,7 @@ fun TipAlert(
         Text(
             text = text,
             style = RarimeTheme.typography.body4,
-            color = Color(0xFF863AC4),
+            color = RarimeTheme.colors.textPrimary,
         )
         actionBar()
     }
@@ -63,8 +63,8 @@ private fun TipAlertPreview() {
         modifier = Modifier.padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        TipAlert("Top:", "This is very important text to understand")
-        TipAlert("Top:", "This is very important text to understand and follow") {
+        TipAlert("Tip:", "This is very important text to understand")
+        TipAlert("Tip:", "This is very important text to understand and follow") {
             PrimaryTextButton(leftIcon = R.drawable.ic_caret_right, onClick = { /*TODO*/ })
         }
     }

@@ -175,9 +175,10 @@ fun VerifyPassportScreen(
                     .padding(horizontal = 24.dp)
             ) {
                 UiPrivacyCheckbox(termsAcceptedState = termsAcceptedState, enabled = !isReserving)
-                PrimaryButton(text = if (isReserving) stringResource(R.string.reserving_btn) else stringResource(
-                    R.string.reserv_btn
-                ),
+                PrimaryButton(
+                    text = if (isReserving) stringResource(R.string.reserving_btn) else stringResource(
+                        R.string.reserv_btn
+                    ),
                     modifier = Modifier.fillMaxWidth(),
                     enabled = termsAcceptedState.checked && !isReserving,
                     size = ButtonSize.Large,

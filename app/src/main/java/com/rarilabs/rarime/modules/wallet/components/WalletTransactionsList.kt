@@ -28,7 +28,7 @@ fun WalletTransactionsList(
     walletAsset: WalletAsset,
     transactions: List<Transaction>
 ) {
-    Column (
+    Column(
         modifier = modifier.fillMaxSize()
     ) {
         Text(
@@ -60,7 +60,7 @@ fun WalletTransactionsList(
 @Preview
 @Composable
 fun WalletTransactionsListPreview() {
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary)

@@ -222,7 +222,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
                     parsedWalletAssets.find { asset -> asset.tokenSymbol == it.token.symbol }
 
                 if (walletAsset != null) {
-                    it.transactions.value = walletAsset.transactions
+                    it.transactions = walletAsset.transactions
                 }
                 it
             }
@@ -251,7 +251,11 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
 
             val walletAsset = walletAssets.find { it.token.symbol == parsedWalletAsset.tokenSymbol }
 
-            return walletAsset ?: walletAssets.first()
+            if (walletAsset == null) {
+                return walletAssets.first()
+            }
+
+            return walletAsset
         } catch (error: Exception) {
             return walletAssets.first()
         }

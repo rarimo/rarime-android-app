@@ -1,9 +1,9 @@
 package com.rarilabs.rarime.util
 
-import java.security.interfaces.RSAPublicKey
-import java.security.spec.RSAPublicKeySpec
 import java.math.BigInteger
 import java.security.KeyFactory
+import java.security.interfaces.RSAPublicKey
+import java.security.spec.RSAPublicKeySpec
 
 
 fun parseASN1RsaManually(data: ByteArray): RSAPublicKey {

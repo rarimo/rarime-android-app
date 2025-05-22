@@ -102,9 +102,9 @@ fun Invitation(
     }
 
     LaunchedEffect(Unit) {
-        if (invitationViewModel.getDeferredReferralCode().isNullOrEmpty()){
+        if (invitationViewModel.getDeferredReferralCode().isNullOrEmpty()) {
             return@LaunchedEffect
-        }else{
+        } else {
             verifyCode()
         }
     }

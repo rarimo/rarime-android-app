@@ -118,6 +118,7 @@ class NewIdentityViewModel @Inject constructor(
 
 
     }
+
     suspend fun createBalance(referralCode: String?) {
         pointsManager.createPointsBalance(referralCode)
         walletManager.loadBalances()

@@ -14,8 +14,8 @@ import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.FileDownloaderInternal
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
-import com.rarilabs.rarime.util.bionet.BionetAnalizer
-import com.rarilabs.rarime.util.tflite.RunTFLiteFeatureExtractorUseCase
+import com.rarilabs.rarime.util.bionet.BinetAnalyzer
+import com.rarilabs.rarime.util.tflite.RunTFLiteFeatureGrayscaleExtractorUseCase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import identity.CallDataBuilder
 import kotlinx.coroutines.CoroutineScope
@@ -79,6 +79,7 @@ class LikenessManager @Inject constructor(
     private var _state = MutableStateFlow(LivenessProcessingStatus.DOWNLOADING)
 
     private var _errorState = MutableStateFlow<LivenessProcessingStatus?>(null)
+
 
     val errorState: StateFlow<LivenessProcessingStatus?>
         get() = _errorState.asStateFlow()
@@ -160,8 +161,6 @@ class LikenessManager @Inject constructor(
 
         val address =
             BigInteger(Numeric.hexStringToByteArray(identityManager.getNullifierForFaceLikeness()))
-
-        Log.i("Nullifier", address.toString())
 
         val faceContract = rarimoContractManager.getFaceRegistry()
 
@@ -269,13 +268,13 @@ class LikenessManager @Inject constructor(
 
             _state.value = LivenessProcessingStatus.EXTRACTING_FEATURES
 
-            val bionetAnalizer = BionetAnalizer()
+            val binetAnalyzer = BinetAnalyzer()
 
 
             val address =
                 BigInteger(Numeric.hexStringToByteArray(identityManager.getNullifierForFaceLikeness()))
 
-            val preparedImage = bionetAnalizer.getPreparedInputForML(bitmap)!!
+            val preparedImage = binetAnalyzer.getPreparedInputForZKML(bitmap)!!
 
             val faceContract = rarimoContractManager.getFaceRegistry()
 
@@ -297,7 +296,7 @@ class LikenessManager @Inject constructor(
 
             val zkp = ZKPUseCase(application, assetManager)
 
-            val tfLite = RunTFLiteFeatureExtractorUseCase(
+            val tfLite = RunTFLiteFeatureGrayscaleExtractorUseCase(
                 context = application, modelName = "bio_net_v3.tflite"
             )
 
@@ -323,7 +322,6 @@ class LikenessManager @Inject constructor(
                 nonce = nonce
             )
 
-            Log.i("Inputs", GsonBuilder().setPrettyPrinting().create().toJson(inputs))
 
             withContext(Dispatchers.Default) {
 

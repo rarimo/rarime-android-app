@@ -9,7 +9,6 @@ import org.web3j.abi.datatypes.DynamicStruct;
 import org.web3j.abi.datatypes.Event;
 import org.web3j.abi.datatypes.Function;
 import org.web3j.abi.datatypes.StaticStruct;
-import org.web3j.abi.datatypes.Type;
 import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.abi.datatypes.generated.Bytes32;
 import org.web3j.abi.datatypes.generated.Uint256;
@@ -42,7 +41,7 @@ import io.reactivex.Flowable;
  * <p>Auto generated code.
  * <p><strong>Do not modify!</strong>
  * <p>Please use the <a href="https://docs.web3j.io/command_line.html">web3j command line tools</a>,
- * or the org.web3j.codegen.SolidityFunctionWrapperGenerator in the 
+ * or the org.web3j.codegen.SolidityFunctionWrapperGenerator in the
  * <a href="https://github.com/web3j/web3j/tree/main/codegen">codegen module</a> to update.
  *
  * <p>Generated with web3j version 1.6.0.
@@ -138,17 +137,6 @@ public class PoseidonSMT extends Contract {
         return typedResponse;
     }
 
-    public Flowable<InitializedEventResponse> initializedEventFlowable(EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getInitializedEventFromLog(log));
-    }
-
-    public Flowable<InitializedEventResponse> initializedEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(INITIALIZED_EVENT));
-        return initializedEventFlowable(filter);
-    }
-
     public static List<RootUpdatedEventResponse> getRootUpdatedEvents(
             TransactionReceipt transactionReceipt) {
         List<Contract.EventValuesWithLog> valueList = staticExtractEventParametersWithLog(ROOTUPDATED_EVENT, transactionReceipt);
@@ -170,17 +158,6 @@ public class PoseidonSMT extends Contract {
         return typedResponse;
     }
 
-    public Flowable<RootUpdatedEventResponse> rootUpdatedEventFlowable(EthFilter filter) {
-        return web3j.ethLogFlowable(filter).map(log -> getRootUpdatedEventFromLog(log));
-    }
-
-    public Flowable<RootUpdatedEventResponse> rootUpdatedEventFlowable(
-            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
-        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
-        filter.addSingleTopic(EventEncoder.encode(ROOTUPDATED_EVENT));
-        return rootUpdatedEventFlowable(filter);
-    }
-
     public static List<UpgradedEventResponse> getUpgradedEvents(
             TransactionReceipt transactionReceipt) {
         List<Contract.EventValuesWithLog> valueList = staticExtractEventParametersWithLog(UPGRADED_EVENT, transactionReceipt);
@@ -200,6 +177,50 @@ public class PoseidonSMT extends Contract {
         typedResponse.log = log;
         typedResponse.implementation = (String) eventValues.getIndexedValues().get(0).getValue();
         return typedResponse;
+    }
+
+    @Deprecated
+    public static PoseidonSMT load(String contractAddress, Web3j web3j, Credentials credentials,
+                                   BigInteger gasPrice, BigInteger gasLimit) {
+        return new PoseidonSMT(contractAddress, web3j, credentials, gasPrice, gasLimit);
+    }
+
+    @Deprecated
+    public static PoseidonSMT load(String contractAddress, Web3j web3j,
+                                   TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit) {
+        return new PoseidonSMT(contractAddress, web3j, transactionManager, gasPrice, gasLimit);
+    }
+
+    public static PoseidonSMT load(String contractAddress, Web3j web3j, Credentials credentials,
+                                   ContractGasProvider contractGasProvider) {
+        return new PoseidonSMT(contractAddress, web3j, credentials, contractGasProvider);
+    }
+
+    public static PoseidonSMT load(String contractAddress, Web3j web3j,
+                                   TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
+        return new PoseidonSMT(contractAddress, web3j, transactionManager, contractGasProvider);
+    }
+
+    public Flowable<InitializedEventResponse> initializedEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getInitializedEventFromLog(log));
+    }
+
+    public Flowable<InitializedEventResponse> initializedEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(INITIALIZED_EVENT));
+        return initializedEventFlowable(filter);
+    }
+
+    public Flowable<RootUpdatedEventResponse> rootUpdatedEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getRootUpdatedEventFromLog(log));
+    }
+
+    public Flowable<RootUpdatedEventResponse> rootUpdatedEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(ROOTUPDATED_EVENT));
+        return rootUpdatedEventFlowable(filter);
     }
 
     public Flowable<UpgradedEventResponse> upgradedEventFlowable(EthFilter filter) {
@@ -348,28 +369,6 @@ public class PoseidonSMT extends Contract {
         return executeRemoteCallTransaction(function, weiValue);
     }
 
-    @Deprecated
-    public static PoseidonSMT load(String contractAddress, Web3j web3j, Credentials credentials,
-                                   BigInteger gasPrice, BigInteger gasLimit) {
-        return new PoseidonSMT(contractAddress, web3j, credentials, gasPrice, gasLimit);
-    }
-
-    @Deprecated
-    public static PoseidonSMT load(String contractAddress, Web3j web3j,
-                                   TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit) {
-        return new PoseidonSMT(contractAddress, web3j, transactionManager, gasPrice, gasLimit);
-    }
-
-    public static PoseidonSMT load(String contractAddress, Web3j web3j, Credentials credentials,
-                                   ContractGasProvider contractGasProvider) {
-        return new PoseidonSMT(contractAddress, web3j, credentials, contractGasProvider);
-    }
-
-    public static PoseidonSMT load(String contractAddress, Web3j web3j,
-                                   TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
-        return new PoseidonSMT(contractAddress, web3j, transactionManager, contractGasProvider);
-    }
-
     public static class Node extends StaticStruct {
         public BigInteger nodeType;
 
@@ -389,7 +388,7 @@ public class PoseidonSMT extends Contract {
                     new org.web3j.abi.datatypes.generated.Uint64(childLeft),
                     new org.web3j.abi.datatypes.generated.Uint64(childRight),
                     new org.web3j.abi.datatypes.generated.Bytes32(nodeHash),
-                    new org.web3j.abi.datatypes.generated.Bytes32(key), 
+                    new org.web3j.abi.datatypes.generated.Bytes32(key),
                     new org.web3j.abi.datatypes.generated.Bytes32(value));
             this.nodeType = nodeType;
             this.childLeft = childLeft;
@@ -430,7 +429,7 @@ public class PoseidonSMT extends Contract {
 
         public Proof(byte[] root, List<byte[]> siblings, Boolean existence, byte[] key,
                      byte[] value, Boolean auxExistence, byte[] auxKey, byte[] auxValue) {
-            super(new org.web3j.abi.datatypes.generated.Bytes32(root), 
+            super(new org.web3j.abi.datatypes.generated.Bytes32(root),
                     new org.web3j.abi.datatypes.DynamicArray<org.web3j.abi.datatypes.generated.Bytes32>(
                             org.web3j.abi.datatypes.generated.Bytes32.class,
                             org.web3j.abi.Utils.typeMap(siblings, org.web3j.abi.datatypes.generated.Bytes32.class)),
@@ -438,7 +437,7 @@ public class PoseidonSMT extends Contract {
                     new org.web3j.abi.datatypes.generated.Bytes32(key),
                     new org.web3j.abi.datatypes.generated.Bytes32(value),
                     new org.web3j.abi.datatypes.Bool(auxExistence),
-                    new org.web3j.abi.datatypes.generated.Bytes32(auxKey), 
+                    new org.web3j.abi.datatypes.generated.Bytes32(auxKey),
                     new org.web3j.abi.datatypes.generated.Bytes32(auxValue));
             this.root = root;
             this.siblings = siblings;

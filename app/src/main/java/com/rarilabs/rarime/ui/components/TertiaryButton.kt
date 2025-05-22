@@ -62,7 +62,8 @@ private fun TertiaryButtonPreview() {
             rightIcon = R.drawable.ic_arrow_right,
             text = "Large",
             onClick = { })
-        TertiaryButton(enabled = false,
+        TertiaryButton(
+            enabled = false,
             size = ButtonSize.Large,
             modifier = Modifier.fillMaxWidth(),
             leftIcon = R.drawable.ic_arrow_left,

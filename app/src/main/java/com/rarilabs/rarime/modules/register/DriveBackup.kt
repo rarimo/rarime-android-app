@@ -80,9 +80,9 @@ private fun getContentDescription(state: DriveState): DriveBackupContent {
 @Composable
 fun DriveBackup(
     state: DriveState,
-    backUp:  () -> Unit,
-    delete:  () -> Unit,
-    sigIn:  () -> Unit,
+    backUp: () -> Unit,
+    delete: () -> Unit,
+    sigIn: () -> Unit,
     isDriveButtonEnabled: Boolean,
 ) {
 
@@ -124,7 +124,7 @@ fun DriveBackup(
                             contentColor = RarimeTheme.colors.errorDark
                         ),
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = {delete.invoke()},
+                        onClick = { delete.invoke() },
                         leftIcon = R.drawable.ic_trash_simple,
                         text = contentDescription.buttonText,
                         size = ButtonSize.Large
@@ -135,7 +135,7 @@ fun DriveBackup(
                     PrimaryButton(
                         enabled = isDriveButtonEnabled,
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = {backUp.invoke()},
+                        onClick = { backUp.invoke() },
                         text = contentDescription.buttonText,
                         size = ButtonSize.Large
                     )
@@ -149,7 +149,7 @@ fun DriveBackup(
                             contentColor = RarimeTheme.colors.errorDark
                         ),
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = {delete.invoke()},
+                        onClick = { delete.invoke() },
                         leftIcon = R.drawable.ic_trash_simple,
                         text = contentDescription.buttonText,
                         size = ButtonSize.Large
@@ -160,7 +160,7 @@ fun DriveBackup(
                     PrimaryButton(
                         enabled = isDriveButtonEnabled,
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = { sigIn.invoke()},
+                        onClick = { sigIn.invoke() },
                         text = contentDescription.buttonText,
                         size = ButtonSize.Large
                     )
@@ -182,29 +182,32 @@ fun DriveBackupSkeleton(modifier: Modifier = Modifier) {
             AppSkeleton(
                 Modifier
                     .height(28.dp)
-                    .fillMaxWidth())
+                    .fillMaxWidth()
+            )
             Spacer(modifier = Modifier.height(8.dp))
             AppSkeleton(
                 Modifier
                     .height(12.dp)
-                    .fillMaxWidth())
+                    .fillMaxWidth()
+            )
             Spacer(modifier = Modifier.height(4.dp))
             AppSkeleton(
                 Modifier
                     .height(12.dp)
-                    .fillMaxWidth())
+                    .fillMaxWidth()
+            )
             Spacer(modifier = Modifier.height(24.dp))
             HorizontalDivider()
             Spacer(modifier = Modifier.height(24.dp))
             AppSkeleton(
                 Modifier
                     .fillMaxWidth()
-                    .height(48.dp))
+                    .height(48.dp)
+            )
 
         }
     }
 }
-
 
 
 @Preview

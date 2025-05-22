@@ -1,3 +1,4 @@
+import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.ui.theme.AppTheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
@@ -61,7 +63,7 @@ fun WinningFaceCard(
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = stringResource(R.string.winner_face_card_title),
-                    style = RarimeTheme.typography.subtitle6
+                    style = RarimeTheme.typography.subtitle6.copy(RarimeTheme.colors.textPrimary)
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -84,7 +86,7 @@ fun WinningFaceCard(
                     Column {
                         Text(
                             text = name,
-                            style = RarimeTheme.typography.h5
+                            style = RarimeTheme.typography.h5.copy(RarimeTheme.colors.textPrimary)
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
@@ -109,7 +111,7 @@ fun WinningFaceCard(
                     Row(horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(
                             text = stringResource(R.string.winner_face_card_winner_lbl),
-                            style = RarimeTheme.typography.subtitle6
+                            style = RarimeTheme.typography.subtitle6.copy(RarimeTheme.colors.textPrimary)
                         )
                         Spacer(Modifier.weight(1f))
                         Text(
@@ -122,7 +124,7 @@ fun WinningFaceCard(
                     Row(horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(
                             text = stringResource(R.string.winner_face_card_prize_lbl),
-                            style = RarimeTheme.typography.subtitle6
+                            style = RarimeTheme.typography.subtitle6.copy(RarimeTheme.colors.textPrimary)
                         )
                         Spacer(Modifier.weight(1f))
                         Row(
@@ -142,25 +144,52 @@ fun WinningFaceCard(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
-fun WinningFaceCardPreview() {
-    Column(
-        modifier = Modifier
-            .height(300.dp)
-            .padding(20.dp),
-        verticalArrangement = Arrangement.Center
-    ) {
-        WinningFaceCard(
-            imageSrc = "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg",
-            placeholderRes = R.drawable.drawable_digital_likeness,
-            name = "Vitalik Buterin",
-            description = "Ethereum co-founder",
-            winnerAddress = "0x00000...0000",
-            prizeAmount = 0.3F,
-            prizeSymbol = {
-                Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
-            },
-        )
+fun WinningFaceCardPreview_LightMode() {
+    AppTheme {
+        Column(
+            modifier = Modifier
+                .height(300.dp)
+                .padding(20.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+            WinningFaceCard(
+                imageSrc = "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg",
+                placeholderRes = R.drawable.drawable_digital_likeness,
+                name = "Vitalik Buterin",
+                description = "Ethereum co-founder",
+                winnerAddress = "0x00000...0000",
+                prizeAmount = 0.3F,
+                prizeSymbol = {
+                    Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
+                },
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun WinningFaceCardPreview_DarkMode() {
+    AppTheme {
+        Column(
+            modifier = Modifier
+                .height(300.dp)
+                .padding(20.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+            WinningFaceCard(
+                imageSrc = "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg",
+                placeholderRes = R.drawable.drawable_digital_likeness,
+                name = "Vitalik Buterin",
+                description = "Ethereum co-founder",
+                winnerAddress = "0x00000...0000",
+                prizeAmount = 0.3F,
+                prizeSymbol = {
+                    Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
+                },
+            )
+        }
     }
 }

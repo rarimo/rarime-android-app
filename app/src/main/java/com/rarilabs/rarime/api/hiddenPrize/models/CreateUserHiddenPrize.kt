@@ -1,61 +1,36 @@
 package com.rarilabs.rarime.api.hiddenPrize.models
 
 data class CreateUserRequest(
-    val data: Data
-) {
-    data class Data(
-        val type: String = "users",
-        val attributes: Attributes
-    ) {
-        data class Attributes(
-            val referred_by: String
-        )
-    }
-}
-
-data class CreateUserResponse(
-    val data: User,
-    val included: List<UserStats>? = null,
-    val relationships: CreateUserRelationships
+    val data: CreateUserRequestData
 )
 
-data class User(
+data class CreateUserRequestData(
     val id: String,
     val type: String = "users",
-    val attributes: Attributes
+    val attributes: CreateUserAttributes
 ) {
-    data class Attributes(
-        val referral_code: String,
-        val referrals_count: Int,
-        val referrals_limit: Int,
-        val social_share: Boolean,
-        val created_at: Long,
-        val updated_at: Long
+    data class CreateUserAttributes(
+        val referred_by: String?
     )
 }
 
-data class UserStats(
-    val type: String = "user_stats",
-    val attributes: Attributes
-) {
-    data class Attributes(
-        val extra_attempts_left: Int,
-        val total_attempts_count: Int,
-        val reset_time: Long
-    )
-}
 
-sealed class CreateUserRelationships(
-    val user_stats: UserStatsRelationship,
-    val celebrity: CelebrityRelationship
+data class CreateUserResponse(
+    val data: UserData,
+    val included: List<Included>? = null
 )
 
-data class UserStatsRelationship(
-    val type: String = "user_stats",
-    val id: Int
+data class UserData(
+    val id: String,
+    val type: String,
+    val attributes: UserAttributes
 )
 
-data class CelebrityRelationship(
-    val type: String = "celebrity",
-    val id: Int
+data class UserAttributes(
+    val referral_code: String,
+    val referrals_count: Int,
+    val referrals_limit: Int,
+    val social_share: Boolean,
+    val created_at: Long,
+    val updated_at: Long
 )

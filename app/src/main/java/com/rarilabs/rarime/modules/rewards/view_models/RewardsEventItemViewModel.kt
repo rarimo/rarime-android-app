@@ -16,7 +16,7 @@ class RewardsEventItemViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val pointsManager: PointsManager,
     private val walletManager: WalletManager,
-): ViewModel() {
+) : ViewModel() {
     val itemId: String = checkNotNull(savedStateHandle["item_id"])
 
     var _pointsEventData = MutableStateFlow<PointsEventData?>(null)
@@ -27,7 +27,7 @@ class RewardsEventItemViewModel @Inject constructor(
 
     val pointsToken = walletManager.pointsToken
 
-    suspend fun loadPointsEvent () {
+    suspend fun loadPointsEvent() {
         _pointsEventData.value = pointsManager.getEventById(itemId)?.data
     }
 }

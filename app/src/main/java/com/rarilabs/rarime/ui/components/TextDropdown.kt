@@ -56,12 +56,12 @@ fun TextDropdown(
         isDropdownExpanded = false
     }
 
-    ExposedDropdownMenuBox (
+    ExposedDropdownMenuBox(
         expanded = isDropdownExpanded,
         onExpandedChange = {}
     ) {
-        Row (modifier = Modifier.menuAnchor()) {
-            Row (
+        Row(modifier = Modifier.menuAnchor()) {
+            Row(
                 modifier = modifier
                     .clickable { toggleDropdown() },
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -128,7 +128,8 @@ fun TextDropdown(
                         if (idx < options.size - 1) {
                             HorizontalDivider(color = RarimeTheme.colors.backgroundPrimary)
                         }
-                    }}
+                    }
+                }
             }
         }
     }
@@ -145,10 +146,10 @@ private fun TextDropdownPreview() {
     var value by remember { mutableStateOf(options.first().value) }
 
 
-    CardContainer (
+    CardContainer(
         modifier = Modifier.fillMaxSize(),
     ) {
-        Column (
+        Column(
             verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
             Row(

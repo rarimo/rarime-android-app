@@ -7,7 +7,10 @@ object WalletUtil {
         charsEndAmount: Int = 8
     ): String {
         try {
-            return address.substring(0, charsStartAmount) + "..." + address.substring(address.length - charsEndAmount)
+            return address.substring(
+                0,
+                charsStartAmount
+            ) + "..." + address.substring(address.length - charsEndAmount)
         } catch (e: Exception) {
             ErrorHandler.logError("WalletUtil.formatAddress", e.toString(), e)
             return address

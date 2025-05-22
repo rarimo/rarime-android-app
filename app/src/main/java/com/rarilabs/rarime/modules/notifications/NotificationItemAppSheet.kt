@@ -119,7 +119,11 @@ fun NotificationTimestamp(timestamp: String, context: Context) {
         LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
     }
     Text(
-        text = "${DateUtil.getDurationString(DateUtil.duration(timeStr), context)} ${stringResource(id = R.string.time_ago)}",
+        text = "${DateUtil.getDurationString(DateUtil.duration(timeStr), context)} ${
+            stringResource(
+                id = R.string.time_ago
+            )
+        }",
         style = RarimeTheme.typography.body3,
         color = RarimeTheme.colors.textSecondary
     )
@@ -153,6 +157,7 @@ fun NotificationActionSection(
                 scope = scope
             )
         }
+
         NotificationType.UNIVERSAL -> {
             val eventData = remember(item) { parseUniversalNotification(item) }
             if (!eventData?.eventName.isNullOrEmpty()) {
@@ -165,6 +170,7 @@ fun NotificationActionSection(
                 )
             }
         }
+
         else -> {
             // Handle other notification types if necessary
         }

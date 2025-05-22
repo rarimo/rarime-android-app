@@ -81,7 +81,7 @@ interface PointsAPI {/* BALANCE */
         @Path("id") id: String,
         @Header("Authorization") authorization: String,
 
-    ): PointsEventBody
+        ): PointsEventBody
 
     @PATCH("/integrations/rarime-points-svc/v1/public/events/{id}")
     suspend fun claimPointsByEvent(

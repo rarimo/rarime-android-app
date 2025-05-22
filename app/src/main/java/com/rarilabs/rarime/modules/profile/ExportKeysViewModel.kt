@@ -3,7 +3,6 @@ package com.rarilabs.rarime.modules.profile
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -58,6 +57,7 @@ class ExportKeysViewModel @Inject constructor(
     private val _isInit = MutableStateFlow(false)
 
     val isInit: StateFlow<Boolean> = _isInit.asStateFlow()
+
     init {
         // Check if the user is already signed in
         viewModelScope.launch {
@@ -187,16 +187,18 @@ class ExportKeysViewModel @Inject constructor(
                     InputStreamReader(inputStream).use { reader -> reader.readText() }
                 }
 
-            }
-
-            catch (e: IOException) {
+            } catch (e: IOException) {
                 ErrorHandler.logError("restorePrivateKey", "An error occurred", e)
                 null
             }
         }
     }
 
-    fun handleSignInResult(task: Task<GoogleSignInAccount>, context: Context, onError: (e: Exception) -> Unit) {
+    fun handleSignInResult(
+        task: Task<GoogleSignInAccount>,
+        context: Context,
+        onError: (e: Exception) -> Unit
+    ) {
         viewModelScope.launch {
             try {
                 val account = task.getResult(ApiException::class.java)

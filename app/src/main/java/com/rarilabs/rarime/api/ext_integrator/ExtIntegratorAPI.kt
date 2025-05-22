@@ -20,7 +20,10 @@ interface ExtIntegratorAPI {
     suspend fun queryProofCallback(@Url url: String, @Body payload: QueryProofGenCallbackRequest)
 
     @POST
-    suspend fun lightSignatureCallback(@Url url: String, @Body payload: LightSignatureCallbackRequest)
+    suspend fun lightSignatureCallback(
+        @Url url: String,
+        @Body payload: LightSignatureCallbackRequest
+    )
 
     @GET
     suspend fun queryProofData(@Url url: String): QueryProofGenResponse

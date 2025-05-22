@@ -109,7 +109,8 @@ fun HandlerPreviewerLayout(
         }
     }
 
-    HandlerPreviewerLayoutContent(previewFields = previewFields,
+    HandlerPreviewerLayoutContent(
+        previewFields = previewFields,
 
         texts = texts,
 
@@ -201,13 +202,15 @@ private fun HandlerPreviewerLayoutContent(
             Column(
                 modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                PrimaryButton(modifier = Modifier.fillMaxWidth(),
+                PrimaryButton(
+                    modifier = Modifier.fillMaxWidth(),
                     text = "Accept",
                     size = ButtonSize.Large,
                     enabled = !isSubmitting && isLoaded,
                     onClick = { handleAccept() })
 
-                TertiaryButton(modifier = Modifier.fillMaxWidth(),
+                TertiaryButton(
+                    modifier = Modifier.fillMaxWidth(),
                     text = "Cancel",
                     size = ButtonSize.Large,
                     enabled = !isSubmitting && isLoaded,
@@ -247,7 +250,8 @@ fun HandlerPreviewerLayoutRow(
 @Preview(showBackground = true)
 @Composable
 fun HandlerPreviewerLayoutContentPreview() {
-    HandlerPreviewerLayoutContent(previewFields = mapOf(
+    HandlerPreviewerLayoutContent(
+        previewFields = mapOf(
         "Key 1" to "Value 1", "Key 2" to "Value 2", "Key 3" to "Value 3"
     ),
 

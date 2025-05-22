@@ -37,7 +37,7 @@ enum class ActionCardVariants {
 }
 
 @Composable
-fun ActionCardContent (
+fun ActionCardContent(
     title: String,
     description: String,
     leadingContent: @Composable (() -> Unit)? = null,
@@ -190,7 +190,11 @@ private fun ActionCardPreview() {
             title = "RARIME",
             description = "Learn more about the App",
             leadingContent = {
-                AppIcon(id = R.drawable.ic_info, size = 24.dp, tint = RarimeTheme.colors.textPrimary)
+                AppIcon(
+                    id = R.drawable.ic_info,
+                    size = 24.dp,
+                    tint = RarimeTheme.colors.textPrimary
+                )
             },
             variant = ActionCardVariants.Outlined,
             onClick = {}

@@ -9,7 +9,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -45,7 +44,7 @@ fun ConfirmationDialog(
     AlertDialog(
         containerColor = RarimeTheme.colors.backgroundPure,
         icon = {
-            Box (
+            Box(
                 modifier = Modifier
                     .size(64.dp)
                     .clip(CircleShape)

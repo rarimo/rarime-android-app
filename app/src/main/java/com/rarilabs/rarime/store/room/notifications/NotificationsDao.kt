@@ -11,29 +11,35 @@ import com.rarilabs.rarime.store.room.notifications.models.NotificationEntityDat
 @Dao
 interface NotificationsDao {
 
-        @Query("SELECT * FROM notifications")
-        suspend fun getAllNotifications() : List<NotificationEntityData>
-        @Insert(onConflict = OnConflictStrategy.REPLACE)
-        suspend fun insertNotifications(task : NotificationEntityData)
-        @Update
-        suspend fun updateNotifications(task : NotificationEntityData)
-        @Delete
-        suspend fun deleteNotifications(task : NotificationEntityData)
+    @Query("SELECT * FROM notifications")
+    suspend fun getAllNotifications(): List<NotificationEntityData>
 
-        @Query("DELETE FROM notifications")
-        suspend fun deleteAll()
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertNotifications(task: NotificationEntityData)
+
+    @Update
+    suspend fun updateNotifications(task: NotificationEntityData)
+
+    @Delete
+    suspend fun deleteNotifications(task: NotificationEntityData)
+
+    @Query("DELETE FROM notifications")
+    suspend fun deleteAll()
 
 
-        @Query("SELECT * FROM notifications")
-        fun getAllNotificationsSync() : List<NotificationEntityData>
-        @Insert(onConflict = OnConflictStrategy.REPLACE)
-        fun insertNotificationsSync(task : NotificationEntityData)
-        @Update
-        fun updateNotificationsSync(task : NotificationEntityData)
-        @Delete
-        fun deleteNotificationsSync(task : NotificationEntityData)
+    @Query("SELECT * FROM notifications")
+    fun getAllNotificationsSync(): List<NotificationEntityData>
 
-        @Query("DELETE FROM notifications")
-        suspend fun deleteAllSync()
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertNotificationsSync(task: NotificationEntityData)
+
+    @Update
+    fun updateNotificationsSync(task: NotificationEntityData)
+
+    @Delete
+    fun deleteNotificationsSync(task: NotificationEntityData)
+
+    @Query("DELETE FROM notifications")
+    suspend fun deleteAllSync()
 
 }

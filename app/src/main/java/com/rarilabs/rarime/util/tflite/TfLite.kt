@@ -4,11 +4,13 @@ import android.content.Context
 import android.content.res.AssetFileDescriptor
 import android.content.res.AssetManager
 import org.tensorflow.lite.Interpreter
+import java.io.File
 import java.io.FileInputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
+import kotlin.math.sqrt
 
 /**
  * Use-case for running a TensorFlow Lite model that maps a 40×40 grayscale input
@@ -21,7 +23,7 @@ import java.nio.channels.FileChannel
  * @param featureSize Number of output features (default: 64).
  * @param numThreads  Number of threads for inference (default: 4).
  */
-class RunTFLiteFeatureExtractorUseCase(
+class RunTFLiteFeatureGrayscaleExtractorUseCase(
     context: Context,
     private val modelName: String = "model.tflite",
     private val inputWidth: Int = 40,
@@ -75,15 +77,73 @@ class RunTFLiteFeatureExtractorUseCase(
     }
 
     private fun preprocess(inputArray: Array<FloatArray>): ByteBuffer {
-        val byteBuffer = ByteBuffer
-            .allocateDirect(4 * inputWidth * inputHeight)
-            .order(ByteOrder.nativeOrder())
+        val byteBuffer =
+            ByteBuffer.allocateDirect(4 * inputWidth * inputHeight).order(ByteOrder.nativeOrder())
 
         for (y in 0 until inputHeight) {
             for (x in 0 until inputWidth) {
                 // value already normalized in [0.0f,1.0f]
                 byteBuffer.putFloat(inputArray[y][x])
             }
+        }
+        byteBuffer.rewind()
+        return byteBuffer
+    }
+}
+
+/**
+ * Use-case for running a TensorFlow Lite model that maps a 224×224×3 RGB input
+ * (values from 0..255) to a 64-dimensional feature vector.
+ */
+class RunTFLiteFeatureRGBExtractorUseCase(
+    private val modelFile: File,
+    numThreads: Int = 1
+) {
+    private val interpreter: Interpreter
+
+    init {
+        val modelBuffer = loadModelFile(modelFile)
+        val options = Interpreter.Options().apply {
+            setNumThreads(numThreads)
+        }
+        interpreter = Interpreter(modelBuffer, options)
+    }
+
+    fun compute(inputs: FloatArray): FloatArray {
+        val inputBuffer = floatArrayToByteBuffer(inputs)
+
+        // output is [1, 512]
+        val output = Array(1) { FloatArray(512) }
+        interpreter.run(inputBuffer, output)
+        val outputData = output[0]
+
+        // Normalize (L2)
+        val sumOfSquares = outputData.fold(0f) { acc, value -> acc + value * value }
+        val norm = sqrt(sumOfSquares)
+        return if (norm != 0f) {
+            outputData.map { it / norm }.toFloatArray()
+        } else {
+            outputData
+        }
+    }
+
+    fun close() {
+        interpreter.close()
+    }
+
+    private fun loadModelFile(file: File): ByteBuffer {
+        FileInputStream(file).channel.use { channel ->
+            return channel.map(
+                FileChannel.MapMode.READ_ONLY, 0, file.length()
+            )
+        }
+    }
+
+
+    private fun floatArrayToByteBuffer(array: FloatArray): ByteBuffer {
+        val byteBuffer = ByteBuffer.allocateDirect(4 * array.size).order(ByteOrder.nativeOrder())
+        for (f in array) {
+            byteBuffer.putFloat(f)
         }
         byteBuffer.rewind()
         return byteBuffer

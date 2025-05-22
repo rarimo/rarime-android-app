@@ -44,7 +44,7 @@ fun HomeScreen(
                 } else {
                     Log.i("Already granted notification", "Nice")
                 }
-            } catch(e: Exception) {
+            } catch (e: Exception) {
                 Log.e(e.toString(), e.stackTraceToString(), e)
             }
 

@@ -75,7 +75,7 @@ fun VoteProcessInfoScreen(
         scope.launch {
 
 
-        if (!userInPoll.poll.isStarted) {
+            if (!userInPoll.poll.isStarted) {
                 voteState = VotingStatus.NOT_STARTED
                 return@launch
             }

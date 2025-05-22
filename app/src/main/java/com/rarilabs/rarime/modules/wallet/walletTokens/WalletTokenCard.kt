@@ -24,7 +24,7 @@ import com.rarilabs.rarime.util.NumberUtil
 
 @Composable
 fun WalletTokenCard(walletAsset: WalletAsset) {
-    Row (
+    Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
 
@@ -35,7 +35,7 @@ fun WalletTokenCard(walletAsset: WalletAsset) {
             .background(RarimeTheme.colors.backgroundPure)
             .padding(16.dp)
     ) {
-        Row (
+        Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -57,7 +57,7 @@ fun WalletTokenCard(walletAsset: WalletAsset) {
             )
         }
 
-        Column (
+        Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalAlignment = Alignment.End
         ) {
