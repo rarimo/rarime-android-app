@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -38,6 +39,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
+import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import kotlinx.coroutines.launch
 import nl.dionsegijn.konfetti.compose.KonfettiView
@@ -54,7 +56,10 @@ fun HiddenPrizeCongratsScreen(
     onClaim: suspend () -> Unit,
     imageLink: String,
     colorScheme: AppColorScheme,
-    downloadProgress: Int
+    downloadProgress: Int,
+    onViewWallet : () -> Unit,
+    onShare : () -> Unit,
+
 ) {
     val isDark = when (colorScheme) {
         AppColorScheme.SYSTEM -> isSystemInDarkTheme()
@@ -63,7 +68,7 @@ fun HiddenPrizeCongratsScreen(
     }
 
     val bgColor = remember(isDark) {
-        if (isDark) Color.Black
+        if (isDark) Color.Black //TODO Sync with theme
         else Color.White
     }
 
@@ -90,10 +95,10 @@ fun HiddenPrizeCongratsScreen(
 
     Box(
         modifier = Modifier
-            //.weight(1f)
+
             .fillMaxWidth()
-            .padding(vertical = 96.dp),
-        //contentAlignment = Alignment.Center
+            .padding(top = 96.dp),
+
     ) {
         KonfettiView(
             modifier = Modifier.fillMaxSize(), parties = listOf(
@@ -171,7 +176,34 @@ fun HiddenPrizeCongratsScreen(
                             }
                         },
                     )
+
                 }
+
+            }
+
+        }
+        if(downloadProgress == 100) {
+            Column(modifier = Modifier.align(Alignment.BottomCenter)) {
+                BaseButton(
+                    onClick = onViewWallet,
+                    text = "View wallet",
+                    size = ButtonSize.Large,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = RarimeTheme.colors.textPrimary,
+                        containerColor = bgColor,
+                        ),
+                    enabled = true
+                )
+                Spacer(modifier = Modifier
+                    .size(8.dp))
+                PrimaryButton(
+                    onClick = onShare,
+                    text = "Share",
+                    size = ButtonSize.Large,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                    enabled = true
+                    )
             }
         }
     }
@@ -183,6 +215,32 @@ private fun LoadingButton(
     isLoading: Boolean, progress: Int, onClick: () -> Unit,
 ) {
 
+
+if(progress == 100) {
+    BaseButton(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 16.dp),
+        size = ButtonSize.Large,
+        colors = ButtonDefaults.buttonColors(
+            disabledContainerColor = RarimeTheme.colors.successLighter,
+            disabledContentColor = RarimeTheme.colors.successDark
+        ),
+        onClick = {
+            onClick()
+        },
+        enabled = false,
+        leftIcon = R.drawable.ic_check_line
+
+
+    ) {
+        Text(
+            stringResource(R.string.hidden_prize_congrats_share_btn),
+            color = RarimeTheme.colors.successDark,
+        )
+    }
+}else{
     BaseButton(
         modifier = Modifier
             .fillMaxWidth()
@@ -207,17 +265,17 @@ private fun LoadingButton(
         )
     }
 }
+}
 
 
 @Composable
 @Preview
 fun HiddenPrizeCongratsScreenPreview() {
     Box(Modifier.fillMaxSize()) {
-
         HiddenPrizeCongratsScreen(
             prizeAmount = 2.2f, onClaim = {}, prizeSymbol = {
             Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
-        }, imageLink = "", colorScheme = AppColorScheme.SYSTEM, downloadProgress = 55
+        }, imageLink = "", colorScheme = AppColorScheme.SYSTEM, downloadProgress = 100, onShare = {}, onViewWallet = {}
         )
     }
 }

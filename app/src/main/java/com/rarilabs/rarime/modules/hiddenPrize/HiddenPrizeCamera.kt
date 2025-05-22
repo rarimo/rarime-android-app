@@ -160,7 +160,9 @@ fun HiddenPrizeCamera(
                 },
                 imageLink = imageLink,
                 colorScheme = colorScheme,
-                downloadProgress = downloadProgress
+                downloadProgress = downloadProgress,
+                onShare = {},
+                onViewWallet = {}
             )
         }
 
