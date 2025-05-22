@@ -15,7 +15,7 @@ import retrofit2.http.Path
 
 interface HiddenPrizeApi {
 
-    @POST("/integrations/registration-relayer/v1/likeness-registry")
+    @POST("/integrations/registration-relayer/v1/register")
     suspend fun claimTokens(
         @Body request: HiddenPrizeClaimRequest, @Header("Authorization") authorization: String,
     ): Response<HiddenPrizeClaimResponse>

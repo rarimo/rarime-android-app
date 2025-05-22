@@ -98,10 +98,9 @@ fun HiddenPrizeExpandedCard(
     }
     val isAddScanEnabled by remember {
         derivedStateOf {
-            (shares?.isSocialShare == true) == false && ((shares?.referralsCount
+            shares?.isSocialShare != true && ((shares?.referralsCount
                 ?: 0) < (shares?.referralsLimit ?: 0))
         }
-
     }
     AppBottomSheet(state = showFaceScan, shape = RectangleShape, isHeaderEnabled = false) {
         Box(Modifier.fillMaxSize()) {
@@ -109,7 +108,6 @@ fun HiddenPrizeExpandedCard(
                 processML = { viewModel.generateFaceFeatures(it) },
                 processZK = { bitmap, features -> viewModel.claimTokens(bitmap, features) },
                 downloadProgress = downloadProgress,
-                checkCrop = { viewModel.checkCrop(it) }
             )
         }
     }

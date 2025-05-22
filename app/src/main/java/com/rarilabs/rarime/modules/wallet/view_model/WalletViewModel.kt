@@ -15,7 +15,6 @@ class WalletViewModel @Inject constructor(
 ) : ViewModel() {
     private var _walletAssets = MutableStateFlow(
         walletManager.walletAssets.value
-        //.filter { it.token is RarimoToken }
     )
 
     val walletAssets: StateFlow<List<WalletAsset>>

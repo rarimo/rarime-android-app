@@ -68,7 +68,6 @@ fun HiddenPrizeCamera(
     modifier: Modifier = Modifier,
     processZK: suspend (Bitmap, List<Float>) -> Unit,
     processML: suspend (Bitmap) -> List<Float>,
-    checkCrop: suspend (Bitmap) -> Bitmap?,
     downloadProgress: Int
 ) {
     val context = LocalContext.current
@@ -115,22 +114,18 @@ fun HiddenPrizeCamera(
     when (currentStep) {
         HiddenPrizeCameraStep.CAMERA -> {
             Box(modifier = modifier.fillMaxSize()) {
-//                FaceMeshCanvas(
-//                    imageSize = imageSize, detectedMeshes = detectedMeshes
-//                )
+                FaceMeshCanvas(
+                    imageSize = imageSize, detectedMeshes = detectedMeshes
+                )
 
                 OverlayControls(
-                    selectedBitmap = selectedBitmap,
-                    onSelectBitmap = {
+                    selectedBitmap = selectedBitmap, onSelectBitmap = {
                         scope.launch {
-                            selectedBitmap = checkCrop(it)
+                            selectedBitmap = it
                         }
-                    },
-                    onClearBitmap = { selectedBitmap = null },
-                    onNext = {
-                        currentStep = HiddenPrizeCameraStep.PROCESSING_ZKP //TODO: rename
-                    },
-                    previewView = previewView
+                    }, onClearBitmap = { selectedBitmap = null }, onNext = {
+                        currentStep = HiddenPrizeCameraStep.PROCESSING_ML
+                    }, previewView = previewView
                 )
             }
         }
@@ -168,14 +163,10 @@ fun HiddenPrizeCamera(
         HiddenPrizeCameraStep.PROCESSING_ZKP -> {
             HiddenPrizeLoadingZK(processingValue = (downloadProgress.toFloat() / 100.0f)) {
                 try {
-
-                    featuresBackend = originalFeaturesDev.map { it.toFloat() }
-
                     processZK(selectedBitmap!!, featuresBackend)
                     currentStep = HiddenPrizeCameraStep.FINISH
                 } catch (e: Exception) {
                     Log.e("PROCESSING_ZKP", "smth went wrong", e)
-
                 }
             }
         }
@@ -365,14 +356,10 @@ fun FaceMeshCanvas(
                     val start = Offset(startP.x * scale - dx, startP.y * scale - dy)
                     val end = Offset(endP.x * scale - dx, endP.y * scale - dy)
                     drawCircle(
-                        center = start,
-                        radius = 4.dp.toPx(),
-                        color = Color.White
+                        center = start, radius = 4.dp.toPx(), color = Color.White
                     )
                     drawCircle(
-                        center = end,
-                        radius = 4.dp.toPx(),
-                        color = Color.White
+                        center = end, radius = 4.dp.toPx(), color = Color.White
                     )
                     drawLine(
                         color = Color.White.copy(alpha = 0.9f),
@@ -414,12 +401,10 @@ fun SetupCamera(
         }
 
         val analysisUseCase =
-            ImageAnalysis.Builder()
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            ImageAnalysis.Builder().setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
 
                 .build().also {
-                    it
-                        .setAnalyzer(cameraExecutor) { imageProxy ->
+                    it.setAnalyzer(cameraExecutor) { imageProxy ->
                             val mediaImage = imageProxy.image
                             if (mediaImage != null) {
                                 val rotation = imageProxy.imageInfo.rotationDegrees
@@ -448,11 +433,3 @@ fun SetupCamera(
         }
     }
 }
-
-//@Preview
-//@Composable
-//private fun HiddenPrizeCameraPreview() {
-//    HiddenPrizeCamera(processML = {}, processZK = {}) {
-//
-//    }
-//}

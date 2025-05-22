@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.api.hiddenPrize
 
+import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.hiddenPrize.models.CreateUserRequest
 import com.rarilabs.rarime.api.hiddenPrize.models.CreateUserRequestData
 import com.rarilabs.rarime.api.hiddenPrize.models.CreateUserRequestData.CreateUserAttributes
@@ -28,7 +29,9 @@ class HiddenPrizeApiManager @Inject constructor(
     ): HiddenPrizeClaimResponse {
         val request = HiddenPrizeClaimRequest(
             data = HiddenPrizeClaimData(
-                tx_data = calldata, no_send = noSend
+                tx_data = calldata,
+                no_send = noSend,
+                destination = BaseConfig.GUESS_CELEBRITY_CONTRACT_ADDRESS
             )
         )
 
@@ -46,9 +49,10 @@ class HiddenPrizeApiManager @Inject constructor(
         val response = api.createNewUser(
             body = CreateUserRequest(
                 data = CreateUserRequestData(
-                    id = nullifier, attributes = CreateUserAttributes(
+                    id = nullifier,
+                    attributes = CreateUserAttributes(
                         referred_by = referredBy
-                ),
+                    ),
                 )
             ), "Bearer ${authManager.accessToken}"
         )

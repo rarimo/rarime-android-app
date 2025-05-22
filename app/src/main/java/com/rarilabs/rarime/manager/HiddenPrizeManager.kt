@@ -1,7 +1,10 @@
 package com.rarilabs.rarime.manager
 
+import android.content.ClipData
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Build
+import android.text.ClipboardManager
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -19,12 +22,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
-import org.web3j.crypto.Credentials
 import org.web3j.utils.Numeric
 import java.io.File
 import java.math.BigInteger
 import javax.inject.Inject
 import kotlin.math.pow
+
 
 data class UserStats(
     val resetTime: Long,
@@ -53,8 +56,10 @@ class HiddenPrizeManager @Inject constructor(
 ) {
 
     private val tfLiteFileName: String = "face-recognition.tflite"
+    private val faceZkeyName: String = "face-recognition.tflite"
 
     private val faceRecognitionTFileHash = "3814d30ed40b217e18d321c9c0f13d1b"
+    private val faceZkeyHash = "eecb7976f40e7bce22f310ed3d66f8f0"
 
     private val _downloadProgressZkey = MutableStateFlow(0)
 
@@ -174,12 +179,12 @@ class HiddenPrizeManager @Inject constructor(
 
     private val fileDownloader = FileDownloaderInternal(application)
 
-    private suspend fun downloadFile(url: String, hash: String): File {
+    private suspend fun downloadFile(url: String, fileName: String, hash: String): File {
         fileDownloader.cancel()
 
 
         return fileDownloader.downloadFileBlocking(
-            url, tfLiteFileName, fileHash = hash
+            url, fileName, fileHash = hash
         ) { progress ->
             if (_downloadProgressZkey.value != progress) {
                 Log.i("Progress", progress.toString())
@@ -190,8 +195,11 @@ class HiddenPrizeManager @Inject constructor(
 
     suspend fun generateFaceFeatures(bitmap: Bitmap): List<Float> {
 
-        val tfLiteFile =
-            downloadFile(BaseConfig.FACE_RECOGNITION_MODEL_URL, hash = faceRecognitionTFileHash)
+        val tfLiteFile = downloadFile(
+            BaseConfig.FACE_RECOGNITION_MODEL_URL,
+            fileName = tfLiteFileName,
+            hash = faceRecognitionTFileHash
+        )
 
         val binetAnalyzer = BinetAnalyzer()
 
@@ -216,22 +224,18 @@ class HiddenPrizeManager @Inject constructor(
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun claimTokens(features: List<Float>, bitmap: Bitmap) {
 
-        val zkeyFile = downloadFile(BaseConfig.FACE_REGISTRY_ZKEY_URL, "")
+        val zkeyFile = downloadFile(BaseConfig.FACE_REGISTRY_ZKEY_URL, faceZkeyName, faceZkeyHash)
 
         val binetAnalyzer = BinetAnalyzer()
 
-        val credentials = Credentials.create(Numeric.toHexString(identityManager.privateKeyBytes))
-
-
-        val address = credentials.address
+        val address = identityManager.evmAddress()
 
         val preparedImage = binetAnalyzer.getPreparedInputForZKML(bitmap)!!
 
         val faceContract = rarimoContractManager.getFaceRegistry()
 
         val nonce = withContext(Dispatchers.IO) {
-            faceContract.getVerificationNonce(BigInteger(address.drop(2), 16))
-                .send().toString()
+            faceContract.getVerificationNonce(BigInteger(address.drop(2), 16)).send().toString()
         }
 
         val assetContext: Context = application.createPackageContext("com.rarilabs.rarime", 0)
@@ -241,20 +245,21 @@ class HiddenPrizeManager @Inject constructor(
 
         val quantizedFeatures = features.map { (it * 2.0.pow(15.0)).toInt().toString() }
 
-        val quantizedImage =
-            listOf(preparedImage.map {
-                it.map { it2 ->
-                    (it2 * 2.0.pow(15.0)).toInt().toString()
-                }
-            })
+        val quantizedImage = listOf(preparedImage.map {
+            it.map { it2 ->
+                (it2 * 2.0.pow(15.0)).toInt().toString()
+            }
+        })
 
         val inputs = LivenessInputs(
             image = quantizedImage,
             features = quantizedFeatures,
-            address = address,
-            threshold = "107374182",
+            address = BigInteger(1, Numeric.hexStringToByteArray(address)).toString(),
+            threshold = "74088185856",
             nonce = nonce
         )
+
+        setClipboard(application, Gson().toJson(inputs))
 
         withContext(Dispatchers.Default) {
 
@@ -264,13 +269,15 @@ class HiddenPrizeManager @Inject constructor(
                 inputs = Gson().toJson(inputs)
             )
 
-
-            Log.i("Tag", GsonBuilder().setPrettyPrinting().create().toJson(zkproof))
+            Log.i(
+                "Pub signals",
+                GsonBuilder().setPrettyPrinting().create().toJson(zkproof.pub_signals)
+            )
 
 
             val callDataBuilder = CallDataBuilder()
-            val callData = callDataBuilder.buildFaceRegistryRegisterUser(
-                Gson().toJson(zkproof).toByteArray()
+            val callData = callDataBuilder.buildGuessCelebrityClaimRewardCalldata(
+                address, Gson().toJson(zkproof).toByteArray()
             )
 
             val response = apiManager.claimTokens("0x" + callData.toHexString())
@@ -281,6 +288,18 @@ class HiddenPrizeManager @Inject constructor(
             if (!isSuccessful) {
                 throw Exception("cant send registration")
             }
+        }
+    }
+
+    private fun setClipboard(context: Context, text: String) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            clipboard.text = text
+        } else {
+            val clipboard =
+                context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            val clip = ClipData.newPlainText("Copied Text", text)
+            clipboard.setPrimaryClip(clip)
         }
     }
 }
