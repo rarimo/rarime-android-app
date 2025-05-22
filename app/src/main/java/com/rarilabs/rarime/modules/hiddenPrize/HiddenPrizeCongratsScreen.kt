@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
@@ -59,7 +61,7 @@ fun HiddenPrizeCongratsScreen(
     onViewWallet: () -> Unit,
     onShare: () -> Unit,
 
-) {
+    ) {
     val isDark = when (colorScheme) {
         AppColorScheme.SYSTEM -> isSystemInDarkTheme()
         AppColorScheme.DARK -> true
@@ -77,11 +79,13 @@ fun HiddenPrizeCongratsScreen(
     }
     val coroutineScope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(false) }
+    var isFinish by remember { mutableStateOf(false) }
     Box(
         Modifier
             .fillMaxSize()
             .background(bgColor)
     ) {
+
         Image(
             painter = painterResource(backgroundRes),
             contentDescription = null,
@@ -96,7 +100,7 @@ fun HiddenPrizeCongratsScreen(
         modifier = Modifier
 
             .fillMaxWidth()
-            .padding(top = 96.dp),
+            .padding(top = 90.dp),
 
         ) {
         KonfettiView(
@@ -111,8 +115,8 @@ fun HiddenPrizeCongratsScreen(
                 )
             )
         )
+
         Column(
-            modifier = Modifier,
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -121,10 +125,10 @@ fun HiddenPrizeCongratsScreen(
                     width = 118.dp, height = 135.dp
                 )
             )
-
+            Spacer(modifier = Modifier.size(62.dp))
             Text(
                 stringResource(R.string.hidden_prize_success_screen_title),
-                color = RarimeTheme.colors.baseBlack,
+                color = RarimeTheme.colors.textPrimary,
                 textAlign = TextAlign.Center,
                 style = RarimeTheme.typography.h3
             )
@@ -135,23 +139,33 @@ fun HiddenPrizeCongratsScreen(
                 textAlign = TextAlign.Center,
             )
             Spacer(Modifier.height(32.dp))
+
             Card(
                 modifier = Modifier
-                    .background(
-                        bgColor, shape = RoundedCornerShape(20.dp)
+                    .shadow(
+                        elevation = 60.dp,
+                        shape = RoundedCornerShape(20.dp),
+                        ambientColor = Color(0xFF9D4EDD),
+                        spotColor = Color(0xFF9D4EDD)
                     )
-                    .padding(vertical = 20.dp, horizontal = 20.dp),
+                    .padding(vertical = 20.dp, horizontal = 23.dp),
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(0.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = bgColor,
+                )
 
-                ) {
+            ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.background(bgColor)
+                    modifier = Modifier.background(bgColor, shape = RoundedCornerShape(20.dp))
 
                 ) {
                     Text(
                         stringResource(R.string.hidden_prize_success_screen_prize),
-                        color = RarimeTheme.colors.textSecondary
+                        color = RarimeTheme.colors.textSecondary,
+                        modifier = Modifier.padding(top = 20.dp)
                     )
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -165,23 +179,23 @@ fun HiddenPrizeCongratsScreen(
                         prizeSymbol()
                     }
                     LoadingButton(
-                        isLoading = isLoading,
-                        progress = downloadProgress,
-                        onClick = {
+                        isLoading = isLoading, progress = downloadProgress, onClick = {
                             coroutineScope.launch {
                                 isLoading = true
                                 onClaim()
                                 isLoading = false
+                                isFinish = true
                             }
-                        },
+                        }, isFinish = isFinish
                     )
 
                 }
 
+
             }
 
         }
-        if (downloadProgress == 100) {
+        if (isFinish) {
             Column(modifier = Modifier.align(Alignment.BottomCenter)) {
                 BaseButton(
                     onClick = onViewWallet,
@@ -197,8 +211,7 @@ fun HiddenPrizeCongratsScreen(
                     enabled = true
                 )
                 Spacer(
-                    modifier = Modifier
-                        .size(8.dp)
+                    modifier = Modifier.size(8.dp)
                 )
                 PrimaryButton(
                     onClick = onShare,
@@ -217,11 +230,11 @@ fun HiddenPrizeCongratsScreen(
 
 @Composable
 private fun LoadingButton(
-    isLoading: Boolean, progress: Int, onClick: () -> Unit,
+    isLoading: Boolean, progress: Int, onClick: () -> Unit, isFinish: Boolean
 ) {
 
 
-    if (progress == 100) {
+    if (isFinish) {
         BaseButton(
             modifier = Modifier
                 .fillMaxWidth()
@@ -264,10 +277,17 @@ private fun LoadingButton(
             enabled = !isLoading
 
         ) {
-            Text(
-                if (isLoading) "$progress%" else stringResource(R.string.hidden_prize_congrats_share_btn),
-                color = RarimeTheme.colors.baseWhite,
-            )
+            if (!isLoading) {
+                Text(
+                    text = stringResource(R.string.hidden_prize_congrats_share_btn),
+                    color = RarimeTheme.colors.baseWhite,
+                )
+            } else {
+                Text(
+                    text = "Claiming ($progress%)", color = RarimeTheme.colors.textDisabled
+                )
+
+            }
         }
     }
 }
@@ -281,13 +301,12 @@ fun HiddenPrizeCongratsScreenPreview() {
             prizeAmount = 2.2f,
             onClaim = {},
             prizeSymbol = {
-            Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
+                Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
             },
             imageLink = "",
             colorScheme = AppColorScheme.SYSTEM,
             downloadProgress = 100,
             onShare = {},
-            onViewWallet = {}
-        )
+            onViewWallet = {})
     }
 }
