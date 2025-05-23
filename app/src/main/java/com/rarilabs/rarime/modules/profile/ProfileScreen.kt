@@ -55,11 +55,9 @@ fun ProfileScreen(
     var isFeedbackDialogShown by remember { mutableStateOf(false) }
 
     val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = {
+        contract = ActivityResultContracts.StartActivityForResult(), onResult = {
             isFeedbackDialogShown = false
         })
-
 
     val image = remember {
         viewModel.getImage()
@@ -79,8 +77,7 @@ fun ProfileScreen(
         },
         onClearConfirm = {
             viewModel.clearAllData(context)
-        }
-    )
+        })
 }
 
 @Composable
@@ -115,7 +112,9 @@ fun ProfileScreenContent(
         ) {
             Column(
                 modifier = Modifier
-                    .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp))
+                    .background(
+                        RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
+                    )
                     .padding(20.dp)
             ) {
                 Row(
@@ -130,9 +129,10 @@ fun ProfileScreenContent(
                             color = RarimeTheme.colors.textPrimary
                         )
                         Text(
-                            text = stringResource(
-                                R.string.user_address,
-                                rarimoAddress
+                            text = WalletUtil.formatAddress(
+                                stringResource(
+                                    R.string.user_address, rarimoAddress
+                                )
                             ),
                             style = RarimeTheme.typography.body5,
                             color = RarimeTheme.colors.textSecondary
@@ -143,7 +143,9 @@ fun ProfileScreenContent(
             }
             Column(
                 modifier = Modifier
-                    .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp))
+                    .background(
+                        RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
+                    )
                     .padding(16.dp)
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
@@ -159,7 +161,9 @@ fun ProfileScreenContent(
             }
             Column(
                 modifier = Modifier
-                    .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp))
+                    .background(
+                        RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
+                    )
                     .padding(16.dp)
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
@@ -188,14 +192,15 @@ fun ProfileScreenContent(
                             scope.launch {
                                 onFeedbackConfirm.invoke()
                             }
-                        }
-                    )
+                        })
                 }
             }
 
             Column(
                 modifier = Modifier
-                    .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp))
+                    .background(
+                        RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
+                    )
                     .padding(16.dp)
             ) {
                 var isDeleteAccountDialogShown by remember { mutableStateOf(false) }

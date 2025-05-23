@@ -112,7 +112,8 @@ fun HiddenPrizeCamera(
         meshDetector = meshDetector,
         cameraExecutor = cameraExecutor,
         onImageSizeUpdated = { imageSize = it },
-        onMeshDetected = { detectedMeshes = it })
+        onMeshDetected = { detectedMeshes = it }
+    )
 
     RenderPreviewOrImage(
         previewView, selectedBitmap, isBlurred = (currentStep != HiddenPrizeCameraStep.CAMERA)
@@ -132,7 +133,7 @@ fun HiddenPrizeCamera(
                         }
                     }, onClearBitmap = { selectedBitmap = null }, onNext = {
                         currentStep = HiddenPrizeCameraStep.PROCESSING_ML
-                    }, previewView = previewView
+                    }, previewView = previewView, detectedMeshes
                 )
             }
         }
@@ -256,7 +257,8 @@ fun OverlayControls(
     onSelectBitmap: (Bitmap) -> Unit,
     onClearBitmap: () -> Unit,
     onNext: (Bitmap) -> Unit,
-    previewView: PreviewView
+    previewView: PreviewView,
+    detectedMeshes: List<FaceMesh>
 ) {
     val scope = rememberCoroutineScope()
 
@@ -288,6 +290,7 @@ fun OverlayControls(
         Column(modifier = Modifier.padding(top = 8.dp)) {
             if (selectedBitmap == null) {
                 PrimaryButton(
+                    enabled = detectedMeshes.isNotEmpty(),
                     size = ButtonSize.Large,
                     modifier = Modifier
                         .fillMaxWidth()

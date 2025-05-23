@@ -21,9 +21,9 @@ class NativeToken @Inject constructor(
 ) : Token(address = "") {
 
     override var name: String = "RMO"
-    override var symbol: String = "R"
+    override var symbol: String = "RMO"
     override var decimals: Int = 2
-    override var icon: Int = R.drawable.ic_bulb
+    override var icon: Int = R.drawable.ic_rarimo
 
     override suspend fun loadDetails() {
 
