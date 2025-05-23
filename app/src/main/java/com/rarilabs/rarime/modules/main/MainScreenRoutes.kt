@@ -399,17 +399,18 @@ fun MainScreenRoutes(
                     },
                     navigate = navigateWithPopUp,
                 ) {
-                    AcceptInvitation(code = code, onFinish = {
-                        mainViewModel.setModalVisibility(true)
-                        mainViewModel.setModalContent {
-                            CongratsInvitationModalContent(
-                                onClose = {
-                                    mainViewModel.setModalVisibility(false)
-                                })
-                        }
+                    AcceptInvitation(
+                        code = code, onFinish = {
+                            mainViewModel.setModalVisibility(true)
+                            mainViewModel.setModalContent {
+                                CongratsInvitationModalContent(
+                                    onClose = {
+                                        mainViewModel.setModalVisibility(false)
+                                    })
+                            }
 
-                        navigateWithPopUp(Screen.Main.Home.route)
-                    },
+                            navigateWithPopUp(Screen.Main.Home.route)
+                        },
                         onError = { navigateWithPopUp(Screen.Main.Home.route) })
                 }
             }

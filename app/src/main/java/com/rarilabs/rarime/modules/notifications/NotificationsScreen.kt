@@ -68,7 +68,8 @@ fun NotificationsScreen(
     val state = rememberAppSheetState()
 
 
-    NotificationScreenContent(notifications,
+    NotificationScreenContent(
+        notifications,
         deleteNotification = notificationsViewModel.deleteNotifications,
         readNotification = { it ->
             notificationsViewModel.readNotifications(it)
@@ -76,7 +77,8 @@ fun NotificationsScreen(
             state.show()
         },
         addNotification = notificationsViewModel.addNotifications,
-        onBack = onBack)
+        onBack = onBack
+    )
 
 
     if (selectedNotification != null) {
@@ -165,7 +167,8 @@ fun NotificationScreenContent(
             }
         } else {
             LazyColumn {
-                itemsIndexed(items = notificationsList.sortedByDescending { it.date.toLong() },
+                itemsIndexed(
+                    items = notificationsList.sortedByDescending { it.date.toLong() },
                     key = { _, item -> item.notificationId }) { index, item ->
                     val isLast = (index < notificationsList.size - 1)
                     NotificationItem(item, isLast, onClick = {
@@ -233,13 +236,15 @@ fun NotificationItem(
         }
     })
 
-    SwipeToDismissBox(state = dismissState,
+    SwipeToDismissBox(
+        state = dismissState,
         backgroundContent = { DismissBackground(dismissState = dismissState) }) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .background(RarimeTheme.colors.backgroundPrimary)
-            .padding(horizontal = 20.dp)
-            .clickable { onClick(currentItem) }) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(RarimeTheme.colors.backgroundPrimary)
+                .padding(horizontal = 20.dp)
+                .clickable { onClick(currentItem) }) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(

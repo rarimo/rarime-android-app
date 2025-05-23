@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.TertiaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme

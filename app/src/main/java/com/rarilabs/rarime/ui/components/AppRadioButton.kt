@@ -22,7 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.ui.theme.RarimeTheme
-import com.rarilabs.rarime.util.Circle
 
 @Composable
 fun AppRadioButton(

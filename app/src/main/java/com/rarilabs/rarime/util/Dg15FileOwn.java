@@ -56,19 +56,6 @@ public class Dg15FileOwn extends DataGroup {
         super(EF_DG15_TAG, inputStream);
     }
 
-    @Override
-    protected void readContent(InputStream inputStream) throws IOException {
-        DataInputStream dataInputStream = inputStream instanceof DataInputStream ? (DataInputStream) inputStream : new DataInputStream(inputStream);
-        try {
-            byte[] value = new byte[getLength()];
-            dataInputStream.readFully(value);
-
-            publicKey = getPublicKey(value);
-        } catch (GeneralSecurityException e) {
-            LOGGER.log(Level.WARNING, "Unexpected exception while reading DG15 content", e);
-        }
-    }
-
     /**
      * Constructs a public key from the given key bytes.
      * Public keys of type {@code "RSA"} and {@code "EC"}
@@ -102,6 +89,19 @@ public class Dg15FileOwn extends DataGroup {
     private static PublicKey getPublicKeyInternal(String algorithm, X509EncodedKeySpec keySpec) throws GeneralSecurityException {
         KeyFactory keyFactory = KeyFactory.getInstance(algorithm, "BC");
         return keyFactory.generatePublic(keySpec);
+    }
+
+    @Override
+    protected void readContent(InputStream inputStream) throws IOException {
+        DataInputStream dataInputStream = inputStream instanceof DataInputStream ? (DataInputStream) inputStream : new DataInputStream(inputStream);
+        try {
+            byte[] value = new byte[getLength()];
+            dataInputStream.readFully(value);
+
+            publicKey = getPublicKey(value);
+        } catch (GeneralSecurityException e) {
+            LOGGER.log(Level.WARNING, "Unexpected exception while reading DG15 content", e);
+        }
     }
 
     @Override

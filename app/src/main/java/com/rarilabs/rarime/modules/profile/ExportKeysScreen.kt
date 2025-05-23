@@ -195,7 +195,8 @@ fun ExportKeysContent(
                             horizontalArrangement = Arrangement.Center,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            PrimaryTextButton(leftIcon = if (isCopied) R.drawable.ic_check else R.drawable.ic_copy_simple,
+                            PrimaryTextButton(
+                                leftIcon = if (isCopied) R.drawable.ic_check else R.drawable.ic_copy_simple,
                                 text = if (isCopied) {
                                     stringResource(R.string.copied_text)
                                 } else {
@@ -231,7 +232,8 @@ fun ExportKeysContent(
 @Preview
 @Composable
 private fun ExportKeysScreenPreview() {
-    ExportKeysContent(onBack = {},
+    ExportKeysContent(
+        onBack = {},
         privateKey = "adasdladalkawl;dklawkadakdl;wdl;,al;wd,law,l;d,awl;d,dl;aw",
         isCopied = false,
         setIsCopied = {},

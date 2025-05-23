@@ -16,7 +16,9 @@ import com.appsflyer.AppsFlyerLib
 import com.appsflyer.deeplink.DeepLink
 import com.appsflyer.deeplink.DeepLinkListener
 import com.appsflyer.deeplink.DeepLinkResult
+import com.rarilabs.rarime.manager.HiddenPrizeManager
 import com.rarilabs.rarime.manager.NfcManager
+import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.manager.ScanNFCState
 import com.rarilabs.rarime.modules.appUpdate.InAppUpdate
 import com.rarilabs.rarime.modules.main.MainScreen
@@ -29,6 +31,13 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var nfcManager: NfcManager
 
+    @Inject
+    lateinit var pointsManager: PointsManager
+
+
+    @Inject
+    lateinit var hiddenPrizeManager: HiddenPrizeManager
+
     private var navController: NavHostController? = null
 
     private var deepLinkData: Uri? = null
@@ -36,10 +45,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.auto(
-                android.graphics.Color.TRANSPARENT,
-                android.graphics.Color.TRANSPARENT
-            ),
-            navigationBarStyle = SystemBarStyle.auto(
+                android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT
+            ), navigationBarStyle = SystemBarStyle.auto(
                 android.graphics.Color.TRANSPARENT,
                 android.graphics.Color.TRANSPARENT,
             )
@@ -89,8 +96,7 @@ class MainActivity : AppCompatActivity() {
             override fun onDeepLinking(deepLinkResult: DeepLinkResult) {
                 if (deepLinkResult.status != DeepLinkResult.Status.FOUND) {
                     ErrorHandler.logError(
-                        "AppsFlyer",
-                        "Deep link not found, status: ${deepLinkResult.status}"
+                        "AppsFlyer", "Deep link not found, status: ${deepLinkResult.status}"
                     )
                     ErrorHandler.logError("AppsFlyer", "Deep link error: ${deepLinkResult.error}")
                     return
@@ -100,7 +106,11 @@ class MainActivity : AppCompatActivity() {
                 if (deepLinkObj.isDeferred == true) {
                     Log.i("AppsFlyer", "Deep link value: ${deepLinkObj.deepLinkValue ?: "null"}")
                     if (deepLinkObj.deepLinkValue != null) {
-                        nfcManager.pointsManager.saveDeferredReferralCode(deepLinkObj.deepLinkValue!!)
+                        if (deepLinkObj.deepLinkValue!!.length == 10) {
+                            hiddenPrizeManager.saveReferralCode(deepLinkObj.deepLinkValue!!)
+                        } else {
+                            pointsManager.saveDeferredReferralCode(deepLinkObj.deepLinkValue!!)
+                        }
                     }
                 }
             }
@@ -108,6 +118,7 @@ class MainActivity : AppCompatActivity() {
 
         AppsFlyerLib.getInstance().start(application.applicationContext)
     }
+
     private fun handleDeepLink(uri: Uri?) {
         if (uri == null) {
             Log.i("uri", "uri is null")

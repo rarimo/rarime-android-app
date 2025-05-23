@@ -33,7 +33,7 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun RewardsLeaderBoard (
+fun RewardsLeaderBoard(
     leaderboardList: List<LeaderBoardItem>,
     userLeaderBoardItem: LeaderBoardItem,
 ) {
@@ -74,7 +74,7 @@ fun RewardsLeaderBoard (
         3 to topLeaderColumnDefaultContentColors(),
     )
 
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary),
@@ -82,18 +82,18 @@ fun RewardsLeaderBoard (
     ) {
         Spacer(modifier = Modifier.height(22.dp))
         // FIXME: overlapped a close btn
-        Text (
+        Text(
             text = stringResource(id = R.string.leaderboard_title),
             style = RarimeTheme.typography.subtitle4,
             color = RarimeTheme.colors.textPrimary
         )
         Spacer(modifier = Modifier.height(40.dp))
 
-        Column (
+        Column(
             modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row (
+            Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.Bottom
             ) {
@@ -109,7 +109,7 @@ fun RewardsLeaderBoard (
                     )
                 }
             }
-            Column (
+            Column(
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
@@ -122,7 +122,7 @@ fun RewardsLeaderBoard (
                 }
 
                 if (rest.isNotEmpty()) {
-                    LazyColumn (
+                    LazyColumn(
                         modifier = Modifier.weight(1f),
                         state = scrollState,
                     ) {
@@ -139,7 +139,7 @@ fun RewardsLeaderBoard (
                     }
                 }
 
-                Column () {
+                Column {
                     HorizontalDivider()
                     RewardsLeaderBoardItem(userLeaderBoardItem, true)
                 }

@@ -10,8 +10,10 @@ import javax.inject.Inject
 @HiltViewModel
 class LanguageViewModel @Inject constructor(
     private val settingsManager: SettingsManager
-): ViewModel() {
+) : ViewModel() {
     val language = settingsManager.language
+
+
     fun updateLanguage(appLanguage: AppLanguage) {
         settingsManager.updateLanguage(appLanguage)
     }

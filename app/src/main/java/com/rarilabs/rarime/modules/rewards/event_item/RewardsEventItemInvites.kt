@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,7 +43,9 @@ fun RewardsEventItemInvites(
     pointsEvent: PointsEventData,
     pointsBalance: PointsBalanceData,
 ) {
-    val rewardPerInvite = pointsBalance.attributes.referral_codes?.size?.let { pointsEvent.attributes.meta.static.reward.div(it) } ?: 0
+    val rewardPerInvite = pointsBalance.attributes.referral_codes?.size?.let {
+        pointsEvent.attributes.meta.static.reward.div(it)
+    } ?: 0
 
     WalletRouteLayout(
         headerModifier = Modifier
@@ -76,7 +77,7 @@ fun RewardsEventItemInvites(
 
             Spacer(modifier = Modifier.height(100.dp))
 
-            Column (
+            Column(
                 modifier = Modifier
                     .weight(1f)
             ) {
@@ -112,7 +113,8 @@ fun RewardsEventItemInvites(
                         Text(
                             text = stringResource(
                                 id = R.string.rewards_event_item_invites_status,
-                                pointsBalance.attributes.referral_codes?.filter { it.status != ReferralCodeStatuses.ACTIVE.value }?.size ?: 0,
+                                pointsBalance.attributes.referral_codes?.filter { it.status != ReferralCodeStatuses.ACTIVE.value }?.size
+                                    ?: 0,
                                 pointsBalance.attributes.referral_codes?.size ?: 0
                             ),
                             style = RarimeTheme.typography.subtitle3,

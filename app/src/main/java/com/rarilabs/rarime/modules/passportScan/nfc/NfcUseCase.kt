@@ -152,11 +152,12 @@ class NfcUseCase(
 
         ErrorHandler.logDebug("Nfc scan", "Digest Encryption Algorithm: $digestEncryptionAlgorithm")
 
-        val digest: MessageDigest = if (Security.getAlgorithms("MessageDigest").contains(digestAlgorithm)) {
-            MessageDigest.getInstance(digestAlgorithm)
-        } else {
-            MessageDigest.getInstance(digestAlgorithm, BouncyCastleProvider())
-        }
+        val digest: MessageDigest =
+            if (Security.getAlgorithms("MessageDigest").contains(digestAlgorithm)) {
+                MessageDigest.getInstance(digestAlgorithm)
+            } else {
+                MessageDigest.getInstance(digestAlgorithm, BouncyCastleProvider())
+            }
 
         currentStateMutableFlow.value = NfcScanStep.DG1SCAN
 
@@ -299,7 +300,10 @@ class NfcUseCase(
 
         try {
             ErrorHandler.logError("pemFile", "pemFile: $pemFileEnded")
-            ErrorHandler.logError("encapsulated_content", "encapsulated_content: $encapsulaged_content")
+            ErrorHandler.logError(
+                "encapsulated_content",
+                "encapsulated_content: $encapsulaged_content"
+            )
             ErrorHandler.logError(
                 "signedAtributes", "signedAtributes: " + signedAtributes.toHexString()
             )

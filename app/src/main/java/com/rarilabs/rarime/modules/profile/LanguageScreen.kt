@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
@@ -24,16 +25,17 @@ fun LanguageScreen(
     onBack: () -> Unit
 ) {
 
-    val language by viewModel.language
+    val language by viewModel.language.collectAsState()
 
     ProfileRouteLayout(
         title = stringResource(R.string.language), onBack = onBack
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             AppLanguage.entries.forEach { lang ->
-                LanguageItem(language = lang,
+                LanguageItem(
+                    language = lang,
                     isSelected = lang == language,
-                    onClick = {onLanguageChange.invoke(lang); viewModel.updateLanguage(lang)  })
+                    onClick = { onLanguageChange.invoke(lang); viewModel.updateLanguage(lang) })
             }
         }
     }

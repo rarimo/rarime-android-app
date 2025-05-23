@@ -67,7 +67,7 @@ fun TopLeaderColumn(
     tokenIcon: Int,
     isCurrentUser: Boolean = false,
 ) {
-    Column (
+    Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         NumberCircle(
@@ -80,7 +80,7 @@ fun TopLeaderColumn(
                 .background(contentColors.container)
                 .padding(top = 32.dp, bottom = 16.dp, start = 16.dp, end = 16.dp)
         ) {
-            Column (
+            Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom,
                 modifier = Modifier
@@ -88,13 +88,13 @@ fun TopLeaderColumn(
                     .requiredWidth(60.dp)
             ) {
                 if (isCurrentUser) {
-                    Box (
+                    Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(100.dp))
                             .background(contentColors.markerWrp)
                             .padding(vertical = 2.dp, horizontal = 10.dp)
                     ) {
-                        Text (
+                        Text(
                             text = "YOU",
                             style = RarimeTheme.typography.overline3,
                             color = contentColors.marker
@@ -104,17 +104,17 @@ fun TopLeaderColumn(
                     Spacer(modifier = Modifier.height(8.dp))
                 }
 
-                Text (
+                Text(
                     text = WalletUtil.formatAddress(address, 4, 4),
                     style = RarimeTheme.typography.caption3,
                     color = contentColors.address
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Row (
+                Row(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text (
+                    Text(
                         text = NumberUtil.formatBalance(balance),
                         style = RarimeTheme.typography.subtitle5,
                         color = contentColors.balance,
@@ -130,7 +130,7 @@ fun TopLeaderColumn(
 @Preview
 @Composable
 fun TopLeaderColumnPreview() {
-    Row (
+    Row(
         modifier = Modifier
             .background(RarimeTheme.colors.backgroundPrimary)
             .padding(horizontal = 16.dp),

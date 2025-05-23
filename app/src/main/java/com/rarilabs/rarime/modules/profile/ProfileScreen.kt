@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,17 +55,15 @@ fun ProfileScreen(
     var isFeedbackDialogShown by remember { mutableStateOf(false) }
 
     val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = {
+        contract = ActivityResultContracts.StartActivityForResult(), onResult = {
             isFeedbackDialogShown = false
         })
-
 
     val image = remember {
         viewModel.getImage()
     }
 
-    val colorScheme by viewModel.colorScheme
+    val colorScheme by viewModel.colorScheme.collectAsState()
 
     ProfileScreenContent(
         rarimoAddress = WalletUtil.formatAddress(viewModel.rarimoAddress),
@@ -78,8 +77,7 @@ fun ProfileScreen(
         },
         onClearConfirm = {
             viewModel.clearAllData(context)
-        }
-    )
+        })
 }
 
 @Composable
@@ -114,7 +112,9 @@ fun ProfileScreenContent(
         ) {
             Column(
                 modifier = Modifier
-                    .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp))
+                    .background(
+                        RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
+                    )
                     .padding(20.dp)
             ) {
                 Row(
@@ -129,9 +129,10 @@ fun ProfileScreenContent(
                             color = RarimeTheme.colors.textPrimary
                         )
                         Text(
-                            text = stringResource(
-                                R.string.user_address,
-                                rarimoAddress
+                            text = WalletUtil.formatAddress(
+                                stringResource(
+                                    R.string.user_address, rarimoAddress
+                                )
                             ),
                             style = RarimeTheme.typography.body5,
                             color = RarimeTheme.colors.textSecondary
@@ -142,36 +143,46 @@ fun ProfileScreenContent(
             }
             Column(
                 modifier = Modifier
-                    .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp))
+                    .background(
+                        RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
+                    )
                     .padding(16.dp)
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                    ProfileRow(iconId = R.drawable.ic_user_focus,
+                    ProfileRow(
+                        iconId = R.drawable.ic_user_focus,
                         title = stringResource(R.string.auth_method),
                         onClick = { navigate(Screen.Main.Profile.AuthMethod.route) })
-                    ProfileRow(iconId = R.drawable.ic_key,
+                    ProfileRow(
+                        iconId = R.drawable.ic_key,
                         title = stringResource(R.string.export_keys),
                         onClick = { navigate(Screen.Main.Profile.ExportKeys.route) })
                 }
             }
             Column(
                 modifier = Modifier
-                    .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp))
+                    .background(
+                        RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
+                    )
                     .padding(16.dp)
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                    ProfileRow(iconId = R.drawable.ic_sun,
+                    ProfileRow(
+                        iconId = R.drawable.ic_sun,
                         title = stringResource(R.string.theme),
                         value = colorScheme.toLocalizedString(),
                         onClick = { navigate(Screen.Main.Profile.Theme.route) })
-                    ProfileRow(iconId = R.drawable.ic_rarime,
+                    ProfileRow(
+                        iconId = R.drawable.ic_rarime,
                         title = stringResource(R.string.app_icon),
                         value = appIcon.toLocalizedString(),
                         onClick = { navigate(Screen.Main.Profile.AppIcon.route) })
-                    ProfileRow(iconId = R.drawable.ic_question,
+                    ProfileRow(
+                        iconId = R.drawable.ic_question,
                         title = stringResource(R.string.privacy_policy),
                         onClick = { navigate(Screen.Main.Profile.Privacy.route) })
-                    ProfileRow(iconId = R.drawable.ic_flag,
+                    ProfileRow(
+                        iconId = R.drawable.ic_flag,
                         title = stringResource(R.string.terms_of_use),
                         onClick = { navigate(Screen.Main.Profile.Terms.route) })
                     ProfileRow(
@@ -181,14 +192,15 @@ fun ProfileScreenContent(
                             scope.launch {
                                 onFeedbackConfirm.invoke()
                             }
-                        }
-                    )
+                        })
                 }
             }
 
             Column(
                 modifier = Modifier
-                    .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp))
+                    .background(
+                        RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
+                    )
                     .padding(16.dp)
             ) {
                 var isDeleteAccountDialogShown by remember { mutableStateOf(false) }
@@ -315,7 +327,7 @@ private fun ProfileRow(
 @Composable
 private fun ProfileScreenPreview() {
     ProfileScreenContent(
-        rarimoAddress = "0x000000000000",
+        rarimoAddress = "0xbF1823EF5Ca4484517F930c695b07544C2b43Efe",
         passportImage = null,
         navigate = {},
         colorScheme = AppColorScheme.LIGHT,

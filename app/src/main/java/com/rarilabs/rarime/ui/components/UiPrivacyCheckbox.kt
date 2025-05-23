@@ -71,7 +71,7 @@ fun UiPrivacyCheckbox(
 @Preview
 @Composable
 fun UiPrivacyCheckboxPreview() {
-    Column (
+    Column(
         modifier = Modifier
             .background(RarimeTheme.colors.backgroundPrimary)
             .padding(24.dp)

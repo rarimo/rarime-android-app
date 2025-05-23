@@ -15,7 +15,7 @@ import com.rarilabs.rarime.util.FileDownloaderInternal
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
 import com.rarilabs.rarime.util.bionet.BionetAnalizer
-import com.rarilabs.rarime.util.tflite.RunTFLiteFeatureExtractorUseCase
+import com.rarilabs.rarime.util.tflite.RunTFLiteFeatureGrayscaleExtractorUseCase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import identity.CallDataBuilder
 import kotlinx.coroutines.CoroutineScope
@@ -56,9 +56,9 @@ data class FaceRegistryNoInclusionInputs(
 )
 
 enum class LivenessProcessingStatus(val title: String) {
-    DOWNLOADING("Downloading circuit data"),
-    EXTRACTING_FEATURES("Extracting image features"),
-    RUNNING_ZKML("Running ZKML"),
+    DOWNLOADING("Downloading circuit data"), EXTRACTING_FEATURES("Extracting image features"), RUNNING_ZKML(
+        "Running ZKML"
+    ),
     FINISH(""),
 }
 
@@ -79,6 +79,7 @@ class LikenessManager @Inject constructor(
     private var _state = MutableStateFlow(LivenessProcessingStatus.DOWNLOADING)
 
     private var _errorState = MutableStateFlow<LivenessProcessingStatus?>(null)
+
 
     val errorState: StateFlow<LivenessProcessingStatus?>
         get() = _errorState.asStateFlow()
@@ -104,8 +105,7 @@ class LikenessManager @Inject constructor(
         get() = _selectedRule.asStateFlow()
 
     suspend fun setSelectedRule(selectedRule: LikenessRule) {
-        if (selectedRule == _selectedRule.value)
-            return
+        if (selectedRule == _selectedRule.value) return
 
         if (_isRegistered.value) {
             changeLikenessRule(selectedRule)
@@ -155,13 +155,11 @@ class LikenessManager @Inject constructor(
         return isAlreadyRegistered
     }
 
-    suspend fun changeLikenessRule(newRule: LikenessRule) {
+    private suspend fun changeLikenessRule(newRule: LikenessRule) {
         val ruleValue = newRule.value
 
         val address =
             BigInteger(Numeric.hexStringToByteArray(identityManager.getNullifierForFaceLikeness()))
-
-        Log.i("Nullifier", address.toString())
 
         val faceContract = rarimoContractManager.getFaceRegistry()
 
@@ -171,8 +169,7 @@ class LikenessManager @Inject constructor(
 
         val privateKey = identityManager.privateKeyBytes
 
-        val assetContext: Context =
-            (application).createPackageContext("com.rarilabs.rarime", 0)
+        val assetContext: Context = (application).createPackageContext("com.rarilabs.rarime", 0)
         val assetManager = assetContext.assets
 
         val zkp = ZKPUseCase(
@@ -243,11 +240,9 @@ class LikenessManager @Inject constructor(
         _downloadProgress.value = 0
 
         return fileDownloader.downloadFileBlocking(
-            BaseConfig.FACE_REGISTRY_ZKEY_URL,
-            zkeyFileName
+            BaseConfig.FACE_REGISTRY_ZKEY_URL, zkeyFileName
         ) { progress ->
             if (_downloadProgress.value != progress) {
-                Log.i("Progress", progress.toString())
                 _downloadProgress.value = progress
             }
         }
@@ -261,11 +256,7 @@ class LikenessManager @Inject constructor(
             _state.value = LivenessProcessingStatus.DOWNLOADING
 
             // TODO: Restore option I
-            val file =
-                // Option I
-                downloadLivenessZkey()
-            // Option II
-            // File("/data/data/com.rarilabs.rarime/files/likeness.zkey")
+            val file = downloadLivenessZkey()
 
             _state.value = LivenessProcessingStatus.EXTRACTING_FEATURES
 
@@ -297,7 +288,7 @@ class LikenessManager @Inject constructor(
 
             val zkp = ZKPUseCase(application, assetManager)
 
-            val tfLite = RunTFLiteFeatureExtractorUseCase(
+            val tfLite = RunTFLiteFeatureGrayscaleExtractorUseCase(
                 context = application, modelName = "bio_net_v3.tflite"
             )
 
@@ -305,12 +296,11 @@ class LikenessManager @Inject constructor(
 
             val quantizedFeatures = features.map { (it * 2.0.pow(15.0)).toInt().toString() }
 
-            val quantizedImage =
-                listOf(preparedImage.map {
-                    it.map { it2 ->
-                        (it2 * 2.0.pow(15.0)).toInt().toString()
-                    }
-                })
+            val quantizedImage = listOf(preparedImage.map {
+                it.map { it2 ->
+                    (it2 * 2.0.pow(15.0)).toInt().toString()
+                }
+            })
 
             _state.value = LivenessProcessingStatus.RUNNING_ZKML
 
@@ -323,7 +313,6 @@ class LikenessManager @Inject constructor(
                 nonce = nonce
             )
 
-            Log.i("Inputs", GsonBuilder().setPrettyPrinting().create().toJson(inputs))
 
             withContext(Dispatchers.Default) {
 
@@ -338,10 +327,9 @@ class LikenessManager @Inject constructor(
 
 
                 val callDataBuilder = CallDataBuilder()
-                val callData =
-                    callDataBuilder.buildFaceRegistryRegisterUser(
-                        Gson().toJson(zkproof).toByteArray()
-                    )
+                val callData = callDataBuilder.buildFaceRegistryRegisterUser(
+                    Gson().toJson(zkproof).toByteArray()
+                )
 
                 val response = likenessApiManager.likenessRegistry("0x" + callData.toHexString())
 

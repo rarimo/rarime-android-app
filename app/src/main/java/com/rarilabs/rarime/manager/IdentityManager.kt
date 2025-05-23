@@ -61,7 +61,7 @@ class IdentityManager @Inject constructor(
         }
     }
 
-    fun getProfiler(): Profile{
+    fun getProfiler(): Profile {
         return Profile().newProfile(privateKeyBytes)
     }
 

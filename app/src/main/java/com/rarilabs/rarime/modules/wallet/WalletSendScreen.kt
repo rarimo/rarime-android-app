@@ -142,7 +142,8 @@ private fun WalletSendScreenContent(
                         },
                         enabled = !isSubmitting,
                     )
-                    AppTextField(state = humanAmountState,
+                    AppTextField(
+                        state = humanAmountState,
                         label = stringResource(R.string.amount_lbl),
                         enabled = !isSubmitting,
                         placeholder = stringResource(
@@ -173,7 +174,8 @@ private fun WalletSendScreenContent(
                                     .height(20.dp)
                             ) {
                                 VerticalDivider()
-                                SecondaryTextButton(text = stringResource(R.string.max_btn),
+                                SecondaryTextButton(
+                                    text = stringResource(R.string.max_btn),
                                     // TODO: mb to human string?
                                     onClick = {
                                         humanAmountState.updateText(
@@ -217,15 +219,16 @@ private fun WalletSendScreenContent(
         }
 
         if (addressState.text.isNotEmpty() && humanAmountState.text.isNotEmpty()) {
-            TxConfirmBottomSheet(sheetState = confirmationSheetState, totalDetails = mapOf(
-                "Address" to WalletUtil.formatAddress(addressState.text, 4, 4),
-                "Send amount" to "${NumberUtil.formatAmount(humanAmountState.text.toDouble())} ${selectedWalletAsset.token.symbol}",
-                "Fee" to "0 ${selectedWalletAsset.token.symbol}"
-            ), onConfirm = {
+            TxConfirmBottomSheet(
+                sheetState = confirmationSheetState, totalDetails = mapOf(
+                    "Address" to WalletUtil.formatAddress(addressState.text, 4, 4),
+                    "Send amount" to "${NumberUtil.formatAmount(humanAmountState.text.toDouble())} ${selectedWalletAsset.token.symbol}",
+                    "Fee" to "0 ${selectedWalletAsset.token.symbol}"
+                ), onConfirm = {
 
-                submit()
+                    submit()
 
-            })
+                })
         }
     }
 }

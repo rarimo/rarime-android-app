@@ -6,12 +6,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -26,12 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.base.ButtonSize
-import com.rarilabs.rarime.ui.components.AppAnimation
-import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppLogo
-import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Screen
 

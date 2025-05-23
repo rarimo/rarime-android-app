@@ -96,8 +96,14 @@ class RarimeColors(
     gradient5: Brush,
     gradient6: Brush,
     gradient7: Brush,
+    gradient8: Brush,
+    gradient9: Brush,
+    gradient10: Brush,
 
-    additionalGreen: Color
+    additionalGreen: Color,
+    hiddenPrizeAccent: Color,
+    hiddenPrizeBackground: Color
+
 ) {
     var primaryDarker by mutableStateOf(primaryDarker, structuralEqualityPolicy())
         internal set
@@ -197,7 +203,6 @@ class RarimeColors(
 
     var baseBlackOp40 by mutableStateOf(baseBlackOp40, structuralEqualityPolicy())
         internal set
-
     var baseWhite by mutableStateOf(baseWhite, structuralEqualityPolicy())
         internal set
     var invertedDark by mutableStateOf(invertedDark, structuralEqualityPolicy())
@@ -224,12 +229,23 @@ class RarimeColors(
 
     var gradient7 by mutableStateOf(gradient7, structuralEqualityPolicy())
         internal set
+    var gradient8 by mutableStateOf(gradient8, structuralEqualityPolicy())
+        internal set
+    var gradient9 by mutableStateOf(gradient9, structuralEqualityPolicy())
+        internal set
+    var gradient10 by mutableStateOf(gradient10, structuralEqualityPolicy())
+        internal set
+
 
     var inverted by mutableStateOf(inverted, structuralEqualityPolicy())
         internal set
 
     var additionalGreen by mutableStateOf(additionalGreen, structuralEqualityPolicy())
         internal set
+
+    var hiddenPrizeAccent by mutableStateOf(hiddenPrizeAccent, structuralEqualityPolicy())
+
+    var hiddenPrizeBackground by mutableStateOf(hiddenPrizeBackground, structuralEqualityPolicy())
 
 
     fun copy(
@@ -284,6 +300,9 @@ class RarimeColors(
         gradient5: Brush = this.gradient5,
         gradient6: Brush = this.gradient6,
         gradient7: Brush = this.gradient7,
+        gradient8: Brush = this.gradient8,
+        gradient9: Brush = this.gradient9,
+        gradient10: Brush = this.gradient10,
         invertedDark: Color = this.invertedDark,
         invertedLight: Color = this.invertedLight,
         inverted: Color = this.inverted,
@@ -355,8 +374,13 @@ class RarimeColors(
         gradient5 = gradient5,
         gradient6 = gradient6,
         gradient7 = gradient7,
+        gradient8 = gradient8,
+        gradient9 = gradient9,
+        gradient10 = gradient10,
         additionalGreen = additionalGreen,
-        inverted = inverted
+        inverted = inverted,
+        hiddenPrizeAccent = hiddenPrizeAccent,
+        hiddenPrizeBackground =hiddenPrizeBackground
     )
 
     fun updateColorsFrom(other: RarimeColors) {
@@ -411,6 +435,9 @@ class RarimeColors(
         this.invertedLight = other.invertedLight
         this.inverted = other.inverted
         this.backgroundSurface1 = other.backgroundSurface1
+
+        this.hiddenPrizeAccent = other.hiddenPrizeAccent
+        this.hiddenPrizeBackground = other.hiddenPrizeBackground
     }
 }
 
@@ -501,13 +528,31 @@ fun darkColors() = RarimeColors(
             )
         )
     ),
+    gradient8 = Brush.linearGradient(
+        colors = listOf(Color(0xFF651C9F), Color(0xFF9D4EDD))
+    ),
+    gradient9 = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFF786586),
+            Color(0xFF1C1B1D),
+            Color(0xFF1C1B1D)
+        )
+    ),
+    gradient10 = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFF151118),
+            Color(0xFF17121A),
+        )
+    ),
 
     additionalGreen = Color(0xFFF1F7F1),
 
 
     baseBlackOp40 = Color(0x66141614),
     baseBlackOp50 = Color(0x80141614),
-    inverted = Color(0xFF000000)
+    inverted = Color(0xFF000000),
+    hiddenPrizeAccent = Color(0xFF9D4EDD),
+    hiddenPrizeBackground = Color(0xFFF5EDFC)
 )
 
 fun lightColors() = RarimeColors(
@@ -596,12 +641,29 @@ fun lightColors() = RarimeColors(
             )
         )
     ),
+    gradient8 = Brush.linearGradient(colors = listOf(Color(0xFF651C9F), Color(0xFF9D4EDD))),
+    gradient9 = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFE3C4F3),
+            Color(0xFFF1F0F2),
+            Color(0xFFF1F0F2)
+        )
+    ),
+    gradient10 = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFF8F5FB),
+            Color(0xFFFAF6FD),
+        )
+    ),
 
     baseBlackOp40 = Color(0x66141614),
     baseBlackOp50 = Color(0x80141614),
 
     additionalGreen = Color(0xFFF1F7F1),
-    inverted = Color(0xFFFFFFFF)
+    inverted = Color(0xFFFFFFFF),
+
+    hiddenPrizeAccent = Color(0xFF9D4EDD),
+    hiddenPrizeBackground = Color(0xFFF5EDFC)
 
 )
 

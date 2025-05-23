@@ -45,7 +45,8 @@ class NfcManager @Inject constructor(
         adapter = NfcAdapter.getDefaultAdapter(activity)
         val intent = Intent(context, activity.javaClass)
         intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-        val pendingIntent = PendingIntent.getActivity(activity, 0, intent, PendingIntent.FLAG_MUTABLE)
+        val pendingIntent =
+            PendingIntent.getActivity(activity, 0, intent, PendingIntent.FLAG_MUTABLE)
         val filter = arrayOf(arrayOf("android.nfc.tech.IsoDep"))
         adapter.enableForegroundDispatch(activity, pendingIntent, null, filter)
     }

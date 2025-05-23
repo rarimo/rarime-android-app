@@ -46,9 +46,23 @@ class FileDownloaderInternal(private val context: Context) {
     suspend fun downloadFileBlocking(
         url: String,
         fileName: String,
+        fileHash: String = "",
         onProgress: (progress: Int) -> Unit
     ): File = suspendCancellableCoroutine { cont ->
         cont.invokeOnCancellation { cancel() }
+
+        val file = File(context.filesDir, fileName)
+
+        if (file.exists()) {
+            val isSuccess = FileIntegrityChecker.verifyFileMD5(file, fileHash)
+
+
+            if (isSuccess) {
+                onProgress(100)
+                cont.resume(file, onCancellation = {})
+                return@suspendCancellableCoroutine
+            }
+        }
 
         downloadFile(url, fileName) { isSuccess, isFinished, progress, e ->
             if (!isSuccess && e != null) {

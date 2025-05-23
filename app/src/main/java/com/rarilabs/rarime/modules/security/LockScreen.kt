@@ -79,7 +79,8 @@ fun LockScreen(
 
     /* METHODS */
     fun authenticateWithBiometrics() {
-        BiometricUtil.authenticate(context = context,
+        BiometricUtil.authenticate(
+            context = context,
             title = context.getString(R.string.biometric_authentication_title),
             subtitle = context.getString(R.string.biometric_authentication_subtitle),
             negativeButtonText = if (lockViewModule.isPasscodeEnabled) {
@@ -170,7 +171,9 @@ fun LockScreen(
                     enabled = !isAttemptsDisabled
                 ) {
                     AppIcon(
-                        id = R.drawable.ic_fingerprint, size = 24.dp, tint = RarimeTheme.colors.textPrimary
+                        id = R.drawable.ic_fingerprint,
+                        size = 24.dp,
+                        tint = RarimeTheme.colors.textPrimary
                     )
                 }
             }
@@ -197,7 +200,8 @@ fun LockScreen(
                     .padding(top = 32.dp)
             )
             if (isBiometricsAvailable) {
-                PrimaryButton(text = stringResource(R.string.unlock_btn),
+                PrimaryButton(
+                    text = stringResource(R.string.unlock_btn),
                     size = ButtonSize.Large,
                     modifier = Modifier.padding(top = 32.dp),
                     onClick = { authenticateWithBiometrics() })

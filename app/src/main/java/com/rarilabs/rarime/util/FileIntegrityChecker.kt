@@ -19,7 +19,7 @@ object FileIntegrityChecker {
 
         val md = MessageDigest.getInstance("MD5")
         FileInputStream(file).use { fis ->
-            val buffer = ByteArray(8192)  // Read in chunks of 8 KB for efficiency
+            val buffer = ByteArray(8192)
             var bytesRead: Int
             while (fis.read(buffer).also { bytesRead = it } != -1) {
                 md.update(buffer, 0, bytesRead)

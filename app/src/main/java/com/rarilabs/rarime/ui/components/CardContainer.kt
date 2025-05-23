@@ -40,7 +40,7 @@ fun CardContainer(
 @Preview(showBackground = true)
 @Composable
 private fun CardContainerPreview() {
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)

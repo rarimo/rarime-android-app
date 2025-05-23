@@ -9,6 +9,7 @@ import com.rarilabs.rarime.api.voting.models.Poll
 import com.rarilabs.rarime.manager.NotificationManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.PointsManager
+import com.rarilabs.rarime.manager.SettingsManager
 import com.rarilabs.rarime.manager.VotingManager
 import com.rarilabs.rarime.manager.WalletManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,6 +34,7 @@ class HomeViewModel @Inject constructor(
     private val pointsManager: PointsManager,
     notificationManager: NotificationManager,
     votingManager: VotingManager,
+    settingsManager: SettingsManager
 ) : AndroidViewModel(app) {
 
     val pointsToken = walletManager.pointsToken
@@ -40,16 +42,14 @@ class HomeViewModel @Inject constructor(
     private val allUserVotes: StateFlow<List<Poll>> = votingManager.allVotesFlow
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    val colorScheme = settingsManager.colorScheme
 
     val hasVotes: StateFlow<Boolean> =
-        allUserVotes
-            .map { it.isNotEmpty() }
-            .distinctUntilChanged()
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = false
-            )
+        allUserVotes.map { it.isNotEmpty() }.distinctUntilChanged().stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = false
+        )
 
     val passport = passportManager.passport
 

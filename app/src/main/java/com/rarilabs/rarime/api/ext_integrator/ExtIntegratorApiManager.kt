@@ -159,7 +159,10 @@ class ExtIntegratorApiManager @Inject constructor(
 
     }
 
-    suspend fun generateQueryProof(context: Context, queryProofParametersRequest: QueryProofGenResponse): ZkProof? {
+    suspend fun generateQueryProof(
+        context: Context,
+        queryProofParametersRequest: QueryProofGenResponse
+    ): ZkProof? {
         if (passportInfo.value == null || identityInfo.value == null) return null
 
         val assetContext: Context = context.createPackageContext("com.rarilabs.rarime", 0)
@@ -186,15 +189,21 @@ class ExtIntegratorApiManager @Inject constructor(
         val TimestampLowerbound = queryProofParametersRequest.data.attributes.timestamp_lower_bound
 
         val TimestampUpperbound =
-            if (identityInfo.value!!.issueTimestamp.toString().toULong() >= queryProofParametersRequest.data.attributes.timestamp_upper_bound.toULong())
+            if (identityInfo.value!!.issueTimestamp.toString()
+                    .toULong() >= queryProofParametersRequest.data.attributes.timestamp_upper_bound.toULong()
+            )
                 (identityInfo.value!!.issueTimestamp.toString().toULong() + 1u).toString()
             else
                 queryProofParametersRequest.data.attributes.timestamp_upper_bound
 
-        val IdentityCounterLowerbound = queryProofParametersRequest.data.attributes.identity_counter_lower_bound.toString()
-        val IdentityCounterUpperbound = (passportInfo.value!!.identityReissueCounter.toLong() + 1).toString()
-        val ExpirationDateLowerbound = queryProofParametersRequest.data.attributes.expiration_date_lower_bound
-        val ExpirationDateUpperbound = queryProofParametersRequest.data.attributes.expiration_date_upper_bound // largets_identity_counter_upper_bound
+        val IdentityCounterLowerbound =
+            queryProofParametersRequest.data.attributes.identity_counter_lower_bound.toString()
+        val IdentityCounterUpperbound =
+            (passportInfo.value!!.identityReissueCounter.toLong() + 1).toString()
+        val ExpirationDateLowerbound =
+            queryProofParametersRequest.data.attributes.expiration_date_lower_bound
+        val ExpirationDateUpperbound =
+            queryProofParametersRequest.data.attributes.expiration_date_upper_bound // largets_identity_counter_upper_bound
         val BirthDateLowerbound = queryProofParametersRequest.data.attributes.birth_date_lower_bound
         val BirthDateUpperbound = queryProofParametersRequest.data.attributes.birth_date_upper_bound
         val CitizenshipMask = queryProofParametersRequest.data.attributes.citizenship_mask

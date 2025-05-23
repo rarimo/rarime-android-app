@@ -82,15 +82,16 @@ fun FieldTypeDatePicker(
     }
 
     PopupDatePicker(state) { toggle ->
-        Row(modifier = Modifier
-            .clickable { toggle() }
-            .border(1.dp, RarimeTheme.colors.componentPrimary, RoundedCornerShape(12.dp))
-            .defaultMinSize(
-                minWidth = OutlinedTextFieldDefaults.MinWidth,
-                minHeight = OutlinedTextFieldDefaults.MinHeight
-            )
-            .padding(OutlinedTextFieldDefaults.contentPadding())
-            .then(modifier),
+        Row(
+            modifier = Modifier
+                .clickable { toggle() }
+                .border(1.dp, RarimeTheme.colors.componentPrimary, RoundedCornerShape(12.dp))
+                .defaultMinSize(
+                    minWidth = OutlinedTextFieldDefaults.MinWidth,
+                    minHeight = OutlinedTextFieldDefaults.MinHeight
+                )
+                .padding(OutlinedTextFieldDefaults.contentPadding())
+                .then(modifier),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically) {
             Text(

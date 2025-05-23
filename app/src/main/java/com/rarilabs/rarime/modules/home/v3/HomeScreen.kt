@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.modules.home.v3
 
-import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -36,17 +35,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
 import com.rarilabs.rarime.modules.home.v3.model.CardType
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.ClaimCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.FreedomtoolCollapsedCard
+import com.rarilabs.rarime.modules.home.v3.ui.collapsed.HiddenPrizeCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.IdentityCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.LikenessCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.components.HomeHeader
 import com.rarilabs.rarime.modules.home.v3.ui.components.VerticalPageIndicator
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.ClaimExpandedCard
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.FreedomtoolExpandedCard
+import com.rarilabs.rarime.modules.home.v3.ui.expanded.HiddenPrizeExpandedCard
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.IdentityExpandedCard
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.LikenessExpandedCard
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
@@ -75,6 +77,7 @@ fun HomeScreenV3(
     val notificationsCount by remember(notifications) {
         derivedStateOf { notifications.count { it.isActive } }
     }
+    val colorScheme by viewModel.colorScheme.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.initHomeData()
@@ -89,7 +92,9 @@ fun HomeScreenV3(
             if (currentPointsBalance != null && currentPointsBalance != 0L) {
                 add(CardType.CLAIM)
             }
+            add(CardType.LIKENESS)
             add(CardType.CLAIM)
+            add(CardType.HIDDEN_PRIZE)
         }
     }
 
@@ -103,6 +108,7 @@ fun HomeScreenV3(
         sharedTransitionScope = sharedTransitionScope,
         setVisibilityOfBottomBar = setVisibilityOfBottomBar,
         currentPointsBalance = currentPointsBalance,
+        colorScheme = colorScheme
     )
 }
 
@@ -117,7 +123,8 @@ fun HomeScreenContent(
     visibleCards: List<CardType>,
     userPassportName: String?,
     notificationsCount: Int?,
-    currentPointsBalance: Long?
+    currentPointsBalance: Long?,
+    colorScheme: AppColorScheme
 ) {
     var selectedCardType by remember { mutableStateOf<CardType?>(null) }
     LaunchedEffect(selectedCardType) {
@@ -147,8 +154,7 @@ fun HomeScreenContent(
                     HomeHeader(
                         notificationsCount = notificationsCount,
                         name = userPassportName,
-                        onNotificationClick = { navigate(Screen.NotificationsList.route) }
-                    )
+                        onNotificationClick = { navigate(Screen.NotificationsList.route) })
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
@@ -211,6 +217,12 @@ fun HomeScreenContent(
                                     modifier = baseCollapsedModifier,
                                     currentPointsBalance = currentPointsBalance
                                 )
+
+                                CardType.HIDDEN_PRIZE -> HiddenPrizeCollapsedCard(
+                                    collapsedCardProps = collapsedCardProps,
+                                    modifier = baseCollapsedModifier,
+                                    colorScheme = colorScheme
+                                )
                                 // TODO: Implement rest collapsed cards here
                             }
                         }
@@ -234,8 +246,7 @@ fun HomeScreenContent(
                 }
 
                 Box(
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
+                    modifier = Modifier.align(Alignment.TopCenter)
                 ) {
                     // Common props for every expanded card
                     val expandedCardProps = BaseCardProps.Expanded(
@@ -270,6 +281,12 @@ fun HomeScreenContent(
                             innerPaddings = innerPaddings,
                             navigate = navigate,
                             currentPointsBalance = currentPointsBalance
+                        )
+
+                        CardType.HIDDEN_PRIZE -> HiddenPrizeExpandedCard(
+                            expandedCardProps = expandedCardProps,
+                            innerPaddings = innerPaddings,
+                            navigate = navigate
                         )
                         // TODO: Implement rest expanded cards here
                     }
@@ -311,7 +328,8 @@ private fun HomeScreenPreview() {
                 notificationsCount = 2,
                 innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
                 visibleCards = CardType.entries,
-                currentPointsBalance = 200L
+                currentPointsBalance = 200L,
+                colorScheme = AppColorScheme.SYSTEM
             )
         }
     }

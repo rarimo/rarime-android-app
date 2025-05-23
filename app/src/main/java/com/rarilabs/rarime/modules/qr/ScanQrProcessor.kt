@@ -25,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -57,7 +56,9 @@ fun ScanQrProcessor(
 
     if (cameraPermissionState.status.isGranted) {
         QrCodeScanner(
-            modifier = Modifier.fillMaxSize().then(modifier),
+            modifier = Modifier
+                .fillMaxSize()
+                .then(modifier),
             onCompletion = onCompletion,
             flashlightOn = false
         )
@@ -96,7 +97,7 @@ fun ScanQrProcessorContent(
     flashlightOn: Boolean = false
 ) {
     val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     var preview by remember { mutableStateOf<Preview?>(null) }
 
     var camera by remember { mutableStateOf<Camera?>(null) }
@@ -154,7 +155,7 @@ fun ScanQrProcessorContent(
                         }
                     val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
-                    val barcodeAnalyser = BarcodeAnalyser() { barcodes ->
+                    val barcodeAnalyser = BarcodeAnalyser { barcodes ->
                         barcodes.forEach { barcode ->
                             barcode.rawValue?.let { barcodeValue ->
                                 onCompletion(barcodeValue)
@@ -205,7 +206,8 @@ class BarcodeAnalyser(
         val options = BarcodeScannerOptions.Builder()
             .setBarcodeFormats(
                 Barcode.FORMAT_QR_CODE,
-                Barcode.FORMAT_AZTEC)
+                Barcode.FORMAT_AZTEC
+            )
             .build()
 
         val scanner = BarcodeScanning.getClient(options)

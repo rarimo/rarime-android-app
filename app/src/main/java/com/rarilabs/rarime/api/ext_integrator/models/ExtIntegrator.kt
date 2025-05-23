@@ -24,7 +24,7 @@ data class RequestDataResponseData(
 
 @JsonClass(generateAdapter = true)
 data class RequestDataResponseAttributes(
-    @Json(name = "request_data")  val requestData: String,
+    @Json(name = "request_data") val requestData: String,
 )
 
 @JsonClass(generateAdapter = true)

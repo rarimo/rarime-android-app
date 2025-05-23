@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.Rect
 import androidx.annotation.OptIn
 import androidx.camera.core.ExperimentalGetImage
+import androidx.core.graphics.scale
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
@@ -66,10 +67,8 @@ class BionetAnalizer {
                         squareRect.top,
                         cropSize,
                         cropSize
-                    ).let { bmp ->
-                        Bitmap.createScaledBitmap(bmp, 40, 40, true)
-                            .copy(Bitmap.Config.ARGB_8888, false)
-                    }
+                    ).scale(40, 40)
+                        .copy(Bitmap.Config.ARGB_8888, false)
 
                     // --- в серую шкалу ---
                     val w = faceBmp.width

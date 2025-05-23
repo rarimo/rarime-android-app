@@ -71,7 +71,8 @@ fun ScanMRZStep(onNext: (MRZInfo) -> Unit, onClose: () -> Unit) {
                 )
             } else {
                 if (isPermissionDialogShown) {
-                    AppAlertDialog(title = stringResource(R.string.camera_permission_title),
+                    AppAlertDialog(
+                        title = stringResource(R.string.camera_permission_title),
                         text = stringResource(R.string.camera_permission_description),
                         onConfirm = {
                             cameraPermissionState.launchPermissionRequest()

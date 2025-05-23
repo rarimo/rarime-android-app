@@ -301,7 +301,7 @@ fun RewardsScreenUserStatistic(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     val level =
-                        getNormalizeLeveling(pointsWalletAsset.balance.value.toDouble()).find {
+                        getNormalizeLeveling(pointsWalletAsset.balance.toDouble()).find {
                             it.isCurrentLevel
                         }
 

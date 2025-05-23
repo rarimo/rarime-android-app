@@ -52,7 +52,8 @@ class AirDropManager @Inject constructor(
         val zkp = ZKPUseCase(context, assetManager)
         val stateKeeperContract = rarimoContractManager.getStateKeeper()
 
-        val registrationSmtContract = rarimoContractManager.getPoseidonSMT(BaseConfig.REGISTRATION_SMT_CONTRACT_ADDRESS)
+        val registrationSmtContract =
+            rarimoContractManager.getPoseidonSMT(BaseConfig.REGISTRATION_SMT_CONTRACT_ADDRESS)
 
         val proofIndex = Identity.calculateProofIndex(
             registrationProof.pub_signals[0], registrationProof.pub_signals[3]
@@ -131,7 +132,11 @@ class AirDropManager @Inject constructor(
         val registrationProof = dataStoreManager.readRegistrationProof()!!
 
         withContext(Dispatchers.Default) {
-            val proof = generateAirdropQueryProof(registrationProof, eDocument, identityManager.privateKeyBytes!!)
+            val proof = generateAirdropQueryProof(
+                registrationProof,
+                eDocument,
+                identityManager.privateKeyBytes!!
+            )
 
             createAirDrop(proof)
 
@@ -159,7 +164,8 @@ class AirDropManager @Inject constructor(
         try {
             val response = airDropAPIManager.getAirDropByNullifier(nullifier)
 
-            _isAirdropClaimed.value = response.data.attributes.status == AirDropStatuses.COMPLETED.value
+            _isAirdropClaimed.value =
+                response.data.attributes.status == AirDropStatuses.COMPLETED.value
         } catch (e: Exception) {
             _isAirdropClaimed.value = false
         }

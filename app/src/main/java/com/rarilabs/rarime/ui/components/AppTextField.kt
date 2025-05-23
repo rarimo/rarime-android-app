@@ -21,7 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.text.isDigitsOnly
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 open class AppTextFieldState(initialText: String, initialErrorMessage: String = "") {

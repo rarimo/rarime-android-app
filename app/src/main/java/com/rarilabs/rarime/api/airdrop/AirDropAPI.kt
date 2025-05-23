@@ -1,8 +1,7 @@
 package com.rarilabs.rarime.api.airdrop
 
-import com.rarilabs.rarime.BaseConfig
-import com.rarilabs.rarime.api.airdrop.models.AirdropEventParamsBody
 import com.rarilabs.rarime.api.airdrop.models.AirDropResponseBody
+import com.rarilabs.rarime.api.airdrop.models.AirdropEventParamsBody
 import com.rarilabs.rarime.api.airdrop.models.CreateAirDropBody
 import retrofit2.http.Body
 import retrofit2.http.GET

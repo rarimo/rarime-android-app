@@ -30,8 +30,8 @@ android {
         applicationId = "com.rarilabs.rarime"
         minSdk = 27
         targetSdk = 34
-        versionCode = 86
-        versionName = "2.2.33-internal"
+        versionCode = 91
+        versionName = "2.2.38-internal"
 
         externalNativeBuild {
             cmake {
@@ -155,6 +155,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.view)
+    implementation(libs.face.mesh.detection)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -243,13 +244,13 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-core:9.6.1")
 
-    implementation ("com.google.android.gms:play-services-auth:20.7.0")
-    implementation ("com.google.firebase:firebase-auth")
-    implementation ("com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0")
-    implementation ("com.google.api-client:google-api-client:2.0.0")
-    implementation ("com.google.api-client:google-api-client-android:1.32.1")
-    implementation ("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
-    implementation ("com.google.auth:google-auth-library-oauth2-http:1.19.0")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0")
+    implementation("com.google.api-client:google-api-client:2.0.0")
+    implementation("com.google.api-client:google-api-client-android:1.32.1")
+    implementation("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.19.0")
     implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
     implementation("androidx.hilt:hilt-work:1.0.0") // ?
     implementation("androidx.work:work-runtime-ktx:2.9.1")
@@ -265,4 +266,5 @@ dependencies {
 
     implementation("io.coil-kt:coil-compose:2.0.0-rc01")
 
+    implementation("nl.dionsegijn:konfetti-compose:2.0.5")
 }

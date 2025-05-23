@@ -72,7 +72,8 @@ fun RevocationStep(
         }
     }
 
-    ScanPassportLayout(step = 2,
+    ScanPassportLayout(
+        step = 2,
         title = stringResource(R.string.nfc_reader_title),
         text = stringResource(R.string.nfc_reader_text),
         onClose = {

@@ -91,7 +91,8 @@ fun PassportCard(
         ) {
             StatusCard(modifier = Modifier.padding(top = 20.dp), passportStatus)
         }
-        Column(verticalArrangement = Arrangement.spacedBy(32.dp),
+        Column(
+            verticalArrangement = Arrangement.spacedBy(32.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .background(look.getBackgroundColor(), RoundedCornerShape(24.dp))
@@ -246,7 +247,8 @@ private fun PassportCardSettings(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 PassportCardLook.entries.forEach { item ->
-                    PassportLookOption(look = item,
+                    PassportLookOption(
+                        look = item,
                         isActive = item == look,
                         modifier = Modifier.weight(1f),
                         onClick = { onLookChange(item) })
@@ -475,17 +477,18 @@ private fun PassportCardPreview() {
         )
     }
 
-    PassportCard(passport = EDocument(
-        personDetails = PersonDetails(
-            name = "John",
-            surname = "Doe",
-            birthDate = "01.01.1990",
-            expiryDate = "01.01.2025",
-            nationality = "USA",
-            serialNumber = "123456789",
-            faceImageInfo = null
-        )
-    ),
+    PassportCard(
+        passport = EDocument(
+            personDetails = PersonDetails(
+                name = "John",
+                surname = "Doe",
+                birthDate = "01.01.1990",
+                expiryDate = "01.01.2025",
+                nationality = "USA",
+                serialNumber = "123456789",
+                faceImageInfo = null
+            )
+        ),
         look = look,
         identifiers = identifiers,
         isIncognito = isIncognito,

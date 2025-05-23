@@ -26,16 +26,16 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.lightspark.composeqr.QrCodeColors
+import com.lightspark.composeqr.QrCodeView
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.data.tokens.PreviewerToken
+import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.wallet.view_model.WalletReceiveViewModel
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.SecondaryTextButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
-import com.lightspark.composeqr.QrCodeColors
-import com.lightspark.composeqr.QrCodeView
-import com.rarilabs.rarime.data.tokens.PreviewerToken
-import com.rarilabs.rarime.manager.WalletAsset
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
@@ -69,7 +69,10 @@ fun WalletReceiveScreenContent(
 
     WalletRouteLayout(
         title = stringResource(R.string.wallet_receive_title, selectedWalletAsset.token.symbol),
-        description = stringResource(R.string.wallet_receive_description, selectedWalletAsset.token.symbol),
+        description = stringResource(
+            R.string.wallet_receive_description,
+            selectedWalletAsset.token.symbol
+        ),
         onBack = onBack
     ) {
         CardContainer(modifier = Modifier.fillMaxWidth()) {
@@ -146,7 +149,7 @@ private fun WalletReceiveScreenPreview() {
         onBack = {},
         selectedWalletAsset = WalletAsset(
             userAddress = "rarimo1000000000000000000000000000000000",
-            token = PreviewerToken("RMO", "RARARARA", "RMO", 18, )
+            token = PreviewerToken("RMO", "RARARARA", "RMO", 18)
         )
     )
 }

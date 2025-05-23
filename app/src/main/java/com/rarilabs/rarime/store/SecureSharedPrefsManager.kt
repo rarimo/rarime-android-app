@@ -83,6 +83,9 @@ interface SecureSharedPrefsManager {
     fun saveDeferredReferralCode(referralCode: String)
     fun getDeferredReferralCode(): String?
 
+    fun saveGuessReferralCode(referralCode: String)
+    fun getGuessReferralCode(): String?
+
     fun saveLightRegistrationData(lightRegistrationData: LightRegistrationData)
     fun getLightRegistrationData(): LightRegistrationData?
 

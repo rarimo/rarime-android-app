@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +28,7 @@ fun ThemeScreen(
     viewModel: ThemeViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
-    val colorScheme by viewModel.colorScheme
+    val colorScheme by viewModel.colorScheme.collectAsState()
     ProfileRouteLayout(title = stringResource(R.string.theme), onBack = onBack) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             AppColorScheme.entries.forEach { scheme ->

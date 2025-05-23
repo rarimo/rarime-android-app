@@ -453,6 +453,7 @@
     <string name="poll_voting_end_timer">Voting ends in %1$s</string>
     <string name="poll_voting_start_timer">Voting starts in %1$s</string>
     <string name="failed_to_parse_qr_code">Failed to parse QR-Code</string>
+    <string name="hidden_price_expanded_cart_description">You can have 3 scan attempts every 24 hours, but your can also earn extra scans by sharing and inviting friends</string>
     <string name="your_device">Your Device</string>
     <string name="your_identity">Your Identity</string>
     <string name="nothing_leaves_this_device">* Nothing leaves this device</string>
@@ -473,5 +474,36 @@
     <string name="soon">Soon</string>
     <string name="don_t_sell_my_face_data">Don’t use my\nface at all</string>
     <string name="ask_me_every_time">Ask me\nfirst</string>
+    <string name="hidden_prize_add_scans_description_enabled">Invite a friend and get 1 bonus scan for each invited friend, or share the post and get 1 bonus scan as a one-time reward.</string>
+    <string name="add_scans_bottom_sheet_title_enebled">Bonus Scan</string>
+    <string name="add_scans_bottom_sheet_title_disablet">Available scan</string>
+    <string name="hidden_prize_add_scans_description_disablet">You have 3 scan attempts every 24 hours, but you can also unlock bonus chances by inviting friends and sharing.</string>
+    <string name="hidden_prize_title_share_row">Share on socials</string>
+    <string name="hidden_prize_share_row_description">+1 scan</string>
+    <string name="hidden_prize_share_row_button_label">Share</string>
+    <string name="hidden_prize_invite_row_title">Invite a friend</string>
+    <string name="hidden_prize_invite_row_description">+1 scan</string>
+    <string name="hidden_prize_invite_row_button_label">Invite</string>
+    <string name="hidden_prize_wrong_screen_description_1">The face you scanned is not the correct one.</string>
+    <string name="hidden_prize_wrong_screen_description_2">You can try again</string>
+    <string name="hidden_prize_wrong_screen_rescan_btn">Scan again</string>
+    <string name="hidden_prize_success_screen_title">Congrats!</string>
+    <string name="hidden_prize_success_screen_description">you\'ve found the hidden keys</string>
+    <string name="hidden_prize_success_screen_prize">Your prize</string>
+    <string name="hidden_prize_success_screen_wallet_btn">View wallet</string>
+    <string name="hidden_prize_success_share_btn">Share</string>
+    <string name="hidden_prize_wrong_screen_title">Wrong face…</string>
+    <string name="winner_face_card_image_description">Winner face</string>
+    <string name="winner_face_card_title">Winning face:</string>
+    <string name="winner_face_card_winner_lbl">Winner:</string>
+    <string name="winner_face_card_prize_lbl">Prize:</string>
+    <string name="hidden_prize_loading_ml_title">Processing</string>
+    <string name="hidden_prize_loading_ml_description">"Downloading some data for the ml generation "</string>
+    <string name="hidden_prize_loading_zk_title">Claiming</string>
+    <string name="hidden_prize_loading_zk_description">"Downloading some data for the proof generation and send the proof on chain "</string>
+    <string name="hidden_prize_finish_screen_title">Finished</string>
+    <string name="hidden_prize_finish_screen_description">The prize has been successfully credited to your wallet.</string>
+    <string name="hidden_prize_congrats_share_btn">Claim</string>
+    <string name="hidden_prize_wrong_screen_back_home">Home</string>
 
 </resources>

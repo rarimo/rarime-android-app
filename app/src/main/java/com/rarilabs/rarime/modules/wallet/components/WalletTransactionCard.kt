@@ -80,7 +80,7 @@ fun WalletTransactionCard(
 @Preview
 @Composable
 fun WalletTransactionCardPreview() {
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(RarimeTheme.colors.backgroundPrimary)

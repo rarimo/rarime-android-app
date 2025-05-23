@@ -47,10 +47,22 @@ object DateUtil {
         for (formatter in formatters) {
             try {
                 return when (formatter) {
-                    DateTimeFormatter.ISO_OFFSET_DATE_TIME -> OffsetDateTime.parse(dateStr, formatter).toLocalDateTime()
-                    DateTimeFormatter.ISO_ZONED_DATE_TIME -> ZonedDateTime.parse(dateStr, formatter).toLocalDateTime()
+                    DateTimeFormatter.ISO_OFFSET_DATE_TIME -> OffsetDateTime.parse(
+                        dateStr,
+                        formatter
+                    ).toLocalDateTime()
+
+                    DateTimeFormatter.ISO_ZONED_DATE_TIME -> ZonedDateTime.parse(dateStr, formatter)
+                        .toLocalDateTime()
+
                     DateTimeFormatter.ISO_LOCAL_DATE_TIME -> LocalDateTime.parse(dateStr, formatter)
-                    DateTimeFormatter.ISO_INSTANT -> LocalDateTime.ofInstant(OffsetDateTime.parse(dateStr, formatter).toInstant(), ZoneOffset.UTC)
+                    DateTimeFormatter.ISO_INSTANT -> LocalDateTime.ofInstant(
+                        OffsetDateTime.parse(
+                            dateStr,
+                            formatter
+                        ).toInstant(), ZoneOffset.UTC
+                    )
+
                     else -> null
                 }
             } catch (e: DateTimeParseException) {
@@ -92,6 +104,7 @@ object DateUtil {
             ?: return ""
         return formatDate(date, DateFormatType.DMY)
     }
+
     fun convertToMrzDate(date: String?): String {
         val formatter = SimpleDateFormat(DateFormatType.DMY.pattern, Locale.US)
         val parsedDate = stringToDate(date, formatter) ?: return ""

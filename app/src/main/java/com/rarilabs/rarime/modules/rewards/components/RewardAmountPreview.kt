@@ -26,7 +26,7 @@ fun RewardAmountPreview(
         modifier = modifier
             .padding(vertical = 2.dp, horizontal = 8.dp)
     ) {
-        Row (
+        Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {

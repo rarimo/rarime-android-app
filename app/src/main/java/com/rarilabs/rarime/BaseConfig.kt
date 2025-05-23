@@ -52,6 +52,11 @@ interface IConfig {
 
     val FACE_REGISTRY_ZKEY_URL: String
 
+
+    val FACE_RECOGNITION_MODEL_URL: String
+
+    val GUESS_CELEBRITY_CONTRACT_ADDRESS: String
+
     val registerIdentity_1_256_3_5_576_248_NA: String
     val registerIdentity_1_256_3_6_576_248_1_2432_5_296: String
     val registerIdentity_2_256_3_6_336_264_21_2448_6_2008: String
@@ -166,9 +171,14 @@ object TestNetConfig : IConfig {
 
     override val FACE_REGISTRY_ADDRESS: String = "0x3C0f27AC1817820C1BA41337B53090652aE4F448"
 
+    override val GUESS_CELEBRITY_CONTRACT_ADDRESS: String =
+        "0x411AA3eF21AdC9e84c60e17451B0732119C8f0c7"
+
 
     override val FACE_REGISTRY_ZKEY_URL: String =
         "https://storage.googleapis.com/rarimo-store/zkey/circuit_final.zkey"
+    override val FACE_RECOGNITION_MODEL_URL: String =
+        "https://storage.googleapis.com/rarimo-store/face-recognition/face-recognition.tflite"
 
     override val registerIdentity_1_256_3_5_576_248_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_5_576_248_NA-download.zip"
@@ -314,8 +324,17 @@ object MainnetConfig : IConfig {
 
     override val FACE_REGISTRY_ADDRESS: String = "0x15DCd57B70D97F1D1F220ccb4e6B8E886aF3e3B9"
 
+
+    override val GUESS_CELEBRITY_CONTRACT_ADDRESS: String =
+        "0x411AA3eF21AdC9e84c60e17451B0732119C8f0c7"
+
+
     override val FACE_REGISTRY_ZKEY_URL: String =
         "https://storage.googleapis.com/rarimo-store/zkey/circuit_final.zkey"
+
+    override val FACE_RECOGNITION_MODEL_URL: String =
+        "https://storage.googleapis.com/rarimo-store/face-recognition/face-recognition.tflite"
+
 
     override val registerIdentity_1_256_3_5_576_248_NA: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_1_256_3_5_576_248_NA-download.zip"

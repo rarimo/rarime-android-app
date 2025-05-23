@@ -122,7 +122,10 @@ class ProofViewModel @Inject constructor(
         )
 
         val response = withContext(Dispatchers.IO) {
-            registrationManager.relayerRegister(callData.calldata, BaseConfig.REGISTER_CONTRACT_ADDRESS)
+            registrationManager.relayerRegister(
+                callData.calldata,
+                BaseConfig.REGISTER_CONTRACT_ADDRESS
+            )
         }
 
         ErrorHandler.logDebug(
@@ -511,9 +514,10 @@ class ProofViewModel @Inject constructor(
             eDocument.dg1!!.decodeHexString(), 2, smartChunkingToBlockSize.toLong()
         )
 
-        val inputs = RegisterIdentityInputs(skIdentity = Numeric.toHexStringWithPrefix(
-            BigInteger(privateKeyBytes)
-        ),
+        val inputs = RegisterIdentityInputs(
+            skIdentity = Numeric.toHexStringWithPrefix(
+                BigInteger(privateKeyBytes)
+            ),
             encapsulatedContent = encapsulatedChunks,
             signedAttributes = signedAttrChunks,
             pubkey = pubKeyChunks,
