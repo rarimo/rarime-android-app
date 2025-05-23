@@ -85,17 +85,13 @@ fun HomeScreenV3(
 
     val visibleCards = remember(hasVotes) {
         buildList {
-//            if (hasVotes) {
-//                add(CardType.FREEDOMTOOL)
-//            }
-//            add(CardType.IDENTITY)
-//            if (currentPointsBalance != null && currentPointsBalance != 0L) {
-//                add(CardType.CLAIM)
-//            }
-//            add(CardType.CLAIM)
-            // TODO: Remove after tests and uncomment code above
-            add(CardType.FREEDOMTOOL)
+            if (hasVotes) {
+                add(CardType.FREEDOMTOOL)
+            }
             add(CardType.IDENTITY)
+            if (currentPointsBalance != null && currentPointsBalance != 0L) {
+                add(CardType.CLAIM)
+            }
             add(CardType.LIKENESS)
             add(CardType.CLAIM)
             add(CardType.HIDDEN_PRIZE)
@@ -227,6 +223,7 @@ fun HomeScreenContent(
                                     modifier = baseCollapsedModifier,
                                     colorScheme = colorScheme
                                 )
+                                // TODO: Implement rest collapsed cards here
                             }
                         }
                         VerticalPageIndicator(
@@ -310,7 +307,8 @@ fun HomeScreenContent(
                                 awaitPointerEvent()
                             }
                         }
-                    })
+                    }
+            )
         }
     }
 }

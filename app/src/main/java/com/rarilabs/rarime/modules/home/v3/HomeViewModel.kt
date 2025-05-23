@@ -39,9 +39,8 @@ class HomeViewModel @Inject constructor(
 
     val pointsToken = walletManager.pointsToken
 
-    private val allUserVotes: StateFlow<List<Poll>> = votingManager.allVotesFlow.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList()
-    )
+    private val allUserVotes: StateFlow<List<Poll>> = votingManager.allVotesFlow
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     val colorScheme = settingsManager.colorScheme
 
