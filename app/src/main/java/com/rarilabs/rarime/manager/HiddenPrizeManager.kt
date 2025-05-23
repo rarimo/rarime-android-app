@@ -8,6 +8,7 @@ import com.google.gson.GsonBuilder
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.hiddenPrize.HiddenPrizeApiManager
 import com.rarilabs.rarime.api.hiddenPrize.models.Included
+import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.FileDownloaderInternal
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.bionet.BinetAnalyzer
@@ -25,6 +26,7 @@ import java.math.BigInteger
 import javax.inject.Inject
 import kotlin.math.pow
 
+class WrongFaceException : Exception()
 
 data class UserStats(
     val resetTime: Long,
@@ -37,19 +39,36 @@ data class Shares(
     val isSocialShare: Boolean, val referralsCount: Int, val referralsLimit: Int
 )
 
+enum class CelebrityStatus(val value: String) {
+    ACTIVE("active"),
+    COMPLETED("completed"),
+    MAINTENANCE("maintenance");
+
+    companion object {
+        fun fromValue(value: String?): CelebrityStatus? =
+            entries.find { it.value.equals(value, ignoreCase = true) }
+    }
+}
+
 data class Celebrity(
     val title: String,
     val description: String,
     val status: String,
     val image: String,
-    val hint: String
-)
+    val hint: String,
+    val winner: String
+) {
+    fun getCelebrityStatus(): CelebrityStatus? {
+        return CelebrityStatus.fromValue(this.status)
+    }
+}
 
 class HiddenPrizeManager @Inject constructor(
     @ApplicationContext private val application: Context,
     private val apiManager: HiddenPrizeApiManager,
     private val identityManager: IdentityManager,
-    private val rarimoContractManager: RarimoContractManager
+    private val rarimoContractManager: RarimoContractManager,
+    private val sharedPrefsManager: SecureSharedPrefsManager
 ) {
 
     private val tfLiteFileName: String = "face-recognition.tflite"
@@ -132,7 +151,8 @@ class HiddenPrizeManager @Inject constructor(
                     description = it.description,
                     status = it.status,
                     image = it.image ?: "",
-                    hint = it.hint ?: ""
+                    hint = it.hint ?: "",
+                    winner = it.winner ?: ""
                 )
             }
 
@@ -166,7 +186,9 @@ class HiddenPrizeManager @Inject constructor(
                     description = it.description,
                     status = it.status,
                     image = it.image ?: "",
-                    hint = it.hint ?: ""
+                    hint = it.hint ?: "",
+
+                    winner = it.winner ?: ""
                 )
             }
 
@@ -212,7 +234,7 @@ class HiddenPrizeManager @Inject constructor(
             val backendFeatures = submitCelebrityGuess(features.toList())
 
             if (backendFeatures == null) {
-                throw Exception("no")
+                throw WrongFaceException()
             } else {
                 _downloadProgressZkey.value = 0
                 return@withContext backendFeatures
@@ -300,4 +322,13 @@ class HiddenPrizeManager @Inject constructor(
             }
         }
     }
+
+    fun saveReferralCode(ref: String) {
+        sharedPrefsManager.saveDeferredReferralCode(ref)
+    }
+
+    fun getReferralCode(): String? {
+        return sharedPrefsManager.getGuessReferralCode()
+    }
+
 }

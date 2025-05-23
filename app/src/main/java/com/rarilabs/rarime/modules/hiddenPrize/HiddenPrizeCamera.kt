@@ -48,6 +48,7 @@ import com.google.mlkit.vision.facemesh.FaceMeshDetection
 import com.google.mlkit.vision.facemesh.FaceMeshDetector
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
+import com.rarilabs.rarime.manager.WrongFaceException
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
@@ -143,7 +144,6 @@ fun HiddenPrizeCamera(
                 onClose = { navigate(Screen.Main.Home.route) },
                 onRetry = {
                     selectedBitmap = null
-
                     currentStep = HiddenPrizeCameraStep.CAMERA
                 })
         }
@@ -177,9 +177,12 @@ fun HiddenPrizeCamera(
                 try {
                     featuresBackend = processML(selectedBitmap!!)
                     currentStep = HiddenPrizeCameraStep.CONGRATS
-                } catch (e: Exception) {
+                } catch (e: WrongFaceException) {
                     Log.e("PROCESSING_ML", "smth went wrong", e)
                     currentStep = HiddenPrizeCameraStep.WRONG
+                } catch (e: Exception) {
+                    Log.e("PROCESSING_ML", "smth went wrong", e)
+                    currentStep = HiddenPrizeCameraStep.ERROR
                 }
             }
         }
@@ -198,6 +201,7 @@ fun HiddenPrizeCamera(
                     processZK(selectedBitmap!!, featuresBackend)
                     currentStep = HiddenPrizeCameraStep.FINISH
                 } catch (e: Exception) {
+                    currentStep = HiddenPrizeCameraStep.ERROR
                     Log.e("PROCESSING_ZKP", "smth went wrong", e)
                 }
             }

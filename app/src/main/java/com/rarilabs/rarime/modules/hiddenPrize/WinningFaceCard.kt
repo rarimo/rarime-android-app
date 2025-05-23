@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
@@ -32,6 +33,7 @@ import coil.request.ImageRequest
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.theme.AppTheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.WalletUtil
 
 @Composable
 fun WinningFaceCard(
@@ -115,7 +117,13 @@ fun WinningFaceCard(
                         )
                         Spacer(Modifier.weight(1f))
                         Text(
-                            text = winnerAddress,
+                            text = WalletUtil.formatAddress(
+                                winnerAddress,
+                                charsStartAmount = 7,
+                                charsEndAmount = 4
+                            ),
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
                             style = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary),
                             textDecoration = TextDecoration.Underline
                         )
@@ -180,11 +188,11 @@ fun WinningFaceCardPreview_DarkMode() {
             verticalArrangement = Arrangement.Center
         ) {
             WinningFaceCard(
-                imageSrc = "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg",
+                imageSrc = "",
                 placeholderRes = R.drawable.drawable_digital_likeness,
                 name = "Vitalik Buterin",
                 description = "Ethereum co-founder",
-                winnerAddress = "0x00000...0000",
+                winnerAddress = "0x0000000000000",
                 prizeAmount = 0.3F,
                 prizeSymbol = {
                     Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")

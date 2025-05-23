@@ -2,6 +2,7 @@
 
 package com.rarilabs.rarime.modules.home.v3.ui.expanded
 
+import WinningFaceCard
 import android.Manifest
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,6 +33,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -38,25 +41,30 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.manager.Celebrity
+import com.rarilabs.rarime.manager.CelebrityStatus
 import com.rarilabs.rarime.modules.hiddenPrize.AddScanBottomSheet
 import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeCamera
 import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeViewModel
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BG_HAND_HIDDEN_PRIZE_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
+import com.rarilabs.rarime.modules.home.v3.model.CardType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
@@ -69,7 +77,9 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.TipAlert
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
+import com.rarilabs.rarime.ui.theme.AppTheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -81,6 +91,11 @@ fun HiddenPrizeExpandedCard(
     viewModel: HiddenPrizeViewModel = hiltViewModel(),
     navigate: (String) -> Unit
 ) {
+
+    LaunchedEffect(Unit) {
+        viewModel.loadUserInfo()
+    }
+
     val downloadProgress by viewModel.downloadProgress.collectAsState()
     val celebrity by viewModel.celebrity.collectAsState()
     val showFaceScan = rememberAppSheetState()
@@ -95,6 +110,7 @@ fun HiddenPrizeExpandedCard(
     val shares by viewModel.shares.collectAsState()
     val colorScheme by viewModel.colorScheme.collectAsState()
 
+
     val dayAttemptsCount by remember {
         derivedStateOf {
             userStats?.totalAttemptsCount ?: 0
@@ -107,8 +123,8 @@ fun HiddenPrizeExpandedCard(
     }
     val isAddScanEnabled by remember {
         derivedStateOf {
-            shares?.isSocialShare != true || ((shares?.referralsCount
-                ?: 0) < (shares?.referralsLimit ?: 0))
+            !(shares?.isSocialShare ?: true) || (shares?.referralsCount
+                ?: 0) != (shares?.referralsLimit ?: 0)
         }
     }
     AppBottomSheet(state = showFaceScan, shape = RectangleShape, isHeaderEnabled = false) {
@@ -125,26 +141,39 @@ fun HiddenPrizeExpandedCard(
         }
     }
 
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(), onResult = {})
-
-    AppBottomSheet(state = showAddScan) {
-        AddScanBottomSheet(onShare = {
-            val intent = Intent(Intent.ACTION_SEND).apply {
-                type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, "I use RareMe")
-            }
-            launcher.launch(Intent.createChooser(intent, "Share via"))
+    val launcherInvite = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(), onResult = {
             scope.launch {
                 viewModel.addExtraAttempt()
             }
-        }, onInvite = {
-            val intent = Intent(Intent.ACTION_SEND).apply {
-                type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, "https://app.rarime.com/r/$referralCode")
-            }
-            launcher.launch(Intent.createChooser(intent, "Invite via"))
         })
+
+
+    val launcherShare = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(), onResult = {})
+
+    AppBottomSheet(state = showAddScan) {
+        AddScanBottomSheet(
+
+            isShareEnable = !(shares?.isSocialShare ?: true),
+            isInviteEnable = (shares?.referralsCount ?: 0) < (shares?.referralsLimit ?: 0),
+            onShare = {
+                val intent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_TEXT, "I use RareMe")
+                }
+                launcherShare.launch(Intent.createChooser(intent, "Share via"))
+
+            },
+            onInvite = {
+                val intent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    val invitationUrl = "${BaseConfig.INVITATION_BASE_URL}/r/${referralCode}"
+
+                    putExtra(Intent.EXTRA_TEXT, invitationUrl)
+                }
+                launcherInvite.launch(Intent.createChooser(intent, "Invite via"))
+            })
 
     }
 
@@ -186,8 +215,13 @@ fun HiddenPrizeExpandedCardContent(
     isAddScanEnabled: Boolean,
     attendsCount: Int,
     dayAttemptsCount: Int,
-    colorScheme: AppColorScheme
+    colorScheme: AppColorScheme,
 ) {
+
+    val celebrityStatus = remember(celebrity?.status) {
+        celebrity?.getCelebrityStatus()
+    }
+
     with(cardProps) {
         with(sharedTransitionScope) {
             BaseExpandedCard(
@@ -207,22 +241,39 @@ fun HiddenPrizeExpandedCardContent(
                         innerPaddings = innerPaddings
                     )
                 }, footer = {
-                    Footer(
-                        layoutId = layoutId,
-                        sharedTransitionScope = sharedTransitionScope,
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        onAddScan = onAddScan,
-                        onScan = onScan,
-                        attendsCount = attendsCount,
-                        isAddScanEnabled = isAddScanEnabled,
-                        dayAttemptsCount = dayAttemptsCount
-                    )
+
+
+                    when (celebrityStatus) {
+                        CelebrityStatus.ACTIVE, null -> {
+                            Footer(
+                                layoutId = layoutId,
+                                sharedTransitionScope = sharedTransitionScope,
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                onAddScan = onAddScan,
+                                onScan = onScan,
+                                attendsCount = attendsCount,
+                                isAddScanEnabled = isAddScanEnabled,
+                                dayAttemptsCount = dayAttemptsCount
+                            )
+                        }
+
+                        CelebrityStatus.COMPLETED -> {
+
+                        }
+
+                        CelebrityStatus.MAINTENANCE -> {
+
+                        }
+
+                    }
+
+
                 }, body = {
                     Body(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope,
-                        tip = celebrity?.hint
+                        celebrity = celebrity
                     )
                 }, background = {
                     Background(
@@ -362,18 +413,21 @@ private fun Footer(
 
 
 @Composable
-fun Body(
+private fun Body(
     layoutId: Int,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    tip: String?
+    celebrity: Celebrity?
 ) {
+    val celebrityStatus = remember(celebrity?.status) {
+        celebrity?.getCelebrityStatus()
+    }
+
     with(sharedTransitionScope) {
         Column(
             modifier = Modifier.sharedBounds(
                 rememberSharedContentState(HomeSharedKeys.content(layoutId)),
                 animatedVisibilityScope = animatedVisibilityScope,
-                renderInOverlayDuringTransition = false,
                 enter = fadeIn(),
                 exit = fadeOut(),
                 resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
@@ -398,11 +452,12 @@ fun Body(
                         shape = RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
                     )
                     .padding(20.dp)
+                    .fillMaxHeight()
             ) {
                 BaseCardTitle(
                     title = "Hidden keys",
                     accentTitle = "Find a face",
-                    caption = "Found hidden prize $1000",
+                    caption = if (celebrityStatus == null || celebrityStatus == CelebrityStatus.ACTIVE) "Found hidden prize $1000" else null,
                     titleStyle = RarimeTheme.typography.h1.copy(RarimeTheme.colors.textPrimary),
                     accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient8),
                     titleModifier = Modifier.sharedBounds(
@@ -424,23 +479,50 @@ fun Body(
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     )
                 )
+
                 Spacer(modifier = Modifier.height(12.dp))
 
-                Text(
-                    stringResource(R.string.hidden_price_expanded_cart_description),
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.textSecondary
-                )
+                when (celebrityStatus) {
+                    CelebrityStatus.ACTIVE, null -> {
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Text(
+                            stringResource(R.string.hidden_price_expanded_cart_description),
+                            style = RarimeTheme.typography.body3,
+                            color = RarimeTheme.colors.textSecondary
+                        )
 
 
-                Spacer(modifier = Modifier.height(24.dp))
-                if (tip != null) {
-                    TipAlert(
-                        text = tip
-                    )
+                        Spacer(modifier = Modifier.height(24.dp))
+                        if (!celebrity?.hint.isNullOrEmpty()) {
+                            TipAlert(
+                                text = celebrity!!.hint
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(24.dp))
+                    }
+
+                    CelebrityStatus.COMPLETED -> {
+                        WinningFaceCard(
+                            imageSrc = celebrity!!.image,
+                            placeholderRes = R.drawable.ic_dots_three_outline_rounded,
+                            name = celebrity.title,
+                            description = celebrity.description,
+                            winnerAddress = celebrity.winner,
+                            prizeAmount = 0.03f,
+                            prizeSymbol = {
+                                Image(
+                                    painterResource(R.drawable.ic_ethereum),
+                                    contentDescription = "ETH"
+                                )
+                            })
+                    }
+
+                    CelebrityStatus.MAINTENANCE -> {
+
+                    }
+
                 }
-                Spacer(modifier = Modifier.height(24.dp))
-
             }
         }
     }
@@ -470,7 +552,6 @@ private fun Background(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(RarimeTheme.colors.gradient9)
         ) {
             Image(
                 painter = painterResource(backgroundRes),
@@ -488,55 +569,62 @@ private fun Background(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     )
+                    .clip(RoundedCornerShape(20.dp))
             )
         }
     }
 }
 
-//@OptIn(ExperimentalSharedTransitionApi::class)
-//@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO)
-//@Composable
-//fun HiddenPriceExpandedCardPreview_LightMode() {
-//    AppTheme {
-//        PrevireSharedAnimationProvider { sts, avs ->
-//            HiddenPrizeExpandedCardContent(
-//                cardProps = BaseCardProps.Expanded(
-//                    onCollapse = {},
-//                    layoutId = CardType.HIDDEN_PRIZE.layoutId,
-//                    animatedVisibilityScope = avs,
-//                    sharedTransitionScope = sts
-//                ),
-//                modifier = Modifier.height(820.dp),
-//                innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
-//                onScan = {},
-//                onAddScan = {},
-//                celebrity = null,
-//                userData = null
-//            )
-//        }
-//    }
-//}
-//
-//@OptIn(ExperimentalSharedTransitionApi::class)
-//@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
-//@Composable
-//fun HiddenPriceExpandedCardPreview_DarkMode() {
-//    AppTheme {
-//        PrevireSharedAnimationProvider { sts, avs ->
-//            HiddenPrizeExpandedCardContent(
-//                cardProps = BaseCardProps.Expanded(
-//                    onCollapse = {},
-//                    layoutId = CardType.HIDDEN_PRIZE.layoutId,
-//                    animatedVisibilityScope = avs,
-//                    sharedTransitionScope = sts
-//                ),
-//                modifier = Modifier.height(820.dp),
-//                innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
-//                onScan = {},
-//                onAddScan = {},
-//                celebrity = null,
-//                userData = null
-//            )
-//        }
-//    }
-//}
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO)
+@Composable
+fun HiddenPriceExpandedCardPreviewLightMode() {
+    AppTheme {
+        PrevireSharedAnimationProvider { sts, avs ->
+            HiddenPrizeExpandedCardContent(
+                cardProps = BaseCardProps.Expanded(
+                    onCollapse = {},
+                    layoutId = CardType.HIDDEN_PRIZE.layoutId,
+                    animatedVisibilityScope = avs,
+                    sharedTransitionScope = sts
+                ),
+                modifier = Modifier.height(820.dp),
+                innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
+                onScan = {},
+                onAddScan = {},
+                celebrity = null,
+                isAddScanEnabled = false,
+                attendsCount = 5,
+                dayAttemptsCount = 5,
+                colorScheme = AppColorScheme.LIGHT
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun HiddenPriceExpandedCardPreviewDarkMode() {
+    AppTheme {
+        PrevireSharedAnimationProvider { sts, avs ->
+            HiddenPrizeExpandedCardContent(
+                cardProps = BaseCardProps.Expanded(
+                    onCollapse = {},
+                    layoutId = CardType.HIDDEN_PRIZE.layoutId,
+                    animatedVisibilityScope = avs,
+                    sharedTransitionScope = sts
+                ),
+                modifier = Modifier.height(820.dp),
+                innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
+                onScan = {},
+                onAddScan = {},
+                celebrity = null,
+                isAddScanEnabled = false,
+                attendsCount = 5,
+                dayAttemptsCount = 5,
+                colorScheme = AppColorScheme.DARK
+            )
+        }
+    }
+}

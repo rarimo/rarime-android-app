@@ -227,7 +227,6 @@ fun HomeScreenContent(
                                     modifier = baseCollapsedModifier,
                                     colorScheme = colorScheme
                                 )
-                                // TODO: Implement rest collapsed cards here
                             }
                         }
                         VerticalPageIndicator(

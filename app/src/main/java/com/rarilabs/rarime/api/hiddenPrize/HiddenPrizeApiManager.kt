@@ -23,7 +23,6 @@ class HiddenPrizeApiManager @Inject constructor(
     private val api: HiddenPrizeApi, private val authManager: AuthManager
 ) {
 
-
     suspend fun claimTokens(
         calldata: String, noSend: Boolean = false
     ): HiddenPrizeClaimResponse {
@@ -69,10 +68,6 @@ class HiddenPrizeApiManager @Inject constructor(
 
         if (response.isSuccessful) {
             return response.body()!!
-        }
-
-        if (response.code() == 401) {
-            throw HiddenPrizeApiError.NotFound()
         }
 
         if (response.code() == 404) {

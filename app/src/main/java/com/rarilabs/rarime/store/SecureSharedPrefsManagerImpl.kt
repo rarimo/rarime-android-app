@@ -54,6 +54,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "IS_IN_WAITLIST" to "IS_IN_WAITLIST",
         "IS_LOGS_DELETED" to "IS_LOGS_DELETED",
         "DEFERRED_REFERRAL_CODE" to "DEFERRED_REFERRAL_CODE",
+        "GUESS_REFERRAL_CODE" to "GUESS_REFERRAL_CODE",
         "LIGHT_REGISTRATION_DATA" to "LIGHT_REGISTRATION_DATA",
         "ALREADY_RESERVED" to "ALREADY_RESERVED",
         "PASSPORT_STATUS" to "PASSPORT_STATUS",
@@ -423,6 +424,17 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
 
     override fun getDeferredReferralCode(): String? {
         return getSharedPreferences().getString(accessTokens["DEFERRED_REFERRAL_CODE"], null)
+    }
+
+
+    override fun saveGuessReferralCode(referralCode: String) {
+        val editor = getEditor()
+        editor.putString(accessTokens["GUESS_REFERRAL_CODE"], referralCode)
+        editor.apply()
+    }
+
+    override fun getGuessReferralCode(): String? {
+        return getSharedPreferences().getString(accessTokens["GUESS_REFERRAL_CODE"], null)
     }
 
     override fun saveLightRegistrationData(lightRegistrationData: LightRegistrationData) {

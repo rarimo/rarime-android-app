@@ -219,7 +219,6 @@ private fun Background(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(RarimeTheme.colors.gradient9)
         ) {
             Image(
                 painter = painterResource(backgroundRes),
@@ -237,6 +236,7 @@ private fun Background(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     )
+                    .clip(RoundedCornerShape(20.dp))
             )
 
 

@@ -122,7 +122,7 @@ fun AddScanBottomSheet(
                     .size(20.dp)
             )
             RowAddScans(
-                isEnabled = isShareEnable,
+                isEnabled = isInviteEnable,
                 props = props,
                 rowTitle = stringResource(R.string.hidden_prize_invite_row_title),
                 rowDescription = stringResource(R.string.hidden_prize_invite_row_description),

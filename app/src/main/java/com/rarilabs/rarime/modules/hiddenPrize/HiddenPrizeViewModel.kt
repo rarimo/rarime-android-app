@@ -2,13 +2,11 @@ package com.rarilabs.rarime.modules.hiddenPrize
 
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.rarilabs.rarime.api.hiddenPrize.HiddenPrizeApiError
 import com.rarilabs.rarime.manager.HiddenPrizeManager
 import com.rarilabs.rarime.manager.SettingsManager
 import com.rarilabs.rarime.util.bionet.BinetAnalyzer
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,13 +27,6 @@ class HiddenPrizeViewModel @Inject constructor(
         hiddenPrizeManager.addExtraAttempts()
     }
 
-    init {
-        viewModelScope.launch {
-            loadUserInfo()
-
-        }
-    }
-
     suspend fun checkCrop(bitmap: Bitmap): Bitmap? {
         val bionet = BinetAnalyzer()
 
@@ -54,7 +45,7 @@ class HiddenPrizeViewModel @Inject constructor(
         try {
             hiddenPrizeManager.loadUserInfo()
         } catch (e: HiddenPrizeApiError.NotFound) {
-            hiddenPrizeManager.createUser()
+            hiddenPrizeManager.createUser(hiddenPrizeManager.getReferralCode())
             hiddenPrizeManager.loadUserInfo()
         }
     }

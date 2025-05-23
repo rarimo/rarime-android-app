@@ -31,7 +31,8 @@ data class CelebrityAttributes(
     val description: String,
     val status: String,
     val image: String?,
-    val hint: String?
+    val hint: String?,
+    val winner: String?
 )
 
 class IncludedJsonAdapter(

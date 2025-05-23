@@ -322,7 +322,7 @@ private fun ProfileRow(
 @Composable
 private fun ProfileScreenPreview() {
     ProfileScreenContent(
-        rarimoAddress = "0x000000000000",
+        rarimoAddress = "0xbF1823EF5Ca4484517F930c695b07544C2b43Efe",
         passportImage = null,
         navigate = {},
         colorScheme = AppColorScheme.LIGHT,
