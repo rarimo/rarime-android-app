@@ -453,7 +453,7 @@
     <string name="poll_voting_end_timer">Voting ends in %1$s</string>
     <string name="poll_voting_start_timer">Voting starts in %1$s</string>
     <string name="failed_to_parse_qr_code">Failed to parse QR-Code</string>
-    <string name="hidden_price_expanded_cart_description">You can have 3 scan attempts every 24 hours, but your can also earn extra scans by sharing and inviting friends</string>
+    <string name="hidden_price_expanded_cart_description">Somewhere out on the open web, one famous face carries a key sealed inside its ZK-vector. Test any image you find, and the first player to prove the match claims the prize. Ready to hunt?</string>
     <string name="your_device">Your Device</string>
     <string name="your_identity">Your Identity</string>
     <string name="nothing_leaves_this_device">* Nothing leaves this device</string>
@@ -474,10 +474,10 @@
     <string name="soon">Soon</string>
     <string name="don_t_sell_my_face_data">Don’t use my\nface at all</string>
     <string name="ask_me_every_time">Ask me\nfirst</string>
-    <string name="hidden_prize_add_scans_description_enabled">Invite a friend and get 1 bonus scan for each invited friend, or share the post and get 1 bonus scan as a one-time reward.</string>
+    <string name="hidden_prize_add_scans_description_enabled">Out of daily scans? Earn extra scans for every friend who joins and a one-time by sharing the hunt</string>
     <string name="add_scans_bottom_sheet_title_enebled">Bonus Scan</string>
     <string name="add_scans_bottom_sheet_title_disablet">Available scan</string>
-    <string name="hidden_prize_add_scans_description_disablet">You have 3 scan attempts every 24 hours, but you can also unlock bonus chances by inviting friends and sharing.</string>
+    <string name="hidden_prize_add_scans_description_disablet">Somewhere out on the open web, one famous face carries a key sealed inside its ZK-vector. Test any image you find, and the first player to prove the match claims the prize. Ready to hunt?</string>
     <string name="hidden_prize_title_share_row">Share on socials</string>
     <string name="hidden_prize_share_row_description">+1 scan</string>
     <string name="hidden_prize_share_row_button_label">Share</string>
