@@ -461,7 +461,7 @@ private fun Body(
                             style = RarimeTheme.typography.subtitle6.copy(color = RarimeTheme.colors.textPrimary)
                         )
                         Text(
-                            " 0,3  ", //TODO Maybe give this from backend in future
+                            text = stringResource(R.string.hidden_prize_prize_pool_value), //TODO Maybe give this from backend in future
                             style = RarimeTheme.typography.h6.copy(color = RarimeTheme.colors.textPrimary)
                         )
                         Image(

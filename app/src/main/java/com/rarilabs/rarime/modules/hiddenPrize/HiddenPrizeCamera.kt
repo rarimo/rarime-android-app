@@ -31,13 +31,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
@@ -122,9 +129,16 @@ fun HiddenPrizeCamera(
     when (currentStep) {
         HiddenPrizeCameraStep.CAMERA -> {
             Box(modifier = modifier.fillMaxSize()) {
+                ShadowBoxCanvas(
+                    boxSize = 270.dp,
+                    cornerRadius = 16.dp,
+                    borderColor = RarimeTheme.colors.baseWhite,
+                    borderWidth = 2.dp
+                    )
                 FaceMeshCanvas(
                     imageSize = imageSize, detectedMeshes = detectedMeshes
                 )
+
 
                 OverlayControls(
                     selectedBitmap = selectedBitmap, onSelectBitmap = {
@@ -174,7 +188,7 @@ fun HiddenPrizeCamera(
         }
 
         HiddenPrizeCameraStep.PROCESSING_ML -> {
-            HiddenPrizeLoadingML(processingValue = downloadProgress ) {
+            HiddenPrizeLoadingML(processingValue = downloadProgress) {
                 try {
                     featuresBackend = processML(selectedBitmap!!)
                     currentStep = HiddenPrizeCameraStep.CONGRATS
@@ -270,10 +284,10 @@ fun OverlayControls(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AppIcon(
-            id = R.drawable.ic_face_scan, size = 40.dp, tint = RarimeTheme.colors.baseWhite
+            id = R.drawable.ic_user_focus, size = 32.dp, tint = RarimeTheme.colors.baseWhite
         )
         Text(
-            text = "Keep your face in the frame",
+            text = stringResource(R.string.hidden_prize_camera_up_title),
             style = RarimeTheme.typography.subtitle5,
             color = RarimeTheme.colors.baseWhite
         )
@@ -305,8 +319,11 @@ fun OverlayControls(
                     text = "Photo"
                 )
             } else {
-                Row(modifier = Modifier.fillMaxWidth()
-                    .padding(bottom = 20.dp)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 20.dp)
+                ) {
                     PrimaryButton(
                         modifier = Modifier.weight(3f),
                         size = ButtonSize.Large,
@@ -421,6 +438,57 @@ fun FaceMeshCanvas(
             }
         }
     }
+}
+
+@Composable
+fun ShadowBoxCanvas(
+    boxSize: Dp,
+    cornerRadius: Dp,
+    borderColor: Color,
+    borderWidth: Dp
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val holeSize = boxSize.toPx()
+            val cornerRadius = cornerRadius.toPx()
+            val borderWidth = borderWidth.toPx()
+
+            val centerX = size.width / 2
+            val centerY = size.height / 2
+            val left = centerX - holeSize / 2
+            val top = centerY - holeSize / 2
+
+
+            drawRect(color = Color(0xAA000000))// TODO sync with theme
+
+
+            val holeRect = RoundRect(
+                left = left,
+                top = top,
+                right = left + holeSize,
+                bottom = top + holeSize,
+                cornerRadius = CornerRadius(cornerRadius, cornerRadius)
+            )
+
+            drawRoundRect(
+                color = Color.Transparent,
+                topLeft = Offset(holeRect.left, holeRect.top),
+                size = Size(holeSize, holeSize),
+                cornerRadius = CornerRadius(cornerRadius, cornerRadius),
+                blendMode = BlendMode.Clear
+            )
+
+            //frame
+            drawRoundRect(
+                color = borderColor,
+                topLeft = Offset(holeRect.left, holeRect.top),
+                size = Size(holeSize, holeSize),
+                cornerRadius = CornerRadius(cornerRadius, cornerRadius),
+                style = Stroke(width = borderWidth)
+            )
+        }
+    }
+
 }
 
 

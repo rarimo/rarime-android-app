@@ -35,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.room.util.TableInfo
@@ -171,7 +172,7 @@ private fun Footer(
                         style = RarimeTheme.typography.subtitle6.copy(color = RarimeTheme.colors.textPrimary)
                     )
                     Text(
-                        " 0,3  ", //TODO Maybe give this from backend in future
+                        text = stringResource(R.string.hidden_prize_prize_pool_value), //TODO Maybe give this from backend in future
                         style = RarimeTheme.typography.h6.copy(color = RarimeTheme.colors.textPrimary)
                     )
                     Image(
