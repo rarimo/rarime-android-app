@@ -294,7 +294,7 @@ fun OverlayControls(
                     size = ButtonSize.Large,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
+                        .padding(horizontal = 8.dp, vertical = 20.dp),
                     onClick = {
                         scope.launch {
                             previewView.bitmap?.let {
@@ -305,7 +305,8 @@ fun OverlayControls(
                     text = "Photo"
                 )
             } else {
-                Row(modifier = Modifier.fillMaxWidth()) {
+                Row(modifier = Modifier.fillMaxWidth()
+                    .padding(bottom = 20.dp)) {
                     PrimaryButton(
                         modifier = Modifier.weight(3f),
                         size = ButtonSize.Large,
