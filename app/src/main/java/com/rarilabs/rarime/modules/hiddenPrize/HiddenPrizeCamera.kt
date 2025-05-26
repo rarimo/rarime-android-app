@@ -174,7 +174,7 @@ fun HiddenPrizeCamera(
         }
 
         HiddenPrizeCameraStep.PROCESSING_ML -> {
-            HiddenPrizeLoadingML(processingValue = (downloadProgress.toFloat() / 100.0f)) {
+            HiddenPrizeLoadingML(processingValue = downloadProgress ) {
                 try {
                     featuresBackend = processML(selectedBitmap!!)
                     currentStep = HiddenPrizeCameraStep.CONGRATS
