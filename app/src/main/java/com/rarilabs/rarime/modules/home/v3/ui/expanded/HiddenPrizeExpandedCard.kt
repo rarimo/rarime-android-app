@@ -26,9 +26,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -444,6 +447,34 @@ private fun Body(
                     .padding(20.dp)
                     .fillMaxHeight()
             ) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = RarimeTheme.colors.componentPrimary,
+                    ),
+                    modifier = Modifier.size(width = 156.dp, height = 32.dp)
+
+                ) {
+                    Row(
+                        modifier = Modifier.padding(
+                            horizontal = 16.dp,
+                            vertical = 6.dp
+                        )
+                    ) {
+                        Text(
+                            "Prize-pool: ",
+                            style = RarimeTheme.typography.subtitle6.copy(color = RarimeTheme.colors.textPrimary)
+                        )
+                        Text(
+                            " 0,3  ", //TODO Maybe give this from backend in future
+                            style = RarimeTheme.typography.h6.copy(color = RarimeTheme.colors.textPrimary)
+                        )
+                        Image(
+                            painterResource(R.drawable.ic_ethereum),
+                            contentDescription = "ETH",
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
                 BaseCardTitle(
                     title = "Hidden keys",
                     accentTitle = "Find a face",
