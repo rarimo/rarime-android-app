@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.api.airdrop.models
 
-import com.rarilabs.rarime.util.data.ZkProof
+
+import com.rarilabs.rarime.util.data.GrothProof
 import com.squareup.moshi.JsonClass
 
 enum class AirDropStatuses(val value: String) {
@@ -24,7 +25,7 @@ data class CreateAirDropAttributes(
     val address: String,
 
 //    @JsonProperty("zk_proof")
-    val zk_proof: ZkProof,
+    val zk_proof: GrothProof,
 )
 
 @JsonClass(generateAdapter = true)

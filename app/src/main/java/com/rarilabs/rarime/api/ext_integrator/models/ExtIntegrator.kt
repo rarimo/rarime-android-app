@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.api.ext_integrator.models
 
-import com.rarilabs.rarime.util.data.ZkProof
+
+import com.rarilabs.rarime.util.data.UniversalZkProof
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -72,7 +73,7 @@ data class QueryProofGenCallbackRequestData(
 
 @JsonClass(generateAdapter = true)
 data class QueryProofGenCallbackRequestAttributes(
-    val proof: ZkProof,
+    val proof: UniversalZkProof,
 )
 
 @JsonClass(generateAdapter = true)

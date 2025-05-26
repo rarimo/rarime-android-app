@@ -32,7 +32,9 @@ import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.circuits.CircuitUtil
 import com.rarilabs.rarime.util.circuits.RegisterNoirCircuitData
 import com.rarilabs.rarime.util.circuits.RegisteredCircuitData
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.GrothProof
+import com.rarilabs.rarime.util.data.UniversalZkProof
+
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.generateLightRegistrationProofByCircuitType
 import com.rarilabs.rarime.util.generateRegistrationProofByCircuitType
@@ -77,7 +79,7 @@ class ProofGenerationManager @Inject constructor(
     private val _state = MutableStateFlow(PassportProofState.READING_DATA)
     val state: StateFlow<PassportProofState> get() = _state.asStateFlow()
     private val _downloadProgress = MutableStateFlow(0)
-    private var currentRegistration: kotlinx.coroutines.Deferred<ZkProof>? = null
+    private var currentRegistration: kotlinx.coroutines.Deferred<UniversalZkProof>? = null
 
     //Download for circuits
     val downloadProgress: StateFlow<Int> = _downloadProgress.asStateFlow()
@@ -155,7 +157,7 @@ class ProofGenerationManager @Inject constructor(
     }
 
     @OptIn(ExperimentalStdlibApi::class)
-    private suspend fun registerByDocument(eDocument: EDocument): ZkProof {
+    private suspend fun registerByDocument(eDocument: EDocument): UniversalZkProof {
         try {
             _state.value = PassportProofState.READING_DATA
             val circuitType = getCircuitType(eDocument)
@@ -235,7 +237,7 @@ class ProofGenerationManager @Inject constructor(
         }
     }
 
-    private suspend fun lightRegistration(eDocument: EDocument): ZkProof {
+    private suspend fun lightRegistration(eDocument: EDocument): UniversalZkProof {
         try {
             if (privateKeyBytes == null) throw IllegalStateException("privateKeyBytes is null")
             _state.value = PassportProofState.READING_DATA
@@ -270,7 +272,7 @@ class ProofGenerationManager @Inject constructor(
 
             val passportInfoKey = withContext(Dispatchers.IO) {
                 registrationManager.getPassportInfo(
-                    eDocument, lightProof, registerResponse.data.attributes
+                    eDocument, UniversalZkProof(lightProof)
                 )!!.component1()
             }
             if (passportInfoKey.activeIdentity.contentEquals(currentIdentityKey)) {
@@ -299,7 +301,7 @@ class ProofGenerationManager @Inject constructor(
         _proofError.value = PassportAlreadyRegisteredByOtherPK()
     }
 
-    suspend fun performRegistration(eDocument: EDocument): ZkProof =
+    suspend fun performRegistration(eDocument: EDocument): UniversalZkProof =
         withContext(managerScope.coroutineContext) {
             // If a registration is already in progress, return its result.
             currentRegistration?.let { ongoing ->
@@ -408,7 +410,7 @@ class ProofGenerationManager @Inject constructor(
     private suspend fun generateRegisterIdentityProofPlonk(
         eDocument: EDocument,
         registerIdentityCircuitType: RegisterIdentityCircuitType
-    ): ZkProof {
+    ): UniversalZkProof {
         val customDispatcher = Executors.newFixedThreadPool(1) { runnable ->
             Thread(null, runnable, "LargeStackThread", 100 * 1024 * 1024) // 100 MB stack size
         }.asCoroutineDispatcher()
@@ -442,8 +444,8 @@ class ProofGenerationManager @Inject constructor(
 
             val proof = circuit.prove(inputs, proofType = "plonk", recursive = false)
 
-            //TODO fix it
-            val zk = ZkProof.getProofFromSavedData(proof.proof.toString())
+
+            val zk = UniversalZkProof(proof.proof.toByteArray())
 
             return@withContext zk
         }
@@ -454,7 +456,7 @@ class ProofGenerationManager @Inject constructor(
         eDocument: EDocument,
         registeredCircuitData: RegisteredCircuitData,
         registerIdentityCircuitType: RegisterIdentityCircuitType
-    ): ZkProof {
+    ): UniversalZkProof {
 
         val circuitDownloader = CircuitDownloader(application)
 
@@ -472,7 +474,14 @@ class ProofGenerationManager @Inject constructor(
         val assetContext: Context = application.createPackageContext("com.rarilabs.rarime", 0)
         val assetManager = assetContext.assets
         val zkp = ZKPUseCase(application, assetManager)
-        return generateRegistrationProofByCircuitType(registeredCircuitData, filePaths, zkp, inputs)
+        return UniversalZkProof(
+            generateRegistrationProofByCircuitType(
+                registeredCircuitData,
+                filePaths,
+                zkp,
+                inputs
+            )
+        )
     }
 
     private fun getCircuitType(eDocument: EDocument): RegisterIdentityCircuitType {
@@ -507,12 +516,18 @@ class ProofGenerationManager @Inject constructor(
         eDocument: EDocument,
         privateKey: ByteArray,
         circuitData: RegisteredCircuitData
-    ): ZkProof {
+    ): GrothProof {
         val inputs = Gson().toJson(getLightRegistrationInputs(eDocument, privateKey)).toByteArray()
         val assetContext: Context = application.createPackageContext("com.rarilabs.rarime", 0)
         val assetManager = assetContext.assets
         val zkp = ZKPUseCase(application, assetManager)
-        return generateLightRegistrationProofByCircuitType(circuitData, filePaths, zkp, inputs)
+        return generateLightRegistrationProofByCircuitType(
+            circuitData,
+            filePaths,
+            zkp,
+            inputs
+        )
+
     }
 
     private fun getLightRegistrationInputs(

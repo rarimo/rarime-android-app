@@ -35,7 +35,6 @@ import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
 import com.rarilabs.rarime.util.data.GrothProof
-import com.rarilabs.rarime.util.data.ZkProof
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.hmacSha256
 import identity.Identity
@@ -160,7 +159,7 @@ class PointsManager @Inject constructor(
 
     private suspend fun generateVerifyPassportQueryProof(
         eDocument: EDocument, privateKey: ByteArray
-    ): ZkProof {
+    ): GrothProof {
 
         val lightProofData = secureSharedPrefsManager.getLightRegistrationData()
 
@@ -308,7 +307,7 @@ class PointsManager @Inject constructor(
                     attributes = WithdrawPayloadAttributes(
                         amount = amount.toLong(),
                         address = identityManager.rarimoAddress(),
-                        proof = (identityManager.registrationProof.value!!.getProofString() as GrothProof).proof
+                        proof = (identityManager.registrationProof.value!! as GrothProof).proof
                     )
                 )
             )

@@ -42,7 +42,8 @@ import com.rarilabs.rarime.util.DateUtil
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.GrothProof
+
 import com.rarilabs.rarime.util.decodeHexString
 import identity.CallDataBuilder
 import identity.Identity
@@ -503,7 +504,7 @@ class VotingManager @Inject constructor(
         pollResultJson: ByteArray,
         passportInfo: StateKeeper.PassportInfo,
         identityInfo: StateKeeper.IdentityInfo
-    ): Pair<ZkProof, Boolean> = withContext(Dispatchers.Default) {
+    ): Pair<GrothProof, Boolean> = withContext(Dispatchers.Default) {
 
         val eventData = profile.calculateVotingEventData(pollResultJson)
 

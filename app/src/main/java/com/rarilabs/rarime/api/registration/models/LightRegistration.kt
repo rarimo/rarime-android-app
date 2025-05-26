@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.api.registration.models
 
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.GrothProof
+
 
 data class VerifySodRequest(
     val data: VerifySodRequestData
@@ -13,7 +14,7 @@ data class VerifySodRequestData(
 )
 
 data class VerifySodRequestAttributes(
-    val zk_proof: ZkProof, // Adjust the type as per the expected structure of zk_proof
+    val zk_proof: GrothProof, // Adjust the type as per the expected structure of zk_proof
     val document_sod: VerifySodRequestDocumentSod
 )
 

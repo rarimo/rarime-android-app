@@ -10,7 +10,8 @@ import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.wallet.models.Transaction
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.UniversalZkProof
+
 
 interface SecureSharedPrefsManager {
 
@@ -49,8 +50,8 @@ interface SecureSharedPrefsManager {
     fun saveEDocument(eDocument: EDocument)
     fun readEDocument(): EDocument?
 
-    fun saveRegistrationProof(proof: ZkProof)
-    fun readRegistrationProof(): ZkProof?
+    fun saveRegistrationProof(proof: UniversalZkProof)
+    fun readRegistrationProof(): UniversalZkProof?
 
     fun readTransactions(): List<Transaction>
     fun addTransaction(transaction: Transaction)

@@ -1,7 +1,7 @@
 package com.rarilabs.rarime.api.points.models
 
 import com.rarilabs.rarime.util.data.Proof
-import com.rarilabs.rarime.util.data.ZkProof
+
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -120,7 +120,7 @@ data class VerifyPassportData(
 
 @JsonClass(generateAdapter = true)
 data class VerifyPassportAttributes(
-    val proof: ZkProof,
+    val proof: UniversalZkProof,
     val country: String,
     val anonymous_id: String
 )

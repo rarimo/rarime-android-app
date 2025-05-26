@@ -5,7 +5,8 @@ import com.rarilabs.rarime.api.registration.models.LightRegistrationData
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ErrorHandler
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.UniversalZkProof
+
 import com.rarilabs.rarime.util.decodeHexString
 import identity.Identity
 import identity.Profile
@@ -31,7 +32,7 @@ class IdentityManager @Inject constructor(
 
     var _registrationProof = MutableStateFlow(dataStoreManager.readRegistrationProof())
         private set
-    val registrationProof: StateFlow<ZkProof?>
+    val registrationProof: StateFlow<UniversalZkProof?>
         get() = _registrationProof.asStateFlow()
 
     val privateKeyBytes: ByteArray?
@@ -46,7 +47,7 @@ class IdentityManager @Inject constructor(
         dataStoreManager.saveIsLogsDeleted(isLogsDeleted)
     }
 
-    fun setRegistrationProof(proof: ZkProof?) {
+    fun setRegistrationProof(proof: UniversalZkProof?) {
         _registrationProof.value = proof
 
         proof?.let {
@@ -60,7 +61,7 @@ class IdentityManager @Inject constructor(
         }
     }
 
-    fun getProfiler(): Profile{
+    fun getProfiler(): Profile {
         return Profile().newProfile(privateKeyBytes)
     }
 
@@ -73,23 +74,9 @@ class IdentityManager @Inject constructor(
             return Credentials.create(_privateKey.value).address
         return ""
     }
-
-    fun getPassportNullifier(): String {
-        return registrationProof.value?.let {
-            it.getPubSignals()[0]
-        } ?: ""
-    }
-
     fun getUserAirDropNullifier(): String {
         return getProfiler().calculateEventNullifierInt(BaseConfig.AIRDROP_SVC_ID)
     }
-
-    fun getUserAirDropNullifierHex(): String {
-        return "0x" + BigInteger(this.getUserAirDropNullifier())
-            .toByteArray()
-            .toHexString()
-    }
-
     fun getUserPointsNullifier(): String {
         return getProfiler().calculateEventNullifierInt(BaseConfig.POINTS_SVC_ID)
     }
@@ -115,6 +102,8 @@ class IdentityManager @Inject constructor(
     suspend fun getPassportActiveIdentity(eDocument: EDocument): String? {
 
         try {
+
+
             val passportInfoKey: String? = if (eDocument.dg15?.isEmpty() == true) {
                 registrationProof.value?.getPubSignals()?.get(1)
             } else {

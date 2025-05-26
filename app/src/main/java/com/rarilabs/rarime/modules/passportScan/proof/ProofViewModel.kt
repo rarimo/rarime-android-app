@@ -30,7 +30,8 @@ import com.rarilabs.rarime.util.SecurityUtil
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.circuits.CircuitUtil
 import com.rarilabs.rarime.util.circuits.RegisteredCircuitData
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.UniversalZkProof
+
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.generateLightRegistrationProofByCircuitType
 import com.rarilabs.rarime.util.generateRegistrationProofByCircuitType
@@ -141,7 +142,7 @@ class ProofViewModel @Inject constructor(
         registeredCircuitData: RegisteredCircuitData,
         filePaths: DownloadRequest?,
         registerIdentityCircuitType: RegisterIdentityCircuitType
-    ): ZkProof {
+    ): UniversalZkProof {
         ErrorHandler.logDebug("ProofViewModel", "Generating proof")
 
         val inputs = buildRegistrationCircuits(eDocument, registerIdentityCircuitType)
@@ -308,7 +309,7 @@ class ProofViewModel @Inject constructor(
         delay(second * 1)
     }
 
-    suspend fun lightRegistration(): ZkProof {
+    suspend fun lightRegistration(): UniversalZkProof {
         val privateKeyBytes = privateKeyBytes!!
         val eDocument = eDoc.value!!
 
@@ -357,7 +358,6 @@ class ProofViewModel @Inject constructor(
             registrationManager.getPassportInfo(
                 eDocument,
                 lightProof,
-                registerResponse.data.attributes
             )!!.component1()
         }
 
@@ -387,7 +387,7 @@ class ProofViewModel @Inject constructor(
         eDocument: EDocument,
         privateKey: ByteArray,
         circuitData: RegisteredCircuitData
-    ): ZkProof {
+    ): UniversalZkProof {
 
         val inputs = Gson().toJson(getLightRegistrationInputs(eDocument, privateKey)).toByteArray()
         val assetContext: Context =

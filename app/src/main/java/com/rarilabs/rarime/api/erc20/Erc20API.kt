@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.api.erc20
 
-import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.erc20.models.FeeResponse
 import com.rarilabs.rarime.api.erc20.models.PermitHashRequest
 import com.rarilabs.rarime.api.erc20.models.PermitHashResponse

@@ -2,7 +2,7 @@ package com.rarilabs.rarime.util
 
 import com.rarilabs.rarime.modules.passportScan.DownloadRequest
 import com.rarilabs.rarime.util.circuits.RegisteredCircuitData
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.GrothProof
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import java.util.concurrent.Executors
@@ -12,7 +12,7 @@ suspend fun generateRegistrationProofByCircuitType(
     filePaths: DownloadRequest?,
     zkp: ZKPUseCase,
     inputs: ByteArray
-): ZkProof {
+): GrothProof {
 
     val customDispatcher = Executors.newFixedThreadPool(1) { runnable ->
         Thread(null, runnable, "LargeStackThread", 100 * 1024 * 1024) // 100 MB stack size
@@ -422,7 +422,7 @@ fun generateLightRegistrationProofByCircuitType(
     filePaths: DownloadRequest,
     zkp: ZKPUseCase,
     inputs: ByteArray
-): ZkProof {
+): GrothProof {
     val zkProof = when (circuitData) {
         RegisteredCircuitData.REGISTER_IDENTITY_160 -> zkp.generateRegisterZKP(
             filePaths.zkey,

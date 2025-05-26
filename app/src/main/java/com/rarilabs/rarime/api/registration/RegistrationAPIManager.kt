@@ -15,7 +15,7 @@ import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.SecurityUtil
 import com.rarilabs.rarime.util.circuits.SODAlgorithm
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.GrothProof
 import com.rarilabs.rarime.util.decodeHexString
 import org.web3j.utils.Numeric
 import javax.inject.Inject
@@ -59,7 +59,7 @@ class RegistrationAPIManager @Inject constructor(
         }
     }
 
-    suspend fun lightRegistration(eDocument: EDocument, zkProof: ZkProof): VerifySodResponse {
+    suspend fun lightRegistration(eDocument: EDocument, zkProof: GrothProof): VerifySodResponse {
         val sodFile = eDocument.getSodFile()
 
         val signedAttributes = sodFile.eContent
@@ -84,6 +84,8 @@ class RegistrationAPIManager @Inject constructor(
             CircuitAlgorithmType.RSAPSS -> "RSA-PSS"
             CircuitAlgorithmType.ECDSA -> "ECDSA"
         }
+
+        val zkProof = zkProof.getPublicKey()
 
         val request = VerifySodRequest(
 

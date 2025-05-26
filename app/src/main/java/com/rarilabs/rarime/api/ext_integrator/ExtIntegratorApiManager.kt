@@ -20,7 +20,9 @@ import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.GrothProof
+import com.rarilabs.rarime.util.data.UniversalZkProof
+
 import com.rarilabs.rarime.util.decodeHexString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,7 +39,7 @@ class ExtIntegratorApiManager @Inject constructor(
     private val passportManager: PassportManager,
     private val identityManager: IdentityManager,
 ) {
-    suspend fun queryProofCallback(url: String, proof: ZkProof, userIdHash: String) {
+    suspend fun queryProofCallback(url: String, proof: UniversalZkProof, userIdHash: String) {
         return withContext(Dispatchers.IO) {
             val payload = QueryProofGenCallbackRequest(
                 data = QueryProofGenCallbackRequestData(
@@ -159,7 +161,10 @@ class ExtIntegratorApiManager @Inject constructor(
 
     }
 
-    suspend fun generateQueryProof(context: Context, queryProofParametersRequest: QueryProofGenResponse): ZkProof? {
+    suspend fun generateQueryProof(
+        context: Context,
+        queryProofParametersRequest: QueryProofGenResponse
+    ): GrothProof? {
         if (passportInfo.value == null || identityInfo.value == null) return null
 
         val assetContext: Context = context.createPackageContext("com.rarilabs.rarime", 0)
