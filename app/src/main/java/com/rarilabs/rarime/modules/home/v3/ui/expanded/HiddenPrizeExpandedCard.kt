@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -123,7 +122,7 @@ fun HiddenPrizeExpandedCard(
     }
     val isAddScanEnabled by remember {
         derivedStateOf {
-            !(shares?.isSocialShare ?: true) || (shares?.referralsCount
+            shares?.isSocialShare == false || (shares?.referralsCount
                 ?: 0) != (shares?.referralsLimit ?: 0)
         }
     }
@@ -155,7 +154,7 @@ fun HiddenPrizeExpandedCard(
     AppBottomSheet(state = showAddScan) {
         AddScanBottomSheet(
 
-            isShareEnable = !(shares?.isSocialShare ?: true),
+            isShareEnable = shares?.isSocialShare == false,
             isInviteEnable = (shares?.referralsCount ?: 0) < (shares?.referralsLimit ?: 0),
             onShare = {
                 val intent = Intent(Intent.ACTION_SEND).apply {
@@ -435,16 +434,7 @@ private fun Body(
         ) {
 
             Spacer(modifier = Modifier.height((BG_HAND_HIDDEN_PRIZE_HEIGHT - 50).dp))
-            Box(
-                modifier = Modifier
-                    .offset(y = (-5).dp)
-                    .width(36.dp)
-                    .height(5.dp)
-                    .background(
-                        RarimeTheme.colors.componentPressed, shape = RoundedCornerShape(100.dp)
-                    )
-                    .align(Alignment.CenterHorizontally)
-            )
+//
             Column(
                 modifier = Modifier
                     .background(
@@ -484,7 +474,7 @@ private fun Body(
 
                 when (celebrityStatus) {
                     CelebrityStatus.ACTIVE, null -> {
-                        Spacer(modifier = Modifier.height(12.dp))
+
 
                         Text(
                             stringResource(R.string.hidden_price_expanded_cart_description),
