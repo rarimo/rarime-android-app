@@ -432,8 +432,8 @@ private fun Body(
             )
         ) {
 
-            Spacer(modifier = Modifier.height((BG_HAND_HIDDEN_PRIZE_HEIGHT - 50).dp))
-//
+            Spacer(modifier = Modifier.height((BG_HAND_HIDDEN_PRIZE_HEIGHT - 100).dp))
+
             Column(
                 modifier = Modifier
                     .background(
