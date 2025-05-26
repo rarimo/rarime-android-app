@@ -478,7 +478,6 @@ private fun Body(
                 BaseCardTitle(
                     title = "Hidden keys",
                     accentTitle = "Find a face",
-                    caption = if (celebrityStatus == null || celebrityStatus == CelebrityStatus.ACTIVE) "Found hidden prize $1000" else null,
                     titleStyle = RarimeTheme.typography.h1.copy(RarimeTheme.colors.textPrimary),
                     accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient8),
                     titleModifier = Modifier.sharedBounds(
