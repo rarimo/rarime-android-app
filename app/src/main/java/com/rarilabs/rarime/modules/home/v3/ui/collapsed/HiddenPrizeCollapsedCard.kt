@@ -220,21 +220,8 @@ private fun Footer(
 
                 Spacer(modifier = Modifier.weight(1f))
                 AppIcon(id = R.drawable.ic_arrow_right_up_line, modifier = Modifier.align(Alignment.Bottom))
-                // Ensure the footer has a shared element in both states for smooth open/close animation.
-                Column(
-                    modifier = Modifier.sharedBounds(
-                        rememberSharedContentState(HomeSharedKeys.footer(layoutId)),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                    )
-                ) {
-                    // Placeholder; no visible UI content.
-                }
             }
         }
-
-
 
     }
 }

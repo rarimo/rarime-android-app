@@ -133,7 +133,8 @@ fun HiddenPrizeCamera(
                     boxSize = 270.dp,
                     cornerRadius = 16.dp,
                     borderColor = RarimeTheme.colors.baseWhite,
-                    borderWidth = 2.dp
+                    borderWidth = 2.dp,
+                    boxColor = RarimeTheme.colors.baseBlackOp50
                     )
                 FaceMeshCanvas(
                     imageSize = imageSize, detectedMeshes = detectedMeshes
@@ -445,7 +446,8 @@ fun ShadowBoxCanvas(
     boxSize: Dp,
     cornerRadius: Dp,
     borderColor: Color,
-    borderWidth: Dp
+    borderWidth: Dp,
+    boxColor: Color
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Canvas(modifier = Modifier.fillMaxSize()) {
@@ -459,7 +461,7 @@ fun ShadowBoxCanvas(
             val top = centerY - holeSize / 2
 
 
-            drawRect(color = Color(0xAA000000))// TODO sync with theme
+            drawRect(color = boxColor)
 
 
             val holeRect = RoundRect(

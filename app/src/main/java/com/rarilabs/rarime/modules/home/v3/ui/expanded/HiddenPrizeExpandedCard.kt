@@ -430,9 +430,10 @@ private fun Body(
                 exit = fadeOut(),
                 resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
             )
+                .fillMaxSize()
         ) {
 
-            Spacer(modifier = Modifier.height((BG_HAND_HIDDEN_PRIZE_HEIGHT - 100).dp))
+            Spacer(modifier = Modifier.height((BG_HAND_HIDDEN_PRIZE_HEIGHT-120).dp))
 
             Column(
                 modifier = Modifier
@@ -448,6 +449,7 @@ private fun Body(
                         containerColor = RarimeTheme.colors.componentPrimary,
                     ),
                     modifier = Modifier.size(width = 156.dp, height = 32.dp)
+
 
                 ) {
                     Row(
@@ -471,6 +473,7 @@ private fun Body(
                         )
                     }
                 }
+                Spacer(modifier = Modifier.size(12.dp))
                 BaseCardTitle(
                     title = "Hidden keys",
                     accentTitle = "Find a face",
@@ -540,8 +543,11 @@ private fun Body(
 
                 }
             }
+            Spacer(modifier = Modifier.weight(1f))
         }
+
     }
+
 
 }
 
@@ -564,10 +570,12 @@ private fun Background(
         else R.drawable.ic_bg_hidden_prize_light
     }
 
+
     with(sharedTransitionScope) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(color = RarimeTheme.colors.backgroundPrimary)
         ) {
             Image(
                 painter = painterResource(backgroundRes),
