@@ -376,11 +376,7 @@ private fun Footer(
                                 fontWeight = RarimeTheme.typography.h4.fontWeight
                             ),
                         )
-                        Text(
-                            text = "/$dayAttemptsCount daily scans",
-                            style = RarimeTheme.typography.body3,
-                            color = RarimeTheme.colors.textSecondary
-                        )
+
                     }
                 }
                 if (attendsCount <= 0 && isAddScanEnabled) {
