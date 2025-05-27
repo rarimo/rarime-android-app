@@ -100,8 +100,8 @@ import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.BackgroundRemover
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
-import com.rarilabs.rarime.util.data.Proof
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.GrothProof
+import com.rarilabs.rarime.util.data.GrothProofData
 import kotlinx.coroutines.launch
 
 const val ALREADY_SET_AMOUNT = "49,421"
@@ -753,8 +753,8 @@ private fun CreateIdentityDetailsPreview() {
             isRegistered = isRegistered,
             saveFaceImage = {},
             processImage = {
-                ZkProof(
-                    proof = Proof(
+                GrothProof(
+                    proof = GrothProofData(
                         pi_a = listOf(), pi_b = listOf(listOf()), pi_c = listOf(), protocol = ""
                     ), pub_signals = listOf()
                 )

@@ -12,7 +12,8 @@ import com.rarilabs.rarime.manager.LikenessRule
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.wallet.models.Transaction
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.GrothProof
+import com.rarilabs.rarime.util.data.UniversalProof
 
 interface SecureSharedPrefsManager {
 
@@ -51,8 +52,11 @@ interface SecureSharedPrefsManager {
     fun saveEDocument(eDocument: EDocument)
     fun readEDocument(): EDocument?
 
-    fun saveRegistrationProof(proof: ZkProof)
-    fun readRegistrationProof(): ZkProof?
+    @Deprecated("use Universal proof")
+    fun saveRegistrationProof(proof: GrothProof)
+
+    @Deprecated("use Universal proof")
+    fun readRegistrationProof(): GrothProof?
 
     fun readTransactions(): List<Transaction>
     fun addTransaction(transaction: Transaction)
@@ -99,7 +103,11 @@ interface SecureSharedPrefsManager {
     fun saveLikenessFace(face: Bitmap)
     fun getLikenessFace(): Bitmap?
 
-    fun saveLivenessProof(proof: ZkProof)
-    fun getLivenessProof(): ZkProof?
+    fun saveLivenessProof(proof: GrothProof)
+    fun getLivenessProof(): GrothProof?
+
+
+    fun saveUniversalProof(proof: UniversalProof)
+    fun readUniversalProof(): UniversalProof?
 
 }

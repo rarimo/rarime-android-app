@@ -7,8 +7,8 @@ import com.google.gson.Gson
 import com.rarilabs.bionet.Bionet
 import com.rarilabs.rarime.util.ZkpUtil.groth16InternalStorage
 import com.rarilabs.rarime.util.ZkpUtil.groth16ProverBig
-import com.rarilabs.rarime.util.data.Proof
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.GrothProof
+import com.rarilabs.rarime.util.data.GrothProofData
 import java.io.ByteArrayOutputStream
 
 object ZkpUtil {
@@ -541,7 +541,7 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         zkeyFilePath: String,
         zkeyFileLen: Long,
         inputs: String
-    ): ZkProof {
+    ): GrothProof {
 
         val errBuf = ByteArray(256)
 
@@ -620,9 +620,9 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         val formatedPubData = pubData.decodeToString().slice(0..indexPubData)
 
         val foramtedProof = proofDataZip.toString(Charsets.UTF_8).slice(0..index)
-        val proof = Proof.fromJson(foramtedProof)
+        val proof = GrothProofData.fromJson(foramtedProof)
 
-        return ZkProof(
+        return GrothProof(
             proof = proof, pub_signals = getPubSignals(formatedPubData).toList()
         )
     }
@@ -637,7 +637,7 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         proofFunction: (
             datFilePath: String, datFileLen: Long, jsonBuffer: ByteArray, jsonSize: Long, wtnsBuffer: ByteArray, wtnsSize: LongArray, errorMsg: ByteArray, errorMsgMaxSize: Long
         ) -> Int
-    ): ZkProof {
+    ): GrothProof {
 
 
         val msg = ByteArray(256)
@@ -724,9 +724,9 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         val formatedPubData = pubData.decodeToString().slice(0..indexPubData)
 
         val foramtedProof = proofDataZip.toString(Charsets.UTF_8).slice(0..index)
-        val proof = Proof.fromJson(foramtedProof)
+        val proof = GrothProofData.fromJson(foramtedProof)
 
-        return ZkProof(
+        return GrothProof(
             proof = proof, pub_signals = getPubSignals(formatedPubData).toList()
         )
     }
@@ -735,7 +735,7 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         zkeyFileName: String, datFile: Int, inputs: ByteArray, proofFunction: (
             circuitBuffer: ByteArray, circuitSize: Long, jsonBuffer: ByteArray, jsonSize: Long, wtnsBuffer: ByteArray, wtnsSize: LongArray, errorMsg: ByteArray, errorMsgMaxSize: Long
         ) -> Int
-    ): ZkProof {
+    ): GrothProof {
         val datFile = openRawResourceAsByteArray(datFile)
 
         val msg = ByteArray(256)
@@ -817,9 +817,9 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         val formatedPubData = pubData.decodeToString().slice(0..indexPubData)
 
         val foramtedProof = proofDataZip.toString(Charsets.UTF_8).slice(0..index)
-        val proof = Proof.fromJson(foramtedProof)
+        val proof = GrothProofData.fromJson(foramtedProof)
 
-        return ZkProof(
+        return GrothProof(
             proof = proof, pub_signals = getPubSignals(formatedPubData).toList()
         )
     }

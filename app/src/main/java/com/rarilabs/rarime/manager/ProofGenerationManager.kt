@@ -26,7 +26,9 @@ import com.rarilabs.rarime.util.SecurityUtil
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.circuits.CircuitUtil
 import com.rarilabs.rarime.util.circuits.RegisteredCircuitData
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.GrothProof
+import com.rarilabs.rarime.util.data.UniversalProof
+import com.rarilabs.rarime.util.data.UniversalProofFactory
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.generateLightRegistrationProofByCircuitType
 import com.rarilabs.rarime.util.generateRegistrationProofByCircuitType
@@ -68,7 +70,7 @@ class ProofGenerationManager @Inject constructor(
     private val _state = MutableStateFlow(PassportProofState.READING_DATA)
     val state: StateFlow<PassportProofState> get() = _state.asStateFlow()
     private val _downloadProgress = MutableStateFlow(0)
-    private var currentRegistration: kotlinx.coroutines.Deferred<ZkProof>? = null
+    private var currentRegistration: kotlinx.coroutines.Deferred<UniversalProof>? = null
 
     //Download for circuits
     val downloadProgress: StateFlow<Int> = _downloadProgress.asStateFlow()
@@ -144,7 +146,7 @@ class ProofGenerationManager @Inject constructor(
         }
     }
 
-    private suspend fun registerByDocument(eDocument: EDocument): ZkProof {
+    private suspend fun registerByDocument(eDocument: EDocument): UniversalProof {
         try {
             _state.value = PassportProofState.READING_DATA
             val circuitType = getCircuitType(eDocument)
@@ -227,7 +229,7 @@ class ProofGenerationManager @Inject constructor(
         }
     }
 
-    private suspend fun lightRegistration(eDocument: EDocument): ZkProof {
+    private suspend fun lightRegistration(eDocument: EDocument): UniversalProof.Light {
         try {
             if (privateKeyBytes == null) throw IllegalStateException("privateKeyBytes is null")
             _state.value = PassportProofState.READING_DATA
@@ -260,16 +262,19 @@ class ProofGenerationManager @Inject constructor(
             val profile = identityManager.getProfiler()
             val currentIdentityKey = profile.publicKeyHash
 
+            val universalProof =
+                UniversalProofFactory.fromLight(registerResponse.data.attributes, lightProof)
+
             val passportInfoKey = withContext(Dispatchers.IO) {
                 registrationManager.getPassportInfo(
-                    eDocument, lightProof, registerResponse.data.attributes
+                    eDocument, universalProof
                 )!!.component1()
             }
             if (passportInfoKey.activeIdentity.contentEquals(currentIdentityKey)) {
                 ErrorHandler.logDebug(TAG, "Passport is already registered with this PK")
-                registrationManager.setRegistrationProof(lightProof)
+                registrationManager.setRegistrationProof(universalProof)
                 identityManager.setLightRegistrationData(registerResponse.data.attributes)
-                return lightProof
+                return UniversalProof.fromLight(registerResponse.data.attributes, lightProof)
             }
             delay(second * 2)
             _state.value = PassportProofState.FINALIZING
@@ -277,10 +282,10 @@ class ProofGenerationManager @Inject constructor(
                 registrationManager.lightRegisterRelayer(lightProof, registerResponse)
             }
             res
-            registrationManager.setRegistrationProof(lightProof)
+            registrationManager.setRegistrationProof(universalProof)
             identityManager.setLightRegistrationData(registerResponse.data.attributes)
             delay(second)
-            return lightProof
+            return UniversalProof.fromLight(registerResponse.data.attributes, lightProof)
         } catch (e: Exception) {
             ErrorHandler.logError(TAG, "Error in lightRegistration", e)
             throw e
@@ -291,7 +296,7 @@ class ProofGenerationManager @Inject constructor(
         _proofError.value = PassportAlreadyRegisteredByOtherPK()
     }
 
-    suspend fun performRegistration(eDocument: EDocument): ZkProof =
+    suspend fun performRegistration(eDocument: EDocument): UniversalProof =
         withContext(managerScope.coroutineContext) {
             // If a registration is already in progress, return its result.
             currentRegistration?.let { ongoing ->
@@ -401,13 +406,20 @@ class ProofGenerationManager @Inject constructor(
         registeredCircuitData: RegisteredCircuitData,
         filePaths: DownloadRequest?,
         registerIdentityCircuitType: RegisterIdentityCircuitType
-    ): ZkProof {
+    ): UniversalProof {
         ErrorHandler.logDebug(TAG, "Generating full registration proof")
         val inputs = buildRegistrationCircuits(eDocument, registerIdentityCircuitType)
         val assetContext: Context = application.createPackageContext("com.rarilabs.rarime", 0)
         val assetManager = assetContext.assets
         val zkp = ZKPUseCase(application, assetManager)
-        return generateRegistrationProofByCircuitType(registeredCircuitData, filePaths, zkp, inputs)
+        return UniversalProofFactory.fromGroth(
+            generateRegistrationProofByCircuitType(
+                registeredCircuitData,
+                filePaths,
+                zkp,
+                inputs
+            )
+        )
     }
 
     private fun getCircuitType(eDocument: EDocument): RegisterIdentityCircuitType {
@@ -442,12 +454,13 @@ class ProofGenerationManager @Inject constructor(
         eDocument: EDocument,
         privateKey: ByteArray,
         circuitData: RegisteredCircuitData
-    ): ZkProof {
+    ): GrothProof {
         val inputs = Gson().toJson(getLightRegistrationInputs(eDocument, privateKey)).toByteArray()
         val assetContext: Context = application.createPackageContext("com.rarilabs.rarime", 0)
         val assetManager = assetContext.assets
         val zkp = ZKPUseCase(application, assetManager)
         return generateLightRegistrationProofByCircuitType(circuitData, filePaths, zkp, inputs)
+
     }
 
     private fun getLightRegistrationInputs(

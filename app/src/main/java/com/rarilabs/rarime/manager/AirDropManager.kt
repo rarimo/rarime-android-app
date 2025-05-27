@@ -17,7 +17,8 @@ import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.GrothProof
+import com.rarilabs.rarime.util.data.UniversalProof
 import com.rarilabs.rarime.util.decodeHexString
 import identity.Identity
 import identity.Profile
@@ -44,8 +45,8 @@ class AirDropManager @Inject constructor(
         get() = _isAirdropClaimed.asStateFlow()
 
     private suspend fun generateAirdropQueryProof(
-        registrationProof: ZkProof, eDocument: EDocument, privateKey: ByteArray
-    ): ZkProof {
+        registrationProof: UniversalProof, eDocument: EDocument, privateKey: ByteArray
+    ): GrothProof {
         val assetContext: Context = context.createPackageContext("com.rarilabs.rarime", 0)
         val assetManager = assetContext.assets
 
@@ -56,7 +57,7 @@ class AirDropManager @Inject constructor(
             rarimoContractManager.getPoseidonSMT(BaseConfig.REGISTRATION_SMT_CONTRACT_ADDRESS)
 
         val proofIndex = Identity.calculateProofIndex(
-            registrationProof.pub_signals[0], registrationProof.pub_signals[3]
+            registrationProof.getPubSignals()[0], registrationProof.getPubSignals()[3]
         )
 
         val smtProofRaw = withContext(Dispatchers.IO) {
@@ -71,7 +72,7 @@ class AirDropManager @Inject constructor(
 
         val passportInfoRaw = withContext(Dispatchers.IO) {
             stateKeeperContract.getPassportInfo(
-                Identity.bigIntToBytes(registrationProof.pub_signals[0])
+                Identity.bigIntToBytes(registrationProof.getPubSignals()[0])
             ).send()
         }
 
@@ -86,7 +87,7 @@ class AirDropManager @Inject constructor(
             eDocument.dg1!!.decodeHexString(),
             smtProofJson.toByteArray(Charsets.UTF_8),
             airDropParams.data.attributes.query_selector,
-            registrationProof.pub_signals[0],
+            registrationProof.getPubSignals()[0],
             identityInfo.issueTimestamp.toString(),
             passportInfo.identityReissueCounter.toString(),
             airDropParams.data.attributes.event_id,
@@ -105,7 +106,7 @@ class AirDropManager @Inject constructor(
         return queryProof
     }
 
-    private suspend fun createAirDrop(zkProof: ZkProof) {
+    private suspend fun createAirDrop(proof: GrothProof) {
         val rarimoAddress = identityManager.rarimoAddress()
 
         val payload = CreateAirDropBody(
@@ -114,7 +115,7 @@ class AirDropManager @Inject constructor(
                 attributes = CreateAirDropAttributes(
                     address = rarimoAddress,
 //                    "SHA256withRSA",
-                    zk_proof = zkProof
+                    zk_proof = proof
                 )
             )
         )
@@ -129,7 +130,7 @@ class AirDropManager @Inject constructor(
         if (_isAirdropClaimed.value) return
 
         val eDocument = dataStoreManager.readEDocument()!!
-        val registrationProof = dataStoreManager.readRegistrationProof()!!
+        val registrationProof = dataStoreManager.readUniversalProof()!!
 
         withContext(Dispatchers.Default) {
             val proof = generateAirdropQueryProof(

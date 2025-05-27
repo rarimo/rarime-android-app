@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.modules.passportScan
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -12,11 +11,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.BuildConfig
-import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.passportScan.camera.ScanMRZStep
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
@@ -25,10 +22,8 @@ import com.rarilabs.rarime.modules.passportScan.nfc.ReadEDocStep
 import com.rarilabs.rarime.modules.passportScan.nfc.RevocationStep
 import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.NotAllowedPassportScreen
 import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.WaitlistPassportScreen
-import com.rarilabs.rarime.ui.components.ConfirmationDialog
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
 import com.rarilabs.rarime.util.ErrorHandler
-import com.rarilabs.rarime.util.data.ZkProof
 import org.jmrtd.lds.icao.MRZInfo
 
 enum class ScanPassportState {
@@ -67,48 +62,6 @@ fun ScanPassportScreen(
 
     LaunchedEffect(Unit) {
         isAlreadyVerified = scanPassportScreenViewModel.isVerified()
-    }
-
-
-    fun handleRegisteredPassportException(zkProof: ZkProof) {
-        if (!BuildConfig.isTestnet) {
-            scanPassportScreenViewModel.resetPassportState()
-
-            Toast.makeText(context, R.string.you_have_already_registered, Toast.LENGTH_SHORT).show()
-            onClose.invoke()
-        } else {
-            mainViewModel.setModalContent {
-                if (eDoc?.dg15.isNullOrEmpty()) {
-                    ConfirmationDialog(
-                        title = stringResource(R.string.passport_already_registered_no_dg15_title),
-                        subtitle = stringResource(R.string.passport_already_registered_no_dg15_description),
-                        confirmButtonText = stringResource(id = R.string.you_have_already_registered_confirm),
-                        onConfirm = {
-                            mainViewModel.setModalVisibility(false)
-                            onClose.invoke()
-                        }
-                    )
-                } else {
-                    ConfirmationDialog(
-                        title = stringResource(R.string.you_have_already_registered),
-                        subtitle = stringResource(R.string.you_have_already_registered_offer),
-                        cancelButtonText = stringResource(id = R.string.you_have_already_registered_cancel),
-                        confirmButtonText = stringResource(id = R.string.you_have_already_registered_confirm),
-                        onConfirm = {
-                            scanPassportScreenViewModel.saveRegistrationProof(zkProof)
-                            state = ScanPassportState.REVOCATION_PROCESS
-                            mainViewModel.setModalVisibility(false)
-                        },
-                        onCancel = {
-                            mainViewModel.setModalVisibility(false)
-                            onClose.invoke()
-                        },
-                    )
-                }
-
-            }
-            mainViewModel.setModalVisibility(true)
-        }
     }
 
     fun handleNFCError(e: Exception) {

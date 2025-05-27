@@ -6,7 +6,6 @@ import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.registration.RegistrationAPIManager
 import com.rarilabs.rarime.api.registration.UserAlreadyRevoked
-import com.rarilabs.rarime.api.registration.models.LightRegistrationData
 import com.rarilabs.rarime.api.registration.models.VerifySodResponse
 import com.rarilabs.rarime.contracts.rarimo.PoseidonSMT.Proof
 import com.rarilabs.rarime.contracts.rarimo.StateKeeper
@@ -14,7 +13,8 @@ import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
 import com.rarilabs.rarime.util.ErrorHandler
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.GrothProof
+import com.rarilabs.rarime.util.data.UniversalProof
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.publicKeyToPem
 import identity.CallDataBuilder
@@ -42,8 +42,8 @@ class RegistrationManager @Inject constructor(
     val activeIdentity: StateFlow<ByteArray>
         get() = _activeIdentity.asStateFlow()
 
-    private var _registrationProof = MutableStateFlow<ZkProof?>(null)
-    val registrationProof: StateFlow<ZkProof?>
+    private var _registrationProof = MutableStateFlow<UniversalProof?>(null)
+    val registrationProof: StateFlow<UniversalProof?>
         get() = _registrationProof.asStateFlow()
 
     var _revocationChallenge = MutableStateFlow<ByteArray>(ByteArray(0))
@@ -77,7 +77,7 @@ class RegistrationManager @Inject constructor(
         _revEDocument.value = eDocument
     }
 
-    fun setRegistrationProof(proof: ZkProof) {
+    fun setRegistrationProof(proof: UniversalProof) {
         _registrationProof.value = proof
     }
 
@@ -97,7 +97,7 @@ class RegistrationManager @Inject constructor(
      * else it is registration for new passport
      */
     suspend fun register(
-        zkProof: ZkProof,
+        zkProof: UniversalProof,
         eDocument: EDocument,
         masterCertProof: Proof,
         isUserRevoking: Boolean,
@@ -105,7 +105,7 @@ class RegistrationManager @Inject constructor(
     ) {
         _eDocument.value = eDocument
 
-        val jsonProof = Gson().toJson(zkProof)
+        val jsonProof = zkProof.getProofJson()
 
         val pubKeyPem = if (!eDocument.dg15.isNullOrEmpty()) {
             eDocument.getDg15File()!!.publicKey.publicKeyToPem()
@@ -137,19 +137,18 @@ class RegistrationManager @Inject constructor(
         }
     }
 
-    suspend fun lightRegistration(eDocument: EDocument, zkProof: ZkProof): VerifySodResponse {
+    suspend fun lightRegistration(eDocument: EDocument, zkProof: GrothProof): VerifySodResponse {
         return registrationAPIManager.lightRegistration(eDocument, zkProof)
     }
 
     suspend fun getPassportInfo(
         eDocument: EDocument,
-        zkProof: ZkProof,
-        lightRegistrationData: LightRegistrationData? = null
+        zkProof: UniversalProof,
     ): Tuple2<StateKeeper.PassportInfo, StateKeeper.IdentityInfo>? {
         val stateKeeperContract = rarimoContractManager.getStateKeeper()
 
         val passportInfoKeyBytes =
-            passportManager.getPassportInfoKeyBytes(eDocument, zkProof, lightRegistrationData)
+            passportManager.getPassportInfoKeyBytes(eDocument, zkProof)
 
         val passportInfo = withContext(Dispatchers.IO) {
             stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()
@@ -158,7 +157,7 @@ class RegistrationManager @Inject constructor(
         return passportInfo
     }
 
-    suspend fun lightRegisterRelayer(zkProof: ZkProof, verifySodResponse: VerifySodResponse) {
+    suspend fun lightRegisterRelayer(zkProof: GrothProof, verifySodResponse: VerifySodResponse) {
         val signature = verifySodResponse.data.attributes.signature.let {
             it.ifEmpty {
                 throw IllegalStateException("verifySodResponse.data.attributes.signature is empty")

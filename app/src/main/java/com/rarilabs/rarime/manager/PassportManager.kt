@@ -8,13 +8,11 @@ import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.Constants
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.UniversalProof
 import identity.Identity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import org.web3j.utils.Numeric
-import java.math.BigInteger
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -89,10 +87,9 @@ class PassportManager @Inject constructor(
             return
         }
 
-        if (dataStoreManager.readPassportStatus() == PassportStatus.ALREADY_REGISTERED_BY_OTHER_PK)
-            return
+        if (dataStoreManager.readPassportStatus() == PassportStatus.ALREADY_REGISTERED_BY_OTHER_PK) return
 
-        if (dataStoreManager.readRegistrationProof() == null) {
+        if (dataStoreManager.readUniversalProof() == null) {
             updatePassportStatus(PassportStatus.UNREGISTERED)
             return
         }
@@ -128,35 +125,25 @@ class PassportManager @Inject constructor(
 
 
     fun getProofIndex(
-        passportInfoKey: String,
-        lightProofData: LightRegistrationData? = getLightRegistrationData()
+        passportInfoKey: String, lightProofData: LightRegistrationData? = getLightRegistrationData()
     ): ByteArray {
         return Identity.calculateProofIndex(
             passportInfoKey,
-            if (lightProofData == null) identityManager.registrationProof.value!!.pub_signals[3]
-            else identityManager.registrationProof.value!!.pub_signals[2]
+            if (lightProofData == null) identityManager.registrationProof.value!!.getIdentityKey()
+            else identityManager.registrationProof.value!!.getIdentityKey()
         )
     }
 
     fun getPassportInfoKey(
         eDocument: EDocument,
-        zkProof: ZkProof,
+        zkProof: UniversalProof,
         lightProofData: LightRegistrationData? = getLightRegistrationData()
     ): String {
         val passportInfoKey: String =
-
-            if (lightProofData != null) {
-                if (eDocument.dg15.isNullOrEmpty()) {
-                    BigInteger(Numeric.hexStringToByteArray(lightProofData.passport_hash)).toString()
-                } else {
-                    BigInteger(Numeric.hexStringToByteArray(lightProofData.public_key)).toString()
-                }
+            if (eDocument.dg15.isNullOrEmpty()) {
+                zkProof.getPassportHash() //lightProofData.passport_hash
             } else {
-                if (eDocument.dg15.isNullOrEmpty()) {
-                    zkProof.pub_signals[1] //lightProofData.passport_hash
-                } else {
-                    zkProof.pub_signals[0] //lightProofData.public_key
-                }
+                zkProof.getPublicKey() //lightProofData.public_key
             }
 
         return passportInfoKey
@@ -164,32 +151,14 @@ class PassportManager @Inject constructor(
 
     fun getPassportInfoKeyBytes(
         eDocument: EDocument,
-        zkProof: ZkProof,
-        lightProofData: LightRegistrationData? = null
+        universalProof: UniversalProof
     ): ByteArray {
 
-        var _lightProofData: LightRegistrationData? = lightProofData
-
-        if (_lightProofData == null) {
-            _lightProofData = dataStoreManager.getLightRegistrationData()
+        val passportInfoKey: String = if (eDocument.dg15.isNullOrEmpty()) {
+            universalProof.getPassportHash() //lightProofData.passport_hash
+        } else {
+            universalProof.getPublicKey() //lightProofData.public_key
         }
-
-        val passportInfoKey: String =
-
-            if (_lightProofData != null) {
-                if (eDocument.dg15.isNullOrEmpty()) {
-                    BigInteger(Numeric.hexStringToByteArray(_lightProofData.passport_hash)).toString()
-                } else {
-                    BigInteger(Numeric.hexStringToByteArray(_lightProofData.public_key)).toString()
-                }
-            } else {
-                if (eDocument.dg15.isNullOrEmpty()) {
-                    zkProof.pub_signals[1] //lightProofData.passport_hash
-                } else {
-                    zkProof.pub_signals[0] //lightProofData.public_key
-                }
-            }
-
 
         var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
 

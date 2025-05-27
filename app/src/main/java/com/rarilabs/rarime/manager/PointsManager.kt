@@ -21,9 +21,6 @@ import com.rarilabs.rarime.api.points.models.PointsLeaderBoardBody
 import com.rarilabs.rarime.api.points.models.VerifyPassportAttributes
 import com.rarilabs.rarime.api.points.models.VerifyPassportBody
 import com.rarilabs.rarime.api.points.models.VerifyPassportData
-import com.rarilabs.rarime.api.points.models.WithdrawBody
-import com.rarilabs.rarime.api.points.models.WithdrawPayload
-import com.rarilabs.rarime.api.points.models.WithdrawPayloadAttributes
 import com.rarilabs.rarime.config.Keys
 import com.rarilabs.rarime.data.ProofTxFull
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
@@ -31,15 +28,13 @@ import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.GrothProof
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.hmacSha256
 import identity.Identity
 import identity.Profile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.web3j.utils.Numeric
-import java.math.BigInteger
 import javax.inject.Inject
 
 class PointsManager @Inject constructor(
@@ -156,7 +151,7 @@ class PointsManager @Inject constructor(
 
     private suspend fun generateVerifyPassportQueryProof(
         eDocument: EDocument, privateKey: ByteArray
-    ): ZkProof {
+    ): GrothProof {
 
         val lightProofData = secureSharedPrefsManager.getLightRegistrationData()
 
@@ -173,24 +168,18 @@ class PointsManager @Inject constructor(
         )
 
         val passportInfoKey: String =
-            if (lightProofData != null) {
-                if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {
-                    BigInteger(Numeric.hexStringToByteArray(lightProofData.passport_hash)).toString()
-                } else {
-                    BigInteger(Numeric.hexStringToByteArray(lightProofData.public_key)).toString()
-                }
+            if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {
+                identityManager.registrationProof.value!!.getPassportHash() //lightProofData.passport_hash
             } else {
-                if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {
-                    identityManager.registrationProof.value!!.pub_signals[1] //lightProofData.passport_hash
-                } else {
-                    identityManager.registrationProof.value!!.pub_signals[0] //lightProofData.public_key
-                }
+                identityManager.registrationProof.value!!.getPublicKey() //lightProofData.public_key
             }
+
+        val identityKey = identityManager.registrationProof.value!!.getIdentityKey()
+
 
         val proofIndex = Identity.calculateProofIndex(
             passportInfoKey,
-            if (lightProofData == null) identityManager.registrationProof.value!!.pub_signals[3]
-            else identityManager.registrationProof.value!!.pub_signals[2]
+            identityKey
         )
 
         var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
@@ -296,19 +285,19 @@ class PointsManager @Inject constructor(
             throw Exception("user nullifier is null")
         }
 
-        pointsAPIManager.withdrawPoints(
-            userNullifierHex, WithdrawBody(
-                data = WithdrawPayload(
-                    id = userNullifierHex,
-                    type = "withdraw",
-                    attributes = WithdrawPayloadAttributes(
-                        amount = amount.toLong(),
-                        address = identityManager.rarimoAddress(),
-                        proof = identityManager.registrationProof.value!!.proof
-                    )
-                )
-            )
-        )
+//        pointsAPIManager.withdrawPoints(
+//            userNullifierHex, WithdrawBody(
+//                data = WithdrawPayload(
+//                    id = userNullifierHex,
+//                    type = "withdraw",
+//                    attributes = WithdrawPayloadAttributes(
+//                        amount = amount.toLong(),
+//                        address = identityManager.rarimoAddress(),
+//                        proof = identityManager.registrationProof.value!!
+//                    )
+//                )
+//            )
+//        )
     }
 
     suspend fun getEventTypes(): PointsEventsTypesBody {
