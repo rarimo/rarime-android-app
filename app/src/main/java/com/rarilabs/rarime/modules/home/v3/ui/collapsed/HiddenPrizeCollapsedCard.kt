@@ -21,7 +21,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -30,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
@@ -134,66 +139,90 @@ private fun Footer(
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
     with(sharedTransitionScope) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom,
+        Column(
+            verticalArrangement = Arrangement.Bottom,
             modifier = Modifier
-                .padding(start = 22.dp, bottom = 28.dp, end = 30.dp)
+                .padding(start = 22.dp, bottom = 32.dp, end = 30.dp)
                 .sharedBounds(
                     rememberSharedContentState(HomeSharedKeys.content(layoutId)),
                     renderInOverlayDuringTransition = false,
                     animatedVisibilityScope = animatedVisibilityScope,
                     resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                 )
+                .fillMaxSize()
         ) {
-            BaseCardTitle(
-                title = "Hidden keys",
-                accentTitle = "Find a face",
-                caption = "Found hidden prize $1000",
-                titleModifier = Modifier.sharedBounds(
-                    rememberSharedContentState(HomeSharedKeys.title(layoutId)),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = RarimeTheme.colors.componentPrimary,
                 ),
-                titleStyle = RarimeTheme.typography.h2.copy(RarimeTheme.colors.textPrimary),
-                accentTitleStyle = RarimeTheme.typography.additional2.copy(brush = RarimeTheme.colors.gradient8),
-                accentTitleModifier = Modifier.sharedBounds(
-                    rememberSharedContentState(
-                        HomeSharedKeys.accentTitle(
-                            layoutId
-                        )
-                    ),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                ),
-                captionStyle = RarimeTheme.typography.body4.copy(RarimeTheme.colors.textSecondary),
-                captionModifier = Modifier.sharedBounds(
-                    rememberSharedContentState(
-                        HomeSharedKeys.caption(
-                            layoutId
-                        )
-                    ),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                )
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            AppIcon(id = R.drawable.ic_arrow_right_up_line)
-            // Ensure the footer has a shared element in both states for smooth open/close animation.
-            Column(
-                modifier = Modifier.sharedBounds(
-                    rememberSharedContentState(HomeSharedKeys.footer(layoutId)),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                )
+                modifier = Modifier.size(width = 156.dp, height = 32.dp)
+
             ) {
-                // Placeholder; no visible UI content.
+                Row(
+                    modifier = Modifier.padding(
+                        horizontal = 16.dp,
+                        vertical = 6.dp
+                    )
+                ) {
+                    Text(
+                        "Prize-pool: ",
+                        style = RarimeTheme.typography.subtitle6.copy(color = RarimeTheme.colors.textPrimary)
+                    )
+                    Text(
+                        text = stringResource(R.string.hidden_prize_prize_pool_value), //TODO Maybe give this from backend in future
+                        style = RarimeTheme.typography.h6.copy(color = RarimeTheme.colors.textPrimary)
+                    )
+                    Image(
+                        painterResource(R.drawable.ic_ethereum),
+                        contentDescription = "ETH",
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.size(12.dp))
+            Row(modifier = Modifier.fillMaxWidth()) {
+                BaseCardTitle(
+                    title = "Hidden keys",
+                    accentTitle = "Find a face",
+                    titleModifier = Modifier.sharedBounds(
+                        rememberSharedContentState(HomeSharedKeys.title(layoutId)),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    ),
+                    titleStyle = RarimeTheme.typography.h2.copy(RarimeTheme.colors.textPrimary),
+                    accentTitleStyle = RarimeTheme.typography.additional2.copy(brush = RarimeTheme.colors.gradient8),
+                    accentTitleModifier = Modifier.sharedBounds(
+                        rememberSharedContentState(
+                            HomeSharedKeys.accentTitle(
+                                layoutId
+                            )
+                        ),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    ),
+                    captionStyle = RarimeTheme.typography.body4.copy(RarimeTheme.colors.textSecondary),
+                    captionModifier = Modifier.sharedBounds(
+                        rememberSharedContentState(
+                            HomeSharedKeys.caption(
+                                layoutId
+                            )
+                        ),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    )
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+                AppIcon(
+                    id = R.drawable.ic_arrow_right_up_line,
+                    modifier = Modifier.align(Alignment.Bottom)
+                )
             }
         }
+
     }
 }
 

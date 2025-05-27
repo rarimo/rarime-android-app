@@ -25,11 +25,13 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -123,7 +125,7 @@ fun HiddenPrizeExpandedCard(
     }
     val isAddScanEnabled by remember {
         derivedStateOf {
-            !(shares?.isSocialShare ?: true) || (shares?.referralsCount
+            shares?.isSocialShare == false || (shares?.referralsCount
                 ?: 0) != (shares?.referralsLimit ?: 0)
         }
     }
@@ -155,7 +157,7 @@ fun HiddenPrizeExpandedCard(
     AppBottomSheet(state = showAddScan) {
         AddScanBottomSheet(
 
-            isShareEnable = !(shares?.isSocialShare ?: true),
+            isShareEnable = shares?.isSocialShare == false,
             isInviteEnable = (shares?.referralsCount ?: 0) < (shares?.referralsLimit ?: 0),
             onShare = {
                 val intent = Intent(Intent.ACTION_SEND).apply {
@@ -374,11 +376,7 @@ private fun Footer(
                                 fontWeight = RarimeTheme.typography.h4.fontWeight
                             ),
                         )
-                        Text(
-                            text = "/$dayAttemptsCount daily scans",
-                            style = RarimeTheme.typography.body3,
-                            color = RarimeTheme.colors.textSecondary
-                        )
+
                     }
                 }
                 if (attendsCount <= 0 && isAddScanEnabled) {
@@ -425,26 +423,19 @@ private fun Body(
 
     with(sharedTransitionScope) {
         Column(
-            modifier = Modifier.sharedBounds(
-                rememberSharedContentState(HomeSharedKeys.content(layoutId)),
-                animatedVisibilityScope = animatedVisibilityScope,
-                enter = fadeIn(),
-                exit = fadeOut(),
-                resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
-            )
+            modifier = Modifier
+                .sharedBounds(
+                    rememberSharedContentState(HomeSharedKeys.content(layoutId)),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+                )
+                .fillMaxSize()
         ) {
 
-            Spacer(modifier = Modifier.height((BG_HAND_HIDDEN_PRIZE_HEIGHT - 50).dp))
-            Box(
-                modifier = Modifier
-                    .offset(y = (-5).dp)
-                    .width(36.dp)
-                    .height(5.dp)
-                    .background(
-                        RarimeTheme.colors.componentPressed, shape = RoundedCornerShape(100.dp)
-                    )
-                    .align(Alignment.CenterHorizontally)
-            )
+            Spacer(modifier = Modifier.height((BG_HAND_HIDDEN_PRIZE_HEIGHT - 120).dp))
+
             Column(
                 modifier = Modifier
                     .background(
@@ -454,10 +445,39 @@ private fun Body(
                     .padding(20.dp)
                     .fillMaxHeight()
             ) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = RarimeTheme.colors.componentPrimary,
+                    ),
+                    modifier = Modifier.size(width = 156.dp, height = 32.dp)
+
+
+                ) {
+                    Row(
+                        modifier = Modifier.padding(
+                            horizontal = 16.dp,
+                            vertical = 6.dp
+                        )
+                    ) {
+                        Text(
+                            "Prize-pool: ",
+                            style = RarimeTheme.typography.subtitle6.copy(color = RarimeTheme.colors.textPrimary)
+                        )
+                        Text(
+                            text = stringResource(R.string.hidden_prize_prize_pool_value), //TODO Maybe give this from backend in future
+                            style = RarimeTheme.typography.h6.copy(color = RarimeTheme.colors.textPrimary)
+                        )
+                        Image(
+                            painterResource(R.drawable.ic_ethereum),
+                            contentDescription = "ETH",
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.size(12.dp))
                 BaseCardTitle(
                     title = "Hidden keys",
                     accentTitle = "Find a face",
-                    caption = if (celebrityStatus == null || celebrityStatus == CelebrityStatus.ACTIVE) "Found hidden prize $1000" else null,
                     titleStyle = RarimeTheme.typography.h1.copy(RarimeTheme.colors.textPrimary),
                     accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient8),
                     titleModifier = Modifier.sharedBounds(
@@ -484,7 +504,7 @@ private fun Body(
 
                 when (celebrityStatus) {
                     CelebrityStatus.ACTIVE, null -> {
-                        Spacer(modifier = Modifier.height(12.dp))
+
 
                         Text(
                             stringResource(R.string.hidden_price_expanded_cart_description),
@@ -524,8 +544,11 @@ private fun Body(
 
                 }
             }
+            Spacer(modifier = Modifier.weight(1f))
         }
+
     }
+
 
 }
 
@@ -548,10 +571,12 @@ private fun Background(
         else R.drawable.ic_bg_hidden_prize_light
     }
 
+
     with(sharedTransitionScope) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(color = RarimeTheme.colors.backgroundPrimary)
         ) {
             Image(
                 painter = painterResource(backgroundRes),

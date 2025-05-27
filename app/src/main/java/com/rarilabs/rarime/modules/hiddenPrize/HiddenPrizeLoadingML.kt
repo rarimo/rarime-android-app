@@ -25,7 +25,7 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 @Composable
 fun HiddenPrizeLoadingML(
     modifier: Modifier = Modifier,
-    processingValue: Float,
+    processingValue: Int,
     processing: suspend () -> Unit
 ) {
 
@@ -72,13 +72,13 @@ fun HiddenPrizeLoadingML(
                     Spacer(modifier = Modifier.height(52.dp))
 
                     LinearProgressIndicator(
-                        progress = { processingValue },
+                        progress = { (processingValue.toFloat() / 100.0f) },
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Text(
-                        text = "${processingValue * 100f}%",
+                        text = "${processingValue}%",
                         color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
                         textAlign = TextAlign.Center,
                         style = RarimeTheme.typography.body3,
@@ -94,5 +94,5 @@ fun HiddenPrizeLoadingML(
 @Preview
 @Composable
 private fun HiddenPrizeLoadingMLPreview() {
-    HiddenPrizeLoadingML(processingValue = 0.64f) {}
+    HiddenPrizeLoadingML(processingValue = 64) {}
 }
