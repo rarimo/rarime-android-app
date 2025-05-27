@@ -16,7 +16,7 @@ import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.manager.RegistrationManager
 import com.rarilabs.rarime.manager.WalletManager
-import com.rarilabs.rarime.modules.passportScan.CircuitUseCase
+import com.rarilabs.rarime.modules.passportScan.CircuitDownloader
 import com.rarilabs.rarime.modules.passportScan.ConnectionError
 import com.rarilabs.rarime.modules.passportScan.DownloadCircuitError
 import com.rarilabs.rarime.modules.passportScan.DownloadRequest
@@ -212,11 +212,11 @@ class ProofViewModel @Inject constructor(
 
         val circuitData = getCircuitData(circuitName)
 
-        val circuitUseCase = CircuitUseCase(application as Context)
+        val circuitDownloader = CircuitDownloader(application as Context)
 
         val filePaths = try {
             withContext(Dispatchers.Default) {
-                circuitUseCase.download(circuitData) { progress, visibility ->
+                circuitDownloader.downloadGrothFiles(circuitData) { progress, visibility ->
                     _progress.value = progress
                     _progressVisibility.value = !visibility
                 }
@@ -229,7 +229,7 @@ class ProofViewModel @Inject constructor(
             throw e
         } catch (e: Exception) {
             ErrorHandler.logError("CircuitUseCase", "Unexpected error occurred", e)
-            circuitUseCase.deleteRedunantFiles(circuitData)
+            circuitDownloader.deleteRedunantFiles(circuitData)
             throw DownloadCircuitError().apply { initCause(e) }
         }
         _state.value = PassportProofState.READING_DATA
@@ -244,7 +244,7 @@ class ProofViewModel @Inject constructor(
         if (!BuildConfig.isTestnet) {
             try {
                 ErrorHandler.logDebug("deleting zkey, dat and Archive", "Start")
-                circuitUseCase.deleteRedunantFiles(circuitData)
+                circuitDownloader.deleteRedunantFiles(circuitData)
                 ErrorHandler.logDebug("deleting zkey, dat and Archive", "Finish")
             } catch (e: Exception) {
                 ErrorHandler.logError("Error deleting zkey, dat and Archive", "Error", e)
@@ -331,7 +331,7 @@ class ProofViewModel @Inject constructor(
 
         //TODO: Don't forget to update download manager here
         val filePaths = withContext(Dispatchers.Default) {
-            CircuitUseCase(application as Context).download(registeredCircuitData) { progress, visibility ->
+            CircuitDownloader(application as Context).downloadGrothFiles(registeredCircuitData) { progress, visibility ->
                 if (_state.value.value < PassportProofState.APPLYING_ZERO_KNOWLEDGE.value) {
                     _progress.value = progress
                     _progressVisibility.value = !visibility

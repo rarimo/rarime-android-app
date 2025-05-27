@@ -8,15 +8,18 @@ import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.noirandroid.lib.Circuit
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.BuildConfig
 import com.rarilabs.rarime.api.registration.PassportAlreadyRegisteredByOtherPK
 import com.rarilabs.rarime.data.enums.PassportStatus
-import com.rarilabs.rarime.modules.passportScan.CircuitUseCase
+import com.rarilabs.rarime.modules.passportScan.CircuitDownloader
+import com.rarilabs.rarime.modules.passportScan.CircuitNoirDownloader
 import com.rarilabs.rarime.modules.passportScan.DownloadCircuitError
 import com.rarilabs.rarime.modules.passportScan.DownloadRequest
 import com.rarilabs.rarime.modules.passportScan.models.CryptoUtilsPassport
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
+import com.rarilabs.rarime.modules.passportScan.models.PlonkRegistrationInputs
 import com.rarilabs.rarime.modules.passportScan.models.RegisterIdentityInputs
 import com.rarilabs.rarime.modules.passportScan.models.RegisterIdentityLightInputs
 import com.rarilabs.rarime.modules.passportScan.nfc.SODFileOwn
@@ -25,6 +28,7 @@ import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.SecurityUtil
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.circuits.CircuitUtil
+import com.rarilabs.rarime.util.circuits.RegisterNoirCircuitData
 import com.rarilabs.rarime.util.circuits.RegisteredCircuitData
 import com.rarilabs.rarime.util.data.GrothProof
 import com.rarilabs.rarime.util.data.UniversalProof
@@ -37,6 +41,7 @@ import identity.X509Util
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,8 +50,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import org.bouncycastle.jce.interfaces.ECPublicKey
 import org.web3j.utils.Numeric
+import java.io.File
 import java.io.IOException
 import java.math.BigInteger
+import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -152,25 +159,31 @@ class ProofGenerationManager @Inject constructor(
             val circuitType = getCircuitType(eDocument)
             registrationManager.setCircuitData(circuitType)
             val circuitName = getCircuitName(circuitType)
-            val circuitData = getCircuitData(circuitName)
+            //val circuitData = getCircuitData(circuitName)
 
             // Download circuit files with CircuitUseCase.
-            val circuitUseCase = CircuitUseCase(application)
-            val filePaths = withContext(Dispatchers.Default) {
-                circuitUseCase.download(circuitData) { progress, visibility ->
-                    _downloadProgress.value = progress
-                }
-            } ?: throw DownloadCircuitError()
+            val circuitDownloader = CircuitDownloader(application)
+//            val filePaths = withContext(Dispatchers.Default) {
+//                circuitDownloader.downloadGrothFiles(circuitData) { progress, visibility ->
+//                    _downloadProgress.value = progress
+//                }
+//            } ?: throw DownloadCircuitError()
 
             _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
-            // Proof generation
-            val proof =
-                generateRegisterIdentityProof(eDocument, circuitData, filePaths, circuitType)
+
+            val proof = if (RegisterNoirCircuitData.fromValue(circuitType.buildName()) != null) {
+                generateRegisterIdentityProofPlonk(
+                    eDocument, registerIdentityCircuitType = circuitType
+                )
+            } else {
+                generateRegisterIdentityProofGroth(eDocument, circuitType)
+            }
+
 
             if (!BuildConfig.isTestnet) {
                 try {
                     ErrorHandler.logDebug(TAG, "Deleting redundant circuit files")
-                    circuitUseCase.deleteRedunantFiles(circuitData)
+                    //circuitDownloader.deleteRedunantFiles(circuitData)
                 } catch (e: Exception) {
                     ErrorHandler.logError(TAG, "Error deleting redundant circuit files", e)
                 }
@@ -244,7 +257,7 @@ class ProofGenerationManager @Inject constructor(
 
             // Download circuit files
             val filePaths = withContext(Dispatchers.Default) {
-                CircuitUseCase(application).download(registeredCircuitData) { progress, visibility ->
+                CircuitDownloader(application).downloadGrothFiles(registeredCircuitData) { progress, visibility ->
                     _downloadProgress.value = progress
                 }
             } ?: throw DownloadCircuitError()
@@ -401,25 +414,98 @@ class ProofGenerationManager @Inject constructor(
             currentRegistration!!.await()
         }
 
-    private suspend fun generateRegisterIdentityProof(
+    private suspend fun generateRegisterIdentityProofPlonk(
+        eDocument: EDocument, registerIdentityCircuitType: RegisterIdentityCircuitType
+    ): UniversalProof {
+        val customDispatcher = Executors.newFixedThreadPool(1) { runnable ->
+            Thread(null, runnable, "LargeStackThread", 100 * 1024 * 1024) // 100 MB stack size
+        }.asCoroutineDispatcher()
+
+        val circuitDownloader = CircuitNoirDownloader(application)
+
+        ErrorHandler.logDebug("Plonk", "Start registration")
+
+        val trustedSetupPath =
+            circuitDownloader.downloadTrustedSetup(onProgressUpdate = { progress, isEnded ->
+                if (progress != _downloadProgress.value) {
+                    _downloadProgress.value = progress
+                    ErrorHandler.logDebug("Plonk", "Circuit download: $progress")
+                }
+            })
+
+        ErrorHandler.logDebug("Plonk", "Circuit downloaded")
+
+
+        val circuitData = RegisterNoirCircuitData.fromValue(registerIdentityCircuitType.buildName())
+
+        val byteCodePath =
+            circuitDownloader.downloadNoirByteCode(circuitData = circuitData!!) { progress, isEnded ->
+
+                if (_downloadProgress.value != progress) {
+                    ErrorHandler.logDebug("Plonk", "progress bytecode: $progress")
+                    _downloadProgress.value = progress
+                }
+            }
+
+
+        ErrorHandler.logDebug("Plonk", "ByteCodePath: $byteCodePath")
+
+
+        _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
+
+        val inputs = buildPlonkRegistrationInputs(eDocument, registerIdentityCircuitType)
+
+        return withContext(customDispatcher) {
+            val circuitByteCode = File(byteCodePath).readText()
+
+
+            val circuit = Circuit.fromJsonManifest(circuitByteCode)
+
+            circuit.setupSrs(trustedSetupPath, false)
+
+            ErrorHandler.logDebug("Plonk", "Start proving")
+
+
+            val proof = circuit.prove(inputs, proofType = "plonk", recursive = false)
+
+
+            val zk = UniversalProofFactory.fromPlonkBytes(proof.proof.toByteArray())
+
+            return@withContext zk
+        }
+    }
+
+    private suspend fun generateRegisterIdentityProofGroth(
         eDocument: EDocument,
-        registeredCircuitData: RegisteredCircuitData,
-        filePaths: DownloadRequest?,
         registerIdentityCircuitType: RegisterIdentityCircuitType
     ): UniversalProof {
+
+        val circuitName = getCircuitName(registerIdentityCircuitType)
+        val circuitData = getCircuitData(circuitName)
+
+        val circuitDownloader = CircuitDownloader(application)
+
+        val filePaths = withContext(Dispatchers.Default) {
+            circuitDownloader.downloadGrothFiles(circuitData) { progress, visibility ->
+                _downloadProgress.value = progress
+            }
+        } ?: throw DownloadCircuitError()
+
         ErrorHandler.logDebug(TAG, "Generating full registration proof")
-        val inputs = buildRegistrationCircuits(eDocument, registerIdentityCircuitType)
+
+        _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
+
+        val inputs = buildGrothRegistrationInputs(eDocument, registerIdentityCircuitType)
         val assetContext: Context = application.createPackageContext("com.rarilabs.rarime", 0)
         val assetManager = assetContext.assets
         val zkp = ZKPUseCase(application, assetManager)
-        return UniversalProofFactory.fromGroth(
+
+        val proof = UniversalProofFactory.fromGroth(
             generateRegistrationProofByCircuitType(
-                registeredCircuitData,
-                filePaths,
-                zkp,
-                inputs
+                circuitData, filePaths, zkp, inputs
             )
         )
+        return proof
     }
 
     private fun getCircuitType(eDocument: EDocument): RegisterIdentityCircuitType {
@@ -478,7 +564,7 @@ class ProofGenerationManager @Inject constructor(
         )
     }
 
-    private suspend fun buildRegistrationCircuits(
+    private suspend fun buildGrothRegistrationInputs(
         eDocument: EDocument, circuitType: RegisterIdentityCircuitType
     ): ByteArray {
         val gson = GsonBuilder().setPrettyPrinting().create()
@@ -561,6 +647,90 @@ class ProofGenerationManager @Inject constructor(
             slaveMerkleInclusionBranches = proof.siblings.map { BigInteger(it).toString() })
         registrationManager.setMasterCertProof(proof)
         return gson.toJson(inputs).toByteArray()
+    }
+
+
+    private suspend fun buildPlonkRegistrationInputs(
+        eDocument: EDocument, circuitType: RegisterIdentityCircuitType
+    ): Map<String, Any> = withContext(Dispatchers.IO) {
+
+        val dg1Bytes = Numeric.hexStringToByteArray(eDocument.dg1)
+        val dg15Bytes = eDocument.dg15?.decodeHexString() ?: ByteArray(0)
+        val sodFile = eDocument.getSodFile()
+        val ecBytes = Numeric.hexStringToByteArray(sodFile.readASN1Data())
+        val saBytes = sodFile.eContent
+
+
+        val cert = sodFile.docSigningCertificate
+        val certPem = SecurityUtil.convertToPEM(cert)
+
+        val certificatesSMTAddress = BaseConfig.CERTIFICATES_SMT_CONTRACT_ADDRESS
+
+        val x509Utils = X509Util()
+
+        val proof = withContext(Dispatchers.IO) {
+            val icao = readICAO(application.applicationContext)
+            val slaveCertificateIndex =
+                x509Utils.getSlaveCertificateIndex(certPem.toByteArray(), icao)
+            val indexHex = slaveCertificateIndex.toHexString()
+            val contract = rarimoContractManager.getPoseidonSMT(certificatesSMTAddress)
+            contract.getProof(indexHex.hexToByteArray()).send()
+        }
+
+        val chunkSize = circuitType.passportHashType.getChunkSize().toInt()
+
+        val dg1Count = CircuitUtil.noirChunkNumber(dg1Bytes.size * 8, chunkSize)
+        val ecCount = CircuitUtil.noirChunkNumber(ecBytes.size * 8, chunkSize)
+        val saCount = CircuitUtil.noirChunkNumber(saBytes.size * 8, chunkSize)
+        val dg15Count = if (dg15Bytes.isEmpty()) 0 else CircuitUtil.noirChunkNumber(
+            dg15Bytes.size * 8, chunkSize
+        )
+
+
+        val dg1Chunks =
+            CircuitUtil.bigIntToChunkingArray(chunkSize, dg1Count, BigInteger(1, dg1Bytes))
+        val ecChunks = CircuitUtil.bigIntToChunkingArray(chunkSize, ecCount, BigInteger(1, ecBytes))
+        val saChunks = CircuitUtil.bigIntToChunkingArray(chunkSize, saCount, BigInteger(1, saBytes))
+        val dg15Chunks =
+            if (dg15Bytes.isEmpty()) emptyList() else CircuitUtil.bigIntToChunkingArray(
+                chunkSize, dg15Count, BigInteger(1, dg15Bytes)
+            )
+
+        val publicKey = sodFile.docSigningCertificate.publicKey
+        val sigBytes = sodFile.encryptedDigest
+        val pubKeyData = CryptoUtilsPassport.getDataFromPublicKey(publicKey)
+            ?: throw IllegalArgumentException("Invalid public key data")
+        val keyCount = CircuitUtil.noirChunkNumber(pubKeyData.size * 8, chunkSize)
+
+        val pkChunks =
+            CircuitUtil.bigIntToChunkingArray(chunkSize, keyCount, BigInteger(1, pubKeyData))
+        val sigChunks =
+            CircuitUtil.bigIntToChunkingArray(chunkSize, keyCount, BigInteger(1, sigBytes))
+
+        val reduction =
+            CircuitUtil.computeBarrettReduction(pubKeyData.size * 8, BigInteger(1, pubKeyData))
+
+        val skIdentity = Numeric.toHexStringWithPrefix(BigInteger(privateKeyBytes))
+        val icaoRoot = (BigInteger(proof.root)).toString()
+        val inclusionBranches = proof.siblings.map { BigInteger(it).toString() }
+
+        val inputs = PlonkRegistrationInputs(
+            dg1 = dg1Chunks,
+            dg15 = dg15Chunks,
+            ec = ecChunks,
+            sa = saChunks,
+            pk = pkChunks,
+            reduction = reduction,
+            sig = sigChunks,
+            sk_identity = skIdentity,
+            icao_root = icaoRoot,
+            inclusion_branches = inclusionBranches
+        ).let { input ->
+            input::class.members.filterIsInstance<kotlin.reflect.KProperty1<PlonkRegistrationInputs, *>>()
+                .associate { it.name to it.get(input)!! }
+        }
+
+        inputs
     }
 
     private fun readICAO(context: Context): ByteArray? {

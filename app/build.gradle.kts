@@ -200,6 +200,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation(files("libs/Identity.aar"))
     implementation(files("libs/bionet-release.aar"))
+    implementation(files("libs/noir.aar"))
 
     // QR Code
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
