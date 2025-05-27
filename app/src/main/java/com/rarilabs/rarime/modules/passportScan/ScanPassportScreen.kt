@@ -28,7 +28,7 @@ import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.WaitlistPas
 import com.rarilabs.rarime.ui.components.ConfirmationDialog
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
 import com.rarilabs.rarime.util.ErrorHandler
-import com.rarilabs.rarime.util.data.UniversalZkProof
+import com.rarilabs.rarime.util.data.UniversalProof
 
 import org.jmrtd.lds.icao.MRZInfo
 
@@ -71,7 +71,7 @@ fun ScanPassportScreen(
     }
 
 
-    fun handleRegisteredPassportException(zkProof: UniversalZkProof) {
+    fun handleRegisteredPassportException(zkProof: UniversalProof) {
         if (!BuildConfig.isTestnet) {
             scanPassportScreenViewModel.resetPassportState()
 

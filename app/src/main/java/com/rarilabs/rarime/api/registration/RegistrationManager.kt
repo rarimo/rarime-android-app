@@ -15,7 +15,7 @@ import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.data.GrothProof
-import com.rarilabs.rarime.util.data.UniversalZkProof
+import com.rarilabs.rarime.util.data.UniversalProof
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.publicKeyToPem
 import identity.CallDataBuilder
@@ -43,8 +43,8 @@ class RegistrationManager @Inject constructor(
     val activeIdentity: StateFlow<ByteArray>
         get() = _activeIdentity.asStateFlow()
 
-    private var _registrationProof = MutableStateFlow<UniversalZkProof?>(null)
-    val registrationProof: StateFlow<UniversalZkProof?>
+    private var _registrationProof = MutableStateFlow<UniversalProof?>(null)
+    val registrationProof: StateFlow<UniversalProof?>
         get() = _registrationProof.asStateFlow()
 
     var _revocationChallenge = MutableStateFlow<ByteArray>(ByteArray(0))
@@ -78,7 +78,7 @@ class RegistrationManager @Inject constructor(
         _revEDocument.value = eDocument
     }
 
-    fun setRegistrationProof(proof: UniversalZkProof) {
+    fun setRegistrationProof(proof: UniversalProof) {
         _registrationProof.value = proof
     }
 
@@ -98,7 +98,7 @@ class RegistrationManager @Inject constructor(
      * else it is registration for new passport
      */
     suspend fun register(
-        zkProof: UniversalZkProof,
+        zkProof: UniversalProof,
         eDocument: EDocument,
         masterCertProof: Proof,
         isUserRevoking: Boolean,
@@ -147,7 +147,7 @@ class RegistrationManager @Inject constructor(
 
     suspend fun getPassportInfo(
         eDocument: EDocument,
-        zkProof: UniversalZkProof,
+        zkProof: UniversalProof,
     ): Tuple2<StateKeeper.PassportInfo, StateKeeper.IdentityInfo>? {
         val stateKeeperContract = rarimoContractManager.getStateKeeper()
 
@@ -162,7 +162,7 @@ class RegistrationManager @Inject constructor(
     }
 
     suspend fun lightRegisterRelayer(
-        zkProof: UniversalZkProof,
+        zkProof: UniversalProof,
         verifySodResponse: VerifySodResponse
     ) {
         val signature = verifySodResponse.data.attributes.signature.let {

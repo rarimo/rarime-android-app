@@ -14,6 +14,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.rarilabs.rarime.modules.home.HomeViewModel
 import com.rarilabs.rarime.modules.home.components.no_passport.HomeScreenNoPassportMain
 import com.rarilabs.rarime.modules.home.components.passport.HomeScreenPassportMain
 

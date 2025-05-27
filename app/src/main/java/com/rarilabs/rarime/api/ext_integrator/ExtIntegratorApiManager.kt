@@ -21,7 +21,7 @@ import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
 import com.rarilabs.rarime.util.data.GrothProof
-import com.rarilabs.rarime.util.data.UniversalZkProof
+import com.rarilabs.rarime.util.data.UniversalProof
 
 import com.rarilabs.rarime.util.decodeHexString
 import kotlinx.coroutines.Dispatchers
@@ -39,7 +39,7 @@ class ExtIntegratorApiManager @Inject constructor(
     private val passportManager: PassportManager,
     private val identityManager: IdentityManager,
 ) {
-    suspend fun queryProofCallback(url: String, proof: UniversalZkProof, userIdHash: String) {
+    suspend fun queryProofCallback(url: String, proof: UniversalProof, userIdHash: String) {
         return withContext(Dispatchers.IO) {
             val payload = QueryProofGenCallbackRequest(
                 data = QueryProofGenCallbackRequestData(
@@ -176,9 +176,8 @@ class ExtIntegratorApiManager @Inject constructor(
 
         val profiler = identityManager.getProfiler()
 
-        val targets_identity_counter_upper_bound =
-            if (passportInfo.value!!.identityReissueCounter.toLong() > queryProofParametersRequest.data.attributes.identity_counter_upper_bound) passportInfo.value!!.identityReissueCounter.toString()
-            else queryProofParametersRequest.data.attributes.identity_counter_upper_bound.toString()
+        if (passportInfo.value!!.identityReissueCounter.toLong() > queryProofParametersRequest.data.attributes.identity_counter_upper_bound) passportInfo.value!!.identityReissueCounter.toString()
+        else queryProofParametersRequest.data.attributes.identity_counter_upper_bound.toString()
 
         val dg1 = passportManager.passport.value!!.dg1!!.decodeHexString()
         val smtProofJSON = queryParams.first

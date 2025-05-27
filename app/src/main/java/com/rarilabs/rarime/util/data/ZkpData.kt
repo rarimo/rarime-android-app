@@ -2,172 +2,85 @@ package com.rarilabs.rarime.util.data
 
 import com.google.gson.Gson
 import com.rarilabs.rarime.api.registration.models.LightRegistrationData
+import com.rarilabs.rarime.util.data.UniversalProofFactory.fromLight
 import org.web3j.utils.Numeric
 import java.math.BigInteger
 
 private val gson = Gson()
 
+// --- UniversalProof: Strict sealed class + only factories for creation ---
 
-enum class RegistrationProofType {
-    LIGHT_PROOF, GROTH_PROOF, PLONK_PROOF
+sealed class UniversalProof {
+    abstract fun getPubSignals(): List<String>
+    abstract fun getIdentityKey(): String
+    abstract fun getPublicKey(): String
+    abstract fun getPassportHash(): String
+
+    data class Groth internal constructor(val proof: GrothProof) : UniversalProof() {
+        override fun getPubSignals() = proof.pub_signals
+        override fun getIdentityKey() = proof.pub_signals[0]
+        override fun getPublicKey() = proof.pub_signals[0]
+        override fun getPassportHash() = proof.pub_signals[1]
+    }
+
+    data class Light internal constructor(
+        val proof: LightRegistrationData, val grothProof: GrothProof
+    ) : UniversalProof() {
+        override fun getPubSignals() = grothProof.pub_signals
+
+        override fun getIdentityKey() = proof.signature
+        override fun getPublicKey() = proof.public_key
+        override fun getPassportHash() = proof.passport_hash
+    }
+
+    data class Plonk internal constructor(val proof: PlonkProof) : UniversalProof() {
+        override fun getPubSignals() = proof.pub_signals
+        override fun getIdentityKey() = proof.pub_signals[0]
+        override fun getPublicKey() = proof.pub_signals[0]
+        override fun getPassportHash() = proof.pub_signals[1]
+    }
+
+    companion object {
+        fun fromGroth(grothProof: GrothProof): Groth = Groth(grothProof)
+        fun fromPlonk(plonkProof: PlonkProof): Plonk = Plonk(plonkProof)
+        fun fromLight(light: LightRegistrationData, groth: GrothProof): Light = Light(light, groth)
+    }
 }
 
 
-class UniversalZkProof private constructor() {
-
-    lateinit var rawData: String
-
-    var type: RegistrationProofType = RegistrationProofType.LIGHT_PROOF
-
-
-    fun getPubSignals(): List<String> {
-        return when (type) {
-            RegistrationProofType.LIGHT_PROOF -> {
-                val res = gson.fromJson(rawData, LightRegistrationData::class.java)
-                listOf(res.verifier, res.signature, res.public_key, res.passport_hash)
-            }
-
-            RegistrationProofType.GROTH_PROOF -> {
-                val res = gson.fromJson(rawData, GrothProof::class.java)
-                res.pub_signals
-            }
-
-            RegistrationProofType.PLONK_PROOF -> {
-                val res = gson.fromJson(rawData, PlonkProof::class.java)
-                res.pub_signals
-            }
-        }
-    }
-
-    fun getIdentityKey(): String {
-        return when (type) {
-            RegistrationProofType.LIGHT_PROOF -> {
-                val res = gson.fromJson(rawData, LightRegistrationData::class.java)
-                res.signature
-            }
-
-            RegistrationProofType.GROTH_PROOF -> {
-                val res = gson.fromJson(rawData, GrothProof::class.java)
-                res.pub_signals[0]
-            }
-
-            RegistrationProofType.PLONK_PROOF -> {
-                val res = gson.fromJson(rawData, PlonkProof::class.java)
-                res.pub_signals[0]
-            }
-        }
-    }
-
-    fun getPublicKey(): String {
-        return when (type) {
-            RegistrationProofType.LIGHT_PROOF -> {
-                val res = gson.fromJson(rawData, LightRegistrationData::class.java)
-                res.public_key
-            }
-
-            RegistrationProofType.GROTH_PROOF -> {
-                val res = gson.fromJson(rawData, GrothProof::class.java)
-                res.pub_signals[0]
-            }
-
-            RegistrationProofType.PLONK_PROOF -> {
-                val res = gson.fromJson(rawData, PlonkProof::class.java)
-                res.pub_signals[0]
-            }
-        }
-    }
-
-
-    fun getPassportHash(): String {
-        return when (type) {
-            RegistrationProofType.LIGHT_PROOF -> {
-                val res = gson.fromJson(rawData, LightRegistrationData::class.java)
-                res.passport_hash
-            }
-
-            RegistrationProofType.GROTH_PROOF -> {
-                val res = gson.fromJson(rawData, GrothProof::class.java)
-                res.pub_signals[1]
-            }
-
-            RegistrationProofType.PLONK_PROOF -> {
-                val res = gson.fromJson(rawData, PlonkProof::class.java)
-                res.pub_signals[1]
-            }
-        }
-    }
-
-    constructor(grothProof: GrothProof) : this() {
-        val json = gson.toJson(grothProof)
-        this.rawData = Numeric.toHexString(json.toByteArray())
-        this.type = RegistrationProofType.GROTH_PROOF
-    }
-
-    //Only For plonkProofs
-    constructor(rawPlonkData: ByteArray) : this() {
-        val plonk = PlonkProof.fromByteArray(rawPlonkData)
-        val json = gson.toJson(plonk)
-        this.rawData = Numeric.toHexString(json.toByteArray())
-        this.type = RegistrationProofType.PLONK_PROOF
-    }
-
-    //From shared Prefs
-    constructor(rawDataHex: String) : this() {
-        val rawData = Numeric.hexStringToByteArray(rawDataHex)
-
-        val jsonString = rawData.decodeToString()
-
-        val grothProof = tryDecodeToGroth(jsonString)
-
-        this.rawData = jsonString
-
-        if (grothProof != null) {
-            type = RegistrationProofType.GROTH_PROOF
-            return
-        }
-
-        val plonkProof = tryDecodeToPlonk(jsonString)
-
-        if (plonkProof != null) {
-            type = RegistrationProofType.PLONK_PROOF
-            return
-        }
-
-        val lightProof = tryDecodeToLight(jsonString)
-
-        if (lightProof != null) {
-            type = RegistrationProofType.LIGHT_PROOF
-            return
-        }
-    }
-
-
-    private fun tryDecodeToGroth(rawJson: String): GrothProof? {
+object UniversalProofFactory {
+    /**
+     * Try to parse Groth or Plonk from raw JSON.
+     * (LightProofs must be constructed via [fromLight] explicitly.)
+     */
+    fun fromRaw(raw: String): UniversalProof? {
         return try {
-            gson.fromJson(rawJson, GrothProof::class.java)
-        } catch (e: Exception) {
-            null
+            val groth = gson.fromJson(raw, GrothProof::class.java)
+            UniversalProof.fromGroth(groth)
+        } catch (_: Exception) {
+            try {
+                val plonk = gson.fromJson(raw, PlonkProof::class.java)
+                UniversalProof.fromPlonk(plonk)
+            } catch (_: Exception) {
+                null
+            }
         }
     }
 
-    private fun tryDecodeToPlonk(rawJson: String): PlonkProof? {
-        return try {
-            gson.fromJson(rawJson, PlonkProof::class.java)
-        } catch (e: Exception) {
-            null
-        }
-    }
+    fun fromGroth(groth: GrothProof): UniversalProof.Groth = UniversalProof.fromGroth(groth)
 
-    private fun tryDecodeToLight(rawJson: String): LightRegistrationData? {
-        return try {
-            gson.fromJson(rawJson, LightRegistrationData::class.java)
-        } catch (e: Exception) {
-            null
-        }
-    }
+    fun fromPlonkBytes(plonkRaw: ByteArray): UniversalProof.Plonk =
+        UniversalProof.fromPlonk(PlonkProof.fromByteArray(plonkRaw))
 
+    fun fromLight(light: LightRegistrationData, groth: GrothProof): UniversalProof.Light =
+        UniversalProof.fromLight(light, groth)
 }
 
+// --- Proof data classes ---
+
+data class GrothProof(
+    val proof: GrothProofData, val pub_signals: List<String>
+)
 
 data class GrothProofData(
     val pi_a: List<String>,
@@ -176,9 +89,8 @@ data class GrothProofData(
     val protocol: String,
 ) {
     companion object {
-        fun fromJson(jsonString: String): GrothProofData {
-            return gson.fromJson(jsonString, GrothProofData::class.java)
-        }
+        fun fromJson(jsonString: String): GrothProofData =
+            gson.fromJson(jsonString, GrothProofData::class.java)
     }
 }
 
@@ -189,8 +101,7 @@ data class PlonkProof(
 ) {
     companion object {
         fun fromByteArray(data: ByteArray): PlonkProof {
-            if (data.size != 2304)
-                throw IllegalStateException("data.size != 2304, got ${data.size}")
+            require(data.size == 2304) { "data.size != 2304, got ${data.size}" }
 
             val pubSignalLen = 5
             val pubSignalData = 32
@@ -198,9 +109,7 @@ data class PlonkProof(
 
             // Extract public signals
             val pubSignalsRaw = data.copyOfRange(0, pubSignalSize)
-            val pubSignalsList = pubSignalsRaw
-                .toList()
-                .chunked(pubSignalData)
+            val pubSignalsList = pubSignalsRaw.toList().chunked(pubSignalData)
                 .map { BigInteger(it.toByteArray()).toString() }
 
             // Extract proof bytes (after pub signals)
@@ -208,14 +117,12 @@ data class PlonkProof(
             val proofHex = Numeric.toHexString(proofBytes)
 
             return PlonkProof(
-                rawProof = data,
-                proof = proofHex,
-                pub_signals = pubSignalsList
+                rawProof = data, proof = proofHex, pub_signals = pubSignalsList
             )
         }
     }
 }
 
-data class GrothProof(
-    val proof: GrothProofData, val pub_signals: List<String>
-)
+//data class LightProofBundle(
+//    val grothProof: GrothProof, val proofData: LightRegistrationData
+//)

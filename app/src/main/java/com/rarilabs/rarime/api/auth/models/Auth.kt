@@ -18,7 +18,7 @@ data class RequestAuthorizeData(
 
 @JsonClass(generateAdapter = true)
 data class RequestAuthorizeDataAttributes(
-    val proof: UniversalZkProof,
+    val proof: UniversalProof,
 )
 
 @JsonClass(generateAdapter = true)

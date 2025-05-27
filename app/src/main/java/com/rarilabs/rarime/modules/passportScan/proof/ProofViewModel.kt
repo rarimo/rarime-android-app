@@ -30,7 +30,8 @@ import com.rarilabs.rarime.util.SecurityUtil
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.circuits.CircuitUtil
 import com.rarilabs.rarime.util.circuits.RegisteredCircuitData
-import com.rarilabs.rarime.util.data.UniversalZkProof
+import com.rarilabs.rarime.util.data.GrothProof
+import com.rarilabs.rarime.util.data.UniversalProof
 
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.generateLightRegistrationProofByCircuitType
@@ -83,7 +84,7 @@ class ProofViewModel @Inject constructor(
     val pointsToken = walletManager.pointsToken
 
     suspend fun joinRewardProgram(eDocument: EDocument) {
-        val res = pointsManager.joinRewardProgram(eDocument)
+        pointsManager.joinRewardProgram(eDocument)
     }
 
     private var _progress = MutableStateFlow(0)
@@ -123,7 +124,10 @@ class ProofViewModel @Inject constructor(
         )
 
         val response = withContext(Dispatchers.IO) {
-            registrationManager.relayerRegister(callData.calldata, BaseConfig.REGISTER_CONTRACT_ADDRESS)
+            registrationManager.relayerRegister(
+                callData.calldata,
+                BaseConfig.REGISTER_CONTRACT_ADDRESS
+            )
         }
 
         ErrorHandler.logDebug(
@@ -142,7 +146,7 @@ class ProofViewModel @Inject constructor(
         registeredCircuitData: RegisteredCircuitData,
         filePaths: DownloadRequest?,
         registerIdentityCircuitType: RegisterIdentityCircuitType
-    ): UniversalZkProof {
+    ): UniversalProof {
         ErrorHandler.logDebug("ProofViewModel", "Generating proof")
 
         val inputs = buildRegistrationCircuits(eDocument, registerIdentityCircuitType)
@@ -159,7 +163,7 @@ class ProofViewModel @Inject constructor(
 
 
 
-        return proof
+        return UniversalProof.fromGroth(proof)
     }
 
     private fun getCircuitType(eDocument: EDocument): RegisterIdentityCircuitType {
@@ -309,7 +313,7 @@ class ProofViewModel @Inject constructor(
         delay(second * 1)
     }
 
-    suspend fun lightRegistration(): UniversalZkProof {
+    suspend fun lightRegistration(): UniversalProof {
         val privateKeyBytes = privateKeyBytes!!
         val eDocument = eDoc.value!!
 
@@ -348,8 +352,9 @@ class ProofViewModel @Inject constructor(
         delay(second * 2)
         _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
 
-
         val registerResponse = registrationManager.lightRegistration(eDocument, lightProof)
+
+        val universalProof = UniversalProof.fromLight(registerResponse.data.attributes, lightProof)
 
         val profile = identityManager.getProfiler()
         val currentIdentityKey = profile.publicKeyHash
@@ -357,29 +362,29 @@ class ProofViewModel @Inject constructor(
         val passportInfoKey = withContext(Dispatchers.IO) {
             registrationManager.getPassportInfo(
                 eDocument,
-                lightProof,
+                universalProof,
             )!!.component1()
         }
 
         if (passportInfoKey.activeIdentity.contentEquals(currentIdentityKey)) {
             ErrorHandler.logDebug(TAG, "Passport is already registered with this PK")
-            registrationManager.setRegistrationProof(lightProof)
+            registrationManager.setRegistrationProof(universalProof)
             identityManager.setLightRegistrationData(registerResponse.data.attributes)
-            return lightProof
+            return universalProof
         }
         delay(second * 2)
         _state.value = PassportProofState.FINALIZING
 
         val res = withContext(Dispatchers.IO) {
-            registrationManager.lightRegisterRelayer(lightProof, registerResponse)
+            registrationManager.lightRegisterRelayer(universalProof, registerResponse)
         }
 
         res
 
-        registrationManager.setRegistrationProof(lightProof)
+        registrationManager.setRegistrationProof(universalProof)
         identityManager.setLightRegistrationData(registerResponse.data.attributes)
         delay(second * 1)
-        return lightProof
+        return universalProof
     }
 
     private fun generateLightRegistrationProof(
@@ -387,7 +392,7 @@ class ProofViewModel @Inject constructor(
         eDocument: EDocument,
         privateKey: ByteArray,
         circuitData: RegisteredCircuitData
-    ): UniversalZkProof {
+    ): GrothProof {
 
         val inputs = Gson().toJson(getLightRegistrationInputs(eDocument, privateKey)).toByteArray()
         val assetContext: Context =
@@ -511,9 +516,10 @@ class ProofViewModel @Inject constructor(
             eDocument.dg1!!.decodeHexString(), 2, smartChunkingToBlockSize.toLong()
         )
 
-        val inputs = RegisterIdentityInputs(skIdentity = Numeric.toHexStringWithPrefix(
-            BigInteger(privateKeyBytes)
-        ),
+        val inputs = RegisterIdentityInputs(
+            skIdentity = Numeric.toHexStringWithPrefix(
+                BigInteger(privateKeyBytes)
+            ),
             encapsulatedContent = encapsulatedChunks,
             signedAttributes = signedAttrChunks,
             pubkey = pubKeyChunks,

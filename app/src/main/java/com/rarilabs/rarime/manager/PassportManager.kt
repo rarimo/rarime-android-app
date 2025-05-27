@@ -8,7 +8,7 @@ import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.Constants
-import com.rarilabs.rarime.util.data.UniversalZkProof
+import com.rarilabs.rarime.util.data.UniversalProof
 import identity.Identity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -138,7 +138,7 @@ class PassportManager @Inject constructor(
 
     fun getPassportInfoKey(
         eDocument: EDocument,
-        zkProof: UniversalZkProof,
+        zkProof: UniversalProof,
     ): String {
         val passportInfoKey: String = if (eDocument.dg15.isNullOrEmpty()) {
             zkProof.getPassportHash()
@@ -151,7 +151,7 @@ class PassportManager @Inject constructor(
 
     fun getPassportInfoKeyBytes(
         eDocument: EDocument,
-        zkProof: UniversalZkProof,
+        zkProof: UniversalProof,
     ): ByteArray {
 
         val passportInfoKey: String = getPassportInfoKey(eDocument, zkProof)

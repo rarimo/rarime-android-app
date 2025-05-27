@@ -18,7 +18,7 @@ import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
-import com.rarilabs.rarime.util.data.UniversalZkProof
+import com.rarilabs.rarime.util.data.UniversalProof
 
 import com.rarilabs.rarime.util.decodeHexString
 import identity.Identity
@@ -46,8 +46,8 @@ class AirDropManager @Inject constructor(
         get() = _isAirdropClaimed.asStateFlow()
 
     private suspend fun generateAirdropQueryProof(
-        registrationProof: UniversalZkProof, eDocument: EDocument, privateKey: ByteArray
-    ): UniversalZkProof {
+        registrationProof: UniversalProof, eDocument: EDocument, privateKey: ByteArray
+    ): UniversalProof {
         val assetContext: Context = context.createPackageContext("com.rarilabs.rarime", 0)
         val assetManager = assetContext.assets
 
@@ -106,7 +106,7 @@ class AirDropManager @Inject constructor(
         return queryProof
     }
 
-    private suspend fun createAirDrop(zkProof: UniversalZkProof) {
+    private suspend fun createAirDrop(zkProof: UniversalProof) {
         val rarimoAddress = identityManager.rarimoAddress()
 
         val payload = CreateAirDropBody(

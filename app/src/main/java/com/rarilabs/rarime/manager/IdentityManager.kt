@@ -5,7 +5,7 @@ import com.rarilabs.rarime.api.registration.models.LightRegistrationData
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ErrorHandler
-import com.rarilabs.rarime.util.data.UniversalZkProof
+import com.rarilabs.rarime.util.data.UniversalProof
 
 import com.rarilabs.rarime.util.decodeHexString
 import identity.Identity
@@ -32,7 +32,7 @@ class IdentityManager @Inject constructor(
 
     var _registrationProof = MutableStateFlow(dataStoreManager.readRegistrationProof())
         private set
-    val registrationProof: StateFlow<UniversalZkProof?>
+    val registrationProof: StateFlow<UniversalProof?>
         get() = _registrationProof.asStateFlow()
 
     val privateKeyBytes: ByteArray?
@@ -47,7 +47,7 @@ class IdentityManager @Inject constructor(
         dataStoreManager.saveIsLogsDeleted(isLogsDeleted)
     }
 
-    fun setRegistrationProof(proof: UniversalZkProof?) {
+    fun setRegistrationProof(proof: UniversalProof?) {
         _registrationProof.value = proof
 
         proof?.let {

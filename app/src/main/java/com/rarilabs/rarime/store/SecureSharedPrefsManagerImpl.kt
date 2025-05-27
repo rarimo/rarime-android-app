@@ -19,7 +19,7 @@ import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.LocaleUtil
-import com.rarilabs.rarime.util.data.UniversalZkProof
+import com.rarilabs.rarime.util.data.UniversalProof
 
 import javax.crypto.AEADBadTagException
 import javax.inject.Inject
@@ -314,17 +314,17 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         }
     }
 
-    override fun saveRegistrationProof(proof: UniversalZkProof) {
+    override fun saveRegistrationProof(proof: UniversalProof) {
         val jsonProof = Gson().toJson(proof)
         val editor = getEditor()
         editor.putString(accessTokens["REGISTRATION_PROOF"], jsonProof)
         editor.apply()
     }
 
-    override fun readRegistrationProof(): UniversalZkProof? {
+    override fun readRegistrationProof(): UniversalProof? {
         val jsonProof = getSharedPreferences().getString(accessTokens["REGISTRATION_PROOF"], null)
             ?: return null
-        return Gson().fromJson(jsonProof, UniversalZkProof::class.java)
+        return Gson().fromJson(jsonProof, UniversalProof::class.java)
     }
 
     override fun readTransactions(): List<Transaction> {

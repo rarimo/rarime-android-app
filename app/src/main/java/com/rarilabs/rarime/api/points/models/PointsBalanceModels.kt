@@ -120,7 +120,7 @@ data class VerifyPassportData(
 
 @JsonClass(generateAdapter = true)
 data class VerifyPassportAttributes(
-    val proof: UniversalZkProof,
+    val proof: UniversalProof,
     val country: String,
     val anonymous_id: String
 )
