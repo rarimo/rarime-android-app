@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.ui.components
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -56,9 +57,27 @@ fun TipAlert(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL
+)
 @Composable
-private fun TipAlertPreview() {
+private fun TipAlertPreviewLight() {
+    Column(
+        modifier = Modifier.padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        TipAlert("Tip:", "This is very important text to understand")
+        TipAlert("Tip:", "This is very important text to understand and follow") {
+            PrimaryTextButton(leftIcon = R.drawable.ic_caret_right, onClick = { /*TODO*/ })
+        }
+    }
+}
+
+@Preview(showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL
+)
+@Composable
+private fun TipAlertPreviewDark() {
     Column(
         modifier = Modifier.padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
