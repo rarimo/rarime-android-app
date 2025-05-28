@@ -6,8 +6,10 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -25,7 +27,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -38,7 +39,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.room.util.TableInfo
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
@@ -52,7 +52,6 @@ import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.AppTheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
-import java.nio.file.WatchEvent
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -65,15 +64,14 @@ fun HiddenPrizeCollapsedCard(
         with(sharedTransitionScope) {
             BaseCollapsedCard(
                 modifier = Modifier
-                    .background(RarimeTheme.colors.backgroundPrimary)
                     .sharedElement(
                         state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
                         animatedVisibilityScope = animatedVisibilityScope,
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) })
-                    .clip(RoundedCornerShape(16.dp))
-                    .padding(vertical = 8.dp)
-                    .padding(horizontal = 16.dp)
                     .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(RarimeTheme.colors.backgroundPrimary)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
@@ -173,7 +171,8 @@ private fun Footer(
                     )
                     Text(
                         text = stringResource(R.string.hidden_prize_prize_pool_value), //TODO Maybe give this from backend in future
-                        style = RarimeTheme.typography.h6.copy(color = RarimeTheme.colors.textPrimary)
+                        style = RarimeTheme.typography.h6.copy(color = RarimeTheme.colors.textPrimary),
+                        modifier = Modifier.padding(end = 8.dp)
                     )
                     Image(
                         painterResource(R.drawable.ic_ethereum),
@@ -219,7 +218,10 @@ private fun Footer(
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
-                AppIcon(id = R.drawable.ic_arrow_right_up_line, modifier = Modifier.align(Alignment.Bottom))
+                AppIcon(
+                    id = R.drawable.ic_arrow_right_up_line,
+                    modifier = Modifier.align(Alignment.Bottom)
+                )
             }
         }
 
@@ -247,14 +249,17 @@ private fun Background(
     with(sharedTransitionScope) {
         Box(
             modifier = Modifier
+                .background(color = RarimeTheme.colors.backgroundPrimary)
+
                 .fillMaxSize()
         ) {
             Image(
                 painter = painterResource(backgroundRes),
                 contentDescription = null,
-                contentScale = ContentScale.FillWidth,
+                contentScale = ContentScale.None,
                 modifier = Modifier
-                    .fillMaxHeight()
+                    .fillMaxSize()
+
                     .sharedBounds(
                         rememberSharedContentState(
                             HomeSharedKeys.image(
@@ -266,6 +271,7 @@ private fun Background(
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     )
                     .clip(RoundedCornerShape(20.dp))
+
             )
 
 

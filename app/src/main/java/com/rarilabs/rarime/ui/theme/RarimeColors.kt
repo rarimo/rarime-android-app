@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.ui.theme
 
-import android.annotation.SuppressLint
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -435,13 +434,33 @@ class RarimeColors(
         this.invertedLight = other.invertedLight
         this.inverted = other.inverted
         this.backgroundSurface1 = other.backgroundSurface1
-
+        this.backgroundSurface2 = other.backgroundSurface2
+        this.backgroundPure = other.backgroundPure
+        this.baseBlack = other.baseBlack
+        this.baseWhite = other.baseWhite
+        this.baseBlackOp40 = other.baseBlackOp40
+        this.baseBlackOp50 = other.baseBlackOp50
+        this.invertedDark = other.invertedDark
+        this.invertedLight = other.invertedLight
+        this.backgroundContainer = other.backgroundContainer
+        this.gradient1 = other.gradient1
+        this.gradient2 = other.gradient2
+        this.gradient3 = other.gradient3
+        this.gradient4 = other.gradient4
+        this.gradient5 = other.gradient5
+        this.gradient6 = other.gradient6
+        this.gradient7 = other.gradient7
+        this.gradient8 = other.gradient8
+        this.gradient9 = other.gradient9
+        this.gradient10 = other.gradient10
+        this.additionalGreen = other.additionalGreen
+        this.inverted = other.inverted
         this.hiddenPrizeAccent = other.hiddenPrizeAccent
         this.hiddenPrizeBackground = other.hiddenPrizeBackground
     }
 }
 
-@SuppressLint("InvalidColorHexValue")
+
 fun darkColors() = RarimeColors(
     // primary
     primaryDarker = Color(0xFFFFFFFF),
