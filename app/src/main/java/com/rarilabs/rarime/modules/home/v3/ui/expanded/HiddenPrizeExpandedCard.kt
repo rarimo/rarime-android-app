@@ -464,7 +464,8 @@ private fun Body(
                         )
                         Text(
                             text = stringResource(R.string.hidden_prize_prize_pool_value), //TODO Maybe give this from backend in future
-                            style = RarimeTheme.typography.h6.copy(color = RarimeTheme.colors.textPrimary)
+                            style = RarimeTheme.typography.h6.copy(color = RarimeTheme.colors.textPrimary),
+                            modifier = Modifier.padding(end= 8.dp)
                         )
                         Image(
                             painterResource(R.drawable.ic_ethereum),
