@@ -21,6 +21,7 @@ import androidx.compose.material3.CardElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,8 +42,8 @@ fun BaseCollapsedCard(
 
     // default `Card` props
     shape: Shape = RoundedCornerShape(40.dp),
-    colors: CardColors = CardDefaults.cardColors(),
-    elevation: CardElevation = CardDefaults.cardElevation(),
+    colors: CardColors = CardDefaults.cardColors(containerColor = Color.Transparent),
+    elevation: CardElevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
     border: BorderStroke? = null,
 ) {
     Card(
@@ -73,6 +74,7 @@ fun BaseCollapsedCard(
 @Preview(showBackground = true)
 @Composable
 fun BaseCollapsedCardPreview() {
+
     BaseCollapsedCard(
         modifier = Modifier
             .height(552.dp)
