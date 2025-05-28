@@ -35,9 +35,10 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathOperation
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
@@ -119,8 +120,7 @@ fun HiddenPrizeCamera(
         meshDetector = meshDetector,
         cameraExecutor = cameraExecutor,
         onImageSizeUpdated = { imageSize = it },
-        onMeshDetected = { detectedMeshes = it }
-    )
+        onMeshDetected = { detectedMeshes = it })
 
     RenderPreviewOrImage(
         previewView, selectedBitmap, isBlurred = (currentStep != HiddenPrizeCameraStep.CAMERA)
@@ -129,30 +129,31 @@ fun HiddenPrizeCamera(
     when (currentStep) {
         HiddenPrizeCameraStep.CAMERA -> {
             Box(modifier = modifier.fillMaxSize()) {
+
                 ShadowBoxCanvas(
                     boxSize = 270.dp,
                     cornerRadius = 16.dp,
                     borderColor = RarimeTheme.colors.baseWhite,
                     borderWidth = 2.dp,
-                    boxColor = RarimeTheme.colors.baseBlackOp50
-                    )
+                    boxColor = RarimeTheme.colors.baseBlackOp40
+                )
+
                 FaceMeshCanvas(
                     imageSize = imageSize, detectedMeshes = detectedMeshes
                 )
 
-
                 OverlayControls(
                     selectedBitmap = selectedBitmap, onSelectBitmap = {
-                        scope.launch {
-                            selectedBitmap = it
-                        }
-                    }, onClearBitmap = { selectedBitmap = null }, onNext = {
-                        currentStep = HiddenPrizeCameraStep.PROCESSING_ML
-                    }, previewView = previewView, detectedMeshes
+                    scope.launch {
+                        selectedBitmap = it
+                    }
+                }, onClearBitmap = { selectedBitmap = null }, onNext = {
+                    currentStep = HiddenPrizeCameraStep.PROCESSING_ML
+                }, previewView = previewView, detectedMeshes
                 )
+
             }
         }
-
 
         HiddenPrizeCameraStep.WRONG -> {
             HiddenPrizeWrongScreen(
@@ -184,8 +185,7 @@ fun HiddenPrizeCamera(
                 onShare = {
 
                 },
-                onViewWallet = { navigate(Screen.Main.Wallet.route) }
-            )
+                onViewWallet = { navigate(Screen.Main.Wallet.route) })
         }
 
         HiddenPrizeCameraStep.PROCESSING_ML -> {
@@ -207,8 +207,7 @@ fun HiddenPrizeCamera(
             HiddenPrizeError(
                 onBack = {
                     navigate(Screen.Main.Home.route)
-                }
-            )
+                })
         }
 
         HiddenPrizeCameraStep.PROCESSING_ZKP -> {
@@ -443,54 +442,49 @@ fun FaceMeshCanvas(
 
 @Composable
 fun ShadowBoxCanvas(
-    boxSize: Dp,
-    cornerRadius: Dp,
-    borderColor: Color,
-    borderWidth: Dp,
-    boxColor: Color
+    boxSize: Dp, cornerRadius: Dp, borderColor: Color, borderWidth: Dp, boxColor: Color
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Canvas(modifier = Modifier.fillMaxSize()) {
-            val holeSize = boxSize.toPx()
-            val cornerRadius = cornerRadius.toPx()
-            val borderWidth = borderWidth.toPx()
-
+            val holeSizePx = boxSize.toPx()
+            val cornerRadiusPx = cornerRadius.toPx()
+            val borderWidthPx = borderWidth.toPx()
             val centerX = size.width / 2
             val centerY = size.height / 2
-            val left = centerX - holeSize / 2
-            val top = centerY - holeSize / 2
-
-
-            drawRect(color = boxColor)
-
+            val left = centerX - holeSizePx / 2
+            val top = centerY - holeSizePx / 2
 
             val holeRect = RoundRect(
                 left = left,
                 top = top,
-                right = left + holeSize,
-                bottom = top + holeSize,
-                cornerRadius = CornerRadius(cornerRadius, cornerRadius)
+                right = left + holeSizePx,
+                bottom = top + holeSizePx,
+                cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx)
             )
 
-            drawRoundRect(
-                color = Color.Transparent,
-                topLeft = Offset(holeRect.left, holeRect.top),
-                size = Size(holeSize, holeSize),
-                cornerRadius = CornerRadius(cornerRadius, cornerRadius),
-                blendMode = BlendMode.Clear
+            val canvasPath = Path().apply {
+                addRect(size.toRect())
+            }
+
+            val holePath = Path().apply {
+                addRoundRect(holeRect)
+            }
+
+            val shadowPath = Path.combine(
+                PathOperation.Difference, canvasPath, holePath
             )
 
-            //frame
+            drawPath(shadowPath, color = boxColor)
+
             drawRoundRect(
                 color = borderColor,
                 topLeft = Offset(holeRect.left, holeRect.top),
-                size = Size(holeSize, holeSize),
-                cornerRadius = CornerRadius(cornerRadius, cornerRadius),
-                style = Stroke(width = borderWidth)
+                size = Size(holeSizePx, holeSizePx),
+                cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx),
+                style = Stroke(width = borderWidthPx)
             )
         }
     }
-
 }
 
 
