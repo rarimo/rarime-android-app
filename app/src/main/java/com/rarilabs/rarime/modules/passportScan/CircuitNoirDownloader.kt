@@ -18,9 +18,11 @@ class CircuitNoirDownloader(private val context: Context) {
 
         val url = getNoirCircuitUrl(circuitData)
 
+        val filePath = url.split("/").last()
+
         return try {
             fileDownloader.downloadFileBlocking(
-                url, "ultraPlonkTrustedSetup.dat"
+                url, filePath
             ) { progress ->
                 onProgressUpdate(progress, false)
             }

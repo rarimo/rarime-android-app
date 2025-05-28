@@ -113,10 +113,10 @@ data class PlonkProof(
 ) {
     companion object {
         fun fromByteArray(data: ByteArray): PlonkProof {
-            require(data.size == 2304) { "data.size != 2304, got ${data.size}" }
+            require(data.size == 2304 * 2) { "data.size != 2304, got ${data.size}" }
 
             val pubSignalLen = 5
-            val pubSignalData = 32
+            val pubSignalData = 32 * 2
             val pubSignalSize = pubSignalLen * pubSignalData
 
             // Extract public signals

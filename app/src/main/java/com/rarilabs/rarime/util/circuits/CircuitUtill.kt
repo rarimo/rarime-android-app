@@ -24,6 +24,15 @@ object CircuitUtil {
         return result
     }
 
+    fun splitEmptyData(data: ByteArray): List<BigInteger> {
+        val nBits = data.size * 8
+        var chunkNumber = nBits / 120
+        if (nBits % 120 != 0) chunkNumber += 1
+
+        // BN(0) in Swift → BigInteger.ZERO in Kotlin
+        return smartBNToArray120(120, chunkNumber, BigInteger.ZERO)
+    }
+
     fun smartChunking2(
         bytes: ByteArray,
         blockNumber: Long,
@@ -114,6 +123,39 @@ object CircuitUtil {
     fun noirChunkNumber(dataBits: Int, chunkSize: Int): Int {
         val length = dataBits + 1 + 64
         return (length + chunkSize - 1) / chunkSize
+    }
+
+    fun splitBy120Bits(data: ByteArray): List<BigInteger> {
+        val bitLength = data.size * 8
+        var chunkNumber = bitLength / 120
+        if (bitLength % 120 != 0) chunkNumber += 1
+
+        return smartBNToArray120(120, chunkNumber, BigInteger(1, data))
+    }
+
+    fun rsaBarrettReductionParam(n: BigInteger, nBits: Int): List<BigInteger> {
+        var chunkNumber = nBits / 120
+        if (nBits % 120 != 0) chunkNumber += 1
+
+        val exp = (nBits + 2) * 2
+        val baseX = BigInteger.valueOf(2L).pow(exp)
+        val result = baseX.divide(n)
+
+        return smartBNToArray120(120, chunkNumber, result)
+    }
+
+    /**
+     * Splits x into k values, each n bits wide, returned as BigIntegers.
+     */
+    fun smartBNToArray120(n: Int, k: Int, x: BigInteger): List<BigInteger> {
+        val mod = BigInteger.ONE.shiftLeft(n) // 2^n
+        val result = mutableListOf<BigInteger>()
+        var mutX = x
+        repeat(k) {
+            result.add(mutX.mod(mod))
+            mutX = mutX.divide(mod)
+        }
+        return result
     }
 
 }

@@ -136,8 +136,7 @@ class PassportManager @Inject constructor(
 
     fun getPassportInfoKey(
         eDocument: EDocument,
-        zkProof: UniversalProof,
-        lightProofData: LightRegistrationData? = getLightRegistrationData()
+        zkProof: UniversalProof
     ): String {
         val passportInfoKey: String =
             if (eDocument.dg15.isNullOrEmpty()) {
