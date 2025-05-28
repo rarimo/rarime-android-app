@@ -138,7 +138,10 @@ fun HiddenPrizeExpandedCard(
                 imageLink = celebrity?.image ?: "",
                 colorScheme = colorScheme,
                 navigate = navigate,
-                attemptsLeft = totalAttemptsCount
+                attemptsLeft = totalAttemptsCount,
+                onClose = {
+                    showAddScan.hide()
+                }
             )
         }
     }

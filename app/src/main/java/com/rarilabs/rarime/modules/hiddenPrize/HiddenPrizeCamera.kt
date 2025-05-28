@@ -83,7 +83,8 @@ fun HiddenPrizeCamera(
     imageLink: String,
     colorScheme: AppColorScheme,
     navigate: (String) -> Unit,
-    attemptsLeft: Int
+    attemptsLeft: Int,
+    onClose: () -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -144,12 +145,13 @@ fun HiddenPrizeCamera(
 
                 OverlayControls(
                     selectedBitmap = selectedBitmap, onSelectBitmap = {
-                    scope.launch {
-                        selectedBitmap = it
-                    }
-                }, onClearBitmap = { selectedBitmap = null }, onNext = {
-                    currentStep = HiddenPrizeCameraStep.PROCESSING_ML
-                }, previewView = previewView, detectedMeshes
+                        scope.launch {
+                            selectedBitmap = it
+                        }
+                    }, onClearBitmap = { selectedBitmap = null }, onNext = {
+                        onClose
+                        currentStep = HiddenPrizeCameraStep.PROCESSING_ML
+                    }, previewView = previewView, detectedMeshes
                 )
 
             }
