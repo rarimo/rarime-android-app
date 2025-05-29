@@ -546,7 +546,7 @@ private fun Body(
                                 name = celebrity.title,
                                 description = celebrity.description,
                                 winnerAddress = celebrity.winner,
-                                prizeAmount = 0.03f,
+                                prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value),
                                 prizeSymbol = {
                                     Image(
                                         painterResource(R.drawable.ic_ethereum),

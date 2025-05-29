@@ -56,7 +56,7 @@ enum class HiddenPrizeCongratsScreenState {
 @Composable
 fun HiddenPrizeCongratsScreen(
     modifier: Modifier = Modifier,
-    prizeAmount: Float,
+    prizeAmount: String,
     prizeSymbol: @Composable () -> Unit = {},
     onClaim: suspend () -> Unit,
     imageLink: String,
@@ -325,7 +325,7 @@ private fun LoadingButton(
 fun HiddenPrizeCongratsScreenPreview() {
     Box(Modifier.fillMaxSize()) {
         HiddenPrizeCongratsScreen(
-            prizeAmount = 2.2f,
+            prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value),
             onClaim = {},
             prizeSymbol = {
                 Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")

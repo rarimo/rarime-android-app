@@ -169,7 +169,7 @@ fun HiddenPrizeCamera(
 
         HiddenPrizeCameraStep.CONGRATS -> {
             HiddenPrizeCongratsScreen(
-                prizeAmount = 2.0f,
+                prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value),
                 prizeSymbol = {
                     Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
                 },
@@ -225,7 +225,7 @@ fun HiddenPrizeCamera(
         }
 
         HiddenPrizeCameraStep.FINISH -> {
-            HiddenPrizeFinish(prizeAmount = 2.0f, prizeSymbol = {
+            HiddenPrizeFinish(prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value), prizeSymbol = {
                 Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
             }, onViewWallet = {}, onShareWallet = {})
         }
