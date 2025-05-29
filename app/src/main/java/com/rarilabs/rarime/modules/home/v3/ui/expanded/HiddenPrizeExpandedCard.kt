@@ -141,7 +141,7 @@ fun HiddenPrizeExpandedCard(
                 navigate = navigate,
                 attemptsLeft = totalAttemptsCount,
                 onClose = {
-                    showAddScan.hide()
+                    showFaceScan.hide()
                 })
         }
     }
