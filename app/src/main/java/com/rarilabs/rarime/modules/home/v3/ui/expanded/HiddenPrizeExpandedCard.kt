@@ -367,7 +367,6 @@ private fun Footer(
                             color = RarimeTheme.colors.textPrimary
                         )
                         Spacer(modifier = Modifier.width(4.dp))
-                        AppIcon(id = R.drawable.ic_info)
                     }
 
                     Row(verticalAlignment = Alignment.Bottom) {
