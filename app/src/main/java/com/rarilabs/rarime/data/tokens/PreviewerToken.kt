@@ -11,7 +11,7 @@ class PreviewerToken(
     address: String,
     override var name: String = "Previewer Token",
     override var symbol: String = "PRE",
-    override var decimals: Int = 18,
+    override var decimals: Int = 0,
     override var icon: Int = R.drawable.ic_info,
 ) : Token(address) {
     override suspend fun loadDetails(): Unit {}

@@ -17,9 +17,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import org.web3j.protocol.Web3j
+import java.math.BigDecimal
 import java.math.BigInteger
 import javax.inject.Inject
-import kotlin.math.pow
 
 data class WalletAssetJSON(
     val tokenSymbol: String, val balance: String, val transactions: List<Transaction>
@@ -46,7 +46,9 @@ data class WalletAsset(
         transactions = emptyList()
     }
 
-    fun humanBalance(): Double = balance.toDouble() / 10.0.pow(token.decimals.toDouble())
+    fun humanBalance(): BigDecimal =
+        balance.toBigDecimal()
+            .divide(BigDecimal.TEN.pow(token.decimals), token.decimals, java.math.RoundingMode.DOWN)
 }
 
 class WalletManager @Inject constructor(

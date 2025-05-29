@@ -69,6 +69,49 @@ object NumberUtil {
         return "${removeTrailingZeros(finalAmount)}$prefix"
     }
 
+    fun convertNumberWithPrefix(value: BigDecimal): String {
+        val K_PREFIX_AMOUNT = BigDecimal("100000")
+        val M_PREFIX_AMOUNT = BigDecimal("1000000")
+        val B_PREFIX_AMOUNT = BigDecimal("1000000000")
+        val T_PREFIX_AMOUNT = BigDecimal("1000000000000")
+
+        fun getPrefix(value: BigDecimal): String {
+            return when {
+                value >= T_PREFIX_AMOUNT -> "T"
+                value >= B_PREFIX_AMOUNT -> "B"
+                value >= M_PREFIX_AMOUNT -> "M"
+                value >= K_PREFIX_AMOUNT -> "K"
+                else -> ""
+            }
+        }
+
+        val prefix = getPrefix(value)
+
+        val divider = when (prefix) {
+            "T" -> T_PREFIX_AMOUNT
+            "B" -> B_PREFIX_AMOUNT
+            "M" -> M_PREFIX_AMOUNT
+            "K" -> K_PREFIX_AMOUNT
+            else -> BigDecimal.ONE
+        }
+
+        val finalAmount =
+            value.divide(divider, 3, RoundingMode.HALF_EVEN).stripTrailingZeros().toPlainString()
+
+        return "$finalAmount$prefix"
+    }
+
+    fun formatAmount(amount: BigDecimal, pattern: String = "#,###.####"): String {
+        return try {
+            val rounded = amount.setScale(4, RoundingMode.DOWN) // 4 decimal places, always down
+            DecimalFormat(pattern).format(rounded)
+        } catch (e: Exception) {
+            ""
+        }
+    }
+
+
+
     fun formatAmount(amount: Double, pattern: String? = "#,###.####"): String {
         try {
             return DecimalFormat(pattern)
@@ -76,6 +119,11 @@ object NumberUtil {
         } catch (e: Exception) {
             return ""
         }
+    }
+
+
+    fun formatBalance(humanAmount: BigDecimal): String {
+        return convertNumberWithPrefix(humanAmount)
     }
 
     fun formatBalance(humanAmount: Double): String {

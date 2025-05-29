@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.wallet.view_model
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.data.tokens.Erc20Token
 import com.rarilabs.rarime.manager.WalletManager
@@ -34,8 +35,8 @@ class WalletSendViewModel @Inject constructor(
     val isSubmitting: StateFlow<Boolean>
         get() = _isSubmitting
 
-    private val _sendError = MutableStateFlow<Throwable?>(null)
-    val sendError: StateFlow<Throwable?> = _sendError
+    private val _feeError = MutableStateFlow<Throwable?>(null)
+    val feeError: StateFlow<Throwable?> = _feeError
 
 
     private suspend fun getGasFee(humanAmount: String): BigDecimal? {
@@ -43,19 +44,15 @@ class WalletSendViewModel @Inject constructor(
         val asset = selectedWalletAsset.value
         val humanAmountNum = humanAmount.toBigDecimalOrNull() ?: return null
 
+        val amount = (humanAmountNum * BigDecimal.TEN.pow(asset.token.decimals)).toBigInteger()
+        Log.i("amount", "$amount")
+        val feeWei = asset.token.estimateTransferFee(
+            asset.userAddress, to, amount
+        )
 
-        return try {
-            val amount = (humanAmountNum * asset.token.decimals.toBigDecimal()).toBigInteger()
-            val feeWei = asset.token.estimateTransferFee(
-                asset.userAddress, to, amount
-            )
+        return NumberUtil.weiToEth(feeWei)
 
-            NumberUtil.weiToEth(feeWei)
 
-        } catch (e: Exception) {
-            ErrorHandler.logError("WalletSendViewModel", "cant gas fee", e)
-            null
-        }
     }
 
     suspend fun estimateGasFee(humanAmount: String) {
@@ -74,12 +71,11 @@ class WalletSendViewModel @Inject constructor(
 
     suspend fun submitSend(to: String, humanAmount: String) {
         _isSubmitting.value = true
-        _sendError.value = null
         try {
             sendTokens(to, humanAmount)
             fetchBalance()
         } catch (e: Exception) {
-            _sendError.value = e
+            ErrorHandler.logError("Send Exception", "Error", e)
         } finally {
             _isSubmitting.value = false
         }

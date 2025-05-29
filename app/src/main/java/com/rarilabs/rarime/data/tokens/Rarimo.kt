@@ -28,7 +28,7 @@ class RarimoToken @Inject constructor(
 ) : Token(address) {
     override var name: String = "" // TODO: make nullable
     override var symbol: String = ""
-    override var decimals: Int = 6
+    override var decimals: Int = 0
     override var icon: Int = R.drawable.ic_rarimo
 
     override suspend fun loadDetails() {
