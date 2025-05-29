@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.firebase.annotations.concurrent.Background
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import kotlinx.coroutines.launch
@@ -74,6 +75,7 @@ fun AppBottomSheet(
     isHeaderEnabled: Boolean = true,
     scrimColor: Color = Color.Black.copy(alpha = 0.5f), // Dims the background
     isWindowInsetsEnabled: Boolean = true,
+    backgroundColor:Color = RarimeTheme.colors.backgroundPure,
     // When `disableScrollPull` true, prevents sheet from closing on pull
     // without pulling in experimental APIs
     disablePullClose: Boolean = false,
@@ -103,7 +105,7 @@ fun AppBottomSheet(
             sheetState = modalState,
             shape = shape,
             dragHandle = null,
-            containerColor = RarimeTheme.colors.backgroundPure,
+            containerColor = backgroundColor,
             onDismissRequest = { hide() },
             scrimColor = scrimColor,
             windowInsets = if (isWindowInsetsEnabled) {
@@ -155,9 +157,8 @@ private fun AppBottomSheetPreview() {
         AppBottomSheet(
             state = sheetState,
             fullScreen = true,
-            isWindowInsetsEnabled = false,
-
-            ) {
+            isWindowInsetsEnabled = false
+        ) {
             Box(modifier = Modifier.height(200.dp)) {
                 Text("Bottom sheet content")
             }

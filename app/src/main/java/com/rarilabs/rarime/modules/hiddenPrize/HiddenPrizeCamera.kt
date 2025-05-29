@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -57,6 +59,7 @@ import com.google.mlkit.vision.facemesh.FaceMeshDetector
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.manager.WrongFaceException
+import com.rarilabs.rarime.ui.base.BaseIconButton
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
@@ -151,7 +154,7 @@ fun HiddenPrizeCamera(
                     }, onClearBitmap = { selectedBitmap = null }, onNext = {
                         onClose()
                         currentStep = HiddenPrizeCameraStep.PROCESSING_ML
-                    }, previewView = previewView, detectedMeshes
+                    }, previewView = previewView, detectedMeshes, onClose=onClose
                 )
 
             }
@@ -169,7 +172,7 @@ fun HiddenPrizeCamera(
 
         HiddenPrizeCameraStep.CONGRATS -> {
             HiddenPrizeCongratsScreen(
-                prizeAmount = 2.0f,
+                prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value),
                 prizeSymbol = {
                     Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
                 },
@@ -225,7 +228,7 @@ fun HiddenPrizeCamera(
         }
 
         HiddenPrizeCameraStep.FINISH -> {
-            HiddenPrizeFinish(prizeAmount = 2.0f, prizeSymbol = {
+            HiddenPrizeFinish(prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value), prizeSymbol = {
                 Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
             }, onViewWallet = {}, onShareWallet = {})
         }
@@ -274,71 +277,85 @@ fun OverlayControls(
     onClearBitmap: () -> Unit,
     onNext: (Bitmap) -> Unit,
     previewView: PreviewView,
-    detectedMeshes: List<FaceMesh>
+    detectedMeshes: List<FaceMesh>,
+    onClose: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .padding(top = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        AppIcon(
-            id = R.drawable.ic_user_focus, size = 32.dp, tint = RarimeTheme.colors.baseWhite
+    Box {
+        BaseIconButton(
+            onClick = onClose,
+            icon = R.drawable.ic_close_fill,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = RarimeTheme.colors.componentPrimary,
+                contentColor = RarimeTheme.colors.baseWhite
+            ),
+            modifier = Modifier
+                .padding(20.dp)
+                .align(Alignment.TopEnd)
+                .size(40.dp)
         )
-        Text(
-            text = stringResource(R.string.hidden_prize_camera_up_title),
-            style = RarimeTheme.typography.subtitle5,
-            color = RarimeTheme.colors.baseWhite
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+                .padding(top = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            AppIcon(
+                id = R.drawable.ic_user_focus, size = 32.dp, tint = RarimeTheme.colors.baseWhite
+            )
+            Text(
+                text = stringResource(R.string.hidden_prize_camera_up_title),
+                style = RarimeTheme.typography.subtitle5,
+                color = RarimeTheme.colors.baseWhite
+            )
 
-        Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f))
 
-        Text(
-            text = "Your face never leaves the device. You create an anonymous record that carries your rules, so AI knows how to treat you.",
-            style = RarimeTheme.typography.body4,
-            color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = stringResource(R.string.hidden_prize_camera_description),
+                style = RarimeTheme.typography.body4,
+                color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
+                textAlign = TextAlign.Center
+            )
 
-        Column(modifier = Modifier.padding(top = 8.dp)) {
-            if (selectedBitmap == null) {
-                PrimaryButton(
-                    enabled = detectedMeshes.isNotEmpty(),
-                    size = ButtonSize.Large,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 20.dp),
-                    onClick = {
-                        scope.launch {
-                            previewView.bitmap?.let {
-                                onSelectBitmap(it)
+            Column(modifier = Modifier.padding(top = 8.dp)) {
+                if (selectedBitmap == null) {
+                    PrimaryButton(
+                        enabled = detectedMeshes.isNotEmpty(),
+                        size = ButtonSize.Large,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp, vertical = 20.dp),
+                        onClick = {
+                            scope.launch {
+                                previewView.bitmap?.let {
+                                    onSelectBitmap(it)
+                                }
                             }
-                        }
-                    },
-                    text = "Photo"
-                )
-            } else {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 20.dp)
-                ) {
-                    PrimaryButton(
-                        modifier = Modifier.weight(3f),
-                        size = ButtonSize.Large,
-                        leftIcon = R.drawable.ic_restart_line,
-                        onClick = { onClearBitmap() })
+                        },
+                        text = "Photo"
+                    )
+                } else {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 20.dp)
+                    ) {
+                        PrimaryButton(
+                            modifier = Modifier.weight(3f),
+                            size = ButtonSize.Large,
+                            leftIcon = R.drawable.ic_restart_line,
+                            onClick = { onClearBitmap() })
 
-                    Spacer(modifier = Modifier.weight(1f))
+                        Spacer(modifier = Modifier.weight(1f))
 
-                    PrimaryButton(
-                        modifier = Modifier.weight(7f),
-                        size = ButtonSize.Large,
-                        text = "Continue",
-                        onClick = { onNext(selectedBitmap) })
+                        PrimaryButton(
+                            modifier = Modifier.weight(7f),
+                            size = ButtonSize.Large,
+                            text = "Continue",
+                            onClick = { onNext(selectedBitmap) })
+                    }
                 }
             }
         }
