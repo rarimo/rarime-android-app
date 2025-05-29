@@ -44,6 +44,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -384,12 +385,15 @@ private fun Footer(
                 }
                 if (attendsCount <= 0 && isAddScanEnabled) {
                     BaseButton(
-                        modifier = Modifier,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(RarimeTheme.colors.gradient8),
                         onClick = onAddScan,
                         enabled = true,
                         size = ButtonSize.Large,
                         colors = ButtonDefaults.buttonColors(
-                            contentColor = RarimeTheme.colors.invertedLight,
+                            containerColor = Color.Transparent,
+                            contentColor = RarimeTheme.colors.baseWhite,
                             disabledContainerColor = RarimeTheme.colors.componentDisabled,
                             disabledContentColor = RarimeTheme.colors.textDisabled
                         ),
