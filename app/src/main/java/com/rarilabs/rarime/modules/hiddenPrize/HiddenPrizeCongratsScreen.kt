@@ -71,10 +71,11 @@ fun HiddenPrizeCongratsScreen(
         AppColorScheme.DARK -> true
         AppColorScheme.LIGHT -> false
     }
-
+    val bgDark=RarimeTheme.colors.baseBlack
+    val bgLight = RarimeTheme.colors.baseWhite
     val bgColor = remember(isDark) {
-        if (isDark) Color.Black //TODO Sync with theme
-        else Color.White
+        if (isDark) bgDark
+        else bgLight
     }
 
     val backgroundRes = remember(isDark) {
