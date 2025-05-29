@@ -158,7 +158,7 @@ fun HiddenPrizeExpandedCard(
     val launcherShare = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(), onResult = {})
 
-    AppBottomSheet(state = showAddScan) {
+    AppBottomSheet(state = showAddScan, backgroundColor = RarimeTheme.colors.backgroundSurface1) {
         AddScanBottomSheet(
 
             isShareEnable = shares?.isSocialShare == false,
