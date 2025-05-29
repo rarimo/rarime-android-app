@@ -64,14 +64,14 @@ fun HiddenPrizeCollapsedCard(
         with(sharedTransitionScope) {
             BaseCollapsedCard(
                 modifier = Modifier
-                    .sharedElement(
-                        state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) })
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
                     .background(RarimeTheme.colors.backgroundPrimary)
                     .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .sharedElement(
+                        state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) })
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
