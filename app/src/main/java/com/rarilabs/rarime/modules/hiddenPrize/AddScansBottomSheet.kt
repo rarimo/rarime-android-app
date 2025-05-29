@@ -44,7 +44,7 @@ fun AddScanBottomSheet(
     val enabledColor = RarimeTheme.colors.textPrimary
     val disabledColor = RarimeTheme.colors.textDisabled
     val enabledIconTitleColor = RarimeTheme.colors.hiddenPrizeAccent
-    val enabledIconBackgroundTitleColor = RarimeTheme.colors.hiddenPrizeBackground
+    val enabledIconBackgroundTitleColor = RarimeTheme.colors.hiddenPrizeBackground//Todo change color
     val disabledIconTitleColor = RarimeTheme.colors.textSecondary
     val disabledIconBackgroundTitleColor = RarimeTheme.colors.componentPrimary
     val props = remember(isInviteEnable, isShareEnable) {
@@ -58,7 +58,7 @@ fun AddScanBottomSheet(
                 iconBackgroundTitleColor = enabledIconBackgroundTitleColor
             )
         } else {
-            AddScanProps(
+            AddScanProps(//TODO delete this
                 idIcon = R.drawable.ic_question,
                 idTitle = R.string.add_scans_bottom_sheet_title_disablet,
                 idDescription = R.string.hidden_prize_add_scans_description_disablet,
@@ -69,7 +69,7 @@ fun AddScanBottomSheet(
         }
     }
     Box(
-        modifier = Modifier.background(color = RarimeTheme.colors.backgroundPrimary)
+        modifier = Modifier.background(color = RarimeTheme.colors.backgroundSurface1)
     ) {
         Column {
             Box(
