@@ -507,5 +507,7 @@
     <string name="hidden_prize_wrong_screen_back_home">Home</string>
     <string name="hidden_prize_camera_up_title">Center the person\'s face</string>
     <string name="hidden_prize_prize_pool_value">0,3</string>
+    <string name="ic_hidden_prize_congats_screen_button_label_while_creating_ZK">Please wait. Creating ZK</string>
+    <string name="hidden_prize_congrats_share_btn_final">Claimed</string>
 
 </resources>

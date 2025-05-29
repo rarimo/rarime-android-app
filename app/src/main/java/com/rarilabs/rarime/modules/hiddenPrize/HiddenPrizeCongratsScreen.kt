@@ -49,6 +49,10 @@ import nl.dionsegijn.konfetti.core.Position
 import nl.dionsegijn.konfetti.core.emitter.Emitter
 import java.util.concurrent.TimeUnit
 
+enum class HiddenPrizeCongratsScreenState {
+    CLAIM, DOWNLOAD, FINISH
+}
+
 @Composable
 fun HiddenPrizeCongratsScreen(
     modifier: Modifier = Modifier,
@@ -77,9 +81,9 @@ fun HiddenPrizeCongratsScreen(
         if (isDark) R.drawable.ic_bg_winner_screen_dark
         else R.drawable.ic_bg_winner_screen_light
     }
+    var currentState by remember { mutableStateOf(HiddenPrizeCongratsScreenState.CLAIM) }
     val coroutineScope = rememberCoroutineScope()
-    var isLoading by remember { mutableStateOf(false) }
-    var isFinish by remember { mutableStateOf(false) }
+
     Box(
         Modifier
             .fillMaxSize()
@@ -178,14 +182,13 @@ fun HiddenPrizeCongratsScreen(
                         prizeSymbol()
                     }
                     LoadingButton(
-                        isLoading = isLoading, progress = downloadProgress, onClick = {
+                        progress = downloadProgress, onClick = {
                             coroutineScope.launch {
-                                isLoading = true
+                                currentState = HiddenPrizeCongratsScreenState.DOWNLOAD
                                 onClaim()
-                                isLoading = false
-                                isFinish = true
+                                currentState = HiddenPrizeCongratsScreenState.FINISH
                             }
-                        }, isFinish = isFinish
+                        }, currentState = currentState
                     )
 
                 }
@@ -194,7 +197,7 @@ fun HiddenPrizeCongratsScreen(
             }
 
         }
-        if (isFinish) {
+        if (currentState == HiddenPrizeCongratsScreenState.FINISH) {
             Column(modifier = Modifier.align(Alignment.BottomCenter)) {
                 BaseButton(
                     onClick = onViewWallet,
@@ -229,12 +232,65 @@ fun HiddenPrizeCongratsScreen(
 
 @Composable
 private fun LoadingButton(
-    isLoading: Boolean, progress: Int, onClick: () -> Unit, isFinish: Boolean
+    progress: Int, onClick: () -> Unit, currentState: HiddenPrizeCongratsScreenState
 ) {
+    when (currentState) {
+        HiddenPrizeCongratsScreenState.CLAIM -> BaseButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 16.dp),
+            size = ButtonSize.Large,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = RarimeTheme.colors.baseBlack,
+                contentColor = RarimeTheme.colors.baseWhite,
+                disabledContainerColor = RarimeTheme.colors.componentDisabled,
+                disabledContentColor = RarimeTheme.colors.textDisabled
+            ),
+            onClick = {
+                onClick()
+            },
+            enabled = true
+
+        ) {
+            Text(
+                text = stringResource(R.string.hidden_prize_congrats_share_btn),
+                color = RarimeTheme.colors.baseWhite,
+            )
+        }
+
+        HiddenPrizeCongratsScreenState.DOWNLOAD -> BaseButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 16.dp),
+            size = ButtonSize.Large,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = RarimeTheme.colors.baseBlack,
+                contentColor = RarimeTheme.colors.baseWhite,
+                disabledContainerColor = RarimeTheme.colors.componentDisabled,
+                disabledContentColor = RarimeTheme.colors.textDisabled
+            ),
+            onClick = {
+                onClick()
+            },
+            enabled = false
+
+        ) {
+            if (progress != 100) {
+                Text(
+                    text = "Claiming ($progress%)", color = RarimeTheme.colors.textDisabled
+                )
+            } else {
+                Text(
+                    text = stringResource(R.string.ic_hidden_prize_congats_screen_button_label_while_creating_ZK),
+                    color = RarimeTheme.colors.textDisabled
+                )
+            }
+        }
 
 
-    if (isFinish) {
-        BaseButton(
+        HiddenPrizeCongratsScreenState.FINISH -> BaseButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
@@ -253,42 +309,14 @@ private fun LoadingButton(
 
         ) {
             Text(
-                stringResource(R.string.hidden_prize_congrats_share_btn),
+                stringResource(R.string.hidden_prize_congrats_share_btn_final),
                 color = RarimeTheme.colors.successDark,
             )
         }
-    } else {
-        BaseButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 16.dp),
-            size = ButtonSize.Large,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = RarimeTheme.colors.baseBlack,
-                contentColor = RarimeTheme.colors.baseWhite,
-                disabledContainerColor = RarimeTheme.colors.componentDisabled,
-                disabledContentColor = RarimeTheme.colors.textDisabled
-            ),
-            onClick = {
-                onClick()
-            },
-            enabled = !isLoading
 
-        ) {
-            if (!isLoading) {
-                Text(
-                    text = stringResource(R.string.hidden_prize_congrats_share_btn),
-                    color = RarimeTheme.colors.baseWhite,
-                )
-            } else {
-                Text(
-                    text = "Claiming ($progress%)", color = RarimeTheme.colors.textDisabled
-                )
-
-            }
-        }
     }
+
+
 }
 
 
