@@ -127,4 +127,14 @@ class Erc20Token(
             )
         )
     }
+
+    override suspend fun estimateTransferFee(
+        from: String,
+        to: String,
+        amount: BigInteger,
+        gasPrice: BigInteger?,
+        gasLimit: BigInteger?
+    ): BigInteger {
+        return BigInteger.ZERO
+    }
 }

@@ -19,6 +19,17 @@ class PointsToken @Inject constructor(
 
     var balanceDetails: PointsBalanceData? = null
 
+    override suspend fun estimateTransferFee(
+        from: String,
+        to: String,
+        amount: BigInteger,
+        gasPrice: BigInteger?,
+        gasLimit: BigInteger?
+    ): BigInteger {
+
+        return BigInteger.ZERO
+    }
+
     override suspend fun loadDetails() {
         name = "Reserved RMO"
         symbol = "RESERVED"

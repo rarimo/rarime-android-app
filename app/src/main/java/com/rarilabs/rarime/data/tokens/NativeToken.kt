@@ -4,6 +4,8 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.modules.wallet.models.TransactionState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.web3j.crypto.Credentials
 import org.web3j.crypto.RawTransaction
 import org.web3j.crypto.TransactionEncoder
@@ -14,15 +16,16 @@ import java.math.BigInteger
 import java.time.Instant
 import java.util.Date
 import javax.inject.Inject
+import kotlin.math.pow
 
 class NativeToken @Inject constructor(
     private val web3j: Web3j,
     private val identityManager: IdentityManager
 ) : Token(address = "") {
 
-    override var name: String = "RMO"
-    override var symbol: String = "RMO"
-    override var decimals: Int = 2
+    override var name: String = "Ethereum"
+    override var symbol: String = "Eth"
+    override var decimals: Int = 10.0.pow(18).toInt()
     override var icon: Int = R.drawable.ic_rarimo
 
     override suspend fun loadDetails() {
@@ -33,6 +36,42 @@ class NativeToken @Inject constructor(
         val ethGetBalance = web3j.ethGetBalance(address, DefaultBlockParameterName.LATEST).send()
 
         return ethGetBalance.balance
+    }
+
+    override suspend fun estimateTransferFee(
+        from: String,
+        to: String,
+        amount: BigInteger,
+        gasPrice: BigInteger?,
+        gasLimit: BigInteger?
+    ): BigInteger {
+        val tx = org.web3j.protocol.core.methods.request.Transaction(
+            from,
+            null,
+            null,
+            null,
+            to,
+            amount,
+            ""
+        )
+
+        val ethEstimateGas = withContext(Dispatchers.IO) {
+            web3j.ethEstimateGas(tx)
+                .sendAsync()
+                .get()
+        }
+        val gasLimit = gasLimit ?: ethEstimateGas.amountUsed
+
+        // 2. Get current gas price if not provided
+        val usedGasPrice = gasPrice ?: withContext(Dispatchers.IO) {
+            web3j.ethGasPrice()
+                .sendAsync()
+                .get()
+        }
+            .gasPrice
+
+
+        return gasLimit.multiply(usedGasPrice)
     }
 
     override suspend fun transfer(to: String, amount: BigInteger): Transaction {
@@ -48,8 +87,7 @@ class NativeToken @Inject constructor(
         val gasLimit = BigInteger.valueOf(21000L)
         val value = amount
 
-        //TODO: fix it
-        val chainId = 201411L
+        val chainId = 7368L
 
         val rawTransaction = RawTransaction.createEtherTransaction(
             nonce, gasPrice, gasLimit, to, value

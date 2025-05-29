@@ -31,6 +31,16 @@ class PreviewerToken(
         )
     }
 
+    override suspend fun estimateTransferFee(
+        from: String,
+        to: String,
+        amount: BigInteger,
+        gasPrice: BigInteger?,
+        gasLimit: BigInteger?
+    ): BigInteger {
+        return BigInteger.ZERO
+    }
+
     override suspend fun loadTransactions(sender: String?, receiver: String?): List<Transaction> {
         if (sender == null || receiver == null) {
             throw IllegalArgumentException("sender or receiver must be not null")

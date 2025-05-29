@@ -146,7 +146,7 @@ fun HiddenPrizeExpandedCard(
         }
     }
 
-    val launcherInvite = rememberLauncherForActivityResult(
+    val launcherShare = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(), onResult = {
             scope.launch {
                 viewModel.addExtraAttempt()
@@ -154,7 +154,7 @@ fun HiddenPrizeExpandedCard(
         })
 
 
-    val launcherShare = rememberLauncherForActivityResult(
+    val launcherInvite = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(), onResult = {})
 
     AppBottomSheet(state = showAddScan) {
@@ -426,13 +426,14 @@ private fun Body(
 
     with(sharedTransitionScope) {
         Column(
-            modifier = Modifier.sharedBounds(
-                rememberSharedContentState(HomeSharedKeys.content(layoutId)),
-                animatedVisibilityScope = animatedVisibilityScope,
-                enter = fadeIn(),
-                exit = fadeOut(),
-                resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
-            )
+            modifier = Modifier
+                .sharedBounds(
+                    rememberSharedContentState(HomeSharedKeys.content(layoutId)),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+                )
                 .fillMaxSize()
         ) {
 
@@ -446,7 +447,7 @@ private fun Body(
                         )
                         .padding(20.dp)
 
-                     .fillMaxHeight()
+                        .fillMaxHeight()
                 ) {
                     Card(
                         colors = CardDefaults.cardColors(

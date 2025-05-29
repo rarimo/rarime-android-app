@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.util
 
+import org.web3j.utils.Convert
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
@@ -83,6 +84,9 @@ object NumberUtil {
 
     fun toHumanAmount(amount: Double, decimals: Int): Double {
         return amount.div(10.0.pow(decimals.toDouble()))
+    }
+    fun weiToEth(wei: BigInteger): BigDecimal {
+        return Convert.fromWei(wei.toBigDecimal(), Convert.Unit.ETHER)
     }
 
     fun toBigIntAmount(amount: Double, decimals: Int): BigInteger {

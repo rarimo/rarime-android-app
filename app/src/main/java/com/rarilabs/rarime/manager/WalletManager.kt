@@ -29,7 +29,8 @@ data class WalletAsset(
     val userAddress: String,
     val token: Token,
     var balance: BigInteger = BigInteger.ZERO,
-    var transactions: List<Transaction> = emptyList()
+    var transactions: List<Transaction> = emptyList(),
+    var showInAssets: Boolean = true
 ) {
     fun toJSON(): String = Gson().toJson(
         WalletAssetJSON(
@@ -58,12 +59,14 @@ class WalletManager @Inject constructor(
     private fun createWalletAssets(): List<WalletAsset> {
         return listOf(
             WalletAsset(
-                identityManager.evmAddress(), NativeToken(web3j, identityManager = identityManager)
+                identityManager.evmAddress(),
+                NativeToken(web3j, identityManager = identityManager),
             ),
             WalletAsset(
                 identityManager.getUserPointsNullifierHex(), PointsToken(
                     pointsManager = pointsManager
-                )
+                ),
+                showInAssets = false
             ),
         )
     }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,11 +42,11 @@ import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldNumberState
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
-import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.NumberUtil
 import com.rarilabs.rarime.util.WalletUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 
 @Composable
 fun WalletSendScreen(
@@ -53,50 +54,47 @@ fun WalletSendScreen(
     walletSendViewModel: WalletSendViewModel = hiltViewModel(),
 ) {
     var isQrCodeScannerOpen by remember { mutableStateOf(false) }
-    var isSubmitting by remember { mutableStateOf(false) }
 
     val humanAmountState = rememberAppTextFieldNumberState("")
     val addressState = rememberAppTextFieldState("")
 
-    val selectedWalletAsset = walletSendViewModel.selectedWalletAsset.collectAsState()
-
     val coroutineScope = rememberCoroutineScope()
+    val selectedWalletAsset by walletSendViewModel.selectedWalletAsset.collectAsState()
 
-    fun submit() {
-        coroutineScope.launch {
-            isSubmitting = true
-            try {
-                val a = walletSendViewModel.sendTokens(addressState.text, humanAmountState.text)
-                a
-                walletSendViewModel.fetchBalance()
-            } catch (e: Exception) {
-                ErrorHandler.logError(
-                    "Error sending",
-                    "Cant send token ${walletSendViewModel.selectedWalletAsset.value.token}",
-                    e
-                )
-            }
+    LaunchedEffect(humanAmountState.text) {
+        if (humanAmountState.text.toDoubleOrNull() == null)
+            return@LaunchedEffect
 
-            isSubmitting = false
-        }
+        walletSendViewModel.estimateGasFee(humanAmountState.text)
     }
 
+    val fee by walletSendViewModel.fee.collectAsState()
+    val isSubmitting by walletSendViewModel.isSubmitting.collectAsState()
+    val isFeeLoading by walletSendViewModel.isFeeLoading.collectAsState()
+
+
     if (isQrCodeScannerOpen) {
-        ScanQrScreen(
-            onBack = { isQrCodeScannerOpen = false },
-            onScan = {
-                addressState.updateText(it)
-                isQrCodeScannerOpen = false
-            }
-        )
+        ScanQrScreen(onBack = { isQrCodeScannerOpen = false }, onScan = {
+            addressState.updateText(it)
+            isQrCodeScannerOpen = false
+        })
     } else {
         WalletSendScreenContent(
             onBack = onBack,
-            selectedWalletAsset = selectedWalletAsset.value,
+            selectedWalletAsset = selectedWalletAsset,
             humanAmountState = humanAmountState,
             addressState = addressState,
             showQrCodeScanner = { isQrCodeScannerOpen = true },
-            submit = { submit() },
+            submit = {
+                coroutineScope.launch {
+                    walletSendViewModel.submitSend(
+                        to = addressState.text, humanAmount = humanAmountState.text
+                    )
+                }
+            },
+            fee = fee,
+            isSubmitting = isSubmitting,
+            isFeeLoading = isFeeLoading,
         )
     }
 }
@@ -105,15 +103,13 @@ fun WalletSendScreen(
 private fun WalletSendScreenContent(
     onBack: () -> Unit,
     selectedWalletAsset: WalletAsset,
-
     humanAmountState: AppTextFieldNumberState,
     addressState: AppTextFieldState,
-
     showQrCodeScanner: () -> Unit,
-
     submit: () -> Unit,
-
     isSubmitting: Boolean = false,
+    fee: BigDecimal?,
+    isFeeLoading: Boolean,
 ) {
     val confirmationSheetState = rememberAppSheetState()
 
@@ -125,8 +121,7 @@ private fun WalletSendScreenContent(
         onBack = onBack
     ) {
         Column(
-            verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxSize()
+            verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxSize()
         ) {
             CardContainer {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
@@ -136,9 +131,7 @@ private fun WalletSendScreenContent(
                         placeholder = selectedWalletAsset.userAddress.substring(0, 7) + "...",
                         trailingItem = {
                             SecondaryTextButton(
-                                leftIcon = R.drawable.ic_qr_code,
-                                onClick = { showQrCodeScanner() }
-                            )
+                                leftIcon = R.drawable.ic_qr_code, onClick = { showQrCodeScanner() })
                         },
                         enabled = !isSubmitting,
                     )
@@ -176,7 +169,6 @@ private fun WalletSendScreenContent(
                                 VerticalDivider()
                                 SecondaryTextButton(
                                     text = stringResource(R.string.max_btn),
-                                    // TODO: mb to human string?
                                     onClick = {
                                         humanAmountState.updateText(
                                             selectedWalletAsset.humanBalance().toString()
@@ -200,11 +192,20 @@ private fun WalletSendScreenContent(
                         style = RarimeTheme.typography.body4,
                         color = RarimeTheme.colors.textSecondary
                     )
-                    Text(
-                        text = "${NumberUtil.formatAmount(humanAmountState.text.toDoubleOrNull() ?: 0.0)} ${selectedWalletAsset.token.symbol}",
-                        style = RarimeTheme.typography.subtitle5,
-                        color = RarimeTheme.colors.textPrimary
-                    )
+                    if (isFeeLoading) {
+                        Text(
+                            text = "Loading...",
+                            style = RarimeTheme.typography.subtitle5,
+                            color = RarimeTheme.colors.textPrimary
+                        )
+                    } else {
+                        Text(
+                            text = "${humanAmountState.text} ${selectedWalletAsset.token.symbol}",
+                            style = RarimeTheme.typography.subtitle5,
+                            color = RarimeTheme.colors.textPrimary
+                        )
+                    }
+
                 }
                 PrimaryButton(
                     text = stringResource(R.string.send_btn),
@@ -213,7 +214,7 @@ private fun WalletSendScreenContent(
                     onClick = {
                         confirmationSheetState.show()
                     },
-                    enabled = addressState.text.isNotEmpty() && humanAmountState.text.isNotEmpty() && !isSubmitting
+                    enabled = addressState.text.isNotEmpty() && humanAmountState.text.isNotEmpty() && !isSubmitting && !isFeeLoading
                 )
             }
         }
@@ -223,7 +224,7 @@ private fun WalletSendScreenContent(
                 sheetState = confirmationSheetState, totalDetails = mapOf(
                     "Address" to WalletUtil.formatAddress(addressState.text, 4, 4),
                     "Send amount" to "${NumberUtil.formatAmount(humanAmountState.text.toDouble())} ${selectedWalletAsset.token.symbol}",
-                    "Fee" to "0 ${selectedWalletAsset.token.symbol}"
+                    "Fee" to "$fee ${selectedWalletAsset.token.symbol}"
                 ), onConfirm = {
 
                     submit()
@@ -260,5 +261,7 @@ private fun WalletSendScreenContentPreview() {
         showQrCodeScanner = { },
         submit = { submit() },
         isSubmitting = isSubmitting,
+        fee = BigDecimal(0),
+        isFeeLoading = false,
     )
 }
