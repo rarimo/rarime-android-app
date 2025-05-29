@@ -313,7 +313,7 @@ fun OverlayControls(
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
-                text = "Your face never leaves the device. You create an anonymous record that carries your rules, so AI knows how to treat you.",
+                text = stringResource(R.string.hidden_prize_camera_description),
                 style = RarimeTheme.typography.body4,
                 color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
                 textAlign = TextAlign.Center

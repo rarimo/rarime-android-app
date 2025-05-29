@@ -509,5 +509,6 @@
     <string name="hidden_prize_prize_pool_value">0.03</string>
     <string name="ic_hidden_prize_congats_screen_button_label_while_creating_ZK">Please wait. Creating ZK</string>
     <string name="hidden_prize_congrats_share_btn_final">Claimed</string>
+    <string name="hidden_prize_camera_description">Your face never leaves the device. You create an anonymous record that carries your rules, so AI knows how to treat you.</string>
 
 </resources>
