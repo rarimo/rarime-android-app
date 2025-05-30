@@ -4,24 +4,16 @@ import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.manager.WalletManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
 class WalletViewModel @Inject constructor(
     private val walletManager: WalletManager,
 ) : ViewModel() {
-    private var _walletAssets = MutableStateFlow(
-        walletManager.walletAssets.value
-    )
 
-    val walletAssets: StateFlow<List<WalletAsset>>
-        get() = _walletAssets.asStateFlow()
+    val walletAssets = walletManager.walletAssets
 
-    var selectedWalletAsset = walletManager.selectedWalletAsset
-        private set
+    val selectedWalletAsset = walletManager.selectedWalletAsset
 
     fun updateSelectedWalletAsset(walletAsset: WalletAsset) {
         walletManager.setSelectedWalletAsset(walletAsset)

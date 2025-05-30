@@ -146,7 +146,7 @@ fun HiddenPrizeExpandedCard(
         }
     }
 
-    val launcherInvite = rememberLauncherForActivityResult(
+    val launcherShare = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(), onResult = {
             scope.launch {
                 viewModel.addExtraAttempt()
@@ -154,7 +154,7 @@ fun HiddenPrizeExpandedCard(
         })
 
 
-    val launcherShare = rememberLauncherForActivityResult(
+    val launcherInvite = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(), onResult = {})
 
     AppBottomSheet(state = showAddScan, backgroundColor = RarimeTheme.colors.backgroundSurface1) {
@@ -450,35 +450,36 @@ private fun Body(
                     .padding(20.dp)
 
                     .fillMaxHeight()
-            ) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = RarimeTheme.colors.componentPrimary,
-                    ), modifier = Modifier.size(width = 156.dp, height = 32.dp)
-
-
                 ) {
-                    Row(
-                        modifier = Modifier.padding(
-                            horizontal = 16.dp, vertical = 6.dp
-                        )
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = RarimeTheme.colors.componentPrimary,
+                        ),
+                        modifier = Modifier.size(width = 156.dp, height = 32.dp)
+
+
                     ) {
-                        Text(
-                            "Prize-pool: ",
-                            style = RarimeTheme.typography.subtitle6.copy(color = RarimeTheme.colors.textPrimary)
-                        )
-                        Text(
-                            text = stringResource(R.string.hidden_prize_prize_pool_value), //TODO Maybe give this from backend in future
-                            style = RarimeTheme.typography.h6.copy(color = RarimeTheme.colors.textPrimary),
-                            modifier = Modifier.padding(end = 8.dp)
-                        )
-                        Image(
-                            painterResource(R.drawable.ic_ethereum),
-                            contentDescription = "ETH",
-                            modifier = Modifier.size(16.dp)
-                        )
+                        Row(
+                            modifier = Modifier.padding(
+                                horizontal = 16.dp, vertical = 6.dp
+                            )
+                        ) {
+                            Text(
+                                "Prize-pool: ",
+                                style = RarimeTheme.typography.subtitle6.copy(color = RarimeTheme.colors.textPrimary)
+                            )
+                            Text(
+                                text = stringResource(R.string.hidden_prize_prize_pool_value), //TODO Maybe give this from backend in future
+                                style = RarimeTheme.typography.h6.copy(color = RarimeTheme.colors.textPrimary),
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                            Image(
+                                painterResource(R.drawable.ic_ethereum),
+                                contentDescription = "ETH",
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
                     }
-                }
                 Spacer(modifier = Modifier.size(12.dp))
                 BaseCardTitle(
                     title = "Hidden keys",

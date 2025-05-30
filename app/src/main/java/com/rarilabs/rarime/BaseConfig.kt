@@ -326,7 +326,7 @@ object MainnetConfig : IConfig {
 
 
     override val GUESS_CELEBRITY_CONTRACT_ADDRESS: String =
-        "0x411AA3eF21AdC9e84c60e17451B0732119C8f0c7"
+        "0x5283f7B6A011433A6631701875A6f147e5c17a96"
 
 
     override val FACE_REGISTRY_ZKEY_URL: String =

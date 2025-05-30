@@ -46,8 +46,10 @@ fun HiddenPrizeWrongScreen(
         BaseIconButton(
             onClick = onClose,
             icon = R.drawable.ic_close_fill,
-            colors = ButtonDefaults.buttonColors(containerColor = RarimeTheme.colors.componentPrimary,
-                contentColor = RarimeTheme.colors.baseWhite),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = RarimeTheme.colors.componentPrimary,
+                contentColor = RarimeTheme.colors.baseWhite
+            ),
             modifier = Modifier
                 .padding(20.dp)
                 .align(Alignment.TopEnd)

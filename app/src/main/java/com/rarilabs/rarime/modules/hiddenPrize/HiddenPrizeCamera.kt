@@ -154,7 +154,7 @@ fun HiddenPrizeCamera(
                     }, onClearBitmap = { selectedBitmap = null }, onNext = {
                         onClose()
                         currentStep = HiddenPrizeCameraStep.PROCESSING_ML
-                    }, previewView = previewView, detectedMeshes, onClose=onClose
+                    }, previewView = previewView, detectedMeshes, onClose = onClose
                 )
 
             }
@@ -228,7 +228,9 @@ fun HiddenPrizeCamera(
         }
 
         HiddenPrizeCameraStep.FINISH -> {
-            HiddenPrizeFinish(prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value), prizeSymbol = {
+            HiddenPrizeFinish(
+                prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value),
+                prizeSymbol = {
                 Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
             }, onViewWallet = {}, onShareWallet = {})
         }

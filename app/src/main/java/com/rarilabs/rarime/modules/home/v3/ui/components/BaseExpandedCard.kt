@@ -65,7 +65,8 @@ fun BaseExpandedCard(
             Column(modifier = Modifier.fillMaxSize()) {
                 header()
                 Column(
-                    modifier = columnModifier.fillMaxWidth()
+                    modifier = columnModifier
+                        .fillMaxWidth()
                         .weight(1f)
                 ) {
                     body()

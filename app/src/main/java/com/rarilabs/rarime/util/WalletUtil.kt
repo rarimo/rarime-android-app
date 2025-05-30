@@ -1,5 +1,7 @@
 package com.rarilabs.rarime.util
 
+import java.math.BigDecimal
+
 object WalletUtil {
     fun formatAddress(
         address: String,
@@ -15,5 +17,28 @@ object WalletUtil {
             ErrorHandler.logError("WalletUtil.formatAddress", e.toString(), e)
             return address
         }
+    }
+
+    fun isValidateAmountForSend(rawAmount: String, balance: BigDecimal? = null): Boolean {
+        val amount = rawAmount.toBigDecimalOrNull() ?: return false
+        if (amount.stripTrailingZeros() == BigDecimal.ZERO)
+            return false
+        val biggerThanAmount = amount > BigDecimal.ZERO
+
+
+        if (balance == null)
+            return biggerThanAmount
+
+        val res = amount <= balance
+        return res
+    }
+
+    fun isValidAddressForSend(address: String, userAddress: String): Boolean {
+        val isNotOwn = address.lowercase() != userAddress.lowercase()
+        return isNotOwn && isValidAddress(address)
+    }
+
+    fun isValidAddress(address: String): Boolean {
+        return org.web3j.crypto.WalletUtils.isValidAddress(address)
     }
 }
