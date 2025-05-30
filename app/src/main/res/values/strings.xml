@@ -511,7 +511,7 @@
     <string name="wallet_success_message">Your transaction has been sent successfully.</string>
     <string name="wallet_error_title">Transaction Failed</string>
     <string name="wallet_error_message">An error occurred while sending your transaction. Please try again.</string>
-    <string name="wallet_incoming_title">receive</string>
-    <string name="wallet_outgoing_title">send</string>
+    <string name="wallet_incoming_title">Receive</string>
+    <string name="wallet_outgoing_title">Send</string>
 
 </resources>

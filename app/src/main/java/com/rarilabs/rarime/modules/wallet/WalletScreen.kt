@@ -160,11 +160,6 @@ fun WalletScreenContainer(
                         )
                     }
                 }
-                Text(
-                    text = "---",
-                    style = RarimeTheme.typography.caption2,
-                    color = RarimeTheme.colors.textSecondary,
-                )
             }
 
             Column(
