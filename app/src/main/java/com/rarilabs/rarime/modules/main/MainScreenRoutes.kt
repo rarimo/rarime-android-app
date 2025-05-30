@@ -242,7 +242,16 @@ fun MainScreenRoutes(
 
                 composable(Screen.Main.Identity.route) {
                     AuthGuard(navigate = navigateWithPopUp) {
-                        ZkIdentityScreen(navigate = simpleNavigate)
+                        ZkIdentityScreen(navigate = simpleNavigate, onClose = {
+                            coroutineScope.launch {
+                                navController.popBackStack()
+                            }
+                        }, onClaim = {
+                            coroutineScope.launch {
+                                navigateWithPopUp(Screen.Claim.Specific.route)
+                            }
+                        },
+                            setVisibilityOfBottomBar = { mainViewModel.setBottomBarVisibility(it) })
                     }
                 }
 
