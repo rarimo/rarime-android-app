@@ -43,7 +43,7 @@ fun WinningFaceCard(
     name: String,
     description: String,
     winnerAddress: String,
-    prizeAmount: Float,
+    prizeAmount: String,
     prizeSymbol: @Composable () -> Unit = {}
 ) {
     Column(
@@ -168,7 +168,7 @@ fun WinningFaceCardPreview_LightMode() {
                 name = "Vitalik Buterin",
                 description = "Ethereum co-founder",
                 winnerAddress = "0x00000...0000",
-                prizeAmount = 0.3F,
+                prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value),
                 prizeSymbol = {
                     Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
                 },
@@ -193,7 +193,7 @@ fun WinningFaceCardPreview_DarkMode() {
                 name = "Vitalik Buterin",
                 description = "Ethereum co-founder",
                 winnerAddress = "0x0000000000000",
-                prizeAmount = 0.3F,
+                prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value),
                 prizeSymbol = {
                     Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
                 },

@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.modules.hiddenPrize
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,7 +43,7 @@ fun AddScanBottomSheet(
     val enabledColor = RarimeTheme.colors.textPrimary
     val disabledColor = RarimeTheme.colors.textDisabled
     val enabledIconTitleColor = RarimeTheme.colors.hiddenPrizeAccent
-    val enabledIconBackgroundTitleColor = RarimeTheme.colors.hiddenPrizeBackground
+    val enabledIconBackgroundTitleColor = RarimeTheme.colors.hiddenPrizeAccent.copy(alpha = 0.1f)
     val disabledIconTitleColor = RarimeTheme.colors.textSecondary
     val disabledIconBackgroundTitleColor = RarimeTheme.colors.componentPrimary
     val props = remember(isInviteEnable, isShareEnable) {
@@ -69,7 +68,7 @@ fun AddScanBottomSheet(
         }
     }
     Box(
-        modifier = Modifier.background(color = RarimeTheme.colors.backgroundPrimary)
+        modifier = Modifier
     ) {
         Column {
             Box(

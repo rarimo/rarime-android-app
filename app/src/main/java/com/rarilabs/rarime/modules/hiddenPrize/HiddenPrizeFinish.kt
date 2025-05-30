@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit
 @Composable
 fun HiddenPrizeFinish(
     modifier: Modifier = Modifier,
-    prizeAmount: Float,
+    prizeAmount: String,
     prizeSymbol: @Composable () -> Unit = {},
     onViewWallet: () -> Unit,
     onShareWallet: () -> Unit
@@ -157,7 +157,10 @@ fun HiddenPrizeFinishPreview() {
                 .blur(20.dp)
         )
 
-        HiddenPrizeFinish(prizeAmount = 2.2f, onViewWallet = {}, prizeSymbol = {
+        HiddenPrizeFinish(
+            prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value),
+            onViewWallet = {},
+            prizeSymbol = {
             Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
         }, onShareWallet = {})
     }

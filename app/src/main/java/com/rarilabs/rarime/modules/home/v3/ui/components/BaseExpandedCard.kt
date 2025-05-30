@@ -48,6 +48,9 @@ fun BaseExpandedCard(
     colors: CardColors = CardDefaults.cardColors(),
     elevation: CardElevation = CardDefaults.cardElevation(),
     border: BorderStroke? = null,
+
+    columnModifier: Modifier = Modifier
+        .verticalScroll(rememberScrollState())
 ) {
     Card(
         modifier = modifier,
@@ -62,10 +65,9 @@ fun BaseExpandedCard(
             Column(modifier = Modifier.fillMaxSize()) {
                 header()
                 Column(
-                    modifier = Modifier
+                    modifier = columnModifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .verticalScroll(rememberScrollState())
                 ) {
                     body()
                 }

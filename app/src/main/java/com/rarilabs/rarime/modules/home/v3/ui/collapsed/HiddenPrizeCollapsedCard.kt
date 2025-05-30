@@ -6,10 +6,8 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -18,7 +16,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -64,14 +61,14 @@ fun HiddenPrizeCollapsedCard(
         with(sharedTransitionScope) {
             BaseCollapsedCard(
                 modifier = Modifier
-                    .sharedElement(
-                        state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) })
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
                     .background(RarimeTheme.colors.backgroundPrimary)
                     .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .sharedElement(
+                        state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) })
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null

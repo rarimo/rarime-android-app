@@ -74,6 +74,7 @@ fun AppBottomSheet(
     isHeaderEnabled: Boolean = true,
     scrimColor: Color = Color.Black.copy(alpha = 0.5f), // Dims the background
     isWindowInsetsEnabled: Boolean = true,
+    backgroundColor: Color = RarimeTheme.colors.backgroundPure,
     // When `disableScrollPull` true, prevents sheet from closing on pull
     // without pulling in experimental APIs
     disablePullClose: Boolean = false,
@@ -103,7 +104,7 @@ fun AppBottomSheet(
             sheetState = modalState,
             shape = shape,
             dragHandle = null,
-            containerColor = RarimeTheme.colors.backgroundPure,
+            containerColor = backgroundColor,
             onDismissRequest = { hide() },
             scrimColor = scrimColor,
             windowInsets = if (isWindowInsetsEnabled) {
@@ -155,9 +156,8 @@ private fun AppBottomSheetPreview() {
         AppBottomSheet(
             state = sheetState,
             fullScreen = true,
-            isWindowInsetsEnabled = false,
-
-            ) {
+            isWindowInsetsEnabled = false
+        ) {
             Box(modifier = Modifier.height(200.dp)) {
                 Text("Bottom sheet content")
             }

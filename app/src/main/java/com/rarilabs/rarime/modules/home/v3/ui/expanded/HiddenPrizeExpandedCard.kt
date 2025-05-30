@@ -44,6 +44,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -140,9 +141,8 @@ fun HiddenPrizeExpandedCard(
                 navigate = navigate,
                 attemptsLeft = totalAttemptsCount,
                 onClose = {
-                    showAddScan.hide()
-                }
-            )
+                    showFaceScan.hide()
+                })
         }
     }
 
@@ -157,7 +157,7 @@ fun HiddenPrizeExpandedCard(
     val launcherInvite = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(), onResult = {})
 
-    AppBottomSheet(state = showAddScan) {
+    AppBottomSheet(state = showAddScan, backgroundColor = RarimeTheme.colors.backgroundSurface1) {
         AddScanBottomSheet(
 
             isShareEnable = shares?.isSocialShare == false,
@@ -280,7 +280,7 @@ fun HiddenPrizeExpandedCardContent(
                         animatedVisibilityScope = animatedVisibilityScope,
                         celebrity = celebrity
                     )
-                }, background = {
+                }, columnModifier = Modifier, background = {
                     Background(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
@@ -366,7 +366,6 @@ private fun Footer(
                             color = RarimeTheme.colors.textPrimary
                         )
                         Spacer(modifier = Modifier.width(4.dp))
-                        AppIcon(id = R.drawable.ic_info)
                     }
 
                     Row(verticalAlignment = Alignment.Bottom) {
@@ -384,12 +383,15 @@ private fun Footer(
                 }
                 if (attendsCount <= 0 && isAddScanEnabled) {
                     BaseButton(
-                        modifier = Modifier,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(RarimeTheme.colors.gradient8),
                         onClick = onAddScan,
                         enabled = true,
                         size = ButtonSize.Large,
                         colors = ButtonDefaults.buttonColors(
-                            contentColor = RarimeTheme.colors.invertedLight,
+                            containerColor = Color.Transparent,
+                            contentColor = RarimeTheme.colors.baseWhite,
                             disabledContainerColor = RarimeTheme.colors.componentDisabled,
                             disabledContentColor = RarimeTheme.colors.textDisabled
                         ),
@@ -437,17 +439,17 @@ private fun Body(
                 .fillMaxSize()
         ) {
 
-            Spacer(modifier = Modifier.height((BG_HAND_HIDDEN_PRIZE_HEIGHT-110).dp))
+            Spacer(modifier = Modifier.height((BG_HAND_HIDDEN_PRIZE_HEIGHT - 120).dp))
 
-                Column(
-                    modifier = Modifier
-                        .background(
-                            RarimeTheme.colors.backgroundPrimary,
-                            shape = RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
-                        )
-                        .padding(20.dp)
+            Column(
+                modifier = Modifier
+                    .background(
+                        RarimeTheme.colors.backgroundPrimary,
+                        shape = RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
+                    )
+                    .padding(20.dp)
 
-                        .fillMaxHeight()
+                    .fillMaxHeight()
                 ) {
                     Card(
                         colors = CardDefaults.cardColors(
@@ -459,8 +461,7 @@ private fun Body(
                     ) {
                         Row(
                             modifier = Modifier.padding(
-                                horizontal = 16.dp,
-                                vertical = 6.dp
+                                horizontal = 16.dp, vertical = 6.dp
                             )
                         ) {
                             Text(
@@ -479,86 +480,86 @@ private fun Body(
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.size(12.dp))
-                    BaseCardTitle(
-                        title = "Hidden keys",
-                        accentTitle = "Find a face",
-                        titleStyle = RarimeTheme.typography.h1.copy(RarimeTheme.colors.textPrimary),
-                        accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient8),
-                        titleModifier = Modifier.sharedBounds(
-                            rememberSharedContentState(HomeSharedKeys.title(layoutId)),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
-                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                        ),
-                        accentTitleModifier = Modifier.sharedBounds(
-                            rememberSharedContentState(HomeSharedKeys.accentTitle(layoutId)),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
-                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                        ),
-                        captionModifier = Modifier.sharedBounds(
-                            rememberSharedContentState(HomeSharedKeys.caption(layoutId)),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
-                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                        )
+                Spacer(modifier = Modifier.size(12.dp))
+                BaseCardTitle(
+                    title = "Hidden keys",
+                    accentTitle = "Find a face",
+                    titleStyle = RarimeTheme.typography.h1.copy(RarimeTheme.colors.textPrimary),
+                    accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient8),
+                    titleModifier = Modifier.sharedBounds(
+                        rememberSharedContentState(HomeSharedKeys.title(layoutId)),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    ),
+                    accentTitleModifier = Modifier.sharedBounds(
+                        rememberSharedContentState(HomeSharedKeys.accentTitle(layoutId)),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    ),
+                    captionModifier = Modifier.sharedBounds(
+                        rememberSharedContentState(HomeSharedKeys.caption(layoutId)),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     )
+                )
 
 
 
-                    when (celebrityStatus) {
-                        CelebrityStatus.ACTIVE, null -> {
+                when (celebrityStatus) {
+                    CelebrityStatus.ACTIVE, null -> {
 
-                            Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                            Text(
-                                stringResource(R.string.hidden_price_expanded_cart_description),
-                                style = RarimeTheme.typography.body3,
-                                color = RarimeTheme.colors.textSecondary
+                        Text(
+                            stringResource(R.string.hidden_price_expanded_cart_description),
+                            style = RarimeTheme.typography.body3,
+                            color = RarimeTheme.colors.textSecondary
+                        )
+
+
+                        Spacer(modifier = Modifier.height(24.dp))
+                        if (!celebrity?.hint.isNullOrEmpty()) {
+                            TipAlert(
+                                text = celebrity!!.hint
                             )
-
-
                             Spacer(modifier = Modifier.height(24.dp))
-                            if (!celebrity?.hint.isNullOrEmpty()) {
-                                TipAlert(
-                                    text = celebrity!!.hint
-                                )
-                                Spacer(modifier = Modifier.height(24.dp))
-                            }
-
-                        }
-
-                        CelebrityStatus.COMPLETED -> {
-                            Spacer(modifier = Modifier
-                                .size(24.dp)
-                            )
-                            HorizontalDivider()
-                            Spacer(modifier = Modifier
-                                .size(24.dp)
-                            )
-                            WinningFaceCard(
-                                imageSrc = celebrity!!.image,
-                                placeholderRes = R.drawable.ic_dots_three_outline_rounded,
-                                name = celebrity.title,
-                                description = celebrity.description,
-                                winnerAddress = celebrity.winner,
-                                prizeAmount = 0.03f,
-                                prizeSymbol = {
-                                    Image(
-                                        painterResource(R.drawable.ic_ethereum),
-                                        contentDescription = "ETH"
-                                    )
-                                })
-                        }
-
-                        CelebrityStatus.MAINTENANCE -> {
-
                         }
 
                     }
+
+                    CelebrityStatus.COMPLETED -> {
+                        Spacer(
+                            modifier = Modifier.size(24.dp)
+                        )
+                        HorizontalDivider()
+                        Spacer(
+                            modifier = Modifier.size(24.dp)
+                        )
+                        WinningFaceCard(
+                            imageSrc = celebrity!!.image,
+                            placeholderRes = R.drawable.ic_dots_three_outline_rounded,
+                            name = celebrity.title,
+                            description = celebrity.description,
+                            winnerAddress = celebrity.winner,
+                            prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value),
+                            prizeSymbol = {
+                                Image(
+                                    painterResource(R.drawable.ic_ethereum),
+                                    contentDescription = "ETH"
+                                )
+                            })
+                    }
+
+                    CelebrityStatus.MAINTENANCE -> {
+
+                    }
+
                 }
-                Spacer(modifier = Modifier.weight(1f))
+            }
+            Spacer(modifier = Modifier.weight(1f))
 
         }
 
