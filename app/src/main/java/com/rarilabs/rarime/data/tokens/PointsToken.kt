@@ -16,6 +16,7 @@ class PointsToken @Inject constructor(
     override var symbol: String = ""
     override var decimals: Int = 0
     override var icon: Int = R.drawable.ic_rarimo
+    override val tokenType: TokenType = TokenType.POINTS
 
     var balanceDetails: PointsBalanceData? = null
 

@@ -1,11 +1,11 @@
 package com.rarilabs.rarime.modules.wallet.view_model
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.data.tokens.Erc20Token
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.NumberUtil
+import com.rarilabs.rarime.util.WalletUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +14,15 @@ import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import java.math.BigInteger
 import javax.inject.Inject
+
+
+data class SendValidationState(
+    val isAddressValid: Boolean = true,
+    val isAmountValid: Boolean = true,
+    val addressError: String? = null,
+    val amountError: String? = null
+)
+
 
 @HiltViewModel
 class WalletSendViewModel @Inject constructor(
@@ -35,17 +44,30 @@ class WalletSendViewModel @Inject constructor(
     val isSubmitting: StateFlow<Boolean>
         get() = _isSubmitting
 
-    private val _feeError = MutableStateFlow<Throwable?>(null)
-    val feeError: StateFlow<Throwable?> = _feeError
+    private val _validationState = MutableStateFlow(SendValidationState())
+    val validationState: StateFlow<SendValidationState> = _validationState
 
+    fun validateSendFields(address: String, amount: String) {
+        val isAddressValid = isValidAddress(address, selectedWalletAsset.value.userAddress)
+        val isAmountValid = isValidAmount(amount, selectedWalletAsset.value.humanBalance())
+        _validationState.value = SendValidationState(
+            isAddressValid = isAddressValid,
+            isAmountValid = isAmountValid,
+            addressError = if (!isAddressValid && address.isNotEmpty()) "Address is not valid" else null,
+            amountError = if (!isAmountValid && amount.isNotEmpty()) "Amount is not valid" else null
+        )
+    }
 
     private suspend fun getGasFee(humanAmount: String): BigDecimal? {
         val to = "0x0000000000000000000000000000000000000000"
         val asset = selectedWalletAsset.value
         val humanAmountNum = humanAmount.toBigDecimalOrNull() ?: return null
 
+        if (humanAmountNum == BigDecimal.ZERO) {
+            return null
+        }
+
         val amount = (humanAmountNum * BigDecimal.TEN.pow(asset.token.decimals)).toBigInteger()
-        Log.i("amount", "$amount")
         val feeWei = asset.token.estimateTransferFee(
             asset.userAddress, to, amount
         )
@@ -90,12 +112,22 @@ class WalletSendViewModel @Inject constructor(
                 } else {
                     BigInteger(humanAmount)
                 }
-                it.token.transfer(to, bigIntAmount)
+                val transaction = it.token.transfer(to, bigIntAmount)
+                walletManager.insertTransaction(transaction)
+                walletManager.loadBalances()
+
                 it.loadBalance()
 
-                walletManager.loadBalances()
             }
         }
+    }
+
+    private fun isValidAddress(address: String, userAddress: String): Boolean {
+        return WalletUtil.isValidAddressForSend(address, userAddress)
+    }
+
+    private fun isValidAmount(rawAmount: String, balance: BigDecimal): Boolean {
+        return WalletUtil.isValidateAmountForSend(rawAmount, balance)
     }
 
     private suspend fun fetchBalance() {

@@ -13,6 +13,7 @@ import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.StableCoinContractManager
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.modules.wallet.models.TransactionState
+import com.rarilabs.rarime.modules.wallet.models.TransactionType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.web3j.crypto.Credentials
@@ -29,7 +30,8 @@ class Erc20Token(
     address: String,
     private val stableCoinContractManager: StableCoinContractManager? = null,
     private val erc20Manager: Erc20Manager? = null,
-    private val identityManager: IdentityManager? = null
+    private val identityManager: IdentityManager? = null,
+    override val tokenType: TokenType = TokenType.DEFAULT
 ) : Token(address) {
     override var name: String = ""
     override var symbol: String = ""
@@ -103,11 +105,13 @@ class Erc20Token(
 
         return Transaction(
             id = deadLine.toInt(),
-            iconId = R.drawable.ic_arrow_up,
-            titleId = R.string.send_btn,
             amount = res.data.attributes.amount.toDouble(),
             date = Date.from(Instant.now()),
             state = TransactionState.OUTGOING,
+            from = identityManager.evmAddress(),
+            to = to,
+            tokenType = tokenType,
+            operationType = TransactionType.TRANSFER
         )
     }
 
@@ -119,11 +123,13 @@ class Erc20Token(
         return listOf(
             Transaction(
                 id = 0,
-                iconId = 0,
-                titleId = 0,
                 amount = 0.0,
                 date = Date.from(Instant.now()),
                 state = TransactionState.INCOMING,
+                from = sender,
+                to = receiver,
+                tokenType = tokenType,
+                operationType = TransactionType.TRANSFER
             )
         )
     }

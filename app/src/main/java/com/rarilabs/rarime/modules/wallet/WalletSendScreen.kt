@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.modules.wallet
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -48,7 +47,7 @@ import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldNumberState
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
-import com.rarilabs.rarime.util.NumberUtil
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.WalletUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -59,24 +58,6 @@ fun WalletSendScreen(
     onBack: () -> Unit,
     walletSendViewModel: WalletSendViewModel = hiltViewModel(),
 ) {
-
-    fun isValidAddress(address: String, userAddress: String): Boolean {
-        val isNotOwn = address.lowercase() != userAddress.lowercase()
-        val isValidFormat =
-            address.startsWith("0x") && address.length == 42 && address.matches(Regex("^0x[0-9a-fA-F]{40}$"))
-        return isNotOwn && isValidFormat
-    }
-
-    fun isValidAmount(rawAmount: String, balance: BigDecimal): Boolean {
-        val amount = rawAmount.toBigDecimalOrNull() ?: return false
-        if (amount <= BigDecimal.ZERO) return false
-        val res = amount <= balance
-        return res
-    }
-
-    var isError by remember {
-        mutableStateOf(false)
-    }
 
     val mainViewModel = LocalMainViewModel.current
 
@@ -90,41 +71,18 @@ fun WalletSendScreen(
     val coroutineScope = rememberCoroutineScope()
     val selectedWalletAsset by walletSendViewModel.selectedWalletAsset.collectAsState()
 
-    LaunchedEffect(humanAmountState.text) {
+    val validateState by walletSendViewModel.validationState.collectAsState()
 
-        if (humanAmountState.text.isEmpty()) {
-            return@LaunchedEffect
-        }
-
-        if (!isValidAmount(
-                humanAmountState.text,
-                selectedWalletAsset.humanBalance()
-            )
-        ) {
-            isError = true
-            humanAmountState.updateErrorMessage("amount is not Valid")
-            return@LaunchedEffect
-        } else {
-            isError = false
-            humanAmountState.updateErrorMessage("")
-        }
-        if (humanAmountState.text.toDoubleOrNull() == null) return@LaunchedEffect
-
-        walletSendViewModel.estimateGasFee(humanAmountState.text)
+    LaunchedEffect(addressState.text, humanAmountState.text) {
+        walletSendViewModel.validateSendFields(addressState.text, humanAmountState.text)
+        humanAmountState.updateErrorMessage(validateState.amountError ?: "")
+        addressState.updateErrorMessage(validateState.addressError ?: "")
     }
 
-    LaunchedEffect(addressState.text) {
-        if (addressState.text.isEmpty()) {
-            return@LaunchedEffect
-        }
-
-        if (!isValidAddress(addressState.text, selectedWalletAsset.userAddress)) {
-            addressState.updateErrorMessage("Address is not valid")
-            isError = true
-            return@LaunchedEffect
-        } else {
-            isError = false
+    LaunchedEffect(humanAmountState.text, validateState.isAmountValid) {
+        if (validateState.isAmountValid) {
             humanAmountState.updateErrorMessage("")
+            walletSendViewModel.estimateGasFee(humanAmount = humanAmountState.text)
         }
     }
 
@@ -148,21 +106,34 @@ fun WalletSendScreen(
                 coroutineScope.launch {
                     try {
 
-                        Log.i("Sending", "Send to ${addressState.text} ${humanAmountState.text}")
                         walletSendViewModel.submitSend(
                             to = addressState.text, humanAmount = amount
                         )
-                        Log.i("Sending", "Success")
 
-                        mainViewModel.showSnackbar(
-                            options = getSnackbarDefaultShowOptions(
-                                severity = SnackbarSeverity.Success,
-                                duration = SnackbarDuration.Long,
-                                title = context.getString(R.string.wallet_success_title),
-                                message = context.getString(R.string.wallet_success_message),
+                        try {
+                            mainViewModel.showSnackbar(
+                                options = getSnackbarDefaultShowOptions(
+                                    severity = SnackbarSeverity.Success,
+                                    duration = SnackbarDuration.Long,
+                                    title = context.getString(R.string.wallet_success_title),
+                                    message = context.getString(R.string.wallet_success_message),
+                                )
                             )
-                        )
+                        } catch (e: Exception) {
+                            ErrorHandler.logError(
+                                "WalletSendScreen",
+                                "smth went wrong during sending showSnackbar",
+                                e
+                            )
+                        }
+
+
                     } catch (e: Exception) {
+                        ErrorHandler.logError(
+                            "WalletSendScreen",
+                            "smth went wrong during sending tokens",
+                            e
+                        )
                         mainViewModel.showSnackbar(
                             options = getSnackbarDefaultShowOptions(
                                 severity = SnackbarSeverity.Error,
@@ -178,7 +149,7 @@ fun WalletSendScreen(
             fee = fee,
             isSubmitting = isSubmitting,
             isFeeLoading = isFeeLoading,
-            isError = isError
+            isSendEnabled = (validateState.isAmountValid && validateState.isAddressValid)
         )
     }
 }
@@ -194,7 +165,7 @@ private fun WalletSendScreenContent(
     isSubmitting: Boolean = false,
     fee: BigDecimal?,
     isFeeLoading: Boolean,
-    isError: Boolean,
+    isSendEnabled: Boolean,
 ) {
     val confirmationSheetState = rememberAppSheetState()
 
@@ -273,7 +244,8 @@ private fun WalletSendScreenContent(
                                 SecondaryTextButton(
                                     text = stringResource(R.string.max_btn), onClick = {
                                         humanAmountState.updateText(
-                                            selectedWalletAsset.humanBalance().toString()
+                                            selectedWalletAsset.humanBalance().stripTrailingZeros()
+                                                .toPlainString()
                                         )
                                     })
                             }
@@ -316,16 +288,19 @@ private fun WalletSendScreenContent(
                     onClick = {
                         confirmationSheetState.show()
                     },
-                    enabled = !isError && !isSubmitting && !isFeeLoading
+                    enabled = isSendEnabled && !isSubmitting && !isFeeLoading
                 )
             }
         }
 
-        if (addressState.text.isNotEmpty() && humanAmountState.text.isNotEmpty()) {
+        if (WalletUtil.isValidAddress(address = addressState.text) && WalletUtil.isValidateAmountForSend(
+                humanAmountState.text
+            )
+        ) {
             TxConfirmBottomSheet(
                 sheetState = confirmationSheetState, totalDetails = mapOf(
                     "Address" to WalletUtil.formatAddress(addressState.text, 4, 4),
-                    "Send amount" to "${NumberUtil.formatAmount(humanAmountState.text.toDouble())} ${selectedWalletAsset.token.symbol}",
+                    "Send amount" to "${humanAmountState.text} ${selectedWalletAsset.token.symbol}",
                     "Fee" to "${fee?.toPlainString()} ${selectedWalletAsset.token.symbol}"
                 ), onConfirm = {
 
@@ -366,6 +341,6 @@ private fun WalletSendScreenContentPreview() {
         isSubmitting = isSubmitting,
         fee = BigDecimal(0),
         isFeeLoading = false,
-        isError = false
+        isSendEnabled = false
     )
 }

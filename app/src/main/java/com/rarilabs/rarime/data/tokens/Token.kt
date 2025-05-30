@@ -10,6 +10,8 @@ abstract class Token(var address: String) {
     abstract var decimals: Int
     abstract var icon: Int
 
+    abstract val tokenType: TokenType
+
     abstract suspend fun loadDetails()
 
     abstract suspend fun balanceOf(address: String): BigInteger

@@ -4,6 +4,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.modules.wallet.models.TransactionState
+import com.rarilabs.rarime.modules.wallet.models.TransactionType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.web3j.crypto.Credentials
@@ -29,6 +30,7 @@ class NativeToken @Inject constructor(
     override var symbol: String = "Eth"
     override var decimals: Int = 18
     override var icon: Int = R.drawable.ic_rarimo
+    override val tokenType: TokenType = TokenType.RARIMO_ETH
 
     override suspend fun loadDetails() {
 
@@ -68,10 +70,8 @@ class NativeToken @Inject constructor(
 
         // 2. Get current gas price if not provided
         val usedGasPrice = gasPrice ?: withContext(Dispatchers.IO) {
-            web3j.ethGasPrice().send()
+            web3j.ethGasPrice().send().gasPrice.multiply(BigInteger.valueOf(2L))
         }
-            .gasPrice
-
 
         return gasLimit.multiply(usedGasPrice)
     }
@@ -116,11 +116,13 @@ class NativeToken @Inject constructor(
 
         return Transaction(
             id = BigInteger(Numeric.hexStringToByteArray(txHash)).toInt(),
-            iconId = R.drawable.ic_arrow_up,
-            titleId = R.string.send_btn,
             amount = amount.toDouble(),
             date = Date.from(Instant.now()),
             state = TransactionState.OUTGOING,
+            to = to,
+            from = identityManager.evmAddress(),
+            tokenType = tokenType,
+            operationType = TransactionType.TRANSFER
         )
 
     }

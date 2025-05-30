@@ -10,9 +10,11 @@ import com.rarilabs.rarime.api.airdrop.models.CreateAirDrop
 import com.rarilabs.rarime.api.airdrop.models.CreateAirDropAttributes
 import com.rarilabs.rarime.api.airdrop.models.CreateAirDropBody
 import com.rarilabs.rarime.data.ProofTxFull
+import com.rarilabs.rarime.data.tokens.TokenType
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.modules.wallet.models.TransactionState
+import com.rarilabs.rarime.modules.wallet.models.TransactionType
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.ZKPUseCase
@@ -144,11 +146,14 @@ class AirDropManager @Inject constructor(
 
             val transaction = Transaction(
                 id = 1,
-                iconId = R.drawable.ic_airdrop,
-                titleId = R.string.airdrop_tx_title,
                 amount = Constants.AIRDROP_REWARD,
                 date = Date(),
-                state = TransactionState.INCOMING
+                state = TransactionState.INCOMING,
+                from = "",
+                to = identityManager.evmAddress(),
+                tokenType = TokenType.POINTS,
+                operationType = TransactionType.TRANSFER
+
             )
 
             // FIXME: use tx from token and remove transaction key from store

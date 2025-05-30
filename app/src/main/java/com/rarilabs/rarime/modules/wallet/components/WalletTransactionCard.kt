@@ -14,11 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.tokens.Erc20Token
+import com.rarilabs.rarime.data.tokens.TokenType
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.modules.wallet.models.TransactionState
+import com.rarilabs.rarime.modules.wallet.models.TransactionType
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Constants
@@ -32,7 +33,6 @@ fun WalletTransactionCard(
     asset: WalletAsset
 ) {
     val amountSign = if (transaction.state == TransactionState.INCOMING) "+" else "-"
-
     val txHumanAmount = NumberUtil.toHumanAmount(transaction.amount, asset.token.decimals)
 
     Row(
@@ -40,9 +40,11 @@ fun WalletTransactionCard(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
     ) {
+
+        //TODO update item
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             AppIcon(
-                id = transaction.iconId,
+                id = transaction.getIconId(),
                 size = 20.dp,
                 tint = RarimeTheme.colors.textSecondary,
                 modifier = Modifier
@@ -53,7 +55,7 @@ fun WalletTransactionCard(
             )
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
-                    text = stringResource(transaction.titleId),
+                    text = stringResource(transaction.getStringId()),
                     style = RarimeTheme.typography.subtitle6,
                     color = RarimeTheme.colors.textPrimary
                 )
@@ -66,7 +68,9 @@ fun WalletTransactionCard(
         }
 
         Text(
-            text = "${amountSign}${NumberUtil.formatAmount(txHumanAmount)} ${asset.token.symbol}",
+            text = "${amountSign}${
+                txHumanAmount.toBigDecimal().stripTrailingZeros().toPlainString()
+            } ${asset.token.symbol}",
             style = RarimeTheme.typography.subtitle7,
             color = if (transaction.state == TransactionState.INCOMING) {
                 RarimeTheme.colors.successMain
@@ -89,11 +93,13 @@ fun WalletTransactionCardPreview() {
         WalletTransactionCard(
             transaction = Transaction(
                 id = 1,
-                iconId = R.drawable.ic_arrow_up,
-                titleId = R.string.airdrop_tx_title,
                 amount = Constants.AIRDROP_REWARD,
                 date = Date(),
-                state = TransactionState.INCOMING
+                state = TransactionState.INCOMING,
+                from = "0x0",
+                to = "0x0",
+                tokenType = TokenType.DEFAULT,
+                operationType = TransactionType.TRANSFER
             ),
             asset = WalletAsset("0x0000000", Erc20Token("0x00000000000"))
         )
