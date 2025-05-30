@@ -127,7 +127,13 @@ fun ScanPassportScreen(
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp)) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(
+            bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp,
+            top =innerPaddings[ScreenInsets.TOP]!!.toInt().dp
+        )
+    ) {
         when (state) {
             ScanPassportState.SCAN_MRZ -> {
                 ScanMRZStep(
