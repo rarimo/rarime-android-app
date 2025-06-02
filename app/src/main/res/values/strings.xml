@@ -516,5 +516,8 @@
     <string name="wallet_error_message">An error occurred while sending your transaction. Please try again.</string>
     <string name="wallet_incoming_title">Receive</string>
     <string name="wallet_outgoing_title">Send</string>
+    <string name="recovery_method_collapsed_card_title">Recovery</string>
+    <string name="recovery_method_collapsed_card_accent_title">Method</string>
+    <string name="recovery_method_collapsed_card_caption">Set up a new way to recover your account</string>
 
 </resources>
