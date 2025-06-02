@@ -211,7 +211,7 @@ fun MainScreenContent(
         Scaffold(
             containerColor = RarimeTheme.colors.backgroundPrimary,
             bottomBar = {
-                if (isBottomBarShown == true) {
+                if (isBottomBarShown) {
                     BottomTabBar(
                         modifier = Modifier.navigationBarsPadding(),
                         currentRoute = currentRoute,

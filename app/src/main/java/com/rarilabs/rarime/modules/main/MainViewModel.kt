@@ -195,7 +195,6 @@ class MainViewModel @Inject constructor(
 
     fun setBottomBarVisibility(isVisible: Boolean) {
         _isBottomBarShown.value = isVisible
-        println("Bottom bar visible ${_isBottomBarShown.value}")
     }
 
     suspend fun showSnackbar(options: SnackbarShowOptions) {
