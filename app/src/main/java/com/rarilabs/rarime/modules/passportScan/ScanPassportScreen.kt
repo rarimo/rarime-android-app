@@ -3,6 +3,7 @@ package com.rarilabs.rarime.modules.passportScan
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -14,10 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.BuildConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
+import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.passportScan.camera.ScanMRZStep
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.ScanPassportScreenViewModel
@@ -42,7 +45,10 @@ fun ScanPassportScreen(
     onClose: () -> Unit,
     onClaim: () -> Unit,
     scanPassportScreenViewModel: ScanPassportScreenViewModel = hiltViewModel(),
-    initialEDocument: EDocument? = if (BuildConfig.isTestnet) scanPassportScreenViewModel.eDocument.value else null
+    initialEDocument: EDocument? = if (BuildConfig.isTestnet) scanPassportScreenViewModel.eDocument.value else null,
+    innerPaddings :Map<ScreenInsets, Number> = mapOf(),
+    setVisibilityOfBottomBar: (Boolean) -> Unit
+
 ) {
     val context = LocalContext.current
     val mainViewModel = LocalMainViewModel.current
@@ -57,6 +63,10 @@ fun ScanPassportScreen(
 
     var isAlreadyVerified by remember {
         mutableStateOf(false)
+    }
+
+    LaunchedEffect(Unit) {
+    setVisibilityOfBottomBar(false)
     }
 
     LaunchedEffect(Unit) {
@@ -123,7 +133,13 @@ fun ScanPassportScreen(
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(
+            bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp,
+            top =innerPaddings[ScreenInsets.TOP]!!.toInt().dp
+        )
+    ) {
         when (state) {
             ScanPassportState.SCAN_MRZ -> {
                 ScanMRZStep(
@@ -234,5 +250,5 @@ fun ScanPassportScreen(
 @Preview
 @Composable
 private fun ScanPassportScreenPreview() {
-    ScanPassportScreen(onClose = {}, onClaim = {})
+    ScanPassportScreen(onClose = {}, onClaim = {}, setVisibilityOfBottomBar = {})
 }
