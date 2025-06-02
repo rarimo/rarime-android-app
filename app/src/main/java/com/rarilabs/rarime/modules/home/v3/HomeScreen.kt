@@ -53,6 +53,8 @@ import com.rarilabs.rarime.modules.home.v3.ui.expanded.IdentityExpandedCard
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.LikenessExpandedCard
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
+import com.rarilabs.rarime.ui.components.AppBottomSheet
+import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import com.rarilabs.rarime.util.Screen
@@ -78,6 +80,8 @@ fun HomeScreenV3(
         derivedStateOf { notifications.count { it.isActive } }
     }
     val colorScheme by viewModel.colorScheme.collectAsState()
+
+    val welcomeAppSheetState = rememberAppSheetState(true)
 
     LaunchedEffect(Unit) {
         viewModel.initHomeData()
@@ -110,6 +114,16 @@ fun HomeScreenV3(
         currentPointsBalance = currentPointsBalance,
         colorScheme = colorScheme
     )
+
+    AppBottomSheet(
+        state = welcomeAppSheetState,
+        isHeaderEnabled = false,
+        isWindowInsetsEnabled = false
+    ) {
+        WelcomeBottomSheet {
+            welcomeAppSheetState.hide()
+        }
+    }
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)

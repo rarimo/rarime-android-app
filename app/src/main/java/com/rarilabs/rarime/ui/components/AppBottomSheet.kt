@@ -5,11 +5,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.BottomSheetDefaults
@@ -32,7 +32,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.firebase.annotations.concurrent.Background
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import kotlinx.coroutines.launch
@@ -101,7 +100,9 @@ fun AppBottomSheet(
 
     if (state.showSheet) {
         ModalBottomSheet(
-            modifier = modifier.fillMaxWidth(), // Let the sheet fill the width of the screen.
+            modifier = modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.statusBars), // Let the sheet fill the width of the screen.
             sheetState = modalState,
             shape = shape,
             dragHandle = null,
@@ -111,10 +112,10 @@ fun AppBottomSheet(
             windowInsets = if (isWindowInsetsEnabled) {
                 BottomSheetDefaults.windowInsets
             } else {
-                val topPaddingDp =
-                    BottomSheetDefaults.windowInsets.asPaddingValues().calculateTopPadding()
-                WindowInsets(0.dp, topPaddingDp, 0.dp, 0.dp)
-
+//                val topPaddingDp =
+//                    BottomSheetDefaults.windowInsets.asPaddingValues().calculateTopPadding()
+//                WindowInsets(0.dp, topPaddingDp, 0.dp, 0.dp)
+                WindowInsets(0.dp)
             }
         ) {
             // Wrap the sheet content with a container that applies window insets (for content padding),

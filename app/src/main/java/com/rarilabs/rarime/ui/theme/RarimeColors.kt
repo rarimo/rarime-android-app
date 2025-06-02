@@ -101,9 +101,15 @@ class RarimeColors(
 
     additionalGreen: Color,
     hiddenPrizeAccent: Color,
-    hiddenPrizeBackground: Color
+    hiddenPrizeBackground: Color,
 
-) {
+
+    welcomeAccent1: Color,
+    welcomeAccent2: Color,
+    welcomeAccent3: Color,
+    welcomeAccent4: Color,
+
+    ) {
     var primaryDarker by mutableStateOf(primaryDarker, structuralEqualityPolicy())
         internal set
     var primaryDark by mutableStateOf(primaryDark, structuralEqualityPolicy())
@@ -247,6 +253,12 @@ class RarimeColors(
     var hiddenPrizeBackground by mutableStateOf(hiddenPrizeBackground, structuralEqualityPolicy())
 
 
+    var welcomeAccent1 by mutableStateOf(welcomeAccent1, structuralEqualityPolicy())
+    var welcomeAccent2 by mutableStateOf(welcomeAccent2, structuralEqualityPolicy())
+    var welcomeAccent3 by mutableStateOf(welcomeAccent3, structuralEqualityPolicy())
+    var welcomeAccent4 by mutableStateOf(welcomeAccent4, structuralEqualityPolicy())
+
+
     fun copy(
         primaryDarker: Color = this.primaryDarker,
         primaryDark: Color = this.primaryDark,
@@ -312,6 +324,11 @@ class RarimeColors(
         backgroundBlur: Color = this.backgroundBlur,
         backgroundSurface1: Color = this.backgroundSurface1,
         backgroundSurface2: Color = this.backgroundSurface2,
+
+        welcomeAccent1: Color = this.welcomeAccent1,
+        welcomeAccent2: Color = this.welcomeAccent2,
+        welcomeAccent3: Color = this.welcomeAccent3,
+        welcomeAccent4: Color = this.welcomeAccent4,
 
 
         ) = RarimeColors(
@@ -379,7 +396,11 @@ class RarimeColors(
         additionalGreen = additionalGreen,
         inverted = inverted,
         hiddenPrizeAccent = hiddenPrizeAccent,
-        hiddenPrizeBackground =hiddenPrizeBackground
+        hiddenPrizeBackground = hiddenPrizeBackground,
+        welcomeAccent1 = welcomeAccent1,
+        welcomeAccent2 = welcomeAccent2,
+        welcomeAccent3 = welcomeAccent3,
+        welcomeAccent4 = welcomeAccent4
     )
 
     fun updateColorsFrom(other: RarimeColors) {
@@ -571,7 +592,11 @@ fun darkColors() = RarimeColors(
     baseBlackOp50 = Color(0x80141614),
     inverted = Color(0xFF000000),
     hiddenPrizeAccent = Color(0xFF9D4EDD),
-    hiddenPrizeBackground = Color(0xFFF5EDFC)
+    hiddenPrizeBackground = Color(0xFFF5EDFC),
+    welcomeAccent1 = Color(0xFF1B1B1A),
+    welcomeAccent2 = Color(0xFF1E2020),
+    welcomeAccent3 = Color(0xFF1F221F),
+    welcomeAccent4 = Color(0xFF201F21)
 )
 
 fun lightColors() = RarimeColors(
@@ -642,6 +667,7 @@ fun lightColors() = RarimeColors(
     baseBlack = Color(0xFF141614),
     baseWhite = Color(0xFFFFFFFF),
 
+
     // inverted
     invertedDark = Color(0xFF141614),
     invertedLight = Color(0xFFFFFFFF),
@@ -660,6 +686,7 @@ fun lightColors() = RarimeColors(
             )
         )
     ),
+
     gradient8 = Brush.linearGradient(colors = listOf(Color(0xFF651C9F), Color(0xFF9D4EDD))),
     gradient9 = Brush.linearGradient(
         colors = listOf(
@@ -682,7 +709,12 @@ fun lightColors() = RarimeColors(
     inverted = Color(0xFFFFFFFF),
 
     hiddenPrizeAccent = Color(0xFF9D4EDD),
-    hiddenPrizeBackground = Color(0xFFF5EDFC)
+    hiddenPrizeBackground = Color(0xFFF5EDFC),
+
+    welcomeAccent1 = Color(0xFFF9F9F2),
+    welcomeAccent2 = Color(0xFFE2EBED),
+    welcomeAccent3 = Color(0xFFEEF4EE),
+    welcomeAccent4 = Color(0xFFF7F4F9)
 
 )
 

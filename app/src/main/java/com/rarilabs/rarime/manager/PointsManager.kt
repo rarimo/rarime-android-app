@@ -323,7 +323,7 @@ class PointsManager @Inject constructor(
         }
     }
 
-    suspend fun getEvents(
+    private suspend fun getEvents(
         filterParams: Map<String, String> = mapOf()
     ): PointsEventsListBody {
         val userPointsNullifierHex = identityManager.getUserPointsNullifierHex()
@@ -344,6 +344,8 @@ class PointsManager @Inject constructor(
 
                 response
             } catch (e: HttpException) {
+                PointsEventsListBody(data = emptyList())
+            } catch (e: Exception) {
                 PointsEventsListBody(data = emptyList())
             }
         }
