@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.you
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -20,20 +21,38 @@ fun ZkIdentityScreen(
     navigate: (String) -> Unit,
     onClose: () ->Unit,
     onClaim: () ->Unit,
-    setVisibilityOfBottomBar: (Boolean) -> Unit,
+    setBottomBarVisibility: (Boolean) -> Unit,
     zkIdentityScreenViewModel: ZkIdentityScreenViewModel = hiltViewModel()
 ) {
     val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
     val passport by zkIdentityScreenViewModel.passport.collectAsState()
 
     CompositionLocalProvider(LocalZkIdentityScreenViewModel provides zkIdentityScreenViewModel) {
+        BackHandler(enabled = true, onBack = {
+            setBottomBarVisibility(true)
+            onClose()
+        })
         if (passport != null) {
-            setVisibilityOfBottomBar(true)
+
             ZkIdentityPassport(navigate = navigate)
         } else {
-            setVisibilityOfBottomBar(false)
-            ScanPassportScreen(onClose = onClose, onClaim = onClaim, innerPaddings = innerPaddings)
+
+            ScanPassportScreen(onClose = {
+                setBottomBarVisibility(true)
+                onClose()
+            },
+                onClaim = {
+                    setBottomBarVisibility(true)
+                    onClaim()
+                },
+                innerPaddings = innerPaddings,
+                setVisibilityOfBottomBar = setBottomBarVisibility
+            )
+
+
         }
+
+
     }
 
 }

@@ -156,7 +156,7 @@ fun ZkIdentityNoPassport(//Todo delete this screen or disable for now
     ) {
         when (currentScreen) {
             IdentityScreenType.PASSPORT -> {
-                ScanPassportScreen(onClose = {}, onClaim = {})
+                ScanPassportScreen(onClose = {}, onClaim = {}, setVisibilityOfBottomBar = { })
             }
 
             IdentityScreenType.NONE -> {}

@@ -46,7 +46,9 @@ fun ScanPassportScreen(
     onClaim: () -> Unit,
     scanPassportScreenViewModel: ScanPassportScreenViewModel = hiltViewModel(),
     initialEDocument: EDocument? = if (BuildConfig.isTestnet) scanPassportScreenViewModel.eDocument.value else null,
-    innerPaddings :Map<ScreenInsets, Number> = mapOf()
+    innerPaddings :Map<ScreenInsets, Number> = mapOf(),
+    setVisibilityOfBottomBar: (Boolean) -> Unit
+
 ) {
     val context = LocalContext.current
     val mainViewModel = LocalMainViewModel.current
@@ -61,6 +63,10 @@ fun ScanPassportScreen(
 
     var isAlreadyVerified by remember {
         mutableStateOf(false)
+    }
+
+    LaunchedEffect(Unit) {
+    setVisibilityOfBottomBar(false)
     }
 
     LaunchedEffect(Unit) {
@@ -244,5 +250,5 @@ fun ScanPassportScreen(
 @Preview
 @Composable
 private fun ScanPassportScreenPreview() {
-    ScanPassportScreen(onClose = {}, onClaim = {})
+    ScanPassportScreen(onClose = {}, onClaim = {}, setVisibilityOfBottomBar = {})
 }
