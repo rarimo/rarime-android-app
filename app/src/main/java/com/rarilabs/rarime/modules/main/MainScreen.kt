@@ -147,7 +147,7 @@ fun MainScreenContent(
 
     val enterProgramSheetState = rememberAppSheetState()
     val qrCodeState = rememberAppSheetState()
-
+    val isBottomBarShown by mainViewModel.isBottomBarShown.collectAsState()
     // Use remember to cache navBackStackEntry and currentRoute
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute by remember(navBackStackEntry) {
@@ -211,7 +211,7 @@ fun MainScreenContent(
         Scaffold(
             containerColor = RarimeTheme.colors.backgroundPrimary,
             bottomBar = {
-                if (mainViewModel.isBottomBarShown.value) {
+                if (isBottomBarShown == true) {
                     BottomTabBar(
                         modifier = Modifier.navigationBarsPadding(),
                         currentRoute = currentRoute,

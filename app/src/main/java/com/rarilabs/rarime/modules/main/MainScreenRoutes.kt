@@ -194,7 +194,8 @@ fun MainScreenRoutes(
                         coroutineScope.launch {
                             navigateWithPopUp(Screen.Claim.Specific.route)
                         }
-                    })
+                    },
+                        setVisibilityOfBottomBar = { })
                 }
             }
 
@@ -208,7 +209,8 @@ fun MainScreenRoutes(
                         coroutineScope.launch {
                             navigateWithPopUp(Screen.Claim.Reserve.route)
                         }
-                    })
+                    },
+                        setVisibilityOfBottomBar = {})
                 }
             }
 
@@ -241,17 +243,21 @@ fun MainScreenRoutes(
                 }
 
                 composable(Screen.Main.Identity.route) {
-                    AuthGuard(navigate = navigateWithPopUp) {
-                        ZkIdentityScreen(navigate = simpleNavigate, onClose = {
+                    AuthGuard(navigate = simpleNavigate) {
+                        ZkIdentityScreen(navigate = simpleNavigate , onClose = {
                             coroutineScope.launch {
-                                navController.popBackStack()
+                                //navController.popBackStack()
+
+                                navigateWithPopUp(Screen.Main.route)
+
                             }
                         }, onClaim = {
                             coroutineScope.launch {
                                 navigateWithPopUp(Screen.Claim.Specific.route)
+
                             }
                         },
-                            setVisibilityOfBottomBar = { mainViewModel.setBottomBarVisibility(it) })
+                            setBottomBarVisibility = { mainViewModel.setBottomBarVisibility(it) })
                     }
                 }
 
