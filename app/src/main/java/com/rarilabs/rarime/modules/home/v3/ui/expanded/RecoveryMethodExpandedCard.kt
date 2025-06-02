@@ -46,11 +46,14 @@ import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
 import com.rarilabs.rarime.modules.main.ScreenInsets
+import com.rarilabs.rarime.modules.recoveryMethod.RecoveryMethodDetailScreen
 import com.rarilabs.rarime.modules.recoveryMethod.RecoveryMethodViewModel
 import com.rarilabs.rarime.ui.base.ButtonSize
+import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
+import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.AppTheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
@@ -65,13 +68,26 @@ fun RecoveryMethodExpandedCard(
     navigate: (String) -> Unit
 ) {
     val colorScheme by viewModel.colorScheme.collectAsState()
+    val sheetRecoveryMethod = rememberAppSheetState()
+    AppBottomSheet(
+        state = sheetRecoveryMethod,
+        backgroundColor = RarimeTheme.colors.backgroundPrimary,
+        fullScreen = true,
+        isHeaderEnabled = false,
+        disablePullClose = true
+
+    ) {
+        RecoveryMethodDetailScreen(onClose = {sheetRecoveryMethod.hide()})
+    }
 
     RecoveryMethodExpandedCardContent(
         cardProps = expandedCardProps,
         modifier = modifier,
         innerPaddings = innerPaddings,
-        colorScheme = colorScheme
-
+        colorScheme = colorScheme,
+        onClick = {
+            sheetRecoveryMethod.show()
+        }
     )
 
 
@@ -84,6 +100,7 @@ fun RecoveryMethodExpandedCardContent(
     cardProps: BaseCardProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
     colorScheme: AppColorScheme,
+    onClick: () -> Unit
 ) {
 
     with(cardProps) {
@@ -106,14 +123,12 @@ fun RecoveryMethodExpandedCardContent(
                     )
                 }, footer = {
 
-
                     Footer(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope,
-
-                        )
-
+                        onClick = onClick
+                    )
 
                 }, body = {
                     Body(
@@ -183,8 +198,8 @@ private fun Footer(
     layoutId: Int,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-
-    ) {
+    onClick: () -> Unit
+) {
 
     with(sharedTransitionScope) {
         Column(
@@ -210,7 +225,7 @@ private fun Footer(
 
                 PrimaryButton(
                     text = stringResource(R.string.recovery_method_expanded_card_button_label),
-                    onClick = {},
+                    onClick = onClick,
                     size = ButtonSize.Large,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -360,7 +375,8 @@ fun RecoveryMethodExpandedCardPreviewLightMode() {
                 ),
                 modifier = Modifier.height(820.dp),
                 innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
-                colorScheme = AppColorScheme.LIGHT
+                colorScheme = AppColorScheme.LIGHT,
+                onClick = {}
             )
         }
     }
@@ -381,7 +397,8 @@ fun RecoveryMethodExpandedCardPreviewDarkMode() {
                 ),
                 modifier = Modifier.height(820.dp),
                 innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
-                colorScheme = AppColorScheme.DARK
+                colorScheme = AppColorScheme.DARK,
+                onClick = {}
             )
         }
     }
