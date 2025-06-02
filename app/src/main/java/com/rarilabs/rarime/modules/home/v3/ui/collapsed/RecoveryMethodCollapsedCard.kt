@@ -20,17 +20,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -188,7 +183,8 @@ private fun Footer(
                 Spacer(modifier = Modifier.weight(1f))
                 AppIcon(
                     id = R.drawable.ic_arrow_right_up_line,
-                    modifier = Modifier.align(Alignment.Bottom)
+                    modifier = Modifier.align(Alignment.Bottom),
+                    tint = RarimeTheme.colors.textPrimary
                 )
             }
         }
@@ -256,10 +252,9 @@ fun RecoveryMethodCollapsedCardPreview_LightMode() {
     AppTheme {
         PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
             RecoveryMethodCollapsedCard(
-                colorScheme = AppColorScheme.LIGHT,
-                collapsedCardProps = BaseCardProps.Collapsed(
+                colorScheme = AppColorScheme.LIGHT, collapsedCardProps = BaseCardProps.Collapsed(
                     onExpand = {},
-                    layoutId = CardType.HIDDEN_PRIZE.layoutId,
+                    layoutId = CardType.RECOVERY_METHOD.layoutId,
                     animatedVisibilityScope = animatedVisibilityScope,
                     sharedTransitionScope = sharedTransitionScope
                 ), modifier = Modifier
@@ -280,7 +275,7 @@ fun RecoveryMethodCollapsedCardPreview_DarkMode() {
                 colorScheme = AppColorScheme.DARK,
                 collapsedCardProps = BaseCardProps.Collapsed(
                     onExpand = {},
-                    layoutId = CardType.HIDDEN_PRIZE.layoutId,
+                    layoutId = CardType.RECOVERY_METHOD.layoutId,
                     animatedVisibilityScope = animatedVisibilityScope,
                     sharedTransitionScope = sharedTransitionScope
                 ),
