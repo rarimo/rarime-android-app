@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.modules.home.v3.ui.expanded
 
-import WinningFaceCard
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -20,34 +19,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
-import com.rarilabs.rarime.manager.Celebrity
-import com.rarilabs.rarime.manager.CelebrityStatus
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
 import com.rarilabs.rarime.modules.home.v3.model.CardType
@@ -56,12 +47,10 @@ import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.recoveryMethod.RecoveryMethodViewModel
-import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.components.TipAlert
 import com.rarilabs.rarime.ui.theme.AppTheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
@@ -123,7 +112,7 @@ fun RecoveryMethodExpandedCardContent(
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope,
 
-                    )
+                        )
 
 
                 }, body = {
@@ -132,7 +121,7 @@ fun RecoveryMethodExpandedCardContent(
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope,
 
-                    )
+                        )
                 }, columnModifier = Modifier, background = {
                     Background(
                         layoutId = layoutId,
@@ -169,8 +158,19 @@ private fun Header(
                 .padding(top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp),
             horizontalArrangement = Arrangement.End
         ) {
-            IconButton(onClick = onCollapse) {
-                AppIcon(id = R.drawable.ic_close, tint = RarimeTheme.colors.textSecondary)
+
+            IconButton(
+                onClick = onCollapse,
+                modifier = Modifier
+                    .padding(20.dp)
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(color = RarimeTheme.colors.componentPrimary)
+            ) {
+                AppIcon(
+                    id = R.drawable.ic_close,
+                    tint = RarimeTheme.colors.textPrimary,
+                )
             }
         }
     }
@@ -184,7 +184,7 @@ private fun Footer(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
 
-) {
+    ) {
 
     with(sharedTransitionScope) {
         Column(
@@ -207,56 +207,13 @@ private fun Footer(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            "Available",
-                            style = RarimeTheme.typography.subtitle6,
-                            color = RarimeTheme.colors.textPrimary
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                    }
 
-                    Row(verticalAlignment = Alignment.Bottom) {
-                        Text(
-                            text = "111111111111",
-                            color = RarimeTheme.colors.textPrimary,
-                            style = TextStyle(
-                                brush = RarimeTheme.colors.gradient8,
-                                fontSize = RarimeTheme.typography.h4.fontSize,
-                                fontWeight = RarimeTheme.typography.h4.fontWeight
-                            ),
-                        )
-
-                    }
-                }
-//                if (attendsCount <= 0 && isAddScanEnabled) {
-//                    BaseButton(
-//                        modifier = Modifier
-//                            .clip(RoundedCornerShape(20.dp))
-//                            .background(RarimeTheme.colors.gradient8),
-//                        onClick = onAddScan,
-//                        enabled = true,
-//                        size = ButtonSize.Large,
-//                        colors = ButtonDefaults.buttonColors(
-//                            containerColor = Color.Transparent,
-//                            contentColor = RarimeTheme.colors.baseWhite,
-//                            disabledContainerColor = RarimeTheme.colors.componentDisabled,
-//                            disabledContentColor = RarimeTheme.colors.textDisabled
-//                        ),
-//                        text = "Bonus scan",
-//                        leftIcon = R.drawable.ic_flashlight_fill,
-//                    )
-//                } else {
-//                    PrimaryButton(
-//                        text = "Scan",
-//                        onClick = onScan,
-//                        size = ButtonSize.Large,
-//                        leftIcon = R.drawable.ic_user_focus
-//                    )
-//
-//                }
-
+                PrimaryButton(
+                    text = stringResource(R.string.recovery_method_expanded_card_button_label),
+                    onClick = {},
+                    size = ButtonSize.Large,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
             }
         }
@@ -283,6 +240,7 @@ private fun Body(
                     exit = fadeOut(),
                     resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
                 )
+
                 .fillMaxSize()
         ) {
 
@@ -295,42 +253,17 @@ private fun Body(
                         shape = RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
                     )
                     .padding(20.dp)
+                    .fillMaxWidth()
 
             ) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = RarimeTheme.colors.componentPrimary,
-                    ), modifier = Modifier.size(width = 156.dp, height = 32.dp)
 
-
-                ) {
-                    Row(
-                        modifier = Modifier.padding(
-                            horizontal = 16.dp, vertical = 6.dp
-                        )
-                    ) {
-                        Text(
-                            "Prize-pool: ",
-                            style = RarimeTheme.typography.subtitle6.copy(color = RarimeTheme.colors.textPrimary)
-                        )
-                        Text(
-                            text = stringResource(R.string.hidden_prize_prize_pool_value),
-                            style = RarimeTheme.typography.h6.copy(color = RarimeTheme.colors.textPrimary),
-                            modifier = Modifier.padding(end = 8.dp)
-                        )
-                        Image(
-                            painterResource(R.drawable.ic_ethereum),
-                            contentDescription = "ETH",
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.size(12.dp))
                 BaseCardTitle(
-                    title = "Hidden keys",
-                    accentTitle = "Find a face",
+                    title = stringResource(R.string.recovery_method_expanded_card_title),
+                    accentTitle = stringResource(R.string.recovery_method_expanded_card_accent_title),
                     titleStyle = RarimeTheme.typography.h1.copy(RarimeTheme.colors.textPrimary),
-                    accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient8),
+                    accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient11),
+                    caption = stringResource(R.string.recovery_method_expanded_card_caption),
+                    captionStyle = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary),
                     titleModifier = Modifier.sharedBounds(
                         rememberSharedContentState(HomeSharedKeys.title(layoutId)),
                         animatedVisibilityScope = animatedVisibilityScope,
@@ -350,12 +283,18 @@ private fun Body(
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     )
                 )
-                }
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = stringResource(R.string.recovery_method_expanded_card_desciption),
+                    style = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary)
+                )
+                Spacer(modifier = Modifier.height(24.dp))
             }
-
         }
 
     }
+
+}
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)

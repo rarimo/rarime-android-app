@@ -519,5 +519,10 @@
     <string name="recovery_method_collapsed_card_title">Recovery</string>
     <string name="recovery_method_collapsed_card_accent_title">Method</string>
     <string name="recovery_method_collapsed_card_caption">Set up a new way to recover your account</string>
+    <string name="recovery_method_expanded_card_title">Recovery</string>
+    <string name="recovery_method_expanded_card_accent_title">Method</string>
+    <string name="recovery_method_expanded_card_button_label">Choose your method</string>
+    <string name="recovery_method_expanded_card_caption">Set up a new way to recover your account</string>
+    <string name="recovery_method_expanded_card_desciption">Forget traditional methods. Use something truly yours: a personal item, your face, or even a unique gesture. Security has never felt this natural.</string>
 
 </resources>
