@@ -42,7 +42,7 @@ fun ZkIdentityScreen(
                 onClose()
             },
                 onClaim = {
-                    setBottomBarVisibility(true)
+
                     onClaim()
                 },
                 innerPaddings = innerPaddings,
