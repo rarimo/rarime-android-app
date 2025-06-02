@@ -152,9 +152,8 @@ fun HiddenPrizeCamera(
                             selectedBitmap = it
                         }
                     }, onClearBitmap = { selectedBitmap = null }, onNext = {
-                        onClose()
-                        currentStep = HiddenPrizeCameraStep.PROCESSING_ML
-                    }, previewView = previewView, detectedMeshes, onClose = onClose
+                        currentStep = HiddenPrizeCameraStep.PROCESSING_ML },
+                    previewView = previewView, detectedMeshes, onClose = onClose
                 )
 
             }
