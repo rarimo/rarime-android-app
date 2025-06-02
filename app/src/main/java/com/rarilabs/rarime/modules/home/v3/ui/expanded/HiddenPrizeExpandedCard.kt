@@ -439,7 +439,7 @@ private fun Body(
                 .fillMaxSize()
         ) {
 
-            Spacer(modifier = Modifier.height((BG_HAND_HIDDEN_PRIZE_HEIGHT - 120).dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             Column(
                 modifier = Modifier
@@ -449,7 +449,6 @@ private fun Body(
                     )
                     .padding(20.dp)
 
-                    .fillMaxHeight()
                 ) {
                     Card(
                         colors = CardDefaults.cardColors(
@@ -515,7 +514,7 @@ private fun Body(
 
                         Text(
                             stringResource(R.string.hidden_price_expanded_cart_description),
-                            style = RarimeTheme.typography.body3,
+                            style = RarimeTheme.typography.body4,
                             color = RarimeTheme.colors.textSecondary
                         )
 
@@ -559,7 +558,6 @@ private fun Body(
 
                 }
             }
-            Spacer(modifier = Modifier.weight(1f))
 
         }
 
