@@ -525,5 +525,14 @@
     <string name="recovery_method_expanded_card_caption">Set up a new way to recover your account</string>
     <string name="recovery_method_expanded_card_desciption">Forget traditional methods. Use something truly yours: a personal item, your face, or even a unique gesture. Security has never felt this natural.</string>
     <string name="recover_method_details_screen_title">Recover method</string>
+    <string name="recovery_method_detail_screen_card_holder_title">Private key</string>
+    <string name="recovery_method_detal_screen_card_holder_description">Please store the private key safely and do not share it with anyone. If you lose this key, you will not be able to recover the account and will lose access forever.</string>
+    <string name="recovery_method_detail_screen_card_holder_btn_label">Copy</string>
+    <string name="recovery_method_cloud_backup_title">Google Cloud backup</string>
+    <string name="recovery_method_cloud_backup_description">Backup key stored in Google Cloud</string>
+    <string name="recovery_method_face_scan_title">zkFace</string>
+    <string name="recovery_method_face_scan_description">Biometric facial key</string>
+    <string name="recovery_method_object_scan_title">Object</string>
+    <string name="recovery_method_object_scan_description">Make any object your key</string>
 
 </resources>

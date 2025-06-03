@@ -77,7 +77,7 @@ fun RecoveryMethodExpandedCard(
         disablePullClose = true
 
     ) {
-        RecoveryMethodDetailScreen(onClose = {sheetRecoveryMethod.hide()})
+        RecoveryMethodDetailScreen(onClose = {sheetRecoveryMethod.hide()}, onCopy = {}) //todo change this to get from vm
     }
 
     RecoveryMethodExpandedCardContent(

@@ -47,6 +47,7 @@ class RarimeColors(
     errorLighter: Color,
 
     // warning
+    warningBase: Color,
     warningDarker: Color,
     warningDark: Color,
     warningMain: Color,
@@ -99,6 +100,8 @@ class RarimeColors(
     gradient9: Brush,
     gradient10: Brush,
     gradient11: Brush,
+    gradient12: Brush,
+
 
 
     additionalGreen: Color,
@@ -157,6 +160,8 @@ class RarimeColors(
     var errorLighter by mutableStateOf(errorLighter, structuralEqualityPolicy())
         internal set
     var warningDarker by mutableStateOf(warningDarker, structuralEqualityPolicy())
+        internal set
+    var warningBase by mutableStateOf(warningBase, structuralEqualityPolicy())
         internal set
     var warningDark by mutableStateOf(warningDark, structuralEqualityPolicy())
         internal set
@@ -238,7 +243,8 @@ class RarimeColors(
         internal set
     var gradient11 by mutableStateOf(gradient11, structuralEqualityPolicy())
         internal set
-
+    var gradient12 by mutableStateOf(gradient12, structuralEqualityPolicy())
+        internal set
 
     var inverted by mutableStateOf(inverted, structuralEqualityPolicy())
         internal set
@@ -277,6 +283,7 @@ class RarimeColors(
         errorMain: Color = this.errorMain,
         errorLight: Color = this.errorLight,
         errorLighter: Color = this.errorLighter,
+        warningBase: Color = this.warningBase,
         warningDarker: Color = this.warningDarker,
         warningDark: Color = this.warningDark,
         warningMain: Color = this.warningMain,
@@ -307,6 +314,7 @@ class RarimeColors(
         gradient9: Brush = this.gradient9,
         gradient10: Brush = this.gradient10,
         gradient11: Brush = this.gradient11,
+        gradient12: Brush = this.gradient12,
         invertedDark: Color = this.invertedDark,
         invertedLight: Color = this.invertedLight,
         inverted: Color = this.inverted,
@@ -345,6 +353,7 @@ class RarimeColors(
         errorMain = errorMain,
         errorLight = errorLight,
         errorLighter = errorLighter,
+        warningBase = warningBase,
         warningDarker = warningDarker,
         warningDark = warningDark,
         warningMain = warningMain,
@@ -382,6 +391,7 @@ class RarimeColors(
         gradient9 = gradient9,
         gradient10 = gradient10,
         gradient11 = gradient11,
+        gradient12 = gradient12,
         additionalGreen = additionalGreen,
         inverted = inverted,
         hiddenPrizeAccent = hiddenPrizeAccent,
@@ -417,6 +427,7 @@ class RarimeColors(
         this.errorMain = other.errorMain
         this.errorLight = other.errorLight
         this.errorLighter = other.errorLighter
+        this.warningBase = other.warningBase
         this.warningDarker = other.warningDarker
         this.warningDark = other.warningDark
         this.warningMain = other.warningMain
@@ -460,6 +471,7 @@ class RarimeColors(
         this.gradient9 = other.gradient9
         this.gradient10 = other.gradient10
         this.gradient11 = other.gradient11
+        this.gradient12 = other.gradient12
         this.additionalGreen = other.additionalGreen
         this.inverted = other.inverted
         this.hiddenPrizeAccent = other.hiddenPrizeAccent
@@ -505,6 +517,7 @@ fun darkColors() = RarimeColors(
     errorLighter = Color(0x0FDA4343),
 
     // warning
+    warningBase = Color(0xFFED9E19),
     warningDarker = Color(0xFFFBB239),
     warningDark = Color(0xFFF3A728),
     warningMain = Color(0xFFED9E19),
@@ -566,8 +579,8 @@ fun darkColors() = RarimeColors(
     ),
     gradient10 = Brush.linearGradient(
         colors = listOf(
-            Color(0xFF5CB563),
-            Color(0xFF458D42),
+            Color(0xFF151118),
+            Color(0xFF17121A),
         )
     ),
 
@@ -575,6 +588,12 @@ fun darkColors() = RarimeColors(
         colors = listOf(
             Color(0xFF286D26),
             Color(0xFF338D3A),
+        )
+    ),
+    gradient12 =  Brush.linearGradient(
+        colors = listOf(
+            Color(0xFF8AFECC),
+            Color(0xFF9AFE8A),
         )
     ),
 
@@ -625,6 +644,7 @@ fun lightColors() = RarimeColors(
     errorLighter = Color(0x0FEF4444),
 
     // warning
+    warningBase = Color(0xFFED9E19),
     warningDarker = Color(0xFFC09027),
     warningDark = Color(0xFFE1AC3B),
     warningMain = Color(0xFFF59E0B),
@@ -692,6 +712,12 @@ fun lightColors() = RarimeColors(
         colors = listOf(
             Color(0xFF286D26),
             Color(0xFF338D3A),
+        )
+    ),
+    gradient12 =  Brush.linearGradient(
+        colors = listOf(
+            Color(0xFF8AFECC),
+            Color(0xFF9AFE8A),
         )
     ),
 
