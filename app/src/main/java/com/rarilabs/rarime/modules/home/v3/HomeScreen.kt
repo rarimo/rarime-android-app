@@ -44,6 +44,7 @@ import com.rarilabs.rarime.modules.home.v3.ui.collapsed.FreedomtoolCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.HiddenPrizeCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.IdentityCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.LikenessCollapsedCard
+import com.rarilabs.rarime.modules.home.v3.ui.collapsed.RecoveryMethodCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.components.HomeHeader
 import com.rarilabs.rarime.modules.home.v3.ui.components.VerticalPageIndicator
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.ClaimExpandedCard
@@ -51,6 +52,7 @@ import com.rarilabs.rarime.modules.home.v3.ui.expanded.FreedomtoolExpandedCard
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.HiddenPrizeExpandedCard
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.IdentityExpandedCard
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.LikenessExpandedCard
+import com.rarilabs.rarime.modules.home.v3.ui.expanded.RecoveryMethodExpandedCard
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.components.AppBottomSheet
@@ -102,6 +104,7 @@ fun HomeScreenV3(
             add(CardType.LIKENESS)
             add(CardType.CLAIM)
             add(CardType.HIDDEN_PRIZE)
+            add(CardType.RECOVERY_METHOD)
         }
     }
 
@@ -240,6 +243,11 @@ fun HomeScreenContent(
                                     modifier = baseCollapsedModifier,
                                     colorScheme = colorScheme
                                 )
+                                CardType.RECOVERY_METHOD -> RecoveryMethodCollapsedCard(
+                                    collapsedCardProps = collapsedCardProps,
+                                    modifier = baseCollapsedModifier,
+                                    colorScheme = colorScheme
+                                )
                                 // TODO: Implement rest collapsed cards here
                             }
                         }
@@ -301,6 +309,11 @@ fun HomeScreenContent(
                         )
 
                         CardType.HIDDEN_PRIZE -> HiddenPrizeExpandedCard(
+                            expandedCardProps = expandedCardProps,
+                            innerPaddings = innerPaddings,
+                            navigate = navigate
+                        )
+                        CardType.RECOVERY_METHOD -> RecoveryMethodExpandedCard(
                             expandedCardProps = expandedCardProps,
                             innerPaddings = innerPaddings,
                             navigate = navigate
