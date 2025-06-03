@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity() {
             )
         )
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
         super.onCreate(savedInstanceState)
 
         installSplashScreen()

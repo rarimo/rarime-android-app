@@ -102,4 +102,7 @@ interface SecureSharedPrefsManager {
     fun saveLivenessProof(proof: ZkProof)
     fun getLivenessProof(): ZkProof?
 
+    fun saveIsShownWelcome(isShown: Boolean)
+    fun getIsShownWelcome(): Boolean
+
 }
