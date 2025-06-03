@@ -31,10 +31,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.Scope
 import com.google.api.services.drive.DriveScopes
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.manager.DriveState
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.register.DriveBackup
 import com.rarilabs.rarime.modules.register.DriveBackupSkeleton
-import com.rarilabs.rarime.modules.register.DriveState
 import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.InfoAlert
@@ -53,11 +53,12 @@ fun ExportKeysScreen(
     val context = LocalContext.current
     val mainViewModel = LocalMainViewModel.current
     val privateKey by viewModel.privateKey.collectAsState()
-    val clipboardManager = LocalClipboardManager.current
     val driveState by viewModel.driveState.collectAsState()
     val isDriveButtonEnabled by viewModel.isDriveButtonEnabled.collectAsState()
-    var isCopied by remember { mutableStateOf(false) }
     val isInit by viewModel.isInit.collectAsState()
+
+    val clipboardManager = LocalClipboardManager.current
+    var isCopied by remember { mutableStateOf(false) }
 
     LaunchedEffect(isCopied) {
         if (isCopied) {
@@ -69,17 +70,16 @@ fun ExportKeysScreen(
     val scope = rememberCoroutineScope()
 
     val signInErrorOptions = getSnackbarDefaultShowOptions(
-        severity = SnackbarSeverity.Error, message = stringResource(
-            R.string.drive_error_cant_sign_in_google_identity_account
-        )
+        severity = SnackbarSeverity.Error,
+        message = stringResource(R.string.drive_error_cant_sign_in_google_identity_account)
     )
     val backupErrorOptions = getSnackbarDefaultShowOptions(
-        severity = SnackbarSeverity.Error, message = stringResource(
-            R.string.drive_error_cant_back_up_your_private_key
-        )
+        severity = SnackbarSeverity.Error,
+        message = stringResource(R.string.drive_error_cant_back_up_your_private_key)
     )
     val deleteErrorOptions = getSnackbarDefaultShowOptions(
-        severity = SnackbarSeverity.Error, message = "Cannot delete backup"
+        severity = SnackbarSeverity.Error,
+        message = "Cannot delete backup"
     )
 
     val googleSignInClient = remember(context) {
@@ -88,19 +88,15 @@ fun ExportKeysScreen(
             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .requestScopes(Scope(DriveScopes.DRIVE_APPDATA))
-                //.requestIdToken(BaseConfig.GOOGLE_WEB_KEY)
                 .build()
         )
     }
 
-
     val signInResultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-            viewModel.handleSignInResult(task, context) {
-                scope.launch {
-                    mainViewModel.showSnackbar(signInErrorOptions)
-                }
+            viewModel.handleSignInResult(task) { error ->
+                scope.launch { mainViewModel.showSnackbar(signInErrorOptions) }
             }
         }
 
@@ -119,11 +115,11 @@ fun ExportKeysScreen(
         }
     }
 
-    val backUp: () -> Unit = remember(context, viewModel, mainViewModel) {
+    val backUp: () -> Unit = remember {
         {
             scope.launch {
                 try {
-                    viewModel.backupPrivateKey(context)
+                    viewModel.backupPrivateKey()
                 } catch (e: Exception) {
                     mainViewModel.showSnackbar(backupErrorOptions)
                 }
@@ -131,18 +127,17 @@ fun ExportKeysScreen(
         }
     }
 
-    val delete: () -> Unit = remember(context, viewModel, mainViewModel) {
+    val delete: () -> Unit = remember {
         {
             scope.launch {
                 try {
-                    viewModel.deleteBackup(context)
+                    viewModel.deleteBackup()
                 } catch (e: Exception) {
                     mainViewModel.showSnackbar(deleteErrorOptions)
                 }
             }
         }
     }
-
 
     ExportKeysContent(
         onBack = onBack,
