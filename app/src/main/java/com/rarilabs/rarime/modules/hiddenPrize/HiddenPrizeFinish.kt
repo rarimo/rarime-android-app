@@ -157,7 +157,10 @@ fun HiddenPrizeFinishPreview() {
                 .blur(20.dp)
         )
 
-        HiddenPrizeFinish(prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value), onViewWallet = {}, prizeSymbol = {
+        HiddenPrizeFinish(
+            prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value),
+            onViewWallet = {},
+            prizeSymbol = {
             Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
         }, onShareWallet = {})
     }

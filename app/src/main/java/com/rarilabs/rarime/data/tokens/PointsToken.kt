@@ -16,8 +16,20 @@ class PointsToken @Inject constructor(
     override var symbol: String = ""
     override var decimals: Int = 0
     override var icon: Int = R.drawable.ic_rarimo
+    override val tokenType: TokenType = TokenType.POINTS
 
     var balanceDetails: PointsBalanceData? = null
+
+    override suspend fun estimateTransferFee(
+        from: String,
+        to: String,
+        amount: BigInteger,
+        gasPrice: BigInteger?,
+        gasLimit: BigInteger?
+    ): BigInteger {
+
+        return BigInteger.ZERO
+    }
 
     override suspend fun loadDetails() {
         name = "Reserved RMO"

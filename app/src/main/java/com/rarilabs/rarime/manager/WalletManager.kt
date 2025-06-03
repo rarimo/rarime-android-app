@@ -5,8 +5,10 @@ import com.google.gson.Gson
 import com.rarilabs.rarime.data.tokens.NativeToken
 import com.rarilabs.rarime.data.tokens.PointsToken
 import com.rarilabs.rarime.data.tokens.Token
+import com.rarilabs.rarime.data.tokens.TokenType
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
+import com.rarilabs.rarime.store.room.transactons.TransactionRepository
 import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -17,9 +19,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import org.web3j.protocol.Web3j
+import java.math.BigDecimal
 import java.math.BigInteger
 import javax.inject.Inject
-import kotlin.math.pow
 
 data class WalletAssetJSON(
     val tokenSymbol: String, val balance: String, val transactions: List<Transaction>
@@ -29,7 +31,8 @@ data class WalletAsset(
     val userAddress: String,
     val token: Token,
     var balance: BigInteger = BigInteger.ZERO,
-    var transactions: List<Transaction> = emptyList()
+    var transactions: List<Transaction> = emptyList(),
+    var showInAssets: Boolean = true
 ) {
     fun toJSON(): String = Gson().toJson(
         WalletAssetJSON(
@@ -41,29 +44,28 @@ data class WalletAsset(
         balance = token.balanceOf(userAddress)
     }
 
-    suspend fun loadTransactions() {
-        transactions = emptyList()
-    }
-
-    fun humanBalance(): Double = balance.toDouble() / 10.0.pow(token.decimals.toDouble())
+    fun humanBalance(): BigDecimal = balance.toBigDecimal()
+        .divide(BigDecimal.TEN.pow(token.decimals), token.decimals, java.math.RoundingMode.DOWN)
 }
 
 class WalletManager @Inject constructor(
     private val dataStoreManager: SecureSharedPrefsManager,
     private val identityManager: IdentityManager,
     private val pointsManager: PointsManager,
+    private val transactionRepository: TransactionRepository,
     private val web3j: Web3j
 ) {
 
     private fun createWalletAssets(): List<WalletAsset> {
         return listOf(
             WalletAsset(
-                identityManager.evmAddress(), NativeToken(web3j, identityManager = identityManager)
+                identityManager.evmAddress(),
+                NativeToken(web3j, identityManager = identityManager),
             ),
             WalletAsset(
                 identityManager.getUserPointsNullifierHex(), PointsToken(
                     pointsManager = pointsManager
-                )
+                ), showInAssets = false
             ),
         )
     }
@@ -88,6 +90,17 @@ class WalletManager @Inject constructor(
         dataStoreManager.saveSelectedWalletAsset(walletAsset)
     }
 
+
+    suspend fun insertTransaction(transaction: Transaction) {
+        transactionRepository.insertTransaction(transaction)
+    }
+
+    private suspend fun loadTransactionsByTokenType(tokenType: TokenType): List<Transaction> {
+        val allTransactions = transactionRepository.getAllTransactions()
+
+        return allTransactions.filter { it.tokenType == tokenType }
+    }
+
     suspend fun loadBalances() = withContext(Dispatchers.IO) {
         val assets = createWalletAssets()
 
@@ -97,17 +110,16 @@ class WalletManager @Inject constructor(
                     async {
                         asset.token.loadDetails()
                         asset.loadBalance()
-                        asset.loadTransactions()
+                        asset.transactions = loadTransactionsByTokenType(asset.token.tokenType)
                         ErrorHandler.logDebug("Loaded asset", asset.token.symbol)
                     }
                 }.awaitAll()
             }
 
-            if (assets != _walletAssets.value) {
-                Log.i("WalletManager", "Updating wallet assets")
-                _walletAssets.value = assets
-                dataStoreManager.saveWalletAssets(assets)
-            }
+            Log.i("WalletManager", "Updating wallet assets")
+            _walletAssets.value = assets
+            dataStoreManager.saveWalletAssets(assets)
+
 
             val newPointsToken = getPointsToken(assets)
             if (_pointsToken.value?.balanceDetails?.attributes?.amount != newPointsToken?.balanceDetails?.attributes?.amount) {

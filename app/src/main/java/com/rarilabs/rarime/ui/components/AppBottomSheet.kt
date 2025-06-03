@@ -75,7 +75,7 @@ fun AppBottomSheet(
     isHeaderEnabled: Boolean = true,
     scrimColor: Color = Color.Black.copy(alpha = 0.5f), // Dims the background
     isWindowInsetsEnabled: Boolean = true,
-    backgroundColor:Color = RarimeTheme.colors.backgroundPure,
+    backgroundColor: Color = RarimeTheme.colors.backgroundPure,
     // When `disableScrollPull` true, prevents sheet from closing on pull
     // without pulling in experimental APIs
     disablePullClose: Boolean = false,

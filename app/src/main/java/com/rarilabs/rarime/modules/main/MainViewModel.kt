@@ -100,8 +100,11 @@ class MainViewModel @Inject constructor(
     }
 
     var colorScheme = settingsManager.colorScheme
-    var isBottomBarShown = mutableStateOf(false)
-        private set
+
+    private var _isBottomBarShown =MutableStateFlow<Boolean>(true)
+
+    val isBottomBarShown : StateFlow<Boolean>
+        get () = _isBottomBarShown.asStateFlow()
 
     fun getIsPkInit(): Boolean {
         return identityManager.privateKeyBytes != null
@@ -191,7 +194,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun setBottomBarVisibility(isVisible: Boolean) {
-        isBottomBarShown.value = isVisible
+        _isBottomBarShown.value = isVisible
     }
 
     suspend fun showSnackbar(options: SnackbarShowOptions) {

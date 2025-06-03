@@ -85,6 +85,8 @@ fun WalletScreenContainer(
     updateSelectedWalletAsset: (WalletAsset) -> Unit,
     navigate: (String) -> Unit
 ) {
+
+    val filteredUserAssets = userAssets.filter { it.showInAssets }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -124,10 +126,10 @@ fun WalletScreenContainer(
                     )
 
                     // TODO: rollback at next releases
-                    if (userAssets.size > 1) {
+                    if (filteredUserAssets.size > 1) {
                         TextDropdown(
                             value = selectedUserAsset.token.symbol,
-                            options = userAssets.map {
+                            options = filteredUserAssets.map {
                                 DropdownOption(
                                     label = it.token.symbol,
                                     value = it.token.symbol
@@ -135,7 +137,7 @@ fun WalletScreenContainer(
                             },
                             onChange = { symb ->
                                 run {
-                                    val asset = userAssets.find { it.token.symbol == symb }
+                                    val asset = filteredUserAssets.find { it.token.symbol == symb }
                                     ErrorHandler.logDebug("onChange: walletViewModel:", symb)
                                     ErrorHandler.logDebug(
                                         "onChange: asset:",
@@ -158,11 +160,6 @@ fun WalletScreenContainer(
                         )
                     }
                 }
-                Text(
-                    text = "---",
-                    style = RarimeTheme.typography.caption2,
-                    color = RarimeTheme.colors.textSecondary,
-                )
             }
 
             Column(
@@ -213,7 +210,7 @@ fun WalletScreenContainer(
                 .fillMaxWidth()
                 .padding(vertical = 20.dp)
         ) {
-            WalletTokensList(userAssets, selectedUserAsset)
+            WalletTokensList(filteredUserAssets, selectedUserAsset)
         }
 
         Column(
@@ -251,7 +248,8 @@ private fun WalletScreenPreview() {
             ),
             WalletAsset(
                 "0xaddress",
-                PreviewerToken("tokenAddress", symbol = "USD")
+                PreviewerToken("tokenAddress", symbol = "USD"),
+                showInAssets = false
             ),
         ),
         updateSelectedWalletAsset = { selectedAsset = it },

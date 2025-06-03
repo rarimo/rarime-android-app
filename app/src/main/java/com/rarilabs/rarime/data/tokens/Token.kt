@@ -10,6 +10,8 @@ abstract class Token(var address: String) {
     abstract var decimals: Int
     abstract var icon: Int
 
+    abstract val tokenType: TokenType
+
     abstract suspend fun loadDetails()
 
     abstract suspend fun balanceOf(address: String): BigInteger
@@ -17,4 +19,12 @@ abstract class Token(var address: String) {
     abstract suspend fun transfer(to: String, amount: BigInteger): Transaction
 
     abstract suspend fun loadTransactions(sender: String?, receiver: String?): List<Transaction>
+
+    abstract suspend fun estimateTransferFee(
+        from: String,
+        to: String,
+        amount: BigInteger,
+        gasPrice: BigInteger? = null,
+        gasLimit: BigInteger? = null
+    ): BigInteger
 }

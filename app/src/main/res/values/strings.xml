@@ -518,5 +518,11 @@
     <string name="welcome_card2_description">No one can trace your actions\nNo system can connect the dots\nNo data ever leaves your phone</string>
     <string name="welcome_card3_description">RariMe lets you prove your identity - without giving anything away\n</string>
     <string name="welcome_card4_description">Add different type of applications that you can interact with anonymously\n</string>
+    <string name="wallet_success_title">Transaction Successful</string>
+    <string name="wallet_success_message">Your transaction has been sent successfully.</string>
+    <string name="wallet_error_title">Transaction Failed</string>
+    <string name="wallet_error_message">An error occurred while sending your transaction. Please try again.</string>
+    <string name="wallet_incoming_title">Receive</string>
+    <string name="wallet_outgoing_title">Send</string>
 
 </resources>

@@ -146,7 +146,7 @@ fun HiddenPrizeExpandedCard(
         }
     }
 
-    val launcherInvite = rememberLauncherForActivityResult(
+    val launcherShare = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(), onResult = {
             scope.launch {
                 viewModel.addExtraAttempt()
@@ -154,7 +154,7 @@ fun HiddenPrizeExpandedCard(
         })
 
 
-    val launcherShare = rememberLauncherForActivityResult(
+    val launcherInvite = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(), onResult = {})
 
     AppBottomSheet(state = showAddScan, backgroundColor = RarimeTheme.colors.backgroundSurface1) {
@@ -439,7 +439,7 @@ private fun Body(
                 .fillMaxSize()
         ) {
 
-            Spacer(modifier = Modifier.height((BG_HAND_HIDDEN_PRIZE_HEIGHT - 120).dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             Column(
                 modifier = Modifier
@@ -449,36 +449,36 @@ private fun Body(
                     )
                     .padding(20.dp)
 
-                    .fillMaxHeight()
-            ) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = RarimeTheme.colors.componentPrimary,
-                    ), modifier = Modifier.size(width = 156.dp, height = 32.dp)
-
-
                 ) {
-                    Row(
-                        modifier = Modifier.padding(
-                            horizontal = 16.dp, vertical = 6.dp
-                        )
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = RarimeTheme.colors.componentPrimary,
+                        ),
+                        modifier = Modifier.size(width = 156.dp, height = 32.dp)
+
+
                     ) {
-                        Text(
-                            "Prize-pool: ",
-                            style = RarimeTheme.typography.subtitle6.copy(color = RarimeTheme.colors.textPrimary)
-                        )
-                        Text(
-                            text = stringResource(R.string.hidden_prize_prize_pool_value), //TODO Maybe give this from backend in future
-                            style = RarimeTheme.typography.h6.copy(color = RarimeTheme.colors.textPrimary),
-                            modifier = Modifier.padding(end = 8.dp)
-                        )
-                        Image(
-                            painterResource(R.drawable.ic_ethereum),
-                            contentDescription = "ETH",
-                            modifier = Modifier.size(16.dp)
-                        )
+                        Row(
+                            modifier = Modifier.padding(
+                                horizontal = 16.dp, vertical = 6.dp
+                            )
+                        ) {
+                            Text(
+                                "Prize-pool: ",
+                                style = RarimeTheme.typography.subtitle6.copy(color = RarimeTheme.colors.textPrimary)
+                            )
+                            Text(
+                                text = stringResource(R.string.hidden_prize_prize_pool_value), //TODO Maybe give this from backend in future
+                                style = RarimeTheme.typography.h6.copy(color = RarimeTheme.colors.textPrimary),
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                            Image(
+                                painterResource(R.drawable.ic_ethereum),
+                                contentDescription = "ETH",
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
                     }
-                }
                 Spacer(modifier = Modifier.size(12.dp))
                 BaseCardTitle(
                     title = "Hidden keys",
@@ -514,7 +514,7 @@ private fun Body(
 
                         Text(
                             stringResource(R.string.hidden_price_expanded_cart_description),
-                            style = RarimeTheme.typography.body3,
+                            style = RarimeTheme.typography.body4,
                             color = RarimeTheme.colors.textSecondary
                         )
 
@@ -558,7 +558,6 @@ private fun Body(
 
                 }
             }
-            Spacer(modifier = Modifier.weight(1f))
 
         }
 
