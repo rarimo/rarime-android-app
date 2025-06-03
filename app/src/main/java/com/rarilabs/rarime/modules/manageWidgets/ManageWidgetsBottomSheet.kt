@@ -81,10 +81,10 @@ fun ManageWidgetsBottomSheet(
 
                 }
 
-                Widgets.LIKENESS -> TODO()
-                Widgets.CLAIM -> TODO()
-                Widgets.HIDDEN_PRIZE -> TODO()
-                Widgets.RECOVERY_METHOD -> TODO()
+                Widgets.LIKENESS -> {}
+                Widgets.CLAIM -> {}
+                Widgets.HIDDEN_PRIZE -> {}
+                Widgets.RECOVERY_METHOD -> {}
             }
         }
 

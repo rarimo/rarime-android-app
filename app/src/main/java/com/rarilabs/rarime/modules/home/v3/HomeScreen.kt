@@ -269,6 +269,9 @@ fun HomeScreenContent(
                     }
 
                 }
+                if(pagerState.currentPage==pagerState.pageCount-1){
+                    ManageWidgetsButton(innerPaddings = innerPaddings)
+                }
 
             } else {
                 // Expanded: one card is visible on top
@@ -330,9 +333,7 @@ fun HomeScreenContent(
                 }
             }
         }
-        if(pagerState.currentPage==pagerState.pageCount-1){
-            ManageWidgetsButton(innerPaddings = innerPaddings)
-        }
+
 
 
         // Overlay which temporarily disable pager scrolling while the expand/collapse animation runs
