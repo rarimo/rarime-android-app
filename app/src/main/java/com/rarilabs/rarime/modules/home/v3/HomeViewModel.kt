@@ -12,6 +12,7 @@ import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.manager.SettingsManager
 import com.rarilabs.rarime.manager.VotingManager
 import com.rarilabs.rarime.manager.WalletManager
+import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -34,7 +35,8 @@ class HomeViewModel @Inject constructor(
     private val pointsManager: PointsManager,
     notificationManager: NotificationManager,
     votingManager: VotingManager,
-    settingsManager: SettingsManager
+    settingsManager: SettingsManager,
+    private val sharedPrefsManager: SecureSharedPrefsManager
 ) : AndroidViewModel(app) {
 
     val pointsToken = walletManager.pointsToken
@@ -71,6 +73,14 @@ class HomeViewModel @Inject constructor(
 
             }
         }
+    }
+
+    fun saveIsShownWelcome(boolean: Boolean) {
+        sharedPrefsManager.saveIsShownWelcome(boolean)
+    }
+
+    fun getIsShownWelcome(): Boolean {
+        return sharedPrefsManager.getIsShownWelcome()
     }
 
     private suspend fun loadPointsEvent() {

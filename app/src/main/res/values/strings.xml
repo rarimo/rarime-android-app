@@ -510,5 +510,13 @@
     <string name="ic_hidden_prize_congats_screen_button_label_while_creating_ZK">Please wait. Creating ZK</string>
     <string name="hidden_prize_congrats_share_btn_final">Claimed</string>
     <string name="hidden_prize_camera_description">Your face never leaves the device. You create an anonymous record that carries your rules, so AI knows how to treat you.</string>
+    <string name="welcome_card1_title">Welcome!</string>
+    <string name="welcome_card2_title">Privacy</string>
+    <string name="welcome_card3_title">Managing identity</string>
+    <string name="welcome_card4_title">Add widgets</string>
+    <string name="welcome_card1_description">This app is where you privately store your digital identities, enabling you to go incognito across the web</string>
+    <string name="welcome_card2_description">No one can trace your actions\nNo system can connect the dots\nNo data ever leaves your phone</string>
+    <string name="welcome_card3_description">RariMe lets you prove your identity - without giving anything away\n</string>
+    <string name="welcome_card4_description">Add different type of applications that you can interact with anonymously\n</string>
 
 </resources>

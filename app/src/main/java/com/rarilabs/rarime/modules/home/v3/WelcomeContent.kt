@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -51,7 +52,6 @@ data class WelcomeCardContent(
 
 @Composable
 fun WelcomeBottomSheet(
-    modifier: Modifier = Modifier,
     onClose: () -> Unit
 ) {
 
@@ -60,37 +60,39 @@ fun WelcomeBottomSheet(
     val welcomeAccentColor3 = RarimeTheme.colors.welcomeAccent3
     val welcomeAccentColor4 = RarimeTheme.colors.welcomeAccent4
 
+    val context = LocalContext.current
+
     val scope = rememberCoroutineScope()
 
     val cardContent = remember {
         listOf(
             WelcomeCardContent(
-                title = "Welcome!",
+                title = context.getString(R.string.welcome_card1_title),
                 imageId = R.drawable.welcome_cat,
-                description = "This app is where you privately store your digital identities, enabling you to go incognito across the web",
+                description = context.getString(R.string.welcome_card1_description),
                 imageHeight = 268.dp,
                 accentColor = welcomeAccentColor1
 
             ), WelcomeCardContent(
-                title = "Privacy",
-                imageId = R.drawable.welcome_cat,
-                description = "No one can trace your actions\n" + "No system can connect the dots\n" + "No data ever leaves your phone",
+                title = context.getString(R.string.welcome_card2_title),
+                imageId = R.drawable.welcome_lock,
+                description = context.getString(R.string.welcome_card2_description),
                 imageHeight = 206.dp,
                 accentColor = welcomeAccentColor2
 
 
             ), WelcomeCardContent(
-                title = "Welcome!",
-                imageId = R.drawable.welcome_cat,
-                description = "This app is where you privately store your digital identities, enabling you to go incognito across the web",
-                imageHeight = 174.dp,
+                title = context.getString(R.string.welcome_card3_title),
+                imageId = R.drawable.welcome_identity_card,
+                description = context.getString(R.string.welcome_card3_description),
+                imageHeight = 224.dp,
                 accentColor = welcomeAccentColor3
 
 
             ), WelcomeCardContent(
-                title = "Welcome!",
+                title = context.getString(R.string.welcome_card4_title),
                 imageId = R.drawable.welcome_cards,
-                description = "This app is where you privately store your digital identities, enabling you to go incognito across the web",
+                description = context.getString(R.string.welcome_card4_description),
                 imageHeight = 191.dp,
                 accentColor = welcomeAccentColor4
 
@@ -101,7 +103,7 @@ fun WelcomeBottomSheet(
     val pagerState = rememberPagerState { cardContent.size }
 
 
-    Box(modifier = modifier) {
+    Box {
         val animatedColor by animateColorAsState(
             targetValue = cardContent[pagerState.currentPage].accentColor,
             animationSpec = tween(durationMillis = 500)
@@ -142,7 +144,7 @@ fun WelcomeBottomSheet(
             Spacer(Modifier.height(32.dp))
 
             WelcomeBottomBar(
-                modifier = Modifier.padding(end = 24.dp, start = 24.dp, bottom = 20.dp),
+                modifier = Modifier.padding(end = 24.dp, start = 24.dp),
                 selectedPage = pagerState.currentPage,
                 numberOfPages = pagerState.pageCount,
                 onNext = {

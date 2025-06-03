@@ -92,7 +92,7 @@ fun DigitalLikenessRuleSheet(
         )
     )
 
-    AppBottomSheet(modifier, state, isHeaderEnabled = false) {
+    AppBottomSheet(modifier, state, isHeaderEnabled = false, isWindowInsetsEnabled = false) {
         Column(modifier = Modifier.padding(horizontal = 20.dp)) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,

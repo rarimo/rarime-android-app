@@ -60,7 +60,8 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "PASSPORT_STATUS" to "PASSPORT_STATUS",
         "SELECTED_LIKENESS_OPTION" to "SELECTED_LIKENESS_OPTION",
         "LIKENESS_DATA" to "LIKENESS_DATA",
-        "LIKENESS_FACE" to "LIKENESS_FACE"
+        "LIKENESS_FACE" to "LIKENESS_FACE",
+        "WELCOME_FIRST_OPEN" to "WELCOME_FIRST_OPEN",
     )
 
     private val PREFS_FILE_NAME = "sharedPrefFile12"
@@ -502,6 +503,16 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
             ?: return null
 
         return Gson().fromJson<ZkProof>(proofJson, ZkProof::class.java)
+    }
+
+    override fun saveIsShownWelcome(isShown: Boolean) {
+        val editor = getEditor()
+        editor.putBoolean(accessTokens["WELCOME_FIRST_OPEN"], isShown)
+        editor.apply()
+    }
+
+    override fun getIsShownWelcome(): Boolean {
+        return getSharedPreferences().getBoolean(accessTokens["WELCOME_FIRST_OPEN"], false)
     }
 
     override fun saveLikenessFace(face: Bitmap) {

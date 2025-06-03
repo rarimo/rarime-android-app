@@ -81,10 +81,13 @@ fun HomeScreenV3(
     }
     val colorScheme by viewModel.colorScheme.collectAsState()
 
-    val welcomeAppSheetState = rememberAppSheetState(true)
+    val welcomeAppSheetState = rememberAppSheetState(!viewModel.getIsShownWelcome())
 
     LaunchedEffect(Unit) {
         viewModel.initHomeData()
+        if (welcomeAppSheetState.showSheet) {
+            viewModel.saveIsShownWelcome(true)
+        }
     }
 
     val visibleCards = remember(hasVotes) {

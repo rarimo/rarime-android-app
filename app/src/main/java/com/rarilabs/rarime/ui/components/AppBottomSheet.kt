@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -115,7 +116,12 @@ fun AppBottomSheet(
 //                val topPaddingDp =
 //                    BottomSheetDefaults.windowInsets.asPaddingValues().calculateTopPadding()
 //                WindowInsets(0.dp, topPaddingDp, 0.dp, 0.dp)
-                WindowInsets(0.dp)
+                val bottomPaddingDp =
+                    BottomSheetDefaults.windowInsets.asPaddingValues().calculateBottomPadding()
+                val topPaddingDp =
+                    BottomSheetDefaults.windowInsets.asPaddingValues().calculateBottomPadding()
+
+                WindowInsets(0.dp, 0.dp, 0.dp, bottomPaddingDp + topPaddingDp)
             }
         ) {
             // Wrap the sheet content with a container that applies window insets (for content padding),
