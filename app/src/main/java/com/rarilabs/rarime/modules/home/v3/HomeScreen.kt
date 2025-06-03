@@ -44,6 +44,7 @@ import com.rarilabs.rarime.modules.home.v3.ui.collapsed.FreedomtoolCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.HiddenPrizeCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.IdentityCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.LikenessCollapsedCard
+import com.rarilabs.rarime.modules.manageWidgets.ManageWidgetsButton
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.RecoveryMethodCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.components.HomeHeader
 import com.rarilabs.rarime.modules.home.v3.ui.components.VerticalPageIndicator
@@ -248,8 +249,11 @@ fun HomeScreenContent(
                                     modifier = baseCollapsedModifier,
                                     colorScheme = colorScheme
                                 )
+
                                 // TODO: Implement rest collapsed cards here
                             }
+
+
                         }
                         VerticalPageIndicator(
                             totalPages = pagerState.pageCount,
@@ -261,7 +265,9 @@ fun HomeScreenContent(
                             selectedHeight = 16.dp,
                             space = 8.dp
                         )
+
                     }
+
                 }
 
             } else {
@@ -318,11 +324,16 @@ fun HomeScreenContent(
                             innerPaddings = innerPaddings,
                             navigate = navigate
                         )
+
                         // TODO: Implement rest expanded cards here
                     }
                 }
             }
         }
+        if(pagerState.currentPage==pagerState.pageCount-1){
+            ManageWidgetsButton(innerPaddings = innerPaddings)
+        }
+
 
         // Overlay which temporarily disable pager scrolling while the expand/collapse animation runs
         if (!pagerScrollEnabled) {

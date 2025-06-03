@@ -542,5 +542,9 @@
     <string name="recovery_method_face_scan_description">Biometric facial key</string>
     <string name="recovery_method_object_scan_title">Object</string>
     <string name="recovery_method_object_scan_description">Make any object your key</string>
+    <string name="manage_widgets_btn_label">Manage Widgets</string>
+    <string name="manage_widgets_bottom_sheet_title">Manage widgets</string>
+    <string name="manage_widgets_add_btn_label">Add</string>
+    <string name="manage_widgets_remove_btn_label">Remove</string>
 
 </resources>
