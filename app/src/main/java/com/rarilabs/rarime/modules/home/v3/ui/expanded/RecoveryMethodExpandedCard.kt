@@ -31,8 +31,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -68,7 +70,12 @@ fun RecoveryMethodExpandedCard(
     navigate: (String) -> Unit
 ) {
     val colorScheme by viewModel.colorScheme.collectAsState()
+    val privateKey by viewModel.privateKey.collectAsState()
     val sheetRecoveryMethod = rememberAppSheetState()
+
+    val clipboardManager = LocalClipboardManager.current
+
+
     AppBottomSheet(
         state = sheetRecoveryMethod,
         backgroundColor = RarimeTheme.colors.backgroundPrimary,
@@ -77,7 +84,13 @@ fun RecoveryMethodExpandedCard(
         disablePullClose = true
 
     ) {
-        RecoveryMethodDetailScreen(onClose = {sheetRecoveryMethod.hide()}, onCopy = {}) //todo change this to get from vm
+        RecoveryMethodDetailScreen(
+            onClose = { sheetRecoveryMethod.hide() },
+            privateKey = privateKey!!,
+            onCopy = {
+                clipboardManager.setText(AnnotatedString(privateKey!!))
+            }
+        )
     }
 
     RecoveryMethodExpandedCardContent(
@@ -87,9 +100,7 @@ fun RecoveryMethodExpandedCard(
         colorScheme = colorScheme,
         onClick = {
             sheetRecoveryMethod.show()
-        }
-    )
-
+        })
 
 }
 
@@ -376,8 +387,7 @@ fun RecoveryMethodExpandedCardPreviewLightMode() {
                 modifier = Modifier.height(820.dp),
                 innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
                 colorScheme = AppColorScheme.LIGHT,
-                onClick = {}
-            )
+                onClick = {})
         }
     }
 }
@@ -398,8 +408,7 @@ fun RecoveryMethodExpandedCardPreviewDarkMode() {
                 modifier = Modifier.height(820.dp),
                 innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
                 colorScheme = AppColorScheme.DARK,
-                onClick = {}
-            )
+                onClick = {})
         }
     }
 }
