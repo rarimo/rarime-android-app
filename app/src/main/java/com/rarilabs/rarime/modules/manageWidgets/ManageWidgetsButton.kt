@@ -21,16 +21,8 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 fun ManageWidgetsButton(
     modifier: Modifier = Modifier,
     innerPaddings: Map<ScreenInsets, Number>,
+    onClick: () -> Unit
 ) {
-    val sheetManageWidgets = rememberAppSheetState()
-    AppBottomSheet(
-        state = sheetManageWidgets,
-        backgroundColor = RarimeTheme.colors.backgroundPrimary,
-        isHeaderEnabled = false,
-
-        ) {
-        ManageWidgetsBottomSheet(onClose = {sheetManageWidgets.hide()})
-    }
     Box(modifier = Modifier.fillMaxSize()) {
         PrimaryButton(
             modifier = Modifier
@@ -42,7 +34,7 @@ fun ManageWidgetsButton(
                     top = 48.dp
                 )
                 .fillMaxWidth(),
-            onClick = { sheetManageWidgets.show() },
+            onClick = onClick,
             size = ButtonSize.Large,
             text = stringResource(R.string.manage_widgets_btn_label)
         )

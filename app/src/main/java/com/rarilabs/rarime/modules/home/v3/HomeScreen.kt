@@ -55,6 +55,7 @@ import com.rarilabs.rarime.modules.home.v3.ui.expanded.LikenessExpandedCard
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.RecoveryMethodExpandedCard
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
+import com.rarilabs.rarime.modules.manageWidgets.ManageWidgetsBottomSheet
 import com.rarilabs.rarime.modules.manageWidgets.ManageWidgetsButton
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
@@ -92,6 +93,15 @@ fun HomeScreenV3(
         }
 
     }
+    val sheetManageWidgets = rememberAppSheetState()
+    AppBottomSheet(
+        state = sheetManageWidgets,
+        backgroundColor = RarimeTheme.colors.backgroundPrimary,
+        isHeaderEnabled = false,
+
+        ) {
+        ManageWidgetsBottomSheet(onClose = {sheetManageWidgets.hide()})
+    }
 
 
 
@@ -105,7 +115,9 @@ fun HomeScreenV3(
         sharedTransitionScope = sharedTransitionScope,
         setVisibilityOfBottomBar = setVisibilityOfBottomBar,
         currentPointsBalance = currentPointsBalance,
-        colorScheme = colorScheme
+        colorScheme = colorScheme,
+        onClick = {sheetManageWidgets.show()}
+
     )
 
     AppBottomSheet(
@@ -117,6 +129,7 @@ fun HomeScreenV3(
             welcomeAppSheetState.hide()
         }
     }
+
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -131,7 +144,8 @@ fun HomeScreenContent(
     userPassportName: String?,
     notificationsCount: Int?,
     currentPointsBalance: Long?,
-    colorScheme: AppColorScheme
+    colorScheme: AppColorScheme,
+    onClick: () -> Unit
 ) {
     var selectedCardType by remember { mutableStateOf<CardType?>(null) }
     LaunchedEffect(selectedCardType) {
@@ -257,7 +271,7 @@ fun HomeScreenContent(
 
                 }
                 if (pagerState.currentPage == pagerState.pageCount - 1) {
-                    ManageWidgetsButton(innerPaddings = innerPaddings)
+                    ManageWidgetsButton(innerPaddings = innerPaddings, onClick = onClick)
                 }
 
             } else {
@@ -358,7 +372,8 @@ private fun HomeScreenPreview() {
                 innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
                 visibleCards = CardType.entries,
                 currentPointsBalance = 200L,
-                colorScheme = AppColorScheme.SYSTEM
+                colorScheme = AppColorScheme.SYSTEM,
+                onClick = {}
             )
         }
     }
