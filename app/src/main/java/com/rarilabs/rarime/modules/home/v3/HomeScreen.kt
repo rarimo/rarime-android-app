@@ -44,7 +44,6 @@ import com.rarilabs.rarime.modules.home.v3.ui.collapsed.FreedomtoolCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.HiddenPrizeCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.IdentityCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.LikenessCollapsedCard
-import com.rarilabs.rarime.modules.manageWidgets.ManageWidgetsButton
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.RecoveryMethodCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.components.HomeHeader
 import com.rarilabs.rarime.modules.home.v3.ui.components.VerticalPageIndicator
@@ -56,6 +55,7 @@ import com.rarilabs.rarime.modules.home.v3.ui.expanded.LikenessExpandedCard
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.RecoveryMethodExpandedCard
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
+import com.rarilabs.rarime.modules.manageWidgets.ManageWidgetsButton
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -76,14 +76,13 @@ fun HomeScreenV3(
     val passport by viewModel.passport.collectAsState()
     val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
     val notifications by viewModel.notifications.collectAsState()
-    val hasVotes by viewModel.hasVotes.collectAsState()
     val pointsBalance by viewModel.pointsEventData.collectAsState()
     val currentPointsBalance = pointsBalance?.attributes?.balance?.attributes?.amount
     val notificationsCount by remember(notifications) {
         derivedStateOf { notifications.count { it.isActive } }
     }
     val colorScheme by viewModel.colorScheme.collectAsState()
-
+    val visibleCards by viewModel.visibleCard.collectAsState()
     val welcomeAppSheetState = rememberAppSheetState(!viewModel.getIsShownWelcome())
 
     LaunchedEffect(Unit) {
@@ -91,23 +90,10 @@ fun HomeScreenV3(
         if (welcomeAppSheetState.showSheet) {
             viewModel.saveIsShownWelcome(true)
         }
+
     }
 
-    val visibleCards = remember(hasVotes) {
-        buildList {
-            if (hasVotes) {
-                add(CardType.FREEDOMTOOL)
-            }
-            add(CardType.IDENTITY)
-            if (currentPointsBalance != null && currentPointsBalance != 0L) {
-                add(CardType.CLAIM)
-            }
-            add(CardType.LIKENESS)
-            add(CardType.CLAIM)
-            add(CardType.HIDDEN_PRIZE)
-            add(CardType.RECOVERY_METHOD)
-        }
-    }
+
 
     HomeScreenContent(
         visibleCards = visibleCards,
@@ -187,7 +173,7 @@ fun HomeScreenContent(
                             pageSpacing = 10.dp,
                             contentPadding = PaddingValues(top = 42.dp, bottom = 95.dp),
                         ) { page ->
-                            val cardType = visibleCards[page]
+                            val cardType =  visibleCards[page]
                             val currentPage = pagerState.currentPage
                             val currentOffset = pagerState.currentPageOffsetFraction
                             val pageOffset = (currentPage - page) + currentOffset
@@ -244,6 +230,7 @@ fun HomeScreenContent(
                                     modifier = baseCollapsedModifier,
                                     colorScheme = colorScheme
                                 )
+
                                 CardType.RECOVERY_METHOD -> RecoveryMethodCollapsedCard(
                                     collapsedCardProps = collapsedCardProps,
                                     modifier = baseCollapsedModifier,
@@ -269,7 +256,7 @@ fun HomeScreenContent(
                     }
 
                 }
-                if(pagerState.currentPage==pagerState.pageCount-1){
+                if (pagerState.currentPage == pagerState.pageCount - 1) {
                     ManageWidgetsButton(innerPaddings = innerPaddings)
                 }
 
@@ -322,6 +309,7 @@ fun HomeScreenContent(
                             innerPaddings = innerPaddings,
                             navigate = navigate
                         )
+
                         CardType.RECOVERY_METHOD -> RecoveryMethodExpandedCard(
                             expandedCardProps = expandedCardProps,
                             innerPaddings = innerPaddings,
@@ -333,7 +321,6 @@ fun HomeScreenContent(
                 }
             }
         }
-
 
 
         // Overlay which temporarily disable pager scrolling while the expand/collapse animation runs

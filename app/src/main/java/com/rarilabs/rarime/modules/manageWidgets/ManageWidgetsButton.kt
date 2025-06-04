@@ -29,7 +29,7 @@ fun ManageWidgetsButton(
         isHeaderEnabled = false,
 
         ) {
-        ManageWidgetsBottomSheet(onClose = { sheetManageWidgets.hide() }, onRemove = {}, onAdd = {})//Todo implement logic
+        ManageWidgetsBottomSheet(onClose = {sheetManageWidgets.hide()})
     }
     Box(modifier = Modifier.fillMaxSize()) {
         PrimaryButton(

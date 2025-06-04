@@ -15,6 +15,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,8 +23,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
+import com.rarilabs.rarime.modules.home.v3.model.CardType
 import com.rarilabs.rarime.modules.manageWidgets.widgets.DigitalLikenessWidget
 import com.rarilabs.rarime.modules.manageWidgets.widgets.FreedomtoolWidget
 import com.rarilabs.rarime.modules.manageWidgets.widgets.HiddenPrizeWidget
@@ -34,29 +37,26 @@ import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalPageIndicator
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
-import androidx.compose.runtime.getValue
 
-enum class Widgets(val id: Int, val isVisible: Boolean) {
-    FREEDOMTOOL(0, true),
-    LIKENESS(1, true),
-    HIDDEN_PRIZE(2, true),
-    RECOVERY_METHOD(3, true),
-}
 
 @Composable
 fun ManageWidgetsBottomSheet(
     onClose: () -> Unit,
-    onRemove: () -> Unit,
-    onAdd: () -> Unit,
     viewModel: ManageWidgetsViewModel = hiltViewModel()
 ) {
     val colorScheme by viewModel.colorScheme.collectAsState()
+    val managedCards = viewModel.managedCards
 
     ManageWidgetsBottomSheetContent(
-        onClose = onClose,
-        onRemove = onRemove,
-        onAdd = onAdd,
-        colorScheme = colorScheme
+        onClose = {
+            viewModel.setVisibleCard()
+            onClose()
+        },
+        onRemove = {cardType -> viewModel.remove(cardType)},
+        onAdd = {cardType -> viewModel.add(cardType)},
+        colorScheme = colorScheme,
+        managedCards = managedCards,
+        isVisible = {cardType -> viewModel.isVisible(cardType)}
     )
 
 }
@@ -64,11 +64,13 @@ fun ManageWidgetsBottomSheet(
 @Composable
 fun ManageWidgetsBottomSheetContent(
     onClose: () -> Unit,
-    onRemove: () -> Unit,
-    onAdd: () -> Unit,
-    colorScheme: AppColorScheme
+    onRemove: (CardType) -> Unit,
+    onAdd: (CardType) -> Unit,
+    colorScheme: AppColorScheme,
+    managedCards: List<CardType>,
+    isVisible : (CardType) -> Boolean
 ) {
-    val pagerState = rememberPagerState(pageCount = { Widgets.values().size })
+    val pagerState = rememberPagerState(pageCount = { managedCards.size })
     Column() {
         Row() {
             Text(
@@ -96,30 +98,30 @@ fun ManageWidgetsBottomSheetContent(
 
         }
         HorizontalPager(state = pagerState) { page ->
-            when (Widgets.values()[page]) {
-                Widgets.FREEDOMTOOL -> {
+            when (managedCards.get(page)) {
+                CardType.FREEDOMTOOL -> {
                     FreedomtoolWidget(colorScheme = colorScheme)
                 }
 
-                Widgets.LIKENESS -> {
+                CardType.LIKENESS -> {
                     DigitalLikenessWidget(colorScheme = colorScheme)
                 }
 
-                Widgets.HIDDEN_PRIZE -> {
+                CardType.HIDDEN_PRIZE -> {
                     HiddenPrizeWidget(colorScheme = colorScheme)
                 }
 
-                Widgets.RECOVERY_METHOD -> {
+                CardType.RECOVERY_METHOD -> {
                     RecoveryMethodWidget(colorScheme = colorScheme)
                 }
-
+                    // todo implement all managing cards
                 else -> {}
             }
         }
 
         HorizontalPageIndicator(
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            numberOfPages = Widgets.values().size,
+            numberOfPages = managedCards.size,
             selectedPage = pagerState.currentPage,
             defaultRadius = 6.dp,
             selectedColor = RarimeTheme.colors.primaryMain,
@@ -128,18 +130,18 @@ fun ManageWidgetsBottomSheetContent(
             space = 8.dp
         )
 
-        if (Widgets.values()[pagerState.currentPage].isVisible) {//todo how we can prove card is deleted
+        if (!isVisible(managedCards.get(pagerState.currentPage))) {//todo how we can prove card is deleted
             PrimaryButton(
                 modifier = Modifier
                     .padding(horizontal = 20.dp, vertical = 17.dp)
                     .fillMaxWidth(),
-                onClick = onAdd,
+                onClick = {onAdd(managedCards.get(pagerState.currentPage))},
                 size = ButtonSize.Large,
                 text = stringResource(R.string.manage_widgets_add_btn_label)
             )
         } else {
             BaseButton(
-                onClick = onRemove,
+                onClick = {onRemove(managedCards.get(pagerState.currentPage))},
                 text = stringResource(R.string.manage_widgets_remove_btn_label),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = RarimeTheme.colors.errorLight,
@@ -163,7 +165,9 @@ fun ManageWidgetsBottomSheetPreview() {
         onClose = {},
         onAdd = {},
         onRemove = {},
-        colorScheme = AppColorScheme.LIGHT
+        colorScheme = AppColorScheme.LIGHT,
+        isVisible = {true},
+        managedCards = CardType.values().toList()
     )
 }
 
