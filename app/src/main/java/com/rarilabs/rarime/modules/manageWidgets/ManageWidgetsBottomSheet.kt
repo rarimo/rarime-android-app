@@ -38,6 +38,7 @@ import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalPageIndicator
 import com.rarilabs.rarime.ui.components.PrimaryButton
+import com.rarilabs.rarime.ui.components.SecondaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 
@@ -47,7 +48,8 @@ fun ManageWidgetsBottomSheet(
     viewModel: ManageWidgetsViewModel = hiltViewModel()
 ) {
     val colorScheme by viewModel.colorScheme.collectAsState()
-    val managedCards = viewModel.managedCards
+    val managedCards by viewModel.managedCards.collectAsState()
+    val visibleCards by viewModel.visisbleCards.collectAsState()
 
     ManageWidgetsBottomSheetContent(
         onClose = {
@@ -58,6 +60,7 @@ fun ManageWidgetsBottomSheet(
         onAdd = { cardType -> viewModel.add(cardType) },
         colorScheme = colorScheme,
         managedCards = managedCards,
+        visibleCards = visibleCards,
         isVisible = { cardType -> viewModel.isVisible(cardType) }
     )
 
@@ -70,6 +73,7 @@ fun ManageWidgetsBottomSheetContent(
     onAdd: (CardType) -> Unit,
     colorScheme: AppColorScheme,
     managedCards: List<CardType>,
+    visibleCards: List<CardType>,
     isVisible: (CardType) -> Boolean
 ) {
     val pagerState = rememberPagerState(pageCount = { managedCards.size })
@@ -143,13 +147,9 @@ fun ManageWidgetsBottomSheetContent(
             text = stringResource(R.string.manage_widgets_add_btn_label)
         )
     } else {
-        BaseButton(
+        SecondaryButton(
             onClick = { onRemove(managedCards.get(pagerState.currentPage)) },
             text = stringResource(R.string.manage_widgets_remove_btn_label),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = RarimeTheme.colors.errorLight,
-                contentColor = RarimeTheme.colors.errorDark
-            ),
             size = ButtonSize.Large,
             modifier = Modifier
                 .padding(horizontal = 20.dp, vertical = 17.dp)
@@ -169,7 +169,8 @@ fun ManageWidgetsBottomSheetPreview() {
         onRemove = {},
         colorScheme = AppColorScheme.LIGHT,
         isVisible = { true },
-        managedCards = CardType.values().toList()
+        managedCards = CardType.values().toList(),
+        visibleCards = CardType.values().toList()
     )
 }
 

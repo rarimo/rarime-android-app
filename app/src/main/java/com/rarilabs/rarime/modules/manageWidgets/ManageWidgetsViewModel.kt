@@ -14,14 +14,15 @@ class ManageWidgetsViewModel @Inject constructor(
     private val widgetsManager: ManageWidgetsManager
 ) : ViewModel() {
     val colorScheme = settingsManager.colorScheme
-    val managedCards = widgetsManager.getManagedCards()
+    val managedCards = widgetsManager.managedCards
+    val visisbleCards = widgetsManager.visibleCards
 
     fun isVisible(cardType:CardType): Boolean{
-        return widgetsManager.isVisible(cardType)
+        return (cardType in visisbleCards.value)
     }
 
     fun setVisibleCard(){
-        widgetsManager.setVisibleCard(managedCards.filter {cardType -> isVisible(cardType) })
+        widgetsManager.setVisibleCard(managedCards.value.filter {cardType -> isVisible(cardType) })
     }
 
     fun remove(cardType: CardType){

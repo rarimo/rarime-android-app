@@ -16,19 +16,18 @@ class ManageWidgetsManager @Inject constructor(
     val visibleCards: StateFlow<List<CardType>>
         get() = _visibleCards.asStateFlow()
 
-
-    fun getManagedCards(): List<CardType> {
-        return listOf(
+    private var _managedCards = MutableStateFlow<List<CardType>>(
+        listOf(
             CardType.FREEDOMTOOL,
             CardType.LIKENESS,
             CardType.HIDDEN_PRIZE,
             CardType.RECOVERY_METHOD
         )
-    }
+    )//todo implement other manage cards
 
-    fun isVisible(cardType: CardType): Boolean {
-        return cardType in _visibleCards.value
-    }
+    val managedCards: StateFlow<List<CardType>>
+        get() = _managedCards.asStateFlow()
+
 
     fun setVisibleCard(visibleCards: List<CardType>) {
         _visibleCards.value = (listOf(CardType.IDENTITY, CardType.CLAIM) + visibleCards).distinct()
