@@ -33,14 +33,14 @@ fun FreedomtoolWidget(
         AppColorScheme.LIGHT -> false
     }
 
-//    val backgroundRes = remember(isDark) { //TODO wait design in dark theme
-//        if (isDark) R.drawable.ic_bg_hidden_prize_dark
-//        else R.drawable.ic_freedomtool_widget_light
-//    }
+    val widgetRes = remember(isDark) {
+        if (isDark) R.drawable.ic_freedomtool_widget_dark
+        else R.drawable.ic_freedomtool_widget_light
+    }
 
     Column(modifier = Modifier.fillMaxWidth()){
         Image(
-            painter = painterResource(id = R.drawable.ic_freedomtool_widget_light),
+            painter = painterResource(id = widgetRes),
             contentDescription = "",
             contentScale = Crop,
             modifier = Modifier

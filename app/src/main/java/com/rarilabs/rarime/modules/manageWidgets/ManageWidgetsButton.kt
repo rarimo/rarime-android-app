@@ -36,7 +36,7 @@ fun ManageWidgetsButton(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(
-                    bottom = (innerPaddings[ScreenInsets.BOTTOM]!!.toInt() + 48).dp,
+                    bottom = (innerPaddings[ScreenInsets.BOTTOM]!!.toInt() + 24).dp,
                     start = 73.dp,
                     end = 73.dp,
                     top = 48.dp

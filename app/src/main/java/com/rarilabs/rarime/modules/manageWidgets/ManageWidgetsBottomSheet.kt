@@ -68,7 +68,6 @@ fun ManageWidgetsBottomSheetContent(
     onAdd: () -> Unit,
     colorScheme: AppColorScheme
 ) {
-
     val pagerState = rememberPagerState(pageCount = { Widgets.values().size })
     Column() {
         Row() {

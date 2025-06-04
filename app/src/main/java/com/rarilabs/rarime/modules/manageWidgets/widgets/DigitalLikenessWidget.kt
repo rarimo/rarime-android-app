@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.modules.manageWidgets.widgets
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,9 +28,19 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 fun DigitalLikenessWidget(
     colorScheme: AppColorScheme
 ) {
+    val isDark = when (colorScheme) {
+        AppColorScheme.SYSTEM -> isSystemInDarkTheme()
+        AppColorScheme.DARK -> true
+        AppColorScheme.LIGHT -> false
+    }
+
+    val widgetRes = remember(isDark) {
+        if (isDark) R.drawable.ic_digital_likeness_widget_dark
+        else R.drawable.ic_digital_likeness_widget_light
+    }
     Column(modifier = Modifier.fillMaxWidth()){
         Image(
-            painter = painterResource(id = R.drawable.ic_digital_likeness_widget_light),
+            painter = painterResource(id = widgetRes),
             contentDescription = "",
             contentScale = Crop,
             modifier = Modifier
