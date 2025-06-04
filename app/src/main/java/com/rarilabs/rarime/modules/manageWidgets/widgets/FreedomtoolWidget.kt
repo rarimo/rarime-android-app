@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.modules.manageWidgets.widgets
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,10 +20,24 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun FreedomtoolWidget() {
+fun FreedomtoolWidget(
+    colorScheme: AppColorScheme
+) {
+    val isDark = when (colorScheme) {
+        AppColorScheme.SYSTEM -> isSystemInDarkTheme()
+        AppColorScheme.DARK -> true
+        AppColorScheme.LIGHT -> false
+    }
+
+//    val backgroundRes = remember(isDark) { //TODO wait design in dark theme
+//        if (isDark) R.drawable.ic_bg_hidden_prize_dark
+//        else R.drawable.ic_freedomtool_widget_light
+//    }
+
     Column(modifier = Modifier.fillMaxWidth()){
         Image(
             painter = painterResource(id = R.drawable.ic_freedomtool_widget_light),
@@ -50,5 +66,6 @@ fun FreedomtoolWidget() {
                 .padding(bottom = 40.dp)
         )
     }
+
 
 }

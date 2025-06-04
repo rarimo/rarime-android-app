@@ -17,10 +17,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun HiddenPrizeWidget() {
+fun HiddenPrizeWidget(
+    colorScheme: AppColorScheme
+) {
     Column(modifier = Modifier.fillMaxWidth()){
         Image(
             painter = painterResource(id = R.drawable.ic_hidden_prize_widget_light),
@@ -37,7 +40,7 @@ fun HiddenPrizeWidget() {
             color = RarimeTheme.colors.textPrimary,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(top = 12.dp, bottom = 20.dp,)
+                .padding(top = 12.dp, bottom = 20.dp,start = 20.dp,end = 20.dp)
         )
         Text(text = stringResource(R.string.hidden_prize_widget_description),
             style = RarimeTheme.typography.body3,
@@ -46,7 +49,7 @@ fun HiddenPrizeWidget() {
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(bottom = 40.dp)
+                .padding(bottom = 40.dp, start = 20.dp,end = 20.dp)
         )
     }
 }

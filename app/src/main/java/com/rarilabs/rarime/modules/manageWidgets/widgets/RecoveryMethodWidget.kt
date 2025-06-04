@@ -18,10 +18,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun RecoveryMethodWidget() {
+fun RecoveryMethodWidget(
+    colorScheme: AppColorScheme
+) {
     Column(modifier = Modifier.fillMaxWidth()){
         Image(
             painter = painterResource(id = R.drawable.ic_recovery_method_widget_light),

@@ -11,6 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.ScreenInsets
+import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
@@ -42,6 +43,7 @@ fun ManageWidgetsButton(
                 )
                 .fillMaxWidth(),
             onClick = { sheetManageWidgets.show() },
+            size = ButtonSize.Large,
             text = stringResource(R.string.manage_widgets_btn_label)
         )
     }

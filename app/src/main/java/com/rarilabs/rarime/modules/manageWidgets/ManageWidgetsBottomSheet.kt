@@ -14,23 +14,27 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.modules.manageWidgets.widgets.DigitalLikenessWidget
 import com.rarilabs.rarime.modules.manageWidgets.widgets.FreedomtoolWidget
 import com.rarilabs.rarime.modules.manageWidgets.widgets.HiddenPrizeWidget
 import com.rarilabs.rarime.modules.manageWidgets.widgets.RecoveryMethodWidget
 import com.rarilabs.rarime.ui.base.BaseButton
+import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalPageIndicator
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import androidx.compose.runtime.getValue
 
 enum class Widgets(val id: Int, val isVisible: Boolean) {
     FREEDOMTOOL(0, true),
@@ -44,8 +48,27 @@ fun ManageWidgetsBottomSheet(
     onClose: () -> Unit,
     onRemove: () -> Unit,
     onAdd: () -> Unit,
+    viewModel: ManageWidgetsViewModel = hiltViewModel()
 ) {
-    //val colorScheme by viewModel.colorScheme.collectAsState()//TODO for changing theme
+    val colorScheme by viewModel.colorScheme.collectAsState()
+
+    ManageWidgetsBottomSheetContent(
+        onClose = onClose,
+        onRemove = onRemove,
+        onAdd = onAdd,
+        colorScheme = colorScheme
+    )
+
+}
+
+@Composable
+fun ManageWidgetsBottomSheetContent(
+    onClose: () -> Unit,
+    onRemove: () -> Unit,
+    onAdd: () -> Unit,
+    colorScheme: AppColorScheme
+) {
+
     val pagerState = rememberPagerState(pageCount = { Widgets.values().size })
     Column() {
         Row() {
@@ -67,7 +90,7 @@ fun ManageWidgetsBottomSheet(
                     .background(color = RarimeTheme.colors.componentPrimary)
             ) {
                 AppIcon(
-                    id = R.drawable.ic_close,
+                    id = R.drawable.ic_close_fill,
                     tint = RarimeTheme.colors.textPrimary,
                 )
             }
@@ -76,20 +99,22 @@ fun ManageWidgetsBottomSheet(
         HorizontalPager(state = pagerState) { page ->
             when (Widgets.values()[page]) {
                 Widgets.FREEDOMTOOL -> {
-                    FreedomtoolWidget()
+                    FreedomtoolWidget(colorScheme = colorScheme)
                 }
 
                 Widgets.LIKENESS -> {
-                    DigitalLikenessWidget()
+                    DigitalLikenessWidget(colorScheme = colorScheme)
                 }
 
                 Widgets.HIDDEN_PRIZE -> {
-                    HiddenPrizeWidget()
+                    HiddenPrizeWidget(colorScheme = colorScheme)
                 }
 
                 Widgets.RECOVERY_METHOD -> {
-                    RecoveryMethodWidget()
+                    RecoveryMethodWidget(colorScheme = colorScheme)
                 }
+
+                else -> {}
             }
         }
 
@@ -104,12 +129,13 @@ fun ManageWidgetsBottomSheet(
             space = 8.dp
         )
 
-        if (Widgets.values()[pagerState.currentPage].isVisible) {//todo how we can prove i card is deleted
+        if (Widgets.values()[pagerState.currentPage].isVisible) {//todo how we can prove card is deleted
             PrimaryButton(
                 modifier = Modifier
                     .padding(horizontal = 20.dp, vertical = 17.dp)
                     .fillMaxWidth(),
                 onClick = onAdd,
+                size = ButtonSize.Large,
                 text = stringResource(R.string.manage_widgets_add_btn_label)
             )
         } else {
@@ -120,6 +146,7 @@ fun ManageWidgetsBottomSheet(
                     containerColor = RarimeTheme.colors.errorLight,
                     contentColor = RarimeTheme.colors.errorDark
                 ),
+                size = ButtonSize.Large,
                 modifier = Modifier
                     .padding(horizontal = 20.dp, vertical = 17.dp)
                     .fillMaxWidth()
@@ -127,14 +154,17 @@ fun ManageWidgetsBottomSheet(
         }
 
     }
-
-
 }
 
 
 @Preview(showBackground = true)
 @Composable
 fun ManageWidgetsBottomSheetPreview() {
-    ManageWidgetsBottomSheet(onClose = {}, onAdd = {}, onRemove = {})
+    ManageWidgetsBottomSheetContent(
+        onClose = {},
+        onAdd = {},
+        onRemove = {},
+        colorScheme = AppColorScheme.LIGHT
+    )
 }
 
