@@ -2,7 +2,6 @@ package com.rarilabs.rarime.modules.manageWidgets.widgets
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -13,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale.Companion.Crop
-import androidx.compose.ui.layout.ContentScale.Companion.FillBounds
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -22,10 +20,10 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun DigitalLikenessWidget() {
+fun HiddenPrizeWidget() {
     Column(modifier = Modifier.fillMaxWidth()){
         Image(
-            painter = painterResource(id = R.drawable.ic_digital_likeness_widget_light),
+            painter = painterResource(id = R.drawable.ic_hidden_prize_widget_light),
             contentDescription = "",
             contentScale = Crop,
             modifier = Modifier
@@ -34,14 +32,14 @@ fun DigitalLikenessWidget() {
                 .align(Alignment.CenterHorizontally)
         )
         Text(
-            text = stringResource(R.string.digital_likeness_widget_title),
+            text = stringResource(R.string.hidden_prize_widget_title),
             style = RarimeTheme.typography.h3,
             color = RarimeTheme.colors.textPrimary,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 12.dp, bottom = 20.dp,)
         )
-        Text(text = stringResource(R.string.digital_likeness_widget_description),
+        Text(text = stringResource(R.string.hidden_prize_widget_description),
             style = RarimeTheme.typography.body3,
             color = RarimeTheme.colors.textSecondary,
             minLines = 2,
@@ -51,5 +49,4 @@ fun DigitalLikenessWidget() {
                 .padding(bottom = 40.dp)
         )
     }
-
 }

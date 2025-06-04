@@ -23,29 +23,29 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.v3.model.CardType
 import com.rarilabs.rarime.modules.manageWidgets.widgets.DigitalLikenessWidget
+import com.rarilabs.rarime.modules.manageWidgets.widgets.FreedomtoolWidget
+import com.rarilabs.rarime.modules.manageWidgets.widgets.HiddenPrizeWidget
+import com.rarilabs.rarime.modules.manageWidgets.widgets.RecoveryMethodWidget
 import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalPageIndicator
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
-enum class Widgets(val id:Int,val title: String, val description: String, val isVisible: Boolean,){
-    FREEDOMTOOL(0,"title","description",true),
-    IDENTITY(1,"","",true),
-    LIKENESS(2,"","",true),
-    CLAIM(3,"","",true),
-    HIDDEN_PRIZE(4,"","",true),
-    RECOVERY_METHOD(5,"","",true),
-
+enum class Widgets(val id: Int, val isVisible: Boolean) {
+    FREEDOMTOOL(0, true),
+    LIKENESS(1, true),
+    HIDDEN_PRIZE(2, true),
+    RECOVERY_METHOD(3, true),
 }
 
 @Composable
 fun ManageWidgetsBottomSheet(
     onClose: () -> Unit,
     onRemove: () -> Unit,
-    onAdd: ()  -> Unit
+    onAdd: () -> Unit,
 ) {
-
+    //val colorScheme by viewModel.colorScheme.collectAsState()//TODO for changing theme
     val pagerState = rememberPagerState(pageCount = { Widgets.values().size })
     Column() {
         Row() {
@@ -75,35 +75,27 @@ fun ManageWidgetsBottomSheet(
         }
         HorizontalPager(state = pagerState) { page ->
             when (Widgets.values()[page]) {
-                Widgets.FREEDOMTOOL ->{}
-                Widgets.IDENTITY -> {
-                    DigitalLikenessWidget()
-
+                Widgets.FREEDOMTOOL -> {
+                    FreedomtoolWidget()
                 }
 
-                Widgets.LIKENESS -> {}
-                Widgets.CLAIM -> {}
-                Widgets.HIDDEN_PRIZE -> {}
-                Widgets.RECOVERY_METHOD -> {}
+                Widgets.LIKENESS -> {
+                    DigitalLikenessWidget()
+                }
+
+                Widgets.HIDDEN_PRIZE -> {
+                    HiddenPrizeWidget()
+                }
+
+                Widgets.RECOVERY_METHOD -> {
+                    RecoveryMethodWidget()
+                }
             }
         }
 
-            Text(
-                text = Widgets.values()[pagerState.currentPage].title,
-                style = RarimeTheme.typography.h3,
-                color = RarimeTheme.colors.textPrimary,
-                modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 12.dp, bottom = 20.dp, )
-            )
-            Text(text = Widgets.values()[pagerState.currentPage].description,
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.textSecondary,
-                modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 40.dp)
-            )
-
-
         HorizontalPageIndicator(
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            numberOfPages = CardType.values().size,
+            numberOfPages = Widgets.values().size,
             selectedPage = pagerState.currentPage,
             defaultRadius = 6.dp,
             selectedColor = RarimeTheme.colors.primaryMain,
@@ -121,14 +113,17 @@ fun ManageWidgetsBottomSheet(
                 text = stringResource(R.string.manage_widgets_add_btn_label)
             )
         } else {
-            BaseButton(onClick = onRemove,
+            BaseButton(
+                onClick = onRemove,
                 text = stringResource(R.string.manage_widgets_remove_btn_label),
-                colors = ButtonDefaults.buttonColors(containerColor = RarimeTheme.colors.errorLight,
-                    contentColor = RarimeTheme.colors.errorDark),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = RarimeTheme.colors.errorLight,
+                    contentColor = RarimeTheme.colors.errorDark
+                ),
                 modifier = Modifier
                     .padding(horizontal = 20.dp, vertical = 17.dp)
                     .fillMaxWidth()
-                )
+            )
         }
 
     }
@@ -140,6 +135,6 @@ fun ManageWidgetsBottomSheet(
 @Preview(showBackground = true)
 @Composable
 fun ManageWidgetsBottomSheetPreview() {
-    ManageWidgetsBottomSheet(onClose = {}, onAdd ={}, onRemove = {})
+    ManageWidgetsBottomSheet(onClose = {}, onAdd = {}, onRemove = {})
 }
 
