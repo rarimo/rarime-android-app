@@ -19,7 +19,7 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 
 @Composable
-fun Widget(
+fun ManageWidgetsItem(
     imageResId: Int,
     title: String,
     description: String

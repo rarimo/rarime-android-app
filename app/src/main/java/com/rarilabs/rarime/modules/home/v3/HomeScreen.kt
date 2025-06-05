@@ -106,7 +106,7 @@ fun HomeScreenV3(
 
 
     HomeScreenContent(
-        visibleCards = visibleCards,
+        visibleWidgets = visibleCards,
         userPassportName = passport?.personDetails?.name,
         notificationsCount = notificationsCount,
         innerPaddings = innerPaddings,
@@ -140,7 +140,7 @@ fun HomeScreenContent(
     navigate: (String) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     setVisibilityOfBottomBar: (Boolean) -> Unit,
-    visibleCards: List<WidgetType>,
+    visibleWidgets: List<WidgetType>,
     userPassportName: String?,
     notificationsCount: Int?,
     currentPointsBalance: Long?,
@@ -153,7 +153,7 @@ fun HomeScreenContent(
     }
 
     // Hoist pagerState to remember scroll position across recompositions
-    val pagerState = rememberPagerState(pageCount = { visibleCards.size })
+    val pagerState = rememberPagerState(pageCount = { visibleWidgets.size })
 
     Box(modifier = modifier) {
         // Temporarily disable pager scrolling while the expand/collapse animation runs
@@ -187,7 +187,7 @@ fun HomeScreenContent(
                             pageSpacing = 10.dp,
                             contentPadding = PaddingValues(top = 42.dp, bottom = 95.dp),
                         ) { page ->
-                            val cardType =  visibleCards[page]
+                            val cardType =  visibleWidgets[page]
                             val currentPage = pagerState.currentPage
                             val currentOffset = pagerState.currentPageOffsetFraction
                             val pageOffset = (currentPage - page) + currentOffset
@@ -370,7 +370,7 @@ private fun HomeScreenPreview() {
                 userPassportName = "Mike",
                 notificationsCount = 2,
                 innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
-                visibleCards = WidgetType.entries,
+                visibleWidgets = WidgetType.entries,
                 currentPointsBalance = 200L,
                 colorScheme = AppColorScheme.SYSTEM,
                 onClick = {}

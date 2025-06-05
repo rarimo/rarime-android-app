@@ -103,7 +103,7 @@ fun ManageWidgetsBottomSheetContent(
         HorizontalPager(state = pagerState) { page ->
             when (managedWidgets.get(page)) {
                 WidgetType.FREEDOMTOOL -> {
-                    Widget(imageResId =
+                    ManageWidgetsItem(imageResId =
                         if(isDark){
                             R.drawable.ic_freedomtool_widget_dark
                         }else{
@@ -116,7 +116,7 @@ fun ManageWidgetsBottomSheetContent(
                 }
 
                 WidgetType.LIKENESS -> {
-                    Widget(imageResId =
+                    ManageWidgetsItem(imageResId =
                         if(isDark){
                             R.drawable.ic_digital_likeness_widget_dark
                         }else{
@@ -129,7 +129,7 @@ fun ManageWidgetsBottomSheetContent(
                 }
 
                 WidgetType.HIDDEN_PRIZE -> {
-                    Widget(imageResId =
+                    ManageWidgetsItem(imageResId =
                         if(isDark){
                             R.drawable.ic_hidden_prize_widget_dark
                         }else{
@@ -142,7 +142,7 @@ fun ManageWidgetsBottomSheetContent(
                 }
 
                 WidgetType.RECOVERY_METHOD -> {
-                    Widget(imageResId =
+                    ManageWidgetsItem(imageResId =
                         if(isDark){
                             R.drawable.ic_recovery_method_widget_dark
                         }else{
