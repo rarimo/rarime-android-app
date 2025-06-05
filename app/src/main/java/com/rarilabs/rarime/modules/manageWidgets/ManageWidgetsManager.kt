@@ -20,7 +20,7 @@ class ManageWidgetsManager @Inject constructor(
     init {
         val visibleCardsStored = sharedPrefsManager.readVisibleWidgets()
         if (visibleCardsStored.isNullOrEmpty()) {
-            setVisibleWidgets(listOf(WidgetType.IDENTITY))
+            setVisibleWidgets(listOf(WidgetType.EARN))
         } else {
             _visibleWidgets.value = visibleCardsStored
         }
@@ -41,7 +41,7 @@ class ManageWidgetsManager @Inject constructor(
 
 
     fun setVisibleWidgets(visibleWidgets: List<WidgetType>) {
-        _visibleWidgets.value = (listOf(WidgetType.IDENTITY, WidgetType.CLAIM) + visibleWidgets).distinct()
+        _visibleWidgets.value = (listOf(WidgetType.EARN) + visibleWidgets).distinct()
             .sortedBy { it.layoutId }
         sharedPrefsManager.saveVisibleWidgets(_visibleWidgets.value)
     }

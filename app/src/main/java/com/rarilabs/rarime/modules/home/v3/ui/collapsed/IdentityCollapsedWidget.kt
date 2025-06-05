@@ -235,7 +235,7 @@ fun IdentityCollapsedWidgetPreview() {
         IdentityCollapsedWidget(
             collapsedWidgetProps = BaseWidgetProps.Collapsed(
                 onExpand = {},
-                layoutId = WidgetType.IDENTITY.layoutId,
+                layoutId = 1,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope
             ),

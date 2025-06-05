@@ -49,7 +49,7 @@ import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 @Composable
-fun ClaimExpandedWidget(
+fun EarnExpandedWidget(
     modifier: Modifier = Modifier,
     expandedWidgetProps: BaseWidgetProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
@@ -296,7 +296,7 @@ fun ClaimExpandedWidgetPreview_Claimed() {
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
         ClaimExpandedWidgetContent(
             widgetProps = BaseWidgetProps.Expanded(
-                layoutId = WidgetType.IDENTITY.layoutId,
+                layoutId = WidgetType.EARN.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope,
                 onCollapse = {}
@@ -316,7 +316,7 @@ fun ClaimExpandedWidgetPreview_Unclaimed() {
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
         ClaimExpandedWidgetContent(
             widgetProps = BaseWidgetProps.Expanded(
-                layoutId = WidgetType.IDENTITY.layoutId,
+                layoutId = WidgetType.EARN.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope,
                 onCollapse = {}

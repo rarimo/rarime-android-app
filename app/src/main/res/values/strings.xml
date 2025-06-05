@@ -554,5 +554,7 @@
     <string name="hidden_prize_widget_description">Somewhere out on the open web, one famous \n face carries a key sealed inside its ZK-vector.</string>
     <string name="recovery_method_widget_title">Recovery Method</string>
     <string name="recovery_method_widget_description">Set up a new way to recover \n your account</string>
+    <string name="earn">Earn</string>
+    <string name="earn_collapsed_widget_caption">Complete various tasks and get \n rewarded with Rarimo tokens.</string>
 
 </resources>
