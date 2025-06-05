@@ -552,7 +552,7 @@
     <string name="digital_likeness_widget_description">Your data, your rules</string>
     <string name="hidden_prize_widget_title">Hidden keys</string>
     <string name="hidden_prize_widget_description">Somewhere out on the open web, one famous \n face carries a key sealed inside its ZK-vector.</string>
-    <string name="recovery_method_wigdet_title">Recovery Method</string>
+    <string name="recovery_method_widget_title">Recovery Method</string>
     <string name="recovery_method_widget_description">Set up a new way to recover \n your account</string>
 
 </resources>

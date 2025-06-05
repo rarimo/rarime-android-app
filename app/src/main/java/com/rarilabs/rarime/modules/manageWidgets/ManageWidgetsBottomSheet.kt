@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.modules.manageWidgets
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,10 +27,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.modules.home.v3.model.WidgetType
-import com.rarilabs.rarime.modules.manageWidgets.widgets.DigitalLikenessWidget
-import com.rarilabs.rarime.modules.manageWidgets.widgets.FreedomtoolWidget
-import com.rarilabs.rarime.modules.manageWidgets.widgets.HiddenPrizeWidget
-import com.rarilabs.rarime.modules.manageWidgets.widgets.RecoveryMethodWidget
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalPageIndicator
@@ -72,6 +70,11 @@ fun ManageWidgetsBottomSheetContent(
     isVisible: (WidgetType) -> Boolean
 ) {
     val pagerState = rememberPagerState(pageCount = { managedCards.size })
+    val isDark = when (colorScheme) {
+        AppColorScheme.SYSTEM -> isSystemInDarkTheme()
+        AppColorScheme.DARK -> true
+        AppColorScheme.LIGHT -> false
+    }
     Column() {
         Row() {
             Text(
@@ -101,19 +104,55 @@ fun ManageWidgetsBottomSheetContent(
         HorizontalPager(state = pagerState) { page ->
             when (managedCards.get(page)) {
                 WidgetType.FREEDOMTOOL -> {
-                    FreedomtoolWidget(colorScheme = colorScheme)
+                    Widget(imageResId =
+                        if(isDark){
+                            R.drawable.ic_freedomtool_widget_dark
+                        }else{
+                            R.drawable.ic_freedomtool_widget_light
+                        }
+                    ,
+                        title = stringResource(R.string.freedomtool_widget_title),
+                        description = stringResource(R.string.freedomtool_widget_description)
+                    )
                 }
 
                 WidgetType.LIKENESS -> {
-                    DigitalLikenessWidget(colorScheme = colorScheme)
+                    Widget(imageResId =
+                        if(isDark){
+                            R.drawable.ic_digital_likeness_widget_dark
+                        }else{
+                            R.drawable.ic_digital_likeness_widget_light
+                        }
+                        ,
+                        title = stringResource(R.string.digital_likeness_widget_title),
+                        description = stringResource(R.string.digital_likeness_widget_description)
+                    )
                 }
 
                 WidgetType.HIDDEN_PRIZE -> {
-                    HiddenPrizeWidget(colorScheme = colorScheme)
+                    Widget(imageResId =
+                        if(isDark){
+                            R.drawable.ic_hidden_prize_widget_dark
+                        }else{
+                            R.drawable.ic_hidden_prize_widget_light
+                        }
+                        ,
+                        title = stringResource(R.string.hidden_prize_widget_title),
+                        description = stringResource(R.string.hidden_prize_widget_description)
+                    )
                 }
 
                 WidgetType.RECOVERY_METHOD -> {
-                    RecoveryMethodWidget(colorScheme = colorScheme)
+                    Widget(imageResId =
+                        if(isDark){
+                            R.drawable.ic_recovery_method_widget_dark
+                        }else{
+                            R.drawable.ic_recovery_method_widget_light
+                        }
+                        ,
+                        title = stringResource(R.string.recovery_method_widget_title),
+                        description = stringResource(R.string.recovery_method_widget_description)
+                    )
                 }
                 // todo implement all managing cards
                 else -> {}

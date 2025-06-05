@@ -1,4 +1,4 @@
-package com.rarilabs.rarime.modules.manageWidgets.widgets
+package com.rarilabs.rarime.modules.manageWidgets
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale.Companion.Crop
-import androidx.compose.ui.layout.ContentScale.Companion.FillBounds
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -23,24 +22,17 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
-@Composable
-fun FreedomtoolWidget(
-    colorScheme: AppColorScheme
-) {
-    val isDark = when (colorScheme) {
-        AppColorScheme.SYSTEM -> isSystemInDarkTheme()
-        AppColorScheme.DARK -> true
-        AppColorScheme.LIGHT -> false
-    }
 
-    val widgetRes = remember(isDark) {
-        if (isDark) R.drawable.ic_freedomtool_widget_dark
-        else R.drawable.ic_freedomtool_widget_light
-    }
+@Composable
+fun Widget(
+    imageResId : Int,
+    title: String,
+    description: String
+) {
 
     Column(modifier = Modifier.fillMaxWidth()){
         Image(
-            painter = painterResource(id = widgetRes),
+            painter = painterResource(id = imageResId),
             contentDescription = "",
             contentScale = Crop,
             modifier = Modifier
@@ -49,14 +41,14 @@ fun FreedomtoolWidget(
                 .align(Alignment.CenterHorizontally)
         )
         Text(
-            text = stringResource(R.string.freedomtool_widget_title),
+            text = title,
             style = RarimeTheme.typography.h3,
             color = RarimeTheme.colors.textPrimary,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 12.dp, bottom = 20.dp,)
         )
-        Text(text = stringResource(R.string.freedomtool_widget_description),
+        Text(text = description,
             style = RarimeTheme.typography.body3,
             color = RarimeTheme.colors.textSecondary,
             minLines = 2,
@@ -66,6 +58,5 @@ fun FreedomtoolWidget(
                 .padding(bottom = 40.dp)
         )
     }
-
 
 }
