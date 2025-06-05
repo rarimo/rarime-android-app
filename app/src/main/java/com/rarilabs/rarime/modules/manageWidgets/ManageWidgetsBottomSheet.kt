@@ -40,20 +40,20 @@ fun ManageWidgetsBottomSheet(
     viewModel: ManageWidgetsViewModel = hiltViewModel()
 ) {
     val colorScheme by viewModel.colorScheme.collectAsState()
-    val managedCards by viewModel.managedCards.collectAsState()
-    val visibleCards by viewModel.visibleCards.collectAsState()
+    val managedWidgets by viewModel.managedWidgets.collectAsState()
+    val visibleWidgets by viewModel.visibleWidgets.collectAsState()
 
     ManageWidgetsBottomSheetContent(
         onClose = {
-            viewModel.setVisibleCard()
+            viewModel.setVisibleWidgets()
             onClose()
         },
-        onRemove = { cardType -> viewModel.remove(cardType) },
-        onAdd = { cardType -> viewModel.add(cardType) },
+        onRemove = { widgetType -> viewModel.remove(widgetType) },
+        onAdd = { widgetType -> viewModel.add(widgetType) },
         colorScheme = colorScheme,
-        managedCards = managedCards,
-        visibleCards = visibleCards,
-        isVisible = { cardType -> viewModel.isVisible(cardType) }
+        managedWidgets = managedWidgets,
+        visibleWidgets = visibleWidgets,
+        isVisible = { widgetType -> viewModel.isVisible(widgetType) }
     )
 
 }
@@ -64,11 +64,11 @@ fun ManageWidgetsBottomSheetContent(
     onRemove: (WidgetType) -> Unit,
     onAdd: (WidgetType) -> Unit,
     colorScheme: AppColorScheme,
-    managedCards: List<WidgetType>,
-    visibleCards: List<WidgetType>,
+    managedWidgets: List<WidgetType>,
+    visibleWidgets: List<WidgetType>,
     isVisible: (WidgetType) -> Boolean
 ) {
-    val pagerState = rememberPagerState(pageCount = { managedCards.size })
+    val pagerState = rememberPagerState(pageCount = { managedWidgets.size })
     val isDark = when (colorScheme) {
         AppColorScheme.SYSTEM -> isSystemInDarkTheme()
         AppColorScheme.DARK -> true
@@ -101,7 +101,7 @@ fun ManageWidgetsBottomSheetContent(
 
         }
         HorizontalPager(state = pagerState) { page ->
-            when (managedCards.get(page)) {
+            when (managedWidgets.get(page)) {
                 WidgetType.FREEDOMTOOL -> {
                     Widget(imageResId =
                         if(isDark){
@@ -153,14 +153,14 @@ fun ManageWidgetsBottomSheetContent(
                         description = stringResource(R.string.recovery_method_widget_description)
                     )
                 }
-                // todo implement all managing cards
+                // todo implement all managing widgets
                 else -> {}
             }
         }
 
         HorizontalPageIndicator(
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            numberOfPages = managedCards.size,
+            numberOfPages = managedWidgets.size,
             selectedPage = pagerState.currentPage,
             defaultRadius = 6.dp,
             selectedColor = RarimeTheme.colors.primaryMain,
@@ -170,9 +170,9 @@ fun ManageWidgetsBottomSheetContent(
         )
 
     }
-    if (isVisible(managedCards.get(pagerState.currentPage))) {
+    if (isVisible(managedWidgets.get(pagerState.currentPage))) {
         SecondaryButton(
-            onClick = { onRemove(managedCards.get(pagerState.currentPage)) },
+            onClick = { onRemove(managedWidgets.get(pagerState.currentPage)) },
             text = stringResource(R.string.manage_widgets_remove_btn_label),
             size = ButtonSize.Large,
             modifier = Modifier
@@ -184,7 +184,7 @@ fun ManageWidgetsBottomSheetContent(
             modifier = Modifier
                 .padding(horizontal = 20.dp, vertical = 17.dp)
                 .fillMaxWidth(),
-            onClick = { onAdd(managedCards.get(pagerState.currentPage)) },
+            onClick = { onAdd(managedWidgets.get(pagerState.currentPage)) },
             size = ButtonSize.Large,
             text = stringResource(R.string.manage_widgets_add_btn_label)
         )
@@ -202,8 +202,8 @@ fun ManageWidgetsBottomSheetPreview() {
         onRemove = {},
         colorScheme = AppColorScheme.LIGHT,
         isVisible = { true },
-        managedCards = WidgetType.values().toList(),
-        visibleCards = WidgetType.values().toList()
+        managedWidgets = WidgetType.values().toList(),
+        visibleWidgets = WidgetType.values().toList()
     )
 }
 

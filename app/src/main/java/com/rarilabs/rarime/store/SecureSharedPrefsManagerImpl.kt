@@ -63,7 +63,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "LIKENESS_DATA" to "LIKENESS_DATA",
         "LIKENESS_FACE" to "LIKENESS_FACE",
         "WELCOME_FIRST_OPEN" to "WELCOME_FIRST_OPEN",
-        "VISIBLE_CARDS" to "VISIBLE_CARDS"
+        "VISIBLE_WIDGETS" to "VISIBLE_WIDGETS"
     )
 
     private val PREFS_FILE_NAME = "sharedPrefFile12"
@@ -107,15 +107,15 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         return getSharedPreferences().getString(accessTokens["PRIVATE_KEY"], null)
     }
 
-    override fun readVisibleCards(): List<WidgetType>? {
-        val savedSet = getSharedPreferences().getStringSet(accessTokens["VISIBLE_CARDS"], null)
+    override fun readVisibleWidgets(): List<WidgetType>? {
+        val savedSet = getSharedPreferences().getStringSet(accessTokens["VISIBLE_WIDGETS"], null)
         return savedSet
             ?.mapNotNull { name -> runCatching { WidgetType.valueOf(name) }.getOrNull() }
     }
 
-    override fun saveVisibleCards(visibleCards: List<WidgetType>) {
+    override fun saveVisibleWidgets(visibleWidgets: List<WidgetType>) {
         val editor = getEditor()
-        editor.putStringSet(accessTokens["VISIBLE_CARDS"], visibleCards.map { it.name }.toSet())
+        editor.putStringSet(accessTokens["VISIBLE_WIDGETS"], visibleWidgets.map { it.name }.toSet())
         editor.apply()
     }
 

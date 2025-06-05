@@ -12,22 +12,22 @@ import javax.inject.Singleton
 class ManageWidgetsManager @Inject constructor(
     private val sharedPrefsManager: SecureSharedPrefsManager
 ) {
-    private var _visibleCards = MutableStateFlow<List<WidgetType>>(emptyList())
+    private var _visibleWidgets = MutableStateFlow<List<WidgetType>>(emptyList())
 
-    val visibleCards: StateFlow<List<WidgetType>>
-        get() = _visibleCards.asStateFlow()
+    val visibleWidgets: StateFlow<List<WidgetType>>
+        get() = _visibleWidgets.asStateFlow()
 
     init {
-        val visibleCardsStored = sharedPrefsManager.readVisibleCards()
+        val visibleCardsStored = sharedPrefsManager.readVisibleWidgets()
         if (visibleCardsStored.isNullOrEmpty()) {
-            setVisibleCards(WidgetType.values().toList())
+            setVisibleWidgets(WidgetType.values().toList())
         } else {
-            _visibleCards.value = visibleCardsStored
+            _visibleWidgets.value = visibleCardsStored
         }
 
     }
 
-    private var _managedCards = MutableStateFlow<List<WidgetType>>(
+    private var _managedWidgets = MutableStateFlow<List<WidgetType>>(
         listOf(
             WidgetType.FREEDOMTOOL,
             WidgetType.LIKENESS,
@@ -36,22 +36,22 @@ class ManageWidgetsManager @Inject constructor(
         )
     )//todo implement other manage cards
 
-    val managedCards: StateFlow<List<WidgetType>>
-        get() = _managedCards.asStateFlow()
+    val managedWidgets: StateFlow<List<WidgetType>>
+        get() = _managedWidgets.asStateFlow()
 
 
-    fun setVisibleCards(visibleCards: List<WidgetType>) {
-        _visibleCards.value = (listOf(WidgetType.IDENTITY, WidgetType.CLAIM) + visibleCards).distinct()
+    fun setVisibleWidgets(visibleWidgets: List<WidgetType>) {
+        _visibleWidgets.value = (listOf(WidgetType.IDENTITY, WidgetType.CLAIM) + visibleWidgets).distinct()
             .sortedBy { it.layoutId }
-        sharedPrefsManager.saveVisibleCards(_visibleCards.value)
+        sharedPrefsManager.saveVisibleWidgets(_visibleWidgets.value)
     }
 
     fun remove(widgetType: WidgetType) {
-        setVisibleCards(_visibleCards.value.filter { it != widgetType })
+        setVisibleWidgets(_visibleWidgets.value.filter { it != widgetType })
     }
 
     fun add(widgetType: WidgetType) {
-        setVisibleCards((_visibleCards.value + widgetType))
+        setVisibleWidgets((_visibleWidgets.value + widgetType))
     }
 }
 

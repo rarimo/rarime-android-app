@@ -24,8 +24,8 @@ interface SecureSharedPrefsManager {
     fun readPasscodeState(): SecurityCheckState
     fun savePasscodeState(state: SecurityCheckState)
 
-    fun readVisibleCards(): List<WidgetType>?
-    fun saveVisibleCards(visibleCard:List<WidgetType>)
+    fun readVisibleWidgets(): List<WidgetType>?
+    fun saveVisibleWidgets(visibleCard:List<WidgetType>)
 
     fun readBiometricsState(): SecurityCheckState
     fun saveBiometricsState(state: SecurityCheckState)

@@ -83,7 +83,7 @@ fun HomeScreenV3(
         derivedStateOf { notifications.count { it.isActive } }
     }
     val colorScheme by viewModel.colorScheme.collectAsState()
-    val visibleCards by viewModel.visibleCards.collectAsState()
+    val visibleCards by viewModel.visibleWidgets.collectAsState()
     val welcomeAppSheetState = rememberAppSheetState(!viewModel.getIsShownWelcome())
 
     LaunchedEffect(Unit) {
