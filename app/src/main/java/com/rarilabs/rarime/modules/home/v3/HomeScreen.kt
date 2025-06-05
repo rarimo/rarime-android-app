@@ -38,7 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
-import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.ClaimCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.FreedomtoolCollapsedCard
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.HiddenPrizeCollapsedCard
@@ -140,16 +140,16 @@ fun HomeScreenContent(
     navigate: (String) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     setVisibilityOfBottomBar: (Boolean) -> Unit,
-    visibleCards: List<CardType>,
+    visibleCards: List<WidgetType>,
     userPassportName: String?,
     notificationsCount: Int?,
     currentPointsBalance: Long?,
     colorScheme: AppColorScheme,
     onClick: () -> Unit
 ) {
-    var selectedCardType by remember { mutableStateOf<CardType?>(null) }
-    LaunchedEffect(selectedCardType) {
-        setVisibilityOfBottomBar(selectedCardType == null)
+    var selectedWidgetType by remember { mutableStateOf<WidgetType?>(null) }
+    LaunchedEffect(selectedWidgetType) {
+        setVisibilityOfBottomBar(selectedWidgetType == null)
     }
 
     // Hoist pagerState to remember scroll position across recompositions
@@ -158,13 +158,13 @@ fun HomeScreenContent(
     Box(modifier = modifier) {
         // Temporarily disable pager scrolling while the expand/collapse animation runs
         var pagerScrollEnabled by remember { mutableStateOf(true) }
-        LaunchedEffect(selectedCardType) {
+        LaunchedEffect(selectedWidgetType) {
             pagerScrollEnabled = false
             delay((ANIMATION_DURATION_MS + 200).toLong())
             pagerScrollEnabled = true
         }
 
-        AnimatedContent(selectedCardType) { targetCardType ->
+        AnimatedContent(selectedWidgetType) { targetCardType ->
             if (targetCardType == null) {
                 Column(
                     modifier = Modifier.padding(
@@ -203,7 +203,7 @@ fun HomeScreenContent(
                             val collapsedCardProps = BaseCardProps.Collapsed(
                                 onExpand = {
                                     if (pagerScrollEnabled) {
-                                        selectedCardType = cardType
+                                        selectedWidgetType = cardType
                                     }
                                 },
                                 layoutId = cardType.layoutId,
@@ -218,34 +218,34 @@ fun HomeScreenContent(
                             }
 
                             when (cardType) {
-                                CardType.FREEDOMTOOL -> FreedomtoolCollapsedCard(
+                                WidgetType.FREEDOMTOOL -> FreedomtoolCollapsedCard(
                                     collapsedCardProps = collapsedCardProps,
                                     modifier = baseCollapsedModifier,
                                 )
 
-                                CardType.IDENTITY -> IdentityCollapsedCard(
+                                WidgetType.IDENTITY -> IdentityCollapsedCard(
                                     collapsedCardProps = collapsedCardProps,
                                     modifier = baseCollapsedModifier,
                                 )
 
-                                CardType.LIKENESS -> LikenessCollapsedCard(
+                                WidgetType.LIKENESS -> LikenessCollapsedCard(
                                     collapsedCardProps = collapsedCardProps,
                                     modifier = baseCollapsedModifier,
                                 )
 
-                                CardType.CLAIM -> ClaimCollapsedCard(
+                                WidgetType.CLAIM -> ClaimCollapsedCard(
                                     collapsedCardProps = collapsedCardProps,
                                     modifier = baseCollapsedModifier,
                                     currentPointsBalance = currentPointsBalance
                                 )
 
-                                CardType.HIDDEN_PRIZE -> HiddenPrizeCollapsedCard(
+                                WidgetType.HIDDEN_PRIZE -> HiddenPrizeCollapsedCard(
                                     collapsedCardProps = collapsedCardProps,
                                     modifier = baseCollapsedModifier,
                                     colorScheme = colorScheme
                                 )
 
-                                CardType.RECOVERY_METHOD -> RecoveryMethodCollapsedCard(
+                                WidgetType.RECOVERY_METHOD -> RecoveryMethodCollapsedCard(
                                     collapsedCardProps = collapsedCardProps,
                                     modifier = baseCollapsedModifier,
                                     colorScheme = colorScheme
@@ -277,7 +277,7 @@ fun HomeScreenContent(
             } else {
                 // Expanded: one card is visible on top
                 BackHandler {
-                    selectedCardType = null
+                    selectedWidgetType = null
                 }
 
                 Box(
@@ -285,46 +285,46 @@ fun HomeScreenContent(
                 ) {
                     // Common props for every expanded card
                     val expandedCardProps = BaseCardProps.Expanded(
-                        onCollapse = { selectedCardType = null },
+                        onCollapse = { selectedWidgetType = null },
                         layoutId = targetCardType.layoutId,
                         animatedVisibilityScope = this@AnimatedContent,
                         sharedTransitionScope = sharedTransitionScope
                     )
 
                     when (targetCardType) {
-                        CardType.FREEDOMTOOL -> FreedomtoolExpandedCard(
+                        WidgetType.FREEDOMTOOL -> FreedomtoolExpandedCard(
                             expandedCardProps = expandedCardProps,
                             innerPaddings = innerPaddings,
                             navigate = navigate
                         )
 
-                        CardType.IDENTITY -> IdentityExpandedCard(
+                        WidgetType.IDENTITY -> IdentityExpandedCard(
                             expandedCardProps = expandedCardProps,
                             innerPaddings = innerPaddings,
                             navigate = navigate,
                             setVisibilityOfBottomBar = setVisibilityOfBottomBar
                         )
 
-                        CardType.LIKENESS -> LikenessExpandedCard(
+                        WidgetType.LIKENESS -> LikenessExpandedCard(
                             expandedCardProps = expandedCardProps,
                             innerPaddings = innerPaddings,
                             navigate = navigate
                         )
 
-                        CardType.CLAIM -> ClaimExpandedCard(
+                        WidgetType.CLAIM -> ClaimExpandedCard(
                             expandedCardProps = expandedCardProps,
                             innerPaddings = innerPaddings,
                             navigate = navigate,
                             currentPointsBalance = currentPointsBalance
                         )
 
-                        CardType.HIDDEN_PRIZE -> HiddenPrizeExpandedCard(
+                        WidgetType.HIDDEN_PRIZE -> HiddenPrizeExpandedCard(
                             expandedCardProps = expandedCardProps,
                             innerPaddings = innerPaddings,
                             navigate = navigate
                         )
 
-                        CardType.RECOVERY_METHOD -> RecoveryMethodExpandedCard(
+                        WidgetType.RECOVERY_METHOD -> RecoveryMethodExpandedCard(
                             expandedCardProps = expandedCardProps,
                             innerPaddings = innerPaddings,
                             navigate = navigate
@@ -370,7 +370,7 @@ private fun HomeScreenPreview() {
                 userPassportName = "Mike",
                 notificationsCount = 2,
                 innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
-                visibleCards = CardType.entries,
+                visibleCards = WidgetType.entries,
                 currentPointsBalance = 200L,
                 colorScheme = AppColorScheme.SYSTEM,
                 onClick = {}

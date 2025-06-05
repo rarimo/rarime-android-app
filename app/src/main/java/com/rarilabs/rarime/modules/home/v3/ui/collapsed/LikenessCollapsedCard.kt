@@ -45,7 +45,7 @@ import com.rarilabs.rarime.manager.LikenessRule
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessViewModel
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
-import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
 import com.rarilabs.rarime.modules.home.v3.model.IMG_LIKENESS_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardLogo
@@ -382,7 +382,7 @@ fun LikenessCollapsedCardPreview() {
         LikenessCollapsedCardContent(
             collapsedCardProps = BaseCardProps.Collapsed(
                 onExpand = {},
-                layoutId = CardType.LIKENESS.layoutId,
+                layoutId = WidgetType.LIKENESS.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope
             ),

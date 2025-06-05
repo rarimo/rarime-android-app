@@ -40,7 +40,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
-import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardLogo
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
@@ -288,7 +288,7 @@ fun HiddenPrizeCollapsedCardPreview_DarkMode() {
                 colorScheme = AppColorScheme.DARK,
                 collapsedCardProps = BaseCardProps.Collapsed(
                     onExpand = {},
-                    layoutId = CardType.HIDDEN_PRIZE.layoutId,
+                    layoutId = WidgetType.HIDDEN_PRIZE.layoutId,
                     animatedVisibilityScope = animatedVisibilityScope,
                     sharedTransitionScope = sharedTransitionScope
                 ),
@@ -311,7 +311,7 @@ fun HiddenPrizeCollapsedCardPreview_LightMode() {
                 colorScheme = AppColorScheme.LIGHT,
                 collapsedCardProps = BaseCardProps.Collapsed(
                     onExpand = {},
-                    layoutId = CardType.HIDDEN_PRIZE.layoutId,
+                    layoutId = WidgetType.HIDDEN_PRIZE.layoutId,
                     animatedVisibilityScope = animatedVisibilityScope,
                     sharedTransitionScope = sharedTransitionScope
                 ), modifier = Modifier

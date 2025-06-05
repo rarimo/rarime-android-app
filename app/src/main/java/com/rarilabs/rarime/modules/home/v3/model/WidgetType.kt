@@ -1,6 +1,6 @@
 package com.rarilabs.rarime.modules.home.v3.model
 
-enum class CardType(val layoutId: Int) {
+enum class WidgetType(val layoutId: Int) {
     FREEDOMTOOL(0),
     IDENTITY(1),
     LIKENESS(2),

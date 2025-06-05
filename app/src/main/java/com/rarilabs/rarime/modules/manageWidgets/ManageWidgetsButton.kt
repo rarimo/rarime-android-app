@@ -36,7 +36,9 @@ fun ManageWidgetsButton(
                 .fillMaxWidth(),
             onClick = onClick,
             size = ButtonSize.Large,
-            text = stringResource(R.string.manage_widgets_btn_label)
+            text = stringResource(R.string.manage_widgets_btn_label),
+            leftIcon = R.drawable.ic_filter_3_line
+
         )
     }
 }

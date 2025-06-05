@@ -53,7 +53,7 @@ import com.rarilabs.rarime.api.voting.models.Poll
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BG_DOT_MAP_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
-import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
@@ -427,7 +427,7 @@ fun FreedomtoolExpandedCardPreview() {
         FreedomtoolExpandedCardContent(
             cardProps = BaseCardProps.Expanded(
                 onCollapse = {},
-                layoutId = CardType.FREEDOMTOOL.layoutId,
+                layoutId = WidgetType.FREEDOMTOOL.layoutId,
                 animatedVisibilityScope = avs,
                 sharedTransitionScope = sts
             ),

@@ -29,7 +29,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BG_HAND_PHONE_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
-import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
@@ -280,7 +280,7 @@ fun IdentityExpandedCardPreview() {
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
         IdentityExpandedCardContent(
             cardProps = BaseCardProps.Expanded(
-                layoutId = CardType.IDENTITY.layoutId,
+                layoutId = WidgetType.IDENTITY.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope,
                 onCollapse = {}

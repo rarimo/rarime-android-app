@@ -33,7 +33,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BG_ClAIM_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
-import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
 import com.rarilabs.rarime.modules.home.v3.model.getClaimCardAccentTitle
 import com.rarilabs.rarime.modules.home.v3.model.getClaimCardTitle
@@ -230,7 +230,7 @@ fun ClaimCollapsedCardPreview_Unclaimed() {
         ClaimCollapsedCard(
             collapsedCardProps = BaseCardProps.Collapsed(
                 onExpand = {},
-                layoutId = CardType.CLAIM.layoutId,
+                layoutId = WidgetType.CLAIM.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope
             ),
@@ -250,7 +250,7 @@ fun ClaimCollapsedCardPreview_Claimed() {
         ClaimCollapsedCard(
             collapsedCardProps = BaseCardProps.Collapsed(
                 onExpand = {},
-                layoutId = CardType.CLAIM.layoutId,
+                layoutId = WidgetType.CLAIM.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope
             ),

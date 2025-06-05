@@ -10,15 +10,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,12 +24,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
-import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.manageWidgets.widgets.DigitalLikenessWidget
 import com.rarilabs.rarime.modules.manageWidgets.widgets.FreedomtoolWidget
 import com.rarilabs.rarime.modules.manageWidgets.widgets.HiddenPrizeWidget
 import com.rarilabs.rarime.modules.manageWidgets.widgets.RecoveryMethodWidget
-import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalPageIndicator
@@ -69,12 +64,12 @@ fun ManageWidgetsBottomSheet(
 @Composable
 fun ManageWidgetsBottomSheetContent(
     onClose: () -> Unit,
-    onRemove: (CardType) -> Unit,
-    onAdd: (CardType) -> Unit,
+    onRemove: (WidgetType) -> Unit,
+    onAdd: (WidgetType) -> Unit,
     colorScheme: AppColorScheme,
-    managedCards: List<CardType>,
-    visibleCards: List<CardType>,
-    isVisible: (CardType) -> Boolean
+    managedCards: List<WidgetType>,
+    visibleCards: List<WidgetType>,
+    isVisible: (WidgetType) -> Boolean
 ) {
     val pagerState = rememberPagerState(pageCount = { managedCards.size })
     Column() {
@@ -105,19 +100,19 @@ fun ManageWidgetsBottomSheetContent(
         }
         HorizontalPager(state = pagerState) { page ->
             when (managedCards.get(page)) {
-                CardType.FREEDOMTOOL -> {
+                WidgetType.FREEDOMTOOL -> {
                     FreedomtoolWidget(colorScheme = colorScheme)
                 }
 
-                CardType.LIKENESS -> {
+                WidgetType.LIKENESS -> {
                     DigitalLikenessWidget(colorScheme = colorScheme)
                 }
 
-                CardType.HIDDEN_PRIZE -> {
+                WidgetType.HIDDEN_PRIZE -> {
                     HiddenPrizeWidget(colorScheme = colorScheme)
                 }
 
-                CardType.RECOVERY_METHOD -> {
+                WidgetType.RECOVERY_METHOD -> {
                     RecoveryMethodWidget(colorScheme = colorScheme)
                 }
                 // todo implement all managing cards
@@ -169,8 +164,8 @@ fun ManageWidgetsBottomSheetPreview() {
         onRemove = {},
         colorScheme = AppColorScheme.LIGHT,
         isVisible = { true },
-        managedCards = CardType.values().toList(),
-        visibleCards = CardType.values().toList()
+        managedCards = WidgetType.values().toList(),
+        visibleCards = WidgetType.values().toList()
     )
 }
 

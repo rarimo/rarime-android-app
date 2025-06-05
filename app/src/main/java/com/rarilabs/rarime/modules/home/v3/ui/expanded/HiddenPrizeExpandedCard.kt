@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -65,9 +64,8 @@ import com.rarilabs.rarime.modules.hiddenPrize.AddScanBottomSheet
 import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeCamera
 import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeViewModel
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
-import com.rarilabs.rarime.modules.home.v3.model.BG_HAND_HIDDEN_PRIZE_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
-import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
@@ -623,7 +621,7 @@ fun HiddenPriceExpandedCardPreviewLightMode() {
             HiddenPrizeExpandedCardContent(
                 cardProps = BaseCardProps.Expanded(
                     onCollapse = {},
-                    layoutId = CardType.HIDDEN_PRIZE.layoutId,
+                    layoutId = WidgetType.HIDDEN_PRIZE.layoutId,
                     animatedVisibilityScope = avs,
                     sharedTransitionScope = sts
                 ),
@@ -650,7 +648,7 @@ fun HiddenPriceExpandedCardPreviewDarkMode() {
             HiddenPrizeExpandedCardContent(
                 cardProps = BaseCardProps.Expanded(
                     onCollapse = {},
-                    layoutId = CardType.HIDDEN_PRIZE.layoutId,
+                    layoutId = WidgetType.HIDDEN_PRIZE.layoutId,
                     animatedVisibilityScope = avs,
                     sharedTransitionScope = sts
                 ),

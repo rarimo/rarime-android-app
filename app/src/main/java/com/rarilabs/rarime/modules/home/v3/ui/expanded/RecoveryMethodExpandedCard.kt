@@ -41,7 +41,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
-import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
@@ -369,7 +369,7 @@ fun RecoveryMethodExpandedCardPreviewLightMode() {
             RecoveryMethodExpandedCardContent(
                 cardProps = BaseCardProps.Expanded(
                     onCollapse = {},
-                    layoutId = CardType.RECOVERY_METHOD.layoutId,
+                    layoutId = WidgetType.RECOVERY_METHOD.layoutId,
                     animatedVisibilityScope = avs,
                     sharedTransitionScope = sts
                 ),
@@ -391,7 +391,7 @@ fun RecoveryMethodExpandedCardPreviewDarkMode() {
             RecoveryMethodExpandedCardContent(
                 cardProps = BaseCardProps.Expanded(
                     onCollapse = {},
-                    layoutId = CardType.RECOVERY_METHOD.layoutId,
+                    layoutId = WidgetType.RECOVERY_METHOD.layoutId,
                     animatedVisibilityScope = avs,
                     sharedTransitionScope = sts
                 ),

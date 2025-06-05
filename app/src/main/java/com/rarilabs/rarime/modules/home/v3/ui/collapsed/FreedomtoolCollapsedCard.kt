@@ -33,7 +33,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BG_DOT_MAP_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
-import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardLogo
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
@@ -231,7 +231,7 @@ fun FreedomtoolCollapsedCardPreview() {
         FreedomtoolCollapsedCard(
             collapsedCardProps = BaseCardProps.Collapsed(
                 onExpand = {},
-                layoutId = CardType.FREEDOMTOOL.layoutId,
+                layoutId = WidgetType.FREEDOMTOOL.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope
             ),
