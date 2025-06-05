@@ -37,22 +37,22 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
-import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
+import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.WidgetType
-import com.rarilabs.rarime.modules.home.v3.ui.collapsed.ClaimCollapsedCard
-import com.rarilabs.rarime.modules.home.v3.ui.collapsed.FreedomtoolCollapsedCard
-import com.rarilabs.rarime.modules.home.v3.ui.collapsed.HiddenPrizeCollapsedCard
-import com.rarilabs.rarime.modules.home.v3.ui.collapsed.IdentityCollapsedCard
-import com.rarilabs.rarime.modules.home.v3.ui.collapsed.LikenessCollapsedCard
-import com.rarilabs.rarime.modules.home.v3.ui.collapsed.RecoveryMethodCollapsedCard
+import com.rarilabs.rarime.modules.home.v3.ui.collapsed.ClaimCollapsedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.collapsed.FreedomtoolCollapsedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.collapsed.HiddenPrizeCollapsedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.collapsed.IdentityCollapsedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.collapsed.LikenessCollapsedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.collapsed.RecoveryMethodCollapsedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.components.HomeHeader
 import com.rarilabs.rarime.modules.home.v3.ui.components.VerticalPageIndicator
-import com.rarilabs.rarime.modules.home.v3.ui.expanded.ClaimExpandedCard
-import com.rarilabs.rarime.modules.home.v3.ui.expanded.FreedomtoolExpandedCard
-import com.rarilabs.rarime.modules.home.v3.ui.expanded.HiddenPrizeExpandedCard
-import com.rarilabs.rarime.modules.home.v3.ui.expanded.IdentityExpandedCard
-import com.rarilabs.rarime.modules.home.v3.ui.expanded.LikenessExpandedCard
-import com.rarilabs.rarime.modules.home.v3.ui.expanded.RecoveryMethodExpandedCard
+import com.rarilabs.rarime.modules.home.v3.ui.expanded.ClaimExpandedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.expanded.FreedomtoolExpandedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.expanded.HiddenPrizeExpandedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.expanded.IdentityExpandedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.expanded.LikenessExpandedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.expanded.RecoveryMethodExpandedWidget
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.manageWidgets.ManageWidgetsBottomSheet
@@ -200,7 +200,7 @@ fun HomeScreenContent(
                             )
 
                             // Common props for every collapsed card
-                            val collapsedCardProps = BaseCardProps.Collapsed(
+                            val collapsedCardProps = BaseWidgetProps.Collapsed(
                                 onExpand = {
                                     if (pagerScrollEnabled) {
                                         selectedWidgetType = cardType
@@ -218,35 +218,35 @@ fun HomeScreenContent(
                             }
 
                             when (cardType) {
-                                WidgetType.FREEDOMTOOL -> FreedomtoolCollapsedCard(
-                                    collapsedCardProps = collapsedCardProps,
+                                WidgetType.FREEDOMTOOL -> FreedomtoolCollapsedWidget(
+                                    collapsedWidgetProps = collapsedCardProps,
                                     modifier = baseCollapsedModifier,
                                 )
 
-                                WidgetType.IDENTITY -> IdentityCollapsedCard(
-                                    collapsedCardProps = collapsedCardProps,
+                                WidgetType.IDENTITY -> IdentityCollapsedWidget(
+                                    collapsedWidgetProps = collapsedCardProps,
                                     modifier = baseCollapsedModifier,
                                 )
 
-                                WidgetType.LIKENESS -> LikenessCollapsedCard(
-                                    collapsedCardProps = collapsedCardProps,
+                                WidgetType.LIKENESS -> LikenessCollapsedWidget(
+                                    collapsedWidgetProps = collapsedCardProps,
                                     modifier = baseCollapsedModifier,
                                 )
 
-                                WidgetType.CLAIM -> ClaimCollapsedCard(
-                                    collapsedCardProps = collapsedCardProps,
+                                WidgetType.CLAIM -> ClaimCollapsedWidget(
+                                    collapsedWidgetProps = collapsedCardProps,
                                     modifier = baseCollapsedModifier,
                                     currentPointsBalance = currentPointsBalance
                                 )
 
-                                WidgetType.HIDDEN_PRIZE -> HiddenPrizeCollapsedCard(
-                                    collapsedCardProps = collapsedCardProps,
+                                WidgetType.HIDDEN_PRIZE -> HiddenPrizeCollapsedWidget(
+                                    collapsedWidgetProps = collapsedCardProps,
                                     modifier = baseCollapsedModifier,
                                     colorScheme = colorScheme
                                 )
 
-                                WidgetType.RECOVERY_METHOD -> RecoveryMethodCollapsedCard(
-                                    collapsedCardProps = collapsedCardProps,
+                                WidgetType.RECOVERY_METHOD -> RecoveryMethodCollapsedWidget(
+                                    collapsedWidgetProps = collapsedCardProps,
                                     modifier = baseCollapsedModifier,
                                     colorScheme = colorScheme
                                 )
@@ -284,7 +284,7 @@ fun HomeScreenContent(
                     modifier = Modifier.align(Alignment.TopCenter)
                 ) {
                     // Common props for every expanded card
-                    val expandedCardProps = BaseCardProps.Expanded(
+                    val expandedCardProps = BaseWidgetProps.Expanded(
                         onCollapse = { selectedWidgetType = null },
                         layoutId = targetCardType.layoutId,
                         animatedVisibilityScope = this@AnimatedContent,
@@ -292,40 +292,40 @@ fun HomeScreenContent(
                     )
 
                     when (targetCardType) {
-                        WidgetType.FREEDOMTOOL -> FreedomtoolExpandedCard(
-                            expandedCardProps = expandedCardProps,
+                        WidgetType.FREEDOMTOOL -> FreedomtoolExpandedWidget(
+                            expandedWidgetProps = expandedCardProps,
                             innerPaddings = innerPaddings,
                             navigate = navigate
                         )
 
-                        WidgetType.IDENTITY -> IdentityExpandedCard(
-                            expandedCardProps = expandedCardProps,
+                        WidgetType.IDENTITY -> IdentityExpandedWidget(
+                            expandedWidgetProps = expandedCardProps,
                             innerPaddings = innerPaddings,
                             navigate = navigate,
                             setVisibilityOfBottomBar = setVisibilityOfBottomBar
                         )
 
-                        WidgetType.LIKENESS -> LikenessExpandedCard(
-                            expandedCardProps = expandedCardProps,
+                        WidgetType.LIKENESS -> LikenessExpandedWidget(
+                            expandedWidgetProps = expandedCardProps,
                             innerPaddings = innerPaddings,
                             navigate = navigate
                         )
 
-                        WidgetType.CLAIM -> ClaimExpandedCard(
-                            expandedCardProps = expandedCardProps,
+                        WidgetType.CLAIM -> ClaimExpandedWidget(
+                            expandedWidgetProps = expandedCardProps,
                             innerPaddings = innerPaddings,
                             navigate = navigate,
                             currentPointsBalance = currentPointsBalance
                         )
 
-                        WidgetType.HIDDEN_PRIZE -> HiddenPrizeExpandedCard(
-                            expandedCardProps = expandedCardProps,
+                        WidgetType.HIDDEN_PRIZE -> HiddenPrizeExpandedWidget(
+                            expandedWidgetProps = expandedCardProps,
                             innerPaddings = innerPaddings,
                             navigate = navigate
                         )
 
-                        WidgetType.RECOVERY_METHOD -> RecoveryMethodExpandedCard(
-                            expandedCardProps = expandedCardProps,
+                        WidgetType.RECOVERY_METHOD -> RecoveryMethodExpandedWidget(
+                            expandedWidgetProps = expandedCardProps,
                             innerPaddings = innerPaddings,
                             navigate = navigate
                         )

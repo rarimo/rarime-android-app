@@ -64,11 +64,11 @@ import com.rarilabs.rarime.modules.hiddenPrize.AddScanBottomSheet
 import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeCamera
 import com.rarilabs.rarime.modules.hiddenPrize.HiddenPrizeViewModel
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
-import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
+import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
@@ -85,9 +85,9 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun HiddenPrizeExpandedCard(
+fun HiddenPrizeExpandedWidget(
     modifier: Modifier = Modifier,
-    expandedCardProps: BaseCardProps.Expanded,
+    expandedWidgetProps: BaseWidgetProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
     viewModel: HiddenPrizeViewModel = hiltViewModel(),
     navigate: (String) -> Unit
@@ -180,8 +180,8 @@ fun HiddenPrizeExpandedCard(
 
     }
 
-    HiddenPrizeExpandedCardContent(
-        cardProps = expandedCardProps,
+    HiddenPrizeExpandedWidgetContent(
+        widgetProps = expandedWidgetProps,
         modifier = modifier,
         innerPaddings = innerPaddings,
         onScan = {
@@ -208,9 +208,9 @@ fun HiddenPrizeExpandedCard(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun HiddenPrizeExpandedCardContent(
+fun HiddenPrizeExpandedWidgetContent(
     modifier: Modifier = Modifier,
-    cardProps: BaseCardProps.Expanded,
+    widgetProps: BaseWidgetProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
     onScan: () -> Unit,
     onAddScan: () -> Unit,
@@ -225,9 +225,9 @@ fun HiddenPrizeExpandedCardContent(
         celebrity?.getCelebrityStatus()
     }
 
-    with(cardProps) {
+    with(widgetProps) {
         with(sharedTransitionScope) {
-            BaseExpandedCard(
+            BaseExpandedWidget(
                 modifier = modifier
                     .sharedElement(
                         state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
@@ -478,7 +478,7 @@ private fun Body(
                         }
                     }
                 Spacer(modifier = Modifier.size(12.dp))
-                BaseCardTitle(
+                BaseWidgetTitle(
                     title = "Hidden keys",
                     accentTitle = "Find a face",
                     titleStyle = RarimeTheme.typography.h1.copy(RarimeTheme.colors.textPrimary),
@@ -615,11 +615,11 @@ private fun Background(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO)
 @Composable
-fun HiddenPriceExpandedCardPreviewLightMode() {
+fun HiddenPriceExpandedWidgetPreviewLightMode() {
     AppTheme {
         PrevireSharedAnimationProvider { sts, avs ->
-            HiddenPrizeExpandedCardContent(
-                cardProps = BaseCardProps.Expanded(
+            HiddenPrizeExpandedWidgetContent(
+                widgetProps = BaseWidgetProps.Expanded(
                     onCollapse = {},
                     layoutId = WidgetType.HIDDEN_PRIZE.layoutId,
                     animatedVisibilityScope = avs,
@@ -642,11 +642,11 @@ fun HiddenPriceExpandedCardPreviewLightMode() {
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun HiddenPriceExpandedCardPreviewDarkMode() {
+fun HiddenPriceExpandedWidgetPreviewDarkMode() {
     AppTheme {
         PrevireSharedAnimationProvider { sts, avs ->
-            HiddenPrizeExpandedCardContent(
-                cardProps = BaseCardProps.Expanded(
+            HiddenPrizeExpandedWidgetContent(
+                widgetProps = BaseWidgetProps.Expanded(
                     onCollapse = {},
                     layoutId = WidgetType.HIDDEN_PRIZE.layoutId,
                     animatedVisibilityScope = avs,

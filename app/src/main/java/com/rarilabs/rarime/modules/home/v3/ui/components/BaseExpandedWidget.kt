@@ -34,7 +34,7 @@ import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun BaseExpandedCard(
+fun BaseExpandedWidget(
     modifier: Modifier = Modifier,
 
     // slots
@@ -80,8 +80,8 @@ fun BaseExpandedCard(
 
 @Preview(showBackground = true)
 @Composable
-fun BaseExpandedCardPreview() {
-    BaseExpandedCard(
+fun BaseExpandedWidgetPreview() {
+    BaseExpandedWidget(
         modifier = Modifier.fillMaxSize(),
         header = {
             Row(modifier = Modifier.padding(20.dp)) {
@@ -96,7 +96,7 @@ fun BaseExpandedCardPreview() {
                 modifier = Modifier.padding(20.dp)
             ) {
                 Spacer(Modifier.height(BG_DOT_MAP_HEIGHT.dp))
-                BaseCardTitle(
+                BaseWidgetTitle(
                     title = "RariMe",
                     accentTitle = "Learn More",
                     gradient = RarimeTheme.colors.gradient6,

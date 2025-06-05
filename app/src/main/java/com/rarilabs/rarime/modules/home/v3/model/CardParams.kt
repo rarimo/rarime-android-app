@@ -5,7 +5,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-sealed class BaseCardProps(
+sealed class BaseWidgetProps(
     open val layoutId: Int,
     open val animatedVisibilityScope: AnimatedContentScope,
     open val sharedTransitionScope: SharedTransitionScope
@@ -15,13 +15,13 @@ sealed class BaseCardProps(
         override val layoutId: Int,
         override val animatedVisibilityScope: AnimatedContentScope,
         override val sharedTransitionScope: SharedTransitionScope
-    ) : BaseCardProps(layoutId, animatedVisibilityScope, sharedTransitionScope)
+    ) : BaseWidgetProps(layoutId, animatedVisibilityScope, sharedTransitionScope)
 
     data class Expanded(
         val onCollapse: () -> Unit,
         override val layoutId: Int,
         override val animatedVisibilityScope: AnimatedContentScope,
         override val sharedTransitionScope: SharedTransitionScope
-    ) : BaseCardProps(layoutId, animatedVisibilityScope, sharedTransitionScope)
+    ) : BaseWidgetProps(layoutId, animatedVisibilityScope, sharedTransitionScope)
 }
 

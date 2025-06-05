@@ -21,7 +21,7 @@ import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun BaseCardLogo(
+fun BaseWidgetLogo(
     modifier: Modifier = Modifier,
     size: Int = 40,
     iconSize: Int = size,
@@ -50,14 +50,14 @@ fun BaseCardLogo(
 
 @Preview(showBackground = true, name = "Default Circle")
 @Composable
-fun BaseCardLogoPreview_Default() {
-    BaseCardLogo()
+fun BaseWidgetLogoPreview_Default() {
+    BaseWidgetLogo()
 }
 
 @Preview(showBackground = true, name = "Cut Corner Shape")
 @Composable
-fun BaseCardLogoPreview_CutCorner() {
-    BaseCardLogo(
+fun BaseWidgetLogoPreview_CutCorner() {
+    BaseWidgetLogo(
         size = 48,
         iconSize = 32,
         contentPadding = 8,
@@ -70,8 +70,8 @@ fun BaseCardLogoPreview_CutCorner() {
 
 @Preview(showBackground = true, name = "Rounded Rectangle")
 @Composable
-fun BaseCardLogoPreview_RoundedRect() {
-    BaseCardLogo(
+fun BaseWidgetLogoPreview_RoundedRect() {
+    BaseWidgetLogo(
         size = 48,
         iconSize = 24,
         contentPadding = 12,

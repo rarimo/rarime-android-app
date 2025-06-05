@@ -32,32 +32,33 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BG_ClAIM_HEIGHT
-import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
+import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
-import com.rarilabs.rarime.modules.home.v3.model.getClaimCardAccentTitle
-import com.rarilabs.rarime.modules.home.v3.model.getClaimCardTitle
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardLogo
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCollapsedCard
+import com.rarilabs.rarime.modules.home.v3.model.getClaimWidgetAccentTitle
+import com.rarilabs.rarime.modules.home.v3.model.getClaimWidgetTitle
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetLogo
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCollapsedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetLogo
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun ClaimCollapsedCard(
-    collapsedCardProps: BaseCardProps.Collapsed,
+fun ClaimCollapsedWidget(
+    collapsedWidgetProps: BaseWidgetProps.Collapsed,
     modifier: Modifier = Modifier,
     currentPointsBalance: Long?
 ) {
     val isClaimed = currentPointsBalance != null && currentPointsBalance != 0L
-    val title = getClaimCardTitle(isClaimed)
-    val accentTitle = getClaimCardAccentTitle(currentPointsBalance)
+    val title = getClaimWidgetTitle(isClaimed)
+    val accentTitle = getClaimWidgetAccentTitle(currentPointsBalance)
 
-    with(collapsedCardProps) {
+    with(collapsedWidgetProps) {
         with(sharedTransitionScope) {
-            BaseCollapsedCard(
+            BaseCollapsedWidget(
                 modifier = Modifier
                     .sharedElement(
                         state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
@@ -124,7 +125,7 @@ private fun Header(
                 .padding(top = 20.dp, end = 20.dp)
                 .fillMaxWidth()
         ) {
-            BaseCardLogo(
+            BaseWidgetLogo(
                 resId = R.drawable.ic_rarimo,
                 backgroundColor = Color.Transparent,
                 size = 50,
@@ -158,7 +159,7 @@ private fun Footer(
                     resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                 )
         ) {
-            BaseCardTitle(
+            BaseWidgetTitle(
                 title = title,
                 accentTitle = accentTitle,
                 titleModifier =
@@ -227,8 +228,8 @@ private fun Background(
 @Composable
 fun ClaimCollapsedCardPreview_Unclaimed() {
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
-        ClaimCollapsedCard(
-            collapsedCardProps = BaseCardProps.Collapsed(
+        ClaimCollapsedWidget(
+            collapsedWidgetProps = BaseWidgetProps.Collapsed(
                 onExpand = {},
                 layoutId = WidgetType.CLAIM.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
@@ -247,8 +248,8 @@ fun ClaimCollapsedCardPreview_Unclaimed() {
 @Composable
 fun ClaimCollapsedCardPreview_Claimed() {
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
-        ClaimCollapsedCard(
-            collapsedCardProps = BaseCardProps.Collapsed(
+        ClaimCollapsedWidget(
+            collapsedWidgetProps = BaseWidgetProps.Collapsed(
                 onExpand = {},
                 layoutId = WidgetType.CLAIM.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,

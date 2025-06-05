@@ -20,12 +20,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -34,12 +39,12 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
-import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
+import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardLogo
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCollapsedCard
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetLogo
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCollapsedWidget
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.AppTheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -47,14 +52,14 @@ import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun RecoveryMethodCollapsedCard(
-    collapsedCardProps: BaseCardProps.Collapsed,
+fun HiddenPrizeCollapsedWidget(
+    collapsedWidgetProps: BaseWidgetProps.Collapsed,
     modifier: Modifier = Modifier,
     colorScheme: AppColorScheme
 ) {
-    with(collapsedCardProps) {
+    with(collapsedWidgetProps) {
         with(sharedTransitionScope) {
-            BaseCollapsedCard(
+            BaseCollapsedWidget(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
@@ -114,10 +119,10 @@ private fun Header(
                 .padding(top = 20.dp, start = 20.dp)
                 .fillMaxWidth()
         ) {
-            BaseCardLogo(
+            BaseWidgetLogo(
                 resId = R.drawable.ic_rarime,
-                backgroundColor = RarimeTheme.colors.componentPrimary,
-                size = 40,
+                backgroundColor = Color.Transparent,
+                size = 54,
                 tint = RarimeTheme.colors.textSecondary.copy(alpha = 1f),
             )
         }
@@ -144,10 +149,40 @@ private fun Footer(
                 )
                 .fillMaxSize()
         ) {
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = RarimeTheme.colors.componentPrimary,
+                ),
+                modifier = Modifier.size(width = 156.dp, height = 32.dp)
+
+            ) {
+                Row(
+                    modifier = Modifier.padding(
+                        horizontal = 16.dp,
+                        vertical = 6.dp
+                    )
+                ) {
+                    Text(
+                        "Prize-pool: ",
+                        style = RarimeTheme.typography.subtitle6.copy(color = RarimeTheme.colors.textPrimary)
+                    )
+                    Text(
+                        text = stringResource(R.string.hidden_prize_prize_pool_value), //TODO Maybe give this from backend in future
+                        style = RarimeTheme.typography.h6.copy(color = RarimeTheme.colors.textPrimary),
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    Image(
+                        painterResource(R.drawable.ic_ethereum),
+                        contentDescription = "ETH",
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.size(12.dp))
             Row(modifier = Modifier.fillMaxWidth()) {
-                BaseCardTitle(
-                    title = stringResource(R.string.recovery_method_collapsed_card_title),
-                    accentTitle = stringResource(R.string.recovery_method_collapsed_card_accent_title),
+                BaseWidgetTitle(
+                    title = "Hidden keys",
+                    accentTitle = "Find a face",
                     titleModifier = Modifier.sharedBounds(
                         rememberSharedContentState(HomeSharedKeys.title(layoutId)),
                         animatedVisibilityScope = animatedVisibilityScope,
@@ -155,7 +190,7 @@ private fun Footer(
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
                     titleStyle = RarimeTheme.typography.h2.copy(RarimeTheme.colors.textPrimary),
-                    accentTitleStyle = RarimeTheme.typography.additional2.copy(brush = RarimeTheme.colors.gradient11),
+                    accentTitleStyle = RarimeTheme.typography.additional2.copy(brush = RarimeTheme.colors.gradient8),
                     accentTitleModifier = Modifier.sharedBounds(
                         rememberSharedContentState(
                             HomeSharedKeys.accentTitle(
@@ -166,7 +201,6 @@ private fun Footer(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
-                    caption = stringResource(R.string.recovery_method_collapsed_card_caption),
                     captionStyle = RarimeTheme.typography.body4.copy(RarimeTheme.colors.textSecondary),
                     captionModifier = Modifier.sharedBounds(
                         rememberSharedContentState(
@@ -183,8 +217,7 @@ private fun Footer(
                 Spacer(modifier = Modifier.weight(1f))
                 AppIcon(
                     id = R.drawable.ic_arrow_right_up_line,
-                    modifier = Modifier.align(Alignment.Bottom),
-                    tint = RarimeTheme.colors.textPrimary
+                    modifier = Modifier.align(Alignment.Bottom)
                 )
             }
         }
@@ -207,8 +240,8 @@ private fun Background(
     }
 
     val backgroundRes = remember(isDark) {
-        if (isDark) R.drawable.ic_recovery_method_collapsed_card_background_dark
-        else R.drawable.ic_recovery_method_collapsed_card_background_light
+        if (isDark) R.drawable.ic_bg_hidden_prize_dark
+        else R.drawable.ic_bg_hidden_prize_light
     }
     with(sharedTransitionScope) {
         Box(
@@ -220,7 +253,7 @@ private fun Background(
             Image(
                 painter = painterResource(backgroundRes),
                 contentDescription = null,
-                contentScale = ContentScale.FillBounds,
+                contentScale = ContentScale.None,
                 modifier = Modifier
                     .fillMaxSize()
 
@@ -246,36 +279,16 @@ private fun Background(
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-@Preview(uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO)
-@Composable
-fun RecoveryMethodCollapsedCardPreview_LightMode() {
-    AppTheme {
-        PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
-            RecoveryMethodCollapsedCard(
-                colorScheme = AppColorScheme.LIGHT, collapsedCardProps = BaseCardProps.Collapsed(
-                    onExpand = {},
-                    layoutId = WidgetType.RECOVERY_METHOD.layoutId,
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    sharedTransitionScope = sharedTransitionScope
-                ), modifier = Modifier
-                    .fillMaxWidth()
-                    .height(500.dp)
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun RecoveryMethodCollapsedCardPreview_DarkMode() {
+fun HiddenPrizeCollapsedWidgetPreview_DarkMode() {
     AppTheme {
         PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
-            RecoveryMethodCollapsedCard(
+            HiddenPrizeCollapsedWidget(
                 colorScheme = AppColorScheme.DARK,
-                collapsedCardProps = BaseCardProps.Collapsed(
+                collapsedWidgetProps = BaseWidgetProps.Collapsed(
                     onExpand = {},
-                    layoutId = WidgetType.RECOVERY_METHOD.layoutId,
+                    layoutId = WidgetType.HIDDEN_PRIZE.layoutId,
                     animatedVisibilityScope = animatedVisibilityScope,
                     sharedTransitionScope = sharedTransitionScope
                 ),
@@ -284,6 +297,27 @@ fun RecoveryMethodCollapsedCardPreview_DarkMode() {
                     .height(500.dp),
 
                 )
+        }
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Preview(uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO)
+@Composable
+fun HiddenPrizeCollapsedWidgetPreview_LightMode() {
+    AppTheme {
+        PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
+            HiddenPrizeCollapsedWidget(
+                colorScheme = AppColorScheme.LIGHT,
+                collapsedWidgetProps = BaseWidgetProps.Collapsed(
+                    onExpand = {},
+                    layoutId = WidgetType.HIDDEN_PRIZE.layoutId,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    sharedTransitionScope = sharedTransitionScope
+                ), modifier = Modifier
+                    .fillMaxWidth()
+                    .height(500.dp)
+            )
         }
     }
 }
