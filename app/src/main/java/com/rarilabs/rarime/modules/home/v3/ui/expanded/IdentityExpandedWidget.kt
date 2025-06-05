@@ -28,11 +28,11 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BG_HAND_PHONE_HEIGHT
-import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
-import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
@@ -42,16 +42,16 @@ import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import com.rarilabs.rarime.util.Screen
 
 @Composable
-fun IdentityExpandedCard(
+fun IdentityExpandedWidget(
     modifier: Modifier = Modifier,
-    expandedCardProps: BaseCardProps.Expanded,
+    expandedWidgetProps: BaseWidgetProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
     navigate: (String) -> Unit,
     setVisibilityOfBottomBar: (Boolean) -> Unit
 ) {
-    IdentityExpandedCardContent(
+    IdentityExpandedWidgetContent(
         modifier = modifier,
-        cardProps = expandedCardProps,
+        widgetProps = expandedWidgetProps,
         innerPaddings = innerPaddings,
         navigate = navigate,
         setVisibilityOfBottomBar = setVisibilityOfBottomBar
@@ -60,16 +60,16 @@ fun IdentityExpandedCard(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun IdentityExpandedCardContent(
+fun IdentityExpandedWidgetContent(
     modifier: Modifier = Modifier,
-    cardProps: BaseCardProps.Expanded,
+    widgetProps: BaseWidgetProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
     navigate: (String) -> Unit,
     setVisibilityOfBottomBar: (Boolean) -> Unit
 ) {
-    with(cardProps) {
+    with(widgetProps) {
         with(sharedTransitionScope) {
-            BaseExpandedCard(
+            BaseExpandedWidget(
                 modifier = modifier
                     .sharedElement(
                         state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
@@ -176,7 +176,7 @@ private fun Body(
                 )
         ) {
             Spacer(Modifier.height((BG_HAND_PHONE_HEIGHT - 100).dp))
-            BaseCardTitle(
+            BaseWidgetTitle(
                 title = "Your Device",
                 accentTitle = "Your Identity",
                 titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.baseBlack),
@@ -276,11 +276,11 @@ private fun Background(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true)
 @Composable
-fun IdentityExpandedCardPreview() {
+fun IdentityExpandedWidgetPreview() {
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
-        IdentityExpandedCardContent(
-            cardProps = BaseCardProps.Expanded(
-                layoutId = CardType.IDENTITY.layoutId,
+        IdentityExpandedWidgetContent(
+            widgetProps = BaseWidgetProps.Expanded(
+                layoutId = WidgetType.IDENTITY.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope,
                 onCollapse = {}

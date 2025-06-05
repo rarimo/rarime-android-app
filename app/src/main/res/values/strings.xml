@@ -542,5 +542,17 @@
     <string name="recovery_method_face_scan_description">Biometric facial key</string>
     <string name="recovery_method_object_scan_title">Object</string>
     <string name="recovery_method_object_scan_description">Make any object your key</string>
+    <string name="manage_widgets_btn_label">Manage Widgets</string>
+    <string name="manage_widgets_bottom_sheet_title">Manage widgets</string>
+    <string name="manage_widgets_add_btn_label">Add</string>
+    <string name="manage_widgets_remove_btn_label">Remove</string>
+    <string name="freedomtool_widget_title">Freedomtool</string>
+    <string name="freedomtool_widget_description">Revolutionizing polling, surveying \n and election processes</string>
+    <string name="digital_likeness_widget_title">Digital Likeness</string>
+    <string name="digital_likeness_widget_description">Your data, your rules</string>
+    <string name="hidden_prize_widget_title">Hidden keys</string>
+    <string name="hidden_prize_widget_description">Somewhere out on the open web, one famous \n face carries a key sealed inside its ZK-vector.</string>
+    <string name="recovery_method_widget_title">Recovery Method</string>
+    <string name="recovery_method_widget_description">Set up a new way to recover \n your account</string>
 
 </resources>

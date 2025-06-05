@@ -10,6 +10,7 @@ import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.manager.LikenessRule
 import com.rarilabs.rarime.manager.WalletAsset
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.util.data.ZkProof
@@ -22,6 +23,9 @@ interface SecureSharedPrefsManager {
 
     fun readPasscodeState(): SecurityCheckState
     fun savePasscodeState(state: SecurityCheckState)
+
+    fun readVisibleWidgets(): List<WidgetType>?
+    fun saveVisibleWidgets(visibleCard:List<WidgetType>)
 
     fun readBiometricsState(): SecurityCheckState
     fun saveBiometricsState(state: SecurityCheckState)
