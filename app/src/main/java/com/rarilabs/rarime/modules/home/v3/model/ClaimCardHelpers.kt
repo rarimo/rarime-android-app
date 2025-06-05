@@ -1,8 +1,8 @@
 package com.rarilabs.rarime.modules.home.v3.model
 
 
-fun getClaimCardTitle(isClaimed: Boolean) =
+fun getClaimWidgetTitle(isClaimed: Boolean) =
     if (isClaimed) "Reserved" else "Upcoming"
 
-fun getClaimCardAccentTitle(currentPointsBalance: Long?) =
+fun getClaimWidgetAccentTitle(currentPointsBalance: Long?) =
     if (currentPointsBalance != null && currentPointsBalance != 0L) "$currentPointsBalance RMO" else "RMO"
