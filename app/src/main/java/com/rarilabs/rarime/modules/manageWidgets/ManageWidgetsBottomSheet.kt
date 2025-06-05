@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,7 +41,7 @@ fun ManageWidgetsBottomSheet(
 ) {
     val colorScheme by viewModel.colorScheme.collectAsState()
     val managedCards by viewModel.managedCards.collectAsState()
-    val visibleCards by viewModel.visisbleCards.collectAsState()
+    val visibleCards by viewModel.visibleCards.collectAsState()
 
     ManageWidgetsBottomSheetContent(
         onClose = {
@@ -171,16 +170,7 @@ fun ManageWidgetsBottomSheetContent(
         )
 
     }
-    if (!isVisible(managedCards.get(pagerState.currentPage))) {
-        PrimaryButton(
-            modifier = Modifier
-                .padding(horizontal = 20.dp, vertical = 17.dp)
-                .fillMaxWidth(),
-            onClick = { onAdd(managedCards.get(pagerState.currentPage)) },
-            size = ButtonSize.Large,
-            text = stringResource(R.string.manage_widgets_add_btn_label)
-        )
-    } else {
+    if (isVisible(managedCards.get(pagerState.currentPage))) {
         SecondaryButton(
             onClick = { onRemove(managedCards.get(pagerState.currentPage)) },
             text = stringResource(R.string.manage_widgets_remove_btn_label),
@@ -188,6 +178,15 @@ fun ManageWidgetsBottomSheetContent(
             modifier = Modifier
                 .padding(horizontal = 20.dp, vertical = 17.dp)
                 .fillMaxWidth()
+        )
+    } else {
+        PrimaryButton(
+            modifier = Modifier
+                .padding(horizontal = 20.dp, vertical = 17.dp)
+                .fillMaxWidth(),
+            onClick = { onAdd(managedCards.get(pagerState.currentPage)) },
+            size = ButtonSize.Large,
+            text = stringResource(R.string.manage_widgets_add_btn_label)
         )
     }
 

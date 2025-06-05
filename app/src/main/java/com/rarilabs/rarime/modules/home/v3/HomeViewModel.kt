@@ -47,7 +47,7 @@ class HomeViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     val colorScheme = settingsManager.colorScheme
-    var visibleCard = widgetsManager.visibleCards
+    var visibleCards = widgetsManager.visibleCards
     val hasVotes: StateFlow<Boolean> =
         allUserVotes.map { it.isNotEmpty() }.distinctUntilChanged().stateIn(
             scope = viewModelScope,

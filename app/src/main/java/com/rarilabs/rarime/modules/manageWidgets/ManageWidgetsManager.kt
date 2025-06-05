@@ -19,10 +19,10 @@ class ManageWidgetsManager @Inject constructor(
 
     init {
         val visibleCardsStored = sharedPrefsManager.readVisibleCards()
-        if (!visibleCardsStored.isNullOrEmpty()) {
-            setVisibleCard(visibleCardsStored)
+        if (visibleCardsStored.isNullOrEmpty()) {
+            setVisibleCards(WidgetType.values().toList())
         } else {
-            setVisibleCard(WidgetType.values().toList())
+            _visibleCards.value = visibleCardsStored
         }
 
     }
@@ -40,18 +40,18 @@ class ManageWidgetsManager @Inject constructor(
         get() = _managedCards.asStateFlow()
 
 
-    fun setVisibleCard(visibleCards: List<WidgetType>) {
+    fun setVisibleCards(visibleCards: List<WidgetType>) {
         _visibleCards.value = (listOf(WidgetType.IDENTITY, WidgetType.CLAIM) + visibleCards).distinct()
             .sortedBy { it.layoutId }
         sharedPrefsManager.saveVisibleCards(_visibleCards.value)
     }
 
     fun remove(widgetType: WidgetType) {
-        setVisibleCard(_visibleCards.value.filter { it != widgetType })
+        setVisibleCards(_visibleCards.value.filter { it != widgetType })
     }
 
     fun add(widgetType: WidgetType) {
-        setVisibleCard((_visibleCards.value + widgetType))
+        setVisibleCards((_visibleCards.value + widgetType))
     }
 }
 
