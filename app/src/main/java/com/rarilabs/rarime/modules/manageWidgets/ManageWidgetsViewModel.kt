@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.manager.HiddenPrizeManager
 import com.rarilabs.rarime.manager.SettingsManager
 import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -11,7 +12,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ManageWidgetsViewModel @Inject constructor(
     private val settingsManager: SettingsManager,
-    private val widgetsManager: ManageWidgetsManager
+    private val widgetsManager: ManageWidgetsManager,
+
 ) : ViewModel() {
     val colorScheme = settingsManager.colorScheme
     val managedCards = widgetsManager.managedCards
