@@ -34,7 +34,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.earn.InviteOthersContent
 import com.rarilabs.rarime.earn.TaskCard
+import com.rarilabs.rarime.earn.tempPointsBalances
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
@@ -60,8 +62,15 @@ fun EarnExpandedWidget(
 ) {
     val inviteOthers = rememberAppSheetState()
 
-    AppBottomSheet(state = inviteOthers, backgroundColor = RarimeTheme.colors.backgroundSurface1) {
-//Todo adds Task bottom sheet
+    AppBottomSheet(
+        state = inviteOthers,
+        backgroundColor = RarimeTheme.colors.backgroundSurface1,
+        isHeaderEnabled = false
+    ) {
+        InviteOthersContent(
+            pointsBalance = tempPointsBalances,
+            onClose = {inviteOthers.hide()}
+        )
 
     }
 
@@ -69,6 +78,9 @@ fun EarnExpandedWidget(
         widgetProps = expandedWidgetProps,
         modifier = modifier,
         innerPaddings = innerPaddings,
+        onClick = {
+            inviteOthers.show()
+        }
     )
 
 
@@ -80,8 +92,9 @@ fun EarnExpandedWidgetContent(
     modifier: Modifier = Modifier,
     widgetProps: BaseWidgetProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
+    onClick: () -> Unit
 
-    ) {
+) {
     with(widgetProps) {
         with(sharedTransitionScope) {
             BaseExpandedWidget(
@@ -118,7 +131,7 @@ fun EarnExpandedWidgetContent(
                         //colorScheme = colorScheme
                     )
                 },
-                footer = { Footer(countOfTask = 1) })
+                footer = { Footer(countOfTask = 1, onClick = onClick) })
         }
     }
 }
@@ -248,6 +261,7 @@ private fun Body(
 @Composable
 private fun Footer(
     countOfTask: Int,
+    onClick: () -> Unit
 
 
 ) {
@@ -266,15 +280,16 @@ private fun Footer(
                 color = RarimeTheme.colors.textSecondary,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
-            TaskCard(//todo in future used for implementing logic
+            TaskCard(
+//todo in future used for implementing logic
                 taskIconId = R.drawable.ic_user_add_line,
                 rewardInRMO = 50,
                 title = stringResource(R.string.earn_title_of_task),
-                onClick = {},
+                onClick = onClick,
                 description = stringResource(R.string.earn_invite_task_card_description),
                 currentVal = 1,
-                maxVal = 10
-                )
+                maxVal = 10,
+            )
 
         }
     }
@@ -340,6 +355,7 @@ fun EarnExpandedWidgetPreview() {
             ),
             modifier = Modifier.height(820.dp),
             innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
+            onClick = {}
         )
     }
 }

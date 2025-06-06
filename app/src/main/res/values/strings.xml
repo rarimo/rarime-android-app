@@ -559,5 +559,7 @@
     <string name="earn_expanded_widget_active_task_title">" ACTIVE TASK"</string>
     <string name="earn_title_of_task">Invite others</string>
     <string name="earn_invite_task_card_description">Invited</string>
+    <string name="earn_widget_invite_bottom_sheet_title">Invite others</string>
+    <string name="earn_invite_bottom_sheet_description">Share your referral link and get bonuses  \nwhen your friends join</string>
 
 </resources>
