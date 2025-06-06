@@ -78,7 +78,7 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 @Composable
 fun InviteOthersContent(
     modifier: Modifier = Modifier,
-    pointsBalance: PointsBalanceData = tempPointsBalances, //TODO: remove default temp value
+    pointsBalance: PointsBalanceData, //TODO: remove default temp value
     onClose:()->Unit
 ) {
     val rewardPerInvite = pointsBalance.attributes.referral_codes?.size?.let {

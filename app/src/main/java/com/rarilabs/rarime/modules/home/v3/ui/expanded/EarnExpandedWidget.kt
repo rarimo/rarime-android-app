@@ -68,15 +68,15 @@ fun EarnExpandedWidget(
 ) {
     val inviteOthers = rememberAppSheetState()
     val colorScheme by viewModel.colorScheme.collectAsState()
-
+    val pointsBalances = viewModel.pointBalanceBody.value
     AppBottomSheet(
         state = inviteOthers,
         backgroundColor = RarimeTheme.colors.backgroundSurface1,
         isHeaderEnabled = false
     ) {
         InviteOthersContent(
-            //pointsBalance = tempPointsBalances, //todo in future we can get from backend
-            onClose = {inviteOthers.hide()}
+            pointsBalance = pointsBalances!!.data, //todo in future we can get from backend
+            onClose = { inviteOthers.hide() },
         )
 
     }
@@ -310,7 +310,7 @@ private fun Background(
     layoutId: Int,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-     colorScheme: AppColorScheme
+    colorScheme: AppColorScheme
 ) {
     val isDark = when (colorScheme) {
         AppColorScheme.SYSTEM -> isSystemInDarkTheme()
