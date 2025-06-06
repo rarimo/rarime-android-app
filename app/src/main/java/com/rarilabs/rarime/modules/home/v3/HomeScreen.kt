@@ -46,7 +46,6 @@ import com.rarilabs.rarime.modules.home.v3.ui.collapsed.LikenessCollapsedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.RecoveryMethodCollapsedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.components.HomeHeader
 import com.rarilabs.rarime.modules.home.v3.ui.components.VerticalPageIndicator
-import com.rarilabs.rarime.modules.home.v3.ui.expanded.EarnExpandedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.FreedomtoolExpandedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.HiddenPrizeExpandedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.LikenessExpandedWidget
@@ -300,12 +299,13 @@ fun HomeScreenContent(
                             navigate = navigate
                         )
 
-                        WidgetType.EARN -> EarnExpandedWidget(
-                            expandedWidgetProps = expandedCardProps,
-                            innerPaddings = innerPaddings,
-                            navigate = navigate,
-                            currentPointsBalance = currentPointsBalance
-                        )
+                        WidgetType.EARN ->{}
+//                        EarnExpandedWidget(
+//                            expandedWidgetProps = expandedCardProps,
+//                            innerPaddings = innerPaddings,
+//                            navigate = navigate,
+//                            currentPointsBalance = currentPointsBalance
+//                        )
 
                         WidgetType.HIDDEN_PRIZE -> HiddenPrizeExpandedWidget(
                             expandedWidgetProps = expandedCardProps,

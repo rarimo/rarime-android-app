@@ -1,4 +1,4 @@
-package com.rarilabs.rarime.modules.home.v2.details
+package com.rarilabs.rarime.earn
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -22,6 +22,7 @@ import com.rarilabs.rarime.api.points.models.PointsBalanceData
 import com.rarilabs.rarime.api.points.models.PointsBalanceDataAttributes
 import com.rarilabs.rarime.api.points.models.ReferralCode
 import com.rarilabs.rarime.api.points.models.ReferralCodeStatuses
+import com.rarilabs.rarime.modules.home.v2.details.DetailsProperties
 import com.rarilabs.rarime.modules.rewards.components.RewardsEventItemInvitesCard
 import com.rarilabs.rarime.modules.rewards.view_models.CONST_MOCKED_EVENTS_LIST
 import com.rarilabs.rarime.ui.theme.RarimeTheme
