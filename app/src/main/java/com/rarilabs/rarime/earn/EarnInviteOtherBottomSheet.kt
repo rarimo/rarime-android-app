@@ -32,7 +32,7 @@ import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 
-val tempPointsBalances = PointsBalanceData(
+ val tempPointsBalances = PointsBalanceData(
     id = "12",
     type = "12",
 

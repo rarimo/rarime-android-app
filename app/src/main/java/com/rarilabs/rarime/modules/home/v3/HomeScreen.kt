@@ -114,7 +114,8 @@ fun HomeScreenV3(
         setVisibilityOfBottomBar = setVisibilityOfBottomBar,
         currentPointsBalance = currentPointsBalance,
         colorScheme = colorScheme,
-        onClick = { sheetManageWidgets.show() }
+        onClick = { sheetManageWidgets.show() },
+
 
     )
 
@@ -304,7 +305,7 @@ fun HomeScreenContent(
                             expandedWidgetProps = expandedCardProps,
                             innerPaddings = innerPaddings,
                             navigate = navigate,
-                            //currentPointsBalance = currentPointsBalance
+
                         )
 
                         WidgetType.HIDDEN_PRIZE -> HiddenPrizeExpandedWidget(

@@ -10,6 +10,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -32,11 +36,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.data.enums.AppColorScheme
+import com.rarilabs.rarime.earn.EarnViewModel
 import com.rarilabs.rarime.earn.InviteOthersContent
 import com.rarilabs.rarime.earn.TaskCard
-import com.rarilabs.rarime.earn.tempPointsBalances
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
@@ -57,10 +63,11 @@ fun EarnExpandedWidget(
     modifier: Modifier = Modifier,
     expandedWidgetProps: BaseWidgetProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
-    //viewModel: EarnViewModel = hiltViewModel(),
+    viewModel: EarnViewModel = hiltViewModel(),
     navigate: (String) -> Unit
 ) {
     val inviteOthers = rememberAppSheetState()
+    val colorScheme by viewModel.colorScheme.collectAsState()
 
     AppBottomSheet(
         state = inviteOthers,
@@ -68,7 +75,7 @@ fun EarnExpandedWidget(
         isHeaderEnabled = false
     ) {
         InviteOthersContent(
-            pointsBalance = tempPointsBalances,
+            //pointsBalance = tempPointsBalances, //todo in future we can get from backend
             onClose = {inviteOthers.hide()}
         )
 
@@ -80,7 +87,8 @@ fun EarnExpandedWidget(
         innerPaddings = innerPaddings,
         onClick = {
             inviteOthers.show()
-        }
+        },
+        colorScheme = colorScheme
     )
 
 
@@ -92,7 +100,8 @@ fun EarnExpandedWidgetContent(
     modifier: Modifier = Modifier,
     widgetProps: BaseWidgetProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    colorScheme: AppColorScheme
 
 ) {
     with(widgetProps) {
@@ -128,7 +137,7 @@ fun EarnExpandedWidgetContent(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope,
-                        //colorScheme = colorScheme
+                        colorScheme = colorScheme
                     )
                 },
                 footer = { Footer(countOfTask = 1, onClick = onClick) })
@@ -301,17 +310,17 @@ private fun Background(
     layoutId: Int,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    // colorScheme: AppColorScheme
+     colorScheme: AppColorScheme
 ) {
-//    val isDark = when (colorScheme) {
-//        AppColorScheme.SYSTEM -> isSystemInDarkTheme()
-//        AppColorScheme.DARK -> true
-//        AppColorScheme.LIGHT -> false
-//    }
-//    val backgroundRes = remember(isDark) {
-//        if (isDark) R.drawable.ic_bg_earn_widget_dark
-//        else R.drawable.ic_bg_earn_widget_light
-//    }
+    val isDark = when (colorScheme) {
+        AppColorScheme.SYSTEM -> isSystemInDarkTheme()
+        AppColorScheme.DARK -> true
+        AppColorScheme.LIGHT -> false
+    }
+    val backgroundRes = remember(isDark) {
+        if (isDark) R.drawable.ic_bg_earn_widget_dark
+        else R.drawable.ic_bg_earn_widget_light
+    }
 
 
     with(sharedTransitionScope) {
@@ -321,7 +330,7 @@ private fun Background(
                 .background(color = RarimeTheme.colors.backgroundPrimary)
         ) {
             Image(
-                painter = painterResource(R.drawable.ic_bg_earn_widget_dark),
+                painter = painterResource(backgroundRes),
                 contentDescription = null,
                 contentScale = ContentScale.FillWidth,
                 modifier = Modifier
@@ -355,7 +364,8 @@ fun EarnExpandedWidgetPreview() {
             ),
             modifier = Modifier.height(820.dp),
             innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
-            onClick = {}
+            onClick = {},
+            colorScheme = AppColorScheme.LIGHT
         )
     }
 }
