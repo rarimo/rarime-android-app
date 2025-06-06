@@ -204,7 +204,7 @@ private fun Body(
             Column(
                 modifier = Modifier
                     .background(
-                        RarimeTheme.colors.backgroundBlur,
+                        RarimeTheme.colors.backgroundSurface1,
                         shape = RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
                     )
                     .padding(20.dp)
@@ -265,7 +265,7 @@ private fun Footer(
 
 
 ) {
-    Column(modifier = Modifier.background(color = RarimeTheme.colors.backgroundBlur)) {
+    Column(modifier = Modifier.background(color = RarimeTheme.colors.backgroundSurface1)) {
 
 
         HorizontalDivider(
