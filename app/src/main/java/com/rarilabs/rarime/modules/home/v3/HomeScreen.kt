@@ -82,14 +82,20 @@ fun HomeScreenV3(
     }
     val colorScheme by viewModel.colorScheme.collectAsState()
     val visibleCards by viewModel.visibleWidgets.collectAsState()
-    val welcomeAppSheetState = rememberAppSheetState(!viewModel.getIsShownWelcome())
+    val isWelcomeVisible by remember {
+        derivedStateOf { !viewModel.getIsShownWelcome() }
+    }
+
+    val welcomeAppSheetState = rememberAppSheetState(isWelcomeVisible)
 
     LaunchedEffect(Unit) {
         viewModel.initHomeData()
+    }
+
+    LaunchedEffect(welcomeAppSheetState.showSheet) {
         if (welcomeAppSheetState.showSheet) {
             viewModel.saveIsShownWelcome(true)
         }
-
     }
     val sheetManageWidgets = rememberAppSheetState()
     AppBottomSheet(
@@ -117,7 +123,6 @@ fun HomeScreenV3(
         currentPointsBalance = currentPointsBalance,
         colorScheme = colorScheme,
         onClick = { sheetManageWidgets.show() },
-
     )
 
     AppBottomSheet(
@@ -309,7 +314,7 @@ fun HomeScreenContent(
                             innerPaddings = innerPaddings,
                             navigate = navigate,
 
-                        )
+                            )
 
                         WidgetType.HIDDEN_PRIZE -> HiddenPrizeExpandedWidget(
                             expandedWidgetProps = expandedCardProps,

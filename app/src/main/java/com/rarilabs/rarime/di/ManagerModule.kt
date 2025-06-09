@@ -436,12 +436,6 @@ class APIModule {
         return Web3j.build(HttpService(BaseConfig.EVM_RPC_URL))
     }
 
-    @Provides
-    @Singleton
-    fun provideDriveBackupRepository(
-        @ApplicationContext context: Context
-    ): DriveBackupManager = DriveBackupManager(context)
-
 
     @Provides
     @Singleton
