@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -20,7 +19,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,38 +29,51 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.manager.DriveState
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppAlertDialog
-import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppSwitch
+import com.rarilabs.rarime.ui.components.CirclesLoader
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
+import com.rarilabs.rarime.ui.components.PrimaryTextButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
 
 @Composable
 fun RecoveryMethodDetailScreen(
     onClose: () -> Unit,
-    onCopy: () -> Unit,
-
     deleteBackup: () -> Unit,
     backupPrivateKey: () -> Unit,
     isSwitchEnabled: Boolean,
     signIn: () -> Unit,
-
     privateKey: String,
-    driveState: DriveState = DriveState.NOT_SIGNED_IN
+    isInit: Boolean,
+    driveState: DriveState = DriveState.NOT_SIGNED_IN,
+    isHeaderEnabled: Boolean = true
 ) {
 
+    val clipboardManager = LocalClipboardManager.current
+    var isCopied by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isCopied) {
+        if (isCopied) {
+            delay(3.seconds)
+            isCopied = false
+        }
+    }
 
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showOverwriteDialog by remember { mutableStateOf(false) }
@@ -106,8 +117,7 @@ fun RecoveryMethodDetailScreen(
             },
             onDismiss = {
                 showDeleteDialog = false
-            }
-        )
+            })
     }
 
     if (showOverwriteDialog) {
@@ -120,35 +130,30 @@ fun RecoveryMethodDetailScreen(
             },
             onDismiss = {
                 showOverwriteDialog = false
-            }
-        )
+            })
     }
 
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
-        ) {
-            IconButton(
-                onClick = onClose, modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
+        if (isHeaderEnabled) {
+
+            Box(
+                modifier = Modifier.padding(top = 20.dp, start = 20.dp, end = 20.dp, bottom = 32.dp)
             ) {
-                AppIcon(id = R.drawable.ic_arrow_left_s_line, tint = RarimeTheme.colors.textPrimary)
+                PrimaryTextButton(
+                    leftIcon = R.drawable.ic_caret_left, onClick = onClose
+                )
+                Text(
+                    text = stringResource(R.string.recover_method_details_screen_title),
+                    style = RarimeTheme.typography.subtitle6,
+                    color = RarimeTheme.colors.textPrimary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 1.dp)
+                )
             }
-            Spacer(modifier = Modifier.width(100.dp))
-            Text(
-                text = stringResource(R.string.recover_method_details_screen_title),
-                style = RarimeTheme.typography.buttonMedium.copy(color = RarimeTheme.colors.textPrimary),
-                modifier = Modifier.align(alignment = Alignment.CenterVertically)
-
-            )
-
         }
-        Spacer(modifier = Modifier.width(33.dp))
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -200,21 +205,28 @@ fun RecoveryMethodDetailScreen(
                 )
 
                 Button(
-                    onClick = onCopy,
+                    onClick = {
+                        isCopied = true
+                        clipboardManager.setText(AnnotatedString(privateKey))
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                     elevation = ButtonDefaults.elevatedButtonElevation(0.dp),
                     modifier = Modifier.fillMaxWidth(0.95f)
 
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_file_copy_line),
+                        painter = if (isCopied) painterResource(R.drawable.ic_check) else painterResource(
+                            R.drawable.ic_file_copy_line
+                        ),
                         contentDescription = "",
                         tint = RarimeTheme.colors.textPrimary,
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.size(12.dp))
                     Text(
-                        text = stringResource(R.string.recovery_method_detail_screen_card_holder_btn_label),
+                        text = if (isCopied) stringResource(R.string.recovery_method_detail_screen_copied) else stringResource(
+                            R.string.recovery_method_detail_screen_copy
+                        ),
                         style = RarimeTheme.typography.buttonMedium,
                         color = RarimeTheme.colors.textPrimary,
                         modifier = Modifier
@@ -244,33 +256,35 @@ fun RecoveryMethodDetailScreen(
                 description = stringResource(R.string.recovery_method_cloud_backup_description),
                 rightContent = {
 
-                    when (driveState) {
-                        DriveState.NOT_SIGNED_IN -> {
-                            PrimaryButton(
-                                enabled = isSwitchEnabled,
-                                text = "Sign in",
-                                onClick = {
-                                    signIn()
-                                },
-                                size = ButtonSize.Small
-                            )
-                        }
+                    if (isInit) {
 
-                        else -> {
-                            AppSwitch(
-                                checked = cloudBackupChecked,
-                                onCheckedChange = {
-                                    onSwitchClick(it)
-                                },
-                                enabled = isSwitchEnabled,
-                                modifier = Modifier
-                                    .padding(top = 10.dp)
-                                    .size(width = 40.dp, height = 24.dp)
-                            )
+                        when (driveState) {
+                            DriveState.NOT_SIGNED_IN -> {
+                                PrimaryButton(
+                                    enabled = isSwitchEnabled, text = "Sign in", onClick = {
+                                        signIn()
+                                    }, size = ButtonSize.Small
+                                )
+                            }
+
+                            else -> {
+                                AppSwitch(
+                                    checked = cloudBackupChecked,
+                                    onCheckedChange = {
+                                        onSwitchClick(it)
+                                    },
+                                    enabled = isSwitchEnabled,
+                                    modifier = Modifier
+                                        .padding(top = 10.dp)
+                                        .size(width = 40.dp, height = 24.dp)
+                                )
+                            }
                         }
+                    } else {
+                        CirclesLoader()
                     }
-                }
-            )
+
+                })
             RecoveryMethodCard(
                 isEnabled = false,
                 iconId = R.drawable.ic_emotion_happy_line,
@@ -290,8 +304,7 @@ fun RecoveryMethodDetailScreen(
                             )
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     )
-                }
-            )
+                })
 
             RecoveryMethodCard(
                 isEnabled = false,
@@ -312,8 +325,7 @@ fun RecoveryMethodDetailScreen(
                             )
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     )
-                }
-            )
+                })
         }
 
     }
@@ -329,10 +341,8 @@ private fun RecoveryMethodCard(
     description: String,
     rightContent: @Composable () -> Unit = {}
 ) {
-    val borderColor =
-        if (!isEnabled)
-            RarimeTheme.colors.componentDisabled
-        else if (isRecommended) RarimeTheme.colors.warningBase else RarimeTheme.colors.componentPrimary
+    val borderColor = if (!isEnabled) RarimeTheme.colors.componentDisabled
+    else if (isRecommended) RarimeTheme.colors.warningBase else RarimeTheme.colors.componentPrimary
     val iconTint =
         if (isEnabled) RarimeTheme.colors.textPrimary else RarimeTheme.colors.textSecondary
     val titleColor =
@@ -354,8 +364,7 @@ private fun RecoveryMethodCard(
     ) {
         if (isRecommended) {
             Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.TopEnd
+                modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopEnd
             ) {
                 Text(
                     text = "RECOMENDED",
@@ -407,16 +416,16 @@ private fun RecoveryMethodCard(
 
 @Preview
 @Composable
-fun PreviewRecoveryMethodDetailScreen() {
+fun PreviewRecoveryMethodDetailScreenPreview() {
     Surface {
         RecoveryMethodDetailScreen(
             onClose = {},
-            onCopy = {},
             deleteBackup = {},
             backupPrivateKey = {},
             isSwitchEnabled = true,
             signIn = {},
-            "pkfpokopkokokwfopkwopfkwopefkp",
+            privateKey = "pkfpokopkokokwfopkwopfkwopefkp",
+            isInit = false,
             driveState = DriveState.NOT_SIGNED_IN
         )
     }

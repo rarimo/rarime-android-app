@@ -38,8 +38,6 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.data.enums.AppIcon
 import com.rarilabs.rarime.data.enums.toLocalizedString
-import com.rarilabs.rarime.modules.recoveryMethod.RecoveryMethodDetailScreen
-import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.ConfirmationDialog
 import com.rarilabs.rarime.ui.components.PassportImage
@@ -70,16 +68,7 @@ fun ProfileScreen(
 
     val sheetRecoveryMethod = rememberAppSheetState()
 
-    AppBottomSheet(
-        state = sheetRecoveryMethod,
-        backgroundColor = RarimeTheme.colors.backgroundPrimary,
-        fullScreen = true,
-        isHeaderEnabled = false,
-        disablePullClose = true
 
-    ) {
-        RecoveryMethodDetailScreen(onClose = {sheetRecoveryMethod.hide()}, onCopy = {}) //Todo Changes
-    }
 
     ProfileScreenContent(
         rarimoAddress = WalletUtil.formatAddress(viewModel.rarimoAddress),
@@ -93,8 +82,7 @@ fun ProfileScreen(
         },
         onClearConfirm = {
             viewModel.clearAllData(context)
-        },
-        onRecoveryMethod ={ sheetRecoveryMethod.show()})
+        })
 }
 
 @Composable
@@ -106,7 +94,6 @@ fun ProfileScreenContent(
     colorScheme: AppColorScheme,
     onFeedbackConfirm: suspend () -> Unit = {},
     onClearConfirm: suspend () -> Unit = {},
-    onRecoveryMethod : () -> Unit = {}
 ) {
     val scope = rememberCoroutineScope()
 
@@ -170,7 +157,7 @@ fun ProfileScreenContent(
                     ProfileRow(
                         iconId = R.drawable.ic_user_shared_2_line,
                         title = stringResource(R.string.recovery_method),
-                        onClick = { onRecoveryMethod() })
+                        onClick = { navigate(Screen.Main.Profile.ExportKeys.route) })
                     ProfileRow(
                         iconId = R.drawable.ic_shield_keyhole_line,
                         title = stringResource(R.string.auth_method),
