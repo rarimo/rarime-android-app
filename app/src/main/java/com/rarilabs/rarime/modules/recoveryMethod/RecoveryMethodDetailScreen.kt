@@ -21,8 +21,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,10 +41,11 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.manager.DriveState
 import com.rarilabs.rarime.ui.base.ButtonSize
+import com.rarilabs.rarime.ui.components.AppAlertDialog
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppSwitch
 import com.rarilabs.rarime.ui.components.HorizontalDivider
-import com.rarilabs.rarime.ui.components.TransparentButton
+import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 
@@ -50,9 +53,78 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 fun RecoveryMethodDetailScreen(
     onClose: () -> Unit,
     onCopy: () -> Unit,
+
+    deleteBackup: () -> Unit,
+    backupPrivateKey: () -> Unit,
+    isSwitchEnabled: Boolean,
+    signIn: () -> Unit,
+
     privateKey: String,
     driveState: DriveState = DriveState.NOT_SIGNED_IN
 ) {
+
+
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showOverwriteDialog by remember { mutableStateOf(false) }
+
+    var cloudBackupChecked by remember { mutableStateOf(false) }
+
+
+    LaunchedEffect(driveState) {
+        cloudBackupChecked = driveState == DriveState.BACKED_UP
+    }
+
+    fun onSwitchClick(checkChange: Boolean) {
+        when (driveState) {
+            DriveState.BACKED_UP -> {
+                showDeleteDialog = true
+
+            }
+
+            DriveState.NOT_BACKED_UP -> {
+                backupPrivateKey()
+            }
+
+            DriveState.PKS_ARE_NOT_EQUAL -> {
+                showOverwriteDialog = true
+            }
+
+            DriveState.NOT_SIGNED_IN -> {
+                throw IllegalStateException("Switch should not be visible when NOT_SIGNED_IN")
+            }
+        }
+    }
+
+
+    if (showDeleteDialog) {
+        AppAlertDialog(
+            title = stringResource(R.string.warning),
+            text = stringResource(R.string.recovery_method_delete_dialog_text),
+            onConfirm = {
+                deleteBackup()
+                showDeleteDialog = false
+            },
+            onDismiss = {
+                showDeleteDialog = false
+            }
+        )
+    }
+
+    if (showOverwriteDialog) {
+        AppAlertDialog(
+            title = stringResource(R.string.warning),
+            text = stringResource(R.string.recovery_method_overwrite_dialog_text),
+            onConfirm = {
+                backupPrivateKey()
+                showOverwriteDialog = false
+            },
+            onDismiss = {
+                showOverwriteDialog = false
+            }
+        )
+    }
+
+
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -163,9 +235,9 @@ fun RecoveryMethodDetailScreen(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            var cloudBackupChecked by remember { mutableStateOf(false) }
+
             RecoveryMethodCard(
-                isEnabled = false,
+                isEnabled = isSwitchEnabled,
                 iconId = R.drawable.ic_cloud_line,
                 isRecommended = true,
                 title = stringResource(R.string.recovery_method_cloud_backup_title),
@@ -174,26 +246,29 @@ fun RecoveryMethodDetailScreen(
 
                     when (driveState) {
                         DriveState.NOT_SIGNED_IN -> {
-
-                            TransparentButton(text = "Sign in", onClick = {
-
-                            }, size = ButtonSize.Small)
-
+                            PrimaryButton(
+                                enabled = isSwitchEnabled,
+                                text = "Sign in",
+                                onClick = {
+                                    signIn()
+                                },
+                                size = ButtonSize.Small
+                            )
                         }
 
                         else -> {
                             AppSwitch(
                                 checked = cloudBackupChecked,
-                                onCheckedChange = { cloudBackupChecked = it },
-                                enabled = true,
+                                onCheckedChange = {
+                                    onSwitchClick(it)
+                                },
+                                enabled = isSwitchEnabled,
                                 modifier = Modifier
                                     .padding(top = 10.dp)
                                     .size(width = 40.dp, height = 24.dp)
                             )
                         }
                     }
-
-
                 }
             )
             RecoveryMethodCard(
@@ -330,20 +405,19 @@ private fun RecoveryMethodCard(
     }
 }
 
-
-@Preview(
-    showBackground = true
-)
+@Preview
 @Composable
-fun PreviewRecoveryMethodDetailScreen(
-
-) {
-
-    RecoveryMethodDetailScreen(
-        onClose = {},
-        onCopy = {},
-        "pkfpokopkokokwfopkwopfkwopefkp",
-        driveState = DriveState.NOT_SIGNED_IN
-    )
-
+fun PreviewRecoveryMethodDetailScreen() {
+    Surface {
+        RecoveryMethodDetailScreen(
+            onClose = {},
+            onCopy = {},
+            deleteBackup = {},
+            backupPrivateKey = {},
+            isSwitchEnabled = true,
+            signIn = {},
+            "pkfpokopkokokwfopkwopfkwopefkp",
+            driveState = DriveState.NOT_SIGNED_IN
+        )
+    }
 }

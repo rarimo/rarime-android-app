@@ -537,15 +537,22 @@
     <string name="recovery_method_detal_screen_card_holder_description">Please store the private key safely and do not share it with anyone. If you lose this key, you will not be able to recover the account and will lose access forever.</string>
     <string name="recovery_method_detail_screen_card_holder_btn_label">Copy</string>
     <string name="recovery_method_cloud_backup_title">Google Cloud backup</string>
-    <string name="recovery_method_cloud_backup_description">Backup key stored in Cloud</string>
+    <string name="recovery_method_cloud_backup_description">Backup key in Google Cloud</string>
     <string name="recovery_method_face_scan_title">zkFace</string>
     <string name="recovery_method_face_scan_description">Biometric facial key</string>
     <string name="recovery_method_object_scan_title">Object</string>
     <string name="recovery_method_object_scan_description">Make any object your key</string>
+
+    <string name="recovery_method_delete_dialog_text">Are you sure you want to delete the backup?</string>
+    <string name="recovery_method_overwrite_dialog_text">The backup differs from the current key. Overwrite it?</string>
+    <string name="warning">Warning</string>
+
     <string name="manage_widgets_btn_label">Manage Widgets</string>
     <string name="manage_widgets_bottom_sheet_title">Manage widgets</string>
     <string name="manage_widgets_add_btn_label">Add</string>
     <string name="manage_widgets_remove_btn_label">Remove</string>
+
+
     <string name="freedomtool_widget_title">Freedomtool</string>
     <string name="freedomtool_widget_description">Revolutionizing polling, surveying \n and election processes</string>
     <string name="digital_likeness_widget_title">Digital Likeness</string>

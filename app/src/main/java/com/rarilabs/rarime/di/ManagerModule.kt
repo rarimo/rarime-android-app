@@ -502,6 +502,12 @@ class APIModule {
         return NotificationsRepository(notificationsDao)
     }
 
+    @Provides
+    @Singleton
+    fun provideDriveBackupRepository(
+        @ApplicationContext context: Context
+    ): DriveBackupManager = DriveBackupManager(context)
+
 
     @Provides
     @Singleton

@@ -31,7 +31,7 @@ class RecoveryMethodViewModel @Inject constructor(
 
     val driveState = driveBackupManager.driveState
 
-    val signedInAccount = driveBackupManager.signedInAccount
+    private val signedInAccount = driveBackupManager.signedInAccount
 
     private val _isInit = MutableStateFlow(false)
     val isInit: StateFlow<Boolean> = _isInit.asStateFlow()

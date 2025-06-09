@@ -27,7 +27,6 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
-
 data class DriveBackupContent(
     val description: String,
     val icon: Int,
