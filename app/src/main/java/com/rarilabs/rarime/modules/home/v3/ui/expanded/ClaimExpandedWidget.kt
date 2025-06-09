@@ -35,13 +35,13 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BG_ClAIM_HEIGHT
-import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
-import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
-import com.rarilabs.rarime.modules.home.v3.model.getClaimCardAccentTitle
-import com.rarilabs.rarime.modules.home.v3.model.getClaimCardTitle
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
+import com.rarilabs.rarime.modules.home.v3.model.getClaimWidgetAccentTitle
+import com.rarilabs.rarime.modules.home.v3.model.getClaimWidgetTitle
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -49,16 +49,16 @@ import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 @Composable
-fun ClaimExpandedCard(
+fun ClaimExpandedWidget(
     modifier: Modifier = Modifier,
-    expandedCardProps: BaseCardProps.Expanded,
+    expandedWidgetProps: BaseWidgetProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
     navigate: (String) -> Unit,
     currentPointsBalance: Long?
 ) {
-    ClaimExpandedCardContent(
+    ClaimExpandedWidgetContent(
         modifier = modifier,
-        cardProps = expandedCardProps,
+        widgetProps = expandedWidgetProps,
         innerPaddings = innerPaddings,
         navigate = navigate,
         currentPointsBalance = currentPointsBalance,
@@ -67,20 +67,20 @@ fun ClaimExpandedCard(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun ClaimExpandedCardContent(
+fun ClaimExpandedWidgetContent(
     modifier: Modifier = Modifier,
-    cardProps: BaseCardProps.Expanded,
+    widgetProps: BaseWidgetProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
     navigate: (String) -> Unit,
     currentPointsBalance: Long?
 ) {
     val isClaimed = currentPointsBalance != null && currentPointsBalance != 0L
-    val title = getClaimCardTitle(isClaimed)
-    val accentTitle = getClaimCardAccentTitle(currentPointsBalance)
+    val title = getClaimWidgetTitle(isClaimed)
+    val accentTitle = getClaimWidgetAccentTitle(currentPointsBalance)
 
-    with(cardProps) {
+    with(widgetProps) {
         with(sharedTransitionScope) {
-            BaseExpandedCard(
+            BaseExpandedWidget(
                 modifier = modifier
                     .sharedElement(
                         state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
@@ -179,7 +179,7 @@ private fun Footer(
                 )
         ) {
             Spacer(Modifier.height((BG_ClAIM_HEIGHT + 125).dp))
-            BaseCardTitle(
+            BaseWidgetTitle(
                 title = title,
                 accentTitle = accentTitle,
                 titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.baseBlack),
@@ -292,11 +292,11 @@ private fun Background(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true)
 @Composable
-fun ClaimExpandedCardPreview_Claimed() {
+fun ClaimExpandedWidgetPreview_Claimed() {
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
-        ClaimExpandedCardContent(
-            cardProps = BaseCardProps.Expanded(
-                layoutId = CardType.IDENTITY.layoutId,
+        ClaimExpandedWidgetContent(
+            widgetProps = BaseWidgetProps.Expanded(
+                layoutId = WidgetType.IDENTITY.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope,
                 onCollapse = {}
@@ -312,11 +312,11 @@ fun ClaimExpandedCardPreview_Claimed() {
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true)
 @Composable
-fun ClaimExpandedCardPreview_Unclaimed() {
+fun ClaimExpandedWidgetPreview_Unclaimed() {
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
-        ClaimExpandedCardContent(
-            cardProps = BaseCardProps.Expanded(
-                layoutId = CardType.IDENTITY.layoutId,
+        ClaimExpandedWidgetContent(
+            widgetProps = BaseWidgetProps.Expanded(
+                layoutId = WidgetType.IDENTITY.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope,
                 onCollapse = {}

@@ -44,20 +44,20 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.manager.LikenessRule
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessViewModel
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
-import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
-import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
 import com.rarilabs.rarime.modules.home.v3.model.IMG_LIKENESS_HEIGHT
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardLogo
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCollapsedCard
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCollapsedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetLogo
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 @Composable
-fun LikenessCollapsedCard(
-    collapsedCardProps: BaseCardProps.Collapsed,
+fun LikenessCollapsedWidget(
+    collapsedWidgetProps: BaseWidgetProps.Collapsed,
     modifier: Modifier = Modifier,
     viewModel: DigitalLikenessViewModel = hiltViewModel()
 ) {
@@ -65,8 +65,8 @@ fun LikenessCollapsedCard(
     val isScanned by viewModel.isRegistered.collectAsState()
     val faceImage by viewModel.faceImage.collectAsState()
 
-    LikenessCollapsedCardContent(
-        collapsedCardProps = collapsedCardProps,
+    LikenessCollapsedWidgetContent(
+        collapsedWidgetProps = collapsedWidgetProps,
         modifier = modifier,
         faceImage = faceImage,
         selectedRule = selectedRule,
@@ -76,16 +76,16 @@ fun LikenessCollapsedCard(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun LikenessCollapsedCardContent(
-    collapsedCardProps: BaseCardProps.Collapsed,
+fun LikenessCollapsedWidgetContent(
+    collapsedWidgetProps: BaseWidgetProps.Collapsed,
     modifier: Modifier = Modifier,
     faceImage: Bitmap?,
     isScanned: Boolean,
     selectedRule: LikenessRule?,
 ) {
-    with(collapsedCardProps) {
+    with(collapsedWidgetProps) {
         with(sharedTransitionScope) {
-            BaseCollapsedCard(
+            BaseCollapsedWidget(
                 modifier = modifier
                     .sharedElement(
                         state = rememberSharedContentState(
@@ -164,7 +164,7 @@ private fun Header(
                 .padding(top = 16.dp, end = 16.dp)
                 .fillMaxWidth()
         ) {
-            BaseCardLogo(
+            BaseWidgetLogo(
                 resId = R.drawable.ic_body_scan_fill,
                 backgroundColor = Color.Transparent,
                 size = 50,
@@ -292,7 +292,7 @@ private fun LikenessTitle(
         Column {
             if (isScanned) {
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
-                    BaseCardTitle(
+                    BaseWidgetTitle(
                         title = "My rule:",
                         accentTitle = when (selectedRule) {
                             LikenessRule.USE_AND_PAY -> "Use my likeness and pay me"
@@ -337,7 +337,7 @@ private fun LikenessTitle(
                     )
                 }
             } else {
-                BaseCardTitle(
+                BaseWidgetTitle(
                     title = "Digital likeness",
                     accentTitle = "Set a rule",
                     titleStyle = RarimeTheme.typography.h2.copy(
@@ -377,12 +377,12 @@ private fun LikenessTitle(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
-fun LikenessCollapsedCardPreview() {
+fun LikenessCollapsedWidgetPreview() {
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
-        LikenessCollapsedCardContent(
-            collapsedCardProps = BaseCardProps.Collapsed(
+        LikenessCollapsedWidgetContent(
+            collapsedWidgetProps = BaseWidgetProps.Collapsed(
                 onExpand = {},
-                layoutId = CardType.LIKENESS.layoutId,
+                layoutId = WidgetType.LIKENESS.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope
             ),

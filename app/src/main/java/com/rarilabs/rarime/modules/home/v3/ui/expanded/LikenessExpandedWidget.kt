@@ -64,12 +64,12 @@ import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessRuleSheet
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessViewModel
 import com.rarilabs.rarime.modules.home.v3.model.ALREADY_SET_AMOUNT
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
-import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
-import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
 import com.rarilabs.rarime.modules.home.v3.model.IMG_LIKENESS_HEIGHT
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.BaseTooltip
@@ -92,9 +92,9 @@ data class RuleOptionData(
 )
 
 @Composable
-fun LikenessExpandedCard(
+fun LikenessExpandedWidget(
     modifier: Modifier = Modifier,
-    expandedCardProps: BaseCardProps.Expanded,
+    expandedWidgetProps: BaseWidgetProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
     navigate: (String) -> Unit,
     viewModel: DigitalLikenessViewModel = hiltViewModel()
@@ -111,9 +111,9 @@ fun LikenessExpandedCard(
 
     val scope = rememberCoroutineScope()
 
-    LikenessExpandedCardContent(
+    LikenessExpandedWidgetContent(
         modifier = modifier,
-        cardProps = expandedCardProps,
+        widgetProps = expandedWidgetProps,
         innerPaddings = innerPaddings,
         navigate = navigate,
         selectedRule = selectedRule,
@@ -141,9 +141,9 @@ fun LikenessExpandedCard(
     ExperimentalMaterial3Api::class
 )
 @Composable
-fun LikenessExpandedCardContent(
+fun LikenessExpandedWidgetContent(
     modifier: Modifier = Modifier,
-    cardProps: BaseCardProps.Expanded,
+    widgetProps: BaseWidgetProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
     navigate: (String) -> Unit,
     selectedRule: LikenessRule?,
@@ -217,9 +217,9 @@ fun LikenessExpandedCardContent(
         })
 
 
-    with(cardProps) {
+    with(widgetProps) {
         with(sharedTransitionScope) {
-            BaseExpandedCard(
+            BaseExpandedWidget(
                 modifier = modifier
                     .sharedElement(
                         state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
@@ -447,7 +447,7 @@ private fun LikenessTitle(
                         )
                     }) {
                     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
-                        BaseCardTitle(
+                        BaseWidgetTitle(
                             modifier = Modifier
                                 .weight(1f)
                                 .clickable(
@@ -513,7 +513,7 @@ private fun LikenessTitle(
                     color = RarimeTheme.colors.baseBlack.copy(alpha = 0.1f)
                 )
             } else
-                BaseCardTitle(
+                BaseWidgetTitle(
                     title = "Digital likeness",
                     accentTitle = "Set a rule",
                     titleStyle = RarimeTheme.typography.h1.copy(
@@ -611,7 +611,7 @@ private fun Footer(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true)
 @Composable
-fun LikenessExpandedCardPreview() {
+fun LikenessExpandedWidgetPreview() {
 
     var selectedRule by remember {
         mutableStateOf(
@@ -626,9 +626,9 @@ fun LikenessExpandedCardPreview() {
     }
 
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
-        LikenessExpandedCardContent(
-            cardProps = BaseCardProps.Expanded(
-                layoutId = CardType.IDENTITY.layoutId,
+        LikenessExpandedWidgetContent(
+            widgetProps = BaseWidgetProps.Expanded(
+                layoutId = WidgetType.LIKENESS.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope,
                 onCollapse = {}

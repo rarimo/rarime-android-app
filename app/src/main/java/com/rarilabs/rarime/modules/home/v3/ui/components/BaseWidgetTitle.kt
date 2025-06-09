@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 /**
- * Card header component with optional overline, title, gradient subtitle, and caption.
+ * Widget header component with optional overline, title, gradient subtitle, and caption.
  * Styles for each text element can be customized.
  *
  * @param modifier Modifier applied to the root Column.
@@ -36,7 +36,7 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
  * @param captionStyle TextStyle for the caption.
  */
 @Composable
-fun BaseCardTitle(
+fun BaseWidgetTitle(
     modifier: Modifier = Modifier,
 
     overline: String? = null,
@@ -112,8 +112,8 @@ fun BaseCardTitle(
 
 @Preview(showBackground = true, name = "With Overline")
 @Composable
-fun BaseCardTitlePreview_Overline() {
-    BaseCardTitle(
+fun BaseWidgetTitlePreview_Overline() {
+    BaseWidgetTitle(
         overline = "Category",
         title = "RariMe",
         accentTitle = "Learn More",

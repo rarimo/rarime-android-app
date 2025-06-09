@@ -52,11 +52,11 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.voting.models.Poll
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BG_DOT_MAP_HEIGHT
-import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
-import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
@@ -75,9 +75,9 @@ import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import kotlinx.coroutines.launch
 
 @Composable
-fun FreedomtoolExpandedCard(
+fun FreedomtoolExpandedWidget(
     modifier: Modifier = Modifier,
-    expandedCardProps: BaseCardProps.Expanded,
+    expandedWidgetProps: BaseWidgetProps.Expanded,
     navigate: (String) -> Unit,
     innerPaddings: Map<ScreenInsets, Number>,
     viewModel: VotesScreenViewModel = hiltViewModel()
@@ -107,8 +107,8 @@ fun FreedomtoolExpandedCard(
             }
         )
     } else {
-        FreedomtoolExpandedCardContent(
-            cardProps = expandedCardProps,
+        FreedomtoolExpandedWidgetContent(
+            widgetProps = expandedWidgetProps,
             modifier = modifier,
             innerPaddings = innerPaddings,
             activeVotes = activeVotes,
@@ -125,9 +125,9 @@ fun FreedomtoolExpandedCard(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun FreedomtoolExpandedCardContent(
+fun FreedomtoolExpandedWidgetContent(
     modifier: Modifier = Modifier,
-    cardProps: BaseCardProps.Expanded,
+    widgetProps: BaseWidgetProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
     activeVotes: List<Poll>,
     historyVotes: List<Poll>,
@@ -135,9 +135,9 @@ fun FreedomtoolExpandedCardContent(
     onScan: () -> Unit,
     onVoteClick: (Poll) -> Unit
 ) {
-    with(cardProps) {
+    with(widgetProps) {
         with(sharedTransitionScope) {
-            BaseExpandedCard(
+            BaseExpandedWidget(
                 modifier = modifier
                     .sharedElement(
                         state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
@@ -240,7 +240,7 @@ private fun Body(
                 )
         ) {
             Spacer(Modifier.height((BG_DOT_MAP_HEIGHT - 200).dp))
-            BaseCardTitle(
+            BaseWidgetTitle(
                 title = "Freedomtool",
                 accentTitle = "Voting",
                 caption = "* Nothing leaves this device",
@@ -422,12 +422,12 @@ private fun Background(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true)
 @Composable
-fun FreedomtoolExpandedCardPreview() {
+fun FreedomtoolExpandedWidgetPreview() {
     PrevireSharedAnimationProvider { sts, avs ->
-        FreedomtoolExpandedCardContent(
-            cardProps = BaseCardProps.Expanded(
+        FreedomtoolExpandedWidgetContent(
+            widgetProps = BaseWidgetProps.Expanded(
                 onCollapse = {},
-                layoutId = CardType.FREEDOMTOOL.layoutId,
+                layoutId = WidgetType.FREEDOMTOOL.layoutId,
                 animatedVisibilityScope = avs,
                 sharedTransitionScope = sts
             ),

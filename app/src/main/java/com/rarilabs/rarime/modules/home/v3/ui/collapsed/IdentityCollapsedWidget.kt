@@ -33,25 +33,24 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BG_HAND_PHONE_HEIGHT
-import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
-import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardLogo
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCollapsedCard
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCollapsedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetLogo
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun IdentityCollapsedCard(
-    collapsedCardProps: BaseCardProps.Collapsed,
+fun IdentityCollapsedWidget(
+    collapsedWidgetProps: BaseWidgetProps.Collapsed,
     modifier: Modifier = Modifier
 ) {
-    with(collapsedCardProps) {
+    with(collapsedWidgetProps) {
         with(sharedTransitionScope) {
-            BaseCollapsedCard(
+            BaseCollapsedWidget(
                 modifier = Modifier
                     .sharedElement(
                         state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
@@ -116,7 +115,7 @@ private fun Header(
                 .padding(top = 16.dp, end = 16.dp)
                 .fillMaxWidth()
         ) {
-            BaseCardLogo(
+            BaseWidgetLogo(
                 resId = R.drawable.ic_rarime,
                 backgroundColor = Color.Transparent,
                 size = 55,
@@ -148,7 +147,7 @@ private fun Footer(
                     resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                 )
         ) {
-            BaseCardTitle(
+            BaseWidgetTitle(
                 title = "Your Device",
                 accentTitle = "Your Identity",
                 titleModifier =
@@ -230,12 +229,12 @@ private fun Background(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
-fun IdentityCollapsedCardPreview() {
+fun IdentityCollapsedWidgetPreview() {
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
-        IdentityCollapsedCard(
-            collapsedCardProps = BaseCardProps.Collapsed(
+        IdentityCollapsedWidget(
+            collapsedWidgetProps = BaseWidgetProps.Collapsed(
                 onExpand = {},
-                layoutId = CardType.IDENTITY.layoutId,
+                layoutId = 1,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope
             ),

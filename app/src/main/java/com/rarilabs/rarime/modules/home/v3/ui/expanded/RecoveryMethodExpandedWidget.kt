@@ -42,11 +42,11 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
-import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
-import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedCard
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.recoveryMethod.RecoveryMethodDetailScreen
 import com.rarilabs.rarime.modules.recoveryMethod.RecoveryMethodViewModel
@@ -62,9 +62,9 @@ import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun RecoveryMethodExpandedCard(
+fun RecoveryMethodExpandedWidget(
     modifier: Modifier = Modifier,
-    expandedCardProps: BaseCardProps.Expanded,
+    expandedWidgetProps: BaseWidgetProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
     viewModel: RecoveryMethodViewModel = hiltViewModel(),
     navigate: (String) -> Unit
@@ -93,8 +93,8 @@ fun RecoveryMethodExpandedCard(
         )
     }
 
-    RecoveryMethodExpandedCardContent(
-        cardProps = expandedCardProps,
+    RecoveryMethodExpandedWidgetContent(
+        widgetProps = expandedWidgetProps,
         modifier = modifier,
         innerPaddings = innerPaddings,
         colorScheme = colorScheme,
@@ -106,17 +106,17 @@ fun RecoveryMethodExpandedCard(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun RecoveryMethodExpandedCardContent(
+fun RecoveryMethodExpandedWidgetContent(
     modifier: Modifier = Modifier,
-    cardProps: BaseCardProps.Expanded,
+    widgetProps: BaseWidgetProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
     colorScheme: AppColorScheme,
     onClick: () -> Unit
 ) {
 
-    with(cardProps) {
+    with(widgetProps) {
         with(sharedTransitionScope) {
-            BaseExpandedCard(
+            BaseExpandedWidget(
                 modifier = modifier
                     .sharedElement(
                         state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
@@ -283,7 +283,7 @@ private fun Body(
 
             ) {
 
-                BaseCardTitle(
+                BaseWidgetTitle(
                     title = stringResource(R.string.recovery_method_expanded_card_title),
                     accentTitle = stringResource(R.string.recovery_method_expanded_card_accent_title),
                     titleStyle = RarimeTheme.typography.h1.copy(RarimeTheme.colors.textPrimary),
@@ -374,13 +374,13 @@ private fun Background(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO)
 @Composable
-fun RecoveryMethodExpandedCardPreviewLightMode() {
+fun RecoveryMethodExpandedWidgetPreviewLightMode() {
     AppTheme {
         PrevireSharedAnimationProvider { sts, avs ->
-            RecoveryMethodExpandedCardContent(
-                cardProps = BaseCardProps.Expanded(
+            RecoveryMethodExpandedWidgetContent(
+                widgetProps = BaseWidgetProps.Expanded(
                     onCollapse = {},
-                    layoutId = CardType.RECOVERY_METHOD.layoutId,
+                    layoutId = WidgetType.RECOVERY_METHOD.layoutId,
                     animatedVisibilityScope = avs,
                     sharedTransitionScope = sts
                 ),
@@ -395,13 +395,13 @@ fun RecoveryMethodExpandedCardPreviewLightMode() {
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun RecoveryMethodExpandedCardPreviewDarkMode() {
+fun RecoveryMethodExpandedWidgetPreviewDarkMode() {
     AppTheme {
         PrevireSharedAnimationProvider { sts, avs ->
-            RecoveryMethodExpandedCardContent(
-                cardProps = BaseCardProps.Expanded(
+            RecoveryMethodExpandedWidgetContent(
+                widgetProps = BaseWidgetProps.Expanded(
                     onCollapse = {},
-                    layoutId = CardType.RECOVERY_METHOD.layoutId,
+                    layoutId = WidgetType.RECOVERY_METHOD.layoutId,
                     animatedVisibilityScope = avs,
                     sharedTransitionScope = sts
                 ),

@@ -19,6 +19,7 @@ import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.manager.LikenessRule
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.manager.WalletAssetJSON
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.util.ErrorHandler
@@ -62,6 +63,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "LIKENESS_DATA" to "LIKENESS_DATA",
         "LIKENESS_FACE" to "LIKENESS_FACE",
         "WELCOME_FIRST_OPEN" to "WELCOME_FIRST_OPEN",
+        "VISIBLE_WIDGETS" to "VISIBLE_WIDGETS"
     )
 
     private val PREFS_FILE_NAME = "sharedPrefFile12"
@@ -104,6 +106,19 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     override fun readPrivateKey(): String? {
         return getSharedPreferences().getString(accessTokens["PRIVATE_KEY"], null)
     }
+
+    override fun readVisibleWidgets(): List<WidgetType>? {
+        val savedSet = getSharedPreferences().getStringSet(accessTokens["VISIBLE_WIDGETS"], null)
+        return savedSet
+            ?.mapNotNull { name -> runCatching { WidgetType.valueOf(name) }.getOrNull() }
+    }
+
+    override fun saveVisibleWidgets(visibleWidgets: List<WidgetType>) {
+        val editor = getEditor()
+        editor.putStringSet(accessTokens["VISIBLE_WIDGETS"], visibleWidgets.map { it.name }.toSet())
+        editor.apply()
+    }
+
 
     override fun readPasscodeState(): SecurityCheckState {
         return SecurityCheckState.fromInt(

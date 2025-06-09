@@ -12,6 +12,7 @@ import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.manager.SettingsManager
 import com.rarilabs.rarime.manager.VotingManager
 import com.rarilabs.rarime.manager.WalletManager
+import com.rarilabs.rarime.modules.manageWidgets.ManageWidgetsManager
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +34,7 @@ class HomeViewModel @Inject constructor(
     passportManager: PassportManager,
     private val walletManager: WalletManager,
     private val pointsManager: PointsManager,
+    widgetsManager: ManageWidgetsManager,
     notificationManager: NotificationManager,
     votingManager: VotingManager,
     settingsManager: SettingsManager,
@@ -45,7 +47,7 @@ class HomeViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     val colorScheme = settingsManager.colorScheme
-
+    var visibleWidgets = widgetsManager.visibleWidgets
     val hasVotes: StateFlow<Boolean> =
         allUserVotes.map { it.isNotEmpty() }.distinctUntilChanged().stateIn(
             scope = viewModelScope,
@@ -74,6 +76,7 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+
 
     fun saveIsShownWelcome(boolean: Boolean) {
         sharedPrefsManager.saveIsShownWelcome(boolean)

@@ -39,12 +39,12 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
-import com.rarilabs.rarime.modules.home.v3.model.BaseCardProps
-import com.rarilabs.rarime.modules.home.v3.model.CardType
+import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardLogo
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCardTitle
-import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCollapsedCard
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCollapsedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetLogo
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.AppTheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -52,14 +52,14 @@ import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun HiddenPrizeCollapsedCard(
-    collapsedCardProps: BaseCardProps.Collapsed,
+fun HiddenPrizeCollapsedWidget(
+    collapsedWidgetProps: BaseWidgetProps.Collapsed,
     modifier: Modifier = Modifier,
     colorScheme: AppColorScheme
 ) {
-    with(collapsedCardProps) {
+    with(collapsedWidgetProps) {
         with(sharedTransitionScope) {
-            BaseCollapsedCard(
+            BaseCollapsedWidget(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
@@ -119,7 +119,7 @@ private fun Header(
                 .padding(top = 20.dp, start = 20.dp)
                 .fillMaxWidth()
         ) {
-            BaseCardLogo(
+            BaseWidgetLogo(
                 resId = R.drawable.ic_rarime,
                 backgroundColor = Color.Transparent,
                 size = 54,
@@ -180,7 +180,7 @@ private fun Footer(
             }
             Spacer(modifier = Modifier.size(12.dp))
             Row(modifier = Modifier.fillMaxWidth()) {
-                BaseCardTitle(
+                BaseWidgetTitle(
                     title = "Hidden keys",
                     accentTitle = "Find a face",
                     titleModifier = Modifier.sharedBounds(
@@ -281,14 +281,14 @@ private fun Background(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun HiddenPrizeCollapsedCardPreview_DarkMode() {
+fun HiddenPrizeCollapsedWidgetPreview_DarkMode() {
     AppTheme {
         PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
-            HiddenPrizeCollapsedCard(
+            HiddenPrizeCollapsedWidget(
                 colorScheme = AppColorScheme.DARK,
-                collapsedCardProps = BaseCardProps.Collapsed(
+                collapsedWidgetProps = BaseWidgetProps.Collapsed(
                     onExpand = {},
-                    layoutId = CardType.HIDDEN_PRIZE.layoutId,
+                    layoutId = WidgetType.HIDDEN_PRIZE.layoutId,
                     animatedVisibilityScope = animatedVisibilityScope,
                     sharedTransitionScope = sharedTransitionScope
                 ),
@@ -304,14 +304,14 @@ fun HiddenPrizeCollapsedCardPreview_DarkMode() {
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO)
 @Composable
-fun HiddenPrizeCollapsedCardPreview_LightMode() {
+fun HiddenPrizeCollapsedWidgetPreview_LightMode() {
     AppTheme {
         PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
-            HiddenPrizeCollapsedCard(
+            HiddenPrizeCollapsedWidget(
                 colorScheme = AppColorScheme.LIGHT,
-                collapsedCardProps = BaseCardProps.Collapsed(
+                collapsedWidgetProps = BaseWidgetProps.Collapsed(
                     onExpand = {},
-                    layoutId = CardType.HIDDEN_PRIZE.layoutId,
+                    layoutId = WidgetType.HIDDEN_PRIZE.layoutId,
                     animatedVisibilityScope = animatedVisibilityScope,
                     sharedTransitionScope = sharedTransitionScope
                 ), modifier = Modifier

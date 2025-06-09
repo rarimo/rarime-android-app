@@ -31,7 +31,7 @@ import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
-fun BaseCollapsedCard(
+fun BaseCollapsedWidget(
     modifier: Modifier = Modifier,
 
     // slots
@@ -73,16 +73,16 @@ fun BaseCollapsedCard(
 
 @Preview(showBackground = true)
 @Composable
-fun BaseCollapsedCardPreview() {
+fun BaseCollapsedWidgetPreview() {
 
-    BaseCollapsedCard(
+    BaseCollapsedWidget(
         modifier = Modifier
             .height(552.dp)
             .padding(16.dp)
             .fillMaxWidth(),
         header = {
             Row(modifier = Modifier.padding(24.dp)) {
-                BaseCardLogo()
+                BaseWidgetLogo()
             }
         },
         body = {},
@@ -92,7 +92,7 @@ fun BaseCollapsedCardPreview() {
                 verticalAlignment = Alignment.Bottom,
                 modifier = Modifier.padding(start = 22.dp, bottom = 28.dp, end = 30.dp)
             ) {
-                BaseCardTitle(
+                BaseWidgetTitle(
                     title = "RariMe",
                     accentTitle = "Learn More",
                     caption = "* Nothing leaves this device",
