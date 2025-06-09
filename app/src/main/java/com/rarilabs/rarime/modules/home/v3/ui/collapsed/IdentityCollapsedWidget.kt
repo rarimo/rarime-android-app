@@ -34,7 +34,6 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BG_HAND_PHONE_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
-import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCollapsedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetLogo

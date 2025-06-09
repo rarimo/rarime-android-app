@@ -28,6 +28,7 @@ import com.rarilabs.rarime.api.voting.VotingApiManager
 import com.rarilabs.rarime.manager.AirDropManager
 import com.rarilabs.rarime.manager.AuthManager
 import com.rarilabs.rarime.manager.CosmosManager
+import com.rarilabs.rarime.manager.DriveBackupManager
 import com.rarilabs.rarime.manager.Erc20Manager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
@@ -494,6 +495,12 @@ class APIModule {
     fun provideNotificationsRepository(notificationsDao: NotificationsDao): NotificationsRepository {
         return NotificationsRepository(notificationsDao)
     }
+
+    @Provides
+    @Singleton
+    fun provideDriveBackupRepository(
+        @ApplicationContext context: Context
+    ): DriveBackupManager = DriveBackupManager(context)
 
 
     @Provides

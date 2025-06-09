@@ -73,9 +73,9 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     private fun getSharedPreferences(): SharedPreferences {
         return try {
             if (sharedPref == null) {
-                val masterKey = MasterKey.Builder(application)
-                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                    .build()
+                val masterKey =
+                    MasterKey.Builder(application).setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                        .build()
                 sharedPref = EncryptedSharedPreferences.create(
                     application,
                     PREFS_FILE_NAME,
@@ -109,8 +109,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
 
     override fun readVisibleWidgets(): List<WidgetType>? {
         val savedSet = getSharedPreferences().getStringSet(accessTokens["VISIBLE_WIDGETS"], null)
-        return savedSet
-            ?.mapNotNull { name -> runCatching { WidgetType.valueOf(name) }.getOrNull() }
+        return savedSet?.mapNotNull { name -> runCatching { WidgetType.valueOf(name) }.getOrNull() }
     }
 
     override fun saveVisibleWidgets(visibleWidgets: List<WidgetType>) {
@@ -465,8 +464,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
             getSharedPreferences().getString(accessTokens["LIGHT_REGISTRATION_DATA"], null)
 
         val lightRegistrationData = Gson().fromJson(
-            lightRegistrationDataJson,
-            LightRegistrationData::class.java
+            lightRegistrationDataJson, LightRegistrationData::class.java
         )
 
         return lightRegistrationData
@@ -492,12 +490,10 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     override fun getSelectedLikenessRule(): LikenessRule? {
 
         val enumValue = getSharedPreferences().getInt(
-            accessTokens["SELECTED_LIKENESS_OPTION"],
-            -1
+            accessTokens["SELECTED_LIKENESS_OPTION"], -1
         )
 
-        if (enumValue == -1)
-            return null
+        if (enumValue == -1) return null
 
         return LikenessRule.fromInt(
             enumValue
@@ -514,8 +510,8 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     }
 
     override fun getLivenessProof(): ZkProof? {
-        val proofJson = getSharedPreferences().getString(accessTokens["LIKENESS_DATA"], null)
-            ?: return null
+        val proofJson =
+            getSharedPreferences().getString(accessTokens["LIKENESS_DATA"], null) ?: return null
 
         return Gson().fromJson<ZkProof>(proofJson, ZkProof::class.java)
     }
@@ -538,14 +534,11 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
 
         val encoded = Base64.encodeToString(bytes, Base64.DEFAULT)
 
-        getEditor()
-            .putString(accessTokens["LIKENESS_FACE"], encoded)
-            .apply()
+        getEditor().putString(accessTokens["LIKENESS_FACE"], encoded).apply()
     }
 
     override fun getLikenessFace(): Bitmap? {
-        val encoded = getSharedPreferences()
-            .getString(accessTokens["LIKENESS_FACE"], null)
+        val encoded = getSharedPreferences().getString(accessTokens["LIKENESS_FACE"], null)
 
         if (encoded.isNullOrEmpty()) {
             return null

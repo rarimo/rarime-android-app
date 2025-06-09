@@ -36,8 +36,8 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BG_ClAIM_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
-import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.model.getClaimWidgetAccentTitle
 import com.rarilabs.rarime.modules.home.v3.model.getClaimWidgetTitle
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedWidget

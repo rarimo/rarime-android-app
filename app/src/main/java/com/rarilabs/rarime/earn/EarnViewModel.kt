@@ -19,7 +19,7 @@ class EarnViewModel @Inject constructor(
     private val pointsManager: PointsManager
 
 ) : ViewModel() {
-    init{
+    init {
         loadPointsBalance()
     }
 
@@ -30,7 +30,7 @@ class EarnViewModel @Inject constructor(
         get() = _pointBalanceBody.asStateFlow()
 
 
-    fun loadPointsBalance(){
+    fun loadPointsBalance() {
         viewModelScope.launch(Dispatchers.IO) {
             val result = pointsManager.getPointsBalance()
             _pointBalanceBody.value = result
