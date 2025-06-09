@@ -98,7 +98,9 @@ fun HomeScreenV3(
         isHeaderEnabled = false,
 
         ) {
+
         ManageWidgetsBottomSheet(onClose = { sheetManageWidgets.hide() })
+
     }
 
 
@@ -115,7 +117,6 @@ fun HomeScreenV3(
         currentPointsBalance = currentPointsBalance,
         colorScheme = colorScheme,
         onClick = { sheetManageWidgets.show() },
-
 
     )
 
@@ -186,6 +187,7 @@ fun HomeScreenContent(
                             pageSpacing = 10.dp,
                             contentPadding = PaddingValues(top = 42.dp, bottom = 95.dp),
                         ) { page ->
+
                             val widgetType = visibleWidgets[page]
                             val currentPage = pagerState.currentPage
                             val currentOffset = pagerState.currentPageOffsetFraction
@@ -199,10 +201,12 @@ fun HomeScreenContent(
                             )
 
                             // Common props for every collapsed card
+
                             val collapsedWidgetProps = BaseWidgetProps.Collapsed(
                                 onExpand = {
                                     if (pagerScrollEnabled) {
                                         selectedWidgetType = widgetType
+
                                     }
                                 },
                                 layoutId = widgetType.layoutId,
@@ -215,7 +219,6 @@ fun HomeScreenContent(
                                 scaleY = scale
                                 alpha = lerp(0.8f, 1f, 1f - absoluteOffset)
                             }
-
                             when (widgetType) {
                                 WidgetType.EARN -> EarnCollapsedWidget(
                                     collapsedWidgetProps = collapsedWidgetProps,
@@ -231,6 +234,7 @@ fun HomeScreenContent(
 
                                 WidgetType.LIKENESS -> LikenessCollapsedWidget(
                                     collapsedWidgetProps = collapsedWidgetProps,
+
                                     modifier = baseCollapsedModifier,
                                 )
 
@@ -293,8 +297,6 @@ fun HomeScreenContent(
                             navigate = navigate
                         )
 
-
-
                         WidgetType.LIKENESS -> LikenessExpandedWidget(
                             expandedWidgetProps = expandedCardProps,
                             innerPaddings = innerPaddings,
@@ -302,6 +304,7 @@ fun HomeScreenContent(
                         )
 
                         WidgetType.EARN -> EarnExpandedWidget(
+
                             expandedWidgetProps = expandedCardProps,
                             innerPaddings = innerPaddings,
                             navigate = navigate,

@@ -20,6 +20,7 @@ class ManageWidgetsManager @Inject constructor(
     init {
         val visibleCardsStored = sharedPrefsManager.readVisibleWidgets()
         if (visibleCardsStored.isNullOrEmpty()) {
+
             setVisibleWidgets(listOf(WidgetType.EARN))
         } else {
             _visibleWidgets.value = visibleCardsStored
