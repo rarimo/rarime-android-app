@@ -358,7 +358,7 @@ private fun Body(
                     exit = fadeOut(),
                     resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
                 )
-
+                .padding(bottom = (innerPaddings[ScreenInsets.BOTTOM]!!.toInt()).dp )
                 .fillMaxSize()
         ) {
 
@@ -374,38 +374,15 @@ private fun Body(
                     .fillMaxWidth()
 
             ) {
-                BaseWidgetTitle(
-                    title = stringResource(R.string.digital_likeness_collapsed_widget_title),
-                    accentTitle = stringResource(R.string.digital_likeness_collapsed_widget_accent_title),
-                    titleStyle = RarimeTheme.typography.h2.copy(
-                        color = RarimeTheme.colors.invertedDark
-                    ),
-                    accentTitleStyle = RarimeTheme.typography.h2.copy(brush = RarimeTheme.colors.gradient14),
-                    titleModifier = Modifier.sharedBounds(
-                        rememberSharedContentState(HomeSharedKeys.title(layoutId)),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
-                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                    ),
-                    accentTitleModifier = Modifier.sharedBounds(
-                        rememberSharedContentState(HomeSharedKeys.accentTitle(layoutId)),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
-                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                    ),
-                    caption = stringResource(R.string.digital_likeness_collapsed_widget_caption),
-                    captionModifier = Modifier.sharedBounds(
-                        rememberSharedContentState(
-                            HomeSharedKeys.caption(
-                                layoutId
-                            )
-                        ),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                    ),
-                    captionStyle = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary)
-
+                LikenessTitle(
+                    isScanned = isScanned,
+                    selectedRule = selectedRule,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    sharedTransitionScope = sharedTransitionScope,
+                    layoutId = layoutId,
+                    onTooltipShow = onTooltipShow,
+                    onRuleSheetShow = onRuleSheetShow,
+                    tooltipState = tooltipState
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
@@ -461,15 +438,11 @@ private fun LikenessTitle(
                                 LikenessRule.ASK_FIRST -> "Ask me first"
                                 else -> ""
                             },
-                            titleStyle = RarimeTheme.typography.h5.copy(
-                                color = RarimeTheme.colors.baseBlack
+                            titleStyle = RarimeTheme.typography.subtitle5.copy(
+                                color = RarimeTheme.colors.invertedDark
                             ),
-                            accentTitleStyle = RarimeTheme.typography.additional2.copy(
-                                brush = Brush.linearGradient(
-                                    colors = listOf(
-                                        Color(0xFF655CA4), Color(0xFF7E66B2)
-                                    ), start = Offset(0f, 0f), end = Offset(100f, 0f)
-                                )
+                            accentTitleStyle = RarimeTheme.typography.h2.copy(
+                                brush = RarimeTheme.colors.gradient14
                             ),
                             titleModifier = Modifier.sharedBounds(
                                 rememberSharedContentState(HomeSharedKeys.title(layoutId)),
@@ -482,19 +455,7 @@ private fun LikenessTitle(
                                 animatedVisibilityScope = animatedVisibilityScope,
                                 boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
                                 resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                            ),
-                            caption = "First human-AI Contract",
-                            captionModifier =
-                                Modifier.sharedBounds(
-                                    rememberSharedContentState(
-                                        HomeSharedKeys.caption(
-                                            layoutId
-                                        )
-                                    ),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                                )
+                            )
                         )
                         IconButton(
                             modifier = Modifier.offset(y = (-28).dp, x = (-100).dp),
@@ -513,12 +474,12 @@ private fun LikenessTitle(
                 )
             } else
                 BaseWidgetTitle(
-                    title = "Digital likeness",
-                    accentTitle = "Set a rule",
-                    titleStyle = RarimeTheme.typography.h1.copy(
-                        color = RarimeTheme.colors.baseBlack
+                    title = stringResource(R.string.digital_likeness_collapsed_widget_title),
+                    accentTitle = stringResource(R.string.digital_likeness_collapsed_widget_accent_title),
+                    titleStyle = RarimeTheme.typography.h2.copy(
+                        color = RarimeTheme.colors.invertedDark
                     ),
-                    accentTitleStyle = RarimeTheme.typography.additional1.copy(color = RarimeTheme.colors.baseBlackOp40),
+                    accentTitleStyle = RarimeTheme.typography.h2.copy(brush = RarimeTheme.colors.gradient14),
                     titleModifier = Modifier.sharedBounds(
                         rememberSharedContentState(HomeSharedKeys.title(layoutId)),
                         animatedVisibilityScope = animatedVisibilityScope,
@@ -531,18 +492,19 @@ private fun LikenessTitle(
                         boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
-                    caption = "First human-AI Contract",
-                    captionModifier =
-                        Modifier.sharedBounds(
-                            rememberSharedContentState(
-                                HomeSharedKeys.caption(
-                                    layoutId
-                                )
-                            ),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                        )
+                    caption = stringResource(R.string.digital_likeness_collapsed_widget_caption),
+                    captionModifier = Modifier.sharedBounds(
+                        rememberSharedContentState(
+                            HomeSharedKeys.caption(
+                                layoutId
+                            )
+                        ),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    ),
+                    captionStyle = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary)
+
                 )
         }
     }
@@ -663,7 +625,7 @@ fun LikenessExpandedWidgetPreview() {
 
     var selectedRule by remember {
         mutableStateOf(
-            LikenessRule.ASK_FIRST
+            LikenessRule.USE_AND_PAY
         )
     }
 

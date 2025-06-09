@@ -131,8 +131,7 @@ fun DigitalLikenessRuleSheet(
                 state = rememberLazyListState(),
                 contentPadding = PaddingValues(vertical = 17.dp),
                 reverseLayout = false,
-//                horizontalArrangement = Arrangement.spacedBy(16.dp),
-//                verticalAlignment = Alignment.CenterVertically,
+                verticalArrangement = Arrangement.spacedBy(16.dp),
                 flingBehavior = ScrollableDefaults.flingBehavior(),
                 userScrollEnabled = true
             ) {
@@ -157,22 +156,27 @@ fun DigitalLikenessRuleSheet(
 
 @Composable
 fun RuleOption(
-    item: RuleOptionData, onClick: (LikenessRule) -> Unit, modifier: Modifier = Modifier
+    item: RuleOptionData,
+    onClick: (LikenessRule) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val iconBackground by animateColorAsState(
-        targetValue = if (item.isSelected) RarimeTheme.colors.textPrimary else RarimeTheme.colors.componentPrimary,
-        animationSpec = tween(durationMillis = 300)
-    )
-    val iconTint by animateColorAsState(
-        targetValue = if (item.isSelected) RarimeTheme.colors.invertedLight else RarimeTheme.colors.textPrimary,
-        animationSpec = tween(durationMillis = 300)
-    )
-    val cardBorderColor by animateColorAsState(
-        targetValue = if (item.isSelected) RarimeTheme.colors.textPrimary else RarimeTheme.colors.componentPrimary.copy(
-            alpha = 0.05f
-        ),
-        animationSpec = tween(durationMillis = 500)
-    )
+    val iconBackground = if (item.isSelected) {
+        RarimeTheme.colors.textPrimary
+    } else {
+        RarimeTheme.colors.componentPrimary
+    }
+
+    val iconTint = if (item.isSelected) {
+        RarimeTheme.colors.invertedLight
+    } else {
+        RarimeTheme.colors.textPrimary
+    }
+
+    val cardContainerColor = if (item.isSelected) {
+        RarimeTheme.colors.componentPrimary
+    } else {
+        RarimeTheme.colors.backgroundSurface1
+    }
 
     Card(
         modifier = modifier
@@ -180,15 +184,14 @@ fun RuleOption(
             .clip(RoundedCornerShape(16.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(
-                    bounded = true,
-                ),
-                onClick = { onClick(item.type) }),
+                indication = rememberRipple(bounded = true),
+                onClick = { onClick(item.type) }
+            ),
         colors = CardDefaults.cardColors(
-            containerColor = RarimeTheme.colors.backgroundSurface1
+            containerColor = cardContainerColor
         ),
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, cardBorderColor),
+        border = BorderStroke(1.dp, RarimeTheme.colors.componentPrimary),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
@@ -213,7 +216,7 @@ fun RuleOption(
 
             Spacer(modifier.width(20.dp))
 
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 // Status badge
                 item.badgeText?.let { text ->
                     Text(
@@ -229,10 +232,10 @@ fun RuleOption(
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     )
                 }
+
                 Text(
                     text = item.title,
                     style = RarimeTheme.typography.subtitle6,
-                    modifier = Modifier,
                     color = RarimeTheme.colors.textPrimary
                 )
             }
@@ -247,7 +250,7 @@ fun RuleOptionPreview() {
         item = RuleOptionData(
             isSelected = false,
             type = LikenessRule.ASK_FIRST,
-            title = "Use my likeness\nand pay me.",
+            title = "Use my likeness and pay me.",
             badgeText = "Soon",
             iconRes = R.drawable.ic_money_dollar_circle_line
         ), onClick = {})
