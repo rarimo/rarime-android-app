@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -75,19 +76,19 @@ fun DigitalLikenessRuleSheet(
         RuleOptionData(
             isSelected = LikenessRule.USE_AND_PAY == localSelectedRule,
             type = LikenessRule.USE_AND_PAY,
-            title = "Use my likeness\nand pay me",
+            title = "Use my likeness and pay me",
             badgeText = "Soon",
             iconRes = R.drawable.ic_money_dollar_circle_line
         ), RuleOptionData(
             isSelected = LikenessRule.NOT_USE == localSelectedRule,
             type = LikenessRule.NOT_USE,
-            title = "Don’t use my\nface at all",
+            title = "Don’t use my face at all",
             badgeText = "Soon",
             iconRes = R.drawable.ic_subtract_fill
         ), RuleOptionData(
             isSelected = LikenessRule.ASK_FIRST == localSelectedRule,
             type = LikenessRule.ASK_FIRST,
-            title = "Ask me\nfirst",
+            title = "Ask me first",
             badgeText = "Soon",
             iconRes = R.drawable.ic_question
         )
@@ -177,7 +178,6 @@ fun RuleOption(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .size(width = 160.dp, height = 160.dp)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(
@@ -193,13 +193,13 @@ fun RuleOption(
     ) {
         Row(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(16.dp)
         ) {
             // icon
             Box(
                 modifier = Modifier
-                    .size(30.dp)
+                    .size(40.dp)
                     .background(iconBackground, shape = CircleShape)
                     .padding(vertical = 2.dp, horizontal = 4.dp)
             ) {
@@ -211,7 +211,7 @@ fun RuleOption(
                 )
             }
 
-            //Spacer(modifier.weight(1f))
+            Spacer(modifier.width(20.dp))
 
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 // Status badge
