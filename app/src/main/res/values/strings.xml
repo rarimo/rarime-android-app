@@ -534,7 +534,8 @@
     <string name="recover_method_details_screen_title">Recover method</string>
     <string name="recovery_method_detail_screen_card_holder_title">Private key</string>
     <string name="recovery_method_detal_screen_card_holder_description">Please store the private key safely and do not share it with anyone. If you lose this key, you will not be able to recover the account and will lose access forever.</string>
-    <string name="recovery_method_detail_screen_card_holder_btn_label">Copy</string>
+    <string name="recovery_method_detail_screen_copy">Copy</string>
+    <string name="recovery_method_detail_screen_copied">Copied</string>
     <string name="recovery_method_cloud_backup_title">Google Cloud backup</string>
     <string name="recovery_method_cloud_backup_description">Backup key in Google Cloud</string>
     <string name="recovery_method_face_scan_title">zkFace</string>
