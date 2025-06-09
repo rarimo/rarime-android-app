@@ -20,7 +20,7 @@ fun ManageWidgetsButton(
     innerPaddings: Map<ScreenInsets, Number>,
     onClick: () -> Unit
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         PrimaryButton(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
