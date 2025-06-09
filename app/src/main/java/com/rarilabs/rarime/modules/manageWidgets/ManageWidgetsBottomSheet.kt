@@ -74,8 +74,8 @@ fun ManageWidgetsBottomSheetContent(
         AppColorScheme.DARK -> true
         AppColorScheme.LIGHT -> false
     }
-    Column() {
-        Row() {
+    Column {
+        Row {
             Text(
                 text = stringResource(R.string.manage_widgets_bottom_sheet_title),
                 style = RarimeTheme.typography.h3,
@@ -103,52 +103,52 @@ fun ManageWidgetsBottomSheetContent(
         HorizontalPager(state = pagerState) { page ->
             when (managedWidgets.get(page)) {
                 WidgetType.FREEDOMTOOL -> {
-                    ManageWidgetsItem(imageResId =
-                        if(isDark){
-                            R.drawable.ic_freedomtool_widget_dark
-                        }else{
-                            R.drawable.ic_freedomtool_widget_light
-                        }
-                    ,
+                    ManageWidgetsItem(
+                        imageResId =
+                            if (isDark) {
+                                R.drawable.ic_freedomtool_widget_dark
+                            } else {
+                                R.drawable.ic_freedomtool_widget_light
+                            },
                         title = stringResource(R.string.freedomtool_widget_title),
                         description = stringResource(R.string.freedomtool_widget_description)
                     )
                 }
 
                 WidgetType.LIKENESS -> {
-                    ManageWidgetsItem(imageResId =
-                        if(isDark){
-                            R.drawable.ic_digital_likeness_widget_dark
-                        }else{
-                            R.drawable.ic_digital_likeness_widget_light
-                        }
-                        ,
+                    ManageWidgetsItem(
+                        imageResId =
+                            if (isDark) {
+                                R.drawable.ic_digital_likeness_widget_dark
+                            } else {
+                                R.drawable.ic_digital_likeness_widget_light
+                            },
                         title = stringResource(R.string.digital_likeness_widget_title),
                         description = stringResource(R.string.digital_likeness_widget_description)
                     )
                 }
 
                 WidgetType.HIDDEN_PRIZE -> {
-                    ManageWidgetsItem(imageResId =
-                        if(isDark){
-                            R.drawable.ic_hidden_prize_widget_dark
-                        }else{
-                            R.drawable.ic_hidden_prize_widget_light
-                        }
-                        ,
+                    ManageWidgetsItem(
+                        imageResId =
+                            if (isDark) {
+                                R.drawable.ic_hidden_prize_widget_dark
+                            } else {
+                                R.drawable.ic_hidden_prize_widget_light
+                            },
                         title = stringResource(R.string.hidden_prize_widget_title),
                         description = stringResource(R.string.hidden_prize_widget_description)
                     )
                 }
 
                 WidgetType.RECOVERY_METHOD -> {
-                    ManageWidgetsItem(imageResId =
-                        if(isDark){
-                            R.drawable.ic_recovery_method_widget_dark
-                        }else{
-                            R.drawable.ic_recovery_method_widget_light
-                        }
-                        ,
+                    ManageWidgetsItem(
+                        imageResId =
+                            if (isDark) {
+                                R.drawable.ic_recovery_method_widget_dark
+                            } else {
+                                R.drawable.ic_recovery_method_widget_light
+                            },
                         title = stringResource(R.string.recovery_method_widget_title),
                         description = stringResource(R.string.recovery_method_widget_description)
                     )
@@ -170,9 +170,9 @@ fun ManageWidgetsBottomSheetContent(
         )
 
     }
-    if (isVisible(managedWidgets.get(pagerState.currentPage))) {
+    if (isVisible(managedWidgets[pagerState.currentPage])) {
         SecondaryButton(
-            onClick = { onRemove(managedWidgets.get(pagerState.currentPage)) },
+            onClick = { onRemove(managedWidgets[pagerState.currentPage]) },
             text = stringResource(R.string.manage_widgets_remove_btn_label),
             size = ButtonSize.Large,
             modifier = Modifier
@@ -184,7 +184,7 @@ fun ManageWidgetsBottomSheetContent(
             modifier = Modifier
                 .padding(horizontal = 20.dp, vertical = 17.dp)
                 .fillMaxWidth(),
-            onClick = { onAdd(managedWidgets.get(pagerState.currentPage)) },
+            onClick = { onAdd(managedWidgets[pagerState.currentPage]) },
             size = ButtonSize.Large,
             text = stringResource(R.string.manage_widgets_add_btn_label)
         )

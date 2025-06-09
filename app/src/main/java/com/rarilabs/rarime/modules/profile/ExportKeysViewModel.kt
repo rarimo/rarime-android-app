@@ -17,8 +17,8 @@ import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.google.api.services.drive.model.File
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.manager.DriveState
 import com.rarilabs.rarime.manager.IdentityManager
-import com.rarilabs.rarime.modules.register.DriveState
 import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -113,9 +113,9 @@ class ExportKeysViewModel @Inject constructor(
         ).setApplicationName(context.getString(R.string.app_name)).build()
     }
 
-    suspend fun backupPrivateKey(context: Context) {
+    suspend fun backupPrivateKey() {
         val account = _signedInAccount.value ?: return
-        val driveService = getDriveService(account, context)
+        val driveService = getDriveService(account, app)
         withContext(Dispatchers.IO) {
             try {
                 _isDriveButtonEnabled.value = false
@@ -143,13 +143,13 @@ class ExportKeysViewModel @Inject constructor(
         }
     }
 
-    suspend fun retryBackupPrivateKey(context: Context) {
-        backupPrivateKey(context)
+    suspend fun retryBackupPrivateKey() {
+        backupPrivateKey()
     }
 
-    suspend fun deleteBackup(context: Context) {
+    suspend fun deleteBackup() {
         val account = _signedInAccount.value ?: return
-        val driveService = getDriveService(account, context)
+        val driveService = getDriveService(account, app)
         withContext(Dispatchers.IO) {
             try {
                 _isDriveButtonEnabled.value = false
@@ -196,14 +196,13 @@ class ExportKeysViewModel @Inject constructor(
 
     fun handleSignInResult(
         task: Task<GoogleSignInAccount>,
-        context: Context,
         onError: (e: Exception) -> Unit
     ) {
         viewModelScope.launch {
             try {
                 val account = task.getResult(ApiException::class.java)
                 if (account != null) {
-                    setSignedInAccount(account, context)
+                    setSignedInAccount(account, app)
                 }
             } catch (e: ApiException) {
                 onError(e)

@@ -175,7 +175,6 @@
     <string name="auth_method">Auth Method</string>
     <string name="biometrics">Biometrics</string>
     <string name="passcode">Passcode</string>
-    <string name="export_keys">Export Keys</string>
     <string name="language">Language</string>
     <string name="english">English</string>
     <string name="ukrainian">Українська</string>
@@ -204,7 +203,7 @@
     <string name="what_is_rarime_text_item_1">RariMe is a self-custody identity wallet where no personal data ever leaves the device and everything is processed locally.</string>
     <string name="what_is_rarime_text_item_2">With RariMe, identity becomes private but verifiable.</string>
     <string name="what_is_rarime_text_item_3">" ensures your history, reputation and actions are not lost, but remain confidential and under your control."</string>
-    <string name="icon_black_and_white">Black &amp; White</string>
+    <string name="icon_white">White</string>
     <string name="icon_black_and_green">Black &amp; Green</string>
     <string name="icon_green_and_black">Green &amp; Black</string>
     <string name="app_icon">App Icon</string>
@@ -535,17 +534,25 @@
     <string name="recover_method_details_screen_title">Recover method</string>
     <string name="recovery_method_detail_screen_card_holder_title">Private key</string>
     <string name="recovery_method_detal_screen_card_holder_description">Please store the private key safely and do not share it with anyone. If you lose this key, you will not be able to recover the account and will lose access forever.</string>
-    <string name="recovery_method_detail_screen_card_holder_btn_label">Copy</string>
+    <string name="recovery_method_detail_screen_copy">Copy</string>
+    <string name="recovery_method_detail_screen_copied">Copied</string>
     <string name="recovery_method_cloud_backup_title">Google Cloud backup</string>
-    <string name="recovery_method_cloud_backup_description">Backup key stored in Google Cloud</string>
+    <string name="recovery_method_cloud_backup_description">Backup key in Google Cloud</string>
     <string name="recovery_method_face_scan_title">zkFace</string>
     <string name="recovery_method_face_scan_description">Biometric facial key</string>
     <string name="recovery_method_object_scan_title">Object</string>
     <string name="recovery_method_object_scan_description">Make any object your key</string>
+
+    <string name="recovery_method_delete_dialog_text">Are you sure you want to delete the backup?</string>
+    <string name="recovery_method_overwrite_dialog_text">The backup differs from the current key. Overwrite it?</string>
+    <string name="warning">Warning</string>
+
     <string name="manage_widgets_btn_label">Manage Widgets</string>
     <string name="manage_widgets_bottom_sheet_title">Manage widgets</string>
     <string name="manage_widgets_add_btn_label">Add</string>
     <string name="manage_widgets_remove_btn_label">Remove</string>
+
+
     <string name="freedomtool_widget_title">Freedomtool</string>
     <string name="freedomtool_widget_description">Revolutionizing polling, surveying \n and election processes</string>
     <string name="digital_likeness_widget_title">Digital Likeness</string>
@@ -565,6 +572,12 @@
     <string name="digital_likeness_collapsed_widget_accent_title">Set a rule</string>
     <string name="digital_likeness_collapsed_widget_caption">Your data, your rules</string>
     <string name="digital_likeness_description">AI can now replicate your face, voice, and identity without asking for your permission. But you never agreed to that, raising a fundamental question: who owns your likeness?</string>
+    <string name="recovery_method">Recovery Method</string>
+    <string name="export_keys">Export keys</string>
+    <string name="icon_black">Black</string>
+    <string name="icon_green">Green</string>
+    <string name="icon_gradient">Gradient</string>
+    <string name="icon_cat">Cat</string>
 
 
 </resources>

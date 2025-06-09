@@ -82,22 +82,29 @@ fun HomeScreenV3(
     }
     val colorScheme by viewModel.colorScheme.collectAsState()
     val visibleCards by viewModel.visibleWidgets.collectAsState()
-    val welcomeAppSheetState = rememberAppSheetState(!viewModel.getIsShownWelcome())
+    val isWelcomeVisible by remember {
+        derivedStateOf { !viewModel.getIsShownWelcome() }
+    }
+
+    val welcomeAppSheetState = rememberAppSheetState(isWelcomeVisible)
 
     LaunchedEffect(Unit) {
         viewModel.initHomeData()
+    }
+
+    LaunchedEffect(welcomeAppSheetState.showSheet) {
         if (welcomeAppSheetState.showSheet) {
             viewModel.saveIsShownWelcome(true)
         }
-
     }
     val sheetManageWidgets = rememberAppSheetState()
     AppBottomSheet(
         state = sheetManageWidgets,
         backgroundColor = RarimeTheme.colors.backgroundPrimary,
         isHeaderEnabled = false,
-
-        ) {
+        fullScreen = false,
+        isWindowInsetsEnabled = false
+    ) {
 
         ManageWidgetsBottomSheet(onClose = { sheetManageWidgets.hide() })
 
@@ -117,13 +124,10 @@ fun HomeScreenV3(
         currentPointsBalance = currentPointsBalance,
         colorScheme = colorScheme,
         onClick = { sheetManageWidgets.show() },
-
     )
 
     AppBottomSheet(
-        state = welcomeAppSheetState,
-        isHeaderEnabled = false,
-        isWindowInsetsEnabled = false
+        state = welcomeAppSheetState, isHeaderEnabled = false, isWindowInsetsEnabled = false
     ) {
         WelcomeBottomSheet {
             welcomeAppSheetState.hide()
@@ -269,6 +273,7 @@ fun HomeScreenContent(
                     }
 
                 }
+
                 if (pagerState.currentPage == pagerState.pageCount - 1) {
                     ManageWidgetsButton(innerPaddings = innerPaddings, onClick = onClick)
                 }
@@ -309,7 +314,7 @@ fun HomeScreenContent(
                             innerPaddings = innerPaddings,
                             navigate = navigate,
 
-                        )
+                            )
 
                         WidgetType.HIDDEN_PRIZE -> HiddenPrizeExpandedWidget(
                             expandedWidgetProps = expandedCardProps,
@@ -343,8 +348,7 @@ fun HomeScreenContent(
                                 awaitPointerEvent()
                             }
                         }
-                    }
-            )
+                    })
         }
     }
 }
@@ -366,8 +370,7 @@ private fun HomeScreenPreview() {
                 visibleWidgets = WidgetType.entries,
                 currentPointsBalance = 200L,
                 colorScheme = AppColorScheme.SYSTEM,
-                onClick = {}
-            )
+                onClick = {})
         }
     }
 }

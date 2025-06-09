@@ -21,20 +21,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
 fun TaskCard(
-    taskIconId : Int,
-    rewardInRMO:Int,
+    taskIconId: Int,
+    rewardInRMO: Int,
     title: String,
-    onClick:() -> Unit,
+    onClick: () -> Unit,
     description: String,
-    currentVal : Int,
-    maxVal:Int
+    currentVal: Int,
+    maxVal: Int
 ) {
     Card(
         shape = RoundedCornerShape(20.dp),
@@ -132,14 +131,16 @@ fun TaskCard(
                     .padding(horizontal = 34.dp)
             ) {
                 Text(
-                    text = description + ": " + currentVal.toString() + "/" + maxVal.toString() ,
+                    text = description + ": " + currentVal.toString() + "/" + maxVal.toString(),
                     style = RarimeTheme.typography.body4,
                     color = RarimeTheme.colors.textSecondary
                 )
             }
-            Spacer(modifier = Modifier
-                .fillMaxWidth()
-                .height(24.dp))
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(24.dp)
+            )
 
         }
     }

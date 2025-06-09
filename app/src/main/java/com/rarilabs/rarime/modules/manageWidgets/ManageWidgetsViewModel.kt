@@ -12,23 +12,28 @@ class ManageWidgetsViewModel @Inject constructor(
     private val settingsManager: SettingsManager,
     private val widgetsManager: ManageWidgetsManager,
 
-) : ViewModel() {
+    ) : ViewModel() {
     val colorScheme = settingsManager.colorScheme
     val managedWidgets = widgetsManager.managedWidgets
     val visibleWidgets = widgetsManager.visibleWidgets
 
-    fun isVisible(widgetType:WidgetType): Boolean{
+    fun isVisible(widgetType: WidgetType): Boolean {
         return (widgetType in visibleWidgets.value)
     }
 
-    fun setVisibleWidgets(){
-        widgetsManager.setVisibleWidgets(managedWidgets.value.filter { widgetType -> isVisible(widgetType) })
+    fun setVisibleWidgets() {
+        widgetsManager.setVisibleWidgets(managedWidgets.value.filter { widgetType ->
+            isVisible(
+                widgetType
+            )
+        })
     }
 
-    fun remove(widgetType: WidgetType){
+    fun remove(widgetType: WidgetType) {
         widgetsManager.remove(widgetType)
     }
-    fun add(widgetType: WidgetType){
+
+    fun add(widgetType: WidgetType) {
         widgetsManager.add(widgetType)
     }
 }

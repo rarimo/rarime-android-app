@@ -12,10 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.ButtonSize
-import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.components.rememberAppSheetState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 @Composable
 fun ManageWidgetsButton(
@@ -23,7 +20,7 @@ fun ManageWidgetsButton(
     innerPaddings: Map<ScreenInsets, Number>,
     onClick: () -> Unit
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         PrimaryButton(
             modifier = Modifier
                 .align(Alignment.BottomCenter)

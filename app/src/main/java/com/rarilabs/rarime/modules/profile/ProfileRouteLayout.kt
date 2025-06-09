@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.CardContainer
@@ -24,19 +25,21 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 fun ProfileRouteLayout(
     title: String,
     onBack: () -> Unit,
-    content: @Composable () -> Unit
+    paddingHorizontal: Dp = 20.dp,
+    paddingVertical: Dp = 20.dp,
+    content: @Composable () -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(24.dp),
         modifier = Modifier
             .fillMaxSize()
             .background(RarimeTheme.colors.backgroundPrimary)
-            .padding(20.dp)
     ) {
-        Box {
+        Box(
+            modifier = Modifier.padding(top = 20.dp, start = 20.dp, end = 20.dp)
+        ) {
             PrimaryTextButton(
-                leftIcon = R.drawable.ic_caret_left,
-                onClick = onBack
+                leftIcon = R.drawable.ic_caret_left, onClick = onBack
             )
             Text(
                 text = title,
@@ -48,7 +51,11 @@ fun ProfileRouteLayout(
                     .padding(vertical = 1.dp)
             )
         }
-        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = paddingHorizontal)
+                .verticalScroll(rememberScrollState())
+        ) {
             content()
         }
     }

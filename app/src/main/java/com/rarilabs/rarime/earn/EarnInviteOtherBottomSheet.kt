@@ -1,23 +1,18 @@
 package com.rarilabs.rarime.earn
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,7 +27,7 @@ import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 
- val tempPointsBalances = PointsBalanceData(
+val tempPointsBalances = PointsBalanceData(
     id = "12",
     type = "12",
 
@@ -79,7 +74,7 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 fun InviteOthersContent(
     modifier: Modifier = Modifier,
     pointsBalance: PointsBalanceData, //TODO: remove default temp value
-    onClose:()->Unit
+    onClose: () -> Unit
 ) {
     val rewardPerInvite = pointsBalance.attributes.referral_codes?.size?.let {
         CONST_MOCKED_EVENTS_LIST[0].attributes.meta.static.reward.div(it)
@@ -93,7 +88,7 @@ fun InviteOthersContent(
                 color = RarimeTheme.colors.textPrimary,
                 modifier = Modifier
                     .align(alignment = Alignment.CenterVertically)
-                    .padding( top = 30.dp, bottom = 12.dp)
+                    .padding(top = 30.dp, bottom = 12.dp)
             )
             Spacer(modifier = Modifier.weight(1f))
             IconButton(
@@ -115,38 +110,36 @@ fun InviteOthersContent(
 
         )
 
-            Column(
-                modifier = Modifier.padding(vertical = 17.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                pointsBalance.attributes.referral_codes?.forEach {
-                    RewardsEventItemInvitesCard(
-                        code = it,
-                        rewardAmount = rewardPerInvite,
-                        pointsBalance = pointsBalance,
-                    )
-                }
+        Column(
+            modifier = Modifier.padding(vertical = 17.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            pointsBalance.attributes.referral_codes?.forEach {
+                RewardsEventItemInvitesCard(
+                    code = it,
+                    rewardAmount = rewardPerInvite,
+                    pointsBalance = pointsBalance,
+                )
             }
-
         }
+
     }
+}
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Preview
+@Composable
+private fun InviteOthersContentPreview() {
 
-
-    @OptIn(ExperimentalSharedTransitionApi::class)
-    @Preview
-    @Composable
-    private fun InviteOthersContentPreview() {
-
-        Surface {
+    Surface {
 
             InviteOthersContent(
                 pointsBalance = tempPointsBalances,
                 onClose = {}
             )
 
-        }
-
-
     }
+
+
+}
