@@ -296,7 +296,7 @@ fun ClaimExpandedWidgetPreview_Claimed() {
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
         ClaimExpandedWidgetContent(
             widgetProps = BaseWidgetProps.Expanded(
-                layoutId = WidgetType.EARN.layoutId,
+                layoutId = WidgetType.IDENTITY.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope,
                 onCollapse = {}
@@ -316,7 +316,7 @@ fun ClaimExpandedWidgetPreview_Unclaimed() {
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
         ClaimExpandedWidgetContent(
             widgetProps = BaseWidgetProps.Expanded(
-                layoutId = WidgetType.EARN.layoutId,
+                layoutId = WidgetType.IDENTITY.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope,
                 onCollapse = {}

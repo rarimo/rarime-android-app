@@ -231,7 +231,7 @@ fun ClaimCollapsedCardPreview_Unclaimed() {
         ClaimCollapsedWidget(
             collapsedWidgetProps = BaseWidgetProps.Collapsed(
                 onExpand = {},
-                layoutId = WidgetType.EARN.layoutId,
+                layoutId = WidgetType.CLAIM.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope
             ),
@@ -251,7 +251,7 @@ fun ClaimCollapsedCardPreview_Claimed() {
         ClaimCollapsedWidget(
             collapsedWidgetProps = BaseWidgetProps.Collapsed(
                 onExpand = {},
-                layoutId = WidgetType.EARN.layoutId,
+                layoutId = WidgetType.CLAIM.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope
             ),

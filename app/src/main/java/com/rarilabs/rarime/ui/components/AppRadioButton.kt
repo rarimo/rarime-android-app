@@ -35,8 +35,7 @@ fun AppRadioButton(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .background(RarimeTheme.colors.backgroundPrimary, RoundedCornerShape(12.dp))
-            .border(width = 1.dp, color = RarimeTheme.colors.componentPrimary, shape = RoundedCornerShape(12.dp))
+            .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(12.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
@@ -50,7 +49,7 @@ fun AppRadioButton(
                 .size(20.dp)
                 .border(
                     width = 1.dp,
-                    color = if (isSelected) RarimeTheme.colors.textPrimary else RarimeTheme.colors.textPlaceholder,
+                    color = if (isSelected) RarimeTheme.colors.secondaryMain else RarimeTheme.colors.componentHovered,
                     shape = CircleShape
                 )
         ) {
@@ -59,7 +58,7 @@ fun AppRadioButton(
                     .size(10.dp)
                     .align(Alignment.Center)
                     .background(
-                        color = if (isSelected) RarimeTheme.colors.textPrimary else Color.Transparent,
+                        color = if (isSelected) RarimeTheme.colors.secondaryMain else Color.Transparent,
                         shape = CircleShape
                     )
             )
