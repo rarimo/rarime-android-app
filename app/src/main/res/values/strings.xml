@@ -175,7 +175,6 @@
     <string name="auth_method">Auth Method</string>
     <string name="biometrics">Biometrics</string>
     <string name="passcode">Passcode</string>
-    <string name="export_keys">Export Keys</string>
     <string name="language">Language</string>
     <string name="english">English</string>
     <string name="ukrainian">Українська</string>
@@ -561,6 +560,8 @@
     <string name="earn_invite_task_card_description">Invited</string>
     <string name="earn_widget_invite_bottom_sheet_title">Invite others</string>
     <string name="earn_invite_bottom_sheet_description">Share your referral link and get bonuses  \nwhen your friends join</string>
+    <string name="recovery_method">Recovery Method</string>
+    <string name="export_keys">Export keys</string>
 
 
 </resources>

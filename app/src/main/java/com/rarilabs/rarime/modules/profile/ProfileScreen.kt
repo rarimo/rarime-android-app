@@ -38,9 +38,12 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.data.enums.AppIcon
 import com.rarilabs.rarime.data.enums.toLocalizedString
+import com.rarilabs.rarime.modules.recoveryMethod.RecoveryMethodDetailScreen
+import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.ConfirmationDialog
 import com.rarilabs.rarime.ui.components.PassportImage
+import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Screen
 import com.rarilabs.rarime.util.SendEmailUtil
@@ -65,6 +68,19 @@ fun ProfileScreen(
 
     val colorScheme by viewModel.colorScheme.collectAsState()
 
+    val sheetRecoveryMethod = rememberAppSheetState()
+
+    AppBottomSheet(
+        state = sheetRecoveryMethod,
+        backgroundColor = RarimeTheme.colors.backgroundPrimary,
+        fullScreen = true,
+        isHeaderEnabled = false,
+        disablePullClose = true
+
+    ) {
+        RecoveryMethodDetailScreen(onClose = {sheetRecoveryMethod.hide()}, onCopy = {}) //Todo Changes
+    }
+
     ProfileScreenContent(
         rarimoAddress = WalletUtil.formatAddress(viewModel.rarimoAddress),
         passportImage = image,
@@ -77,7 +93,8 @@ fun ProfileScreen(
         },
         onClearConfirm = {
             viewModel.clearAllData(context)
-        })
+        },
+        onRecoveryMethod ={ sheetRecoveryMethod.show()})
 }
 
 @Composable
@@ -89,6 +106,7 @@ fun ProfileScreenContent(
     colorScheme: AppColorScheme,
     onFeedbackConfirm: suspend () -> Unit = {},
     onClearConfirm: suspend () -> Unit = {},
+    onRecoveryMethod : () -> Unit = {}
 ) {
     val scope = rememberCoroutineScope()
 
@@ -150,13 +168,13 @@ fun ProfileScreenContent(
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                     ProfileRow(
-                        iconId = R.drawable.ic_user_focus,
+                        iconId = R.drawable.ic_user_shared_2_line,
+                        title = stringResource(R.string.recovery_method),
+                        onClick = { onRecoveryMethod() })
+                    ProfileRow(
+                        iconId = R.drawable.ic_shield_keyhole_line,
                         title = stringResource(R.string.auth_method),
                         onClick = { navigate(Screen.Main.Profile.AuthMethod.route) })
-                    ProfileRow(
-                        iconId = R.drawable.ic_key,
-                        title = stringResource(R.string.export_keys),
-                        onClick = { navigate(Screen.Main.Profile.ExportKeys.route) })
                 }
             }
             Column(
@@ -168,7 +186,7 @@ fun ProfileScreenContent(
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                     ProfileRow(
-                        iconId = R.drawable.ic_sun,
+                        iconId = R.drawable.ic_sun_line,
                         title = stringResource(R.string.theme),
                         value = colorScheme.toLocalizedString(),
                         onClick = { navigate(Screen.Main.Profile.Theme.route) })
@@ -177,12 +195,23 @@ fun ProfileScreenContent(
                         title = stringResource(R.string.app_icon),
                         value = appIcon.toLocalizedString(),
                         onClick = { navigate(Screen.Main.Profile.AppIcon.route) })
+
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .background(
+                        RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
+                    )
+                    .padding(16.dp)
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                     ProfileRow(
-                        iconId = R.drawable.ic_question,
+                        iconId = R.drawable.ic_question_line,
                         title = stringResource(R.string.privacy_policy),
                         onClick = { navigate(Screen.Main.Profile.Privacy.route) })
                     ProfileRow(
-                        iconId = R.drawable.ic_flag,
+                        iconId = R.drawable.ic_flag_line,
                         title = stringResource(R.string.terms_of_use),
                         onClick = { navigate(Screen.Main.Profile.Terms.route) })
                     ProfileRow(
