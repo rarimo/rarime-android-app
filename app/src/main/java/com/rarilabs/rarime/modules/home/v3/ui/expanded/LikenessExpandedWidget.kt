@@ -628,7 +628,7 @@ fun LikenessExpandedWidgetPreview() {
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
         LikenessExpandedWidgetContent(
             widgetProps = BaseWidgetProps.Expanded(
-                layoutId = WidgetType.IDENTITY.layoutId,
+                layoutId = WidgetType.LIKENESS.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope,
                 onCollapse = {}

@@ -101,6 +101,7 @@ class RarimeColors(
     gradient10: Brush,
     gradient11: Brush,
     gradient12: Brush,
+    gradient13: Brush,
 
 
 
@@ -251,6 +252,8 @@ class RarimeColors(
         internal set
     var gradient12 by mutableStateOf(gradient12, structuralEqualityPolicy())
         internal set
+    var gradient13 by mutableStateOf(gradient13, structuralEqualityPolicy())
+        internal set
 
     var inverted by mutableStateOf(inverted, structuralEqualityPolicy())
         internal set
@@ -327,6 +330,7 @@ class RarimeColors(
         gradient10: Brush = this.gradient10,
         gradient11: Brush = this.gradient11,
         gradient12: Brush = this.gradient12,
+        gradient13: Brush = this.gradient13,
         invertedDark: Color = this.invertedDark,
         invertedLight: Color = this.invertedLight,
         inverted: Color = this.inverted,
@@ -409,6 +413,7 @@ class RarimeColors(
         gradient10 = gradient10,
         gradient11 = gradient11,
         gradient12 = gradient12,
+        gradient13 = gradient13,
         additionalGreen = additionalGreen,
         inverted = inverted,
         hiddenPrizeAccent = hiddenPrizeAccent,
@@ -493,6 +498,7 @@ class RarimeColors(
         this.gradient10 = other.gradient10
         this.gradient11 = other.gradient11
         this.gradient12 = other.gradient12
+        this.gradient13 = other.gradient13
         this.additionalGreen = other.additionalGreen
         this.inverted = other.inverted
         this.hiddenPrizeAccent = other.hiddenPrizeAccent
@@ -615,6 +621,12 @@ fun darkColors() = RarimeColors(
         colors = listOf(
             Color(0xFF8AFECC),
             Color(0xFF9AFE8A),
+        )
+    ),
+    gradient13 = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFF40A661),
+            Color(0xFF43C46C)
         )
     ),
 
@@ -745,6 +757,13 @@ fun lightColors() = RarimeColors(
         colors = listOf(
             Color(0xFF8AFECC),
             Color(0xFF9AFE8A),
+        )
+    ),
+
+    gradient13 = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFF144C26),
+            Color(0xFF258D46)
         )
     ),
 

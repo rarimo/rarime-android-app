@@ -280,7 +280,7 @@ fun IdentityExpandedWidgetPreview() {
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
         IdentityExpandedWidgetContent(
             widgetProps = BaseWidgetProps.Expanded(
-                layoutId = WidgetType.IDENTITY.layoutId,
+                layoutId = 1,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope,
                 onCollapse = {}
