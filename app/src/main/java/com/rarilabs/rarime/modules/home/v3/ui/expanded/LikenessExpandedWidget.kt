@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.modules.home.v3.ui.expanded
 
-import DigitalLikenessFrame
 import android.Manifest
 import android.graphics.Bitmap
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -14,6 +13,7 @@ import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +24,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -46,9 +48,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -56,6 +59,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.manager.LikenessRule
 import com.rarilabs.rarime.manager.LivenessProcessingStatus
 import com.rarilabs.rarime.modules.digitalLikeness.DigitalLikenessCamera
@@ -66,7 +70,6 @@ import com.rarilabs.rarime.modules.home.v3.model.ALREADY_SET_AMOUNT
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
-import com.rarilabs.rarime.modules.home.v3.model.IMG_LIKENESS_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
@@ -92,13 +95,14 @@ data class RuleOptionData(
 )
 
 @Composable
-fun LikenessExpandedWidget(
+fun DigitalLikenessExpandedWidget(
     modifier: Modifier = Modifier,
     expandedWidgetProps: BaseWidgetProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
     navigate: (String) -> Unit,
     viewModel: DigitalLikenessViewModel = hiltViewModel()
 ) {
+    val colorScheme by viewModel.colorScheme.collectAsState()
     val selectedRule by viewModel.selectedRule.collectAsState()
     val isRegistered by viewModel.isRegistered.collectAsState()
 
@@ -131,7 +135,8 @@ fun LikenessExpandedWidget(
         downloadProgress = downloadProgress,
         processImage = viewModel::processImage,
         livenessStatus = livenessState,
-        livenessError = errorState
+        livenessError = errorState,
+        colorScheme = colorScheme
     )
 }
 
@@ -155,7 +160,8 @@ fun LikenessExpandedWidgetContent(
     faceImage: Bitmap?,
     livenessStatus: LivenessProcessingStatus,
     livenessError: LivenessProcessingStatus?,
-    downloadProgress: Int
+    downloadProgress: Int,
+    colorScheme: AppColorScheme
 ) {
     val isPreview = LocalInspectionMode.current
     val appSheetState = rememberAppSheetState()
@@ -273,12 +279,14 @@ fun LikenessExpandedWidgetContent(
                     }
                 },
                 background = {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(RarimeTheme.colors.gradient7)
+                    Background(
+                        layoutId = layoutId,
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        colorScheme = colorScheme
                     )
-                }
+                },
+                columnModifier = Modifier
             )
         }
     }
@@ -304,14 +312,23 @@ private fun Header(
                     resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                 )
                 .fillMaxWidth()
-                .padding(
-                    top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp,
-                )
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp)
+                .padding(top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp),
             horizontalArrangement = Arrangement.End
         ) {
-            IconButton(onClick = onCollapse) {
-                AppIcon(id = R.drawable.ic_close)
+
+            IconButton(
+                onClick = onCollapse,
+                modifier = Modifier
+                    .padding(20.dp)
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(color = RarimeTheme.colors.componentPrimary)
+            ) {
+                AppIcon(
+                    id = R.drawable.ic_close,
+                    tint = RarimeTheme.colors.textPrimary,
+                )
             }
         }
     }
@@ -333,87 +350,46 @@ private fun Body(
 ) {
     with(sharedTransitionScope) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(24.dp),
             modifier = Modifier
-                .padding(horizontal = 20.dp)
-                .padding(bottom = (innerPaddings[ScreenInsets.BOTTOM]!!.toInt() + 20).dp)
                 .sharedBounds(
                     rememberSharedContentState(HomeSharedKeys.content(layoutId)),
                     animatedVisibilityScope = animatedVisibilityScope,
-                    renderInOverlayDuringTransition = false,
                     enter = fadeIn(),
                     exit = fadeOut(),
                     resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
                 )
+                .padding(bottom = (innerPaddings[ScreenInsets.BOTTOM]!!.toInt()).dp )
+                .fillMaxSize()
         ) {
-            if (faceImage != null) {
-                DigitalLikenessFrame(
-                    faceImage = faceImage.asImageBitmap(),
-                    frameRes = R.drawable.drawable_likeness_face_bg,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .offset(y = 40.dp)
-                        .sharedBounds(
-                            rememberSharedContentState(
-                                HomeSharedKeys.image(
-                                    layoutId
-                                )
-                            ),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                        ),
-                    frameSize = 325.dp,
-                    faceSize = 295.dp
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Column(
+                modifier = Modifier
+                    .background(
+                        RarimeTheme.colors.backgroundPrimary,
+                        shape = RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
+                    )
+                    .padding(20.dp)
+                    .fillMaxWidth()
+
+            ) {
+                LikenessTitle(
+                    isScanned = isScanned,
+                    selectedRule = selectedRule,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    sharedTransitionScope = sharedTransitionScope,
+                    layoutId = layoutId,
+                    onTooltipShow = onTooltipShow,
+                    onRuleSheetShow = onRuleSheetShow,
+                    tooltipState = tooltipState
                 )
-                Spacer(modifier = Modifier.height(10.dp))
-            } else {
-                Image(
-                    painter = painterResource(R.drawable.drawable_digital_likeness),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(IMG_LIKENESS_HEIGHT.dp)
-                        .offset(y = 40.dp)
-                        .sharedBounds(
-                            rememberSharedContentState(
-                                HomeSharedKeys.image(
-                                    layoutId
-                                )
-                            ),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                        )
-                )
-                Spacer(modifier = Modifier.height(40.dp))
-            }
-            LikenessTitle(
-                isScanned = isScanned,
-                selectedRule = selectedRule,
-                animatedVisibilityScope = animatedVisibilityScope,
-                sharedTransitionScope = sharedTransitionScope,
-                layoutId = layoutId,
-                onTooltipShow = onTooltipShow,
-                onRuleSheetShow = onRuleSheetShow,
-                tooltipState = tooltipState
-            )
-            Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+                Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    text = "AI can now replicate your face, voice, and identity without asking for your permission. But you never agreed to that, raising a fundamental question: who owns your likeness?",
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.baseBlackOp50
+                    text = stringResource(R.string.digital_likeness_description),
+                    style = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary)
                 )
-                Text(
-                    text = "Rarimo is building the infrastructure to give you back that control. With this app, you can create a private, verifiable record that defines how your likeness can and can’t be used.",
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.baseBlackOp50
-                )
-                Text(
-                    text = "Your face stays on your device. No company owns it. And over time, no AI model will be able to ignore your rule.",
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.baseBlackOp50
-                )
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }
@@ -462,15 +438,11 @@ private fun LikenessTitle(
                                 LikenessRule.ASK_FIRST -> "Ask me first"
                                 else -> ""
                             },
-                            titleStyle = RarimeTheme.typography.h5.copy(
-                                color = RarimeTheme.colors.baseBlack
+                            titleStyle = RarimeTheme.typography.subtitle5.copy(
+                                color = RarimeTheme.colors.invertedDark
                             ),
-                            accentTitleStyle = RarimeTheme.typography.additional2.copy(
-                                brush = Brush.linearGradient(
-                                    colors = listOf(
-                                        Color(0xFF655CA4), Color(0xFF7E66B2)
-                                    ), start = Offset(0f, 0f), end = Offset(100f, 0f)
-                                )
+                            accentTitleStyle = RarimeTheme.typography.h2.copy(
+                                brush = RarimeTheme.colors.gradient14
                             ),
                             titleModifier = Modifier.sharedBounds(
                                 rememberSharedContentState(HomeSharedKeys.title(layoutId)),
@@ -483,19 +455,7 @@ private fun LikenessTitle(
                                 animatedVisibilityScope = animatedVisibilityScope,
                                 boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
                                 resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                            ),
-                            caption = "First human-AI Contract",
-                            captionModifier =
-                                Modifier.sharedBounds(
-                                    rememberSharedContentState(
-                                        HomeSharedKeys.caption(
-                                            layoutId
-                                        )
-                                    ),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                                )
+                            )
                         )
                         IconButton(
                             modifier = Modifier.offset(y = (-28).dp, x = (-100).dp),
@@ -514,12 +474,12 @@ private fun LikenessTitle(
                 )
             } else
                 BaseWidgetTitle(
-                    title = "Digital likeness",
-                    accentTitle = "Set a rule",
-                    titleStyle = RarimeTheme.typography.h1.copy(
-                        color = RarimeTheme.colors.baseBlack
+                    title = stringResource(R.string.digital_likeness_collapsed_widget_title),
+                    accentTitle = stringResource(R.string.digital_likeness_collapsed_widget_accent_title),
+                    titleStyle = RarimeTheme.typography.h2.copy(
+                        color = RarimeTheme.colors.invertedDark
                     ),
-                    accentTitleStyle = RarimeTheme.typography.additional1.copy(color = RarimeTheme.colors.baseBlackOp40),
+                    accentTitleStyle = RarimeTheme.typography.h2.copy(brush = RarimeTheme.colors.gradient14),
                     titleModifier = Modifier.sharedBounds(
                         rememberSharedContentState(HomeSharedKeys.title(layoutId)),
                         animatedVisibilityScope = animatedVisibilityScope,
@@ -532,18 +492,19 @@ private fun LikenessTitle(
                         boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
-                    caption = "First human-AI Contract",
-                    captionModifier =
-                        Modifier.sharedBounds(
-                            rememberSharedContentState(
-                                HomeSharedKeys.caption(
-                                    layoutId
-                                )
-                            ),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                        )
+                    caption = stringResource(R.string.digital_likeness_collapsed_widget_caption),
+                    captionModifier = Modifier.sharedBounds(
+                        rememberSharedContentState(
+                            HomeSharedKeys.caption(
+                                layoutId
+                            )
+                        ),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    ),
+                    captionStyle = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary)
+
                 )
         }
     }
@@ -584,20 +545,21 @@ private fun Footer(
                         text = String.format(
                             "%,d",
                             ALREADY_SET_AMOUNT
-                        ), style = RarimeTheme.typography.h4
+                        ), style = RarimeTheme.typography.h4,
+                        color = RarimeTheme.colors.textPrimary
                     )
                     Text(
-                        "Already registered",
+                        "Others already set",
                         style = RarimeTheme.typography.body4,
-                        color = RarimeTheme.colors.baseBlack.copy(alpha = 0.5f)
+                        color = RarimeTheme.colors.textSecondary
                     )
 
                 }
 
                 BaseButton(
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = RarimeTheme.colors.baseBlack,
-                        contentColor = RarimeTheme.colors.baseWhite,
+                        containerColor = RarimeTheme.colors.invertedDark,
+                        contentColor = RarimeTheme.colors.invertedLight,
                         disabledContainerColor = RarimeTheme.colors.componentDisabled,
                         disabledContentColor = RarimeTheme.colors.textDisabled
                     ),
@@ -609,13 +571,61 @@ private fun Footer(
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun Background(
+    layoutId: Int,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    colorScheme: AppColorScheme
+) {
+    val isDark = when (colorScheme) {
+        AppColorScheme.SYSTEM -> isSystemInDarkTheme()
+        AppColorScheme.DARK -> true
+        AppColorScheme.LIGHT -> false
+    }
+
+    val backgroundRes = remember(isDark) {
+        if (isDark) R.drawable.ic_bg_digital_likeness_dark
+        else R.drawable.ic_bg_digital_likeness_light
+    }
+
+
+    with(sharedTransitionScope) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = RarimeTheme.colors.backgroundPrimary)
+        ) {
+            Image(
+                painter = painterResource(backgroundRes),
+                contentDescription = null,
+                contentScale = ContentScale.FillWidth,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .sharedBounds(
+                        rememberSharedContentState(
+                            HomeSharedKeys.image(
+                                layoutId
+                            )
+                        ),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    )
+                    .clip(RoundedCornerShape(20.dp))
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true)
 @Composable
 fun LikenessExpandedWidgetPreview() {
 
     var selectedRule by remember {
         mutableStateOf(
-            LikenessRule.ASK_FIRST
+            LikenessRule.USE_AND_PAY
         )
     }
 
@@ -644,7 +654,8 @@ fun LikenessExpandedWidgetPreview() {
             livenessStatus = LivenessProcessingStatus.DOWNLOADING,
             livenessError = null,
             processImage = {},
-            downloadProgress = 0
+            downloadProgress = 0,
+            colorScheme = AppColorScheme.LIGHT
         )
     }
 }

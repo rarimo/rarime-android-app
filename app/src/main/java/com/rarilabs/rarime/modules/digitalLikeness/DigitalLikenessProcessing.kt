@@ -59,28 +59,19 @@ fun DigitalLikenessProcessing(
     downloadProgress: Int
 ) {
 
-    var currentProgress: Float by remember {
-        mutableFloatStateOf(0f)
-    }
+
 
     val retryScope = rememberCoroutineScope()
 
-    LaunchedEffect(downloadProgress) {
-        currentProgress = downloadProgress / 100f
-    }
 
     LaunchedEffect(currentProcessingState) {
         when (currentProcessingState) {
             LivenessProcessingStatus.RUNNING_ZKML -> {
-                currentProgress = 0f
+                downloadProgress
                 val totalTime = 40_000L
                 val steps = 100
                 val stepDelay = totalTime / steps
 
-                repeat(steps + 1) { i ->
-                    currentProgress = i / steps.toFloat()
-                    delay(stepDelay)
-                }
             }
 
             LivenessProcessingStatus.DOWNLOADING,
@@ -89,9 +80,9 @@ fun DigitalLikenessProcessing(
             }
 
             else -> {
-                currentProgress = 0f
+
                 repeat(101) { i ->
-                    currentProgress = i / 100f
+
                     delay(20)
                 }
             }
@@ -170,7 +161,7 @@ fun DigitalLikenessProcessing(
                     ProcessingItemStatus.FINISHED -> ProcessItemFinished(title = i.title)
                     ProcessingItemStatus.LOADING -> ProcessItemLoading(
                         title = i.title,
-                        progress = currentProgress
+                        progress = downloadProgress
                     )
 
                     ProcessingItemStatus.NOT_ACTIVE -> ProcessItemNotActive(
@@ -200,7 +191,7 @@ fun DigitalLikenessProcessing(
 fun ProcessItemLoading(
     modifier: Modifier = Modifier,
     title: String,
-    progress: Float,
+    progress: Int,
 ) {
     Box(
         modifier = Modifier
@@ -211,9 +202,7 @@ fun ProcessItemLoading(
         Box(
             modifier = Modifier
                 .fillMaxWidth(
-                    progress.coerceIn(
-                        0f, 1f
-                    )
+                    progress.toFloat() / 100f
                 )
                 .height(60.dp)
                 .clip(RoundedCornerShape(24.dp))
@@ -241,7 +230,7 @@ fun ProcessItemLoading(
             )
 
             Text(
-                text = "${(progress * 100).toInt()}%",
+                text = "$progress %",
                 style = RarimeTheme.typography.subtitle5,
                 color = RarimeTheme.colors.textPrimary
             )

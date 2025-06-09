@@ -102,6 +102,7 @@ class RarimeColors(
     gradient11: Brush,
     gradient12: Brush,
     gradient13: Brush,
+    gradient14: Brush,
 
 
 
@@ -255,6 +256,9 @@ class RarimeColors(
     var gradient13 by mutableStateOf(gradient13, structuralEqualityPolicy())
         internal set
 
+    var gradient14 by mutableStateOf(gradient14, structuralEqualityPolicy())
+        internal set
+
     var inverted by mutableStateOf(inverted, structuralEqualityPolicy())
         internal set
 
@@ -331,6 +335,7 @@ class RarimeColors(
         gradient11: Brush = this.gradient11,
         gradient12: Brush = this.gradient12,
         gradient13: Brush = this.gradient13,
+        gradient14: Brush = this.gradient14,
         invertedDark: Color = this.invertedDark,
         invertedLight: Color = this.invertedLight,
         inverted: Color = this.inverted,
@@ -414,6 +419,7 @@ class RarimeColors(
         gradient11 = gradient11,
         gradient12 = gradient12,
         gradient13 = gradient13,
+        gradient14 = gradient14,
         additionalGreen = additionalGreen,
         inverted = inverted,
         hiddenPrizeAccent = hiddenPrizeAccent,
@@ -499,6 +505,7 @@ class RarimeColors(
         this.gradient11 = other.gradient11
         this.gradient12 = other.gradient12
         this.gradient13 = other.gradient13
+        this.gradient14 = other.gradient14
         this.additionalGreen = other.additionalGreen
         this.inverted = other.inverted
         this.hiddenPrizeAccent = other.hiddenPrizeAccent
@@ -627,6 +634,12 @@ fun darkColors() = RarimeColors(
         colors = listOf(
             Color(0xFF40A661),
             Color(0xFF43C46C)
+        )
+    ),
+    gradient14 = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFF518119),
+            Color(0xFF71BB1D)
         )
     ),
 
@@ -764,6 +777,13 @@ fun lightColors() = RarimeColors(
         colors = listOf(
             Color(0xFF144C26),
             Color(0xFF258D46)
+        )
+    ),
+
+    gradient14 = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFF518219),
+            Color(0xFF72BB1D)
         )
     ),
 
