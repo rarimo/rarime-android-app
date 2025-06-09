@@ -31,10 +31,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.Scope
 import com.google.api.services.drive.DriveScopes
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.manager.DriveState
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.register.DriveBackup
 import com.rarilabs.rarime.modules.register.DriveBackupSkeleton
-import com.rarilabs.rarime.modules.register.DriveState
 import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.InfoAlert

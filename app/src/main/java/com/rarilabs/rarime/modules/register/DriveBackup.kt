@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.manager.DriveState
 import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppSkeleton
@@ -24,11 +26,6 @@ import com.rarilabs.rarime.ui.components.CircledBadge
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
-
-
-enum class DriveState {
-    BACKED_UP, NOT_BACKED_UP, PKS_ARE_NOT_EQUAL, NOT_SIGNED_IN,
-}
 
 data class DriveBackupContent(
     val description: String,
@@ -213,7 +210,9 @@ fun DriveBackupSkeleton(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun DriveBackupPreview() {
-    DriveBackup(DriveState.BACKED_UP, {}, {}, {}, false)
+    Surface {
+        DriveBackup(DriveState.BACKED_UP, {}, {}, {}, false)
+    }
 }
 
 @Preview

@@ -17,8 +17,8 @@ import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.google.api.services.drive.model.File
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.manager.DriveState
 import com.rarilabs.rarime.manager.IdentityManager
-import com.rarilabs.rarime.modules.register.DriveState
 import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

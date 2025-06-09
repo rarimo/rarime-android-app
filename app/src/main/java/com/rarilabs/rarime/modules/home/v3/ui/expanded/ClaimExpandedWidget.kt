@@ -36,8 +36,8 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BG_ClAIM_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
-import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.model.getClaimWidgetAccentTitle
 import com.rarilabs.rarime.modules.home.v3.model.getClaimWidgetTitle
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedWidget
@@ -296,7 +296,7 @@ fun ClaimExpandedWidgetPreview_Claimed() {
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
         ClaimExpandedWidgetContent(
             widgetProps = BaseWidgetProps.Expanded(
-                layoutId = WidgetType.IDENTITY.layoutId,
+                layoutId = WidgetType.EARN.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope,
                 onCollapse = {}
@@ -316,7 +316,7 @@ fun ClaimExpandedWidgetPreview_Unclaimed() {
     PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
         ClaimExpandedWidgetContent(
             widgetProps = BaseWidgetProps.Expanded(
-                layoutId = WidgetType.IDENTITY.layoutId,
+                layoutId = WidgetType.EARN.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope,
                 onCollapse = {}
