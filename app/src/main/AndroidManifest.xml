@@ -83,14 +83,14 @@
             </intent-filter>
         </activity>
 
-        <!-- Activity Alias for Launcher Icon BW -->
+        <!-- Activity Alias for Black Icon -->
         <activity-alias
-            android:name="com.rarilabs.rarime.MainActivityBW"
+            android:name="com.rarilabs.rarime.MainActivityBlack"
             android:enabled="true"
             android:exported="true"
-            android:icon="@mipmap/ic_launcher"
+            android:icon="@mipmap/ic_launcher_green"
             android:label="@string/app_name"
-            android:roundIcon="@mipmap/ic_launcher_round"
+            android:roundIcon="@mipmap/ic_launcher_green_round"
             android:targetActivity="com.rarilabs.rarime.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -98,14 +98,29 @@
             </intent-filter>
         </activity-alias>
 
-        <!-- Activity Alias for Launcher Icon BG -->
+        <!-- Activity Alias for Green Icon -->
+        <activity-alias
+            android:name="com.rarilabs.rarime.MainActivityBW"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_green"
+            android:label="@string/app_name"
+            android:roundIcon="@mipmap/ic_launcher_green_round"
+            android:targetActivity="com.rarilabs.rarime.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <!-- Activity Alias for Gradient Icon -->
         <activity-alias
             android:name="com.rarilabs.rarime.MainActivityBG"
             android:enabled="false"
             android:exported="true"
-            android:icon="@mipmap/ic_launcher_bg"
+            android:icon="@mipmap/ic_launcher_gradient"
             android:label="@string/app_name"
-            android:roundIcon="@mipmap/ic_launcher_bg_round"
+            android:roundIcon="@mipmap/ic_launcher_gradient_round"
             android:targetActivity="com.rarilabs.rarime.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -113,14 +128,29 @@
             </intent-filter>
         </activity-alias>
 
-        <!-- Activity Alias for Launcher Icon GB -->
+        <!-- Activity Alias for White Icon -->
         <activity-alias
             android:name="com.rarilabs.rarime.MainActivityGB"
             android:enabled="false"
             android:exported="true"
-            android:icon="@mipmap/ic_launcher_gb"
+            android:icon="@mipmap/ic_launcher_white"
             android:label="@string/app_name"
-            android:roundIcon="@mipmap/ic_launcher_gb_round"
+            android:roundIcon="@mipmap/ic_launcher_white_round"
+            android:targetActivity="com.rarilabs.rarime.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <!-- Activity Alias for Cat Icon -->
+        <activity-alias
+            android:name="com.rarilabs.rarime.MainActivityCat"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_cat"
+            android:label="@string/app_name"
+            android:roundIcon="@mipmap/ic_launcher_cat_round"
             android:targetActivity="com.rarilabs.rarime.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

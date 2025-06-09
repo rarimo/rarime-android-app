@@ -7,11 +7,11 @@ import com.rarilabs.rarime.R
 
 enum class AppIcon(val activity: String, @DrawableRes val iconId: Int) {
     WHITE(
-        activity = "com.rarilabs.rarime.MainActivityBW",
+        activity = "com.rarilabs.rarime.MainActivityGB",
         iconId = R.drawable.logo_bw
     ),
     BLACK(
-        activity = "com.rarilabs.rarime.MainActivityBW",
+        activity = "com.rarilabs.rarime.MainActivityBlack",
         iconId = R.drawable.ic_logo_black
     ),
     GREEN(
@@ -19,11 +19,11 @@ enum class AppIcon(val activity: String, @DrawableRes val iconId: Int) {
         iconId = R.drawable.ic_logo_green
     ),
     GRADIENT(
-        activity = "com.rarilabs.rarime.MainActivityBW",
+        activity = "com.rarilabs.rarime.MainActivityBG",
         iconId = R.drawable.ic_logo_gradient
     ),
     CAT(
-        activity = "com.rarilabs.rarime.MainActivityBW",
+        activity = "com.rarilabs.rarime.MainActivityCat",
         iconId = R.drawable.ic_logo_cat
     )
 

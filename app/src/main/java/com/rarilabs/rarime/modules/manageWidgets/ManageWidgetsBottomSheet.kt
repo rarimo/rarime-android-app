@@ -170,9 +170,9 @@ fun ManageWidgetsBottomSheetContent(
         )
 
     }
-    if (isVisible(managedWidgets.get(pagerState.currentPage))) {
+    if (isVisible(managedWidgets[pagerState.currentPage])) {
         SecondaryButton(
-            onClick = { onRemove(managedWidgets.get(pagerState.currentPage)) },
+            onClick = { onRemove(managedWidgets[pagerState.currentPage]) },
             text = stringResource(R.string.manage_widgets_remove_btn_label),
             size = ButtonSize.Large,
             modifier = Modifier
@@ -184,7 +184,7 @@ fun ManageWidgetsBottomSheetContent(
             modifier = Modifier
                 .padding(horizontal = 20.dp, vertical = 17.dp)
                 .fillMaxWidth(),
-            onClick = { onAdd(managedWidgets.get(pagerState.currentPage)) },
+            onClick = { onAdd(managedWidgets[pagerState.currentPage]) },
             size = ButtonSize.Large,
             text = stringResource(R.string.manage_widgets_add_btn_label)
         )

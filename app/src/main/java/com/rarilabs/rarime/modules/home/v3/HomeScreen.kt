@@ -102,8 +102,9 @@ fun HomeScreenV3(
         state = sheetManageWidgets,
         backgroundColor = RarimeTheme.colors.backgroundPrimary,
         isHeaderEnabled = false,
-
-        ) {
+        fullScreen = false,
+        isWindowInsetsEnabled = false
+    ) {
 
         ManageWidgetsBottomSheet(onClose = { sheetManageWidgets.hide() })
 
@@ -126,9 +127,7 @@ fun HomeScreenV3(
     )
 
     AppBottomSheet(
-        state = welcomeAppSheetState,
-        isHeaderEnabled = false,
-        isWindowInsetsEnabled = false
+        state = welcomeAppSheetState, isHeaderEnabled = false, isWindowInsetsEnabled = false
     ) {
         WelcomeBottomSheet {
             welcomeAppSheetState.hide()
@@ -274,6 +273,7 @@ fun HomeScreenContent(
                     }
 
                 }
+
                 if (pagerState.currentPage == pagerState.pageCount - 1) {
                     ManageWidgetsButton(innerPaddings = innerPaddings, onClick = onClick)
                 }
@@ -348,8 +348,7 @@ fun HomeScreenContent(
                                 awaitPointerEvent()
                             }
                         }
-                    }
-            )
+                    })
         }
     }
 }
@@ -371,8 +370,7 @@ private fun HomeScreenPreview() {
                 visibleWidgets = WidgetType.entries,
                 currentPointsBalance = 200L,
                 colorScheme = AppColorScheme.SYSTEM,
-                onClick = {}
-            )
+                onClick = {})
         }
     }
 }

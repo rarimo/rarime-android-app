@@ -41,7 +41,6 @@ import com.rarilabs.rarime.data.enums.toLocalizedString
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.ConfirmationDialog
 import com.rarilabs.rarime.ui.components.PassportImage
-import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Screen
 import com.rarilabs.rarime.util.SendEmailUtil
@@ -65,8 +64,6 @@ fun ProfileScreen(
     }
 
     val colorScheme by viewModel.colorScheme.collectAsState()
-
-    val sheetRecoveryMethod = rememberAppSheetState()
 
 
 

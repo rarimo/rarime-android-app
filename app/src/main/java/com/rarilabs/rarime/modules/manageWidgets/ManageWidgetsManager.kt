@@ -21,14 +21,14 @@ class ManageWidgetsManager @Inject constructor(
         val visibleCardsStored = sharedPrefsManager.readVisibleWidgets()
         if (visibleCardsStored.isNullOrEmpty()) {
 
-            setVisibleWidgets(listOf(WidgetType.EARN))
+            setVisibleWidgets(listOf(WidgetType.RECOVERY_METHOD))
         } else {
             _visibleWidgets.value = visibleCardsStored
         }
 
     }
 
-    private var _managedWidgets = MutableStateFlow<List<WidgetType>>(
+    private var _managedWidgets = MutableStateFlow(
         listOf(
             WidgetType.FREEDOMTOOL,
             WidgetType.LIKENESS,
