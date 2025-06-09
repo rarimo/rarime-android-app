@@ -360,6 +360,6 @@ private fun ProfileScreenPreview() {
         passportImage = null,
         navigate = {},
         colorScheme = AppColorScheme.LIGHT,
-        appIcon = AppIcon.BLACK_AND_WHITE,
+        appIcon = AppIcon.WHITE,
     )
 }

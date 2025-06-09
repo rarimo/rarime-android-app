@@ -77,7 +77,7 @@ private fun AppIconItem(
 @Composable
 private fun AppIconScreenPreview() {
     AppIconScreen(
-        appIcon = AppIcon.BLACK_AND_WHITE,
+        appIcon = AppIcon.WHITE,
         onAppIconChange = {},
         onBack = {}
     )
