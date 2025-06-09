@@ -175,7 +175,6 @@
     <string name="auth_method">Auth Method</string>
     <string name="biometrics">Biometrics</string>
     <string name="passcode">Passcode</string>
-    <string name="export_keys">Export Keys</string>
     <string name="language">Language</string>
     <string name="english">English</string>
     <string name="ukrainian">Українська</string>
@@ -204,7 +203,7 @@
     <string name="what_is_rarime_text_item_1">RariMe is a self-custody identity wallet where no personal data ever leaves the device and everything is processed locally.</string>
     <string name="what_is_rarime_text_item_2">With RariMe, identity becomes private but verifiable.</string>
     <string name="what_is_rarime_text_item_3">" ensures your history, reputation and actions are not lost, but remain confidential and under your control."</string>
-    <string name="icon_black_and_white">Black &amp; White</string>
+    <string name="icon_white">White</string>
     <string name="icon_black_and_green">Black &amp; Green</string>
     <string name="icon_green_and_black">Green &amp; Black</string>
     <string name="app_icon">App Icon</string>
@@ -561,6 +560,12 @@
     <string name="earn_invite_task_card_description">Invited</string>
     <string name="earn_widget_invite_bottom_sheet_title">Invite others</string>
     <string name="earn_invite_bottom_sheet_description">Share your referral link and get bonuses  \nwhen your friends join</string>
+    <string name="recovery_method">Recovery Method</string>
+    <string name="export_keys">Export keys</string>
+    <string name="icon_black">Black</string>
+    <string name="icon_green">Green</string>
+    <string name="icon_gradient">Gradient</string>
+    <string name="icon_cat">Cat</string>
 
 
 </resources>
