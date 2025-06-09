@@ -75,7 +75,7 @@ fun EarnExpandedWidget(
         isHeaderEnabled = false
     ) {
         InviteOthersContent(
-            pointsBalance = pointsBalances!!.data, //todo in future we can get from backend
+            pointsBalance = pointsBalances!!.data,
             onClose = { inviteOthers.hide() },
         )
 
