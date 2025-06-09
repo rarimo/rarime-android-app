@@ -564,6 +564,7 @@
     <string name="digital_likeness_collapsed_widget_title">Digital likeness</string>
     <string name="digital_likeness_collapsed_widget_accent_title">Set a rule</string>
     <string name="digital_likeness_collapsed_widget_caption">Your data, your rules</string>
+    <string name="digital_likeness_description">AI can now replicate your face, voice, and identity without asking for your permission. But you never agreed to that, raising a fundamental question: who owns your likeness?</string>
 
 
 </resources>

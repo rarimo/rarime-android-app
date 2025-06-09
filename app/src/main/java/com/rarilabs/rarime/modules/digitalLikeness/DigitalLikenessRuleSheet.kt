@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -124,13 +125,13 @@ fun DigitalLikenessRuleSheet(
                     )
                 }
             }
-            LazyRow(
+            LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
                 state = rememberLazyListState(),
                 contentPadding = PaddingValues(vertical = 17.dp),
                 reverseLayout = false,
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.spacedBy(16.dp),
+//                verticalAlignment = Alignment.CenterVertically,
                 flingBehavior = ScrollableDefaults.flingBehavior(),
                 userScrollEnabled = true
             ) {
@@ -174,6 +175,7 @@ fun RuleOption(
 
     Card(
         modifier = modifier
+            .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .size(width = 160.dp, height = 160.dp)
             .clickable(
@@ -189,7 +191,7 @@ fun RuleOption(
         border = BorderStroke(1.dp, cardBorderColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
@@ -209,7 +211,7 @@ fun RuleOption(
                 )
             }
 
-            Spacer(modifier.weight(1f))
+            //Spacer(modifier.weight(1f))
 
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 // Status badge

@@ -49,7 +49,7 @@ import com.rarilabs.rarime.modules.home.v3.ui.components.VerticalPageIndicator
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.EarnExpandedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.FreedomtoolExpandedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.HiddenPrizeExpandedWidget
-import com.rarilabs.rarime.modules.home.v3.ui.expanded.LikenessExpandedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.expanded.DigitalLikenessExpandedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.RecoveryMethodExpandedWidget
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
@@ -297,7 +297,7 @@ fun HomeScreenContent(
                             navigate = navigate
                         )
 
-                        WidgetType.LIKENESS -> LikenessExpandedWidget(
+                        WidgetType.LIKENESS -> DigitalLikenessExpandedWidget(
                             expandedWidgetProps = expandedCardProps,
                             innerPaddings = innerPaddings,
                             navigate = navigate
