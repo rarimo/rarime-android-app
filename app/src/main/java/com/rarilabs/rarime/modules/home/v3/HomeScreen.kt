@@ -42,14 +42,12 @@ import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.EarnCollapsedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.FreedomtoolCollapsedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.HiddenPrizeCollapsedWidget
-import com.rarilabs.rarime.modules.home.v3.ui.collapsed.LikenessCollapsedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.RecoveryMethodCollapsedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.components.HomeHeader
 import com.rarilabs.rarime.modules.home.v3.ui.components.VerticalPageIndicator
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.EarnExpandedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.FreedomtoolExpandedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.HiddenPrizeExpandedWidget
-import com.rarilabs.rarime.modules.home.v3.ui.expanded.DigitalLikenessExpandedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.RecoveryMethodExpandedWidget
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
@@ -103,7 +101,7 @@ fun HomeScreenV3(
         backgroundColor = RarimeTheme.colors.backgroundPrimary,
         isHeaderEnabled = false,
         fullScreen = false,
-        isWindowInsetsEnabled = false
+        isWindowInsetsEnabled = false,
     ) {
 
         ManageWidgetsBottomSheet(onClose = { sheetManageWidgets.hide() })
@@ -127,7 +125,10 @@ fun HomeScreenV3(
     )
 
     AppBottomSheet(
-        state = welcomeAppSheetState, isHeaderEnabled = false, isWindowInsetsEnabled = false
+        state = welcomeAppSheetState,
+        isHeaderEnabled = false,
+        isWindowInsetsEnabled = false,
+        disablePullClose = true
     ) {
         WelcomeBottomSheet {
             welcomeAppSheetState.hide()
