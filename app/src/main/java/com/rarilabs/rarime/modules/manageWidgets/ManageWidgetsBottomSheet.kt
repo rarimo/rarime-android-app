@@ -108,7 +108,7 @@ fun ManageWidgetsBottomSheetContent(
                             if (isDark) {
                                 R.drawable.ic_freedomtool_widget_dark
                             } else {
-                                R.drawable.ic_freedomtool_widget_light
+                                R.drawable.ic_freedomtool_widget
                             },
                         title = stringResource(R.string.freedomtool_widget_title),
                         description = stringResource(R.string.freedomtool_widget_description)
@@ -132,9 +132,9 @@ fun ManageWidgetsBottomSheetContent(
                     ManageWidgetsItem(
                         imageResId =
                             if (isDark) {
-                                R.drawable.ic_hidden_prize_widget_dark
+                                R.drawable.ic_hidden_keys_widget_dark
                             } else {
-                                R.drawable.ic_hidden_prize_widget_light
+                                R.drawable.ic_hidden_keys_widget
                             },
                         title = stringResource(R.string.hidden_prize_widget_title),
                         description = stringResource(R.string.hidden_prize_widget_description)
@@ -147,7 +147,7 @@ fun ManageWidgetsBottomSheetContent(
                             if (isDark) {
                                 R.drawable.ic_recovery_method_widget_dark
                             } else {
-                                R.drawable.ic_recovery_method_widget_light
+                                R.drawable.ic_recovery_method_widget
                             },
                         title = stringResource(R.string.recovery_method_widget_title),
                         description = stringResource(R.string.recovery_method_widget_description)
