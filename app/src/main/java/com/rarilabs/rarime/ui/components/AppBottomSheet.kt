@@ -5,12 +5,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -73,7 +72,6 @@ fun AppBottomSheet(
     scrimColor: Color = Color.Black.copy(alpha = 0.5f),
     backgroundColor: Color = RarimeTheme.colors.backgroundPure,
     disablePullClose: Boolean = false,
-    isWindowInsetsEnabled: Boolean = false,
     content: @Composable (HideSheetFn) -> Unit,
 ) {
     val modalState = rememberModalBottomSheetState(
@@ -82,6 +80,8 @@ fun AppBottomSheet(
             if (disablePullClose) newValue == SheetValue.Hidden else true
         })
     val coroutineScope = rememberCoroutineScope()
+    val systemBarPaddings = WindowInsets.systemBars.asPaddingValues()
+
 
     fun hide(callback: () -> Unit = {}) {
         coroutineScope.launch { modalState.hide() }.invokeOnCompletion {
@@ -94,25 +94,26 @@ fun AppBottomSheet(
 
     if (state.showSheet) {
         ModalBottomSheet(
-            modifier = modifier,
+            modifier = modifier.padding(top = systemBarPaddings.calculateBottomPadding()),
             sheetState = modalState,
             shape = shape,
             dragHandle = null,
             containerColor = backgroundColor,
             onDismissRequest = { hide() },
             scrimColor = scrimColor,
-            // FIX: Set windowInsets to zero. This allows the sheet's container to draw behind
-            // the system bars (edge-to-edge). The padding is handled by the content Column inside.
+            // This forces the scrim to be drawn edge-to-edge, covering the status bar.
             windowInsets = WindowInsets(0, 0, 0, 0),
         ) {
-            Box(modifier = if (fullScreen) Modifier.fillMaxSize() else Modifier.fillMaxWidth()) {
+
+            Box(
+                modifier = Modifier
+                    .padding(
+                        bottom = systemBarPaddings.calculateBottomPadding()
+                            .plus(systemBarPaddings.calculateTopPadding())
+                    )
+            ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        // This modifier correctly applies padding for the system bars to the content.
-                        .windowInsetsPadding(WindowInsets.systemBars)
-                        // This hardcoded padding is now applied correctly *after* the system insets.
-                        .padding(bottom = 24.dp)
+                    modifier = (if (fullScreen) Modifier.fillMaxSize() else Modifier.fillMaxWidth())
                 ) {
                     if (isHeaderEnabled) {
                         Row(
@@ -121,8 +122,6 @@ fun AppBottomSheet(
                                 .padding(horizontal = 20.dp, vertical = 10.dp),
                             horizontalArrangement = Arrangement.End
                         ) {
-                            // Assuming PrimaryTextButton exists and is correctly implemented
-                            // PrimaryTextButton(leftIcon = R.drawable.ic_close, onClick = { hide() })
                         }
                     }
                     content { callback -> hide(callback) }
@@ -136,7 +135,7 @@ fun AppBottomSheet(
 @Preview(showSystemUi = true)
 @Composable
 private fun AppBottomSheetPreview() {
-    val sheetState = rememberAppSheetState(false)
+    val sheetState = rememberAppSheetState(true) // Open by default for preview
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Box {
@@ -147,9 +146,11 @@ private fun AppBottomSheetPreview() {
         AppBottomSheet(
             state = sheetState,
             fullScreen = true,
-            isWindowInsetsEnabled = false
         ) {
-            Box(modifier = Modifier.height(200.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
                 Text("Bottom sheet content")
             }
         }

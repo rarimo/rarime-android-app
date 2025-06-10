@@ -74,7 +74,10 @@ fun ScanQrScreenContent(
                 size = 20.dp,
                 tint = RarimeTheme.colors.baseWhite,
                 modifier = Modifier
-                    .padding(top = (20.0 + innerPaddings[ScreenInsets.TOP]!!.toInt()).dp)
+                    .padding(
+                        top = (20.0 + innerPaddings[ScreenInsets.TOP]!!.toInt()).dp,
+                        start = 20.dp
+                    )
                     .clickable { onBack() }
             )
             Text(

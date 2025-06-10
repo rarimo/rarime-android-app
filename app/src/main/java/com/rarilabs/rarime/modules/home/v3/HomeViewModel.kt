@@ -2,15 +2,12 @@ package com.rarilabs.rarime.modules.home.v3
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
 import com.rarilabs.rarime.api.points.models.BaseEvents
 import com.rarilabs.rarime.api.points.models.PointsEventData
-import com.rarilabs.rarime.api.voting.models.Poll
 import com.rarilabs.rarime.manager.NotificationManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.manager.SettingsManager
-import com.rarilabs.rarime.manager.VotingManager
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.modules.manageWidgets.ManageWidgetsManager
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
@@ -19,12 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -36,24 +27,14 @@ class HomeViewModel @Inject constructor(
     private val pointsManager: PointsManager,
     widgetsManager: ManageWidgetsManager,
     notificationManager: NotificationManager,
-    votingManager: VotingManager,
     settingsManager: SettingsManager,
     private val sharedPrefsManager: SecureSharedPrefsManager
 ) : AndroidViewModel(app) {
 
     val pointsToken = walletManager.pointsToken
 
-    private val allUserVotes: StateFlow<List<Poll>> = votingManager.allVotesFlow
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
-
     val colorScheme = settingsManager.colorScheme
     var visibleWidgets = widgetsManager.visibleWidgets
-    val hasVotes: StateFlow<Boolean> =
-        allUserVotes.map { it.isNotEmpty() }.distinctUntilChanged().stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = false
-        )
 
     val passport = passportManager.passport
 
@@ -61,8 +42,6 @@ class HomeViewModel @Inject constructor(
 
     val notifications = notificationManager.notificationList
 
-    val pointsEventData: StateFlow<PointsEventData?>
-        get() = _pointsEventData.asStateFlow()
 
 
     suspend fun initHomeData() = withContext(Dispatchers.IO) {

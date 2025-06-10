@@ -44,7 +44,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -128,7 +127,11 @@ fun HiddenPrizeExpandedWidget(
                 ?: 0) != (shares?.referralsLimit ?: 0)
         }
     }
-    AppBottomSheet(state = showFaceScan, shape = RectangleShape, isHeaderEnabled = false) {
+    AppBottomSheet(
+        state = showFaceScan,
+        fullScreen = true,
+        isHeaderEnabled = false,
+    ) {
         Box(Modifier.fillMaxSize()) {
             HiddenPrizeCamera(
                 processML = { viewModel.generateFaceFeatures(it) },
@@ -447,36 +450,36 @@ private fun Body(
                     )
                     .padding(20.dp)
 
+            ) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = RarimeTheme.colors.componentPrimary,
+                    ),
+                    modifier = Modifier.size(width = 156.dp, height = 32.dp)
+
+
                 ) {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = RarimeTheme.colors.componentPrimary,
-                        ),
-                        modifier = Modifier.size(width = 156.dp, height = 32.dp)
-
-
+                    Row(
+                        modifier = Modifier.padding(
+                            horizontal = 16.dp, vertical = 6.dp
+                        )
                     ) {
-                        Row(
-                            modifier = Modifier.padding(
-                                horizontal = 16.dp, vertical = 6.dp
-                            )
-                        ) {
-                            Text(
-                                "Prize-pool: ",
-                                style = RarimeTheme.typography.subtitle6.copy(color = RarimeTheme.colors.textPrimary)
-                            )
-                            Text(
-                                text = stringResource(R.string.hidden_prize_prize_pool_value), //TODO Maybe give this from backend in future
-                                style = RarimeTheme.typography.h6.copy(color = RarimeTheme.colors.textPrimary),
-                                modifier = Modifier.padding(end = 8.dp)
-                            )
-                            Image(
-                                painterResource(R.drawable.ic_ethereum),
-                                contentDescription = "ETH",
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
+                        Text(
+                            "Prize-pool: ",
+                            style = RarimeTheme.typography.subtitle6.copy(color = RarimeTheme.colors.textPrimary)
+                        )
+                        Text(
+                            text = stringResource(R.string.hidden_prize_prize_pool_value), //TODO Maybe give this from backend in future
+                            style = RarimeTheme.typography.h6.copy(color = RarimeTheme.colors.textPrimary),
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        Image(
+                            painterResource(R.drawable.ic_ethereum),
+                            contentDescription = "ETH",
+                            modifier = Modifier.size(16.dp)
+                        )
                     }
+                }
                 Spacer(modifier = Modifier.size(12.dp))
                 BaseWidgetTitle(
                     title = "Hidden keys",

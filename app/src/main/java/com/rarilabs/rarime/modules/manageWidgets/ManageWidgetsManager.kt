@@ -1,16 +1,23 @@
 package com.rarilabs.rarime.modules.manageWidgets
 
+import com.rarilabs.rarime.api.points.models.PointsBalanceBody
+import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ManageWidgetsManager @Inject constructor(
-    private val sharedPrefsManager: SecureSharedPrefsManager
+    private val sharedPrefsManager: SecureSharedPrefsManager,
+    private val pointsManager: PointsManager
 ) {
     private var _visibleWidgets = MutableStateFlow<List<WidgetType>>(emptyList())
 
@@ -18,12 +25,19 @@ class ManageWidgetsManager @Inject constructor(
         get() = _visibleWidgets.asStateFlow()
 
     init {
-        val visibleCardsStored = sharedPrefsManager.readVisibleWidgets()
-        if (visibleCardsStored.isNullOrEmpty()) {
-
-            setVisibleWidgets(listOf(WidgetType.RECOVERY_METHOD))
-        } else {
-            _visibleWidgets.value = visibleCardsStored
+        CoroutineScope(Dispatchers.IO).launch {
+            val pointBalance: PointsBalanceBody? = withContext(Dispatchers.IO) {
+                pointsManager.getPointsBalance()
+            }
+            val visibleCardsStored = sharedPrefsManager.readVisibleWidgets()
+            if (visibleCardsStored.isNullOrEmpty()) {
+                setVisibleWidgets(listOf(WidgetType.HIDDEN_PRIZE, WidgetType.RECOVERY_METHOD))
+                if (pointBalance != null && pointBalance.data.attributes.amount != 0L) {
+                    add(widgetType = WidgetType.EARN)
+                }
+            } else {
+                _visibleWidgets.value = visibleCardsStored
+            }
         }
 
     }
@@ -42,7 +56,7 @@ class ManageWidgetsManager @Inject constructor(
 
 
     fun setVisibleWidgets(visibleWidgets: List<WidgetType>) {
-        _visibleWidgets.value = (listOf(WidgetType.EARN) + visibleWidgets).distinct()
+        _visibleWidgets.value = visibleWidgets.distinct()
             .sortedBy { it.layoutId }
         sharedPrefsManager.saveVisibleWidgets(_visibleWidgets.value)
     }

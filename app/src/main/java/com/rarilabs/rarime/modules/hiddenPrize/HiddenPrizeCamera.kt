@@ -21,7 +21,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.RoundRect
@@ -95,6 +98,7 @@ fun HiddenPrizeCamera(
     val meshDetector = remember { FaceMeshDetection.getClient() }
     val previewView = remember {
         PreviewView(context).apply {
+            implementationMode = PreviewView.ImplementationMode.COMPATIBLE
             scaleType = PreviewView.ScaleType.FILL_CENTER
         }
     }
@@ -152,7 +156,8 @@ fun HiddenPrizeCamera(
                             selectedBitmap = it
                         }
                     }, onClearBitmap = { selectedBitmap = null }, onNext = {
-                        currentStep = HiddenPrizeCameraStep.PROCESSING_ML },
+                        currentStep = HiddenPrizeCameraStep.PROCESSING_ML
+                    },
                     previewView = previewView, detectedMeshes, onClose = onClose
                 )
 
@@ -230,44 +235,51 @@ fun HiddenPrizeCamera(
             HiddenPrizeFinish(
                 prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value),
                 prizeSymbol = {
-                Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
-            }, onViewWallet = {}, onShareWallet = {})
+                    Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
+                }, onViewWallet = {}, onShareWallet = {})
         }
     }
 
 }
 
 
+@kotlin.OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RenderPreviewOrImage(
     previewView: PreviewView, selectedBitmap: Bitmap?, isBlurred: Boolean
 ) {
+    // This is the shape the AppBottomSheet uses by default.
+    val sheetShape = BottomSheetDefaults.ExpandedShape
+
     val targetBlur = if (isBlurred) 50f else 0f
     val targetShadow = if (isBlurred) 0.5f else 0f
 
     val blurValue by animateFloatAsState(
         targetValue = targetBlur,
-        animationSpec = tween(durationMillis = 500), // Adjust duration for smoothness
+        animationSpec = tween(durationMillis = 500),
         label = "blurAnimation"
     )
 
     val shadowValue by animateFloatAsState(
         targetValue = targetShadow,
-        animationSpec = tween(durationMillis = 1000), // Adjust duration for smoothness
+        animationSpec = tween(durationMillis = 1000),
         label = "ShadowAnimation"
     )
+
+    val commonModifier = Modifier
+        .fillMaxSize()
+        .clip(sheetShape)
 
     if (selectedBitmap != null) {
         Image(
             bitmap = selectedBitmap.asImageBitmap(),
             contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = commonModifier
                 .background(Color.Black.copy(alpha = shadowValue))
                 .blur(blurValue.dp)
         )
     } else {
-        AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())
+        AndroidView(factory = { previewView }, modifier = commonModifier)
     }
 }
 

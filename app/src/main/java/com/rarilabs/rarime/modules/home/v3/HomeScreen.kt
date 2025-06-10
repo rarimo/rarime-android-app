@@ -46,10 +46,10 @@ import com.rarilabs.rarime.modules.home.v3.ui.collapsed.LikenessCollapsedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.RecoveryMethodCollapsedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.components.HomeHeader
 import com.rarilabs.rarime.modules.home.v3.ui.components.VerticalPageIndicator
+import com.rarilabs.rarime.modules.home.v3.ui.expanded.DigitalLikenessExpandedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.EarnExpandedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.FreedomtoolExpandedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.HiddenPrizeExpandedWidget
-import com.rarilabs.rarime.modules.home.v3.ui.expanded.DigitalLikenessExpandedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.RecoveryMethodExpandedWidget
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
@@ -75,8 +75,6 @@ fun HomeScreenV3(
     val passport by viewModel.passport.collectAsState()
     val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
     val notifications by viewModel.notifications.collectAsState()
-    val pointsBalance by viewModel.pointsEventData.collectAsState()
-    val currentPointsBalance = pointsBalance?.attributes?.balance?.attributes?.amount
     val notificationsCount by remember(notifications) {
         derivedStateOf { notifications.count { it.isActive } }
     }
@@ -86,7 +84,7 @@ fun HomeScreenV3(
         derivedStateOf { !viewModel.getIsShownWelcome() }
     }
 
-    val welcomeAppSheetState = rememberAppSheetState(isWelcomeVisible)
+    val welcomeAppSheetState = rememberAppSheetState(true)
 
     LaunchedEffect(Unit) {
         viewModel.initHomeData()
@@ -103,7 +101,6 @@ fun HomeScreenV3(
         backgroundColor = RarimeTheme.colors.backgroundPrimary,
         isHeaderEnabled = false,
         fullScreen = false,
-        isWindowInsetsEnabled = false
     ) {
 
         ManageWidgetsBottomSheet(onClose = { sheetManageWidgets.hide() })
@@ -121,13 +118,12 @@ fun HomeScreenV3(
         navigate = navigate,
         sharedTransitionScope = sharedTransitionScope,
         setVisibilityOfBottomBar = setVisibilityOfBottomBar,
-        currentPointsBalance = currentPointsBalance,
         colorScheme = colorScheme,
         onClick = { sheetManageWidgets.show() },
     )
 
     AppBottomSheet(
-        state = welcomeAppSheetState, isHeaderEnabled = false, isWindowInsetsEnabled = false
+        state = welcomeAppSheetState, isHeaderEnabled = false
     ) {
         WelcomeBottomSheet {
             welcomeAppSheetState.hide()
@@ -147,7 +143,6 @@ fun HomeScreenContent(
     visibleWidgets: List<WidgetType>,
     userPassportName: String?,
     notificationsCount: Int?,
-    currentPointsBalance: Long?,
     colorScheme: AppColorScheme,
     onClick: () -> Unit
 ) {
@@ -368,7 +363,6 @@ private fun HomeScreenPreview() {
                 notificationsCount = 2,
                 innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
                 visibleWidgets = WidgetType.entries,
-                currentPointsBalance = 200L,
                 colorScheme = AppColorScheme.SYSTEM,
                 onClick = {})
         }

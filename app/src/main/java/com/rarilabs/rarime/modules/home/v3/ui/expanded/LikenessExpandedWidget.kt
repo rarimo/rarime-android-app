@@ -44,10 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
@@ -175,12 +172,11 @@ fun LikenessExpandedWidgetContent(
     if (isPreview || cameraPermissionState!!.status.isGranted) {
         AppBottomSheet(
             state = appSheetState,
-            shape = RectangleShape,
+            //shape = RectangleShape,
             fullScreen = true,
             scrimColor = Color.Transparent,
             isHeaderEnabled = false,
             disablePullClose = true,
-            isWindowInsetsEnabled = true,
         ) {
             if (selectedBitmap == null) {
                 DigitalLikenessCamera {
@@ -358,7 +354,7 @@ private fun Body(
                     exit = fadeOut(),
                     resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
                 )
-                .padding(bottom = (innerPaddings[ScreenInsets.BOTTOM]!!.toInt()).dp )
+                .padding(bottom = (innerPaddings[ScreenInsets.BOTTOM]!!.toInt()).dp)
                 .fillMaxSize()
         ) {
 

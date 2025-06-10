@@ -91,7 +91,6 @@ fun VotingAppSheet(
         isHeaderEnabled = false,
         scrimColor = Color.Transparent,
         fullScreen = true,
-        isWindowInsetsEnabled = false,
     ) {
 
         when (currentState) {

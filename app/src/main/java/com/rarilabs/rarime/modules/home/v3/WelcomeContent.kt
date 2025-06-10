@@ -19,10 +19,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,10 +32,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.ButtonSize
+import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.CircledBadge
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.HorizontalPageIndicator
 import com.rarilabs.rarime.ui.components.PrimaryButton
+import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import kotlinx.coroutines.launch
 
@@ -259,20 +259,19 @@ private fun WelcomeBottomSheetPreview() {
     WelcomeBottomSheet {}
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun WelcomeBottomBarPreview() {
-    var currentPage by remember { mutableIntStateOf(0) }
-    val totalPages = remember { 5 }
+
+
+    val appBottomSheet = rememberAppSheetState(false)
 
     Surface {
-        WelcomeBottomBar(selectedPage = currentPage, numberOfPages = totalPages, onNext = {
-            currentPage += 1
-        }, onExplore = {
-
+        PrimaryButton(onClick = { appBottomSheet.show() })
+        AppBottomSheet(state = appBottomSheet) {
+            WelcomeBottomSheet {}
         }
 
-        )
     }
 
 }
