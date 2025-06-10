@@ -11,7 +11,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,14 +20,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -39,12 +41,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.points.models.PointsBalanceData
 import com.rarilabs.rarime.api.points.models.PointsBalanceBody
 import com.rarilabs.rarime.api.points.models.ReferralCodeStatuses
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.modules.earn.EarnViewModel
 import com.rarilabs.rarime.modules.earn.InviteOthersContent
 import com.rarilabs.rarime.modules.earn.TaskCard
+import com.rarilabs.rarime.modules.earn.tempPointsBalances
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
@@ -91,7 +95,7 @@ fun EarnExpandedWidget(
             inviteOthers.show()
         },
         colorScheme = colorScheme,
-        pointsBalances = pointsBalances
+        pointsBalance = pointsBalances
     )
 
 
@@ -105,7 +109,7 @@ fun EarnExpandedWidgetContent(
     innerPaddings: Map<ScreenInsets, Number>,
     onClick: () -> Unit,
     colorScheme: AppColorScheme,
-    pointsBalances: PointsBalanceBody?
+    pointsBalance: PointsBalanceBody?
 
 ) {
     with(widgetProps) {
@@ -118,13 +122,15 @@ fun EarnExpandedWidgetContent(
                         boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) })
                     .padding(
                         bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp
-                    ), header = {
+                    ),
+                header = {
                     Header(
                         layoutId = layoutId,
                         onCollapse = onCollapse,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope,
-                        innerPaddings = innerPaddings
+                        innerPaddings = innerPaddings,
+                        pointsBalance = pointsBalance
                     )
 
 
@@ -148,7 +154,7 @@ fun EarnExpandedWidgetContent(
                     Footer(
                         countOfTask = 1,
                         onClick = onClick,
-                        pointsBalances = pointsBalances
+                        pointsBalances =  pointsBalance
                     )
                 })
         }
@@ -163,7 +169,9 @@ private fun Header(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     innerPaddings: Map<ScreenInsets, Number>,
+    pointsBalance: PointsBalanceBody?
 ) {
+    val balance = pointsBalance!!.data.attributes.amount
     with(sharedTransitionScope) {
         Row(
             modifier = Modifier
@@ -177,8 +185,39 @@ private fun Header(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
                 .padding(top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp),
-            horizontalArrangement = Arrangement.End
+            //horizontalArrangement = Arrangement.End
         ) {
+            Box(
+                modifier = Modifier
+                    .padding(20.dp)
+                    .clip(RoundedCornerShape(40.dp))
+                    .background(color = RarimeTheme.colors.componentPrimary),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(modifier = Modifier.padding(vertical = 10.dp, horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "Reserved: ",
+                        style = RarimeTheme.typography.subtitle6,
+                        color = RarimeTheme.colors.textPrimary,
+
+                        )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = balance.toString(),
+                        style = RarimeTheme.typography.h6,
+                        color = RarimeTheme.colors.textPrimary,
+                        modifier = Modifier
+                    )
+                    AppIcon(
+                        id = (R.drawable.ic_rarimo),
+                        size = 17.dp,
+                        tint = RarimeTheme.colors.textPrimary,
+                    )
+                }
+
+
+            }
+            Spacer(modifier = Modifier.weight(1f))
             IconButton(
                 onClick = onCollapse,
                 modifier = Modifier
@@ -304,7 +343,7 @@ private fun Footer(
                 modifier = Modifier.padding(bottom = 24.dp)
             )
             TaskCard(
-                //todo in future used for implementing logic
+//todo in future used for implementing logic
                 taskIconId = R.drawable.ic_user_add_line,
                 rewardInRMO = 50,
                 title = stringResource(R.string.earn_title_of_task),
@@ -380,7 +419,7 @@ fun EarnExpandedWidgetPreview() {
             innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
             onClick = {},
             colorScheme = AppColorScheme.LIGHT,
-            pointsBalances = null
+            pointsBalance = null
         )
     }
 }
