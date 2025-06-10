@@ -39,10 +39,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.points.models.PointsBalanceBody
+import com.rarilabs.rarime.api.points.models.ReferralCodeStatuses
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.modules.earn.EarnViewModel
 import com.rarilabs.rarime.modules.earn.InviteOthersContent
 import com.rarilabs.rarime.modules.earn.TaskCard
+import com.rarilabs.rarime.modules.earn.tempPointsBalances
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
@@ -88,7 +91,8 @@ fun EarnExpandedWidget(
         onClick = {
             inviteOthers.show()
         },
-        colorScheme = colorScheme
+        colorScheme = colorScheme,
+        pointsBalances = pointsBalances
     )
 
 
@@ -101,7 +105,8 @@ fun EarnExpandedWidgetContent(
     widgetProps: BaseWidgetProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
     onClick: () -> Unit,
-    colorScheme: AppColorScheme
+    colorScheme: AppColorScheme,
+    pointsBalances : PointsBalanceBody?
 
 ) {
     with(widgetProps) {
@@ -140,7 +145,7 @@ fun EarnExpandedWidgetContent(
                         colorScheme = colorScheme
                     )
                 },
-                footer = { Footer(countOfTask = 1, onClick = onClick) })
+                footer = { Footer(countOfTask = 1, onClick = onClick, pointsBalances = pointsBalances) })
         }
     }
 }
@@ -270,7 +275,8 @@ private fun Body(
 @Composable
 private fun Footer(
     countOfTask: Int,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    pointsBalances: PointsBalanceBody?
 
 
 ) {
@@ -296,8 +302,8 @@ private fun Footer(
                 title = stringResource(R.string.earn_title_of_task),
                 onClick = onClick,
                 description = stringResource(R.string.earn_invite_task_card_description),
-                currentVal = 1,
-                maxVal = 10,
+                currentVal = pointsBalances!!.data.attributes.referral_codes!!.count{it.status != ReferralCodeStatuses.ACTIVE.value},
+                maxVal = pointsBalances!!.data.attributes.referral_codes!!.size,
             )
 
         }
@@ -365,7 +371,8 @@ fun EarnExpandedWidgetPreview() {
             modifier = Modifier.height(820.dp),
             innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
             onClick = {},
-            colorScheme = AppColorScheme.LIGHT
+            colorScheme = AppColorScheme.LIGHT,
+            pointsBalances = null
         )
     }
 }
