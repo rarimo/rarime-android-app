@@ -45,7 +45,7 @@ class ManageWidgetsManager @Inject constructor(
     private var _managedWidgets = MutableStateFlow(
         listOf(
             WidgetType.FREEDOMTOOL,
-            WidgetType.LIKENESS,
+            //WidgetType.LIKENESS,
             WidgetType.HIDDEN_PRIZE,
             WidgetType.RECOVERY_METHOD
         )

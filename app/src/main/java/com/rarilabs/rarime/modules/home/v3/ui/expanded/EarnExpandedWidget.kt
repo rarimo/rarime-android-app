@@ -13,7 +13,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -42,6 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.points.models.PointsBalanceBody
+import com.rarilabs.rarime.api.points.models.ReferralCodeStatuses
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.modules.earn.EarnViewModel
 import com.rarilabs.rarime.modules.earn.InviteOthersContent
@@ -96,7 +99,8 @@ fun EarnExpandedWidget(
         onClick = {
             inviteOthers.show()
         },
-        colorScheme = colorScheme
+        colorScheme = colorScheme,
+        pointsBalance = pointsBalances
     )
 
 
@@ -109,7 +113,8 @@ fun EarnExpandedWidgetContent(
     widgetProps: BaseWidgetProps.Expanded,
     innerPaddings: Map<ScreenInsets, Number>,
     onClick: () -> Unit,
-    colorScheme: AppColorScheme
+    colorScheme: AppColorScheme,
+    pointsBalance: PointsBalanceBody?
 
 ) {
     with(widgetProps) {
@@ -122,13 +127,15 @@ fun EarnExpandedWidgetContent(
                         boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) })
                     .padding(
                         bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp
-                    ), header = {
+                    ),
+                header = {
                     Header(
                         layoutId = layoutId,
                         onCollapse = onCollapse,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope,
-                        innerPaddings = innerPaddings
+                        innerPaddings = innerPaddings,
+                        pointsBalance = pointsBalance
                     )
 
 
@@ -148,7 +155,13 @@ fun EarnExpandedWidgetContent(
                         colorScheme = colorScheme
                     )
                 },
-                footer = { Footer(countOfTask = 1, onClick = onClick) })
+                footer = {
+                    Footer(
+                        countOfTask = 1,
+                        onClick = onClick,
+                        pointsBalances = pointsBalance
+                    )
+                })
         }
     }
 }
@@ -161,7 +174,9 @@ private fun Header(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     innerPaddings: Map<ScreenInsets, Number>,
+    pointsBalance: PointsBalanceBody?
 ) {
+    val balance = pointsBalance!!.data.attributes.amount
     with(sharedTransitionScope) {
         Row(
             modifier = Modifier
@@ -175,8 +190,42 @@ private fun Header(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
                 .padding(top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp),
-            horizontalArrangement = Arrangement.End
+            //horizontalArrangement = Arrangement.End
         ) {
+            Box(
+                modifier = Modifier
+                    .padding(20.dp)
+                    .clip(RoundedCornerShape(40.dp))
+                    .background(color = RarimeTheme.colors.componentPrimary),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    modifier = Modifier.padding(vertical = 10.dp, horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Reserved: ",
+                        style = RarimeTheme.typography.subtitle6,
+                        color = RarimeTheme.colors.textPrimary,
+
+                        )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = balance.toString(),
+                        style = RarimeTheme.typography.h6,
+                        color = RarimeTheme.colors.textPrimary,
+                        modifier = Modifier
+                    )
+                    AppIcon(
+                        id = (R.drawable.ic_rarimo),
+                        size = 17.dp,
+                        tint = RarimeTheme.colors.textPrimary,
+                    )
+                }
+
+
+            }
+            Spacer(modifier = Modifier.weight(1f))
             IconButton(
                 onClick = onCollapse,
                 modifier = Modifier
@@ -278,10 +327,14 @@ private fun Body(
 @Composable
 private fun Footer(
     countOfTask: Int,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    pointsBalances: PointsBalanceBody?
 
 
 ) {
+    val currentValue =
+        pointsBalances!!.data.attributes.referral_codes!!.count { it.status != ReferralCodeStatuses.ACTIVE.value }
+    val maxValue = pointsBalances.data.attributes.referral_codes!!.size
     Column(modifier = Modifier.background(color = RarimeTheme.colors.backgroundSurface1)) {
 
 
@@ -304,8 +357,8 @@ private fun Footer(
                 title = stringResource(R.string.earn_title_of_task),
                 onClick = onClick,
                 description = stringResource(R.string.earn_invite_task_card_description),
-                currentVal = 1,
-                maxVal = 10,
+                currentVal = currentValue,
+                maxVal = maxValue,
             )
 
         }
@@ -373,7 +426,8 @@ fun EarnExpandedWidgetPreview() {
             modifier = Modifier.height(820.dp),
             innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
             onClick = {},
-            colorScheme = AppColorScheme.LIGHT
+            colorScheme = AppColorScheme.LIGHT,
+            pointsBalance = null
         )
     }
 }

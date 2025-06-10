@@ -42,11 +42,9 @@ import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.EarnCollapsedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.FreedomtoolCollapsedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.HiddenPrizeCollapsedWidget
-import com.rarilabs.rarime.modules.home.v3.ui.collapsed.LikenessCollapsedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.RecoveryMethodCollapsedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.components.HomeHeader
 import com.rarilabs.rarime.modules.home.v3.ui.components.VerticalPageIndicator
-import com.rarilabs.rarime.modules.home.v3.ui.expanded.DigitalLikenessExpandedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.EarnExpandedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.FreedomtoolExpandedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.HiddenPrizeExpandedWidget
@@ -84,7 +82,7 @@ fun HomeScreenV3(
         derivedStateOf { !viewModel.getIsShownWelcome() }
     }
 
-    val welcomeAppSheetState = rememberAppSheetState(true)
+    val welcomeAppSheetState = rememberAppSheetState(isWelcomeVisible)
 
     LaunchedEffect(Unit) {
         viewModel.initHomeData()
@@ -231,11 +229,11 @@ fun HomeScreenContent(
                                     modifier = baseCollapsedModifier,
                                 )
 
-                                WidgetType.LIKENESS -> LikenessCollapsedWidget(
-                                    collapsedWidgetProps = collapsedWidgetProps,
-
-                                    modifier = baseCollapsedModifier,
-                                )
+//                                WidgetType.LIKENESS -> LikenessCollapsedWidget(
+//                                    collapsedWidgetProps = collapsedWidgetProps,
+//
+//                                    modifier = baseCollapsedModifier,
+//                                )
 
                                 WidgetType.HIDDEN_PRIZE -> HiddenPrizeCollapsedWidget(
                                     collapsedWidgetProps = collapsedWidgetProps,
@@ -297,11 +295,11 @@ fun HomeScreenContent(
                             navigate = navigate
                         )
 
-                        WidgetType.LIKENESS -> DigitalLikenessExpandedWidget(
-                            expandedWidgetProps = expandedCardProps,
-                            innerPaddings = innerPaddings,
-                            navigate = navigate
-                        )
+//                        WidgetType.LIKENESS -> DigitalLikenessExpandedWidget(
+//                            expandedWidgetProps = expandedCardProps,
+//                            innerPaddings = innerPaddings,
+//                            navigate = navigate
+//                        )
 
                         WidgetType.EARN -> EarnExpandedWidget(
 
