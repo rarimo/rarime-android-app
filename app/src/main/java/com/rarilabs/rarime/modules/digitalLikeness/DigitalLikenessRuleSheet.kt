@@ -262,6 +262,7 @@ fun DigitalLikenessRuleSheetPreview() {
     val ruleSheetState = rememberAppSheetState(true)
     DigitalLikenessRuleSheet(
         ruleSheetState,
-        selectedRule = LikenessRule.ASK_FIRST,
+        selectedRule = null,
+                //LikenessRule.ASK_FIRST,
         onSave = { ruleSheetState.hide() })
 }
