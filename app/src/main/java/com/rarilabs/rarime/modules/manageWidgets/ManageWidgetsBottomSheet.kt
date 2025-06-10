@@ -115,18 +115,18 @@ fun ManageWidgetsBottomSheetContent(
                     )
                 }
 
-                WidgetType.LIKENESS -> {
-                    ManageWidgetsItem(
-                        imageResId =
-                            if (isDark) {
-                                R.drawable.ic_digital_likeness_widget_dark
-                            } else {
-                                R.drawable.ic_digital_likeness_widget_light
-                            },
-                        title = stringResource(R.string.digital_likeness_widget_title),
-                        description = stringResource(R.string.digital_likeness_widget_description)
-                    )
-                }
+//                WidgetType.LIKENESS -> {
+//                    ManageWidgetsItem(
+//                        imageResId =
+//                            if (isDark) {
+//                                R.drawable.ic_digital_likeness_widget_dark
+//                            } else {
+//                                R.drawable.ic_digital_likeness_widget_light
+//                            },
+//                        title = stringResource(R.string.digital_likeness_widget_title),
+//                        description = stringResource(R.string.digital_likeness_widget_description)
+//                    )
+//                }
 
                 WidgetType.HIDDEN_PRIZE -> {
                     ManageWidgetsItem(
