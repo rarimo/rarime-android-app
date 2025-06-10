@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.wallet
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.gson.Gson
 import com.lightspark.composeqr.QrCodeColors
 import com.lightspark.composeqr.QrCodeView
 import com.rarilabs.rarime.R
@@ -45,6 +47,10 @@ fun WalletReceiveScreen(
     walletViewModel: WalletReceiveViewModel = hiltViewModel()
 ) {
     val selectedWalletAsset by walletViewModel.selectedWalletAsset.collectAsState()
+
+    LaunchedEffect(selectedWalletAsset) {
+        Log.i("selectedWalletAsset", Gson().toJson(selectedWalletAsset.userAddress))
+    }
 
     WalletReceiveScreenContent(
         onBack = onBack,

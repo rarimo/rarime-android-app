@@ -40,3 +40,14 @@ fun AppIcon.toLocalizedString(): String {
         AppIcon.CAT -> stringResource(R.string.icon_cat)
     }
 }
+
+@Composable
+fun AppIcon.getInAppIcon(): Int {
+    return when (this) {
+        AppIcon.WHITE -> R.drawable.app_icon_white
+        AppIcon.BLACK -> R.drawable.app_icon_black
+        AppIcon.GREEN -> R.drawable.app_icon_green
+        AppIcon.GRADIENT -> R.drawable.app_icon_gradeint
+        AppIcon.CAT -> R.drawable.app_icon_cat
+    }
+}

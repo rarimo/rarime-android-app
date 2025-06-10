@@ -206,15 +206,15 @@ fun BackUpScreen(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+//            PrimaryButton(
+//                modifier = Modifier.fillMaxWidth(),
+//                size = ButtonSize.Large,
+//                text = resolveButtonMessage(),
+//                enabled = isDriveButtonEnabled,
+//                onClick = {
+//                    if (signInAccount == null) signIn.invoke() else onDriveBackup.invoke(privateKey)
+//                })
             PrimaryButton(
-                modifier = Modifier.fillMaxWidth(),
-                size = ButtonSize.Large,
-                text = resolveButtonMessage(),
-                enabled = isDriveButtonEnabled,
-                onClick = {
-                    if (signInAccount == null) signIn.invoke() else onDriveBackup.invoke(privateKey)
-                })
-            TertiaryButton(
                 text = stringResource(R.string.drive_continue_without_backup),
                 enabled = isDriveButtonEnabled,
                 size = ButtonSize.Large,

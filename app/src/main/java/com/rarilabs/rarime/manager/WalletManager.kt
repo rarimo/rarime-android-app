@@ -57,7 +57,7 @@ class WalletManager @Inject constructor(
 ) {
 
     private fun createWalletAssets(): List<WalletAsset> {
-        return listOf(
+        val list = listOf(
             WalletAsset(
                 identityManager.evmAddress(),
                 NativeToken(web3j, identityManager = identityManager),
@@ -68,6 +68,7 @@ class WalletManager @Inject constructor(
                 ), showInAssets = false
             ),
         )
+        return list
     }
 
     private val _walletAssets = MutableStateFlow(createWalletAssets())
@@ -116,6 +117,10 @@ class WalletManager @Inject constructor(
                 }.awaitAll()
             }
 
+
+            //Default token asset
+            setSelectedWalletAsset(assets.first { it.token is NativeToken })
+            
             Log.i("WalletManager", "Updating wallet assets")
             _walletAssets.value = assets
             dataStoreManager.saveWalletAssets(assets)
@@ -130,7 +135,7 @@ class WalletManager @Inject constructor(
             val newSelectedWalletAsset = dataStoreManager.readSelectedWalletAsset(assets)
             if (_selectedWalletAsset.value.humanBalance() != newSelectedWalletAsset.humanBalance()) {
                 Log.i("WalletManager", "Updating selected wallet asset")
-                _selectedWalletAsset.value = newSelectedWalletAsset
+                setSelectedWalletAsset(newSelectedWalletAsset)
             }
         } catch (e: Exception) {
             ErrorHandler.logError("WalletManager.loadBalances", "Failed to load balances", e)

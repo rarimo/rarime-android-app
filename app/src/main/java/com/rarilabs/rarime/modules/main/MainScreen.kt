@@ -6,12 +6,20 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
@@ -27,10 +35,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.zIndex
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -62,11 +74,11 @@ val LocalMainViewModel = compositionLocalOf<MainViewModel> { error("No MainViewM
 
 @Composable
 fun MainScreen(
-    mainViewModel: MainViewModel = hiltViewModel(),
-    navController: NavHostController
+    mainViewModel: MainViewModel = hiltViewModel(), navController: NavHostController
 ) {
     val coroutineScope = rememberCoroutineScope()
     val appLoadingState = mainViewModel.appLoadingState
+    val appIcon by mainViewModel.appIcon.collectAsState()
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
@@ -99,16 +111,36 @@ fun MainScreen(
 
 @Composable
 fun AppLoadingScreen() {
+    val infiniteTransition = rememberInfiniteTransition(label = "heartbeat_transition")
+
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 1f, targetValue = 1f, animationSpec = infiniteRepeatable(
+            animation = keyframes {
+                durationMillis = 1400
+
+                // 1. High pulse
+                1.2f at 200 using LinearOutSlowInEasing
+
+                // 2. Medium pulse
+                1.1f at 400 using LinearOutSlowInEasing
+
+                // 3. High (less) pulse
+                1.15f at 600 using LinearOutSlowInEasing
+
+                // 4. Low (return to normal) and pause
+                1.0f at 800 using LinearOutSlowInEasing
+            }, repeatMode = RepeatMode.Restart
+        ), label = "heartbeat_scale"
+    )
     Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
-        AppIcon(
-            modifier = Modifier,
-            id = R.drawable.ic_rarime,
-            size = 140.dp,
-            tint = RarimeTheme.colors.textPrimary
+        Image(
+            modifier = Modifier
+                .size(140.dp)
+                .scale(scale),
+            contentDescription = "Rarime app icon pulsing",
+            painter = painterResource(R.drawable.ic_rarime),
         )
     }
 }
@@ -116,8 +148,7 @@ fun AppLoadingScreen() {
 @Composable
 private fun AppLoadingFailedScreen() {
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
         AppIcon(id = R.drawable.ic_warning, tint = RarimeTheme.colors.errorDark, size = 140.dp)
     }
@@ -142,6 +173,8 @@ fun MainScreenContent(
 
     val snackbarHostState by mainViewModel.snackbarHostState.collectAsState()
     val snackbarContent by mainViewModel.snackbarContent.collectAsState()
+
+    val colorSchema by mainViewModel.colorScheme.collectAsState()
 
     val extIntDataURI by mainViewModel.extIntDataURI.collectAsState()
 
@@ -192,9 +225,7 @@ fun MainScreenContent(
                         launchSingleTop = true
                     }
                 }
-            } else if (
-                route == Screen.Main.QrScan.route
-            ) {
+            } else if (route == Screen.Main.QrScan.route) {
                 val currentQrCodeSheetState = qrCodeSheetState.value
                 currentQrCodeSheetState.show()
             } else {
@@ -207,7 +238,7 @@ fun MainScreenContent(
         }
     }
 
-    AppTheme(colorScheme = mainViewModel.colorScheme.value) {
+    AppTheme(colorScheme = colorSchema) {
         Scaffold(
             containerColor = RarimeTheme.colors.backgroundPrimary,
             bottomBar = {
@@ -216,8 +247,7 @@ fun MainScreenContent(
                         modifier = Modifier.navigationBarsPadding(),
                         currentRoute = currentRoute,
                         onRouteSelected = { navigateWithPopUp(it) },
-                        onQrCodeRouteSelected = { mainViewModel }
-                    )
+                        onQrCodeRouteSelected = { mainViewModel })
                 }
             },
 
@@ -226,6 +256,7 @@ fun MainScreenContent(
                 snackbarContent?.let { snackContent ->
                     Column(
                         modifier = Modifier
+                            .zIndex(100f)
                             .fillMaxWidth()
                             .padding(horizontal = 20.dp)
                     ) {
@@ -252,7 +283,7 @@ fun MainScreenContent(
             )
 
             ScreenBarsColor(
-                colorScheme = mainViewModel.colorScheme.value, route = currentRoute ?: ""
+                colorScheme = colorSchema, route = currentRoute ?: ""
             )
 
             key(extIntDataURI?.second) {
@@ -262,38 +293,33 @@ fun MainScreenContent(
                     if (currentRoute == "external") {
                         navigateWithPopUp(Screen.Main.Home.route)
                     }
-                    ExtIntActionPreview(
-                        navigate = navigateWithPopUp,
-                        dataUri = uri,
-                        onError = {
-                            navigateWithPopUp(Screen.Main.Home.route)
-                            mainViewModel.setExtIntDataURI(null)
-                        },
-                        onCancel = {
-                            navigateWithPopUp(Screen.Main.Home.route)
-                            mainViewModel.setExtIntDataURI(null)
-                        },
-                        onSuccess = { extDestination, localDestination ->
-                            if (!extDestination.isNullOrEmpty()) {
-                                val intent = Intent(Intent.ACTION_VIEW, extDestination.toUri())
+                    ExtIntActionPreview(navigate = navigateWithPopUp, dataUri = uri, onError = {
+                        navigateWithPopUp(Screen.Main.Home.route)
+                        mainViewModel.setExtIntDataURI(null)
+                    }, onCancel = {
+                        navigateWithPopUp(Screen.Main.Home.route)
+                        mainViewModel.setExtIntDataURI(null)
+                    }, onSuccess = { extDestination, localDestination ->
+                        if (!extDestination.isNullOrEmpty()) {
+                            val intent = Intent(Intent.ACTION_VIEW, extDestination.toUri())
 
-                                try {
-                                    context.startActivity(intent)
-                                } catch (e: ActivityNotFoundException) {
-                                    Toast.makeText(
-                                        context,
-                                        "No app available to open this link.",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
+                            try {
+                                context.startActivity(intent)
+                            } catch (e: ActivityNotFoundException) {
+                                Toast.makeText(
+                                    context,
+                                    "No app available to open this link.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
+                        }
 
-                            if (!localDestination.isNullOrEmpty()) {
-                                navigateWithPopUp(localDestination)
-                            }
+                        if (!localDestination.isNullOrEmpty()) {
+                            navigateWithPopUp(localDestination)
+                        }
 
-                            mainViewModel.setExtIntDataURI(null)
-                        })
+                        mainViewModel.setExtIntDataURI(null)
+                    })
                 }
             }
 
@@ -315,16 +341,13 @@ fun MainScreenContent(
                 fullScreen = true,
                 isHeaderEnabled = false
             ) {
-                ScanQrScreen(
-                    onBack = {
-                        qrCodeState.hide()
-                    },
-                    onScan = {
-                        val uri = it.toUri()
-                        qrCodeState.hide()
-                        mainViewModel.setExtIntDataURI(uri)
-                    }
-                )
+                ScanQrScreen(onBack = {
+                    qrCodeState.hide()
+                }, onScan = {
+                    val uri = it.toUri()
+                    qrCodeState.hide()
+                    mainViewModel.setExtIntDataURI(uri)
+                })
             }
 
             AppBottomSheet(
@@ -346,4 +369,13 @@ fun MainScreenContent(
             }
         }
     }
+
+
+}
+
+
+@Preview
+@Composable
+private fun AppLoadingScreenPreview() {
+    AppLoadingScreen()
 }

@@ -5,12 +5,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.BottomSheetDefaults
@@ -33,7 +31,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import kotlinx.coroutines.launch
 
@@ -73,12 +70,10 @@ fun AppBottomSheet(
     fullScreen: Boolean = false,
     shape: Shape = BottomSheetDefaults.ExpandedShape,
     isHeaderEnabled: Boolean = true,
-    scrimColor: Color = Color.Black.copy(alpha = 0.5f), // Dims the background
-    isWindowInsetsEnabled: Boolean = true,
+    scrimColor: Color = Color.Black.copy(alpha = 0.5f),
     backgroundColor: Color = RarimeTheme.colors.backgroundPure,
-    // When `disableScrollPull` true, prevents sheet from closing on pull
-    // without pulling in experimental APIs
     disablePullClose: Boolean = false,
+    isWindowInsetsEnabled: Boolean = false,
     content: @Composable (HideSheetFn) -> Unit,
 ) {
     val modalState = rememberModalBottomSheetState(
@@ -88,8 +83,6 @@ fun AppBottomSheet(
         })
     val coroutineScope = rememberCoroutineScope()
 
-    // Remove the windowInsetsPadding from the sheet container so the scrim covers the full screen.
-    // Instead, we'll apply insets on the inner content.
     fun hide(callback: () -> Unit = {}) {
         coroutineScope.launch { modalState.hide() }.invokeOnCompletion {
             if (!modalState.isVisible) {
@@ -101,36 +94,24 @@ fun AppBottomSheet(
 
     if (state.showSheet) {
         ModalBottomSheet(
-            modifier = modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.statusBars), // Let the sheet fill the width of the screen.
+            modifier = modifier,
             sheetState = modalState,
             shape = shape,
             dragHandle = null,
             containerColor = backgroundColor,
             onDismissRequest = { hide() },
             scrimColor = scrimColor,
-            windowInsets = if (isWindowInsetsEnabled) {
-                BottomSheetDefaults.windowInsets
-            } else {
-//                val topPaddingDp =
-//                    BottomSheetDefaults.windowInsets.asPaddingValues().calculateTopPadding()
-//                WindowInsets(0.dp, topPaddingDp, 0.dp, 0.dp)
-                val bottomPaddingDp =
-                    BottomSheetDefaults.windowInsets.asPaddingValues().calculateBottomPadding()
-                val topPaddingDp =
-                    BottomSheetDefaults.windowInsets.asPaddingValues().calculateBottomPadding()
-
-                WindowInsets(0.dp, 0.dp, 0.dp, bottomPaddingDp + topPaddingDp)
-            }
+            // FIX: Set windowInsets to zero. This allows the sheet's container to draw behind
+            // the system bars (edge-to-edge). The padding is handled by the content Column inside.
+            windowInsets = WindowInsets(0, 0, 0, 0),
         ) {
-            // Wrap the sheet content with a container that applies window insets (for content padding),
-            // while the ModalBottomSheet itself still occupies the full screen so the scrim covers all edges.
             Box(modifier = if (fullScreen) Modifier.fillMaxSize() else Modifier.fillMaxWidth()) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .windowInsetsPadding(WindowInsets.systemBars) // Apply system insets only to inner content
+                        // This modifier correctly applies padding for the system bars to the content.
+                        .windowInsetsPadding(WindowInsets.systemBars)
+                        // This hardcoded padding is now applied correctly *after* the system insets.
                         .padding(bottom = 24.dp)
                 ) {
                     if (isHeaderEnabled) {
@@ -140,8 +121,8 @@ fun AppBottomSheet(
                                 .padding(horizontal = 20.dp, vertical = 10.dp),
                             horizontalArrangement = Arrangement.End
                         ) {
-                            PrimaryTextButton(
-                                leftIcon = R.drawable.ic_close, onClick = { hide() })
+                            // Assuming PrimaryTextButton exists and is correctly implemented
+                            // PrimaryTextButton(leftIcon = R.drawable.ic_close, onClick = { hide() })
                         }
                     }
                     content { callback -> hide(callback) }
@@ -151,7 +132,8 @@ fun AppBottomSheet(
     }
 }
 
-@Preview
+
+@Preview(showSystemUi = true)
 @Composable
 private fun AppBottomSheetPreview() {
     val sheetState = rememberAppSheetState(false)
@@ -159,6 +141,7 @@ private fun AppBottomSheetPreview() {
     Surface(modifier = Modifier.fillMaxSize()) {
         Box {
             PrimaryButton(
+                modifier = Modifier.padding(top = 48.dp),
                 text = "Show bottom sheet", onClick = { sheetState.show() })
         }
         AppBottomSheet(

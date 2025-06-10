@@ -1,4 +1,4 @@
-package com.rarilabs.rarime.earn
+package com.rarilabs.rarime.modules.earn
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,7 +30,7 @@ class EarnViewModel @Inject constructor(
         get() = _pointBalanceBody.asStateFlow()
 
 
-    fun loadPointsBalance() {
+    private fun loadPointsBalance() {
         viewModelScope.launch(Dispatchers.IO) {
             val result = pointsManager.getPointsBalance()
             _pointBalanceBody.value = result
