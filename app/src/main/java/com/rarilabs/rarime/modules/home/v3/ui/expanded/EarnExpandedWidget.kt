@@ -45,7 +45,6 @@ import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.modules.earn.EarnViewModel
 import com.rarilabs.rarime.modules.earn.InviteOthersContent
 import com.rarilabs.rarime.modules.earn.TaskCard
-import com.rarilabs.rarime.modules.earn.tempPointsBalances
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
@@ -106,7 +105,7 @@ fun EarnExpandedWidgetContent(
     innerPaddings: Map<ScreenInsets, Number>,
     onClick: () -> Unit,
     colorScheme: AppColorScheme,
-    pointsBalances : PointsBalanceBody?
+    pointsBalances: PointsBalanceBody?
 
 ) {
     with(widgetProps) {
@@ -145,7 +144,13 @@ fun EarnExpandedWidgetContent(
                         colorScheme = colorScheme
                     )
                 },
-                footer = { Footer(countOfTask = 1, onClick = onClick, pointsBalances = pointsBalances) })
+                footer = {
+                    Footer(
+                        countOfTask = 1,
+                        onClick = onClick,
+                        pointsBalances = pointsBalances
+                    )
+                })
         }
     }
 }
@@ -280,6 +285,9 @@ private fun Footer(
 
 
 ) {
+    val currentValue =
+        pointsBalances!!.data.attributes.referral_codes!!.count { it.status != ReferralCodeStatuses.ACTIVE.value }
+    val maxValue = pointsBalances!!.data.attributes.referral_codes!!.size
     Column(modifier = Modifier.background(color = RarimeTheme.colors.backgroundSurface1)) {
 
 
@@ -296,14 +304,14 @@ private fun Footer(
                 modifier = Modifier.padding(bottom = 24.dp)
             )
             TaskCard(
-                    //todo in future used for implementing logic
+                //todo in future used for implementing logic
                 taskIconId = R.drawable.ic_user_add_line,
                 rewardInRMO = 50,
                 title = stringResource(R.string.earn_title_of_task),
                 onClick = onClick,
                 description = stringResource(R.string.earn_invite_task_card_description),
-                currentVal = pointsBalances!!.data.attributes.referral_codes!!.count{it.status != ReferralCodeStatuses.ACTIVE.value},
-                maxVal = pointsBalances!!.data.attributes.referral_codes!!.size,
+                currentVal = currentValue,
+                maxVal = maxValue,
             )
 
         }
