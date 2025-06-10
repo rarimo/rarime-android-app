@@ -108,7 +108,7 @@ fun DigitalLikenessRuleSheet(
                     modifier = Modifier.padding(top = 12.dp, bottom = 24.dp)
                 ) {
                     Text(
-                        "Set the rule",
+                        "Set a rule",
                         style = RarimeTheme.typography.h2,
                         color = RarimeTheme.colors.textPrimary
                     )
@@ -262,6 +262,7 @@ fun DigitalLikenessRuleSheetPreview() {
     val ruleSheetState = rememberAppSheetState(true)
     DigitalLikenessRuleSheet(
         ruleSheetState,
-        selectedRule = LikenessRule.ASK_FIRST,
+        selectedRule = null,
+                //LikenessRule.ASK_FIRST,
         onSave = { ruleSheetState.hide() })
 }

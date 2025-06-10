@@ -121,7 +121,7 @@ fun AppBottomSheet(
                 val topPaddingDp =
                     BottomSheetDefaults.windowInsets.asPaddingValues().calculateBottomPadding()
 
-                WindowInsets(0.dp, 0.dp, 0.dp, bottomPaddingDp + topPaddingDp)
+                WindowInsets(0.dp, 0.dp, 0.dp, bottomPaddingDp)
             }
         ) {
             // Wrap the sheet content with a container that applies window insets (for content padding),
