@@ -32,7 +32,7 @@ class ManageWidgetsManager @Inject constructor(
             val visibleCardsStored = sharedPrefsManager.readVisibleWidgets()
             if (visibleCardsStored.isNullOrEmpty()) {
                 setVisibleWidgets(listOf(WidgetType.HIDDEN_PRIZE, WidgetType.RECOVERY_METHOD))
-                if (pointBalance != null) {
+                if (pointBalance != null && pointBalance.data.attributes.amount != 0L) {
                     add(widgetType = WidgetType.EARN)
                 }
             } else {
