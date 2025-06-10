@@ -290,7 +290,7 @@ fun LikenessCollapsedWidgetPreview() {
         LikenessCollapsedWidgetContent(
             collapsedWidgetProps = BaseWidgetProps.Collapsed(
                 onExpand = {},
-                layoutId = WidgetType.LIKENESS.layoutId,
+                layoutId = 1,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope
             ),

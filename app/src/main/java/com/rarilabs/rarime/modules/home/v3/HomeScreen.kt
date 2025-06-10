@@ -236,11 +236,11 @@ fun HomeScreenContent(
                                     modifier = baseCollapsedModifier,
                                 )
 
-                                WidgetType.LIKENESS -> LikenessCollapsedWidget(
-                                    collapsedWidgetProps = collapsedWidgetProps,
-
-                                    modifier = baseCollapsedModifier,
-                                )
+//                                WidgetType.LIKENESS -> LikenessCollapsedWidget(
+//                                    collapsedWidgetProps = collapsedWidgetProps,
+//
+//                                    modifier = baseCollapsedModifier,
+//                                )
 
                                 WidgetType.HIDDEN_PRIZE -> HiddenPrizeCollapsedWidget(
                                     collapsedWidgetProps = collapsedWidgetProps,
@@ -302,11 +302,11 @@ fun HomeScreenContent(
                             navigate = navigate
                         )
 
-                        WidgetType.LIKENESS -> DigitalLikenessExpandedWidget(
-                            expandedWidgetProps = expandedCardProps,
-                            innerPaddings = innerPaddings,
-                            navigate = navigate
-                        )
+//                        WidgetType.LIKENESS -> DigitalLikenessExpandedWidget(
+//                            expandedWidgetProps = expandedCardProps,
+//                            innerPaddings = innerPaddings,
+//                            navigate = navigate
+//                        )
 
                         WidgetType.EARN -> EarnExpandedWidget(
 

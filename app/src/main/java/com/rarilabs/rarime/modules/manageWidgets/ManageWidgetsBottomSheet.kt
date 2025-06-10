@@ -175,6 +175,7 @@ fun ManageWidgetsBottomSheetContent(
             onClick = { onRemove(managedWidgets[pagerState.currentPage]) },
             text = stringResource(R.string.manage_widgets_remove_btn_label),
             size = ButtonSize.Large,
+            enabled = managedWidgets[pagerState.currentPage] != WidgetType.RECOVERY_METHOD,
             modifier = Modifier
                 .padding(horizontal = 20.dp, vertical = 17.dp)
                 .fillMaxWidth()
