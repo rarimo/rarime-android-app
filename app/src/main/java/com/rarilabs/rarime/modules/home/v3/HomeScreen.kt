@@ -99,7 +99,6 @@ fun HomeScreenV3(
         backgroundColor = RarimeTheme.colors.backgroundPrimary,
         isHeaderEnabled = false,
         fullScreen = false,
-        isWindowInsetsEnabled = false,
     ) {
 
         ManageWidgetsBottomSheet(onClose = { sheetManageWidgets.hide() })
@@ -122,10 +121,7 @@ fun HomeScreenV3(
     )
 
     AppBottomSheet(
-        state = welcomeAppSheetState,
-        isHeaderEnabled = false,
-        isWindowInsetsEnabled = false,
-        disablePullClose = true
+        state = welcomeAppSheetState, isHeaderEnabled = false
     ) {
         WelcomeBottomSheet {
             welcomeAppSheetState.hide()

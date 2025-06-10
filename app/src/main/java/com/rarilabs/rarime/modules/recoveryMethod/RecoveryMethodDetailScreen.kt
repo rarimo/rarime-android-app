@@ -85,7 +85,7 @@ fun RecoveryMethodDetailScreen(
         cloudBackupChecked = driveState == DriveState.BACKED_UP
     }
 
-    fun onSwitchClick(checkChange: Boolean) {
+    fun onSwitchClick() {
         when (driveState) {
             DriveState.BACKED_UP -> {
                 showDeleteDialog = true
@@ -271,7 +271,7 @@ fun RecoveryMethodDetailScreen(
                                 AppSwitch(
                                     checked = cloudBackupChecked,
                                     onCheckedChange = {
-                                        onSwitchClick(it)
+                                        onSwitchClick()
                                     },
                                     enabled = isSwitchEnabled,
                                     modifier = Modifier

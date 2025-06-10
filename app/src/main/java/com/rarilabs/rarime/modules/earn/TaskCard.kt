@@ -131,7 +131,7 @@ fun TaskCard(
                     .padding(horizontal = 34.dp)
             ) {
                 Text(
-                    text = description + ": " + currentVal.toString() + "/" + maxVal.toString(),
+                    text = "$description: $currentVal/$maxVal",
                     style = RarimeTheme.typography.body4,
                     color = RarimeTheme.colors.textSecondary
                 )

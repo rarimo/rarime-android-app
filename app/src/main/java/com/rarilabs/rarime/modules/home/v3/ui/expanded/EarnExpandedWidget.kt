@@ -10,6 +10,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,9 +23,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,14 +43,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.points.models.PointsBalanceData
 import com.rarilabs.rarime.api.points.models.PointsBalanceBody
 import com.rarilabs.rarime.api.points.models.ReferralCodeStatuses
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.modules.earn.EarnViewModel
 import com.rarilabs.rarime.modules.earn.InviteOthersContent
 import com.rarilabs.rarime.modules.earn.TaskCard
-import com.rarilabs.rarime.modules.earn.tempPointsBalances
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
@@ -74,13 +74,18 @@ fun EarnExpandedWidget(
 ) {
     val inviteOthers = rememberAppSheetState()
     val colorScheme by viewModel.colorScheme.collectAsState()
-    val pointsBalances = viewModel.pointBalanceBody.value
+    val pointsBalances by viewModel.pointBalanceBody.collectAsState()
     AppBottomSheet(
         state = inviteOthers,
         backgroundColor = RarimeTheme.colors.backgroundSurface1,
-        isHeaderEnabled = false
+        isHeaderEnabled = false,
+        fullScreen = true
     ) {
         InviteOthersContent(
+            modifier = Modifier.scrollable(
+                state = rememberScrollState(),
+                orientation = Orientation.Vertical
+            ),
             pointsBalance = pointsBalances!!.data,
             onClose = { inviteOthers.hide() },
         )
@@ -154,7 +159,7 @@ fun EarnExpandedWidgetContent(
                     Footer(
                         countOfTask = 1,
                         onClick = onClick,
-                        pointsBalances =  pointsBalance
+                        pointsBalances = pointsBalance
                     )
                 })
         }
@@ -194,7 +199,10 @@ private fun Header(
                     .background(color = RarimeTheme.colors.componentPrimary),
                 contentAlignment = Alignment.Center
             ) {
-                Row(modifier = Modifier.padding(vertical = 10.dp, horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier.padding(vertical = 10.dp, horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
                         text = "Reserved: ",
                         style = RarimeTheme.typography.subtitle6,
@@ -326,7 +334,7 @@ private fun Footer(
 ) {
     val currentValue =
         pointsBalances!!.data.attributes.referral_codes!!.count { it.status != ReferralCodeStatuses.ACTIVE.value }
-    val maxValue = pointsBalances!!.data.attributes.referral_codes!!.size
+    val maxValue = pointsBalances.data.attributes.referral_codes!!.size
     Column(modifier = Modifier.background(color = RarimeTheme.colors.backgroundSurface1)) {
 
 

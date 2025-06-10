@@ -130,7 +130,6 @@ fun RecoveryMethodExpandedWidget(
         fullScreen = true,
         isHeaderEnabled = false,
         disablePullClose = false,
-        isWindowInsetsEnabled = false
     ) {
         RecoveryMethodDetailScreen(
             driveState = driveState,

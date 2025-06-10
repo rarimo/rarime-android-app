@@ -40,24 +40,20 @@ val tempPointsBalances = PointsBalanceData(
         rank = 0,
         referral_codes = listOf(
             ReferralCode(
-                id = "QrisPfszkps_1",
-                status = ReferralCodeStatuses.ACTIVE.value
+                id = "QrisPfszkps_1", status = ReferralCodeStatuses.ACTIVE.value
             ),
             ReferralCode(
                 id = "QrisPfszkps_2",
                 status = ReferralCodeStatuses.ACTIVE.value,
             ),
             ReferralCode(
-                id = "QrisPfszkps_3",
-                status = ReferralCodeStatuses.ACTIVE.value
+                id = "QrisPfszkps_3", status = ReferralCodeStatuses.ACTIVE.value
             ),
             ReferralCode(
-                id = "QrisPfszkps_4",
-                status = ReferralCodeStatuses.ACTIVE.value
+                id = "QrisPfszkps_4", status = ReferralCodeStatuses.ACTIVE.value
             ),
             ReferralCode(
-                id = "QrisPfszkps_5",
-                status = ReferralCodeStatuses.ACTIVE.value
+                id = "QrisPfszkps_5", status = ReferralCodeStatuses.ACTIVE.value
             ),
 //                    ReferralCode(
 //                        id = "QrisPfszkps_6",
@@ -80,7 +76,11 @@ fun InviteOthersContent(
         CONST_MOCKED_EVENTS_LIST[0].attributes.meta.static.reward.div(it)
     } ?: 0L
 
-    Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 20.dp)
+            .then(modifier)
+    ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = stringResource(R.string.earn_widget_invite_bottom_sheet_title),
@@ -127,19 +127,11 @@ fun InviteOthersContent(
 }
 
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
 private fun InviteOthersContentPreview() {
-
     Surface {
-
-            InviteOthersContent(
-                pointsBalance = tempPointsBalances,
-                onClose = {}
-            )
-
+        InviteOthersContent(
+            pointsBalance = tempPointsBalances, onClose = {})
     }
-
-
 }

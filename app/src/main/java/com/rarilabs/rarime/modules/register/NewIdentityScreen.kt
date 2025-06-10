@@ -75,7 +75,7 @@ fun NewIdentityScreen(
         mutableStateOf(newIdentityViewModel.genPrivateKey())
     }
 
-    var isDriveState by remember { mutableStateOf(true) }
+    var isDriveState by remember { mutableStateOf(isImporting) }
     var isDriveButtonEnabled by remember { mutableStateOf(true) }
 
     val signInErrorOptions = getSnackbarDefaultShowOptions(
@@ -208,9 +208,7 @@ fun NewIdentityScreen(
             savePrivateKey(pk)
         }
 
-        //delay(1000)
         mainViewModel.tryLogin()
-        //fidelay(1000)
 
         if (invitationCodeState.text.isEmpty()) {
             finishOnboarding("")
@@ -219,39 +217,26 @@ fun NewIdentityScreen(
         }
     }
 
-    if (isDriveState) {
-        if (isImporting) {
-            RestoreScreen(
-                onDriveRestore = { scope.launch { restorePrivateKey() } },
-                signInAccount = signedInAccount,
-                signIn = {
-                    signInResultLauncher.launch(
-                        googleSignInClient.signInIntent
-                    )
-                },
-                isDriveButtonEnabled = isDriveButtonEnabled,
-                onBack = onBack
-            ) {
-                isDriveState = false
-            }
-        } else {
-            BackUpScreen(
-                onDriveBackup = { scope.launch { backUpPrivateKey() } },
-                signInAccount = signedInAccount,
-                signIn = {
-                    signInResultLauncher.launch(
-                        googleSignInClient.signInIntent
-                    )
-                },
-                onManualBackup = { isDriveState = false },
-                onBack = onBack,
-                isDriveButtonEnabled = isDriveButtonEnabled,
-                privateKey = privateKey
-            )
+    if (isDriveState && isImporting) {
+        RestoreScreen(
+            onDriveRestore = { scope.launch { restorePrivateKey() } },
+            signInAccount = signedInAccount,
+            signIn = {
+                signInResultLauncher.launch(
+                    googleSignInClient.signInIntent
+                )
+            },
+            isDriveButtonEnabled = isDriveButtonEnabled,
+            onBack = onBack
+        ) {
+            isDriveState = false
         }
     } else {
         NewIdentityScreenContent(
-            onBack = { isDriveState = true },
+            onBack = {
+                // Allow user to go back to Drive only if recovering
+                if (isImporting) isDriveState = true else onBack()
+            },
             privateKey = privateKey,
             isImporting = isImporting,
             handleInitPK = { scope.launch { handleInitPK(it) } },
