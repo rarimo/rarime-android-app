@@ -40,9 +40,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
-import com.rarilabs.rarime.earn.EarnViewModel
-import com.rarilabs.rarime.earn.InviteOthersContent
-import com.rarilabs.rarime.earn.TaskCard
+import com.rarilabs.rarime.modules.earn.EarnViewModel
+import com.rarilabs.rarime.modules.earn.InviteOthersContent
+import com.rarilabs.rarime.modules.earn.TaskCard
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
