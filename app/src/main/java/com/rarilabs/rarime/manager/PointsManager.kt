@@ -54,26 +54,26 @@ class PointsManager @Inject constructor(
     private val passportManager: PassportManager,
     private val secureSharedPrefsManager: SecureSharedPrefsManager
 ) {
-    suspend fun createPointsBalance(referralCode: String?) {
-        val userNullifierHex = identityManager.getUserPointsNullifierHex()
-
-        if (userNullifierHex.isEmpty()) {
-            throw Exception("user nullifier is null")
-        }
-
-        withContext(Dispatchers.IO) {
-            pointsAPIManager.createPointsBalance(
-                CreateBalanceBody(
-                    data = CreateBalanceData(
-                        id = userNullifierHex,
-                        type = "create_balance",
-                        attributes = CreateBalanceAttributes(
-                            referredBy = if (referralCode.isNullOrEmpty()) null else referralCode
-                        )
-                    )
-                ), "Bearer ${authManager.accessToken}"
-            )
-        }
+    suspend fun createPointsBalance(referralCode: String?) { //todo not commented while testing
+//        val userNullifierHex = identityManager.getUserPointsNullifierHex()
+//
+//        if (userNullifierHex.isEmpty()) {
+//            throw Exception("user nullifier is null")
+//        }
+//
+//        withContext(Dispatchers.IO) {
+//            pointsAPIManager.createPointsBalance(
+//                CreateBalanceBody(
+//                    data = CreateBalanceData(
+//                        id = userNullifierHex,
+//                        type = "create_balance",
+//                        attributes = CreateBalanceAttributes(
+//                            referredBy = if (referralCode.isNullOrEmpty()) null else referralCode
+//                        )
+//                    )
+//                ), "Bearer ${authManager.accessToken}"
+//            )
+//        }
     }
 
 

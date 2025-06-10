@@ -1,4 +1,4 @@
-package com.rarilabs.rarime.earn
+package com.rarilabs.rarime.modules.earn
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background

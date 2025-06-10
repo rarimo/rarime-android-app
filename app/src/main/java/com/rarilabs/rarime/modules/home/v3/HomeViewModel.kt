@@ -36,24 +36,14 @@ class HomeViewModel @Inject constructor(
     private val pointsManager: PointsManager,
     widgetsManager: ManageWidgetsManager,
     notificationManager: NotificationManager,
-    votingManager: VotingManager,
     settingsManager: SettingsManager,
     private val sharedPrefsManager: SecureSharedPrefsManager
 ) : AndroidViewModel(app) {
 
     val pointsToken = walletManager.pointsToken
 
-    private val allUserVotes: StateFlow<List<Poll>> = votingManager.allVotesFlow
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
-
     val colorScheme = settingsManager.colorScheme
     var visibleWidgets = widgetsManager.visibleWidgets
-    val hasVotes: StateFlow<Boolean> =
-        allUserVotes.map { it.isNotEmpty() }.distinctUntilChanged().stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = false
-        )
 
     val passport = passportManager.passport
 
@@ -61,8 +51,6 @@ class HomeViewModel @Inject constructor(
 
     val notifications = notificationManager.notificationList
 
-    val pointsEventData: StateFlow<PointsEventData?>
-        get() = _pointsEventData.asStateFlow()
 
 
     suspend fun initHomeData() = withContext(Dispatchers.IO) {
