@@ -1,4 +1,4 @@
-package com.rarilabs.rarime.earn
+package com.rarilabs.rarime.modules.earn
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement

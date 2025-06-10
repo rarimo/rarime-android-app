@@ -75,8 +75,6 @@ fun HomeScreenV3(
     val passport by viewModel.passport.collectAsState()
     val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
     val notifications by viewModel.notifications.collectAsState()
-    val pointsBalance by viewModel.pointsEventData.collectAsState()
-    val currentPointsBalance = pointsBalance?.attributes?.balance?.attributes?.amount
     val notificationsCount by remember(notifications) {
         derivedStateOf { notifications.count { it.isActive } }
     }
@@ -121,7 +119,6 @@ fun HomeScreenV3(
         navigate = navigate,
         sharedTransitionScope = sharedTransitionScope,
         setVisibilityOfBottomBar = setVisibilityOfBottomBar,
-        currentPointsBalance = currentPointsBalance,
         colorScheme = colorScheme,
         onClick = { sheetManageWidgets.show() },
     )
@@ -147,7 +144,6 @@ fun HomeScreenContent(
     visibleWidgets: List<WidgetType>,
     userPassportName: String?,
     notificationsCount: Int?,
-    currentPointsBalance: Long?,
     colorScheme: AppColorScheme,
     onClick: () -> Unit
 ) {
@@ -368,7 +364,6 @@ private fun HomeScreenPreview() {
                 notificationsCount = 2,
                 innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
                 visibleWidgets = WidgetType.entries,
-                currentPointsBalance = 200L,
                 colorScheme = AppColorScheme.SYSTEM,
                 onClick = {})
         }
