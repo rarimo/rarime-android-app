@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.home.v3.ui.collapsed
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -27,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
@@ -39,6 +41,7 @@ import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCollapsedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetLogo
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
 import com.rarilabs.rarime.ui.components.AppIcon
+import com.rarilabs.rarime.ui.theme.AppTheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
@@ -103,7 +106,7 @@ private fun Header(
 ) {
     with(sharedTransitionScope) {
         Row(
-            horizontalArrangement = Arrangement.End,
+            horizontalArrangement = Arrangement.Start,
             modifier = Modifier
                 .sharedBounds(
                     rememberSharedContentState(HomeSharedKeys.header(layoutId)),
@@ -112,14 +115,15 @@ private fun Header(
                     exit = fadeOut(),
                     resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                 )
-                .padding(top = 12.dp, end = 8.dp)
+                .padding(top = 24.dp, start = 24.dp)
                 .fillMaxWidth()
         ) {
             BaseWidgetLogo(
                 resId = R.drawable.ic_check_unframed,
-                backgroundColor = Color.Transparent,
-                size = 58,
-                tint = RarimeTheme.colors.baseBlackOp40
+                backgroundColor = RarimeTheme.colors.componentPrimary,
+                size = 40,
+                iconSize = 24,
+                tint = RarimeTheme.colors.textPrimary
             )
         }
     }
@@ -148,9 +152,9 @@ private fun Footer(
                 )
         ) {
             BaseWidgetTitle(
-                title = "Freedomtool",
-                accentTitle = "Voting",
-                caption = "* Nothing leaves this device",
+                title = stringResource(R.string.freedomtool_title),
+                accentTitle = stringResource(R.string.fredomtool_accent_title),
+                titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.invertedDark),
                 titleModifier =
                     Modifier.sharedBounds(
                         rememberSharedContentState(HomeSharedKeys.title(layoutId)),
@@ -158,7 +162,7 @@ private fun Footer(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
-                accentTitleStyle = RarimeTheme.typography.additional2.copy(color = RarimeTheme.colors.baseBlackOp40),
+                accentTitleStyle = RarimeTheme.typography.h1.copy(brush = RarimeTheme.colors.gradient15),
                 accentTitleModifier =
                     Modifier.sharedBounds(
                         rememberSharedContentState(
@@ -170,20 +174,14 @@ private fun Footer(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
-                captionModifier =
-                    Modifier.sharedBounds(
-                        rememberSharedContentState(
-                            HomeSharedKeys.caption(
-                                layoutId
-                            )
-                        ),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                    )
+
             )
             Spacer(modifier = Modifier.weight(1f))
-            AppIcon(id = R.drawable.ic_arrow_right_up_line)
+            AppIcon(
+                id = R.drawable.ic_arrow_right_up_line,
+                tint = RarimeTheme.colors.invertedDark,
+                size = 24.dp
+            )
         }
     }
 }
@@ -203,12 +201,11 @@ private fun Background(
                 .background(RarimeTheme.colors.gradient5)
         ) {
             Image(
-                painter = painterResource(R.drawable.freedomtool_bg),
+                painter = painterResource(R.drawable.ic_bg_freedomtool_voting),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(BG_DOT_MAP_HEIGHT.dp)
-                    .offset(y = (-10).dp)
                     .sharedBounds(
                         rememberSharedContentState(
                             HomeSharedKeys.image(
@@ -225,20 +222,43 @@ private fun Background(
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL)
 @Composable
-fun FreedomtoolCollapsedWidgetPreview() {
-    PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
-        FreedomtoolCollapsedWidget(
-            collapsedWidgetProps = BaseWidgetProps.Collapsed(
-                onExpand = {},
-                layoutId = WidgetType.FREEDOMTOOL.layoutId,
-                animatedVisibilityScope = animatedVisibilityScope,
-                sharedTransitionScope = sharedTransitionScope
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(450.dp)
-        )
+fun FreedomtoolCollapsedWidgetPreview_light() {
+    AppTheme {
+        PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
+            FreedomtoolCollapsedWidget(
+                collapsedWidgetProps = BaseWidgetProps.Collapsed(
+                    onExpand = {},
+                    layoutId = WidgetType.FREEDOMTOOL.layoutId,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    sharedTransitionScope = sharedTransitionScope
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(550.dp)
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
+@Composable
+fun FreedomtoolCollapsedWidgetPreview_dark() {
+    AppTheme {
+        PrevireSharedAnimationProvider { sharedTransitionScope, animatedVisibilityScope ->
+            FreedomtoolCollapsedWidget(
+                collapsedWidgetProps = BaseWidgetProps.Collapsed(
+                    onExpand = {},
+                    layoutId = WidgetType.FREEDOMTOOL.layoutId,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    sharedTransitionScope = sharedTransitionScope
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(550.dp)
+            )
+        }
     }
 }

@@ -103,6 +103,7 @@ class RarimeColors(
     gradient12: Brush,
     gradient13: Brush,
     gradient14: Brush,
+    gradient15: Brush,
 
 
 
@@ -258,6 +259,8 @@ class RarimeColors(
 
     var gradient14 by mutableStateOf(gradient14, structuralEqualityPolicy())
         internal set
+    var gradient15 by mutableStateOf(gradient15, structuralEqualityPolicy())
+        internal set
 
     var inverted by mutableStateOf(inverted, structuralEqualityPolicy())
         internal set
@@ -336,6 +339,7 @@ class RarimeColors(
         gradient12: Brush = this.gradient12,
         gradient13: Brush = this.gradient13,
         gradient14: Brush = this.gradient14,
+        gradient15: Brush = this.gradient15,
         invertedDark: Color = this.invertedDark,
         invertedLight: Color = this.invertedLight,
         inverted: Color = this.inverted,
@@ -420,6 +424,7 @@ class RarimeColors(
         gradient12 = gradient12,
         gradient13 = gradient13,
         gradient14 = gradient14,
+        gradient15 = gradient15,
         additionalGreen = additionalGreen,
         inverted = inverted,
         hiddenPrizeAccent = hiddenPrizeAccent,
@@ -506,6 +511,7 @@ class RarimeColors(
         this.gradient12 = other.gradient12
         this.gradient13 = other.gradient13
         this.gradient14 = other.gradient14
+        this.gradient15 = other.gradient15
         this.additionalGreen = other.additionalGreen
         this.inverted = other.inverted
         this.hiddenPrizeAccent = other.hiddenPrizeAccent
@@ -592,7 +598,10 @@ fun darkColors() = RarimeColors(
     gradient2 = Brush.linearGradient(colors = listOf(Color(0xFFF2F8EE), Color(0xFFCBE7EC))),
     gradient3 = Brush.linearGradient(colors = listOf(Color(0xFFDFFCC4), Color(0xFFF4F3F0))),
     gradient4 = Brush.linearGradient(colors = listOf(Color(0xFFD3D1EF), Color(0xFFFCE3FC))),
-    gradient5 = Brush.linearGradient(colors = listOf(Color(0xFF80ED99), Color(0xFFD5FEC8))),
+    gradient5 = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFF255130),
+            Color(0xFF0F1611))),
     gradient6 = Brush.linearGradient(colors = listOf(Color(0xFF39CDA0), Color(0xFF45C45C))),
     gradient7 = Brush.linearGradient(
         colors = listOf(
@@ -640,6 +649,12 @@ fun darkColors() = RarimeColors(
         colors = listOf(
             Color(0xFF518119),
             Color(0xFF71BB1D)
+        )
+    ),
+    gradient15 = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFF1A833A),
+            Color(0xFF1E853C)
         )
     ),
 
@@ -736,7 +751,12 @@ fun lightColors() = RarimeColors(
     gradient2 = Brush.linearGradient(colors = listOf(Color(0xFFF2F8EE), Color(0xFFCBE7EC))),
     gradient3 = Brush.linearGradient(colors = listOf(Color(0xFFDFFCC4), Color(0xFFF4F3F0))),
     gradient4 = Brush.linearGradient(colors = listOf(Color(0xFFD3D1EF), Color(0xFFFCE3FC))),
-    gradient5 = Brush.linearGradient(colors = listOf(Color(0xFF80ED99), Color(0xFFD5FEC8))),
+    gradient5 = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFA2F0B6),
+            Color(0xFFF2F9F0)
+        )
+    ),
     gradient6 = Brush.linearGradient(colors = listOf(Color(0xFF39CDA0), Color(0xFF45C45C))),
     gradient7 = Brush.linearGradient(
         colors = listOf(
@@ -784,6 +804,13 @@ fun lightColors() = RarimeColors(
         colors = listOf(
             Color(0xFF518219),
             Color(0xFF72BB1D)
+        )
+    ),
+
+    gradient15 = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFF1A833A),
+            Color(0xFF1E853C)
         )
     ),
 
