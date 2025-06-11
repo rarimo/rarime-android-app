@@ -79,6 +79,7 @@ class RecoveryMethodViewModel @Inject constructor(
 
             } catch (e: IOException) {
                 ErrorHandler.logError("backupPrivateKey", "Cannot back up private key", e)
+                throw e
             } finally {
                 _isDriveButtonEnabled.value = true
             }
@@ -94,6 +95,7 @@ class RecoveryMethodViewModel @Inject constructor(
                 driveBackupManager.deleteBackup(account)
             } catch (e: IOException) {
                 ErrorHandler.logError("deleteBackup", "Cannot delete backup", e)
+                throw e
             } finally {
                 _isDriveButtonEnabled.value = true
             }

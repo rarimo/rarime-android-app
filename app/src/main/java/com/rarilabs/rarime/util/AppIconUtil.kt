@@ -18,7 +18,7 @@ object AppIconUtil {
             }
         }
 
-        return AppIcon.WHITE
+        return AppIcon.BLACK
     }
 
 

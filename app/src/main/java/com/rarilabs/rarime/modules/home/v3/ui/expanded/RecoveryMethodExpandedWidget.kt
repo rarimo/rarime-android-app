@@ -119,6 +119,7 @@ fun RecoveryMethodExpandedWidget(
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
             viewModel.handleSignInResult(task) {
                 scope.launch {
+                    sheetRecoveryMethod.hide()
                     mainViewModel.showSnackbar(signInErrorOptions)
                 }
             }
@@ -135,7 +136,17 @@ fun RecoveryMethodExpandedWidget(
             driveState = driveState,
             onClose = { sheetRecoveryMethod.hide() },
             privateKey = privateKey!!,
-            backupPrivateKey = viewModel::backupPrivateKey,
+            backupPrivateKey = {
+                try {
+                    viewModel.backupPrivateKey()
+                } catch (e: Exception) {
+                    sheetRecoveryMethod.hide()
+                    scope.launch {
+                        sheetRecoveryMethod.hide()
+                        mainViewModel.showSnackbar(backupErrorOptions)
+                    }
+                }
+            },
             isSwitchEnabled = isDriveBtnEnabled,
             deleteBackup = viewModel::deleteBackup,
             signIn = {

@@ -15,7 +15,6 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-
         ErrorHandler.initialize(this)
         setupBouncyCastle()
         setupFireBase()

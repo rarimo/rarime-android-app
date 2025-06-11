@@ -25,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -103,8 +102,7 @@ private fun Header(
 ) {
     with(sharedTransitionScope) {
         Row(
-            horizontalArrangement = Arrangement.End,
-            modifier = Modifier
+            horizontalArrangement = Arrangement.Start, modifier = Modifier
                 .sharedBounds(
                     rememberSharedContentState(HomeSharedKeys.header(layoutId)),
                     animatedVisibilityScope = animatedVisibilityScope,
@@ -112,14 +110,14 @@ private fun Header(
                     exit = fadeOut(),
                     resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                 )
-                .padding(top = 12.dp, end = 8.dp)
+                .padding(top = 20.dp, start = 20.dp)
                 .fillMaxWidth()
         ) {
             BaseWidgetLogo(
                 resId = R.drawable.ic_check_unframed,
-                backgroundColor = Color.Transparent,
-                size = 58,
-                tint = RarimeTheme.colors.baseBlackOp40
+                backgroundColor = RarimeTheme.colors.componentPrimary,
+                size = 40,
+                tint = RarimeTheme.colors.textSecondary.copy(alpha = 1f),
             )
         }
     }
