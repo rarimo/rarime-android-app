@@ -199,18 +199,19 @@ fun HiddenPrizeCamera(
                 colorScheme = colorScheme,
                 downloadProgress = downloadProgress,
                 onShare = {
-                    val imageUri =
-                        Uri.parse("android.resource://" + "com.rarilabs.rarime" + "/" + R.drawable.ic_hidden_prize_win_share)
+                    val resId = R.drawable.ic_hidden_prize_win_share
+                    val uri = Uri.parse("android.resource://${context.packageName}/${resId}")
                     val intent = Intent(Intent.ACTION_SEND).apply {
                         type = "image/*"
-                        putExtra(Intent.EXTRA_STREAM, imageUri)
+                        putExtra(Intent.EXTRA_STREAM, uri)
                         putExtra(
                             Intent.EXTRA_TEXT,
-                            "Hidden keys: found. Prize: secured. Who’s next to join the winners’ circle? \uD83D\uDD11\uD83C\uDFC6"
+                            context.getString(R.string.hidden_prize_on_win_description)
                         )
                         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     }
-                    launcherShare.launch(Intent.createChooser(intent, "Share via"))
+                    launcherShare.launch(Intent.createChooser(intent,
+                        context.getString(R.string.share_via)))
                 },
                 onViewWallet = { navigate(Screen.Main.Wallet.route) })
         }
