@@ -232,9 +232,10 @@ private fun Background(
                         ),
                         animatedVisibilityScope = animatedVisibilityScope,
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(),
+                        clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(40.dp)),
                     )
-                    .clip(RoundedCornerShape(20.dp))
+                    .clip(RoundedCornerShape(40.dp))
 
             )
 

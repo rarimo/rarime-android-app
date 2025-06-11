@@ -152,7 +152,14 @@ private fun Footer(
                 colors = CardDefaults.cardColors(
                     containerColor = RarimeTheme.colors.componentPrimary,
                 ),
-                modifier = Modifier.size(width = 156.dp, height = 32.dp)
+                modifier = Modifier
+                    .sharedBounds(
+                        rememberSharedContentState(HomeSharedKeys.label(layoutId)),
+                        renderInOverlayDuringTransition = true,
+                        animatedVisibilityScope = animatedVisibilityScope,
+                    )
+
+                    .size(width = 156.dp, height = 32.dp)
 
             ) {
                 Row(
@@ -255,18 +262,19 @@ private fun Background(
                 contentScale = ContentScale.None,
                 modifier = Modifier
                     .fillMaxSize()
-
                     .sharedBounds(
                         rememberSharedContentState(
                             HomeSharedKeys.image(
                                 layoutId
                             )
                         ),
+                        clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(40.dp)),
                         animatedVisibilityScope = animatedVisibilityScope,
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     )
-                    .clip(RoundedCornerShape(20.dp))
+                    .clip(RoundedCornerShape(40.dp))
+
 
             )
 
