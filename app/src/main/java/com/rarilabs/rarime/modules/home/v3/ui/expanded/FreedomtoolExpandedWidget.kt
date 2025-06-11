@@ -217,7 +217,7 @@ private fun Header(
                     .background(color = RarimeTheme.colors.componentPrimary)
             ) {
                 AppIcon(
-                    id = R.drawable.ic_close,
+                    id = R.drawable.ic_close_fill,
                     tint = RarimeTheme.colors.textPrimary,
                 )
             }
