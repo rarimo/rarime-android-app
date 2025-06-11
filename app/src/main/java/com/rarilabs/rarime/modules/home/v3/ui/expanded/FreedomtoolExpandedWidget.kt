@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.home.v3.ui.expanded
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -18,15 +19,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,6 +43,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,6 +51,7 @@ import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.voting.models.MOCKED_POLL_ITEM
 import com.rarilabs.rarime.api.voting.models.Poll
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BG_DOT_MAP_HEIGHT
@@ -68,8 +71,10 @@ import com.rarilabs.rarime.modules.votes.voteProcessScreen.VotingAppSheet
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
-import com.rarilabs.rarime.ui.components.TransparentButton
+import com.rarilabs.rarime.ui.components.PrimaryButton
+import com.rarilabs.rarime.ui.components.SecondaryButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
+import com.rarilabs.rarime.ui.theme.AppTheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import kotlinx.coroutines.launch
@@ -198,14 +203,23 @@ private fun Header(
                     resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                 )
                 .fillMaxWidth()
-                .padding(
-                    top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp,
-                )
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp)
+                .padding(top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp),
             horizontalArrangement = Arrangement.End
         ) {
-            IconButton(onClick = onCollapse) {
-                AppIcon(id = R.drawable.ic_close)
+
+            IconButton(
+                onClick = onCollapse,
+                modifier = Modifier
+                    .padding(20.dp)
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(color = RarimeTheme.colors.componentPrimary)
+            ) {
+                AppIcon(
+                    id = R.drawable.ic_close,
+                    tint = RarimeTheme.colors.textPrimary,
+                )
             }
         }
     }
@@ -224,69 +238,83 @@ private fun Body(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
+
     val uriHandler = LocalUriHandler.current
     with(sharedTransitionScope) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(24.dp),
             modifier = Modifier
-                .padding(horizontal = 20.dp)
                 .sharedBounds(
                     rememberSharedContentState(HomeSharedKeys.content(layoutId)),
                     animatedVisibilityScope = animatedVisibilityScope,
-                    renderInOverlayDuringTransition = false,
                     enter = fadeIn(),
                     exit = fadeOut(),
                     resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
                 )
+
+                .fillMaxSize()
         ) {
-            Spacer(Modifier.height((BG_DOT_MAP_HEIGHT - 200).dp))
-            BaseWidgetTitle(
-                title = "Freedomtool",
-                accentTitle = "Voting",
-                caption = "* Nothing leaves this device",
-                titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.baseBlack),
-                accentTitleStyle = RarimeTheme.typography.additional1.copy(color = RarimeTheme.colors.baseBlackOp40),
-                titleModifier = Modifier.sharedBounds(
-                    rememberSharedContentState(HomeSharedKeys.title(layoutId)),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
-                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                ),
-                accentTitleModifier = Modifier.sharedBounds(
-                    rememberSharedContentState(HomeSharedKeys.accentTitle(layoutId)),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
-                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                ),
-                captionModifier = Modifier.sharedBounds(
-                    rememberSharedContentState(HomeSharedKeys.caption(layoutId)),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
-                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                )
-            )
-            Text(
-                "An identification and privacy solution that revolutionizes polling, surveying and election processes",
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.baseBlackOp50
-            )
-            VoteActionRow(
-                onLink = { uriHandler.openUri(BaseConfig.VOTING_WEBSITE_URL) },
-                onScan = onScan
-            )
-            HorizontalDivider(
+
+            Spacer(Modifier.height((BG_DOT_MAP_HEIGHT - 80).dp))
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(24.dp),
                 modifier = Modifier
-                    .background(RarimeTheme.colors.componentPrimary)
+                    .background(
+                        RarimeTheme.colors.backgroundPrimary,
+                        shape = RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
+                    )
+                    .padding(20.dp)
                     .fillMaxWidth()
-                    .height(2.dp)
-            )
-            VoteTabs(
-                activeVotes = activeVotes,
-                historyVotes = historyVotes,
-                isLoading = isLoading,
-                onVoteClick = onVoteClick,
-                innerPaddings = innerPaddings
-            )
+
+            ) {
+                BaseWidgetTitle(
+                    title = stringResource(R.string.freedomtool_title),
+                    accentTitle = stringResource(R.string.fredomtool_accent_title),
+                    titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.invertedDark),
+                    titleModifier =
+                        Modifier.sharedBounds(
+                            rememberSharedContentState(HomeSharedKeys.title(layoutId)),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                        ),
+                    accentTitleStyle = RarimeTheme.typography.h1.copy(brush = RarimeTheme.colors.gradient15),
+                    accentTitleModifier =
+                        Modifier.sharedBounds(
+                            rememberSharedContentState(
+                                HomeSharedKeys.accentTitle(
+                                    layoutId
+                                )
+                            ),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                        ),
+
+                    )
+                Text(
+                    text = "Cast secure, anonymous votes from anywhere, just using your passport",
+                    style = RarimeTheme.typography.body4,
+                    color = RarimeTheme.colors.textSecondary
+                )
+                VoteActionRow(
+                    onLink = { uriHandler.openUri(BaseConfig.VOTING_WEBSITE_URL) },
+                    onScan = onScan
+                )
+                HorizontalDivider(
+                    modifier = Modifier
+                        .background(RarimeTheme.colors.componentPrimary)
+                        .fillMaxWidth()
+
+                )
+                VoteTabs(
+                    activeVotes = activeVotes,
+                    historyVotes = historyVotes,
+                    isLoading = isLoading,
+                    onVoteClick = onVoteClick,
+                    innerPaddings = innerPaddings
+                )
+            }
         }
     }
 }
@@ -296,33 +324,24 @@ private fun VoteActionRow(
     onLink: () -> Unit,
     onScan: () -> Unit
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        IconButton(
-            modifier = Modifier
-                .width(56.dp)
-                .height(56.dp)
-                .background(
-                    RarimeTheme.colors.componentPrimary,
-                    RoundedCornerShape(20.dp)
-                ),
-            colors = IconButtonDefaults.iconButtonColors(
-                containerColor = Color.Transparent,
-                contentColor = RarimeTheme.colors.textPrimary,
-                disabledContainerColor = RarimeTheme.colors.componentDisabled,
-                disabledContentColor = RarimeTheme.colors.textDisabled
-            ),
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        SecondaryButton(
             onClick = onLink,
-        ) {
-            AppIcon(id = R.drawable.ic_plus, tint = RarimeTheme.colors.baseBlack)
-        }
+            size = ButtonSize.Large,
+            text = "Create a poll", modifier = Modifier.weight(1f)
+
+        )
         Spacer(modifier = Modifier.width(16.dp))
-        TransparentButton(
-            modifier = Modifier
-                .weight(1f)
-                .height(56.dp),
+        PrimaryButton(
+            onClick = onScan,
             size = ButtonSize.Large,
             text = "Scan a QR",
-            onClick = onScan
+            leftIcon = R.drawable.ic_qr_scan_2_line,
+            modifier = Modifier.weight(1f)
         )
     }
 }
@@ -335,7 +354,7 @@ private fun VoteTabs(
     onVoteClick: (Poll) -> Unit,
     innerPaddings: Map<ScreenInsets, Number>
 ) {
-    val tabs = listOf("Active", "History")
+    val tabs = listOf("1 Active", "2 Finished")
     val pagerState = rememberPagerState(pageCount = { tabs.size }, initialPage = 0)
     val scope = rememberCoroutineScope()
 
@@ -353,9 +372,7 @@ private fun VoteTabs(
                     ) { scope.launch { pagerState.animateScrollToPage(idx) } }
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 style = RarimeTheme.typography.overline2,
-                color = if (sel) RarimeTheme.colors.baseBlack else RarimeTheme.colors.baseBlack.copy(
-                    alpha = 0.4f
-                )
+                color = if (sel) RarimeTheme.colors.textPrimary else RarimeTheme.colors.textSecondary
             )
         }
     }
@@ -384,7 +401,7 @@ private fun EmptyState(text: String) {
             .fillMaxWidth()
             .padding(vertical = 10.dp)
     ) {
-        Text(text = text, color = RarimeTheme.colors.baseBlackOp40, textAlign = TextAlign.Center)
+        Text(text = text, color = RarimeTheme.colors.textSecondary, textAlign = TextAlign.Center)
     }
 }
 
@@ -402,16 +419,19 @@ private fun Background(
                 .background(RarimeTheme.colors.gradient5)
         ) {
             Image(
-                painter = painterResource(R.drawable.freedomtool_bg),
+                painter = painterResource(R.drawable.ic_bg_freedomtool_voting),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(BG_DOT_MAP_HEIGHT.dp)
-                    .offset(y = (-80).dp)
                     .sharedBounds(
-                        rememberSharedContentState(HomeSharedKeys.image(layoutId)),
+                        rememberSharedContentState(
+                            HomeSharedKeys.image(
+                                layoutId
+                            )
+                        ),
                         animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) },
+                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     )
             )
@@ -420,24 +440,57 @@ private fun Background(
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-@Preview(showBackground = true)
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL
+)
 @Composable
-fun FreedomtoolExpandedWidgetPreview() {
-    PrevireSharedAnimationProvider { sts, avs ->
-        FreedomtoolExpandedWidgetContent(
-            widgetProps = BaseWidgetProps.Expanded(
-                onCollapse = {},
-                layoutId = WidgetType.FREEDOMTOOL.layoutId,
-                animatedVisibilityScope = avs,
-                sharedTransitionScope = sts
-            ),
-            modifier = Modifier.fillMaxSize(),
-            innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
-            activeVotes = emptyList(),
-            historyVotes = emptyList(),
-            isLoading = false,
-            onScan = {},
-            onVoteClick = {}
-        )
+fun FreedomtoolExpandedWidgetPreview_light() {
+    AppTheme {
+        PrevireSharedAnimationProvider { sts, avs ->
+            FreedomtoolExpandedWidgetContent(
+                widgetProps = BaseWidgetProps.Expanded(
+                    onCollapse = {},
+                    layoutId = WidgetType.FREEDOMTOOL.layoutId,
+                    animatedVisibilityScope = avs,
+                    sharedTransitionScope = sts
+                ),
+                modifier = Modifier.fillMaxSize(),
+                innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
+                activeVotes = listOf(MOCKED_POLL_ITEM, MOCKED_POLL_ITEM),
+                historyVotes = emptyList(),
+                isLoading = false,
+                onScan = {},
+                onVoteClick = {}
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL
+)
+@Composable
+fun FreedomtoolExpandedWidgetPreview_dark() {
+    AppTheme {
+        PrevireSharedAnimationProvider { sts, avs ->
+            FreedomtoolExpandedWidgetContent(
+                widgetProps = BaseWidgetProps.Expanded(
+                    onCollapse = {},
+                    layoutId = WidgetType.FREEDOMTOOL.layoutId,
+                    animatedVisibilityScope = avs,
+                    sharedTransitionScope = sts
+                ),
+                modifier = Modifier.fillMaxSize(),
+                innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
+                activeVotes = listOf(MOCKED_POLL_ITEM, MOCKED_POLL_ITEM),
+                historyVotes = emptyList(),
+                isLoading = false,
+                onScan = {},
+                onVoteClick = {}
+            )
+        }
     }
 }
