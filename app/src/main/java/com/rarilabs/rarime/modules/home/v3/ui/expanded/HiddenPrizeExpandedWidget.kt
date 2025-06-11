@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -110,7 +111,6 @@ fun HiddenPrizeExpandedWidget(
     val shares by viewModel.shares.collectAsState()
     val colorScheme by viewModel.colorScheme.collectAsState()
 
-
     val dayAttemptsCount by remember {
         derivedStateOf {
             userStats?.totalAttemptsCount ?: 0
@@ -130,6 +130,7 @@ fun HiddenPrizeExpandedWidget(
     AppBottomSheet(
         state = showFaceScan,
         fullScreen = true,
+        disablePullClose = true,
         isHeaderEnabled = false,
     ) {
         Box(Modifier.fillMaxSize()) {
@@ -141,6 +142,7 @@ fun HiddenPrizeExpandedWidget(
                 colorScheme = colorScheme,
                 navigate = navigate,
                 attemptsLeft = totalAttemptsCount,
+                innerPaddings = innerPaddings,
                 onClose = {
                     showFaceScan.hide()
                 })
@@ -317,8 +319,18 @@ private fun Header(
                 .padding(top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp),
             horizontalArrangement = Arrangement.End
         ) {
-            IconButton(onClick = onCollapse) {
-                AppIcon(id = R.drawable.ic_close, tint = RarimeTheme.colors.textSecondary)
+            IconButton(
+                onClick = onCollapse,
+                modifier = Modifier
+                    .padding(20.dp)
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(color = RarimeTheme.colors.componentPrimary)
+            ) {
+                AppIcon(
+                    id = R.drawable.ic_close_fill,
+                    tint = RarimeTheme.colors.textPrimary,
+                )
             }
         }
     }

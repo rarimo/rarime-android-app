@@ -62,6 +62,7 @@ import com.google.mlkit.vision.facemesh.FaceMeshDetector
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.manager.WrongFaceException
+import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.BaseIconButton
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
@@ -87,6 +88,7 @@ fun HiddenPrizeCamera(
     processML: suspend (Bitmap) -> List<Float>,
     downloadProgress: Int,
     imageLink: String,
+    innerPaddings: Map<ScreenInsets, Number>,
     colorScheme: AppColorScheme,
     navigate: (String) -> Unit,
     attemptsLeft: Int,
@@ -128,7 +130,12 @@ fun HiddenPrizeCamera(
         meshDetector = meshDetector,
         cameraExecutor = cameraExecutor,
         onImageSizeUpdated = { imageSize = it },
-        onMeshDetected = { detectedMeshes = it })
+        onMeshDetected = {
+            if (selectedBitmap == null) {
+                detectedMeshes = it
+            }
+        }
+    )
 
     RenderPreviewOrImage(
         previewView, selectedBitmap, isBlurred = (currentStep != HiddenPrizeCameraStep.CAMERA)
@@ -151,14 +158,20 @@ fun HiddenPrizeCamera(
                 )
 
                 OverlayControls(
-                    selectedBitmap = selectedBitmap, onSelectBitmap = {
+                    selectedBitmap = selectedBitmap,
+                    onSelectBitmap = {
                         scope.launch {
                             selectedBitmap = it
                         }
-                    }, onClearBitmap = { selectedBitmap = null }, onNext = {
+                    },
+                    innerPaddings = innerPaddings,
+                    onClearBitmap = { selectedBitmap = null },
+                    onNext = {
                         currentStep = HiddenPrizeCameraStep.PROCESSING_ML
                     },
-                    previewView = previewView, detectedMeshes, onClose = onClose
+                    previewView = previewView,
+                    detectedMeshes = detectedMeshes,
+                    onClose = onClose
                 )
 
             }
@@ -166,6 +179,7 @@ fun HiddenPrizeCamera(
 
         HiddenPrizeCameraStep.WRONG -> {
             HiddenPrizeWrongScreen(
+                modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
                 attemptsLeft = attemptsLeft,
                 onClose = { navigate(Screen.Main.Home.route) },
                 onRetry = {
@@ -176,6 +190,7 @@ fun HiddenPrizeCamera(
 
         HiddenPrizeCameraStep.CONGRATS -> {
             HiddenPrizeCongratsScreen(
+                modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
                 prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value),
                 prizeSymbol = {
                     Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
@@ -198,7 +213,10 @@ fun HiddenPrizeCamera(
         }
 
         HiddenPrizeCameraStep.PROCESSING_ML -> {
-            HiddenPrizeLoadingML(processingValue = downloadProgress) {
+            HiddenPrizeLoadingML(
+                processingValue = downloadProgress,
+                modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
+            ) {
                 try {
                     featuresBackend = processML(selectedBitmap!!)
                     currentStep = HiddenPrizeCameraStep.CONGRATS
@@ -214,13 +232,17 @@ fun HiddenPrizeCamera(
 
         HiddenPrizeCameraStep.ERROR -> {
             HiddenPrizeError(
+                modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
                 onBack = {
                     navigate(Screen.Main.Home.route)
                 })
         }
 
         HiddenPrizeCameraStep.PROCESSING_ZKP -> {
-            HiddenPrizeLoadingZK(processingValue = (downloadProgress.toFloat() / 100.0f)) {
+            HiddenPrizeLoadingZK(
+                modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
+                processingValue = (downloadProgress.toFloat() / 100.0f)
+            ) {
                 try {
                     processZK(selectedBitmap!!, featuresBackend)
                     currentStep = HiddenPrizeCameraStep.FINISH
@@ -233,10 +255,13 @@ fun HiddenPrizeCamera(
 
         HiddenPrizeCameraStep.FINISH -> {
             HiddenPrizeFinish(
+                modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
                 prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value),
                 prizeSymbol = {
                     Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
-                }, onViewWallet = {}, onShareWallet = {})
+                },
+                onViewWallet = {},
+                onShareWallet = {})
         }
     }
 
@@ -289,6 +314,7 @@ fun OverlayControls(
     onSelectBitmap: (Bitmap) -> Unit,
     onClearBitmap: () -> Unit,
     onNext: (Bitmap) -> Unit,
+    innerPaddings: Map<ScreenInsets, Number>,
     previewView: PreviewView,
     detectedMeshes: List<FaceMesh>,
     onClose: () -> Unit
@@ -332,7 +358,12 @@ fun OverlayControls(
                 textAlign = TextAlign.Center
             )
 
-            Column(modifier = Modifier.padding(top = 8.dp)) {
+            Column(
+                modifier = Modifier.padding(
+                    top = 8.dp,
+                    bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp
+                )
+            ) {
                 if (selectedBitmap == null) {
                     PrimaryButton(
                         enabled = detectedMeshes.isNotEmpty(),
@@ -550,9 +581,13 @@ fun SetupCamera(
                             onImageSizeUpdated(Size(rotW.toFloat(), rotH.toFloat()))
 
                             val inputImage = InputImage.fromMediaImage(mediaImage, rotation)
-                            meshDetector.process(inputImage)
-                                .addOnSuccessListener { onMeshDetected(it) }
-                                .addOnCompleteListener { imageProxy.close() }
+                            meshDetector.process(inputImage).addOnSuccessListener {
+
+                                onMeshDetected(
+                                    it
+                                )
+
+                            }.addOnCompleteListener { imageProxy.close() }
                         } else {
                             imageProxy.close()
                         }
