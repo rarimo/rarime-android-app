@@ -63,7 +63,6 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.facemesh.FaceMesh
 import com.google.mlkit.vision.facemesh.FaceMeshDetection
 import com.google.mlkit.vision.facemesh.FaceMeshDetector
-import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.manager.WrongFaceException
@@ -186,7 +185,7 @@ fun HiddenPrizeCamera(
 
         HiddenPrizeCameraStep.WRONG -> {
             HiddenPrizeWrongScreen(
-                modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
+                // modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
                 attemptsLeft = attemptsLeft,
                 onClose = { navigate(Screen.Main.Home.route) },
                 onRetry = {
@@ -197,7 +196,7 @@ fun HiddenPrizeCamera(
 
         HiddenPrizeCameraStep.CONGRATS -> {
             HiddenPrizeCongratsScreen(
-                modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
+                // modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
                 prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value),
                 prizeSymbol = {
                     Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
@@ -234,7 +233,7 @@ fun HiddenPrizeCamera(
         HiddenPrizeCameraStep.PROCESSING_ML -> {
             HiddenPrizeLoadingML(
                 processingValue = downloadProgress,
-                modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
+                // modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
             ) {
                 try {
                     featuresBackend = processML(selectedBitmap!!)
@@ -251,7 +250,7 @@ fun HiddenPrizeCamera(
 
         HiddenPrizeCameraStep.ERROR -> {
             HiddenPrizeError(
-                modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
+                //modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
                 onBack = {
                     navigate(Screen.Main.Home.route)
                 })
@@ -259,7 +258,7 @@ fun HiddenPrizeCamera(
 
         HiddenPrizeCameraStep.PROCESSING_ZKP -> {
             HiddenPrizeLoadingZK(
-                modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
+                //modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
                 processingValue = (downloadProgress.toFloat() / 100.0f)
             ) {
                 try {
@@ -274,7 +273,7 @@ fun HiddenPrizeCamera(
 
         HiddenPrizeCameraStep.FINISH -> {
             HiddenPrizeFinish(
-                modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
+                //modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
                 prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value),
                 prizeSymbol = {
                     Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
@@ -380,7 +379,7 @@ fun OverlayControls(
             Column(
                 modifier = Modifier.padding(
                     top = 8.dp,
-                    bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp
+                    //bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp
                 )
             ) {
                 if (selectedBitmap == null) {

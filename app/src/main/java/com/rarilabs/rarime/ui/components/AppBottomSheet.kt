@@ -1,11 +1,11 @@
 package com.rarilabs.rarime.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,7 +14,6 @@ import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetValue
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -77,10 +76,14 @@ fun AppBottomSheet(
     val modalState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { newValue ->
-            if (disablePullClose) newValue == SheetValue.Hidden else true
-        })
+            if (disablePullClose) {
+                newValue != SheetValue.Hidden
+            } else {
+                true
+            }
+        }
+    )
     val coroutineScope = rememberCoroutineScope()
-    val systemBarPaddings = WindowInsets.systemBars.asPaddingValues()
 
 
     fun hide(callback: () -> Unit = {}) {
@@ -94,7 +97,7 @@ fun AppBottomSheet(
 
     if (state.showSheet) {
         ModalBottomSheet(
-            modifier = modifier.padding(top = systemBarPaddings.calculateBottomPadding()),
+            //modifier = modifier.padding(top = systemBarPaddings.calculateTopPadding()),
             sheetState = modalState,
             shape = shape,
             dragHandle = null,
@@ -102,18 +105,17 @@ fun AppBottomSheet(
             onDismissRequest = { hide() },
             scrimColor = scrimColor,
             // This forces the scrim to be drawn edge-to-edge, covering the status bar.
-            windowInsets = WindowInsets(0, 0, 0, 0),
+            windowInsets = WindowInsets.systemBars,
         ) {
 
             Box(
                 modifier = Modifier
-                    .padding(
-                        bottom = systemBarPaddings.calculateBottomPadding()
-                            .plus(systemBarPaddings.calculateTopPadding())
-                    )
+
             ) {
                 Column(
-                    modifier = (if (fullScreen) Modifier.fillMaxSize() else Modifier.fillMaxWidth())
+                    modifier = (if (fullScreen) Modifier.fillMaxSize() else Modifier
+                        .fillMaxWidth()
+                            )
                 ) {
                     if (isHeaderEnabled) {
                         Row(
@@ -121,8 +123,7 @@ fun AppBottomSheet(
                                 .fillMaxWidth()
                                 .padding(horizontal = 20.dp, vertical = 10.dp),
                             horizontalArrangement = Arrangement.End
-                        ) {
-                        }
+                        ) {}
                     }
                     content { callback -> hide(callback) }
                 }
@@ -137,22 +138,21 @@ fun AppBottomSheet(
 private fun AppBottomSheetPreview() {
     val sheetState = rememberAppSheetState(true) // Open by default for preview
 
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Box {
-            PrimaryButton(
-                modifier = Modifier.padding(top = 48.dp),
-                text = "Show bottom sheet", onClick = { sheetState.show() })
-        }
-        AppBottomSheet(
-            state = sheetState,
-            fullScreen = true,
+    Box {
+        PrimaryButton(
+            modifier = Modifier.padding(top = 48.dp),
+            text = "Show bottom sheet",
+            onClick = { sheetState.show() })
+    }
+    AppBottomSheet(
+        state = sheetState,
+        fullScreen = false,
+    ) {
+        Box(
+            modifier = Modifier.background(Color.Red)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                Text("Bottom sheet content")
-            }
+            Text("Bottom sheet content")
         }
     }
+
 }

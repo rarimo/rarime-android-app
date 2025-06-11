@@ -52,7 +52,7 @@ data class WelcomeCardContent(
 
 @Composable
 fun WelcomeBottomSheet(
-    onClose: () -> Unit
+    onClose: () -> Unit,
 ) {
 
     val welcomeAccentColor1 = RarimeTheme.colors.welcomeAccent1
@@ -143,8 +143,14 @@ fun WelcomeBottomSheet(
 
             Spacer(Modifier.height(32.dp))
 
+
+
             WelcomeBottomBar(
-                modifier = Modifier.padding(end = 24.dp, start = 24.dp, bottom = 20.dp),
+                modifier = Modifier.padding(
+                    end = 24.dp,
+                    start = 24.dp,
+                    bottom = 20.dp
+                ),
                 selectedPage = pagerState.currentPage,
                 numberOfPages = pagerState.pageCount,
                 onNext = {
