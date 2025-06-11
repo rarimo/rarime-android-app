@@ -354,15 +354,16 @@ private fun VoteTabs(
     onVoteClick: (Poll) -> Unit,
     innerPaddings: Map<ScreenInsets, Number>
 ) {
-    val tabs = listOf("1 Active", "2 Finished")
+    val tabs = listOf("Active", "Finished")
     val pagerState = rememberPagerState(pageCount = { tabs.size }, initialPage = 0)
     val scope = rememberCoroutineScope()
 
     Row {
         tabs.forEachIndexed { idx, title ->
             val sel = pagerState.currentPage == idx
+            val counter = if(idx==0) activeVotes.size else historyVotes.size
             Text(
-                text = title.uppercase(),
+                text = counter.toString() +" " + title.uppercase(),
                 modifier = Modifier
                     .clip(RoundedCornerShape(100.dp))
                     .background(if (sel) RarimeTheme.colors.componentPrimary else Color.Transparent)
