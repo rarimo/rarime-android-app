@@ -1,7 +1,11 @@
 package com.rarilabs.rarime.modules.hiddenPrize
 
+import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
@@ -59,6 +63,7 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.facemesh.FaceMesh
 import com.google.mlkit.vision.facemesh.FaceMeshDetection
 import com.google.mlkit.vision.facemesh.FaceMeshDetector
+import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.manager.WrongFaceException
@@ -120,6 +125,8 @@ fun HiddenPrizeCamera(
     var currentStep by remember {
         mutableStateOf(HiddenPrizeCameraStep.CAMERA)
     }
+    val launcherShare = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(), onResult = {})
 
     SetupCamera(
         cameraProvider = cameraProvider,
@@ -192,7 +199,18 @@ fun HiddenPrizeCamera(
                 colorScheme = colorScheme,
                 downloadProgress = downloadProgress,
                 onShare = {
-
+                    val imageUri =
+                        Uri.parse("android.resource://" + "com.rarilabs.rarime" + "/" + R.drawable.ic_hidden_prize_win_share)
+                    val intent = Intent(Intent.ACTION_SEND).apply {
+                        type = "image/*"
+                        putExtra(Intent.EXTRA_STREAM, imageUri)
+                        putExtra(
+                            Intent.EXTRA_TEXT,
+                            "Hidden keys: found. Prize: secured. Who’s next to join the winners’ circle? \uD83D\uDD11\uD83C\uDFC6"
+                        )
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                    launcherShare.launch(Intent.createChooser(intent, "Share via"))
                 },
                 onViewWallet = { navigate(Screen.Main.Wallet.route) })
         }

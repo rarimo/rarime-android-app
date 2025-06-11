@@ -5,6 +5,7 @@ package com.rarilabs.rarime.modules.home.v3.ui.expanded
 import WinningFaceCard
 import android.Manifest
 import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -164,19 +165,22 @@ fun HiddenPrizeExpandedWidget(
             isShareEnable = shares?.isSocialShare == false,
             isInviteEnable = (shares?.referralsCount ?: 0) < (shares?.referralsLimit ?: 0),
             onShare = {
+                val imageUri = Uri.parse("android.resource://" + "com.rarilabs.rarime" + "/" + R.drawable.ic_hidden_prize_share_on_social)
+                val inviteUrl = "${BaseConfig.INVITATION_BASE_URL}/r/${referralCode}"
                 val intent = Intent(Intent.ACTION_SEND).apply {
-                    type = "text/plain"
-                    putExtra(Intent.EXTRA_TEXT, "I use RareMe")
+                    type = "image/*"
+                    putExtra(Intent.EXTRA_TEXT, "Think you can spot the famous face and unlock the key? Join the hunt in rariMe now!\n" + inviteUrl )
+                    putExtra(Intent.EXTRA_STREAM, imageUri)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
                 launcherShare.launch(Intent.createChooser(intent, "Share via"))
-
             },
             onInvite = {
                 val intent = Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
-                    val invitationUrl = "${BaseConfig.INVITATION_BASE_URL}/r/${referralCode}"
+                    val inviteUrl = "${BaseConfig.INVITATION_BASE_URL}/r/${referralCode}"
 
-                    putExtra(Intent.EXTRA_TEXT, invitationUrl)
+                    putExtra(Intent.EXTRA_TEXT, "Ready to test faces for hidden keys? Tap my invite, get free scans, and let’s race for the prize.\n"+inviteUrl)
                 }
                 launcherInvite.launch(Intent.createChooser(intent, "Invite via"))
             })
