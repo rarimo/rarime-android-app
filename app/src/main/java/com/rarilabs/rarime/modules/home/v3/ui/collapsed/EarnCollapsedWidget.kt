@@ -37,6 +37,7 @@ import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
 import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCollapsedWidget
+import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetLogo
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.AppTheme
@@ -81,6 +82,9 @@ fun EarnCollapsedWidget(
                         accentTitle = stringResource(R.string.rmo)
                     )
                 },
+                header = {
+                    Header(layoutId, sharedTransitionScope, animatedVisibilityScope)
+                },
                 background = {
                     Background(
                         layoutId = layoutId,
@@ -89,6 +93,37 @@ fun EarnCollapsedWidget(
                         colorScheme = colorScheme
                     )
                 }
+            )
+        }
+    }
+}
+
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun Header(
+    layoutId: Int,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+) {
+    with(sharedTransitionScope) {
+        Row(
+            horizontalArrangement = Arrangement.Start, modifier = Modifier
+                .sharedBounds(
+                    rememberSharedContentState(HomeSharedKeys.header(layoutId)),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                )
+                .padding(top = 20.dp, start = 20.dp)
+                .fillMaxWidth()
+        ) {
+            BaseWidgetLogo(
+                resId = R.drawable.ic_rarimo,
+                backgroundColor = RarimeTheme.colors.componentPrimary,
+                size = 40,
+                tint = RarimeTheme.colors.textSecondary.copy(alpha = 1f),
             )
         }
     }

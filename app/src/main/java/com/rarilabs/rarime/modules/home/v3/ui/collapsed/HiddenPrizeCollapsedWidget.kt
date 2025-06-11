@@ -30,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -121,8 +120,8 @@ private fun Header(
         ) {
             BaseWidgetLogo(
                 resId = R.drawable.ic_rarime,
-                backgroundColor = Color.Transparent,
-                size = 54,
+                backgroundColor = RarimeTheme.colors.componentPrimary,
+                size = 40,
                 tint = RarimeTheme.colors.textSecondary.copy(alpha = 1f),
             )
         }
@@ -247,7 +246,7 @@ private fun Background(
         Box(
             modifier = Modifier
                 .background(color = RarimeTheme.colors.backgroundPrimary)
-
+                .clip(RoundedCornerShape(40.dp))
                 .fillMaxSize()
         ) {
             Image(

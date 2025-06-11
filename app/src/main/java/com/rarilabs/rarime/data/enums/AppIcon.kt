@@ -6,13 +6,13 @@ import androidx.compose.ui.res.stringResource
 import com.rarilabs.rarime.R
 
 enum class AppIcon(val activity: String, @DrawableRes val iconId: Int) {
-    WHITE(
-        activity = "com.rarilabs.rarime.MainActivityGB",
-        iconId = R.drawable.logo_bw
-    ),
     BLACK(
         activity = "com.rarilabs.rarime.MainActivityBlack",
         iconId = R.drawable.ic_logo_black
+    ),
+    WHITE(
+        activity = "com.rarilabs.rarime.MainActivityGB",
+        iconId = R.drawable.logo_bw
     ),
     GREEN(
         activity = "com.rarilabs.rarime.MainActivityBW",

@@ -100,9 +100,7 @@ fun HomeScreenV3(
         isHeaderEnabled = false,
         fullScreen = false,
     ) {
-
         ManageWidgetsBottomSheet(onClose = { sheetManageWidgets.hide() })
-
     }
 
 
@@ -121,7 +119,8 @@ fun HomeScreenV3(
     )
 
     AppBottomSheet(
-        state = welcomeAppSheetState, isHeaderEnabled = false
+        state = welcomeAppSheetState, isHeaderEnabled = false,
+        disablePullClose = true
     ) {
         WelcomeBottomSheet {
             welcomeAppSheetState.hide()
@@ -149,11 +148,9 @@ fun HomeScreenContent(
         setVisibilityOfBottomBar(selectedWidgetType == null)
     }
 
-    // Hoist pagerState to remember scroll position across recompositions
     val pagerState = rememberPagerState(pageCount = { visibleWidgets.size })
 
     Box(modifier = modifier) {
-        // Temporarily disable pager scrolling while the expand/collapse animation runs
         var pagerScrollEnabled by remember { mutableStateOf(true) }
         LaunchedEffect(selectedWidgetType) {
             pagerScrollEnabled = false
@@ -183,6 +180,8 @@ fun HomeScreenContent(
                             state = pagerState,
                             pageSpacing = 10.dp,
                             contentPadding = PaddingValues(top = 42.dp, bottom = 95.dp),
+                            key = { page -> visibleWidgets[page].layoutId }
+
                         ) { page ->
 
                             val widgetType = visibleWidgets[page]
@@ -197,15 +196,16 @@ fun HomeScreenContent(
                                 )
                             )
 
-                            // Common props for every collapsed card
-
-                            val collapsedWidgetProps = BaseWidgetProps.Collapsed(
-                                onExpand = {
+                            val onExpand = remember(pagerScrollEnabled, widgetType) {
+                                {
                                     if (pagerScrollEnabled) {
                                         selectedWidgetType = widgetType
-
                                     }
-                                },
+                                }
+                            }
+
+                            val collapsedWidgetProps = BaseWidgetProps.Collapsed(
+                                onExpand = onExpand,
                                 layoutId = widgetType.layoutId,
                                 animatedVisibilityScope = this@AnimatedContent,
                                 sharedTransitionScope = sharedTransitionScope
@@ -328,7 +328,6 @@ fun HomeScreenContent(
         }
 
 
-        // Overlay which temporarily disable pager scrolling while the expand/collapse animation runs
         if (!pagerScrollEnabled) {
             Box(
                 modifier = Modifier

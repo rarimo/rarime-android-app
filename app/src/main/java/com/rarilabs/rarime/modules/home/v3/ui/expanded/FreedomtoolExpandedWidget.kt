@@ -334,7 +334,7 @@ private fun VoteActionRow(
             size = ButtonSize.Large,
             text = "Create a poll", modifier = Modifier.weight(1f)
 
-            )
+        )
         Spacer(modifier = Modifier.width(16.dp))
         PrimaryButton(
             onClick = onScan,
@@ -457,7 +457,7 @@ fun FreedomtoolExpandedWidgetPreview_light() {
                 ),
                 modifier = Modifier.fillMaxSize(),
                 innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
-                activeVotes = listOf(MOCKED_POLL_ITEM,MOCKED_POLL_ITEM),
+                activeVotes = listOf(MOCKED_POLL_ITEM, MOCKED_POLL_ITEM),
                 historyVotes = emptyList(),
                 isLoading = false,
                 onScan = {},
@@ -485,7 +485,7 @@ fun FreedomtoolExpandedWidgetPreview_dark() {
                 ),
                 modifier = Modifier.fillMaxSize(),
                 innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
-                activeVotes = listOf(MOCKED_POLL_ITEM,MOCKED_POLL_ITEM),
+                activeVotes = listOf(MOCKED_POLL_ITEM, MOCKED_POLL_ITEM),
                 historyVotes = emptyList(),
                 isLoading = false,
                 onScan = {},
