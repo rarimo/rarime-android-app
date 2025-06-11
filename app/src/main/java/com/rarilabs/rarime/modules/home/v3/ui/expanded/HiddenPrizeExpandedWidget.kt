@@ -5,6 +5,7 @@ package com.rarilabs.rarime.modules.home.v3.ui.expanded
 import WinningFaceCard
 import android.Manifest
 import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -46,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -92,7 +94,7 @@ fun HiddenPrizeExpandedWidget(
     viewModel: HiddenPrizeViewModel = hiltViewModel(),
     navigate: (String) -> Unit
 ) {
-
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         viewModel.loadUserInfo()
     }
@@ -166,21 +168,28 @@ fun HiddenPrizeExpandedWidget(
             isShareEnable = shares?.isSocialShare == false,
             isInviteEnable = (shares?.referralsCount ?: 0) < (shares?.referralsLimit ?: 0),
             onShare = {
+                val resId = R.drawable.ic_hidden_prize_share_on_social
+                val uri = Uri.parse("android.resource://${context.packageName}/${resId}")
+                val inviteUrl = "${BaseConfig.INVITATION_BASE_URL}/r/${referralCode}"
                 val intent = Intent(Intent.ACTION_SEND).apply {
-                    type = "text/plain"
-                    putExtra(Intent.EXTRA_TEXT, "I use RareMe")
+                    type = "image/*"
+                    putExtra(Intent.EXTRA_TEXT,
+                        context.getString(R.string.hidden_prize_on_social_share_description) + inviteUrl )
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
-                launcherShare.launch(Intent.createChooser(intent, "Share via"))
-
+                launcherShare.launch(Intent.createChooser(intent, context.getString(R.string.share_via)))
             },
             onInvite = {
                 val intent = Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
-                    val invitationUrl = "${BaseConfig.INVITATION_BASE_URL}/r/${referralCode}"
+                    val inviteUrl = "${BaseConfig.INVITATION_BASE_URL}/r/${referralCode}"
 
-                    putExtra(Intent.EXTRA_TEXT, invitationUrl)
+                    putExtra(Intent.EXTRA_TEXT,
+                        context.getString(R.string.hidden_prize_on_invite_description)+inviteUrl)
                 }
-                launcherInvite.launch(Intent.createChooser(intent, "Invite via"))
+                launcherInvite.launch(Intent.createChooser(intent,
+                    context.getString(R.string.invite_via)))
             })
 
     }

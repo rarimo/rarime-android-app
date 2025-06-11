@@ -47,7 +47,7 @@ fun AddScanBottomSheet(
     val disabledIconTitleColor = RarimeTheme.colors.textSecondary
     val disabledIconBackgroundTitleColor = RarimeTheme.colors.componentPrimary
     val props = remember(isInviteEnable, isShareEnable) {
-        if (isInviteEnable && isShareEnable) {
+        if (isInviteEnable || isShareEnable) {
             AddScanProps(
                 idIcon = R.drawable.ic_flashlight_fill,
                 idTitle = R.string.add_scans_bottom_sheet_title_enebled,
