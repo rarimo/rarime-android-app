@@ -578,6 +578,8 @@
     <string name="icon_green">Green</string>
     <string name="icon_gradient">Gradient</string>
     <string name="icon_cat">Cat</string>
+    <string name="freedomtool_title">Freedomtool</string>
+    <string name="fredomtool_accent_title">Voting</string>
 
 
 </resources>
