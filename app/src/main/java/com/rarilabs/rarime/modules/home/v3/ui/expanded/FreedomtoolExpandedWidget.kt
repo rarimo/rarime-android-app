@@ -278,7 +278,7 @@ private fun Body(
                             boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                             resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                         ),
-                    accentTitleStyle = RarimeTheme.typography.h1.copy(brush = RarimeTheme.colors.gradient15),
+                    accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient15),
                     accentTitleModifier =
                         Modifier.sharedBounds(
                             rememberSharedContentState(

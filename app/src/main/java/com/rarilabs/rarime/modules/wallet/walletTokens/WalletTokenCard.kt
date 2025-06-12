@@ -52,7 +52,7 @@ fun WalletTokenCard(walletAsset: WalletAsset) {
             }
 
             Text(
-                text = walletAsset.token.symbol,
+                text = walletAsset.token.symbol.uppercase(),
                 style = RarimeTheme.typography.body3,
                 color = RarimeTheme.colors.textSecondary
             )

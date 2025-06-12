@@ -129,7 +129,7 @@ fun ExportKeysContent(
 ) {
 
     ProfileRouteLayout(
-        title = stringResource(R.string.recover_method_details_screen_title),
+        title = stringResource(R.string.recovery_method_details_screen_title),
         paddingHorizontal = 0.dp,
         onBack = onBack
     ) {

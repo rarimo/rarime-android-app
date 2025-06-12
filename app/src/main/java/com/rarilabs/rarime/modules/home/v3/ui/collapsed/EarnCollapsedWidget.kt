@@ -13,6 +13,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -140,36 +141,47 @@ private fun Footer(
     accentTitle: String
 ) {
     with(sharedTransitionScope) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom,
+        Column(
+            verticalArrangement = Arrangement.Bottom,
             modifier = Modifier
-                .padding(start = 22.dp, bottom = 28.dp, end = 30.dp)
+                .padding(start = 22.dp, bottom = 32.dp, end = 30.dp)
                 .sharedBounds(
                     rememberSharedContentState(HomeSharedKeys.content(layoutId)),
                     renderInOverlayDuringTransition = false,
                     animatedVisibilityScope = animatedVisibilityScope,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
                     resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                 )
+                .fillMaxSize()
         ) {
-            BaseWidgetTitle(
-                title = title,
-                titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.invertedDark),
-                accentTitle = accentTitle,
-                titleModifier =
-                    Modifier.sharedBounds(
-                        rememberSharedContentState(HomeSharedKeys.title(layoutId)),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                    ),
-                accentTitleStyle = RarimeTheme.typography.additional2.copy(brush = RarimeTheme.colors.gradient13),
-                accentTitleModifier =
-                    Modifier.sharedBounds(
+            Row(modifier = Modifier.fillMaxWidth()) {
+                BaseWidgetTitle(
+                    title = title,
+                    titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.invertedDark),
+                    accentTitle = accentTitle,
+                    titleModifier =
+                        Modifier.sharedBounds(
+                            rememberSharedContentState(HomeSharedKeys.title(layoutId)),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                        ),
+                    accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient13),
+                    accentTitleModifier =
+                        Modifier.sharedBounds(
+                            rememberSharedContentState(
+                                HomeSharedKeys.accentTitle(
+                                    layoutId
+                                )
+                            ),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                        ),
+                    caption = stringResource(R.string.earn_collapsed_widget_caption),
+                    captionStyle = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary),
+                    captionModifier = Modifier.sharedBounds(
                         rememberSharedContentState(
-                            HomeSharedKeys.accentTitle(
+                            HomeSharedKeys.caption(
                                 layoutId
                             )
                         ),
@@ -177,29 +189,19 @@ private fun Footer(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
-                caption = stringResource(R.string.earn_collapsed_widget_caption),
-                captionStyle = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary),
-                captionModifier = Modifier.sharedBounds(
-                    rememberSharedContentState(
-                        HomeSharedKeys.caption(
-                            layoutId
-                        )
-                    ),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                ),
-
-
+                    )
+                Spacer(modifier = Modifier.weight(1f))
+                AppIcon(
+                    id = R.drawable.ic_arrow_right_up_line,
+                    modifier = Modifier.align(Alignment.Bottom),
+                    tint = RarimeTheme.colors.invertedDark,
+                    size = 24.dp
                 )
-            Spacer(modifier = Modifier.weight(1f))
-            AppIcon(
-                id = R.drawable.ic_arrow_right_up_line,
-                tint = RarimeTheme.colors.invertedDark
-            )
+            }
         }
     }
 }
+
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -284,7 +286,7 @@ fun ClaimCollapsedCardPreviewDark() {
                 colorScheme = AppColorScheme.DARK,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(450.dp)
+                    .height(550.dp)
             )
         }
     }

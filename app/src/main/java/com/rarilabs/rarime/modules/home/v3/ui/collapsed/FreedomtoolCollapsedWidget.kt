@@ -160,7 +160,7 @@ private fun Footer(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
-                accentTitleStyle = RarimeTheme.typography.h1.copy(brush = RarimeTheme.colors.gradient15),
+                accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient15),
                 accentTitleModifier =
                     Modifier.sharedBounds(
                         rememberSharedContentState(
@@ -177,6 +177,7 @@ private fun Footer(
             Spacer(modifier = Modifier.weight(1f))
             AppIcon(
                 id = R.drawable.ic_arrow_right_up_line,
+                modifier = Modifier.align(Alignment.Bottom),
                 tint = RarimeTheme.colors.invertedDark,
                 size = 24.dp
             )

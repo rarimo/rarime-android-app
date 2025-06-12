@@ -25,10 +25,10 @@ fun ManageWidgetsButton(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(
-                    bottom = (innerPaddings[ScreenInsets.BOTTOM]!!.toInt() + 24).dp,
+                    bottom = (innerPaddings[ScreenInsets.BOTTOM]!!.toInt() + 10).dp,
                     start = 73.dp,
                     end = 73.dp,
-                    top = 48.dp
+                    top = 56.dp
                 )
                 .fillMaxWidth(),
             onClick = onClick,

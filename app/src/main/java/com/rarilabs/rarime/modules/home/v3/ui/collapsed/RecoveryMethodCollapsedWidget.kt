@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -154,8 +155,8 @@ private fun Footer(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
-                    titleStyle = RarimeTheme.typography.h2.copy(RarimeTheme.colors.textPrimary),
-                    accentTitleStyle = RarimeTheme.typography.additional2.copy(brush = RarimeTheme.colors.gradient11),
+                    titleStyle = RarimeTheme.typography.h1.copy(RarimeTheme.colors.textPrimary),
+                    accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient11),
                     accentTitleModifier = Modifier.sharedBounds(
                         rememberSharedContentState(
                             HomeSharedKeys.accentTitle(
@@ -180,13 +181,16 @@ private fun Footer(
                     )
                 )
 
+
                 Spacer(modifier = Modifier.weight(1f))
                 AppIcon(
                     id = R.drawable.ic_arrow_right_up_line,
                     modifier = Modifier.align(Alignment.Bottom),
-                    tint = RarimeTheme.colors.textPrimary
+                    tint = RarimeTheme.colors.textPrimary,
+                    size = 24.dp
                 )
             }
+
         }
 
     }

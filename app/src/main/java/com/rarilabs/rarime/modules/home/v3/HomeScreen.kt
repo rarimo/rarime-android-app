@@ -174,8 +174,8 @@ fun HomeScreenContent(
                             modifier = Modifier.weight(1f),
                             userScrollEnabled = pagerScrollEnabled,
                             state = pagerState,
-                            pageSpacing = 10.dp,
-                            contentPadding = PaddingValues(top = 42.dp, bottom = 95.dp),
+                            pageSpacing = 5.dp,
+                            contentPadding = PaddingValues(top = 0.dp, bottom = 70.dp),
                             key = { page -> visibleWidgets[page].layoutId }
 
                         ) { page ->

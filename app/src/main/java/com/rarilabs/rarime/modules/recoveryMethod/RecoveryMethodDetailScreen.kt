@@ -144,7 +144,7 @@ fun RecoveryMethodDetailScreen(
                     leftIcon = R.drawable.ic_caret_left, onClick = onClose
                 )
                 Text(
-                    text = stringResource(R.string.recover_method_details_screen_title),
+                    text = stringResource(R.string.recovery_method_details_screen_title),
                     style = RarimeTheme.typography.subtitle6,
                     color = RarimeTheme.colors.textPrimary,
                     textAlign = TextAlign.Center,
