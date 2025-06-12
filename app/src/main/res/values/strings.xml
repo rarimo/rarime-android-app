@@ -586,6 +586,7 @@
     <string name="hidden_prize_on_social_share_description">Think you can spot the famous face and unlock the key? Join the hunt in rariMe now!\n</string>
     <string name="invite_via">Invite via</string>
     <string name="hidden_prize_on_invite_description">Ready to test faces for hidden keys? Tap my invite, get free scans, and let’s race for the prize.\n</string>
+    <string name="take_a_picture">Take a picture</string>
 
 
 </resources>

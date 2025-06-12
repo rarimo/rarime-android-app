@@ -382,22 +382,25 @@ fun OverlayControls(
                 )
             ) {
                 if (selectedBitmap == null) {
-                    TransparentButton(
-                        enabled = detectedMeshes.isNotEmpty(),
-                        size = ButtonSize.Large,
-                        alpha = 0.1f,
-                        baseColor = RarimeTheme.colors.baseWhite,
+                    BaseButton(
                         modifier = Modifier
                             .fillMaxWidth(),
-                        onClick = {
-                            scope.launch {
-                                previewView.bitmap?.let {
-                                    onSelectBitmap(it)
-                                }
+                        size = ButtonSize.Large,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = RarimeTheme.colors.baseWhite.copy(0.1f),
+                            contentColor = RarimeTheme.colors.baseWhite,
+                            disabledContainerColor = RarimeTheme.colors.componentDisabled,
+                            disabledContentColor = RarimeTheme.colors.textDisabled
+                        ),
+                        onClick =  {scope.launch {
+                            previewView.bitmap?.let {
+                                onSelectBitmap(it)
                             }
-                        },
-                        text = "Take a picture"
+                        } },
+                        enabled = detectedMeshes.isNotEmpty(),
+                        text = stringResource(R.string.take_a_picture)
                     )
+
                 } else {
                     Row(
                         modifier = Modifier
@@ -408,7 +411,13 @@ fun OverlayControls(
                             modifier = Modifier.weight(3f),
                             size = ButtonSize.Large,
                             leftIcon = R.drawable.ic_restart_line,
-                            onClick = { onClearBitmap() }
+                            onClick = { onClearBitmap() },
+                            colors = ButtonColors(
+                                containerColor = RarimeTheme.colors.baseBlack,
+                                contentColor = RarimeTheme.colors.baseWhite,
+                                disabledContainerColor = RarimeTheme.colors.componentDisabled,
+                                disabledContentColor = RarimeTheme.colors.textDisabled
+                            )
                         )
 
                         Spacer(modifier = Modifier.weight(1f))

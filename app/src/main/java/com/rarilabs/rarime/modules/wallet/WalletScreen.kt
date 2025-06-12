@@ -128,7 +128,7 @@ fun WalletScreenContainer(
                     // TODO: rollback at next releases
                     if (filteredUserAssets.size > 1) {
                         TextDropdown(
-                            value = selectedUserAsset.token.symbol,
+                            value = selectedUserAsset.token.symbol.uppercase(),
                             options = filteredUserAssets.map {
                                 DropdownOption(
                                     label = it.token.symbol,
@@ -204,20 +204,20 @@ fun WalletScreenContainer(
                 HorizontalDivider()
             }
         }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 20.dp)
-        ) {
-            WalletTokensList(filteredUserAssets, selectedUserAsset)
-        }
+//
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(vertical = 20.dp)
+//        ) {
+//            WalletTokensList(filteredUserAssets, selectedUserAsset)
+//        }
 
         Column(
             verticalArrangement = Arrangement.spacedBy(20.dp),
             modifier = Modifier.padding(horizontal = 12.dp)
         ) {
-            HorizontalDivider()
+
             CardContainer {
                 WalletTransactionsList(
                     modifier = Modifier.fillMaxSize(),
