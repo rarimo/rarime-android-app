@@ -361,9 +361,8 @@ private fun VoteTabs(
     Row {
         tabs.forEachIndexed { idx, title ->
             val sel = pagerState.currentPage == idx
-            val counter = if(idx==0) activeVotes.size else historyVotes.size
             Text(
-                text = counter.toString() +" " + title.uppercase(),
+                text = title.uppercase(),
                 modifier = Modifier
                     .clip(RoundedCornerShape(100.dp))
                     .background(if (sel) RarimeTheme.colors.componentPrimary else Color.Transparent)
