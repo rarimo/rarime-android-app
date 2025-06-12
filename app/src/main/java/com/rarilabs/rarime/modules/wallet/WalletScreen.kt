@@ -137,7 +137,7 @@ fun WalletScreenContainer(
                             },
                             onChange = { symb ->
                                 run {
-                                    val asset = filteredUserAssets.find { it.token.symbol == symb }
+                                    val asset = filteredUserAssets.find { it.token.symbol == symb.uppercase() }
                                     ErrorHandler.logDebug("onChange: walletViewModel:", symb)
                                     ErrorHandler.logDebug(
                                         "onChange: asset:",
@@ -154,7 +154,7 @@ fun WalletScreenContainer(
                         )
                     } else {
                         Text(
-                            text = selectedUserAsset.token.symbol,
+                            text = selectedUserAsset.token.symbol.uppercase(),
                             style = RarimeTheme.typography.overline2,
                             color = RarimeTheme.colors.textPrimary
                         )
