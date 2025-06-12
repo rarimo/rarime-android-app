@@ -525,7 +525,7 @@
     <string name="wallet_outgoing_title">Send</string>
     <string name="recovery_method_collapsed_card_title">Recovery</string>
     <string name="recovery_method_collapsed_card_accent_title">Method</string>
-    <string name="recovery_method_collapsed_card_caption">Set up a new way to recover your account</string>
+    <string name="recovery_method_collapsed_card_caption">Set up a new way to recover\nyour account</string>
     <string name="recovery_method_expanded_card_title">Recovery</string>
     <string name="recovery_method_expanded_card_accent_title">Method</string>
     <string name="recovery_method_expanded_card_button_label">Choose your method</string>
@@ -562,7 +562,8 @@
     <string name="recovery_method_widget_title">Recovery Method</string>
     <string name="recovery_method_widget_description">Set up a new way to recover \n your account</string>
     <string name="earn">Earn</string>
-    <string name="earn_collapsed_widget_caption">Complete various tasks and get rewarded with Rarimo tokens.</string>
+    <string name="earn_collapsed_widget_caption">Complete various tasks and get\n rewarded with Rarimo tokens.</string>
+    <string name="earn_expanded_widget_caption">Complete various tasks and get rewarded with Rarimo tokens.</string>
     <string name="earn_expanded_widget_active_task_title">" ACTIVE TASK"</string>
     <string name="earn_title_of_task">Invite others</string>
     <string name="earn_invite_task_card_description">Invited</string>

@@ -289,7 +289,7 @@ private fun Body(
                             boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                             resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                         ),
-                    accentTitleStyle = RarimeTheme.typography.additional2.copy(brush = RarimeTheme.colors.gradient13),
+                    accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient13),
                     accentTitleModifier =
                         Modifier.sharedBounds(
                             rememberSharedContentState(
@@ -301,7 +301,7 @@ private fun Body(
                             boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                             resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                         ),
-                    caption = stringResource(R.string.earn_collapsed_widget_caption),
+                    caption = stringResource(R.string.earn_expanded_widget_caption),
                     captionStyle = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary),
                     captionModifier = Modifier.sharedBounds(
                         rememberSharedContentState(
