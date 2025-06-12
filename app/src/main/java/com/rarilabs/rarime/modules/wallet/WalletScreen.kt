@@ -204,20 +204,20 @@ fun WalletScreenContainer(
                 HorizontalDivider()
             }
         }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 20.dp)
-        ) {
-            WalletTokensList(filteredUserAssets, selectedUserAsset)
-        }
+//
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(vertical = 20.dp)
+//        ) {
+//            WalletTokensList(filteredUserAssets, selectedUserAsset)
+//        }
 
         Column(
             verticalArrangement = Arrangement.spacedBy(20.dp),
             modifier = Modifier.padding(horizontal = 12.dp)
         ) {
-            HorizontalDivider()
+
             CardContainer {
                 WalletTransactionsList(
                     modifier = Modifier.fillMaxSize(),
