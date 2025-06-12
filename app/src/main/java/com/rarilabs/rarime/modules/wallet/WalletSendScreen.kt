@@ -185,9 +185,9 @@ private fun WalletSendScreenContent(
     }
 
     WalletRouteLayout(
-        title = stringResource(R.string.wallet_send_title, selectedWalletAsset.token.symbol),
+        title = stringResource(R.string.wallet_send_title, selectedWalletAsset.token.symbol.uppercase()),
         description = stringResource(
-            R.string.wallet_send_description, selectedWalletAsset.token.symbol
+            R.string.wallet_send_description, selectedWalletAsset.token.symbol.uppercase()
         ),
         onBack = onBack
     ) {
@@ -211,7 +211,7 @@ private fun WalletSendScreenContent(
                         label = stringResource(R.string.amount_lbl),
                         enabled = !isSubmitting,
                         placeholder = stringResource(
-                            R.string.amount_placeholder, selectedWalletAsset.token.symbol
+                            R.string.amount_placeholder, selectedWalletAsset.token.symbol.uppercase()
                         ),
                         hint = {
                             Row(
@@ -227,7 +227,7 @@ private fun WalletSendScreenContent(
                                     text = "${
                                         selectedWalletAsset.humanBalance().stripTrailingZeros()
                                             .toPlainString()
-                                    } ${selectedWalletAsset.token.symbol}",
+                                    } ${selectedWalletAsset.token.symbol.uppercase()}",
                                     style = RarimeTheme.typography.body5,
                                     color = RarimeTheme.colors.textPrimary
                                 )
@@ -274,7 +274,7 @@ private fun WalletSendScreenContent(
                         )
                     } else {
                         Text(
-                            text = "${calculateWithFee(humanAmountState.text)} ${selectedWalletAsset.token.symbol}",
+                            text = "${calculateWithFee(humanAmountState.text)} ${selectedWalletAsset.token.symbol.uppercase()}",
                             style = RarimeTheme.typography.subtitle5,
                             color = RarimeTheme.colors.textPrimary
                         )
@@ -300,8 +300,8 @@ private fun WalletSendScreenContent(
             TxConfirmBottomSheet(
                 sheetState = confirmationSheetState, totalDetails = mapOf(
                     "Address" to WalletUtil.formatAddress(addressState.text, 4, 4),
-                    "Send amount" to "${humanAmountState.text} ${selectedWalletAsset.token.symbol}",
-                    "Fee" to "${fee?.toPlainString()} ${selectedWalletAsset.token.symbol}"
+                    "Send amount" to "${humanAmountState.text} ${selectedWalletAsset.token.symbol.uppercase()}",
+                    "Fee" to "${fee?.toPlainString()} ${selectedWalletAsset.token.symbol.uppercase()}"
                 ), onConfirm = {
 
                     submit(calculateWithFee(humanAmountState.text))
@@ -332,7 +332,7 @@ private fun WalletSendScreenContentPreview() {
     WalletSendScreenContent(
         onBack = {},
         selectedWalletAsset = WalletAsset(
-            "0xgqiuweyfgkafsdjnfksladnfajsdn", PreviewerToken("", "Preview", "PRW", 18)
+            "0xgqiuweyfgkafsdjnfksladnfajsdn", PreviewerToken("", "Preview", "testtest", 18)
         ),
         humanAmountState = rememberAppTextFieldNumberState(initialText = ""),
         addressState = rememberAppTextFieldState(initialText = ""),

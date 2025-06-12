@@ -128,7 +128,7 @@ fun WalletScreenContainer(
                     // TODO: rollback at next releases
                     if (filteredUserAssets.size > 1) {
                         TextDropdown(
-                            value = selectedUserAsset.token.symbol,
+                            value = selectedUserAsset.token.symbol.uppercase(),
                             options = filteredUserAssets.map {
                                 DropdownOption(
                                     label = it.token.symbol,
