@@ -361,8 +361,9 @@ private fun VoteTabs(
     Row {
         tabs.forEachIndexed { idx, title ->
             val sel = pagerState.currentPage == idx
+            val counter = if(idx==0) activeVotes.size else historyVotes.size
             Text(
-                text = title.uppercase(),
+                text = counter.toString() +" " + title.uppercase(),
                 modifier = Modifier
                     .clip(RoundedCornerShape(100.dp))
                     .background(if (sel) RarimeTheme.colors.componentPrimary else Color.Transparent)
@@ -384,9 +385,9 @@ private fun VoteTabs(
     ) { page ->
         when {
             isLoading -> VotesLoadingSkeleton()
-            page == 0 && activeVotes.isEmpty() -> EmptyState("No active votes")
+            page == 0 && activeVotes.isEmpty() -> EmptyState("No active polls")
             page == 0 -> ActiveVotesList(votes = activeVotes, onClick = onVoteClick)
-            page == 1 && historyVotes.isEmpty() -> EmptyState("No votes")
+            page == 1 && historyVotes.isEmpty() -> EmptyState("No polls")
             else -> HistoryVotesList(historyVotes) { onVoteClick(it) }
         }
     }

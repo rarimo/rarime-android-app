@@ -36,6 +36,7 @@ object DateUtil {
         return date
     }
 
+
     fun parseDateString(dateStr: String): LocalDateTime? {
         val formatters = listOf(
             DateTimeFormatter.ISO_OFFSET_DATE_TIME,  // e.g., "2024-08-01T00:00:00Z"
@@ -114,6 +115,8 @@ object DateUtil {
     fun formatDate(date: Date, formatType: DateFormatType = DateFormatType.DEFAULT): String {
         return SimpleDateFormat(formatType.pattern, Locale.US).format(date)
     }
+
+
 
     fun yearsBetween(from: Date): Int {
         val now = Calendar.getInstance()
