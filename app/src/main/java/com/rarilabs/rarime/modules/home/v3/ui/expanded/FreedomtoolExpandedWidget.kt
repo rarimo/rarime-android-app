@@ -385,9 +385,9 @@ private fun VoteTabs(
     ) { page ->
         when {
             isLoading -> VotesLoadingSkeleton()
-            page == 0 && activeVotes.isEmpty() -> EmptyState("No active votes")
+            page == 0 && activeVotes.isEmpty() -> EmptyState("No active polls")
             page == 0 -> ActiveVotesList(votes = activeVotes, onClick = onVoteClick)
-            page == 1 && historyVotes.isEmpty() -> EmptyState("No votes")
+            page == 1 && historyVotes.isEmpty() -> EmptyState("No polls")
             else -> HistoryVotesList(historyVotes) { onVoteClick(it) }
         }
     }
