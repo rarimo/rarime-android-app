@@ -411,7 +411,13 @@ fun OverlayControls(
                             modifier = Modifier.weight(3f),
                             size = ButtonSize.Large,
                             leftIcon = R.drawable.ic_restart_line,
-                            onClick = { onClearBitmap() }
+                            onClick = { onClearBitmap() },
+                            colors = ButtonColors(
+                                containerColor = RarimeTheme.colors.baseBlack,
+                                contentColor = RarimeTheme.colors.baseWhite,
+                                disabledContainerColor = RarimeTheme.colors.componentDisabled,
+                                disabledContentColor = RarimeTheme.colors.textDisabled
+                            )
                         )
 
                         Spacer(modifier = Modifier.weight(1f))
