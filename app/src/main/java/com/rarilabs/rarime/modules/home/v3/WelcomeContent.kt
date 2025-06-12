@@ -245,6 +245,7 @@ fun WelcomeBottomBar(
                 space = 8.dp,
                 selectedPage = selectedPage,
                 numberOfPages = numberOfPages,
+                selectedColor = RarimeTheme.colors.primaryMain
             )
 
             PrimaryButton(
