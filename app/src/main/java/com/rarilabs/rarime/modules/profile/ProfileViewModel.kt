@@ -42,7 +42,7 @@ class ProfileViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    val rarimoAddress = identityManager.rarimoAddress()
+    val evmAddress = identityManager.evmAddress()
     val privateKey = identityManager.privateKey
 
     val language = settingsManager.language

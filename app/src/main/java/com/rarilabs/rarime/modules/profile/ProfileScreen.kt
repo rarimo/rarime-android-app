@@ -68,7 +68,7 @@ fun ProfileScreen(
 
 
     ProfileScreenContent(
-        rarimoAddress = WalletUtil.formatAddress(viewModel.rarimoAddress),
+        evmAddress = WalletUtil.formatAddress(viewModel.evmAddress),
         passportImage = image,
         navigate = navigate,
         colorScheme = colorScheme,
@@ -85,7 +85,7 @@ fun ProfileScreen(
 @Composable
 fun ProfileScreenContent(
     appIcon: AppIcon,
-    rarimoAddress: String,
+    evmAddress: String,
     passportImage: Bitmap?,
     navigate: (String) -> Unit,
     colorScheme: AppColorScheme,
@@ -133,7 +133,7 @@ fun ProfileScreenContent(
                         Text(
                             text = WalletUtil.formatAddress(
                                 stringResource(
-                                    R.string.user_address, rarimoAddress
+                                    R.string.user_address, evmAddress
                                 )
                             ),
                             style = RarimeTheme.typography.body5,
@@ -340,7 +340,7 @@ private fun ProfileRow(
 @Composable
 private fun ProfileScreenPreview() {
     ProfileScreenContent(
-        rarimoAddress = "0xbF1823EF5Ca4484517F930c695b07544C2b43Efe",
+        evmAddress = "0xbF1823EF5Ca4484517F930c695b07544C2b43Efe",
         passportImage = null,
         navigate = {},
         colorScheme = AppColorScheme.LIGHT,
