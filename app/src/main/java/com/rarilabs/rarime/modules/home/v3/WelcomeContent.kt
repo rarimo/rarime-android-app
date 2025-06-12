@@ -246,8 +246,7 @@ fun WelcomeBottomBar(
                 selectedColor = RarimeTheme.colors.primaryMain,
                 defaultColor = RarimeTheme.colors.primaryLight,
                 selectedPage = selectedPage,
-                numberOfPages = numberOfPages,
-                selectedColor = RarimeTheme.colors.primaryMain
+                numberOfPages = numberOfPages
             )
 
             PrimaryButton(

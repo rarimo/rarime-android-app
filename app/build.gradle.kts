@@ -30,8 +30,8 @@ android {
         applicationId = "com.rarilabs.rarime"
         minSdk = 27
         targetSdk = 34
-        versionCode = 99
-        versionName = "2.2.45"
+        versionCode = 100
+        versionName = "2.2.46"
 
         externalNativeBuild {
             cmake {
