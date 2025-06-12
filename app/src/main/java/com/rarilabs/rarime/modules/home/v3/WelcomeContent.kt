@@ -243,6 +243,8 @@ fun WelcomeBottomBar(
                 defaultRadius = 6.dp,
                 selectedLength = 16.dp,
                 space = 8.dp,
+                selectedColor = RarimeTheme.colors.primaryMain,
+                defaultColor = RarimeTheme.colors.primaryLight,
                 selectedPage = selectedPage,
                 numberOfPages = numberOfPages,
             )

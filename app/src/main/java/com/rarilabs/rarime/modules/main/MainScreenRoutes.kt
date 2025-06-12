@@ -94,7 +94,7 @@ fun MainScreenRoutes(
         ) {
             composable(Screen.Intro.route) {
                 ScreenInsetsContainer {
-                    IntroScreen { simpleNavigate(it) }
+                    IntroScreen(navigate = simpleNavigate)
                 }
             }
 
@@ -189,14 +189,14 @@ fun MainScreenRoutes(
 
                     ScanPassportScreen(
                         onClose = {
-                        coroutineScope.launch {
-                            navController.popBackStack()
-                        }
-                    }, onClaim = {
-                        coroutineScope.launch {
-                            navigateWithPopUp(Screen.Claim.Specific.route)
-                        }
-                    },
+                            coroutineScope.launch {
+                                navController.popBackStack()
+                            }
+                        }, onClaim = {
+                            coroutineScope.launch {
+                                navigateWithPopUp(Screen.Claim.Specific.route)
+                            }
+                        },
                         setVisibilityOfBottomBar = { })
                 }
             }
@@ -205,14 +205,14 @@ fun MainScreenRoutes(
                 ScreenInsetsContainer {
                     ScanPassportScreen(
                         onClose = {
-                        coroutineScope.launch {
-                            navigateWithPopUp(Screen.Main.Identity.route)
-                        }
-                    }, onClaim = {
-                        coroutineScope.launch {
-                            navigateWithPopUp(Screen.Claim.Reserve.route)
-                        }
-                    },
+                            coroutineScope.launch {
+                                navigateWithPopUp(Screen.Main.Identity.route)
+                            }
+                        }, onClaim = {
+                            coroutineScope.launch {
+                                navigateWithPopUp(Screen.Claim.Reserve.route)
+                            }
+                        },
                         setVisibilityOfBottomBar = {})
                 }
             }
@@ -249,18 +249,18 @@ fun MainScreenRoutes(
                     AuthGuard(navigate = simpleNavigate) {
                         ZkIdentityScreen(
                             navigate = simpleNavigate, onClose = {
-                            coroutineScope.launch {
-                                //navController.popBackStack()
+                                coroutineScope.launch {
+                                    //navController.popBackStack()
 
-                                navigateWithPopUp(Screen.Main.route)
+                                    navigateWithPopUp(Screen.Main.route)
 
-                            }
-                        }, onClaim = {
-                            coroutineScope.launch {
-                                navigateWithPopUp(Screen.Claim.Specific.route)
+                                }
+                            }, onClaim = {
+                                coroutineScope.launch {
+                                    navigateWithPopUp(Screen.Claim.Specific.route)
 
-                            }
-                        },
+                                }
+                            },
                             setBottomBarVisibility = { mainViewModel.setBottomBarVisibility(it) })
                     }
                 }

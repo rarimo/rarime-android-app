@@ -2,7 +2,6 @@ package com.rarilabs.rarime.modules.hiddenPrize
 
 import android.content.Intent
 import android.graphics.Bitmap
-import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -53,10 +53,11 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.net.toUri
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.mlkit.vision.common.InputImage
@@ -67,10 +68,12 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.manager.WrongFaceException
 import com.rarilabs.rarime.modules.main.ScreenInsets
+import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.BaseIconButton
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
+import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.Screen
@@ -185,7 +188,6 @@ fun HiddenPrizeCamera(
 
         HiddenPrizeCameraStep.WRONG -> {
             HiddenPrizeWrongScreen(
-                // modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
                 attemptsLeft = attemptsLeft,
                 onClose = { navigate(Screen.Main.Home.route) },
                 onRetry = {
@@ -196,7 +198,6 @@ fun HiddenPrizeCamera(
 
         HiddenPrizeCameraStep.CONGRATS -> {
             HiddenPrizeCongratsScreen(
-                // modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
                 prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value),
                 prizeSymbol = {
                     Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
@@ -214,7 +215,7 @@ fun HiddenPrizeCamera(
                 downloadProgress = downloadProgress,
                 onShare = {
                     val resId = R.drawable.ic_hidden_prize_win_share
-                    val uri = Uri.parse("android.resource://${context.packageName}/${resId}")
+                    val uri = "android.resource://${context.packageName}/${resId}".toUri()
                     val intent = Intent(Intent.ACTION_SEND).apply {
                         type = "image/*"
                         putExtra(Intent.EXTRA_STREAM, uri)
@@ -224,8 +225,12 @@ fun HiddenPrizeCamera(
                         )
                         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     }
-                    launcherShare.launch(Intent.createChooser(intent,
-                        context.getString(R.string.share_via)))
+                    launcherShare.launch(
+                        Intent.createChooser(
+                            intent,
+                            context.getString(R.string.share_via)
+                        )
+                    )
                 },
                 onViewWallet = { navigate(Screen.Main.Wallet.route) })
         }
@@ -233,7 +238,6 @@ fun HiddenPrizeCamera(
         HiddenPrizeCameraStep.PROCESSING_ML -> {
             HiddenPrizeLoadingML(
                 processingValue = downloadProgress,
-                // modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
             ) {
                 try {
                     featuresBackend = processML(selectedBitmap!!)
@@ -359,9 +363,11 @@ fun OverlayControls(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AppIcon(
+                modifier = Modifier.padding(top = 42.dp),
                 id = R.drawable.ic_user_focus, size = 32.dp, tint = RarimeTheme.colors.baseWhite
             )
             Text(
+                modifier = Modifier.padding(top = 17.dp),
                 text = stringResource(R.string.hidden_prize_camera_up_title),
                 style = RarimeTheme.typography.subtitle5,
                 color = RarimeTheme.colors.baseWhite
@@ -369,26 +375,20 @@ fun OverlayControls(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Text(
-                text = stringResource(R.string.hidden_prize_camera_description),
-                style = RarimeTheme.typography.body4,
-                color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
-                textAlign = TextAlign.Center
-            )
 
             Column(
                 modifier = Modifier.padding(
-                    top = 8.dp,
-                    //bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp
+                    bottom = 20.dp,
                 )
             ) {
                 if (selectedBitmap == null) {
-                    PrimaryButton(
+                    TransparentButton(
                         enabled = detectedMeshes.isNotEmpty(),
                         size = ButtonSize.Large,
+                        alpha = 0.1f,
+                        baseColor = RarimeTheme.colors.baseWhite,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp, vertical = 20.dp),
+                            .fillMaxWidth(),
                         onClick = {
                             scope.launch {
                                 previewView.bitmap?.let {
@@ -396,7 +396,7 @@ fun OverlayControls(
                                 }
                             }
                         },
-                        text = "Photo"
+                        text = "Take a picture"
                     )
                 } else {
                     Row(
@@ -408,14 +408,21 @@ fun OverlayControls(
                             modifier = Modifier.weight(3f),
                             size = ButtonSize.Large,
                             leftIcon = R.drawable.ic_restart_line,
-                            onClick = { onClearBitmap() })
+                            onClick = { onClearBitmap() }
+                        )
 
                         Spacer(modifier = Modifier.weight(1f))
 
-                        PrimaryButton(
-                            modifier = Modifier.weight(7f),
+                        BaseButton(
+                            modifier = Modifier.weight(12f),
                             size = ButtonSize.Large,
-                            text = "Continue",
+                            colors = ButtonColors(
+                                containerColor = RarimeTheme.colors.baseWhite,
+                                contentColor = RarimeTheme.colors.baseBlack,
+                                disabledContentColor = RarimeTheme.colors.textDisabled,
+                                disabledContainerColor = RarimeTheme.colors.componentDisabled
+                            ),
+                            text = "Confirm",
                             onClick = { onNext(selectedBitmap) })
                     }
                 }
@@ -621,4 +628,21 @@ fun SetupCamera(
             ErrorHandler.logError("CameraError", e.toString())
         }
     }
+}
+
+
+@Preview
+@Composable
+private fun OverlayControlsPreview() {
+
+    val context = LocalContext.current
+    OverlayControls(
+        Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8),
+        {},
+        {},
+        {},
+        innerPaddings = mapOf(),
+        previewView = PreviewView(context),
+        detectedMeshes = listOf()
+    ) { }
 }

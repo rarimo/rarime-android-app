@@ -28,12 +28,14 @@ fun TransparentButton(
     text: String? = null,
     @DrawableRes leftIcon: Int? = null,
     @DrawableRes rightIcon: Int? = null,
+    alpha: Float = 0.05f,
+    baseColor: Color = RarimeTheme.colors.componentPrimary,
     content: @Composable RowScope.() -> Unit = {}
 ) {
     BaseButton(
         modifier = Modifier
             .background(
-                RarimeTheme.colors.componentPrimary,
+                baseColor,
                 RoundedCornerShape(20.dp)
             )
             .then(modifier),
@@ -41,7 +43,7 @@ fun TransparentButton(
         enabled = enabled,
         size = size,
         colors = ButtonDefaults.buttonColors(
-            containerColor = RarimeTheme.colors.baseBlack.copy(alpha = 0.05f),
+            containerColor = baseColor.copy(alpha),
             contentColor = RarimeTheme.colors.baseBlack,
             disabledContainerColor = Color.Transparent,
             disabledContentColor = RarimeTheme.colors.textDisabled

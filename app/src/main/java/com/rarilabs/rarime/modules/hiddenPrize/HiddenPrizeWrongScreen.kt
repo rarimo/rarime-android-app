@@ -40,7 +40,7 @@ fun HiddenPrizeWrongScreen(
     val canRetry = attemptsLeft > 0
     val description = buildString {
         append(stringResource(R.string.hidden_prize_wrong_screen_description_1))
-        if (canRetry) append(stringResource(R.string.hidden_prize_wrong_screen_description_2))
+        if (canRetry) append(" " + stringResource(R.string.hidden_prize_wrong_screen_description_2))
     }
     Box(Modifier.fillMaxSize()) {
         BaseIconButton(
@@ -88,14 +88,13 @@ fun HiddenPrizeWrongScreen(
                 }
             }
 
-            tip?.let {
-                Text(
-                    it,
-                    color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-            }
+            Text(
+                "Different photos of the same person return the same result, try scanning a new face",
+                color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+
 
             if (canRetry) {
                 BaseButton(

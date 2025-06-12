@@ -38,7 +38,6 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.api.services.drive.DriveScopes
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.points.InvitationUsedException
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppTextField
@@ -71,6 +70,7 @@ fun NewIdentityScreen(
     val mainViewModel = LocalMainViewModel.current
     val savedPrivateKey by newIdentityViewModel.savedPrivateKey.collectAsState()
     var isSubmitting by remember { mutableStateOf(false) }
+
     val privateKey by remember {
         mutableStateOf(newIdentityViewModel.genPrivateKey())
     }
@@ -125,21 +125,7 @@ fun NewIdentityScreen(
     }
 
     fun finishOnboarding(code: String) {
-        scope.launch {
-            try {
-                newIdentityViewModel.pointsManager.getPointsBalance()
-                //newIdentityViewModel.createBalance(code)
-                onNext.invoke()
-            } catch (e: Exception) {
-                ErrorHandler.logError("finishOnboarding", e.toString(), e)
-
-                when (e) {
-                    is InvitationUsedException -> {
-                        onNext.invoke()
-                    }
-                }
-            }
-        }
+        onNext.invoke()
     }
 
 
@@ -208,7 +194,7 @@ fun NewIdentityScreen(
             savePrivateKey(pk)
         }
 
-        mainViewModel.tryLogin()
+        //mainViewModel.tryLogin()
 
         if (invitationCodeState.text.isEmpty()) {
             finishOnboarding("")
