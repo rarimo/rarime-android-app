@@ -159,7 +159,6 @@ private fun Footer(
                         animatedVisibilityScope = animatedVisibilityScope,
                     )
 
-                    .size(width = 156.dp, height = 32.dp)
 
             ) {
                 Row(

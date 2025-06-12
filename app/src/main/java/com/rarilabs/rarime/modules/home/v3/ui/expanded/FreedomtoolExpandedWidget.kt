@@ -354,7 +354,7 @@ private fun VoteTabs(
     onVoteClick: (Poll) -> Unit,
     innerPaddings: Map<ScreenInsets, Number>
 ) {
-    val tabs = listOf("Active", "Finished")
+    val tabs = listOf("${activeVotes.size} Active", "${historyVotes.size} Finished")
     val pagerState = rememberPagerState(pageCount = { tabs.size }, initialPage = 0)
     val scope = rememberCoroutineScope()
 

@@ -173,23 +173,36 @@ fun HiddenPrizeExpandedWidget(
                 val inviteUrl = "${BaseConfig.INVITATION_BASE_URL}/r/${referralCode}"
                 val intent = Intent(Intent.ACTION_SEND).apply {
                     type = "image/*"
-                    putExtra(Intent.EXTRA_TEXT,
-                        context.getString(R.string.hidden_prize_on_social_share_description) + inviteUrl )
+                    putExtra(
+                        Intent.EXTRA_TEXT,
+                        context.getString(R.string.hidden_prize_on_social_share_description) + inviteUrl
+                    )
                     putExtra(Intent.EXTRA_STREAM, uri)
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
-                launcherShare.launch(Intent.createChooser(intent, context.getString(R.string.share_via)))
+                launcherShare.launch(
+                    Intent.createChooser(
+                        intent,
+                        context.getString(R.string.share_via)
+                    )
+                )
             },
             onInvite = {
                 val intent = Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
                     val inviteUrl = "${BaseConfig.INVITATION_BASE_URL}/r/${referralCode}"
 
-                    putExtra(Intent.EXTRA_TEXT,
-                        context.getString(R.string.hidden_prize_on_invite_description)+inviteUrl)
+                    putExtra(
+                        Intent.EXTRA_TEXT,
+                        context.getString(R.string.hidden_prize_on_invite_description) + inviteUrl
+                    )
                 }
-                launcherInvite.launch(Intent.createChooser(intent,
-                    context.getString(R.string.invite_via)))
+                launcherInvite.launch(
+                    Intent.createChooser(
+                        intent,
+                        context.getString(R.string.invite_via)
+                    )
+                )
             })
 
     }
@@ -482,7 +495,6 @@ private fun Body(
                             renderInOverlayDuringTransition = true,
                             animatedVisibilityScope = animatedVisibilityScope,
                         )
-                        .size(width = 156.dp, height = 32.dp)
 
                 ) {
                     Row(
