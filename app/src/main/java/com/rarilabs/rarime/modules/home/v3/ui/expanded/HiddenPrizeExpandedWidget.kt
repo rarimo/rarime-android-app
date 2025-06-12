@@ -405,7 +405,7 @@ private fun Footer(
 
                     Row(verticalAlignment = Alignment.Bottom) {
                         Text(
-                            text = attendsCount.toString(),
+                            text = attendsCount.toString() + " scans",
                             color = RarimeTheme.colors.textPrimary,
                             style = TextStyle(
                                 brush = RarimeTheme.colors.gradient8,
@@ -420,7 +420,8 @@ private fun Footer(
                     BaseButton(
                         modifier = Modifier
                             .clip(RoundedCornerShape(20.dp))
-                            .background(RarimeTheme.colors.gradient8),
+                            .background(RarimeTheme.colors.gradient8)
+                            .fillMaxWidth(0.6f),
                         onClick = onAddScan,
                         enabled = true,
                         size = ButtonSize.Large,
@@ -438,7 +439,8 @@ private fun Footer(
                         text = "Scan",
                         onClick = onScan,
                         size = ButtonSize.Large,
-                        leftIcon = R.drawable.ic_user_focus
+                        leftIcon = R.drawable.ic_user_focus,
+                        modifier = Modifier.fillMaxWidth(0.6f)
                     )
 
                 }
