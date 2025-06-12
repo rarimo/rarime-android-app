@@ -72,7 +72,9 @@ fun HiddenPrizeLoadingML(
                     Spacer(modifier = Modifier.height(52.dp))
 
                     LinearProgressIndicator(
-                        progress = {(processingValue.toFloat() / 100.0f)},
+                        color = RarimeTheme.colors.baseWhite,
+                        trackColor = RarimeTheme.colors.textDisabled,
+                        progress = { (processingValue.toFloat() / 100.0f) },
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))

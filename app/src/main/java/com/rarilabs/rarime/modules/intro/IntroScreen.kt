@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.AppLogo
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -61,17 +62,26 @@ private enum class IntroStep(
 
 @Composable
 fun IntroScreen(
-    navigate: (String) -> Unit
+    navigate: (String) -> Unit,
+    viewModel: IntroViewModel = hiltViewModel()
+) {
+
+    IntroScreenContent(navigate, genPrivateKey = viewModel::savePrivateKey)
+}
+
+@Composable
+fun IntroScreenContent(
+    navigate: (String) -> Unit,
+    genPrivateKey: () -> Unit,
 ) {
     val introSteps = rememberSaveable {
         listOf(
-            IntroStep.Welcome,
-            IntroStep.Identity,
-            IntroStep.Privacy,
-            IntroStep.Rewards
+            IntroStep.Welcome, IntroStep.Identity, IntroStep.Privacy, IntroStep.Rewards
         )
     }
     val stepState = rememberPagerState(pageCount = { 1 })
+
+
 
     Column(
         verticalArrangement = Arrangement.spacedBy(48.dp),
@@ -99,16 +109,15 @@ fun IntroScreen(
                         title = stringResource(id = R.string.create_identity_selector_option_1),
                         icon = R.drawable.ic_plus,
                         onSelect = {
-                            navigate(Screen.Register.NewIdentity.route)
-                        }
-                    ),
+                            genPrivateKey()
+                            navigate(Screen.Main.Home.route)
+                        }),
                     AuthorizationMethod(
                         title = stringResource(id = R.string.create_identity_selector_option_2),
                         icon = R.drawable.ic_share_1,
                         onSelect = {
                             navigate(Screen.Register.ImportIdentity.route)
-                        }
-                    ),
+                        }),
                 )
             )
         }
@@ -121,8 +130,7 @@ private fun StepView(step: IntroStep) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f),
-            contentAlignment = Alignment.Center
+                .weight(1f), contentAlignment = Alignment.Center
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(30.dp),
@@ -157,5 +165,5 @@ private fun StepView(step: IntroStep) {
 @Preview
 @Composable
 private fun IntroScreenPreview() {
-    IntroScreen(navigate = {})
+    IntroScreenContent(navigate = {}, genPrivateKey = {})
 }

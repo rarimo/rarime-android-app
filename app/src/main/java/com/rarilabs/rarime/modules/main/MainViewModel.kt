@@ -222,7 +222,8 @@ class MainViewModel @Inject constructor(
 
     suspend fun finishIntro() {
         withContext(Dispatchers.IO) {
-            tryLogin()
+
+        tryLogin()
             loadUserDetails()
         }
     }

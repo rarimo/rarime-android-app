@@ -483,8 +483,8 @@
     <string name="hidden_prize_invite_row_title">Invite a friend</string>
     <string name="hidden_prize_invite_row_description">+1 scan</string>
     <string name="hidden_prize_invite_row_button_label">Invite</string>
-    <string name="hidden_prize_wrong_screen_description_1">The face you scanned is not the correct one.</string>
-    <string name="hidden_prize_wrong_screen_description_2">You can try again</string>
+    <string name="hidden_prize_wrong_screen_description_1">Swing and a miss, this face isn’t hiding the key.</string>
+    <string name="hidden_prize_wrong_screen_description_2">Keep scanning!</string>
     <string name="hidden_prize_wrong_screen_rescan_btn">Scan again</string>
     <string name="hidden_prize_success_screen_title">Congrats!</string>
     <string name="hidden_prize_success_screen_description">you\'ve found the hidden keys</string>
