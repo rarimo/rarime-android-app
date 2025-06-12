@@ -2,6 +2,7 @@ package com.rarilabs.rarime.modules.profile
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -74,7 +75,7 @@ fun AuthMethodScreen(
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 AuthMethodItem(
-                    iconId = R.drawable.ic_password,
+                    iconId = R.drawable.ic_hashtag,
                     label = stringResource(R.string.passcode),
                     checked = passcodeState == SecurityCheckState.ENABLED,
                     onCheckedChange = { isPasscodeShown = true })
@@ -106,7 +107,8 @@ private fun AuthMethodItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(12.dp))
+            .background(RarimeTheme.colors.backgroundPrimary, RoundedCornerShape(20.dp))
+            .border(width = 1.dp, color = RarimeTheme.colors.componentPrimary, shape = RoundedCornerShape(20.dp))
             .padding(16.dp),
     ) {
         Row(
@@ -118,12 +120,11 @@ private fun AuthMethodItem(
                 size = 20.dp,
                 tint = RarimeTheme.colors.textPrimary,
                 modifier = Modifier
-                    .background(RarimeTheme.colors.componentPrimary, CircleShape)
                     .padding(6.dp)
             )
             Text(
                 text = label,
-                style = RarimeTheme.typography.buttonMedium,
+                style = RarimeTheme.typography.subtitle6,
                 color = RarimeTheme.colors.textPrimary
             )
         }
