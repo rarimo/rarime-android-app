@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.rarilabs.rarime.data.tokens.PreviewerToken
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -51,7 +52,7 @@ fun WalletTokenCard(walletAsset: WalletAsset) {
             }
 
             Text(
-                text = walletAsset.token.symbol,
+                text = walletAsset.token.symbol.uppercase(),
                 style = RarimeTheme.typography.body3,
                 color = RarimeTheme.colors.textSecondary
             )
@@ -66,11 +67,7 @@ fun WalletTokenCard(walletAsset: WalletAsset) {
                 color = RarimeTheme.colors.textPrimary,
                 style = RarimeTheme.typography.subtitle4
             )
-            Text(
-                text = "---", // TODO: add $ equivalent
-                color = RarimeTheme.colors.textSecondary,
-                style = RarimeTheme.typography.caption3
-            )
+
         }
     }
 }
@@ -78,6 +75,6 @@ fun WalletTokenCard(walletAsset: WalletAsset) {
 @Preview
 @Composable
 private fun WalletTokenCardPreview() {
-//    TODO: implement this
-//    WalletTokenCard()
+
+    WalletTokenCard(WalletAsset("", PreviewerToken("", "Reserved RMO", "RRMO")))
 }

@@ -6,25 +6,48 @@ import androidx.compose.ui.res.stringResource
 import com.rarilabs.rarime.R
 
 enum class AppIcon(val activity: String, @DrawableRes val iconId: Int) {
-    BLACK_AND_WHITE(
-        activity = "com.rarilabs.rarime.MainActivityBW",
+    BLACK(
+        activity = "com.rarilabs.rarime.MainActivityBlack",
+        iconId = R.drawable.ic_logo_black
+    ),
+    WHITE(
+        activity = "com.rarilabs.rarime.MainActivityGB",
         iconId = R.drawable.logo_bw
     ),
-    BLACK_AND_GREEN(
+    GREEN(
+        activity = "com.rarilabs.rarime.MainActivityBW",
+        iconId = R.drawable.ic_logo_green
+    ),
+    GRADIENT(
         activity = "com.rarilabs.rarime.MainActivityBG",
-        iconId = R.drawable.logo_bg
+        iconId = R.drawable.ic_logo_gradient
     ),
-    GREEN_AND_BLACK(
-        activity = "com.rarilabs.rarime.MainActivityGB",
-        iconId = R.drawable.logo_gb
-    ),
+    CAT(
+        activity = "com.rarilabs.rarime.MainActivityCat",
+        iconId = R.drawable.ic_logo_cat
+    )
+
+
 }
 
 @Composable
 fun AppIcon.toLocalizedString(): String {
     return when (this) {
-        AppIcon.BLACK_AND_WHITE -> stringResource(R.string.icon_black_and_white)
-        AppIcon.BLACK_AND_GREEN -> stringResource(R.string.icon_black_and_green)
-        AppIcon.GREEN_AND_BLACK -> stringResource(R.string.icon_green_and_black)
+        AppIcon.WHITE -> stringResource(R.string.icon_white)
+        AppIcon.BLACK -> stringResource(R.string.icon_black)
+        AppIcon.GREEN -> stringResource(R.string.icon_green)
+        AppIcon.GRADIENT -> stringResource(R.string.icon_gradient)
+        AppIcon.CAT -> stringResource(R.string.icon_cat)
+    }
+}
+
+@Composable
+fun AppIcon.getInAppIcon(): Int {
+    return when (this) {
+        AppIcon.WHITE -> R.drawable.app_icon_white
+        AppIcon.BLACK -> R.drawable.app_icon_black
+        AppIcon.GREEN -> R.drawable.app_icon_green
+        AppIcon.GRADIENT -> R.drawable.app_icon_gradeint
+        AppIcon.CAT -> R.drawable.app_icon_cat
     }
 }

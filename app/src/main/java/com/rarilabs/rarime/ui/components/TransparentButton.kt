@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -28,24 +29,27 @@ fun TransparentButton(
     text: String? = null,
     @DrawableRes leftIcon: Int? = null,
     @DrawableRes rightIcon: Int? = null,
-    content: @Composable RowScope.() -> Unit = {}
+    alpha: Float = 0.05f,
+    baseColor: Color = RarimeTheme.colors.componentPrimary,
+    content: @Composable RowScope.() -> Unit = {},
+    colors: ButtonColors = ButtonDefaults.buttonColors(
+        containerColor = baseColor.copy(alpha),
+        contentColor = RarimeTheme.colors.textPrimary,
+        disabledContainerColor = Color.Transparent,
+        disabledContentColor = RarimeTheme.colors.textDisabled
+    )
 ) {
     BaseButton(
         modifier = Modifier
             .background(
-                RarimeTheme.colors.componentPrimary,
+                baseColor,
                 RoundedCornerShape(20.dp)
             )
             .then(modifier),
         onClick = onClick,
         enabled = enabled,
         size = size,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = RarimeTheme.colors.baseBlack.copy(alpha = 0.05f),
-            contentColor = RarimeTheme.colors.baseBlack,
-            disabledContainerColor = Color.Transparent,
-            disabledContentColor = RarimeTheme.colors.textDisabled
-        ),
+        colors = colors,
         text = text,
         leftIcon = leftIcon,
         rightIcon = rightIcon,

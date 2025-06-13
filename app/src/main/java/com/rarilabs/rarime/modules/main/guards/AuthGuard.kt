@@ -5,7 +5,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.util.Screen
 
 @Composable
@@ -29,11 +28,11 @@ fun AuthGuard(
         if (isScreenLocked) {
             navigate(Screen.Lock.route)
         } else {
-            if (passcodeState.value == SecurityCheckState.UNSET.value) {
-                navigate(Screen.Passcode.route)
-            } else {
-                content()
-            }
+//            if (passcodeState.value == SecurityCheckState.UNSET.value) {
+//                navigate(Screen.Passcode.route)
+//            } else {
+            content()
+            // }
         }
     } else {
         navigate(Screen.Intro.route)

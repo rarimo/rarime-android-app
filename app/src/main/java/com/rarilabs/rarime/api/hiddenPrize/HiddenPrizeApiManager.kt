@@ -99,7 +99,6 @@ class HiddenPrizeApiManager @Inject constructor(
             )
         )
 
-
         val response =
             api.submitCelebrityGuess(nullifier, request, "Bearer ${authManager.accessToken}")
 

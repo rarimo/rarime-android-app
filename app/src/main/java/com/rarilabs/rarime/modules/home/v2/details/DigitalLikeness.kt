@@ -63,7 +63,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -192,12 +191,9 @@ fun DigitalLikenessContent(
     if (isPreview || cameraPermissionState!!.status.isGranted) {
         AppBottomSheet(
             state = appSheetState,
-            shape = RectangleShape,
             fullScreen = true,
-            scrimColor = Color.Transparent,
             isHeaderEnabled = false,
             disablePullClose = true,
-            isWindowInsetsEnabled = true,
         ) {
             var selectedBitmap: Bitmap? by remember { mutableStateOf(null) }
 

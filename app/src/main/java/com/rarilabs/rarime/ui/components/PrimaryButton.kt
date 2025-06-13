@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +27,12 @@ fun PrimaryButton(
     enabled: Boolean = true,
     size: ButtonSize = ButtonSize.Medium,
     text: String? = null,
+    colors: ButtonColors = ButtonDefaults.buttonColors(
+        containerColor = RarimeTheme.colors.textPrimary,
+        contentColor = RarimeTheme.colors.invertedLight,
+        disabledContainerColor = RarimeTheme.colors.componentDisabled,
+        disabledContentColor = RarimeTheme.colors.textDisabled
+    ),
     @DrawableRes leftIcon: Int? = null,
     @DrawableRes rightIcon: Int? = null,
     content: @Composable RowScope.() -> Unit = {}
@@ -35,12 +42,7 @@ fun PrimaryButton(
         onClick = onClick,
         enabled = enabled,
         size = size,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = RarimeTheme.colors.textPrimary,
-            contentColor = RarimeTheme.colors.invertedLight,
-            disabledContainerColor = RarimeTheme.colors.componentDisabled,
-            disabledContentColor = RarimeTheme.colors.textDisabled
-        ),
+        colors = colors,
         text = text,
         leftIcon = leftIcon,
         rightIcon = rightIcon,

@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.data.tokens
 
-import android.util.Log
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.ChainInfo
@@ -8,6 +7,7 @@ import com.rarilabs.rarime.manager.CosmosManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.modules.wallet.models.TransactionState
+import com.rarilabs.rarime.modules.wallet.models.TransactionType
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.Constants.RARIMO_CHAINS
 import com.rarilabs.rarime.util.ErrorHandler
@@ -28,8 +28,10 @@ class RarimoToken @Inject constructor(
 ) : Token(address) {
     override var name: String = "" // TODO: make nullable
     override var symbol: String = ""
-    override var decimals: Int = 6
+    override var decimals: Int = 0
     override var icon: Int = R.drawable.ic_rarimo
+    override val tokenType: TokenType = TokenType.RARIMO_COSMOS
+
 
     override suspend fun loadDetails() {
         val currency = chainInfo.currencies[0]
@@ -63,10 +65,6 @@ class RarimoToken @Inject constructor(
 
         val rarimoChain = RARIMO_CHAINS[BaseConfig.CHAIN.chainId]
 
-        Log.i("ChainId", rarimoChain?.chainId.toString())
-        Log.i("coinMinimalDenom", rarimoChain?.stakeCurrency?.coinMinimalDenom.toString())
-        Log.i("rpc", rarimoChain?.rpc.toString())
-
         withContext(Dispatchers.IO) {
             profiler.walletSend(
                 to,
@@ -79,11 +77,13 @@ class RarimoToken @Inject constructor(
 
         return Transaction(
             id = 12,
-            iconId = R.drawable.ic_arrow_up,
-            titleId = R.string.send_btn,
             amount = amount.toDouble(),
             date = Date.from(Instant.now()),
             state = TransactionState.INCOMING,
+            from = identityManager.rarimoAddress(),
+            to = to,
+            tokenType = tokenType,
+            operationType = TransactionType.TRANSFER
         )
     }
 
@@ -95,12 +95,24 @@ class RarimoToken @Inject constructor(
         return listOf(
             Transaction(
                 id = 0,
-                iconId = 0,
-                titleId = 0,
                 amount = 0.0,
                 date = Date.from(Instant.now()),
                 state = TransactionState.INCOMING,
+                from = identityManager.rarimoAddress(),
+                to = receiver,
+                tokenType = tokenType,
+                operationType = TransactionType.TRANSFER
             )
         )
+    }
+
+    override suspend fun estimateTransferFee(
+        from: String,
+        to: String,
+        amount: BigInteger,
+        gasPrice: BigInteger?,
+        gasLimit: BigInteger?
+    ): BigInteger {
+        return BigInteger.ZERO
     }
 }

@@ -32,7 +32,6 @@ import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.wallet.components.WalletTransactionsList
 import com.rarilabs.rarime.modules.wallet.view_model.WalletViewModel
-import com.rarilabs.rarime.modules.wallet.walletTokens.WalletTokensList
 import com.rarilabs.rarime.ui.base.ButtonIconSize
 import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.DropdownOption
@@ -85,6 +84,8 @@ fun WalletScreenContainer(
     updateSelectedWalletAsset: (WalletAsset) -> Unit,
     navigate: (String) -> Unit
 ) {
+
+    val filteredUserAssets = userAssets.filter { it.showInAssets }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -124,10 +125,10 @@ fun WalletScreenContainer(
                     )
 
                     // TODO: rollback at next releases
-                    if (userAssets.size > 1) {
+                    if (filteredUserAssets.size > 1) {
                         TextDropdown(
-                            value = selectedUserAsset.token.symbol,
-                            options = userAssets.map {
+                            value = selectedUserAsset.token.symbol.uppercase(),
+                            options = filteredUserAssets.map {
                                 DropdownOption(
                                     label = it.token.symbol,
                                     value = it.token.symbol
@@ -135,7 +136,8 @@ fun WalletScreenContainer(
                             },
                             onChange = { symb ->
                                 run {
-                                    val asset = userAssets.find { it.token.symbol == symb }
+                                    val asset =
+                                        filteredUserAssets.find { it.token.symbol == symb.uppercase() }
                                     ErrorHandler.logDebug("onChange: walletViewModel:", symb)
                                     ErrorHandler.logDebug(
                                         "onChange: asset:",
@@ -152,17 +154,12 @@ fun WalletScreenContainer(
                         )
                     } else {
                         Text(
-                            text = selectedUserAsset.token.symbol,
+                            text = selectedUserAsset.token.symbol.uppercase(),
                             style = RarimeTheme.typography.overline2,
                             color = RarimeTheme.colors.textPrimary
                         )
                     }
                 }
-                Text(
-                    text = "---",
-                    style = RarimeTheme.typography.caption2,
-                    color = RarimeTheme.colors.textSecondary,
-                )
             }
 
             Column(
@@ -207,20 +204,20 @@ fun WalletScreenContainer(
                 HorizontalDivider()
             }
         }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 20.dp)
-        ) {
-            WalletTokensList(userAssets, selectedUserAsset)
-        }
+//
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(vertical = 20.dp)
+//        ) {
+//            WalletTokensList(filteredUserAssets, selectedUserAsset)
+//        }
 
         Column(
             verticalArrangement = Arrangement.spacedBy(20.dp),
             modifier = Modifier.padding(horizontal = 12.dp)
         ) {
-            HorizontalDivider()
+
             CardContainer {
                 WalletTransactionsList(
                     modifier = Modifier.fillMaxSize(),
@@ -251,7 +248,8 @@ private fun WalletScreenPreview() {
             ),
             WalletAsset(
                 "0xaddress",
-                PreviewerToken("tokenAddress", symbol = "USD")
+                PreviewerToken("tokenAddress", symbol = "USD"),
+                showInAssets = false
             ),
         ),
         updateSelectedWalletAsset = { selectedAsset = it },

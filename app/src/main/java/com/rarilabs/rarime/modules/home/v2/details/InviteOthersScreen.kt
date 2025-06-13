@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.points.models.PointsBalanceData
 import com.rarilabs.rarime.api.points.models.PointsEventData
+import com.rarilabs.rarime.modules.earn.tempPointsBalances
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.rewards.components.RewardsEventItemInvitesCard
 import com.rarilabs.rarime.modules.rewards.view_models.CONST_MOCKED_EVENTS_LIST

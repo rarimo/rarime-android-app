@@ -19,6 +19,7 @@ import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.manager.LikenessRule
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.manager.WalletAssetJSON
+import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.util.ErrorHandler
@@ -64,7 +65,9 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         "PASSPORT_STATUS" to "PASSPORT_STATUS",
         "SELECTED_LIKENESS_OPTION" to "SELECTED_LIKENESS_OPTION",
         "LIKENESS_DATA" to "LIKENESS_DATA",
-        "LIKENESS_FACE" to "LIKENESS_FACE"
+        "LIKENESS_FACE" to "LIKENESS_FACE",
+        "WELCOME_FIRST_OPEN" to "WELCOME_FIRST_OPEN",
+        "VISIBLE_WIDGETS" to "VISIBLE_WIDGETS"
     )
 
     private val PREFS_FILE_NAME = "sharedPrefFile12"
@@ -74,9 +77,9 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     private fun getSharedPreferences(): SharedPreferences {
         return try {
             if (sharedPref == null) {
-                val masterKey = MasterKey.Builder(application)
-                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                    .build()
+                val masterKey =
+                    MasterKey.Builder(application).setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                        .build()
                 sharedPref = EncryptedSharedPreferences.create(
                     application,
                     PREFS_FILE_NAME,
@@ -107,6 +110,18 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     override fun readPrivateKey(): String? {
         return getSharedPreferences().getString(accessTokens["PRIVATE_KEY"], null)
     }
+
+    override fun readVisibleWidgets(): List<WidgetType>? {
+        val savedSet = getSharedPreferences().getStringSet(accessTokens["VISIBLE_WIDGETS"], null)
+        return savedSet?.mapNotNull { name -> runCatching { WidgetType.valueOf(name) }.getOrNull() }
+    }
+
+    override fun saveVisibleWidgets(visibleWidgets: List<WidgetType>) {
+        val editor = getEditor()
+        editor.putStringSet(accessTokens["VISIBLE_WIDGETS"], visibleWidgets.map { it.name }.toSet())
+        editor.apply()
+    }
+
 
     override fun readPasscodeState(): SecurityCheckState {
         return SecurityCheckState.fromInt(
@@ -455,8 +470,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
             getSharedPreferences().getString(accessTokens["LIGHT_REGISTRATION_DATA"], null)
 
         val lightRegistrationData = Gson().fromJson(
-            lightRegistrationDataJson,
-            LightRegistrationData::class.java
+            lightRegistrationDataJson, LightRegistrationData::class.java
         )
 
         return lightRegistrationData
@@ -510,6 +524,16 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         return Gson().fromJson<GrothProof>(proofJson, GrothProof::class.java)
     }
 
+    override fun saveIsShownWelcome(isShown: Boolean) {
+        val editor = getEditor()
+        editor.putBoolean(accessTokens["WELCOME_FIRST_OPEN"], isShown)
+        editor.apply()
+    }
+
+    override fun getIsShownWelcome(): Boolean {
+        return getSharedPreferences().getBoolean(accessTokens["WELCOME_FIRST_OPEN"], false)
+    }
+
     override fun saveLikenessFace(face: Bitmap) {
         val baos = ByteArrayOutputStream().apply {
             face.compress(Bitmap.CompressFormat.PNG, 100, this)
@@ -518,14 +542,11 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
 
         val encoded = Base64.encodeToString(bytes, Base64.DEFAULT)
 
-        getEditor()
-            .putString(accessTokens["LIKENESS_FACE"], encoded)
-            .apply()
+        getEditor().putString(accessTokens["LIKENESS_FACE"], encoded).apply()
     }
 
     override fun getLikenessFace(): Bitmap? {
-        val encoded = getSharedPreferences()
-            .getString(accessTokens["LIKENESS_FACE"], null)
+        val encoded = getSharedPreferences().getString(accessTokens["LIKENESS_FACE"], null)
 
         if (encoded.isNullOrEmpty()) {
             return null

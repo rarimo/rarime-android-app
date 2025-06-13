@@ -46,7 +46,7 @@ class PointsManager @Inject constructor(
     private val passportManager: PassportManager,
     private val secureSharedPrefsManager: SecureSharedPrefsManager
 ) {
-    suspend fun createPointsBalance(referralCode: String?) {
+    suspend fun createPointsBalance(referralCode: String?) { //todo not commented while testing
 //        val userNullifierHex = identityManager.getUserPointsNullifierHex()
 //
 //        if (userNullifierHex.isEmpty()) {
@@ -63,7 +63,7 @@ class PointsManager @Inject constructor(
 //                            referredBy = if (referralCode.isNullOrEmpty()) null else referralCode
 //                        )
 //                    )
-//                ), "Bearer ${authManager.accessToken.value!!}"
+//                ), "Bearer ${authManager.accessToken}"
 //            )
 //        }
     }
@@ -312,7 +312,7 @@ class PointsManager @Inject constructor(
         }
     }
 
-    suspend fun getEvents(
+    private suspend fun getEvents(
         filterParams: Map<String, String> = mapOf()
     ): PointsEventsListBody {
         val userPointsNullifierHex = identityManager.getUserPointsNullifierHex()
@@ -333,6 +333,8 @@ class PointsManager @Inject constructor(
 
                 response
             } catch (e: HttpException) {
+                PointsEventsListBody(data = emptyList())
+            } catch (e: Exception) {
                 PointsEventsListBody(data = emptyList())
             }
         }

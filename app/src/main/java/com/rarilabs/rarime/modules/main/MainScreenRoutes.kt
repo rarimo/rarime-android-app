@@ -8,6 +8,7 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -71,9 +72,9 @@ fun MainScreenRoutes(
 ) {
     val mainViewModel = LocalMainViewModel.current
     val context = LocalContext.current
-    var appIcon by remember { mutableStateOf(AppIconUtil.getIcon(context)) }
     val coroutineScope = rememberCoroutineScope()
     var savedNextNavScreen by remember { mutableStateOf<String?>(null) }
+    val appIcon by mainViewModel.appIcon.collectAsState()
 
     fun navigateWithSavedNextNavScreen(route: String) {
         savedNextNavScreen?.let {
@@ -93,7 +94,7 @@ fun MainScreenRoutes(
         ) {
             composable(Screen.Intro.route) {
                 ScreenInsetsContainer {
-                    IntroScreen { simpleNavigate(it) }
+                    IntroScreen(navigate = simpleNavigate)
                 }
             }
 
@@ -186,29 +187,33 @@ fun MainScreenRoutes(
             composable(Screen.ScanPassport.ScanPassportSpecific.route) {
                 ScreenInsetsContainer {
 
-                    ScanPassportScreen(onClose = {
-                        coroutineScope.launch {
-                            navController.popBackStack()
-                        }
-                    }, onClaim = {
-                        coroutineScope.launch {
-                            navigateWithPopUp(Screen.Claim.Specific.route)
-                        }
-                    })
+                    ScanPassportScreen(
+                        onClose = {
+                            coroutineScope.launch {
+                                navController.popBackStack()
+                            }
+                        }, onClaim = {
+                            coroutineScope.launch {
+                                navigateWithPopUp(Screen.Claim.Specific.route)
+                            }
+                        },
+                        setVisibilityOfBottomBar = { })
                 }
             }
 
             composable(Screen.ScanPassport.ScanPassportPoints.route) {
                 ScreenInsetsContainer {
-                    ScanPassportScreen(onClose = {
-                        coroutineScope.launch {
-                            navigateWithPopUp(Screen.Main.Identity.route)
-                        }
-                    }, onClaim = {
-                        coroutineScope.launch {
-                            navigateWithPopUp(Screen.Claim.Reserve.route)
-                        }
-                    })
+                    ScanPassportScreen(
+                        onClose = {
+                            coroutineScope.launch {
+                                navigateWithPopUp(Screen.Main.Identity.route)
+                            }
+                        }, onClaim = {
+                            coroutineScope.launch {
+                                navigateWithPopUp(Screen.Claim.Reserve.route)
+                            }
+                        },
+                        setVisibilityOfBottomBar = {})
                 }
             }
 
@@ -241,8 +246,22 @@ fun MainScreenRoutes(
                 }
 
                 composable(Screen.Main.Identity.route) {
-                    AuthGuard(navigate = navigateWithPopUp) {
-                        ZkIdentityScreen(navigate = simpleNavigate)
+                    AuthGuard(navigate = simpleNavigate) {
+                        ZkIdentityScreen(
+                            navigate = simpleNavigate, onClose = {
+                                coroutineScope.launch {
+                                    //navController.popBackStack()
+
+                                    navigateWithPopUp(Screen.Main.route)
+
+                                }
+                            }, onClaim = {
+                                coroutineScope.launch {
+                                    navigateWithPopUp(Screen.Claim.Specific.route)
+
+                                }
+                            },
+                            setBottomBarVisibility = { mainViewModel.setBottomBarVisibility(it) })
                     }
                 }
 
@@ -354,7 +373,7 @@ fun MainScreenRoutes(
                     AuthGuard(navigate = navigateWithPopUp) {
                         ScreenInsetsContainer {
                             AppIconScreen(appIcon = appIcon, onAppIconChange = {
-                                appIcon = it
+                                mainViewModel.setAppIcon(it)
                                 AppIconUtil.setIcon(context, it)
                             }, onBack = { navController.popBackStack() })
                         }
@@ -465,6 +484,7 @@ fun AcceptInvitation(
 
     val scope = rememberCoroutineScope()
 
+    val appIcon by mainViewModel.appIcon.collectAsState()
     suspend fun acceptInvitation() {
         ErrorHandler.logDebug("MainScreen", "acceptInvitation: $code")
         try {

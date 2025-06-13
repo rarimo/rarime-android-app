@@ -28,6 +28,7 @@ import com.rarilabs.rarime.api.voting.VotingApiManager
 import com.rarilabs.rarime.manager.AirDropManager
 import com.rarilabs.rarime.manager.AuthManager
 import com.rarilabs.rarime.manager.CosmosManager
+import com.rarilabs.rarime.manager.DriveBackupManager
 import com.rarilabs.rarime.manager.Erc20Manager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.NfcManager
@@ -48,6 +49,8 @@ import com.rarilabs.rarime.store.SecureSharedPrefsManagerImpl
 import com.rarilabs.rarime.store.room.notifications.AppDatabase
 import com.rarilabs.rarime.store.room.notifications.NotificationsDao
 import com.rarilabs.rarime.store.room.notifications.NotificationsRepository
+import com.rarilabs.rarime.store.room.transactons.TransactionDao
+import com.rarilabs.rarime.store.room.transactons.TransactionRepository
 import com.rarilabs.rarime.store.room.voting.VotingDao
 import com.rarilabs.rarime.store.room.voting.VotingRepository
 import com.squareup.moshi.Moshi
@@ -390,13 +393,15 @@ class APIModule {
         dataStoreManager: SecureSharedPrefsManager,
         identityManager: IdentityManager,
         pointsManager: PointsManager,
-        @Named("RARIMO") web3j: Web3j
+        @Named("RARIMO") web3j: Web3j,
+        transactionRepository: TransactionRepository
     ): WalletManager {
         return WalletManager(
             dataStoreManager = dataStoreManager,
             identityManager = identityManager,
             pointsManager = pointsManager,
-            web3j = web3j
+            web3j = web3j,
+            transactionRepository = transactionRepository
         )
     }
 
@@ -491,11 +496,29 @@ class APIModule {
         return NotificationsRepository(notificationsDao)
     }
 
+    @Provides
+    @Singleton
+    fun provideDriveBackupRepository(
+        @ApplicationContext context: Context
+    ): DriveBackupManager = DriveBackupManager(context)
+
 
     @Provides
     @Singleton
     fun provideVotingRepository(votingDao: VotingDao): VotingRepository {
         return VotingRepository(votingDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTransactionDao(appDatabase: AppDatabase): TransactionDao {
+        return appDatabase.transactionDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTransactionsRepository(transactionDao: TransactionDao): TransactionRepository {
+        return TransactionRepository(transactionDao)
     }
 
     @Provides

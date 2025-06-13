@@ -38,7 +38,6 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.api.services.drive.DriveScopes
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.points.InvitationUsedException
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppTextField
@@ -71,11 +70,12 @@ fun NewIdentityScreen(
     val mainViewModel = LocalMainViewModel.current
     val savedPrivateKey by newIdentityViewModel.savedPrivateKey.collectAsState()
     var isSubmitting by remember { mutableStateOf(false) }
+
     val privateKey by remember {
         mutableStateOf(newIdentityViewModel.genPrivateKey())
     }
 
-    var isDriveState by remember { mutableStateOf(true) }
+    var isDriveState by remember { mutableStateOf(isImporting) }
     var isDriveButtonEnabled by remember { mutableStateOf(true) }
 
     val signInErrorOptions = getSnackbarDefaultShowOptions(
@@ -125,21 +125,7 @@ fun NewIdentityScreen(
     }
 
     fun finishOnboarding(code: String) {
-        scope.launch {
-            try {
-                newIdentityViewModel.pointsManager.getPointsBalance()
-                //newIdentityViewModel.createBalance(code)
-                onNext.invoke()
-            } catch (e: Exception) {
-                ErrorHandler.logError("finishOnboarding", e.toString(), e)
-
-                when (e) {
-                    is InvitationUsedException -> {
-                        onNext.invoke()
-                    }
-                }
-            }
-        }
+        onNext.invoke()
     }
 
 
@@ -208,9 +194,7 @@ fun NewIdentityScreen(
             savePrivateKey(pk)
         }
 
-        //delay(1000)
-        mainViewModel.tryLogin()
-        //fidelay(1000)
+        //mainViewModel.tryLogin()
 
         if (invitationCodeState.text.isEmpty()) {
             finishOnboarding("")
@@ -219,39 +203,26 @@ fun NewIdentityScreen(
         }
     }
 
-    if (isDriveState) {
-        if (isImporting) {
-            RestoreScreen(
-                onDriveRestore = { scope.launch { restorePrivateKey() } },
-                signInAccount = signedInAccount,
-                signIn = {
-                    signInResultLauncher.launch(
-                        googleSignInClient.signInIntent
-                    )
-                },
-                isDriveButtonEnabled = isDriveButtonEnabled,
-                onBack = onBack
-            ) {
-                isDriveState = false
-            }
-        } else {
-            BackUpScreen(
-                onDriveBackup = { scope.launch { backUpPrivateKey() } },
-                signInAccount = signedInAccount,
-                signIn = {
-                    signInResultLauncher.launch(
-                        googleSignInClient.signInIntent
-                    )
-                },
-                onManualBackup = { isDriveState = false },
-                onBack = onBack,
-                isDriveButtonEnabled = isDriveButtonEnabled,
-                privateKey = privateKey
-            )
+    if (isDriveState && isImporting) {
+        RestoreScreen(
+            onDriveRestore = { scope.launch { restorePrivateKey() } },
+            signInAccount = signedInAccount,
+            signIn = {
+                signInResultLauncher.launch(
+                    googleSignInClient.signInIntent
+                )
+            },
+            isDriveButtonEnabled = isDriveButtonEnabled,
+            onBack = onBack
+        ) {
+            isDriveState = false
         }
     } else {
         NewIdentityScreenContent(
-            onBack = { isDriveState = true },
+            onBack = {
+                // Allow user to go back to Drive only if recovering
+                if (isImporting) isDriveState = true else onBack()
+            },
             privateKey = privateKey,
             isImporting = isImporting,
             handleInitPK = { scope.launch { handleInitPK(it) } },

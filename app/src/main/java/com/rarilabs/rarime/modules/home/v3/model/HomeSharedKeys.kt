@@ -9,4 +9,5 @@ object HomeSharedKeys {
     fun caption(layoutId: Int) = "caption-$layoutId"
     fun image(layoutId: Int) = "image-$layoutId"
     fun footer(layoutId: Int) = "footer-$layoutId"
+    fun label(layoutId: Int) = "label-$layoutId"
 }

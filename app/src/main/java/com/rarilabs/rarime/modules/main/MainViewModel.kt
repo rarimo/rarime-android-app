@@ -1,11 +1,13 @@
 package com.rarilabs.rarime.modules.main
 
+import android.app.Application
 import android.net.Uri
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
+import com.rarilabs.rarime.data.enums.AppIcon
 import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.manager.AirDropManager
 import com.rarilabs.rarime.manager.AuthManager
@@ -16,6 +18,7 @@ import com.rarilabs.rarime.manager.SecurityManager
 import com.rarilabs.rarime.manager.SettingsManager
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.ui.components.SnackbarShowOptions
+import com.rarilabs.rarime.util.AppIconUtil
 import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -30,21 +33,16 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 enum class AppLoadingStates {
-    LOADING,
-    LOADED,
-    LOAD_FAILED,
-    MAINTENANCE,
+    LOADING, LOADED, LOAD_FAILED, MAINTENANCE,
 }
 
 enum class ScreenInsets {
-    TOP,
-    RIGHT,
-    BOTTOM,
-    LEFT,
+    TOP, RIGHT, BOTTOM, LEFT,
 }
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    private val app: Application,
     private val securityManager: SecurityManager,
     private val settingsManager: SettingsManager,
     private val walletManager: WalletManager,
@@ -53,7 +51,7 @@ class MainViewModel @Inject constructor(
     private val identityManager: IdentityManager,
     private val passportManager: PassportManager,
     private val pointsManager: PointsManager,
-) : ViewModel() {
+) : AndroidViewModel(app) {
     val isLogsDeleted = identityManager.isLogsDeleted
 
     val passportStatus = passportManager.passportStatus
@@ -61,15 +59,22 @@ class MainViewModel @Inject constructor(
     var appLoadingState = mutableStateOf(AppLoadingStates.LOADING)
         private set
 
+    private val _appIcon = MutableStateFlow(AppIconUtil.getIcon(app))
+
+    val appIcon: StateFlow<AppIcon>
+        get() = _appIcon.asStateFlow()
+
+
     val pointsToken = walletManager.pointsToken
 
-    var _isModalShown = MutableStateFlow(false)
-        private set
+
+    private var _isModalShown = MutableStateFlow(false)
+
     val isModalShown: StateFlow<Boolean>
         get() = _isModalShown.asStateFlow()
 
-    var _modalContent = MutableStateFlow<@Composable () -> Unit?>({})
-        private set
+    private var _modalContent = MutableStateFlow<@Composable () -> Unit?>({})
+
     val modalContent: StateFlow<@Composable () -> Unit?>
         get() = _modalContent.asStateFlow()
 
@@ -99,9 +104,17 @@ class MainViewModel @Inject constructor(
         )
     }
 
+    fun setAppIcon(appIcon: AppIcon) {
+        _appIcon.value = appIcon
+    }
+
+
     var colorScheme = settingsManager.colorScheme
-    var isBottomBarShown = mutableStateOf(false)
-        private set
+
+    private var _isBottomBarShown = MutableStateFlow<Boolean>(true)
+
+    val isBottomBarShown: StateFlow<Boolean>
+        get() = _isBottomBarShown.asStateFlow()
 
     fun getIsPkInit(): Boolean {
         return identityManager.privateKeyBytes != null
@@ -127,9 +140,8 @@ class MainViewModel @Inject constructor(
 
 
     suspend fun initApp() = coroutineScope {
-
         appLoadingState.value = AppLoadingStates.LOADING
-        // 1. Early checks
+
         if (pointsManager.getMaintenanceStatus()) {
             appLoadingState.value = AppLoadingStates.MAINTENANCE
             return@coroutineScope
@@ -139,9 +151,7 @@ class MainViewModel @Inject constructor(
             return@coroutineScope
         }
 
-        // 2. Set loading state
-
-        val clearLogsJob = launch {
+        launch {
             if (!isLogsDeleted.value) {
                 try {
                     ErrorHandler.clearLogFile()
@@ -152,27 +162,25 @@ class MainViewModel @Inject constructor(
             }
         }
 
-        val initJob = launch {
-            try {
-                tryLogin()
-                loadUserDetails()
-                appLoadingState.value = AppLoadingStates.LOADED
-            } catch (e: Exception) {
-                appLoadingState.value = AppLoadingStates.LOAD_FAILED
-                ErrorHandler.logError("MainScreen", "Failed to init app", e)
-            }
-        }
+        try {
+            val loginJob = async { tryLogin() }
+            val userDetailsJob = async { loadUserDetails() }
 
-        initJob.join()
-        clearLogsJob.join()
-        appLoadingState.value = AppLoadingStates.LOADED
+            // awaitAll waits for all deferred tasks to complete.
+            // The total wait time is the duration of the LONGEST task.
+            awaitAll(loginJob, userDetailsJob)
+            appLoadingState.value = AppLoadingStates.LOADED
+        } catch (e: Exception) {
+            appLoadingState.value = AppLoadingStates.LOAD_FAILED
+            ErrorHandler.logError("MainScreen", "Failed to init app", e)
+        }
     }
 
     private suspend fun loadUserDetails() = coroutineScope {
-        val walletDeferred = async { walletManager.loadBalances() }
+        //val walletDeferred = async { walletManager.loadBalances() }
         val passportDeferred = async { passportManager.loadPassportStatus() }
 
-        awaitAll(walletDeferred, passportDeferred)
+        awaitAll(passportDeferred)
     }
 
     suspend fun tryLogin() = runCatching {
@@ -191,7 +199,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun setBottomBarVisibility(isVisible: Boolean) {
-        isBottomBarShown.value = isVisible
+        _isBottomBarShown.value = isVisible
     }
 
     suspend fun showSnackbar(options: SnackbarShowOptions) {
@@ -214,6 +222,7 @@ class MainViewModel @Inject constructor(
 
     suspend fun finishIntro() {
         withContext(Dispatchers.IO) {
+
             tryLogin()
             loadUserDetails()
         }

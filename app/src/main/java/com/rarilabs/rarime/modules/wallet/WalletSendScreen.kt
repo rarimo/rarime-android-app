@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +21,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.tokens.PreviewerToken
 import com.rarilabs.rarime.manager.WalletAsset
+import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
 import com.rarilabs.rarime.modules.wallet.view_model.WalletSendViewModel
 import com.rarilabs.rarime.ui.base.ButtonSize
@@ -35,68 +39,117 @@ import com.rarilabs.rarime.ui.components.AppTextFieldState
 import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.SecondaryTextButton
+import com.rarilabs.rarime.ui.components.SnackbarSeverity
 import com.rarilabs.rarime.ui.components.TxConfirmBottomSheet
 import com.rarilabs.rarime.ui.components.VerticalDivider
+import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldNumberState
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
-import com.rarilabs.rarime.util.NumberUtil
 import com.rarilabs.rarime.util.WalletUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 
 @Composable
 fun WalletSendScreen(
     onBack: () -> Unit,
     walletSendViewModel: WalletSendViewModel = hiltViewModel(),
 ) {
+
+    val mainViewModel = LocalMainViewModel.current
+
+    val context = LocalContext.current
+
     var isQrCodeScannerOpen by remember { mutableStateOf(false) }
-    var isSubmitting by remember { mutableStateOf(false) }
 
     val humanAmountState = rememberAppTextFieldNumberState("")
     val addressState = rememberAppTextFieldState("")
 
-    val selectedWalletAsset = walletSendViewModel.selectedWalletAsset.collectAsState()
-
     val coroutineScope = rememberCoroutineScope()
+    val selectedWalletAsset by walletSendViewModel.selectedWalletAsset.collectAsState()
 
-    fun submit() {
-        coroutineScope.launch {
-            isSubmitting = true
-            try {
-                val a = walletSendViewModel.sendTokens(addressState.text, humanAmountState.text)
-                a
-                walletSendViewModel.fetchBalance()
-            } catch (e: Exception) {
-                ErrorHandler.logError(
-                    "Error sending",
-                    "Cant send token ${walletSendViewModel.selectedWalletAsset.value.token}",
-                    e
-                )
-            }
+    val validateState by walletSendViewModel.validationState.collectAsState()
 
-            isSubmitting = false
+    LaunchedEffect(addressState.text, humanAmountState.text) {
+        walletSendViewModel.validateSendFields(addressState.text, humanAmountState.text)
+        humanAmountState.updateErrorMessage(validateState.amountError ?: "")
+        addressState.updateErrorMessage(validateState.addressError ?: "")
+    }
+
+    LaunchedEffect(humanAmountState.text, validateState.isAmountValid) {
+        if (validateState.isAmountValid) {
+            humanAmountState.updateErrorMessage("")
+            walletSendViewModel.estimateGasFee(humanAmount = humanAmountState.text)
         }
     }
 
+    val fee by walletSendViewModel.fee.collectAsState()
+    val isSubmitting by walletSendViewModel.isSubmitting.collectAsState()
+    val isFeeLoading by walletSendViewModel.isFeeLoading.collectAsState()
+
     if (isQrCodeScannerOpen) {
-        ScanQrScreen(
-            onBack = { isQrCodeScannerOpen = false },
-            onScan = {
-                addressState.updateText(it)
-                isQrCodeScannerOpen = false
-            }
-        )
+        ScanQrScreen(onBack = { isQrCodeScannerOpen = false }, onScan = {
+            addressState.updateText(it)
+            isQrCodeScannerOpen = false
+        })
     } else {
         WalletSendScreenContent(
             onBack = onBack,
-            selectedWalletAsset = selectedWalletAsset.value,
+            selectedWalletAsset = selectedWalletAsset,
             humanAmountState = humanAmountState,
             addressState = addressState,
             showQrCodeScanner = { isQrCodeScannerOpen = true },
-            submit = { submit() },
+            submit = { amount ->
+                coroutineScope.launch {
+                    try {
+
+                        walletSendViewModel.submitSend(
+                            to = addressState.text, humanAmount = amount
+                        )
+
+                        try {
+                            mainViewModel.showSnackbar(
+                                options = getSnackbarDefaultShowOptions(
+                                    severity = SnackbarSeverity.Success,
+                                    duration = SnackbarDuration.Long,
+                                    title = context.getString(R.string.wallet_success_title),
+                                    message = context.getString(R.string.wallet_success_message),
+                                )
+                            )
+                        } catch (e: Exception) {
+                            ErrorHandler.logError(
+                                "WalletSendScreen",
+                                "smth went wrong during sending showSnackbar",
+                                e
+                            )
+                        }
+
+
+                    } catch (e: Exception) {
+                        ErrorHandler.logError(
+                            "WalletSendScreen",
+                            "smth went wrong during sending tokens",
+                            e
+                        )
+                        mainViewModel.showSnackbar(
+                            options = getSnackbarDefaultShowOptions(
+                                severity = SnackbarSeverity.Error,
+                                duration = SnackbarDuration.Long,
+                                title = context.getString(R.string.wallet_error_title),
+                                message = context.getString(R.string.wallet_error_message),
+                            )
+                        )
+                    }
+
+                }
+            },
+            fee = fee,
+            isSubmitting = isSubmitting,
+            isFeeLoading = isFeeLoading,
+            isSendEnabled = (validateState.isAmountValid && validateState.isAddressValid)
         )
     }
 }
@@ -105,28 +158,44 @@ fun WalletSendScreen(
 private fun WalletSendScreenContent(
     onBack: () -> Unit,
     selectedWalletAsset: WalletAsset,
-
     humanAmountState: AppTextFieldNumberState,
     addressState: AppTextFieldState,
-
     showQrCodeScanner: () -> Unit,
-
-    submit: () -> Unit,
-
+    submit: (amount: String) -> Unit,
     isSubmitting: Boolean = false,
+    fee: BigDecimal?,
+    isFeeLoading: Boolean,
+    isSendEnabled: Boolean,
 ) {
     val confirmationSheetState = rememberAppSheetState()
 
+
+    fun calculateWithFee(rawAmount: String): String {
+        val amount = rawAmount.toBigDecimalOrNull() ?: return "0.0"
+        val feeValue = fee ?: BigDecimal.ZERO
+        val balance = selectedWalletAsset.humanBalance()
+
+        val total = amount + feeValue
+        return if (total > balance) {
+            val maxSendable = (balance - feeValue).coerceAtLeast(BigDecimal.ZERO)
+            maxSendable.stripTrailingZeros().toPlainString()
+        } else {
+            amount.stripTrailingZeros().toPlainString()
+        }
+    }
+
     WalletRouteLayout(
-        title = stringResource(R.string.wallet_send_title, selectedWalletAsset.token.symbol),
+        title = stringResource(
+            R.string.wallet_send_title,
+            selectedWalletAsset.token.symbol.uppercase()
+        ),
         description = stringResource(
-            R.string.wallet_send_description, selectedWalletAsset.token.symbol
+            R.string.wallet_send_description, selectedWalletAsset.token.symbol.uppercase()
         ),
         onBack = onBack
     ) {
         Column(
-            verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxSize()
+            verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxSize()
         ) {
             CardContainer {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
@@ -136,9 +205,7 @@ private fun WalletSendScreenContent(
                         placeholder = selectedWalletAsset.userAddress.substring(0, 7) + "...",
                         trailingItem = {
                             SecondaryTextButton(
-                                leftIcon = R.drawable.ic_qr_code,
-                                onClick = { showQrCodeScanner() }
-                            )
+                                leftIcon = R.drawable.ic_qr_code, onClick = { showQrCodeScanner() })
                         },
                         enabled = !isSubmitting,
                     )
@@ -147,7 +214,8 @@ private fun WalletSendScreenContent(
                         label = stringResource(R.string.amount_lbl),
                         enabled = !isSubmitting,
                         placeholder = stringResource(
-                            R.string.amount_placeholder, selectedWalletAsset.token.symbol
+                            R.string.amount_placeholder,
+                            selectedWalletAsset.token.symbol.uppercase()
                         ),
                         hint = {
                             Row(
@@ -160,7 +228,10 @@ private fun WalletSendScreenContent(
                                     color = RarimeTheme.colors.textSecondary
                                 )
                                 Text(
-                                    text = "${selectedWalletAsset.humanBalance()} ${selectedWalletAsset.token.symbol}",
+                                    text = "${
+                                        selectedWalletAsset.humanBalance().stripTrailingZeros()
+                                            .toPlainString()
+                                    } ${selectedWalletAsset.token.symbol.uppercase()}",
                                     style = RarimeTheme.typography.body5,
                                     color = RarimeTheme.colors.textPrimary
                                 )
@@ -175,11 +246,10 @@ private fun WalletSendScreenContent(
                             ) {
                                 VerticalDivider()
                                 SecondaryTextButton(
-                                    text = stringResource(R.string.max_btn),
-                                    // TODO: mb to human string?
-                                    onClick = {
+                                    text = stringResource(R.string.max_btn), onClick = {
                                         humanAmountState.updateText(
-                                            selectedWalletAsset.humanBalance().toString()
+                                            selectedWalletAsset.humanBalance().stripTrailingZeros()
+                                                .toPlainString()
                                         )
                                     })
                             }
@@ -200,11 +270,20 @@ private fun WalletSendScreenContent(
                         style = RarimeTheme.typography.body4,
                         color = RarimeTheme.colors.textSecondary
                     )
-                    Text(
-                        text = "${NumberUtil.formatAmount(humanAmountState.text.toDoubleOrNull() ?: 0.0)} ${selectedWalletAsset.token.symbol}",
-                        style = RarimeTheme.typography.subtitle5,
-                        color = RarimeTheme.colors.textPrimary
-                    )
+                    if (isFeeLoading) {
+                        Text(
+                            text = "Loading...",
+                            style = RarimeTheme.typography.subtitle5,
+                            color = RarimeTheme.colors.textPrimary
+                        )
+                    } else {
+                        Text(
+                            text = "${calculateWithFee(humanAmountState.text)} ${selectedWalletAsset.token.symbol.uppercase()}",
+                            style = RarimeTheme.typography.subtitle5,
+                            color = RarimeTheme.colors.textPrimary
+                        )
+                    }
+
                 }
                 PrimaryButton(
                     text = stringResource(R.string.send_btn),
@@ -213,20 +292,24 @@ private fun WalletSendScreenContent(
                     onClick = {
                         confirmationSheetState.show()
                     },
-                    enabled = addressState.text.isNotEmpty() && humanAmountState.text.isNotEmpty() && !isSubmitting
+                    enabled = isSendEnabled && !isSubmitting && !isFeeLoading
                 )
             }
         }
 
-        if (addressState.text.isNotEmpty() && humanAmountState.text.isNotEmpty()) {
+        if (WalletUtil.isValidAddress(address = addressState.text) && WalletUtil.isValidateAmountForSend(
+                humanAmountState.text
+            )
+        ) {
             TxConfirmBottomSheet(
                 sheetState = confirmationSheetState, totalDetails = mapOf(
                     "Address" to WalletUtil.formatAddress(addressState.text, 4, 4),
-                    "Send amount" to "${NumberUtil.formatAmount(humanAmountState.text.toDouble())} ${selectedWalletAsset.token.symbol}",
-                    "Fee" to "0 ${selectedWalletAsset.token.symbol}"
+                    "Send amount" to "${humanAmountState.text} ${selectedWalletAsset.token.symbol.uppercase()}",
+                    "Fee" to "${fee?.toPlainString()} ${selectedWalletAsset.token.symbol.uppercase()}"
                 ), onConfirm = {
 
-                    submit()
+                    submit(calculateWithFee(humanAmountState.text))
+                    confirmationSheetState.hide()
 
                 })
         }
@@ -253,12 +336,15 @@ private fun WalletSendScreenContentPreview() {
     WalletSendScreenContent(
         onBack = {},
         selectedWalletAsset = WalletAsset(
-            "0xgqiuweyfgkafsdjnfksladnfajsdn", PreviewerToken("", "Preview", "PRW", 18)
+            "0xgqiuweyfgkafsdjnfksladnfajsdn", PreviewerToken("", "Preview", "testtest", 18)
         ),
         humanAmountState = rememberAppTextFieldNumberState(initialText = ""),
         addressState = rememberAppTextFieldState(initialText = ""),
         showQrCodeScanner = { },
         submit = { submit() },
         isSubmitting = isSubmitting,
+        fee = BigDecimal(0),
+        isFeeLoading = false,
+        isSendEnabled = false
     )
 }

@@ -1,7 +1,10 @@
 package com.rarilabs.rarime.modules.hiddenPrize
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
@@ -20,6 +23,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,21 +39,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathOperation
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.net.toUri
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.mlkit.vision.common.InputImage
@@ -55,6 +67,9 @@ import com.google.mlkit.vision.facemesh.FaceMeshDetector
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.manager.WrongFaceException
+import com.rarilabs.rarime.modules.main.ScreenInsets
+import com.rarilabs.rarime.ui.base.BaseButton
+import com.rarilabs.rarime.ui.base.BaseIconButton
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
@@ -79,9 +94,11 @@ fun HiddenPrizeCamera(
     processML: suspend (Bitmap) -> List<Float>,
     downloadProgress: Int,
     imageLink: String,
+    innerPaddings: Map<ScreenInsets, Number>,
     colorScheme: AppColorScheme,
     navigate: (String) -> Unit,
-    attemptsLeft: Int
+    attemptsLeft: Int,
+    onClose: () -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -89,6 +106,7 @@ fun HiddenPrizeCamera(
     val meshDetector = remember { FaceMeshDetection.getClient() }
     val previewView = remember {
         PreviewView(context).apply {
+            implementationMode = PreviewView.ImplementationMode.COMPATIBLE
             scaleType = PreviewView.ScaleType.FILL_CENTER
         }
     }
@@ -110,6 +128,8 @@ fun HiddenPrizeCamera(
     var currentStep by remember {
         mutableStateOf(HiddenPrizeCameraStep.CAMERA)
     }
+    val launcherShare = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(), onResult = {})
 
     SetupCamera(
         cameraProvider = cameraProvider,
@@ -118,7 +138,11 @@ fun HiddenPrizeCamera(
         meshDetector = meshDetector,
         cameraExecutor = cameraExecutor,
         onImageSizeUpdated = { imageSize = it },
-        onMeshDetected = { detectedMeshes = it }
+        onMeshDetected = {
+            if (selectedBitmap == null) {
+                detectedMeshes = it
+            }
+        }
     )
 
     RenderPreviewOrImage(
@@ -128,30 +152,38 @@ fun HiddenPrizeCamera(
     when (currentStep) {
         HiddenPrizeCameraStep.CAMERA -> {
             Box(modifier = modifier.fillMaxSize()) {
+
                 ShadowBoxCanvas(
                     boxSize = 270.dp,
                     cornerRadius = 16.dp,
                     borderColor = RarimeTheme.colors.baseWhite,
                     borderWidth = 2.dp,
-                    boxColor = RarimeTheme.colors.baseBlackOp50
+                    boxColor = RarimeTheme.colors.baseBlackOp40
                 )
+
                 FaceMeshCanvas(
                     imageSize = imageSize, detectedMeshes = detectedMeshes
                 )
 
-
                 OverlayControls(
-                    selectedBitmap = selectedBitmap, onSelectBitmap = {
+                    selectedBitmap = selectedBitmap,
+                    onSelectBitmap = {
                         scope.launch {
                             selectedBitmap = it
                         }
-                    }, onClearBitmap = { selectedBitmap = null }, onNext = {
+                    },
+                    innerPaddings = innerPaddings,
+                    onClearBitmap = { selectedBitmap = null },
+                    onNext = {
                         currentStep = HiddenPrizeCameraStep.PROCESSING_ML
-                    }, previewView = previewView, detectedMeshes
+                    },
+                    previewView = previewView,
+                    detectedMeshes = detectedMeshes,
+                    onClose = onClose
                 )
+
             }
         }
-
 
         HiddenPrizeCameraStep.WRONG -> {
             HiddenPrizeWrongScreen(
@@ -165,7 +197,7 @@ fun HiddenPrizeCamera(
 
         HiddenPrizeCameraStep.CONGRATS -> {
             HiddenPrizeCongratsScreen(
-                prizeAmount = 2.0f,
+                prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value),
                 prizeSymbol = {
                     Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
                 },
@@ -181,14 +213,31 @@ fun HiddenPrizeCamera(
                 colorScheme = colorScheme,
                 downloadProgress = downloadProgress,
                 onShare = {
-
+                    val resId = R.drawable.ic_hidden_prize_win_share
+                    val uri = "android.resource://${context.packageName}/${resId}".toUri()
+                    val intent = Intent(Intent.ACTION_SEND).apply {
+                        type = "image/*"
+                        putExtra(Intent.EXTRA_STREAM, uri)
+                        putExtra(
+                            Intent.EXTRA_TEXT,
+                            context.getString(R.string.hidden_prize_on_win_description)
+                        )
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                    launcherShare.launch(
+                        Intent.createChooser(
+                            intent,
+                            context.getString(R.string.share_via)
+                        )
+                    )
                 },
-                onViewWallet = { navigate(Screen.Main.Wallet.route) }
-            )
+                onViewWallet = { navigate(Screen.Main.Wallet.route) })
         }
 
         HiddenPrizeCameraStep.PROCESSING_ML -> {
-            HiddenPrizeLoadingML(processingValue = downloadProgress) {
+            HiddenPrizeLoadingML(
+                processingValue = downloadProgress,
+            ) {
                 try {
                     featuresBackend = processML(selectedBitmap!!)
                     currentStep = HiddenPrizeCameraStep.CONGRATS
@@ -204,14 +253,17 @@ fun HiddenPrizeCamera(
 
         HiddenPrizeCameraStep.ERROR -> {
             HiddenPrizeError(
+                //modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
                 onBack = {
                     navigate(Screen.Main.Home.route)
-                }
-            )
+                })
         }
 
         HiddenPrizeCameraStep.PROCESSING_ZKP -> {
-            HiddenPrizeLoadingZK(processingValue = (downloadProgress.toFloat() / 100.0f)) {
+            HiddenPrizeLoadingZK(
+                //modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
+                processingValue = (downloadProgress.toFloat() / 100.0f)
+            ) {
                 try {
                     processZK(selectedBitmap!!, featuresBackend)
                     currentStep = HiddenPrizeCameraStep.FINISH
@@ -223,45 +275,57 @@ fun HiddenPrizeCamera(
         }
 
         HiddenPrizeCameraStep.FINISH -> {
-            HiddenPrizeFinish(prizeAmount = 2.0f, prizeSymbol = {
-                Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
-            }, onViewWallet = {}, onShareWallet = {})
+            HiddenPrizeFinish(
+                //modifier = Modifier.padding(bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp),
+                prizeAmount = stringResource(R.string.hidden_prize_prize_pool_value),
+                prizeSymbol = {
+                    Image(painterResource(R.drawable.ic_ethereum), contentDescription = "ETH")
+                },
+                onViewWallet = {},
+                onShareWallet = {})
         }
     }
 
 }
 
 
+@kotlin.OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RenderPreviewOrImage(
     previewView: PreviewView, selectedBitmap: Bitmap?, isBlurred: Boolean
 ) {
+    // This is the shape the AppBottomSheet uses by default.
+    val sheetShape = BottomSheetDefaults.ExpandedShape
+
     val targetBlur = if (isBlurred) 50f else 0f
     val targetShadow = if (isBlurred) 0.5f else 0f
 
     val blurValue by animateFloatAsState(
         targetValue = targetBlur,
-        animationSpec = tween(durationMillis = 500), // Adjust duration for smoothness
+        animationSpec = tween(durationMillis = 500),
         label = "blurAnimation"
     )
 
     val shadowValue by animateFloatAsState(
         targetValue = targetShadow,
-        animationSpec = tween(durationMillis = 1000), // Adjust duration for smoothness
+        animationSpec = tween(durationMillis = 1000),
         label = "ShadowAnimation"
     )
+
+    val commonModifier = Modifier
+        .fillMaxSize()
+        .clip(sheetShape)
 
     if (selectedBitmap != null) {
         Image(
             bitmap = selectedBitmap.asImageBitmap(),
             contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = commonModifier
                 .background(Color.Black.copy(alpha = shadowValue))
                 .blur(blurValue.dp)
         )
     } else {
-        AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())
+        AndroidView(factory = { previewView }, modifier = commonModifier)
     }
 }
 
@@ -271,72 +335,106 @@ fun OverlayControls(
     onSelectBitmap: (Bitmap) -> Unit,
     onClearBitmap: () -> Unit,
     onNext: (Bitmap) -> Unit,
+    innerPaddings: Map<ScreenInsets, Number>,
     previewView: PreviewView,
-    detectedMeshes: List<FaceMesh>
+    detectedMeshes: List<FaceMesh>,
+    onClose: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .padding(top = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        AppIcon(
-            id = R.drawable.ic_user_focus, size = 32.dp, tint = RarimeTheme.colors.baseWhite
+    Box {
+        BaseIconButton(
+            onClick = onClose,
+            icon = R.drawable.ic_close_fill,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = RarimeTheme.colors.componentPrimary,
+                contentColor = RarimeTheme.colors.baseWhite
+            ),
+            modifier = Modifier
+                .padding(20.dp)
+                .align(Alignment.TopEnd)
+                .size(40.dp)
         )
-        Text(
-            text = stringResource(R.string.hidden_prize_camera_up_title),
-            style = RarimeTheme.typography.subtitle5,
-            color = RarimeTheme.colors.baseWhite
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+                .padding(top = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            AppIcon(
+                modifier = Modifier.padding(top = 42.dp),
+                id = R.drawable.ic_user_focus, size = 32.dp, tint = RarimeTheme.colors.baseWhite
+            )
+            Text(
+                modifier = Modifier.padding(top = 17.dp),
+                text = stringResource(R.string.hidden_prize_camera_up_title),
+                style = RarimeTheme.typography.subtitle5,
+                color = RarimeTheme.colors.baseWhite
+            )
 
-        Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f))
 
-        Text(
-            text = "Your face never leaves the device. You create an anonymous record that carries your rules, so AI knows how to treat you.",
-            style = RarimeTheme.typography.body4,
-            color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
-            textAlign = TextAlign.Center
-        )
 
-        Column(modifier = Modifier.padding(top = 8.dp)) {
-            if (selectedBitmap == null) {
-                PrimaryButton(
-                    enabled = detectedMeshes.isNotEmpty(),
-                    size = ButtonSize.Large,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 20.dp),
-                    onClick = {
-                        scope.launch {
+            Column(
+                modifier = Modifier.padding(
+                    bottom = 20.dp,
+                )
+            ) {
+                if (selectedBitmap == null) {
+                    BaseButton(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        size = ButtonSize.Large,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = RarimeTheme.colors.baseWhite.copy(0.1f),
+                            contentColor = RarimeTheme.colors.baseWhite,
+                            disabledContainerColor = RarimeTheme.colors.componentDisabled,
+                            disabledContentColor = RarimeTheme.colors.textDisabled
+                        ),
+                        onClick = {
+                            scope.launch {
                             previewView.bitmap?.let {
                                 onSelectBitmap(it)
                             }
-                        }
-                    },
-                    text = "Photo"
-                )
-            } else {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 20.dp)
-                ) {
-                    PrimaryButton(
-                        modifier = Modifier.weight(3f),
-                        size = ButtonSize.Large,
-                        leftIcon = R.drawable.ic_restart_line,
-                        onClick = { onClearBitmap() })
+                            }
+                        },
+                        enabled = detectedMeshes.isNotEmpty(),
+                        text = stringResource(R.string.take_a_picture)
+                    )
 
-                    Spacer(modifier = Modifier.weight(1f))
+                } else {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 20.dp)
+                    ) {
+                        PrimaryButton(
+                            modifier = Modifier.weight(3f),
+                            size = ButtonSize.Large,
+                            leftIcon = R.drawable.ic_restart_line,
+                            onClick = { onClearBitmap() },
+                            colors = ButtonColors(
+                                containerColor = RarimeTheme.colors.baseBlack,
+                                contentColor = RarimeTheme.colors.baseWhite,
+                                disabledContainerColor = RarimeTheme.colors.componentDisabled,
+                                disabledContentColor = RarimeTheme.colors.textDisabled
+                            )
+                        )
 
-                    PrimaryButton(
-                        modifier = Modifier.weight(7f),
-                        size = ButtonSize.Large,
-                        text = "Continue",
-                        onClick = { onNext(selectedBitmap) })
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        BaseButton(
+                            modifier = Modifier.weight(12f),
+                            size = ButtonSize.Large,
+                            colors = ButtonColors(
+                                containerColor = RarimeTheme.colors.baseWhite,
+                                contentColor = RarimeTheme.colors.baseBlack,
+                                disabledContentColor = RarimeTheme.colors.textDisabled,
+                                disabledContainerColor = RarimeTheme.colors.componentDisabled
+                            ),
+                            text = "Confirm",
+                            onClick = { onNext(selectedBitmap) })
+                    }
                 }
             }
         }
@@ -442,54 +540,49 @@ fun FaceMeshCanvas(
 
 @Composable
 fun ShadowBoxCanvas(
-    boxSize: Dp,
-    cornerRadius: Dp,
-    borderColor: Color,
-    borderWidth: Dp,
-    boxColor: Color
+    boxSize: Dp, cornerRadius: Dp, borderColor: Color, borderWidth: Dp, boxColor: Color
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Canvas(modifier = Modifier.fillMaxSize()) {
-            val holeSize = boxSize.toPx()
-            val cornerRadius = cornerRadius.toPx()
-            val borderWidth = borderWidth.toPx()
-
+            val holeSizePx = boxSize.toPx()
+            val cornerRadiusPx = cornerRadius.toPx()
+            val borderWidthPx = borderWidth.toPx()
             val centerX = size.width / 2
             val centerY = size.height / 2
-            val left = centerX - holeSize / 2
-            val top = centerY - holeSize / 2
-
-
-            drawRect(color = boxColor)
-
+            val left = centerX - holeSizePx / 2
+            val top = centerY - holeSizePx / 2
 
             val holeRect = RoundRect(
                 left = left,
                 top = top,
-                right = left + holeSize,
-                bottom = top + holeSize,
-                cornerRadius = CornerRadius(cornerRadius, cornerRadius)
+                right = left + holeSizePx,
+                bottom = top + holeSizePx,
+                cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx)
             )
 
-            drawRoundRect(
-                color = Color.Transparent,
-                topLeft = Offset(holeRect.left, holeRect.top),
-                size = Size(holeSize, holeSize),
-                cornerRadius = CornerRadius(cornerRadius, cornerRadius),
-                blendMode = BlendMode.Clear
+            val canvasPath = Path().apply {
+                addRect(size.toRect())
+            }
+
+            val holePath = Path().apply {
+                addRoundRect(holeRect)
+            }
+
+            val shadowPath = Path.combine(
+                PathOperation.Difference, canvasPath, holePath
             )
 
-            //frame
+            drawPath(shadowPath, color = boxColor)
+
             drawRoundRect(
                 color = borderColor,
                 topLeft = Offset(holeRect.left, holeRect.top),
-                size = Size(holeSize, holeSize),
-                cornerRadius = CornerRadius(cornerRadius, cornerRadius),
-                style = Stroke(width = borderWidth)
+                size = Size(holeSizePx, holeSizePx),
+                cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx),
+                style = Stroke(width = borderWidthPx)
             )
         }
     }
-
 }
 
 
@@ -523,9 +616,13 @@ fun SetupCamera(
                             onImageSizeUpdated(Size(rotW.toFloat(), rotH.toFloat()))
 
                             val inputImage = InputImage.fromMediaImage(mediaImage, rotation)
-                            meshDetector.process(inputImage)
-                                .addOnSuccessListener { onMeshDetected(it) }
-                                .addOnCompleteListener { imageProxy.close() }
+                            meshDetector.process(inputImage).addOnSuccessListener {
+
+                                onMeshDetected(
+                                    it
+                                )
+
+                            }.addOnCompleteListener { imageProxy.close() }
                         } else {
                             imageProxy.close()
                         }
@@ -541,4 +638,21 @@ fun SetupCamera(
             ErrorHandler.logError("CameraError", e.toString())
         }
     }
+}
+
+
+@Preview
+@Composable
+private fun OverlayControlsPreview() {
+
+    val context = LocalContext.current
+    OverlayControls(
+        Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8),
+        {},
+        {},
+        {},
+        innerPaddings = mapOf(),
+        previewView = PreviewView(context),
+        detectedMeshes = listOf()
+    ) { }
 }

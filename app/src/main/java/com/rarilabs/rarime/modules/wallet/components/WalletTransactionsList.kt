@@ -15,18 +15,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.tokens.Erc20Token
+import com.rarilabs.rarime.data.tokens.TokenType
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.modules.wallet.models.TransactionState
+import com.rarilabs.rarime.modules.wallet.models.TransactionType
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Constants
 import java.util.Date
 
 @Composable
 fun WalletTransactionsList(
-    modifier: Modifier = Modifier,
-    walletAsset: WalletAsset,
-    transactions: List<Transaction>
+    modifier: Modifier = Modifier, walletAsset: WalletAsset, transactions: List<Transaction>
 ) {
     Column(
         modifier = modifier.fillMaxSize()
@@ -67,39 +67,46 @@ fun WalletTransactionsListPreview() {
             .padding(20.dp)
     ) {
         WalletTransactionsList(
-            walletAsset = WalletAsset("0x000000", Erc20Token("0x00000000")),
-            transactions = listOf(
+            walletAsset = WalletAsset("0x000000", Erc20Token("0x00000000")), transactions = listOf(
                 Transaction(
                     id = 1,
-                    iconId = R.drawable.ic_airdrop,
-                    titleId = R.string.airdrop_tx_title,
                     amount = Constants.AIRDROP_REWARD,
                     date = Date(),
-                    state = TransactionState.INCOMING
+                    state = TransactionState.INCOMING,
+                    from = "",
+                    to = "",
+                    tokenType = TokenType.DEFAULT,
+                    operationType = TransactionType.TRANSFER
                 ),
                 Transaction(
                     id = 2,
-                    iconId = R.drawable.ic_arrow_up,
-                    titleId = R.string.airdrop_tx_title,
                     amount = Constants.AIRDROP_REWARD,
                     date = Date(),
-                    state = TransactionState.INCOMING
+                    state = TransactionState.INCOMING,
+                    from = "",
+                    to = "",
+                    tokenType = TokenType.DEFAULT,
+                    operationType = TransactionType.TRANSFER
                 ),
                 Transaction(
                     id = 3,
-                    iconId = R.drawable.ic_arrow_down,
-                    titleId = R.string.airdrop_tx_title,
                     amount = Constants.AIRDROP_REWARD,
                     date = Date(),
-                    state = TransactionState.INCOMING
+                    state = TransactionState.INCOMING,
+                    from = "",
+                    to = "",
+                    tokenType = TokenType.DEFAULT,
+                    operationType = TransactionType.TRANSFER
                 ),
                 Transaction(
                     id = 4,
-                    iconId = R.drawable.ic_shield_check,
-                    titleId = R.string.airdrop_tx_title,
                     amount = Constants.AIRDROP_REWARD,
                     date = Date(),
-                    state = TransactionState.INCOMING
+                    state = TransactionState.INCOMING,
+                    from = "",
+                    to = "",
+                    tokenType = TokenType.DEFAULT,
+                    operationType = TransactionType.TRANSFER
                 ),
             )
         )

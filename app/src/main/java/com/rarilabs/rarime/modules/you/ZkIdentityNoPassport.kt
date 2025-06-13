@@ -60,7 +60,7 @@ data class IdentityItemData(
 )
 
 @Composable
-fun ZkIdentityNoPassport(
+fun ZkIdentityNoPassport(//Todo delete this screen or disable for now
     navigate: (String) -> Unit,
     viewModel: ZkIdentityNoPassportViewModel = hiltViewModel()
 ) {
@@ -156,7 +156,7 @@ fun ZkIdentityNoPassport(
     ) {
         when (currentScreen) {
             IdentityScreenType.PASSPORT -> {
-                ScanPassportScreen(onClose = {}, onClaim = {})
+                ScanPassportScreen(onClose = {}, onClaim = {}, setVisibilityOfBottomBar = { })
             }
 
             IdentityScreenType.NONE -> {}

@@ -175,7 +175,6 @@
     <string name="auth_method">Auth Method</string>
     <string name="biometrics">Biometrics</string>
     <string name="passcode">Passcode</string>
-    <string name="export_keys">Export Keys</string>
     <string name="language">Language</string>
     <string name="english">English</string>
     <string name="ukrainian">Українська</string>
@@ -204,7 +203,7 @@
     <string name="what_is_rarime_text_item_1">RariMe is a self-custody identity wallet where no personal data ever leaves the device and everything is processed locally.</string>
     <string name="what_is_rarime_text_item_2">With RariMe, identity becomes private but verifiable.</string>
     <string name="what_is_rarime_text_item_3">" ensures your history, reputation and actions are not lost, but remain confidential and under your control."</string>
-    <string name="icon_black_and_white">Black &amp; White</string>
+    <string name="icon_white">White</string>
     <string name="icon_black_and_green">Black &amp; Green</string>
     <string name="icon_green_and_black">Green &amp; Black</string>
     <string name="app_icon">App Icon</string>
@@ -484,8 +483,8 @@
     <string name="hidden_prize_invite_row_title">Invite a friend</string>
     <string name="hidden_prize_invite_row_description">+1 scan</string>
     <string name="hidden_prize_invite_row_button_label">Invite</string>
-    <string name="hidden_prize_wrong_screen_description_1">The face you scanned is not the correct one.</string>
-    <string name="hidden_prize_wrong_screen_description_2">You can try again</string>
+    <string name="hidden_prize_wrong_screen_description_1">Swing and a miss, this face isn’t hiding the key.</string>
+    <string name="hidden_prize_wrong_screen_description_2">Keep scanning!</string>
     <string name="hidden_prize_wrong_screen_rescan_btn">Scan again</string>
     <string name="hidden_prize_success_screen_title">Congrats!</string>
     <string name="hidden_prize_success_screen_description">you\'ve found the hidden keys</string>
@@ -506,6 +505,88 @@
     <string name="hidden_prize_congrats_share_btn">Claim</string>
     <string name="hidden_prize_wrong_screen_back_home">Home</string>
     <string name="hidden_prize_camera_up_title">Center the person\'s face</string>
-    <string name="hidden_prize_prize_pool_value">0,3</string>
+    <string name="hidden_prize_prize_pool_value">0.03</string>
+    <string name="ic_hidden_prize_congats_screen_button_label_while_creating_ZK">Please wait. Creating ZK</string>
+    <string name="hidden_prize_congrats_share_btn_final">Claimed</string>
+    <string name="hidden_prize_camera_description">Your face never leaves the device. You create an anonymous record that carries your rules, so AI knows how to treat you.</string>
+    <string name="welcome_card1_title">Welcome!</string>
+    <string name="welcome_card2_title">Privacy</string>
+    <string name="welcome_card3_title">Managing identity</string>
+    <string name="welcome_card4_title">Add widgets</string>
+    <string name="welcome_card1_description">This app is where you privately store your digital identities, enabling you to go incognito across the web</string>
+    <string name="welcome_card2_description">No one can trace your actions\nNo system can connect the dots\nNo data ever leaves your phone</string>
+    <string name="welcome_card3_description">RariMe lets you prove your identity - without giving anything away\n</string>
+    <string name="welcome_card4_description">Add different type of applications that you can interact with anonymously\n</string>
+    <string name="wallet_success_title">Transaction Successful</string>
+    <string name="wallet_success_message">Your transaction has been sent successfully.</string>
+    <string name="wallet_error_title">Transaction Failed</string>
+    <string name="wallet_error_message">An error occurred while sending your transaction. Please try again.</string>
+    <string name="wallet_incoming_title">Receive</string>
+    <string name="wallet_outgoing_title">Send</string>
+    <string name="recovery_method_collapsed_card_title">Recovery</string>
+    <string name="recovery_method_collapsed_card_accent_title">Method</string>
+    <string name="recovery_method_collapsed_card_caption">Set up a new way to recover\nyour account</string>
+    <string name="recovery_method_expanded_card_title">Recovery</string>
+    <string name="recovery_method_expanded_card_accent_title">Method</string>
+    <string name="recovery_method_expanded_card_button_label">Choose your method</string>
+    <string name="recovery_method_expanded_card_caption">Set up a new way to recover your account</string>
+    <string name="recovery_method_expanded_card_desciption">Forget traditional methods. Use something truly yours: a personal item, your face, or even a unique gesture. Security has never felt this natural.</string>
+    <string name="recovery_method_details_screen_title">Recovery method</string>
+    <string name="recovery_method_detail_screen_card_holder_title">Private key</string>
+    <string name="recovery_method_detal_screen_card_holder_description">Please store the private key safely and do not share it with anyone. If you lose this key, you will not be able to recover the account and will lose access forever.</string>
+    <string name="recovery_method_detail_screen_copy">Copy</string>
+    <string name="recovery_method_detail_screen_copied">Copied</string>
+    <string name="recovery_method_cloud_backup_title">Google Cloud backup</string>
+    <string name="recovery_method_cloud_backup_description">Backup key in Google Cloud</string>
+    <string name="recovery_method_face_scan_title">zkFace</string>
+    <string name="recovery_method_face_scan_description">Biometric facial key</string>
+    <string name="recovery_method_object_scan_title">Object</string>
+    <string name="recovery_method_object_scan_description">Make any object your key</string>
+
+    <string name="recovery_method_delete_dialog_text">Are you sure you want to delete the backup?</string>
+    <string name="recovery_method_overwrite_dialog_text">The backup differs from the current key. Overwrite it?</string>
+    <string name="warning">Warning</string>
+
+    <string name="manage_widgets_btn_label">Manage Widgets</string>
+    <string name="manage_widgets_bottom_sheet_title">Manage widgets</string>
+    <string name="manage_widgets_add_btn_label">Add</string>
+    <string name="manage_widgets_remove_btn_label">Remove</string>
+
+
+    <string name="freedomtool_widget_title">Freedomtool</string>
+    <string name="freedomtool_widget_description">Revolutionizing polling, surveying \n and election processes</string>
+    <string name="digital_likeness_widget_title">Digital Likeness</string>
+    <string name="digital_likeness_widget_description">Your data, your rules</string>
+    <string name="hidden_prize_widget_title">Hidden keys</string>
+    <string name="hidden_prize_widget_description">Somewhere out on the open web, one famous \n face carries a key sealed inside its ZK-vector</string>
+    <string name="recovery_method_widget_title">Recovery Method</string>
+    <string name="recovery_method_widget_description">Set up a new way to recover \n your account</string>
+    <string name="earn">Earn</string>
+    <string name="earn_collapsed_widget_caption">Complete various tasks and get\n rewarded with Rarimo tokens.</string>
+    <string name="earn_expanded_widget_caption">Complete various tasks and get rewarded with Rarimo tokens.</string>
+    <string name="earn_expanded_widget_active_task_title">" ACTIVE TASK"</string>
+    <string name="earn_title_of_task">Invite others</string>
+    <string name="earn_invite_task_card_description">Invited</string>
+    <string name="earn_widget_invite_bottom_sheet_title">Invite others</string>
+    <string name="earn_invite_bottom_sheet_description">Share your referral link and get bonuses  \nwhen your friends join</string>
+    <string name="digital_likeness_collapsed_widget_title">Digital likeness</string>
+    <string name="digital_likeness_collapsed_widget_accent_title">Set a rule</string>
+    <string name="digital_likeness_collapsed_widget_caption">Your data, your rules</string>
+    <string name="digital_likeness_description">AI can now replicate your face, voice, and identity without asking for your permission. But you never agreed to that, raising a fundamental question: who owns your likeness?</string>
+    <string name="recovery_method">Recovery Method</string>
+    <string name="export_keys">Export keys</string>
+    <string name="icon_black">Black</string>
+    <string name="icon_green">Green</string>
+    <string name="icon_gradient">Gradient</string>
+    <string name="icon_cat">Cat</string>
+    <string name="freedomtool_title">Freedomtool</string>
+    <string name="fredomtool_accent_title">Voting</string>
+    <string name="hidden_prize_on_win_description">Hidden keys: found. Prize: secured. Who’s next to join the winners’ circle? 🔑🏆</string>
+    <string name="share_via">Share via</string>
+    <string name="hidden_prize_on_social_share_description">Think you can spot the famous face and unlock the key? Join the hunt in rariMe now!\n</string>
+    <string name="invite_via">Invite via</string>
+    <string name="hidden_prize_on_invite_description">Ready to test faces for hidden keys? Tap my invite, get free scans, and let’s race for the prize.\n</string>
+    <string name="take_a_picture">Take a picture</string>
+
 
 </resources>

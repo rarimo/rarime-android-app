@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -24,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.BaseButton
+import com.rarilabs.rarime.ui.base.BaseIconButton
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
@@ -38,10 +40,21 @@ fun HiddenPrizeWrongScreen(
     val canRetry = attemptsLeft > 0
     val description = buildString {
         append(stringResource(R.string.hidden_prize_wrong_screen_description_1))
-        if (canRetry) append(stringResource(R.string.hidden_prize_wrong_screen_description_2))
+        if (canRetry) append(" " + stringResource(R.string.hidden_prize_wrong_screen_description_2))
     }
     Box(Modifier.fillMaxSize()) {
-
+        BaseIconButton(
+            onClick = onClose,
+            icon = R.drawable.ic_close_fill,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = RarimeTheme.colors.componentPrimary,
+                contentColor = RarimeTheme.colors.baseWhite
+            ),
+            modifier = Modifier
+                .padding(20.dp)
+                .align(Alignment.TopEnd)
+                .size(40.dp)
+        )
         Column(
             modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -75,14 +88,13 @@ fun HiddenPrizeWrongScreen(
                 }
             }
 
-            tip?.let {
-                Text(
-                    it,
-                    color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-            }
+            Text(
+                "Different photos of the same person return the same result, try scanning a new face",
+                color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+
 
             if (canRetry) {
                 BaseButton(
@@ -145,7 +157,6 @@ fun WrongScreenPreview_WithBlur() {
         HiddenPrizeWrongScreen(
             attemptsLeft = 2,
             tip = "Tip: I think there's something as light as ether in that face...",
-            onClose = {}
-        )
+            onClose = {})
     }
 }
