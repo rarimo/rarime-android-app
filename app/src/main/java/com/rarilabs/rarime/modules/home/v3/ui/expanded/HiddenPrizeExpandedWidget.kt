@@ -405,13 +405,19 @@ private fun Footer(
 
                     Row(verticalAlignment = Alignment.Bottom) {
                         Text(
-                            text = attendsCount.toString() + " scans",
+                            text = attendsCount.toString(),
                             color = RarimeTheme.colors.textPrimary,
                             style = TextStyle(
                                 brush = RarimeTheme.colors.gradient8,
                                 fontSize = RarimeTheme.typography.h4.fontSize,
                                 fontWeight = RarimeTheme.typography.h4.fontWeight
                             ),
+                        )
+                        Text(
+                            text = " scans",
+                            color = RarimeTheme.colors.textSecondary,
+                            style = RarimeTheme.typography.body4
+
                         )
 
                     }
