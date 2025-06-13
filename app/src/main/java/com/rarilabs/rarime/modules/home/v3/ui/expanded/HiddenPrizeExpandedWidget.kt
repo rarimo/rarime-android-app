@@ -5,6 +5,7 @@ package com.rarilabs.rarime.modules.home.v3.ui.expanded
 import WinningFaceCard
 import android.Manifest
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -153,9 +154,11 @@ fun HiddenPrizeExpandedWidget(
 
     val launcherShare = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(), onResult = {
-            scope.launch {
-                viewModel.addExtraAttempt()
-            }
+           if(shares?.isSocialShare == false){
+               scope.launch {
+                   viewModel.addExtraAttempt()
+               }
+           }
         })
 
 
@@ -203,7 +206,11 @@ fun HiddenPrizeExpandedWidget(
                         context.getString(R.string.invite_via)
                     )
                 )
-            })
+
+            },
+            currentInvite = shares!!.referralsCount,
+            maxInvite = shares!!.referralsLimit
+        )
 
     }
 
@@ -405,13 +412,19 @@ private fun Footer(
 
                     Row(verticalAlignment = Alignment.Bottom) {
                         Text(
-                            text = attendsCount.toString() + " scans",
+                            text = attendsCount.toString(),
                             color = RarimeTheme.colors.textPrimary,
                             style = TextStyle(
                                 brush = RarimeTheme.colors.gradient8,
                                 fontSize = RarimeTheme.typography.h4.fontSize,
                                 fontWeight = RarimeTheme.typography.h4.fontWeight
                             ),
+                        )
+                        Text(
+                            text = " scans",
+                            color = RarimeTheme.colors.textSecondary,
+                            style = RarimeTheme.typography.body4
+
                         )
 
                     }
@@ -657,7 +670,7 @@ private fun Background(
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 fun HiddenPriceExpandedWidgetPreviewLightMode() {
     AppTheme {
@@ -684,7 +697,7 @@ fun HiddenPriceExpandedWidgetPreviewLightMode() {
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun HiddenPriceExpandedWidgetPreviewDarkMode() {
     AppTheme {
