@@ -57,6 +57,7 @@ import java.math.BigInteger
 import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.abs
 
 enum class PassportProofState(val value: Int) {
     READING_DATA(0), APPLYING_ZERO_KNOWLEDGE(1), CREATING_CONFIDENTIAL_PROFILE(2), FINALIZING(3)
@@ -160,15 +161,6 @@ class ProofGenerationManager @Inject constructor(
             val circuitType = getCircuitType(eDocument)
             registrationManager.setCircuitData(circuitType)
             val circuitName = getCircuitName(circuitType)
-            //val circuitData = getCircuitData(circuitName)
-
-            // Download circuit files with CircuitUseCase.
-            val circuitDownloader = CircuitDownloader(application)
-//            val filePaths = withContext(Dispatchers.Default) {
-//                circuitDownloader.downloadGrothFiles(circuitData) { progress, visibility ->
-//                    _downloadProgress.value = progress
-//                }
-//            } ?: throw DownloadCircuitError()
 
             _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
 
@@ -455,11 +447,7 @@ class ProofGenerationManager @Inject constructor(
         return withContext(customDispatcher) {
             val circuitByteCode = File(byteCodePath).readText()
 
-            Log.i("trustedSetupPath", byteCodePath)
-
             val circuit = Circuit.fromJsonManifest(circuitByteCode)
-
-            Log.i("trustedSetupPath", trustedSetupPath)
 
             circuit.setupSrs(trustedSetupPath, false)
 
@@ -632,17 +620,16 @@ class ProofGenerationManager @Inject constructor(
             eDocument.dg1!!.decodeHexString(), 2, smartChunkingToBlockSize.toLong()
         )
 
-        val inputs =
-            RegisterIdentityInputs(
-                skIdentity = Numeric.toHexStringWithPrefix(BigInteger(privateKeyBytes)),
-                encapsulatedContent = encapsulatedChunks,
-                signedAttributes = signedAttrChunks,
-                pubkey = pubKeyChunks,
-                signature = signatureChunks,
-                dg1 = dg1Chunks,
-                dg15 = dg15,
-                slaveMerkleRoot = (BigInteger(proof.root)).toString(),
-                slaveMerkleInclusionBranches = proof.siblings.map { BigInteger(it).toString() })
+        val inputs = RegisterIdentityInputs(
+            skIdentity = Numeric.toHexStringWithPrefix(BigInteger(privateKeyBytes)),
+            encapsulatedContent = encapsulatedChunks,
+            signedAttributes = signedAttrChunks,
+            pubkey = pubKeyChunks,
+            signature = signatureChunks,
+            dg1 = dg1Chunks,
+            dg15 = dg15,
+            slaveMerkleRoot = (BigInteger(proof.root)).toString(),
+            slaveMerkleInclusionBranches = proof.siblings.map { BigInteger(it).toString() })
         registrationManager.setMasterCertProof(proof)
         return gson.toJson(inputs).toByteArray()
     }
@@ -664,7 +651,7 @@ class ProofGenerationManager @Inject constructor(
         val pubKeyData = CryptoUtilsPassport.getDataFromPublicKey(publicKey)!!
 
         val reductionPk: List<String>
-        val pk: List<BigInteger>
+        val pk: List<String>
         val sig: List<String>
 
         val encapsulatedContent = Numeric.hexStringToByteArray(sodFile.readASN1Data())
@@ -673,10 +660,10 @@ class ProofGenerationManager @Inject constructor(
 
         when (circuitType.signatureType.algorithm) {
             CircuitAlgorithmType.RSA, CircuitAlgorithmType.RSAPSS -> {
-                pk = CircuitUtil.splitBy120Bits(pubKeyData)
+                pk = CircuitUtil.splitBy120Bits(pubKeyData).map { it.toString() }
 
                 reductionPk = CircuitUtil.rsaBarrettReductionParam(
-                    BigInteger(pubKeyData), pubKeyData.size * 8
+                    BigInteger(1, pubKeyData), pubKeyData.size * 8
                 ).map { it.toString() }
 
                 sig = CircuitUtil.splitBy120Bits(sigBytes).map { it.toString() }
@@ -687,23 +674,20 @@ class ProofGenerationManager @Inject constructor(
                 val pubKeyX = pubKeyData.copyOfRange(0, half)
                 val pubKeyY = pubKeyData.copyOfRange(half, pubKeyData.size)
 
-                pk = CircuitUtil.splitBy120Bits(pubKeyX) + CircuitUtil.splitBy120Bits(pubKeyY)
+                pk =
+                    (CircuitUtil.splitBy120Bits(pubKeyX) + CircuitUtil.splitBy120Bits(pubKeyY)).map { it.toString() }
 
-                // reductionPk: splitEmptyData on X and Y, decimal strings
                 reductionPk =
                     (CircuitUtil.splitEmptyData(pubKeyX) + CircuitUtil.splitEmptyData(pubKeyY)).map { it.toString() }
 
-                // ASN.1 decode ECDSA signature, get R and S
-                val signature = CircuitUtil.parseECDSASignature(sigBytes)!!
+                val sigBytes64 = CircuitUtil.parseECDSASignature(sigBytes)!!
+                val sigHalf = sigBytes64.size / 2
+                val sigR = sigBytes64.copyOfRange(0, sigHalf)
+                val sigS = sigBytes64.copyOfRange(sigHalf, sigBytes64.size)
 
-                val sigHalf = signature.size / 2
-                val sigR = signature.copyOfRange(0, sigHalf)
-                val sigS = signature.copyOfRange(sigHalf, signature.size)
-
-                sig =
-                    (CircuitUtil.splitBy120Bits(sigR) + CircuitUtil.splitBy120Bits(sigS)).map { it ->
-                        Numeric.toHexString(it.toByteArray())
-                    }
+                sig = (CircuitUtil.splitBy120Bits(sigR) + CircuitUtil.splitBy120Bits(sigS)).map {
+                    Numeric.toHexString(it.toByteArray())
+                }
             }
         }
 
@@ -717,70 +701,41 @@ class ProofGenerationManager @Inject constructor(
             val contract = rarimoContractManager.getPoseidonSMT(certificatesSMTAddress)
             contract.getProof(indexHex.hexToByteArray()).send()
         }
-//
-//        val chunkSize = circuitType.passportHashType.getChunkSize().toInt()
-//
-//        val dg1Count = CircuitUtil.noirChunkNumber(dg1Bytes.size * 8, chunkSize)
-//        val ecCount = CircuitUtil.noirChunkNumber(ecBytes.size * 8, chunkSize)
-//        val saCount = CircuitUtil.noirChunkNumber(saBytes.size * 8, chunkSize)
-//        val dg15Count = if (dg15Bytes.isEmpty()) 0 else CircuitUtil.noirChunkNumber(
-//            dg15Bytes.size * 8, chunkSize
-//        )
-//
-//        val dg1Chunks =
-//            CircuitUtil.bigIntToChunkingArray(chunkSize, dg1Count, BigInteger(1, dg1Bytes))
-//        val ecChunks = CircuitUtil.bigIntToChunkingArray(chunkSize, ecCount, BigInteger(1, ecBytes))
-//        val saChunks = CircuitUtil.bigIntToChunkingArray(chunkSize, saCount, BigInteger(1, saBytes))
-//        val dg15Chunks =
-//            if (dg15Bytes.isEmpty()) emptyList() else CircuitUtil.bigIntToChunkingArray(
-//                chunkSize, dg15Count, BigInteger(1, dg15Bytes)
-//            )
-//
-//        val publicKey = sodFile.docSigningCertificate.publicKey
-//        val sigBytes = sodFile.encryptedDigest
-//        val pubKeyData = CryptoUtilsPassport.getDataFromPublicKey(publicKey)
-//            ?: throw IllegalArgumentException("Invalid public key data")
-//        val keyCount = CircuitUtil.noirChunkNumber(pubKeyData.size * 8, chunkSize)
-//
-//        val pkChunks =
-//            CircuitUtil.bigIntToChunkingArray(chunkSize, keyCount, BigInteger(1, pubKeyData))
-//        val sigChunks =
-//            CircuitUtil.bigIntToChunkingArray(chunkSize, keyCount, BigInteger(1, sigBytes))
-//
-//        val reduction =
-//            CircuitUtil.computeBarrettReduction(pubKeyData.size * 8, BigInteger(1, pubKeyData))
-//
-        val skIdentity = Numeric.toHexString(privateKeyBytes)
-        val icaoRoot = Numeric.toHexString(proof.root)
-        val inclusionBranches = proof.siblings.map { Numeric.toHexString(it) }
 
 
-        val inputs = PlonkRegistrationInputs.getMocked()
+        val plonkInputs = PlonkRegistrationInputs(
+            dg1 = eDocument.dg1!!.decodeHexString().map {
+                BigInteger(listOf(it).toByteArray()).toString()
+            },
+            dg15 = eDocument.dg15?.decodeHexString()?.map {
+                BigInteger(1, listOf(it).toByteArray()).toString()
+            } ?: listOf(),
+            ec = encapsulatedContent.map { abs(it.toInt()).toString() },
+            sa = signedAttributes.map { abs(it.toInt()).toString() },
+            pk = pk,
+            reduction_pk = reductionPk,
+            sig = sig,
+            sk_identity = BigInteger(1, privateKeyBytes).toString(),
+            icao_root = BigInteger(1, proof.root).toString(),
+            inclusion_branches = proof.siblings.map { BigInteger(1, it).toString() },
+        )
 
-//            PlonkRegistrationInputs(
-//            dg1 = eDocument.getDg1File().encoded.map {
-//                Numeric.toHexString(listOf(it).toByteArray())
-//            },
-//            dg15 = eDocument.getDg15File()?.encoded?.map {
-//                Numeric.toHexString(listOf(it).toByteArray())
-//            } ?: listOf(),
-//            ec = encapsulatedContent.map { Numeric.toHexString(listOf(it).toByteArray()) },
-//            sa = signedAttributes.map { Numeric.toHexString(listOf(it).toByteArray()) },
-//            pk = pk.map { Numeric.toHexString(it.toByteArray()) },
-//            reduction_pk = reductionPk.map { Numeric.toHexString(it.toByteArray()) },
-//            sig = sig.map { Numeric.toHexString(it.toByteArray()) },
-//            sk_identity = skIdentity,
-//            icao_root = icaoRoot,
-//            inclusion_branches = inclusionBranches
-//        )
-            .let { input ->
-            input::class.members.filterIsInstance<kotlin.reflect.KProperty1<PlonkRegistrationInputs, *>>()
-                .associate { it.name to it.get(input)!! }
-        }
+        Log.i("Inputs:", GsonBuilder().setPrettyPrinting().create().toJson(plonkInputs))
 
-        Log.i("Inputs:", GsonBuilder().setPrettyPrinting().create().toJson(inputs))
+        val inputsMap: Map<String, Any> = mapOf(
+            "dg1" to plonkInputs.dg1,
+            "dg15" to plonkInputs.dg15,
+            "ec" to plonkInputs.ec,
+            "icao_root" to plonkInputs.icao_root,
+            "inclusion_branches" to plonkInputs.inclusion_branches,
+            "pk" to plonkInputs.pk,
+            "reduction_pk" to plonkInputs.reduction_pk,
+            "sa" to plonkInputs.sa,
+            "sig" to plonkInputs.sig,
+            "sk_identity" to plonkInputs.sk_identity
+        )
 
-        inputs
+        inputsMap
     }
 
     private fun readICAO(context: Context): ByteArray? {

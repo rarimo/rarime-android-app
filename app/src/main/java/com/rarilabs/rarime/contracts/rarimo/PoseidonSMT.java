@@ -9,6 +9,7 @@ import org.web3j.abi.datatypes.DynamicStruct;
 import org.web3j.abi.datatypes.Event;
 import org.web3j.abi.datatypes.Function;
 import org.web3j.abi.datatypes.StaticStruct;
+import org.web3j.abi.datatypes.Type;
 import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.abi.datatypes.generated.Bytes32;
 import org.web3j.abi.datatypes.generated.Uint256;
@@ -287,8 +288,15 @@ public class PoseidonSMT extends Contract {
     }
 
     public RemoteFunctionCall<Proof> getProof(byte[] key_) {
+        byte[] index = new byte[32];
+        // Fill the index array with zeros
+        Arrays.fill(index, (byte) 0);
+
+        // Copy the key array into the index array starting at the correct position
+        System.arraycopy(key_, 0, index, 32 - key_.length, key_.length);
+
         final Function function = new Function(FUNC_GETPROOF,
-                List.of(new Bytes32(key_)),
+                List.of(new Bytes32(index)),
                 List.of(new TypeReference<Proof>() {
                 }));
         return executeRemoteCallSingleValueReturn(function, Proof.class);
