@@ -31,7 +31,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +47,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
-import com.rarilabs.rarime.modules.maintenanceScreen.MaintenanceScreen
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
@@ -59,7 +57,6 @@ import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.AppTheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Screen
-import kotlinx.coroutines.launch
 
 val mainRoutes = listOf(
     Screen.Main.Home.route,
@@ -75,36 +72,9 @@ val LocalMainViewModel = compositionLocalOf<MainViewModel> { error("No MainViewM
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(), navController: NavHostController
 ) {
-    val coroutineScope = rememberCoroutineScope()
-    val appLoadingState = mainViewModel.appLoadingState
-    val appIcon by mainViewModel.appIcon.collectAsState()
-
-    LaunchedEffect(Unit) {
-        coroutineScope.launch {
-            mainViewModel.initApp()
-        }
-    }
 
     CompositionLocalProvider(LocalMainViewModel provides mainViewModel) {
-        when (appLoadingState.value) {
-            AppLoadingStates.LOADING -> {
-                AppLoadingScreen()
-            }
-
-            AppLoadingStates.LOAD_FAILED -> {
-                AppLoadingFailedScreen()
-            }
-
-            AppLoadingStates.LOADED -> {
-                MainScreenContent(
-                    navController = navController,
-                )
-            }
-
-            AppLoadingStates.MAINTENANCE -> {
-                MaintenanceScreen()
-            }
-        }
+        MainScreenContent(navController = navController)
     }
 }
 
@@ -145,7 +115,7 @@ fun AppLoadingScreen() {
 }
 
 @Composable
-private fun AppLoadingFailedScreen() {
+fun AppLoadingFailedScreen() {
     Box(
         modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
@@ -290,7 +260,9 @@ fun MainScreenContent(
                     // If the "external" route comes in, the handler shows a blank white screen,
                     // thus  it's necessary to immediately redirect back to the Home route.
                     if (currentRoute == "external") {
-                        navigateWithPopUp(Screen.Main.Home.route)
+                        LaunchedEffect(Unit) {
+                            navigateWithPopUp(Screen.Main.Home.route)
+                        }
                     }
                     ExtIntActionPreview(navigate = navigateWithPopUp, dataUri = uri, onError = {
                         navigateWithPopUp(Screen.Main.Home.route)
@@ -335,9 +307,7 @@ fun MainScreenContent(
             }
 
             AppBottomSheet(
-                state = qrCodeState,
-                fullScreen = true,
-                isHeaderEnabled = false
+                state = qrCodeState, fullScreen = true, isHeaderEnabled = false
             ) {
                 ScanQrScreen(onBack = {
                     qrCodeState.hide()

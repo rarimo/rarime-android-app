@@ -5,8 +5,8 @@ import android.net.Uri
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.rarilabs.rarime.data.enums.AppIcon
 import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.manager.AirDropManager
@@ -56,14 +56,21 @@ class MainViewModel @Inject constructor(
 
     val passportStatus = passportManager.passportStatus
 
-    var appLoadingState = mutableStateOf(AppLoadingStates.LOADING)
-        private set
+    private var _appLoadingState = MutableStateFlow(AppLoadingStates.LOADING)
+
+    val appLoadingStates: StateFlow<AppLoadingStates>
+        get() = _appLoadingState
 
     private val _appIcon = MutableStateFlow(AppIconUtil.getIcon(app))
 
     val appIcon: StateFlow<AppIcon>
         get() = _appIcon.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            initApp()
+        }
+    }
 
     val pointsToken = walletManager.pointsToken
 
@@ -140,14 +147,14 @@ class MainViewModel @Inject constructor(
 
 
     suspend fun initApp() = coroutineScope {
-        appLoadingState.value = AppLoadingStates.LOADING
+        _appLoadingState.value = AppLoadingStates.LOADING
 
         if (pointsManager.getMaintenanceStatus()) {
-            appLoadingState.value = AppLoadingStates.MAINTENANCE
+            _appLoadingState.value = AppLoadingStates.MAINTENANCE
             return@coroutineScope
         }
         if (identityManager.privateKey.value == null) {
-            appLoadingState.value = AppLoadingStates.LOADED
+            _appLoadingState.value = AppLoadingStates.LOADED
             return@coroutineScope
         }
 
@@ -169,9 +176,9 @@ class MainViewModel @Inject constructor(
             // awaitAll waits for all deferred tasks to complete.
             // The total wait time is the duration of the LONGEST task.
             awaitAll(loginJob, userDetailsJob)
-            appLoadingState.value = AppLoadingStates.LOADED
+            _appLoadingState.value = AppLoadingStates.LOADED
         } catch (e: Exception) {
-            appLoadingState.value = AppLoadingStates.LOAD_FAILED
+            _appLoadingState.value = AppLoadingStates.LOAD_FAILED
             ErrorHandler.logError("MainScreen", "Failed to init app", e)
         }
     }
