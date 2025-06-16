@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.Text
@@ -30,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,6 +50,7 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.SecondaryButton
 import com.rarilabs.rarime.ui.components.SnackbarSeverity
+import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -187,9 +190,8 @@ private fun ExtIntQueryProofHandlerContent(
     ) {
         Column(
             modifier = Modifier
-                .padding(horizontal = 20.dp)
         ) {
-            Row() {
+            Row(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Text(
                     text = "Proof Request",
                     style = RarimeTheme.typography.h3,
@@ -204,19 +206,23 @@ private fun ExtIntQueryProofHandlerContent(
                         .padding(end = 20.dp, top = 24.dp)
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(color = RarimeTheme.colors.componentPrimary)
                 ) {
                     AppIcon(
                         id = R.drawable.ic_close_fill,
                         tint = RarimeTheme.colors.textPrimary,
+                        size = 30.dp
                     )
                 }
 
             }
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            HorizontalDivider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 20.dp)
+            )
 
-            Column {
+            Column(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Text(
                     text = "VERIFICATION CRITERIA",
                     style = RarimeTheme.typography.overline2,
@@ -224,7 +230,7 @@ private fun ExtIntQueryProofHandlerContent(
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 previewFields.forEach { it ->
-                    Row(modifier = Modifier.padding(4.dp)) {
+                    Row(modifier = Modifier.padding(8.dp)) {
                         Text(
                             text = it.key,
                             style = RarimeTheme.typography.body4,
@@ -243,8 +249,8 @@ private fun ExtIntQueryProofHandlerContent(
 
 
             }
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-            Column {
+            HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp, horizontal = 20.dp))
+            Column(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Text(
                     text = "REQUESTOR",
                     style = RarimeTheme.typography.overline2,
@@ -252,7 +258,7 @@ private fun ExtIntQueryProofHandlerContent(
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 previewFields.forEach { it -> //TODO change this for requestor information
-                    Row(modifier = Modifier.padding(4.dp)) {
+                    Row(modifier = Modifier.padding(8.dp)) {
                         Text(
                             text = it.key,
                             style = RarimeTheme.typography.body4,
@@ -270,8 +276,8 @@ private fun ExtIntQueryProofHandlerContent(
                 }
 
             }
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-            Column {
+            HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp, horizontal = 20.dp))
+            Column(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Text(
                     text = "DATA TO SHARE",
                     style = RarimeTheme.typography.overline2,
@@ -299,8 +305,7 @@ private fun ExtIntQueryProofHandlerContent(
                 }
 
             }
-            Spacer(modifier = Modifier.height(20.dp))
-            Column {
+            Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp)) {
                 PrimaryButton(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -310,14 +315,20 @@ private fun ExtIntQueryProofHandlerContent(
                     enabled = !isSubmitting,
                     onClick = { handleAccept() }
                 )
-                SecondaryButton(
+                Spacer(modifier = Modifier.height(8.dp))
+                TransparentButton(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
+                    .fillMaxWidth(),
                     text = "Cancel",
                     size = ButtonSize.Large,
-                    onClick = { onCancel() }
-                )
+                    onClick = { onCancel() },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = RarimeTheme.colors.textPrimary,
+                        disabledContainerColor = Color.Transparent,
+                        disabledContentColor = RarimeTheme.colors.textDisabled
+                ))
+
             }
 
 
