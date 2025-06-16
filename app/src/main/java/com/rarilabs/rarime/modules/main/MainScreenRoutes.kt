@@ -88,10 +88,25 @@ fun MainScreenRoutes(
     SharedTransitionLayout {
         NavHost(
             navController = navController,
-            startDestination = if (mainViewModel.getIsPkInit()) Screen.Main.route else Screen.Intro.route,
+            startDestination = "init",//if (mainViewModel.getIsPkInit()) Screen.Main.route else Screen.Intro.route,
             enterTransition = { fadeIn() },
             exitTransition = { ExitTransition.None },
         ) {
+
+            composable("init") {
+                LaunchedEffect(Unit) {
+                    if (mainViewModel.getIsPkInit()) {
+                        navController.navigate(Screen.Main.route) {
+                            popUpTo("init") { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate(Screen.Intro.route) {
+                            popUpTo("init") { inclusive = true }
+                        }
+                    }
+                }
+            }
+
             composable(Screen.Intro.route) {
                 ScreenInsetsContainer {
                     IntroScreen(navigate = simpleNavigate)
@@ -437,6 +452,10 @@ fun MainScreenRoutes(
             composable(
                 route = Screen.ExtIntegrator.route,
                 deepLinks = listOf(
+                    navDeepLink {
+                        uriPattern = "https://app.rarime.com/external"
+                        action = Intent.ACTION_VIEW
+                    },
                     navDeepLink {
                         uriPattern = "https://app.rarime.com/external"
                         action = Intent.ACTION_VIEW

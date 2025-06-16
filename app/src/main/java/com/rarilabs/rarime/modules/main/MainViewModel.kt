@@ -2,11 +2,13 @@ package com.rarilabs.rarime.modules.main
 
 import android.app.Application
 import android.net.Uri
+import android.util.Log
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.rarilabs.rarime.data.enums.AppIcon
 import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.manager.AirDropManager
@@ -64,9 +66,14 @@ class MainViewModel @Inject constructor(
     val appIcon: StateFlow<AppIcon>
         get() = _appIcon.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            Log.i("initApp", "")
+            initApp()
+        }
+    }
 
     val pointsToken = walletManager.pointsToken
-
 
     private var _isModalShown = MutableStateFlow(false)
 
@@ -223,7 +230,7 @@ class MainViewModel @Inject constructor(
     suspend fun finishIntro() {
         withContext(Dispatchers.IO) {
 
-        tryLogin()
+            tryLogin()
             loadUserDetails()
         }
     }

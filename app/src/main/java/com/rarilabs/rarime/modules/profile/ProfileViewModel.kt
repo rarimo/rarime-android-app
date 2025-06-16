@@ -16,6 +16,7 @@ import com.rarilabs.rarime.manager.SettingsManager
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.store.room.notifications.NotificationsRepository
+import com.rarilabs.rarime.store.room.transactons.TransactionRepository
 import com.rarilabs.rarime.store.room.voting.VotingRepository
 import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,7 +39,8 @@ class ProfileViewModel @Inject constructor(
     val dataStoreManager: SecureSharedPrefsManager,
     private val driveBackupManager: DriveBackupManager,
     private val notificationsRepository: NotificationsRepository,
-    private val votingRepository: VotingRepository
+    private val votingRepository: VotingRepository,
+    private val transactionRepository: TransactionRepository
 ) : ViewModel() {
 
 
@@ -59,6 +61,7 @@ class ProfileViewModel @Inject constructor(
 
         notificationsRepository.deleteAllNotifications()
         votingRepository.deleteAllVoting()
+        transactionRepository.deleteAll()
 
         delay(1000L)
 

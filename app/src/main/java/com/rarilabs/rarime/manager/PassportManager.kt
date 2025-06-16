@@ -106,17 +106,17 @@ class PassportManager @Inject constructor(
 
         var isIdentityCreated = false
 
+        if (isInWaitlist) {
+            updatePassportStatus(PassportStatus.WAITLIST)
+            return
+        }
+
         try {
             val activeIdentity = identityManager.getPassportActiveIdentity(passport.value!!)
 
             isIdentityCreated = !activeIdentity.isNullOrEmpty()
         } catch (e: Exception) {
 
-        }
-
-        if (isInWaitlist) {
-            updatePassportStatus(PassportStatus.WAITLIST)
-            return
         }
 
         if (isIdentityCreated) {

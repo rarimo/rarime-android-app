@@ -50,10 +50,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="http" />
-                <data android:scheme="https" />
-                <data android:host="app.stage.rarime.com" />
-                <data android:pathPattern="/r/.*" />
+                <data
+                    android:host="app.stage.rarime.com"
+                    android:pathPrefix="/external"
+                    android:scheme="https" />
             </intent-filter>
 
             <intent-filter android:autoVerify="true">
@@ -62,13 +62,35 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="https" />
-                <data android:host="app.rarime.com" />
-                <data android:pathPrefix="/external" />
+                <data
+                    android:host="app.stage.rarime.com"
+                    android:pathPrefix="/external"
+                    android:scheme="http" />
+            </intent-filter>
 
-                <data android:scheme="http" />
-                <data android:host="app.rarime.com" />
-                <data android:pathPrefix="/external" />
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="app.rarime.com"
+                    android:pathPrefix="/external"
+                    android:scheme="https" />
+            </intent-filter>
+
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="app.rarime.com"
+                    android:pathPrefix="/external"
+                    android:scheme="http" />
             </intent-filter>
 
             <intent-filter>

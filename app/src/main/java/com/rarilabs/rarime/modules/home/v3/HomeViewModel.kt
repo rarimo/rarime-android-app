@@ -2,6 +2,7 @@ package com.rarilabs.rarime.modules.home.v3
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.rarilabs.rarime.api.points.models.BaseEvents
 import com.rarilabs.rarime.api.points.models.PointsEventData
 import com.rarilabs.rarime.manager.NotificationManager
@@ -16,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -42,6 +44,11 @@ class HomeViewModel @Inject constructor(
 
     val notifications = notificationManager.notificationList
 
+    init {
+        viewModelScope.launch {
+            initHomeData()
+        }
+    }
 
 
     suspend fun initHomeData() = withContext(Dispatchers.IO) {

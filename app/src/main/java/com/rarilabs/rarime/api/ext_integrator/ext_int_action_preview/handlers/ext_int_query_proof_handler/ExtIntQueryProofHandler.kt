@@ -97,6 +97,7 @@ fun ExtIntQueryProofHandler(
     }
 
     fun onFailHandler(e: Exception) {
+        ErrorHandler.logError("onFailHandler Proof", "fail", e)
         scope.launch {
             val message = when (e) {
                 is YourAgeDoesNotMeetTheRequirements -> context.getString(R.string.light_verification_error_age)

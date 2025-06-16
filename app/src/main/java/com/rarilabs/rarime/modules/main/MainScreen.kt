@@ -59,7 +59,6 @@ import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.AppTheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Screen
-import kotlinx.coroutines.launch
 
 val mainRoutes = listOf(
     Screen.Main.Home.route,
@@ -79,11 +78,6 @@ fun MainScreen(
     val appLoadingState = mainViewModel.appLoadingState
     val appIcon by mainViewModel.appIcon.collectAsState()
 
-    LaunchedEffect(Unit) {
-        coroutineScope.launch {
-            mainViewModel.initApp()
-        }
-    }
 
     CompositionLocalProvider(LocalMainViewModel provides mainViewModel) {
         when (appLoadingState.value) {
