@@ -1,16 +1,21 @@
 package com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.components
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,14 +34,12 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.components.AppSheetState
-import com.rarilabs.rarime.ui.components.AppSkeleton
+import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.components.TertiaryButton
+import com.rarilabs.rarime.ui.components.SecondaryButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
-import com.rarilabs.rarime.util.StringUtil
 import kotlinx.coroutines.launch
 
 data class HandlerPreviewerLayoutTexts(
@@ -108,117 +112,184 @@ fun HandlerPreviewerLayout(
             isLoaded = true
         }
     }
+    AppBottomSheet(
+        state = sheetState,
+        isHeaderEnabled = false,
+    ) {
+        HandlerPreviewerLayoutContent(
+            previewFields = previewFields,
 
-    HandlerPreviewerLayoutContent(
-        previewFields = previewFields,
+            texts = texts,
 
-        texts = texts,
+            isLoaded = isLoaded, isSubmitting = isSubmitting,
 
-        isLoaded = isLoaded, isSubmitting = isSubmitting, sheetState = sheetState,
-
-        handleAccept = { handleAccept() }, onCancel = { onCancel() })
+            handleAccept = {
+                handleAccept()
+                sheetState.hide()
+            },
+            onCancel = {
+                onCancel()
+                sheetState.hide()
+            }
+        )
+    }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun HandlerPreviewerLayoutContent(
     previewFields: Map<String, String> = mapOf(),
 
     texts: HandlerPreviewerLayoutTexts,
 
-    isLoaded: Boolean = false, isSubmitting: Boolean, sheetState: AppSheetState,
+    isLoaded: Boolean = false, isSubmitting: Boolean,
 
     handleAccept: () -> Unit = {}, onCancel: () -> Unit = {}
 ) {
-    AppBottomSheet(
-        state = sheetState,
-        isHeaderEnabled = false,
-    ) { hide ->
+    Box(
+        modifier = Modifier
+    )
+    {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    top = 24.dp, start = 24.dp, end = 24.dp, bottom = 16.dp
-                )
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .padding(horizontal = 20.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
-            ) {
+            Row() {
                 Text(
-                    text = texts.title,
-                    style = RarimeTheme.typography.h6,
+                    text = "Proof Request",
+                    style = RarimeTheme.typography.h3,
                     color = RarimeTheme.colors.textPrimary,
-                    modifier = Modifier.align(Alignment.CenterVertically)
+                    modifier = Modifier
+                        .padding(top = 30.dp)
                 )
-                AppIcon(
-                    modifier = Modifier.clickable { hide.invoke({}) },
-                    id = R.drawable.ic_close,
-                    tint = RarimeTheme.colors.textPrimary,
-                    size = 22.dp
-                )
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(
+                    onClick = onCancel,
+                    modifier = Modifier
+                        .padding(end = 20.dp, top = 24.dp)
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(color = RarimeTheme.colors.componentPrimary)
+                ) {
+                    AppIcon(
+                        id = R.drawable.ic_close_fill,
+                        tint = RarimeTheme.colors.textPrimary,
+                    )
+                }
+
             }
 
-            if (previewFields.isNotEmpty()) {
-                previewFields.forEach { (key, value) ->
-                    if (key == "Redirection URL") {
-                        val url = StringUtil.parseHost(value)
-                        if (url != null) {
-                            HandlerPreviewerLayoutRow(
-                                key = key, value = url
-                            )
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+            Column {
+                Text(
+                    text = "VERIFICATION CRITERIA",
+                    style = RarimeTheme.typography.overline2,
+                    color = RarimeTheme.colors.textSecondary,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                previewFields.forEach { it ->
+                    Row(modifier = Modifier.padding(4.dp)) {
+                        Text(
+                            text = it.key,
+                            style = RarimeTheme.typography.body4,
+                            color = RarimeTheme.colors.textPrimary
+                        )
+                        Spacer(
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            text = it.value,
+                            style = RarimeTheme.typography.body4,
+                            color = RarimeTheme.colors.textPrimary
+                        )
+                    }
+                }
+
+
+            }
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            Column {
+                Text(
+                    text = "REQUESTOR",
+                    style = RarimeTheme.typography.overline2,
+                    color = RarimeTheme.colors.textSecondary,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                previewFields.forEach { it -> //TODO change this for requestor information
+                    Row(modifier = Modifier.padding(4.dp)) {
+                        Text(
+                            text = it.key,
+                            style = RarimeTheme.typography.body4,
+                            color = RarimeTheme.colors.textPrimary
+                        )
+                        Spacer(
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            text = it.value,
+                            style = RarimeTheme.typography.body4,
+                            color = RarimeTheme.colors.textPrimary
+                        )
+                    }
+                }
+
+            }
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            Column {
+                Text(
+                    text = "DATA TO SHARE",
+                    style = RarimeTheme.typography.overline2,
+                    color = RarimeTheme.colors.textSecondary,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    previewFields.forEach { it -> //TODO change this for data share
+
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = RarimeTheme.colors.componentPrimary,
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                                .padding(horizontal = 12.dp, vertical = 6.dp)
+                        ) {
+                            Text(text = it.key, color = RarimeTheme.colors.textPrimary)
                         }
 
-                    } else {
-                        HandlerPreviewerLayoutRow(
-                            key = key, value = value
-                        )
                     }
+                }
 
-                }
-            } else {
-                repeat(3) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        AppSkeleton(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(32.dp),
-                        )
-                        AppSkeleton(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(32.dp),
-                        )
-                    }
-                }
             }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Column(
-                modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
+            Spacer(modifier = Modifier.height(20.dp))
+            Column {
                 PrimaryButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "Accept",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    text = "Generate Proof",
                     size = ButtonSize.Large,
-                    enabled = !isSubmitting && isLoaded,
-                    onClick = { handleAccept() })
-
-                TertiaryButton(
-                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !isSubmitting,
+                    onClick = { handleAccept() }
+                )
+                SecondaryButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
                     text = "Cancel",
                     size = ButtonSize.Large,
-                    enabled = !isSubmitting && isLoaded,
-                    onClick = { onCancel.invoke() })
+                    onClick = { onCancel() }
+                )
             }
+
+
         }
     }
 }
+
 
 @Composable
 fun HandlerPreviewerLayoutRow(
@@ -252,14 +323,14 @@ fun HandlerPreviewerLayoutRow(
 fun HandlerPreviewerLayoutContentPreview() {
     HandlerPreviewerLayoutContent(
         previewFields = mapOf(
-        "Key 1" to "Value 1", "Key 2" to "Value 2", "Key 3" to "Value 3"
-    ),
+            "Key 1" to "Value 1", "Key 2" to "Value 2", "Key 3" to "Value 3"
+        ),
 
         texts = HandlerPreviewerLayoutTexts(
             title = "Title"
         ),
 
-        isSubmitting = false, sheetState = rememberAppSheetState(true),
+        isSubmitting = false,
 
         handleAccept = { }, onCancel = { })
 }
