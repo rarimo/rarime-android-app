@@ -43,6 +43,7 @@ import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.QueryProofField
+import com.rarilabs.rarime.util.WalletUtil.formatAddress
 import kotlinx.coroutines.launch
 
 data class HandlerPreviewerLayoutTexts(
@@ -177,7 +178,7 @@ private fun HandlerPreviewerLayoutContent(
                 IconButton(
                     onClick = onCancel,
                     modifier = Modifier
-                        .padding(end = 20.dp, top = 24.dp)
+                        .padding(top = 24.dp)
                         .size(40.dp)
                         .clip(CircleShape)
                 ) {
@@ -240,7 +241,11 @@ private fun HandlerPreviewerLayoutContent(
                         modifier = Modifier.weight(1f)
                     )
                     Text(
-                        text = requestorId,
+                        text = formatAddress(
+                            address = requestorId,
+                            charsStartAmount = 8,
+                            charsEndAmount = 8
+                        ),
                         style = RarimeTheme.typography.body4,
                         color = RarimeTheme.colors.textPrimary
                     )
@@ -266,7 +271,7 @@ private fun HandlerPreviewerLayoutContent(
             HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp, horizontal = 20.dp))
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Text(
-                    text = "DATA TO SHARE",
+                    text = "REVEALED DATA",
                     style = RarimeTheme.typography.overline2,
                     color = RarimeTheme.colors.textSecondary,
                     modifier = Modifier.padding(bottom = 8.dp)
@@ -285,7 +290,11 @@ private fun HandlerPreviewerLayoutContent(
                                 )
                                 .padding(horizontal = 12.dp, vertical = 6.dp)
                         ) {
-                            Text(text = it.displayName, color = RarimeTheme.colors.textPrimary)
+                            Text(
+                                text = it.displayName,
+                                style = RarimeTheme.typography.subtitle6,
+                                color = RarimeTheme.colors.textPrimary
+                            )
                         }
 
                     }
@@ -324,7 +333,6 @@ private fun HandlerPreviewerLayoutContent(
 
     }
 }
-
 
 
 @Composable
