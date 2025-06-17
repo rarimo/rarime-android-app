@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
@@ -22,6 +23,7 @@ import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.manager.ScanNFCState
 import com.rarilabs.rarime.modules.appUpdate.InAppUpdate
 import com.rarilabs.rarime.modules.main.MainScreen
+import com.rarilabs.rarime.modules.main.MainViewModel
 import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -34,15 +36,22 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var pointsManager: PointsManager
 
-
     @Inject
     lateinit var hiddenPrizeManager: HiddenPrizeManager
 
+    private val mainViewModel: MainViewModel by viewModels()
+
     private var navController: NavHostController? = null
 
-    private var deepLinkData: Uri? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        intent.addFlags(
+            Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+        )
+
+
+
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.auto(
                 android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT
@@ -51,9 +60,11 @@ class MainActivity : AppCompatActivity() {
                 android.graphics.Color.TRANSPARENT,
             )
         )
+
+        handleDeepLink(intent.data, isColdStart = true)
+
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.statusBarColor = android.graphics.Color.TRANSPARENT
-        super.onCreate(savedInstanceState)
 
         installSplashScreen()
         initAppsFlyer()
@@ -62,7 +73,10 @@ class MainActivity : AppCompatActivity() {
         setContent {
             navController = rememberNavController()
             InAppUpdate(activity = this)
-            MainScreen(navController = navController!!)
+            MainScreen(
+                mainViewModel = mainViewModel,
+                navController = navController!!,
+            )
         }
     }
 
@@ -78,10 +92,8 @@ class MainActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
 
-        if (navController != null) {
-            val data = intent.data
-            handleDeepLink(data)
-        }
+        handleDeepLink(intent.data, false)
+
         nfcManager.handleNewIntent(intent)
     }
 
@@ -120,17 +132,9 @@ class MainActivity : AppCompatActivity() {
         AppsFlyerLib.getInstance().start(application.applicationContext)
     }
 
-    private fun handleDeepLink(uri: Uri?) {
-        if (uri == null) {
-            Log.i("uri", "uri is null")
-            return
-        }
-        //TODO: there is an issue that will cause onNewIntent to be called twice when the activity is already present.
-        if (intent?.data != null) {
-            deepLinkData = uri
-            navController?.navigate(uri)
-        } else {
-            Log.i("Smt wrong", "intent?.data == null")
-        }
+    private fun handleDeepLink(uri: Uri?, isColdStart: Boolean) {
+        uri ?: return
+        Log.i("MainActivity", "handleDeepLink(uri=$uri, cold=$isColdStart)")
+        mainViewModel.setExtIntDataURI(uri)
     }
 }

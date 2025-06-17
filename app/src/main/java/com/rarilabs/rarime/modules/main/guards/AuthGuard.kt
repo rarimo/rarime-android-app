@@ -15,9 +15,6 @@ fun AuthGuard(
     content: @Composable () -> Unit
 ) {
     val isScreenLocked by guardViewModel.isScreenLocked.collectAsState()
-    val biometricsState by guardViewModel.biometricsState
-    val passcodeState by guardViewModel.passcodeState
-
     val privateKey by guardViewModel.privateKey.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -28,11 +25,7 @@ fun AuthGuard(
         if (isScreenLocked) {
             navigate(Screen.Lock.route)
         } else {
-//            if (passcodeState.value == SecurityCheckState.UNSET.value) {
-//                navigate(Screen.Passcode.route)
-//            } else {
             content()
-            // }
         }
     } else {
         navigate(Screen.Intro.route)

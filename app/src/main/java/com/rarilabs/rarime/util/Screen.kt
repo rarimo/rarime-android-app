@@ -24,6 +24,12 @@ sealed class Screen(val route: String) {
         data object AddPasscode : Screen("add_passcode")
     }
 
+    data object Loading : Screen("loading")
+
+    data object Maintenance : Screen("maintenance")
+
+    data object LoadFailed : Screen("load_failed")
+
     data object EnableBiometrics : Screen("enable_biometrics")
 
     data object NotificationsList : Screen("notifications_list")
