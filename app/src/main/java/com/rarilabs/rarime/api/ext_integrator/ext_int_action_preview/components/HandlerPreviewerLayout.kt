@@ -134,8 +134,8 @@ fun HandlerPreviewerLayout(
                 sheetState.hide()
             },
             onCancel = {
-                onCancel()
                 sheetState.hide()
+                onCancel()
             },
             selector = selector,
             requestorId = requestorId,

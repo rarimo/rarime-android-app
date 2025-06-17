@@ -113,10 +113,10 @@ fun MainScreenRoutes(
     key(extIntDataURIState?.second) {
         extIntDataURIState?.first?.let { uri ->
             ExtIntActionPreview(navigate = navigateWithPopUp, dataUri = uri, onError = {
-                simpleNavigate(Screen.Main.Home.route)
+                extIntDataURIState = null
                 mainViewModel.setExtIntDataURI(null)
             }, onCancel = {
-                navigateWithPopUp(Screen.Main.Home.route)
+                extIntDataURIState = null
                 mainViewModel.setExtIntDataURI(null)
             }, onSuccess = { extDestination, localDestination ->
                 if (!extDestination.isNullOrEmpty()) {
