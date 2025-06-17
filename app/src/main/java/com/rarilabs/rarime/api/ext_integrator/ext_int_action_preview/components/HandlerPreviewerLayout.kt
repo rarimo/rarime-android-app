@@ -42,6 +42,7 @@ import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
+import com.rarilabs.rarime.util.QueryProofField
 import kotlinx.coroutines.launch
 
 data class HandlerPreviewerLayoutTexts(
@@ -57,7 +58,10 @@ fun HandlerPreviewerLayout(
 
     onSuccess: () -> Unit = {},
     onFail: (e: Exception) -> Unit = {},
-    onCancel: () -> Unit = {}
+    onCancel: () -> Unit = {},
+    selector: String = "0",
+    requestorId: String,
+    requestorHost: String
 ) {
     val scope = rememberCoroutineScope()
 
@@ -132,7 +136,10 @@ fun HandlerPreviewerLayout(
             onCancel = {
                 onCancel()
                 sheetState.hide()
-            }
+            },
+            selector = selector,
+            requestorId = requestorId,
+            requestorHost = requestorHost
         )
     }
 }
@@ -146,8 +153,12 @@ private fun HandlerPreviewerLayoutContent(
 
     isLoaded: Boolean = false, isSubmitting: Boolean,
 
-    handleAccept: () -> Unit = {}, onCancel: () -> Unit = {}
+    handleAccept: () -> Unit = {}, onCancel: () -> Unit = {},
+    selector: String = "0",
+    requestorId: String,
+    requestorHost: String
 ) {
+    val dataToShare = QueryProofField.fromSelector(selector)
     Box(
         modifier = Modifier
     ) {
@@ -210,7 +221,6 @@ private fun HandlerPreviewerLayoutContent(
                     }
                 }
 
-
             }
             HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp, horizontal = 20.dp))
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
@@ -220,25 +230,39 @@ private fun HandlerPreviewerLayoutContent(
                     color = RarimeTheme.colors.textSecondary,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-                previewFields.forEach { it -> //TODO change this for requestor information
-                    Row(modifier = Modifier.padding(8.dp)) {
-                        Text(
-                            text = it.key,
-                            style = RarimeTheme.typography.body4,
-                            color = RarimeTheme.colors.textPrimary
-                        )
-                        Spacer(
-                            modifier = Modifier.weight(1f)
-                        )
-                        Text(
-                            text = it.value,
-                            style = RarimeTheme.typography.body4,
-                            color = RarimeTheme.colors.textPrimary
-                        )
-                    }
+                Row(modifier = Modifier.padding(8.dp)) {
+                    Text(
+                        text = "ID",
+                        style = RarimeTheme.typography.body4,
+                        color = RarimeTheme.colors.textPrimary
+                    )
+                    Spacer(
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = requestorId,
+                        style = RarimeTheme.typography.body4,
+                        color = RarimeTheme.colors.textPrimary
+                    )
                 }
-
+                Row(modifier = Modifier.padding(8.dp)) {
+                    Text(
+                        text = "Host",
+                        style = RarimeTheme.typography.body4,
+                        color = RarimeTheme.colors.textPrimary
+                    )
+                    Spacer(
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = requestorHost,
+                        style = RarimeTheme.typography.body4,
+                        color = RarimeTheme.colors.textPrimary
+                    )
+                }
             }
+
+
             HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp, horizontal = 20.dp))
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Text(
@@ -251,7 +275,7 @@ private fun HandlerPreviewerLayoutContent(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    previewFields.forEach { it -> //TODO change this for data share
+                    dataToShare.forEach { it ->
 
                         Box(
                             modifier = Modifier
@@ -261,13 +285,14 @@ private fun HandlerPreviewerLayoutContent(
                                 )
                                 .padding(horizontal = 12.dp, vertical = 6.dp)
                         ) {
-                            Text(text = it.key, color = RarimeTheme.colors.textPrimary)
+                            Text(text = it.displayName, color = RarimeTheme.colors.textPrimary)
                         }
 
                     }
                 }
 
             }
+
             Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp)) {
                 PrimaryButton(
                     modifier = Modifier
@@ -294,9 +319,9 @@ private fun HandlerPreviewerLayoutContent(
                 )
 
             }
-
-
         }
+
+
     }
 }
 
@@ -343,5 +368,9 @@ fun HandlerPreviewerLayoutContentPreview() {
 
         isSubmitting = false,
 
-        handleAccept = { }, onCancel = { })
+        handleAccept = { }, onCancel = { },
+        selector = "1098",
+        requestorId = "24",
+        requestorHost = "Rarime",
+    )
 }
