@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
-    <!-- Features -->
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -19,7 +19,7 @@
         android:name="android.hardware.nfc"
         android:required="true" />
 
-    <!-- Query for SENDTO intents -->
+
     <queries>
         <intent>
             <action android:name="android.intent.action.SENDTO" />
@@ -36,18 +36,44 @@
         android:theme="@style/Theme.Rarime"
         tools:targetApi="31">
 
-        <!-- 1) The real MainActivity: NO deep-link intent-filters here -->
+
         <activity
             android:name="com.rarilabs.rarime.MainActivity"
             android:exported="true"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:localeConfig="@xml/locales_config"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Rarime">
-            <!-- Intentionally left blank: all VIEW-filters moved to alias -->
+
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:host="app.rarime.com" />
+                <data android:pathPrefix="/external" />
+
+                <data android:scheme="http" />
+                <data android:host="app.rarime.com" />
+                <data android:pathPrefix="/external" />
+            </intent-filter>
+
+            <!-- Custom URI scheme rarime://external -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="rarime"
+                    android:host="external" />
+            </intent-filter>
+
         </activity>
 
-        <!-- 2) Launcher-alias: starts MainActivity from home screen -->
+
         <activity-alias
             android:name="com.rarilabs.rarime.MainActivityBlack"
             android:enabled="true"
@@ -62,45 +88,7 @@
             </intent-filter>
         </activity-alias>
 
-        <!-- 3) Deep-link alias: handles only your external URLs/schemes -->
-        <activity-alias
-            android:name="com.rarilabs.rarime.DeepLinkAlias"
-            android:enabled="true"
-            android:exported="true"
-            android:icon="@mipmap/ic_launcher"
-            android:roundIcon="@mipmap/ic_launcher_round"
-            android:label="@string/app_name"
-            android:targetActivity="com.rarilabs.rarime.MainActivity">
 
-            <!-- HTTPS / HTTP deep link -->
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:scheme="https"
-                    android:host="app.rarime.com"
-                    android:pathPrefix="/external" />
-                <data
-                    android:scheme="http"
-                    android:host="app.rarime.com"
-                    android:pathPrefix="/external" />
-            </intent-filter>
-
-            <!-- Custom URI scheme rarime://external -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:scheme="rarime"
-                    android:host="external" />
-            </intent-filter>
-        </activity-alias>
-
-        <!-- 4) Other icon aliases (unchanged) -->
         <activity-alias
             android:name="com.rarilabs.rarime.MainActivityBW"
             android:enabled="false"

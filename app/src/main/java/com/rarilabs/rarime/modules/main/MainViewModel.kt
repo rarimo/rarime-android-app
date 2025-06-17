@@ -6,7 +6,6 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
 import com.rarilabs.rarime.data.enums.AppIcon
 import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.manager.AirDropManager
@@ -28,7 +27,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -51,10 +49,16 @@ class MainViewModel @Inject constructor(
     private val identityManager: IdentityManager,
     private val passportManager: PassportManager,
     private val pointsManager: PointsManager,
-) : AndroidViewModel(app) {
+
+    ) : AndroidViewModel(app) {
+
+    val isScreenLocked = securityManager.isScreenLocked
+
+
     val isLogsDeleted = identityManager.isLogsDeleted
 
     val passportStatus = passportManager.passportStatus
+
 
     private var _appLoadingState = MutableStateFlow(AppLoadingStates.LOADING)
 
@@ -66,14 +70,7 @@ class MainViewModel @Inject constructor(
     val appIcon: StateFlow<AppIcon>
         get() = _appIcon.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            initApp()
-        }
-    }
-
     val pointsToken = walletManager.pointsToken
-
 
     private var _isModalShown = MutableStateFlow(false)
 
@@ -141,24 +138,26 @@ class MainViewModel @Inject constructor(
         get() = _extIntDataURI.asStateFlow()
 
     fun setExtIntDataURI(uri: Uri?) {
-        val tempUrl = uri?.buildUpon()?.build().let { it to System.currentTimeMillis() }
-        _extIntDataURI.value = tempUrl
+        uri?.let {
+            _extIntDataURI.value = it to System.currentTimeMillis()
+        }
     }
 
 
-    suspend fun initApp() = coroutineScope {
-        _appLoadingState.value = AppLoadingStates.LOADING
+    suspend fun initApp() {
+        withContext(Dispatchers.IO) {
+            _appLoadingState.value = AppLoadingStates.LOADING
 
-        if (pointsManager.getMaintenanceStatus()) {
-            _appLoadingState.value = AppLoadingStates.MAINTENANCE
-            return@coroutineScope
-        }
-        if (identityManager.privateKey.value == null) {
-            _appLoadingState.value = AppLoadingStates.LOADED
-            return@coroutineScope
-        }
+            if (pointsManager.getMaintenanceStatus()) {
+                _appLoadingState.value = AppLoadingStates.MAINTENANCE
+                return@withContext
+            }
+            if (identityManager.privateKey.value == null) {
+                _appLoadingState.value = AppLoadingStates.LOADED
+                return@withContext
+            }
 
-        launch {
+
             if (!isLogsDeleted.value) {
                 try {
                     ErrorHandler.clearLogFile()
@@ -167,19 +166,20 @@ class MainViewModel @Inject constructor(
                     ErrorHandler.logError("MainViewModel", "Failed to clear logs", e)
                 }
             }
-        }
 
-        try {
-            val loginJob = async { tryLogin() }
-            val userDetailsJob = async { loadUserDetails() }
 
-            // awaitAll waits for all deferred tasks to complete.
-            // The total wait time is the duration of the LONGEST task.
-            awaitAll(loginJob, userDetailsJob)
-            _appLoadingState.value = AppLoadingStates.LOADED
-        } catch (e: Exception) {
-            _appLoadingState.value = AppLoadingStates.LOAD_FAILED
-            ErrorHandler.logError("MainScreen", "Failed to init app", e)
+            try {
+                val loginJob = async { tryLogin() }
+                val userDetailsJob = async { loadUserDetails() }
+
+                // awaitAll waits for all deferred tasks to complete.
+                // The total wait time is the duration of the LONGEST task.
+                awaitAll(loginJob, userDetailsJob)
+                _appLoadingState.value = AppLoadingStates.LOADED
+            } catch (e: Exception) {
+                _appLoadingState.value = AppLoadingStates.LOAD_FAILED
+                ErrorHandler.logError("MainScreen", "Failed to init app", e)
+            }
         }
     }
 
@@ -230,7 +230,7 @@ class MainViewModel @Inject constructor(
     suspend fun finishIntro() {
         withContext(Dispatchers.IO) {
 
-        tryLogin()
+            tryLogin()
             loadUserDetails()
         }
     }

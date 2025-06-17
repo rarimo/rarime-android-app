@@ -2,10 +2,7 @@ package com.rarilabs.rarime.modules.main
 
 
 import android.annotation.SuppressLint
-import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -29,7 +26,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
@@ -46,7 +42,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
@@ -70,8 +65,14 @@ val LocalMainViewModel = compositionLocalOf<MainViewModel> { error("No MainViewM
 
 @Composable
 fun MainScreen(
-    mainViewModel: MainViewModel = hiltViewModel(), navController: NavHostController
+    mainViewModel: MainViewModel = hiltViewModel(),
+    navController: NavHostController
 ) {
+
+    LaunchedEffect(Unit) {
+        mainViewModel.initApp()
+    }
+
 
     CompositionLocalProvider(LocalMainViewModel provides mainViewModel) {
         MainScreenContent(navController = navController)
@@ -123,8 +124,6 @@ fun AppLoadingFailedScreen() {
     }
 }
 
-// We have a floating tab bar at the bottom of the screen,
-// so no need to use scaffold padding
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreenContent(
@@ -134,7 +133,6 @@ fun MainScreenContent(
     val context = LocalContext.current
 
 
-    // Collect states using 'by' to avoid accessing .value
     val passportStatus by mainViewModel.passportStatus.collectAsState()
     val isModalShown by mainViewModel.isModalShown.collectAsState()
     val modalContent by mainViewModel.modalContent.collectAsState()
@@ -144,8 +142,6 @@ fun MainScreenContent(
     val snackbarContent by mainViewModel.snackbarContent.collectAsState()
 
     val colorSchema by mainViewModel.colorScheme.collectAsState()
-
-    val extIntDataURI by mainViewModel.extIntDataURI.collectAsState()
 
     val enterProgramSheetState = rememberAppSheetState()
     val qrCodeState = rememberAppSheetState()
@@ -255,44 +251,6 @@ fun MainScreenContent(
                 colorScheme = colorSchema, route = currentRoute ?: ""
             )
 
-            key(extIntDataURI?.second) {
-                extIntDataURI?.first?.let { uri ->
-                    // If the "external" route comes in, the handler shows a blank white screen,
-                    // thus  it's necessary to immediately redirect back to the Home route.
-                    if (currentRoute == "external") {
-                        LaunchedEffect(Unit) {
-                            navigateWithPopUp(Screen.Main.Home.route)
-                        }
-                    }
-                    ExtIntActionPreview(navigate = navigateWithPopUp, dataUri = uri, onError = {
-                        navigateWithPopUp(Screen.Main.Home.route)
-                        mainViewModel.setExtIntDataURI(null)
-                    }, onCancel = {
-                        navigateWithPopUp(Screen.Main.Home.route)
-                        mainViewModel.setExtIntDataURI(null)
-                    }, onSuccess = { extDestination, localDestination ->
-                        if (!extDestination.isNullOrEmpty()) {
-                            val intent = Intent(Intent.ACTION_VIEW, extDestination.toUri())
-
-                            try {
-                                context.startActivity(intent)
-                            } catch (e: ActivityNotFoundException) {
-                                Toast.makeText(
-                                    context,
-                                    "No app available to open this link.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-
-                        if (!localDestination.isNullOrEmpty()) {
-                            navigateWithPopUp(localDestination)
-                        }
-
-                        mainViewModel.setExtIntDataURI(null)
-                    })
-                }
-            }
 
             MainScreenRoutes(
                 navController = navController,

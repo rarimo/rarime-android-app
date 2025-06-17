@@ -119,7 +119,7 @@ fun LockScreen(
     }
 
     /* EFFECTS */
-    LaunchedEffect(true) {
+    LaunchedEffect(Unit) {
         if (lockViewModule.isBiometricEnabled && isBiometricsAvailable) {
             if (lockTimestamp.value <= System.currentTimeMillis() && !isAttemptsDisabled) {
                 authenticateWithBiometrics()
