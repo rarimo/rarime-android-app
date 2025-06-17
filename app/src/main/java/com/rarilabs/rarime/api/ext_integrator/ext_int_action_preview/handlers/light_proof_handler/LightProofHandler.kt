@@ -12,7 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.components.HandlerPreviewerLayout
-import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.components.HandlerPreviewerLayoutTexts
+import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.components.HandlerPreviewerLayoutTitle
 import com.rarilabs.rarime.api.ext_integrator.models.NoPassport
 import com.rarilabs.rarime.api.ext_integrator.models.YourAgeDoesNotMeetTheRequirements
 import com.rarilabs.rarime.api.ext_integrator.models.YourCitizenshipDoesNotMeetTheRequirements
@@ -106,9 +106,7 @@ fun LightProofHandler(
             viewModel.loadDetails(proofParamsUrl, redirectUrl)
         },
 
-        texts = HandlerPreviewerLayoutTexts(
-            title = stringResource(R.string.light_verification_sheet_title)
-        ),
+
 
         onSuccess = { onSuccessHandler() },
         onFail = { onFailHandler(it) },

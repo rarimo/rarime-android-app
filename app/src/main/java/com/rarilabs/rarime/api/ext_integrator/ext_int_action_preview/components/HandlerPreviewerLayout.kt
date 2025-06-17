@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,7 +47,7 @@ import com.rarilabs.rarime.util.QueryProofField
 import com.rarilabs.rarime.util.WalletUtil.formatAddress
 import kotlinx.coroutines.launch
 
-data class HandlerPreviewerLayoutTexts(
+data class HandlerPreviewerLayoutTitle(
     val title: String
 )
 
@@ -55,7 +56,6 @@ fun HandlerPreviewerLayout(
     onAcceptHandler: suspend () -> Unit = {},
     loadPreviewFields: suspend () -> Map<String, String> = { mapOf() },
 
-    texts: HandlerPreviewerLayoutTexts,
 
     onSuccess: () -> Unit = {},
     onFail: (e: Exception) -> Unit = {},
@@ -126,7 +126,6 @@ fun HandlerPreviewerLayout(
         HandlerPreviewerLayoutContent(
             previewFields = previewFields,
 
-            texts = texts,
 
             isLoaded = isLoaded, isSubmitting = isSubmitting,
 
@@ -150,7 +149,6 @@ fun HandlerPreviewerLayout(
 private fun HandlerPreviewerLayoutContent(
     previewFields: Map<String, String> = mapOf(),
 
-    texts: HandlerPreviewerLayoutTexts,
 
     isLoaded: Boolean = false, isSubmitting: Boolean,
 
@@ -168,7 +166,7 @@ private fun HandlerPreviewerLayoutContent(
         ) {
             Row(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Text(
-                    text = "Proof Request",
+                    text = stringResource(R.string.light_proof_header),
                     style = RarimeTheme.typography.h3,
                     color = RarimeTheme.colors.textPrimary,
                     modifier = Modifier
@@ -199,7 +197,7 @@ private fun HandlerPreviewerLayoutContent(
 
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Text(
-                    text = "VERIFICATION CRITERIA",
+                    text = stringResource(R.string.light_proof_verification_criteria_section_title),
                     style = RarimeTheme.typography.overline2,
                     color = RarimeTheme.colors.textSecondary,
                     modifier = Modifier.padding(bottom = 8.dp)
@@ -226,14 +224,14 @@ private fun HandlerPreviewerLayoutContent(
             HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp, horizontal = 20.dp))
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Text(
-                    text = "REQUESTOR",
+                    text = stringResource(R.string.light_proof_requestor_section_title),
                     style = RarimeTheme.typography.overline2,
                     color = RarimeTheme.colors.textSecondary,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 Row(modifier = Modifier.padding(8.dp)) {
                     Text(
-                        text = "ID",
+                        text = stringResource(R.string.light_proof_id),
                         style = RarimeTheme.typography.body4,
                         color = RarimeTheme.colors.textPrimary
                     )
@@ -252,7 +250,7 @@ private fun HandlerPreviewerLayoutContent(
                 }
                 Row(modifier = Modifier.padding(8.dp)) {
                     Text(
-                        text = "Host",
+                        text = stringResource(R.string.light_proof_host),
                         style = RarimeTheme.typography.body4,
                         color = RarimeTheme.colors.textPrimary
                     )
@@ -271,7 +269,7 @@ private fun HandlerPreviewerLayoutContent(
             HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp, horizontal = 20.dp))
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Text(
-                    text = "REVEALED DATA",
+                    text = stringResource(R.string.ligth_profe_revealed_data_section_title),
                     style = RarimeTheme.typography.overline2,
                     color = RarimeTheme.colors.textSecondary,
                     modifier = Modifier.padding(bottom = 8.dp)
@@ -307,7 +305,7 @@ private fun HandlerPreviewerLayoutContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp),
-                    text = "Generate Proof",
+                    text = stringResource(R.string.light_proof_generate_proof_btn_label),
                     size = ButtonSize.Large,
                     enabled = !isSubmitting,
                     onClick = { handleAccept() }
@@ -316,7 +314,7 @@ private fun HandlerPreviewerLayoutContent(
                 TransparentButton(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    text = "Cancel",
+                    text = stringResource(R.string.light_proof_cancel_btn_label),
                     size = ButtonSize.Large,
                     onClick = { onCancel() },
                     colors = ButtonDefaults.buttonColors(
@@ -369,10 +367,7 @@ fun HandlerPreviewerLayoutContentPreview() {
         previewFields = mapOf(
             "Key 1" to "Value 1", "Key 2" to "Value 2", "Key 3" to "Value 3"
         ),
-
-        texts = HandlerPreviewerLayoutTexts(
-            title = "Title"
-        ),
+        
 
         isSubmitting = false,
 

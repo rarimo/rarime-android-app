@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -219,7 +220,7 @@ private fun ExtIntQueryProofHandlerContent(
         ) {
             Row(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Text(
-                    text = "Proof Request",
+                    text = stringResource(R.string.querry_proof_header),
                     style = RarimeTheme.typography.h3,
                     color = RarimeTheme.colors.textPrimary,
                     modifier = Modifier
@@ -250,7 +251,7 @@ private fun ExtIntQueryProofHandlerContent(
 
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Text(
-                    text = "VERIFICATION CRITERIA",
+                    text = stringResource(R.string.querry_proof_verification_criteria_section_title),
                     style = RarimeTheme.typography.overline2,
                     color = RarimeTheme.colors.textSecondary,
                     modifier = Modifier.padding(bottom = 8.dp)
@@ -277,14 +278,14 @@ private fun ExtIntQueryProofHandlerContent(
             HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp, horizontal = 20.dp))
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Text(
-                    text = "REQUESTOR",
+                    text = stringResource(R.string.querry_proof_requestor_section_title),
                     style = RarimeTheme.typography.overline2,
                     color = RarimeTheme.colors.textSecondary,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 Row(modifier = Modifier.padding(8.dp)) {
                     Text(
-                        text = "ID",
+                        text = stringResource(R.string.querry_proof_id),
                         style = RarimeTheme.typography.body4,
                         color = RarimeTheme.colors.textPrimary
                     )
@@ -303,7 +304,7 @@ private fun ExtIntQueryProofHandlerContent(
                 }
                 Row(modifier = Modifier.padding(8.dp)) {
                     Text(
-                        text = "Host",
+                        text = stringResource(R.string.querry_proof_host),
                         style = RarimeTheme.typography.body4,
                         color = RarimeTheme.colors.textPrimary
                     )
@@ -322,7 +323,7 @@ private fun ExtIntQueryProofHandlerContent(
             HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp, horizontal = 20.dp))
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Text(
-                    text = "REVEALED DATA",
+                    text = stringResource(R.string.querry_proof_revealed_data_section_title),
                     style = RarimeTheme.typography.overline2,
                     color = RarimeTheme.colors.textSecondary,
                     modifier = Modifier.padding(bottom = 8.dp)
@@ -358,7 +359,7 @@ private fun ExtIntQueryProofHandlerContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp),
-                    text = "Generate Proof",
+                    text = stringResource(R.string.querry_prooof_generate_proof_btn_label),
                     size = ButtonSize.Large,
                     enabled = !isSubmitting,
                     onClick = { handleAccept() }
@@ -367,7 +368,7 @@ private fun ExtIntQueryProofHandlerContent(
                 TransparentButton(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    text = "Cancel",
+                    text = stringResource(R.string.querry_proof_cancel_btn_label),
                     size = ButtonSize.Large,
                     onClick = { onCancel() },
                     colors = ButtonDefaults.buttonColors(

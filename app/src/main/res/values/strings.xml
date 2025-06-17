@@ -588,6 +588,22 @@
     <string name="hidden_prize_on_invite_description">Ready to test faces for hidden keys? Tap my invite, get free scans, and let’s race for the prize.\n</string>
     <string name="take_a_picture">Take a picture</string>
     <string name="shared">Shared</string>
+    <string name="light_proof_header">Proof Request</string>
+    <string name="light_proof_verification_criteria_section_title">VERIFICATION CRITERIA</string>
+    <string name="light_proof_requestor_section_title">REQUESTOR</string>
+    <string name="light_proof_id">ID</string>
+    <string name="light_proof_host">Host</string>
+    <string name="ligth_profe_revealed_data_section_title">REVEALED DATA</string>
+    <string name="light_proof_generate_proof_btn_label">Generate Proof</string>
+    <string name="light_proof_cancel_btn_label">Cancel</string>
+    <string name="querry_proof_header">Proof Request</string>
+    <string name="querry_proof_verification_criteria_section_title">VERIFICATION CRITERIA</string>
+    <string name="querry_proof_requestor_section_title">REQUESTOR</string>
+    <string name="querry_proof_id">ID</string>
+    <string name="querry_proof_host">Host</string>
+    <string name="querry_proof_revealed_data_section_title">REVEALED DATA</string>
+    <string name="querry_prooof_generate_proof_btn_label">Generate Proof</string>
+    <string name="querry_proof_cancel_btn_label">Cancel</string>
 
 
 </resources>
