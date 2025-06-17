@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,16 +49,18 @@ import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.components.SecondaryButton
 import com.rarilabs.rarime.ui.components.SnackbarSeverity
 import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
+import com.rarilabs.rarime.util.QueryProofField
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import java.net.URL
+
 
 @Composable
 fun ExtIntQueryProofHandler(
@@ -70,6 +73,22 @@ fun ExtIntQueryProofHandler(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val mainViewModel = LocalMainViewModel.current
+    val queryProofParametersRequest by viewModel.queryProofParametersRequest.collectAsState()
+    val selector by remember {
+        derivedStateOf {
+            queryProofParametersRequest!!.data.attributes.selector
+        }
+    }
+    val requestorId by remember {
+        derivedStateOf {
+            queryProofParametersRequest!!.data.id
+        }
+    }
+    val requestorHost by remember {
+        derivedStateOf {
+            URL(queryProofParametersRequest!!.data.attributes.callback_url).host
+        }
+    }
 
     val previewFields by viewModel.fieldsParams.collectAsState()
 
@@ -170,8 +189,10 @@ fun ExtIntQueryProofHandler(
             isSubmitting = isSubmitting,
             handleAccept = { handleAccept() },
             onCancel = { onCancel.invoke() },
-
-            )
+            selector = selector,
+            requestorId = requestorId,
+            requestorHost = requestorHost,
+        )
     }
 
 }
@@ -183,8 +204,12 @@ private fun ExtIntQueryProofHandlerContent(
     isSubmitting: Boolean,
     handleAccept: () -> Unit = {},
     onCancel: () -> Unit = {},
+    selector: String = "0",
+    requestorId: String,
+    requestorHost: String
 
-    ) {
+) {
+    val dataToShare = QueryProofField.fromSelector(selector)
     Box(
         modifier = Modifier
     ) {
@@ -247,7 +272,6 @@ private fun ExtIntQueryProofHandlerContent(
                     }
                 }
 
-
             }
             HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp, horizontal = 20.dp))
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
@@ -257,25 +281,39 @@ private fun ExtIntQueryProofHandlerContent(
                     color = RarimeTheme.colors.textSecondary,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-                previewFields.forEach { it -> //TODO change this for requestor information
-                    Row(modifier = Modifier.padding(8.dp)) {
-                        Text(
-                            text = it.key,
-                            style = RarimeTheme.typography.body4,
-                            color = RarimeTheme.colors.textPrimary
-                        )
-                        Spacer(
-                            modifier = Modifier.weight(1f)
-                        )
-                        Text(
-                            text = it.value,
-                            style = RarimeTheme.typography.body4,
-                            color = RarimeTheme.colors.textPrimary
-                        )
-                    }
+                Row(modifier = Modifier.padding(8.dp)) {
+                    Text(
+                        text = "ID",
+                        style = RarimeTheme.typography.body4,
+                        color = RarimeTheme.colors.textPrimary
+                    )
+                    Spacer(
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = requestorId,
+                        style = RarimeTheme.typography.body4,
+                        color = RarimeTheme.colors.textPrimary
+                    )
                 }
-
+                Row(modifier = Modifier.padding(8.dp)) {
+                    Text(
+                        text = "Host",
+                        style = RarimeTheme.typography.body4,
+                        color = RarimeTheme.colors.textPrimary
+                    )
+                    Spacer(
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = requestorHost,
+                        style = RarimeTheme.typography.body4,
+                        color = RarimeTheme.colors.textPrimary
+                    )
+                }
             }
+
+
             HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp, horizontal = 20.dp))
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Text(
@@ -288,7 +326,7 @@ private fun ExtIntQueryProofHandlerContent(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    previewFields.forEach { it -> //TODO change this for data share
+                    dataToShare.forEach { it ->
 
                         Box(
                             modifier = Modifier
@@ -298,13 +336,14 @@ private fun ExtIntQueryProofHandlerContent(
                                 )
                                 .padding(horizontal = 12.dp, vertical = 6.dp)
                         ) {
-                            Text(text = it.key, color = RarimeTheme.colors.textPrimary)
+                            Text(text = it.displayName, color = RarimeTheme.colors.textPrimary)
                         }
 
                     }
                 }
 
             }
+
             Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp)) {
                 PrimaryButton(
                     modifier = Modifier
@@ -318,7 +357,7 @@ private fun ExtIntQueryProofHandlerContent(
                 Spacer(modifier = Modifier.height(8.dp))
                 TransparentButton(
                     modifier = Modifier
-                    .fillMaxWidth(),
+                        .fillMaxWidth(),
                     text = "Cancel",
                     size = ButtonSize.Large,
                     onClick = { onCancel() },
@@ -327,12 +366,13 @@ private fun ExtIntQueryProofHandlerContent(
                         contentColor = RarimeTheme.colors.textPrimary,
                         disabledContainerColor = Color.Transparent,
                         disabledContentColor = RarimeTheme.colors.textDisabled
-                ))
+                    )
+                )
 
             }
-
-
         }
+
+
     }
 }
 
@@ -379,6 +419,9 @@ private fun ExtIntQueryProofHandlerContentPreview() {
         isSubmitting = false,
         handleAccept = { },
         onCancel = { },
+        selector = "1098",
+        requestorId = "24",
+        requestorHost = "Rarime",
     )
 
 }
