@@ -418,7 +418,6 @@ class ProofGenerationManager @Inject constructor(
             circuitDownloader.downloadTrustedSetup(onProgressUpdate = { progress, isEnded ->
                 if (progress != _downloadProgress.value) {
                     _downloadProgress.value = progress
-                    ErrorHandler.logDebug("Plonk", "Circuit download: $progress")
                 }
             })
 
@@ -431,13 +430,11 @@ class ProofGenerationManager @Inject constructor(
             circuitDownloader.downloadNoirByteCode(circuitData = circuitData!!) { progress, isEnded ->
 
                 if (_downloadProgress.value != progress) {
-                    ErrorHandler.logDebug("Plonk", "progress bytecode: $progress")
                     _downloadProgress.value = progress
                 }
             }
 
 
-        ErrorHandler.logDebug("Plonk", "ByteCodePath: $byteCodePath")
 
 
         _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
@@ -720,19 +717,34 @@ class ProofGenerationManager @Inject constructor(
             inclusion_branches = proof.siblings.map { BigInteger(1, it).toString() },
         )
 
-        Log.i("Inputs:", GsonBuilder().setPrettyPrinting().create().toJson(plonkInputs))
+        //Log.i("Inputs:", GsonBuilder().setPrettyPrinting().create().toJson(plonkInputs))
+
+        val inputs = PlonkRegistrationInputs(
+            plonkInputs.dg1.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
+            plonkInputs.dg15.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
+            plonkInputs.ec.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
+            plonkInputs.icao_root.let { Numeric.toHexString(BigInteger(it).toByteArray()) },
+            plonkInputs.inclusion_branches.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
+            plonkInputs.sa.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
+            plonkInputs.pk.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
+            plonkInputs.reduction_pk.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
+            plonkInputs.sig.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
+            plonkInputs.sk_identity.let { Numeric.toHexString(BigInteger(it).toByteArray()) },
+        )
+
+        Log.i("sa", inputs.sa.size.toString())
 
         val inputsMap: Map<String, Any> = mapOf(
-            "dg1" to plonkInputs.dg1,
-            "dg15" to plonkInputs.dg15,
-            "ec" to plonkInputs.ec,
-            "icao_root" to plonkInputs.icao_root,
-            "inclusion_branches" to plonkInputs.inclusion_branches,
-            "pk" to plonkInputs.pk,
-            "reduction_pk" to plonkInputs.reduction_pk,
-            "sa" to plonkInputs.sa,
-            "sig" to plonkInputs.sig,
-            "sk_identity" to plonkInputs.sk_identity
+            "dg15" to inputs.dg15,
+            "sa" to inputs.sa,
+            "pk" to inputs.pk,
+            "icao_root" to inputs.icao_root,
+            "inclusion_branches" to inputs.inclusion_branches,
+            "ec" to inputs.ec,
+            "sk_identity" to inputs.sk_identity,
+            "dg1" to inputs.dg1,
+            "sig" to inputs.sig,
+            "reduction_pk" to inputs.reduction_pk,
         )
 
         inputsMap
