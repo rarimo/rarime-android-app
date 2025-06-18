@@ -27,7 +27,7 @@ class NativeToken @Inject constructor(
 ) : Token(address = "") {
 
     override var name: String = "Ethereum"
-    override var symbol: String = "Eth"
+    override var symbol: String = "ETH"
     override var decimals: Int = 18
     override var icon: Int = R.drawable.ic_rarimo
     override val tokenType: TokenType = TokenType.RARIMO_ETH

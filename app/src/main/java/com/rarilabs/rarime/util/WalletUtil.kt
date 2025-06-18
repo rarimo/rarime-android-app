@@ -34,8 +34,7 @@ object WalletUtil {
     }
 
     fun isValidAddressForSend(address: String, userAddress: String): Boolean {
-        val isNotOwn = address.lowercase() != userAddress.lowercase()
-        return isNotOwn && isValidAddress(address)
+        return isValidAddress(address)
     }
 
     fun isValidAddress(address: String): Boolean {
