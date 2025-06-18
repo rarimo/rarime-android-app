@@ -37,8 +37,10 @@ data class AddScanProps(
 fun AddScanBottomSheet(
     isInviteEnable: Boolean = true,
     isShareEnable: Boolean = true,
+    currentInvite: Int,
+    maxInvite: Int,
     onShare: () -> Unit,
-    onInvite: () -> Unit
+    onInvite: () -> Unit,
 ) {
     val enabledColor = RarimeTheme.colors.textPrimary
     val disabledColor = RarimeTheme.colors.textDisabled
@@ -106,10 +108,10 @@ fun AddScanBottomSheet(
                 )
             )
             RowAddScans(
-                isEnabled = isShareEnable,
                 props = props,
                 rowTitle = stringResource(R.string.hidden_prize_title_share_row),
-                rowDescription = stringResource(R.string.hidden_prize_share_row_description),
+                rowDescription = if (isShareEnable) stringResource(R.string.hidden_prize_share_row_description)
+                else stringResource(R.string.shared),
                 modifier = Modifier,
                 buttonLabel = stringResource(R.string.hidden_prize_share_row_button_label),
                 idIcon = R.drawable.ic_share_line,
@@ -121,10 +123,9 @@ fun AddScanBottomSheet(
                     .size(20.dp)
             )
             RowAddScans(
-                isEnabled = isInviteEnable,
                 props = props,
                 rowTitle = stringResource(R.string.hidden_prize_invite_row_title),
-                rowDescription = stringResource(R.string.hidden_prize_invite_row_description),
+                rowDescription = "$currentInvite / $maxInvite invited",
                 modifier = Modifier,
                 buttonLabel = stringResource(R.string.hidden_prize_invite_row_button_label),
                 idIcon = R.drawable.ic_user_add_line,
@@ -171,10 +172,12 @@ private fun RowAddScans(
 
         Column {
             Text(
-                text = rowTitle, color = props.color
+                text = rowTitle, style = RarimeTheme.typography.subtitle5, color = props.color
             )
             Text(
-                text = rowDescription, color = props.color
+                text = rowDescription,
+                style = RarimeTheme.typography.body5,
+                color = if (isEnabled) RarimeTheme.colors.textSecondary else props.color
             )
         }
         Spacer(Modifier.weight(weight = 1.0f))
@@ -193,20 +196,13 @@ private fun RowAddScans(
 @Composable
 fun AddScansBottomSheetEnabledPreview() {
     Box(modifier = Modifier) {
-        AddScanBottomSheet(onShare = {}, onInvite = {})
-    }
-
-}
-
-@Preview(showBackground = true)
-@Composable
-fun AddScansBottomSheetDisabledPreview() {
-    Box(modifier = Modifier) {
         AddScanBottomSheet(
-            isInviteEnable = false,
-            isShareEnable = false,
-            onShare = {},
-            onInvite = {})
+            onShare = {}, onInvite = {},
+            currentInvite = 0,
+            maxInvite = 5
+        )
     }
+
 }
+
 

@@ -110,7 +110,8 @@ fun ScanPassportScreen(
                     onNext = {
                         scanPassportScreenViewModel.setPassportTEMP(it)
                         scanPassportScreenViewModel.savePassport()
-                        onClose.invoke()
+                        setVisibilityOfBottomBar(true)
+                        //onClose.invoke()
                     },
                     onClose = {
                         onClose.invoke()

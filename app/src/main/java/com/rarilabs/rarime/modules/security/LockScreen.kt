@@ -38,20 +38,27 @@ import com.rarilabs.rarime.ui.components.rememberAppTextFieldState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.BiometricUtil
 import com.rarilabs.rarime.util.Constants
+import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun LockScreen(
-    lockViewModule: LockViewModule = hiltViewModel(), onPass: () -> Unit
+    lockViewModule: LockViewModule = hiltViewModel(),
+    nextRoute: String? = Screen.Main.Home.route,
+    onPass: (String?) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
     fun onPassHandler() {
         scope.launch {
             lockViewModule.unlockScreen()
-            delay(300)
-            onPass.invoke()
+            if (nextRoute == null) {
+                onPass.invoke(Screen.Main.Home.route)
+
+            } else {
+                onPass.invoke(nextRoute)
+            }
         }
     }
 
@@ -112,12 +119,9 @@ fun LockScreen(
     }
 
     /* EFFECTS */
-    LaunchedEffect(true) {
+    LaunchedEffect(Unit) {
         if (lockViewModule.isBiometricEnabled && isBiometricsAvailable) {
-            if (
-                lockTimestamp.value <= System.currentTimeMillis() &&
-                !isAttemptsDisabled
-            ) {
+            if (lockTimestamp.value <= System.currentTimeMillis() && !isAttemptsDisabled) {
                 authenticateWithBiometrics()
             }
         }
@@ -155,8 +159,7 @@ fun LockScreen(
             else RarimeTheme.colors.primaryMain to RarimeTheme.colors.baseBlack,
             passcodeState = passcodeState,
             enabled = !isAttemptsDisabled,
-            onPasscodeFilled = { verifyPasscode() }
-        ) {
+            onPasscodeFilled = { verifyPasscode() }) {
             if (lockViewModule.isBiometricEnabled && isBiometricsAvailable) {
                 Button(
                     modifier = Modifier
@@ -226,6 +229,6 @@ fun LockScreen(
 @Composable
 private fun LockScreenPreview() {
     LockScreen(
-        onPass = {},
+        onPass = {}, nextRoute = ""
     )
 }
