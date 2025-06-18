@@ -38,6 +38,7 @@ import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.generateLightRegistrationProofByCircuitType
 import com.rarilabs.rarime.util.generateRegistrationProofByCircuitType
 import com.rarilabs.rarime.util.toBits
+import com.rarilabs.rarime.util.toUint8
 import identity.X509Util
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +58,6 @@ import java.math.BigInteger
 import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.math.abs
 
 enum class PassportProofState(val value: Int) {
     READING_DATA(0), APPLYING_ZERO_KNOWLEDGE(1), CREATING_CONFIDENTIAL_PROFILE(2), FINALIZING(3)
@@ -434,9 +434,6 @@ class ProofGenerationManager @Inject constructor(
                 }
             }
 
-
-
-
         _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
 
         val inputs = buildPlonkRegistrationInputs(eDocument, registerIdentityCircuitType)
@@ -707,8 +704,8 @@ class ProofGenerationManager @Inject constructor(
             dg15 = eDocument.dg15?.decodeHexString()?.map {
                 BigInteger(1, listOf(it).toByteArray()).toString()
             } ?: listOf(),
-            ec = encapsulatedContent.map { abs(it.toInt()).toString() },
-            sa = signedAttributes.map { abs(it.toInt()).toString() },
+            ec = encapsulatedContent.map { it.toUint8().toString() },
+            sa = signedAttributes.map { it.toUint8().toString() },
             pk = pk,
             reduction_pk = reductionPk,
             sig = sig,
@@ -717,22 +714,30 @@ class ProofGenerationManager @Inject constructor(
             inclusion_branches = proof.siblings.map { BigInteger(1, it).toString() },
         )
 
-        //Log.i("Inputs:", GsonBuilder().setPrettyPrinting().create().toJson(plonkInputs))
+        Log.i("sa", plonkInputs.sa.size.toString())
+
 
         val inputs = PlonkRegistrationInputs(
-            plonkInputs.dg1.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
-            plonkInputs.dg15.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
-            plonkInputs.ec.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
-            plonkInputs.icao_root.let { Numeric.toHexString(BigInteger(it).toByteArray()) },
-            plonkInputs.inclusion_branches.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
-            plonkInputs.sa.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
-            plonkInputs.pk.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
-            plonkInputs.reduction_pk.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
-            plonkInputs.sig.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
-            plonkInputs.sk_identity.let { Numeric.toHexString(BigInteger(it).toByteArray()) },
+            dg1 = plonkInputs.dg1.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
+            dg15 = plonkInputs.dg15.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
+            ec = plonkInputs.ec.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
+            icao_root = plonkInputs.icao_root.let { Numeric.toHexString(BigInteger(it).toByteArray()) },
+            inclusion_branches = plonkInputs.inclusion_branches.map {
+                Numeric.toHexString(
+                    BigInteger(
+                        it
+                    ).toByteArray()
+                )
+            },
+            sa = plonkInputs.sa.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
+            pk = plonkInputs.pk.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
+            reduction_pk = plonkInputs.reduction_pk.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
+            sig = plonkInputs.sig.map { Numeric.toHexString(BigInteger(it).toByteArray()) },
+            sk_identity = plonkInputs.sk_identity.let { Numeric.toHexString(BigInteger(it).toByteArray()) },
         )
 
         Log.i("sa", inputs.sa.size.toString())
+
 
         val inputsMap: Map<String, Any> = mapOf(
             "dg15" to inputs.dg15,

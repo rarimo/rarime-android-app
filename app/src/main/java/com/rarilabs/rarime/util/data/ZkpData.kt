@@ -31,7 +31,7 @@ sealed class UniversalProof {
 
         override fun getIdentityKey() = grothProof.pub_signals[2]
         override fun getPublicKey() = proof.public_key
-        override fun getPassportHash() = proof.passport_hash
+        override fun getPassportHash() = grothProof.pub_signals[0]
 
         override fun getProofJson(): String {
             return Gson().toJson(grothProof)
@@ -40,7 +40,7 @@ sealed class UniversalProof {
 
     data class Plonk internal constructor(val proof: PlonkProof) : UniversalProof() {
         override fun getPubSignals() = proof.pub_signals
-        override fun getIdentityKey() = proof.pub_signals[0]
+        override fun getIdentityKey() = proof.pub_signals[3]
         override fun getPublicKey() = proof.pub_signals[0]
         override fun getPassportHash() = proof.pub_signals[1]
         override fun getProofJson(): String {
