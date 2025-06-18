@@ -22,7 +22,8 @@ class ManageWidgetsManager @Inject constructor(
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     private val _visibleWidgets = MutableStateFlow<List<WidgetType>>(emptyList())
-    val visibleWidgets: StateFlow<List<WidgetType>> = _visibleWidgets.asStateFlow()
+    val visibleWidgets: StateFlow<List<WidgetType>>
+        get() = _visibleWidgets.asStateFlow()
 
     private val allManagedWidgets = listOf(
         WidgetType.FREEDOMTOOL,
@@ -32,7 +33,7 @@ class ManageWidgetsManager @Inject constructor(
         //WidgetType.EARN
     )
     val managedWidgets: StateFlow<List<WidgetType>> =
-        MutableStateFlow(allManagedWidgets).asStateFlow()
+        MutableStateFlow(allManagedWidgets.filter { it != WidgetType.HIDDEN_PRIZE }).asStateFlow()
 
     init {
         scope.launch {
@@ -44,7 +45,7 @@ class ManageWidgetsManager @Inject constructor(
         val visibleCardsStored = sharedPrefsManager.readVisibleWidgets()
 
         if (visibleCardsStored.isNullOrEmpty()) {
-            val defaultWidgets = mutableListOf(WidgetType.HIDDEN_PRIZE, WidgetType.RECOVERY_METHOD)
+            val defaultWidgets = mutableListOf(WidgetType.RECOVERY_METHOD)
             val pointBalance: PointsBalanceBody? = pointsManager.getPointsBalance()
 
             if (pointBalance != null && pointBalance.data.attributes.amount != 0L) {
@@ -52,7 +53,7 @@ class ManageWidgetsManager @Inject constructor(
             }
             setVisibleWidgets(defaultWidgets)
         } else {
-            _visibleWidgets.value = visibleCardsStored
+            _visibleWidgets.value = visibleCardsStored.filter { it != WidgetType.HIDDEN_PRIZE }
         }
     }
 

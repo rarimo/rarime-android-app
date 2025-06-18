@@ -36,7 +36,7 @@ fun LightProofHandler(
     val queryProofParametersRequest by viewModel.queryProofParametersRequest.collectAsState()
     val selector by remember {
         derivedStateOf {
-            queryProofParametersRequest!!.data.attributes.selector
+            queryProofParametersRequest?.data?.attributes?.selector ?: "0"
         }
     }
     val requestorId by remember {
