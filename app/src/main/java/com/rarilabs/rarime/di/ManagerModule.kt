@@ -19,6 +19,8 @@ import com.rarilabs.rarime.api.hiddenPrize.models.Included
 import com.rarilabs.rarime.api.hiddenPrize.models.IncludedJsonAdapter
 import com.rarilabs.rarime.api.likeness.LikenessApi
 import com.rarilabs.rarime.api.likeness.LikenessApiManager
+import com.rarilabs.rarime.api.nativeToken.NativeTokenAPI
+import com.rarilabs.rarime.api.nativeToken.models.NativeTokenAPIManager
 import com.rarilabs.rarime.api.points.PointsAPI
 import com.rarilabs.rarime.api.points.PointsAPIManager
 import com.rarilabs.rarime.api.registration.RegistrationAPI
@@ -56,6 +58,7 @@ import com.rarilabs.rarime.store.room.voting.VotingRepository
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Binds
+import dagger.Lazy
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -142,7 +145,7 @@ class APIModule {
     @Singleton
     @Named("jsonApiRetrofit")
     fun provideJsonApiRetrofit(
-        authManager: dagger.Lazy<AuthManager>, // Use Lazy injection to break the cycle
+        authManager: Lazy<AuthManager>, // Use Lazy injection to break the cycle
         @Named("authRetrofit") authRetrofit: Retrofit
     ): Retrofit {
         val okHttpClient = OkHttpClient.Builder()
@@ -346,7 +349,7 @@ class APIModule {
     @Singleton
     @Named("jsonApiCosmosRetrofit")
     fun provideCosmosRetrofit(
-        authManager: dagger.Lazy<AuthManager>, // Use Lazy injection to break the cycle
+        authManager: Lazy<AuthManager>, // Use Lazy injection to break the cycle
         @Named("authRetrofit") authRetrofit: Retrofit
     ): Retrofit {
         val okHttpClient = OkHttpClient.Builder().addInterceptor(
@@ -514,11 +517,42 @@ class APIModule {
     fun provideTransactionDao(appDatabase: AppDatabase): TransactionDao {
         return appDatabase.transactionDao()
     }
+    @Provides
+    @Singleton
+    @Named("nativeTokenRetrofit")
+    fun nativeTokenRetrofit(): Retrofit {
+        return Retrofit.Builder().addConverterFactory(
+            MoshiConverterFactory.create(
+                Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+            )
+        ).baseUrl(BaseConfig.EVM_SERVICE_URL).client(
+            OkHttpClient.Builder()
+                .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                .build()
+        ).build()
+    }
+    @Provides
+    @Singleton
+    fun provideNativeTokenAPI(@Named("nativeTokenRetrofit")retrofit: Retrofit): NativeTokenAPI {
+        return retrofit.create(NativeTokenAPI::class.java)
+    }
 
     @Provides
     @Singleton
-    fun provideTransactionsRepository(transactionDao: TransactionDao): TransactionRepository {
-        return TransactionRepository(transactionDao)
+    fun provideNativeTokenAPIManager(nativeTokenAPI:NativeTokenAPI): NativeTokenAPIManager {
+        return NativeTokenAPIManager(nativeTokenAPI)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTransactionsRepository(
+        transactionDao: TransactionDao,
+        nativeTokenAPIManager: NativeTokenAPIManager
+    ): TransactionRepository {
+        return TransactionRepository(
+            transactionDao = transactionDao,
+            nativeTokenAPIManager = nativeTokenAPIManager
+        )
     }
 
     @Provides
