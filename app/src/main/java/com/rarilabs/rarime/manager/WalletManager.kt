@@ -112,7 +112,6 @@ class WalletManager @Inject constructor(
                         asset.token.loadDetails()
                         asset.loadBalance()
                         asset.transactions = loadTransactionsByTokenType(asset.token.tokenType)
-                        ErrorHandler.logDebug("Loaded asset", asset.token.symbol)
                     }
                 }.awaitAll()
             }
@@ -120,7 +119,7 @@ class WalletManager @Inject constructor(
 
             //Default token asset
             setSelectedWalletAsset(assets.first { it.token is NativeToken })
-            
+
             Log.i("WalletManager", "Updating wallet assets")
             _walletAssets.value = assets
             dataStoreManager.saveWalletAssets(assets)
