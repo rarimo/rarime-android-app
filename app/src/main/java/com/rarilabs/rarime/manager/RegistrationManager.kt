@@ -270,18 +270,12 @@ class RegistrationManager @Inject constructor(
 
         val callDataBuilder = CallDataBuilder()
 
-        ErrorHandler.logDebug(
-            "buildRevocationCallData",
-            revEDocument.value!!.aaSignature.toString()
-        )
-
         ErrorHandler.logDebug("buildRevocationCallData", pubKeyPem)
 
         Log.i("activeIdentity.value", activeIdentity.value.toHexString())
 
         val encapsulatedContent =
             Numeric.hexStringToByteArray(revEDocument.value!!.getSodFile().readASN1Data())
-
 
         val callData = callDataBuilder.buildRevoceCalldata(
             activeIdentity.value,
@@ -297,7 +291,7 @@ class RegistrationManager @Inject constructor(
     suspend fun revoke() {
         try {
             try {
-                val txResponse = registrationAPIManager.register(
+                val txResponse = relayerRegister(
                     revocationCallData.value!!,
                     BaseConfig.REGISTER_CONTRACT_ADDRESS
                 )
