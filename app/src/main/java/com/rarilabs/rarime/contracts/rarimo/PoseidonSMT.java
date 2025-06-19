@@ -287,8 +287,15 @@ public class PoseidonSMT extends Contract {
     }
 
     public RemoteFunctionCall<Proof> getProof(byte[] key_) {
+        byte[] index = new byte[32];
+        // Fill the index array with zeros
+        Arrays.fill(index, (byte) 0);
+
+        // Copy the key array into the index array starting at the correct position
+        System.arraycopy(key_, 0, index, 32 - key_.length, key_.length);
+
         final Function function = new Function(FUNC_GETPROOF,
-                List.of(new Bytes32(key_)),
+                List.of(new Bytes32(index)),
                 List.of(new TypeReference<Proof>() {
                 }));
         return executeRemoteCallSingleValueReturn(function, Proof.class);
