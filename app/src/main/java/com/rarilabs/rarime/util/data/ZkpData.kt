@@ -30,8 +30,11 @@ sealed class UniversalProof {
         override fun getPubSignals() = grothProof.pub_signals
 
         override fun getIdentityKey() = grothProof.pub_signals[2]
-        override fun getPublicKey() = proof.public_key
-        override fun getPassportHash() = grothProof.pub_signals[0]
+        override fun getPublicKey() =
+            BigInteger(Numeric.hexStringToByteArray(proof.public_key)).toString()
+
+        override fun getPassportHash() =
+            BigInteger(Numeric.hexStringToByteArray(proof.passport_hash)).toString()
 
         override fun getProofJson(): String {
             return Gson().toJson(grothProof)
@@ -113,10 +116,10 @@ data class PlonkProof(
 ) {
     companion object {
         fun fromByteArray(data: ByteArray): PlonkProof {
-            require(data.size == 2304 * 2) { "data.size != 2304, got ${data.size}" }
+            require(data.size == 2304) { "data.size != 2304, got ${data.size}" }
 
             val pubSignalLen = 5
-            val pubSignalData = 32 * 2
+            val pubSignalData = 32
             val pubSignalSize = pubSignalLen * pubSignalData
 
             // Extract public signals

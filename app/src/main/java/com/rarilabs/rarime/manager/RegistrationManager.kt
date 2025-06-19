@@ -12,6 +12,7 @@ import com.rarilabs.rarime.contracts.rarimo.StateKeeper
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
+import com.rarilabs.rarime.util.Dg15FileOwn
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.data.GrothProof
 import com.rarilabs.rarime.util.data.UniversalProof
@@ -23,7 +24,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
-import org.jmrtd.lds.icao.DG15File
 import org.web3j.tuples.generated.Tuple2
 import org.web3j.utils.Numeric
 import javax.inject.Inject
@@ -234,7 +234,7 @@ class RegistrationManager @Inject constructor(
 
     @OptIn(ExperimentalStdlibApi::class)
     fun buildRevocationCallData() {
-        val dG15File = DG15File(revEDocument.value!!.dg15!!.decodeHexString().inputStream())
+        val dG15File = Dg15FileOwn(revEDocument.value!!.dg15!!.decodeHexString().inputStream())
 
         val pubKeyPem = dG15File.publicKey.publicKeyToPem()
 
