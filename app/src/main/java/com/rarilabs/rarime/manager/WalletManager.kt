@@ -2,6 +2,7 @@ package com.rarilabs.rarime.manager
 
 import android.util.Log
 import com.google.gson.Gson
+import com.rarilabs.rarime.api.nativeToken.models.NativeTokenAPIManager
 import com.rarilabs.rarime.data.tokens.NativeToken
 import com.rarilabs.rarime.data.tokens.PointsToken
 import com.rarilabs.rarime.data.tokens.Token
@@ -53,14 +54,19 @@ class WalletManager @Inject constructor(
     private val identityManager: IdentityManager,
     private val pointsManager: PointsManager,
     private val transactionRepository: TransactionRepository,
-    private val web3j: Web3j
+    private val web3j: Web3j,
+    private val nativeTokenAPIManager: NativeTokenAPIManager
 ) {
 
     private fun createWalletAssets(): List<WalletAsset> {
         val list = listOf(
             WalletAsset(
                 identityManager.evmAddress(),
-                NativeToken(web3j, identityManager = identityManager),
+                NativeToken(
+                    web3j,
+                    identityManager = identityManager,
+                    nativeTokenAPIManager = nativeTokenAPIManager
+                ),
             ),
             WalletAsset(
                 identityManager.getUserPointsNullifierHex(), PointsToken(
@@ -119,7 +125,7 @@ class WalletManager @Inject constructor(
 
             //Default token asset
             setSelectedWalletAsset(assets.first { it.token is NativeToken })
-            
+
             Log.i("WalletManager", "Updating wallet assets")
             _walletAssets.value = assets
             dataStoreManager.saveWalletAssets(assets)

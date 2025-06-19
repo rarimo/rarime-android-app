@@ -26,17 +26,12 @@ data class TransactionResponse(
 @JsonClass(generateAdapter = true)
 data class TransactionItem(
     val timestamp: String,
-    val fee: Fee,
-    @Json(name = "gas_limit") val gasLimit: Long,
-    @Json(name = "block_number") val blockNumber: Long,
     val status: String,
     val method: String,
     val confirmations: Int,
     val type: Int,
     @Json(name = "exchange_rate") val exchangeRate: String,
     val to: Address,
-    @Json(name = "transaction_burnt_fee") val transactionBurntFee: String,
-    @Json(name = "max_fee_per_gas") val maxFeePerGas: String,
     @Json(name = "result") val result: String,
     val hash: String,
     @Json(name = "gas_price") val gasPrice: String,
@@ -62,7 +57,6 @@ data class TransactionItem(
 ){
     companion object {
         fun toTransaction(entity: TransactionItem, walletAddress: String) : Transaction{
-            WalletUtil
             return Transaction(
                 tokenType = TokenType.RARIMO_ETH,
                 operationType = TransactionType.TRANSFER,
@@ -71,10 +65,11 @@ data class TransactionItem(
                 amount = entity.value.toBigDecimal().divide(BigDecimal.TEN.pow(18)).toDouble(),
                 date = Date.from(Instant.parse(entity.timestamp)),
                 state = if(walletAddress == entity.from.hash) TransactionState.OUTGOING else TransactionState.INCOMING,
-                id = 0
+                id = entity.hash.toInt()
             )
         }
     }
+
 }
 @JsonClass(generateAdapter = true)
 data class DecodedInput(

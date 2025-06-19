@@ -15,10 +15,7 @@ class TransactionRepository @Inject constructor(
 ) {
 
     suspend fun getAllTransactions(walletAddress: String): List<Transaction> = withContext(Dispatchers.IO) {
-        nativeTokenAPIManager.getAddressTransactions(walletAddress)
-            ?.items
-            ?.map { toTransaction(it, walletAddress) }
-            ?: listOf()
+      nativeTokenAPIManager.getAddressTransactions(walletAddress)
     }
 
     suspend fun insertTransaction(tx: Transaction) = withContext(Dispatchers.IO) {

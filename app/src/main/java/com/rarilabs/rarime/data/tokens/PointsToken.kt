@@ -62,7 +62,7 @@ class PointsToken @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun loadTransactions(sender: String?, receiver: String?): List<Transaction> {
+    override suspend fun loadTransactions(address: String): List<Transaction> {
         TODO("Not yet implemented")
     }
 }

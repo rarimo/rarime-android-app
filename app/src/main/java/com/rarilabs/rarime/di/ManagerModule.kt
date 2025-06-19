@@ -397,14 +397,16 @@ class APIModule {
         identityManager: IdentityManager,
         pointsManager: PointsManager,
         @Named("RARIMO") web3j: Web3j,
-        transactionRepository: TransactionRepository
+        transactionRepository: TransactionRepository,
+        nativeTokenAPIManager: NativeTokenAPIManager
     ): WalletManager {
         return WalletManager(
             dataStoreManager = dataStoreManager,
             identityManager = identityManager,
             pointsManager = pointsManager,
             web3j = web3j,
-            transactionRepository = transactionRepository
+            transactionRepository = transactionRepository,
+            nativeTokenAPIManager = nativeTokenAPIManager,
         )
     }
 
