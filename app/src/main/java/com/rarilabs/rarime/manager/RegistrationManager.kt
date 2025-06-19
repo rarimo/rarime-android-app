@@ -105,8 +105,6 @@ class RegistrationManager @Inject constructor(
     ) {
         _eDocument.value = eDocument
 
-        val jsonProof = zkProof.getProofJson()
-
         val pubKeyPem = if (!eDocument.dg15.isNullOrEmpty()) {
             eDocument.getDg15File()!!.publicKey.publicKeyToPem()
                 .toByteArray()
@@ -118,15 +116,47 @@ class RegistrationManager @Inject constructor(
             Numeric.hexStringToByteArray(eDocument.getSodFile().readASN1Data())
 
         val callDataBuilder = CallDataBuilder()
-        val callData = callDataBuilder.buildRegisterCalldata(
-            jsonProof.toByteArray(),
-            eDocument.aaSignature,
-            pubKeyPem,
-            encapsulatedContent.size.toLong() * 8L,
-            masterCertProof.root,
-            isUserRevoking,
-            registerIdentityCircuitName
-        )
+
+        val callData = when (zkProof) {
+            is UniversalProof.Groth -> {
+                callDataBuilder.buildRegisterCalldata(
+                    zkProof.getProofJson().toByteArray(),
+                    eDocument.aaSignature,
+                    pubKeyPem,
+                    encapsulatedContent.size.toLong() * 8L,
+                    masterCertProof.root,
+                    isUserRevoking,
+                    registerIdentityCircuitName
+                )
+            }
+
+            is UniversalProof.Light -> {
+                callDataBuilder.buildRegisterCalldata(
+                    zkProof.getProofJson().toByteArray(),
+                    eDocument.aaSignature,
+                    pubKeyPem,
+                    encapsulatedContent.size.toLong() * 8L,
+                    masterCertProof.root,
+                    isUserRevoking,
+                    registerIdentityCircuitName
+                )
+            }
+
+            is UniversalProof.Plonk -> {
+
+                Log.i("UniversalProof.Plonk", zkProof.proof.proof)
+
+                callDataBuilder.buildNoirRegisterCalldata(
+                    zkProof.proof.proof.toByteArray(),
+                    eDocument.aaSignature,
+                    pubKeyPem,
+                    encapsulatedContent.size.toLong() * 8L,
+                    masterCertProof.root,
+                    isUserRevoking,
+                    registerIdentityCircuitName
+                )
+            }
+        }
 
         withContext(Dispatchers.IO) {
             val response = relayerRegister(callData, BaseConfig.REGISTER_CONTRACT_ADDRESS)

@@ -1,7 +1,7 @@
 package com.rarilabs.rarime.util.circuits
 
 enum class RegisteredCircuitData(val value: String) {
-    REGISTER_IDENTITY_2_256_3_6_336_264_21_2448_6_2008("registerIdentity_2_256_3_6_336_264_21_2448_6_2008"), //TODO
+    //REGISTER_IDENTITY_2_256_3_6_336_264_21_2448_6_2008("registerIdentity_2_256_3_6_336_264_21_2448_6_2008"), //TODO
     REGISTER_IDENTITY_1_256_3_6_576_248_1_2432_5_296("registerIdentity_1_256_3_6_576_248_1_2432_5_296"),
     REGISTER_IDENTITY_21_256_3_7_336_264_21_3072_6_2008("registerIdentity_21_256_3_7_336_264_21_3072_6_2008"),
     REGISTER_IDENTITY_1_256_3_6_576_264_1_2448_3_256("registerIdentity_1_256_3_6_576_264_1_2448_3_256"),
@@ -41,7 +41,7 @@ enum class RegisteredCircuitData(val value: String) {
             return when (item) {
                 //REGISTER_IDENTITY_1_256_3_5_576_248_NA -> "2b739404c000ed35f4862f684e96a0bf"
                 REGISTER_IDENTITY_1_256_3_6_576_248_1_2432_5_296 -> "4c8a1ce87221bcf66105a87ea575f759"
-                REGISTER_IDENTITY_2_256_3_6_336_264_21_2448_6_2008 -> "fa510ff9d20eb4a01e19cdb3062e9f05" //TODO
+                //REGISTER_IDENTITY_2_256_3_6_336_264_21_2448_6_2008 -> "fa510ff9d20eb4a01e19cdb3062e9f05" //TODO
                 REGISTER_IDENTITY_21_256_3_7_336_264_21_3072_6_2008 -> "511f124fb8609d82040b1a11fc7cd40d"
                 REGISTER_IDENTITY_1_256_3_6_576_264_1_2448_3_256 -> "fd13435c1cb675eb5bbdf0f2d6c33f19"
                 //REGISTER_IDENTITY_2_256_3_6_336_248_1_2432_3_256 -> "6d9cc80b7409b23b4884f188bd03ee25"

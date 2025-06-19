@@ -162,14 +162,13 @@ class ProofGenerationManager @Inject constructor(
 
             _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
 
-            val proof =
-//            = if (RegisterNoirCircuitData.fromValue(circuitType.buildName()) != null) {
-//                generateRegisterIdentityProofPlonk(
-//                    eDocument, registerIdentityCircuitType = circuitType
-//                )
-//            } else {
+            val proof = if (RegisterNoirCircuitData.fromValue(circuitType.buildName()) != null) {
+                generateRegisterIdentityProofPlonk(
+                    eDocument, registerIdentityCircuitType = circuitType
+                )
+            } else {
                 generateRegisterIdentityProofGroth(eDocument, circuitType)
-            // }
+            }
 
 
             if (!BuildConfig.isTestnet) {
