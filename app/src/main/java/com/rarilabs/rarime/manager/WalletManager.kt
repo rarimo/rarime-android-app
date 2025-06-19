@@ -27,9 +27,9 @@ data class WalletAssetJSON(
     val tokenSymbol: String, val balance: String, val transactions: List<Transaction>
 )
 
-data class WalletAsset(
+class WalletAsset(//todo rewrite in private
     val userAddress: String,
-    val token: Token,
+    private val token: Token,
     var balance: BigInteger = BigInteger.ZERO,
     var transactions: List<Transaction> = emptyList(),
     var showInAssets: Boolean = true
@@ -39,6 +39,29 @@ data class WalletAsset(
             tokenSymbol = token.symbol, balance = balance.toString(), transactions = transactions
         )
     )
+    fun getToken():Token{
+        return token
+    }
+    fun getTokenSymbol(): String{
+        return token.symbol
+    }
+
+    fun loadDetails(){
+
+    }
+
+//    fun loadDetails() {
+//        return token.symbol
+//    }
+
+    fun getTokenType(): TokenType {
+        return token.tokenType
+    }
+
+    suspend fun getTransactions() : List<Transaction> {
+       val result = token.loadTransactions(userAddress)
+        return result
+    }
 
     suspend fun loadBalance() {
         balance = token.balanceOf(userAddress)
@@ -58,6 +81,7 @@ class WalletManager @Inject constructor(
 
     private fun createWalletAssets(): List<WalletAsset> {
         val list = listOf(
+// not change before reclaim list
             WalletAsset(
                 identityManager.evmAddress(),
                 NativeToken(
@@ -87,23 +111,18 @@ class WalletManager @Inject constructor(
     val pointsToken: StateFlow<PointsToken?> = _pointsToken.asStateFlow()
 
     private fun getPointsToken(walletAssets: List<WalletAsset>) =
-        walletAssets.find { it.token is PointsToken }?.token as? PointsToken
+        walletAssets.find { it.getToken() is PointsToken }?.getToken() as? PointsToken
 
     fun setSelectedWalletAsset(walletAsset: WalletAsset) {
         _selectedWalletAsset.value = walletAsset
-        ErrorHandler.logDebug("setSelectedWalletAsset", walletAsset.token.symbol)
+        ErrorHandler.logDebug("setSelectedWalletAsset", walletAsset.getTokenSymbol())
         dataStoreManager.saveSelectedWalletAsset(walletAsset)
     }
 
-
-//    suspend fun insertTransaction(transaction: Transaction) {
-//        transactionRepository.insertTransaction(transaction)
-//    }
-
     private suspend fun loadTransactionsByTokenType(tokenType: TokenType): List<Transaction> {
         _walletAssets.value.forEach {
-            if (it.token.tokenType == tokenType) {
-                return it.token.loadTransactions(it.userAddress)
+            if (it.getTokenType() == tokenType) {
+                return it.getTransactions()
             }
         }
         return emptyList()
@@ -116,17 +135,17 @@ class WalletManager @Inject constructor(
             coroutineScope {
                 assets.map { asset ->
                     async {
-                        asset.token.loadDetails()
+                        asset.loadDetails()
                         asset.loadBalance()
-                        asset.transactions = loadTransactionsByTokenType(asset.token.tokenType)
-                        ErrorHandler.logDebug("Loaded asset", asset.token.symbol)
+                        asset.transactions = loadTransactionsByTokenType(asset.getTokenType())
+                        ErrorHandler.logDebug("Loaded asset", asset.getTokenSymbol())
                     }
                 }.awaitAll()
             }
 
 
             //Default token asset
-            setSelectedWalletAsset(assets.first { it.token is NativeToken })
+            setSelectedWalletAsset(assets.first { it.getToken() is NativeToken })
 
 
             Log.i("WalletManager", "Updating wallet assets")
