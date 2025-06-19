@@ -37,8 +37,8 @@ data class AddScanProps(
 fun AddScanBottomSheet(
     isInviteEnable: Boolean = true,
     isShareEnable: Boolean = true,
-    currentInvite:Int,
-maxInvite:Int,
+    currentInvite: Int,
+    maxInvite: Int,
     onShare: () -> Unit,
     onInvite: () -> Unit,
 ) {

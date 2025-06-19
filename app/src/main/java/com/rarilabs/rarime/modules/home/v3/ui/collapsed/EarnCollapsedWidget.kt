@@ -189,7 +189,7 @@ private fun Footer(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
-                    )
+                )
                 Spacer(modifier = Modifier.weight(1f))
                 AppIcon(
                     id = R.drawable.ic_arrow_right_up_line,

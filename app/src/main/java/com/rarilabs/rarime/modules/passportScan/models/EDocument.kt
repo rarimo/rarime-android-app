@@ -401,7 +401,6 @@ object CryptoUtilsPassport {
         return if (publicKey is RSAPublicKey) {
             val pubKeyModulus = publicKey.modulus.toByteArray()
             return if (pubKeyModulus.isNotEmpty() && pubKeyModulus[0] == 0x00.toByte()) {
-                // Return a new array without the first byte
                 pubKeyModulus.copyOfRange(1, pubKeyModulus.size)
             } else {
                 pubKeyModulus

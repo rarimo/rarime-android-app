@@ -16,7 +16,7 @@ import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.manager.RarimoContractManager
 import com.rarilabs.rarime.manager.RegistrationManager
 import com.rarilabs.rarime.manager.WalletManager
-import com.rarilabs.rarime.modules.passportScan.CircuitUseCase
+import com.rarilabs.rarime.modules.passportScan.CircuitDownloader
 import com.rarilabs.rarime.modules.passportScan.ConnectionError
 import com.rarilabs.rarime.modules.passportScan.DownloadCircuitError
 import com.rarilabs.rarime.modules.passportScan.DownloadRequest
@@ -30,7 +30,9 @@ import com.rarilabs.rarime.util.SecurityUtil
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.circuits.CircuitUtil
 import com.rarilabs.rarime.util.circuits.RegisteredCircuitData
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.GrothProof
+import com.rarilabs.rarime.util.data.UniversalProof
+import com.rarilabs.rarime.util.data.UniversalProofFactory
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.generateLightRegistrationProofByCircuitType
 import com.rarilabs.rarime.util.generateRegistrationProofByCircuitType
@@ -144,7 +146,7 @@ class ProofViewModel @Inject constructor(
         registeredCircuitData: RegisteredCircuitData,
         filePaths: DownloadRequest?,
         registerIdentityCircuitType: RegisterIdentityCircuitType
-    ): ZkProof {
+    ): GrothProof {
         ErrorHandler.logDebug("ProofViewModel", "Generating proof")
 
         val inputs = buildRegistrationCircuits(eDocument, registerIdentityCircuitType)
@@ -210,11 +212,11 @@ class ProofViewModel @Inject constructor(
 
         val circuitData = getCircuitData(circuitName)
 
-        val circuitUseCase = CircuitUseCase(application as Context)
+        val circuitDownloader = CircuitDownloader(application as Context)
 
         val filePaths = try {
             withContext(Dispatchers.Default) {
-                circuitUseCase.download(circuitData) { progress, visibility ->
+                circuitDownloader.downloadGrothFiles(circuitData) { progress, visibility ->
                     _progress.value = progress
                     _progressVisibility.value = !visibility
                 }
@@ -227,7 +229,7 @@ class ProofViewModel @Inject constructor(
             throw e
         } catch (e: Exception) {
             ErrorHandler.logError("CircuitUseCase", "Unexpected error occurred", e)
-            circuitUseCase.deleteRedunantFiles(circuitData)
+            circuitDownloader.deleteRedunantFiles(circuitData)
             throw DownloadCircuitError().apply { initCause(e) }
         }
         _state.value = PassportProofState.READING_DATA
@@ -242,7 +244,7 @@ class ProofViewModel @Inject constructor(
         if (!BuildConfig.isTestnet) {
             try {
                 ErrorHandler.logDebug("deleting zkey, dat and Archive", "Start")
-                circuitUseCase.deleteRedunantFiles(circuitData)
+                circuitDownloader.deleteRedunantFiles(circuitData)
                 ErrorHandler.logDebug("deleting zkey, dat and Archive", "Finish")
             } catch (e: Exception) {
                 ErrorHandler.logError("Error deleting zkey, dat and Archive", "Error", e)
@@ -251,14 +253,16 @@ class ProofViewModel @Inject constructor(
 
         Log.i("Registration proof", GsonBuilder().setPrettyPrinting().create().toJson(proof))
 
-        registrationManager.setRegistrationProof(proof)
+        val universalProof = UniversalProofFactory.fromGroth(proof)
+
+        registrationManager.setRegistrationProof(universalProof)
 
         _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
         _progressVisibility.value = false
 
         // Get passport info
         val passportInfo = try {
-            registrationManager.getPassportInfo(eDocument, proof)
+            registrationManager.getPassportInfo(eDocument, universalProof)
         } catch (e: Exception) {
             ErrorHandler.logError(TAG, "Error: $e", e)
             null
@@ -275,7 +279,7 @@ class ProofViewModel @Inject constructor(
                 ErrorHandler.logDebug(TAG, "Passport is already registered with this PK")
             } else if (passportInfo.component1().activeIdentity.contentEquals(ZERO_BYTES32)) {
                 registrationManager.register(
-                    proof,
+                    universalProof,
                     eDocument,
                     registrationManager.masterCertProof.value!!,
                     false,
@@ -294,7 +298,7 @@ class ProofViewModel @Inject constructor(
         } ?: run {
 
             registrationManager.register(
-                proof,
+                universalProof,
                 eDocument,
                 registrationManager.masterCertProof.value!!,
                 false,
@@ -311,7 +315,7 @@ class ProofViewModel @Inject constructor(
         delay(second * 1)
     }
 
-    suspend fun lightRegistration(): ZkProof {
+    suspend fun lightRegistration(): UniversalProof {
         val privateKeyBytes = privateKeyBytes!!
         val eDocument = eDoc.value!!
 
@@ -327,7 +331,7 @@ class ProofViewModel @Inject constructor(
 
         //TODO: Don't forget to update download manager here
         val filePaths = withContext(Dispatchers.Default) {
-            CircuitUseCase(application as Context).download(registeredCircuitData) { progress, visibility ->
+            CircuitDownloader(application as Context).downloadGrothFiles(registeredCircuitData) { progress, visibility ->
                 if (_state.value.value < PassportProofState.APPLYING_ZERO_KNOWLEDGE.value) {
                     _progress.value = progress
                     _progressVisibility.value = !visibility
@@ -353,22 +357,24 @@ class ProofViewModel @Inject constructor(
 
         val registerResponse = registrationManager.lightRegistration(eDocument, lightProof)
 
+        val universalProof =
+            UniversalProofFactory.fromLight(registerResponse.data.attributes, lightProof)
+
         val profile = identityManager.getProfiler()
         val currentIdentityKey = profile.publicKeyHash
 
         val passportInfoKey = withContext(Dispatchers.IO) {
             registrationManager.getPassportInfo(
                 eDocument,
-                lightProof,
-                registerResponse.data.attributes
+                universalProof,
             )!!.component1()
         }
 
         if (passportInfoKey.activeIdentity.contentEquals(currentIdentityKey)) {
             ErrorHandler.logDebug(TAG, "Passport is already registered with this PK")
-            registrationManager.setRegistrationProof(lightProof)
+            registrationManager.setRegistrationProof(universalProof)
             identityManager.setLightRegistrationData(registerResponse.data.attributes)
-            return lightProof
+            return UniversalProof.fromLight(registerResponse.data.attributes, lightProof)
         }
         delay(second * 2)
         _state.value = PassportProofState.FINALIZING
@@ -379,10 +385,10 @@ class ProofViewModel @Inject constructor(
 
         res
 
-        registrationManager.setRegistrationProof(lightProof)
+        registrationManager.setRegistrationProof(universalProof)
         identityManager.setLightRegistrationData(registerResponse.data.attributes)
         delay(second * 1)
-        return lightProof
+        return UniversalProof.fromLight(registerResponse.data.attributes, lightProof)
     }
 
     private fun generateLightRegistrationProof(
@@ -390,7 +396,7 @@ class ProofViewModel @Inject constructor(
         eDocument: EDocument,
         privateKey: ByteArray,
         circuitData: RegisteredCircuitData
-    ): ZkProof {
+    ): GrothProof {
 
         val inputs = Gson().toJson(getLightRegistrationInputs(eDocument, privateKey)).toByteArray()
         val assetContext: Context =

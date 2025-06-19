@@ -115,3 +115,7 @@ fun BigInteger.toNormalizedByteArray(capacity: Int = 0): ByteArray {
 
     return result
 }
+
+fun Byte.toUint8(): Int {
+    return this.toInt() and 0xFF
+}

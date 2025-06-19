@@ -117,7 +117,6 @@ object DateUtil {
     }
 
 
-
     fun yearsBetween(from: Date): Int {
         val now = Calendar.getInstance()
         val fromCal = Calendar.getInstance().apply {

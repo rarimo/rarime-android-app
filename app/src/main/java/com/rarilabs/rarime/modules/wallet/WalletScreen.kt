@@ -32,7 +32,6 @@ import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.wallet.components.WalletTransactionsList
 import com.rarilabs.rarime.modules.wallet.view_model.WalletViewModel
-import com.rarilabs.rarime.modules.wallet.walletTokens.WalletTokensList
 import com.rarilabs.rarime.ui.base.ButtonIconSize
 import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.DropdownOption
@@ -137,7 +136,8 @@ fun WalletScreenContainer(
                             },
                             onChange = { symb ->
                                 run {
-                                    val asset = filteredUserAssets.find { it.token.symbol == symb.uppercase() }
+                                    val asset =
+                                        filteredUserAssets.find { it.token.symbol == symb.uppercase() }
                                     ErrorHandler.logDebug("onChange: walletViewModel:", symb)
                                     ErrorHandler.logDebug(
                                         "onChange: asset:",

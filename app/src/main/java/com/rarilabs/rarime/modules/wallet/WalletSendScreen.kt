@@ -185,7 +185,10 @@ private fun WalletSendScreenContent(
     }
 
     WalletRouteLayout(
-        title = stringResource(R.string.wallet_send_title, selectedWalletAsset.token.symbol.uppercase()),
+        title = stringResource(
+            R.string.wallet_send_title,
+            selectedWalletAsset.token.symbol.uppercase()
+        ),
         description = stringResource(
             R.string.wallet_send_description, selectedWalletAsset.token.symbol.uppercase()
         ),
@@ -211,7 +214,8 @@ private fun WalletSendScreenContent(
                         label = stringResource(R.string.amount_lbl),
                         enabled = !isSubmitting,
                         placeholder = stringResource(
-                            R.string.amount_placeholder, selectedWalletAsset.token.symbol.uppercase()
+                            R.string.amount_placeholder,
+                            selectedWalletAsset.token.symbol.uppercase()
                         ),
                         hint = {
                             Row(

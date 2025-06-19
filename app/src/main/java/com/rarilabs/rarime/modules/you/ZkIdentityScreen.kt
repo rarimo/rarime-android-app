@@ -19,8 +19,8 @@ val LocalZkIdentityScreenViewModel =
 fun ZkIdentityScreen(
     modifier: Modifier = Modifier,
     navigate: (String) -> Unit,
-    onClose: () ->Unit,
-    onClaim: () ->Unit,
+    onClose: () -> Unit,
+    onClaim: () -> Unit,
     setBottomBarVisibility: (Boolean) -> Unit,
     zkIdentityScreenViewModel: ZkIdentityScreenViewModel = hiltViewModel()
 ) {
@@ -37,10 +37,11 @@ fun ZkIdentityScreen(
             ZkIdentityPassport(navigate = navigate)
         } else {
 
-            ScanPassportScreen(onClose = {
-                setBottomBarVisibility(true)
-                onClose()
-            },
+            ScanPassportScreen(
+                onClose = {
+                    setBottomBarVisibility(true)
+                    onClose()
+                },
                 onClaim = {
 
                     onClaim()
