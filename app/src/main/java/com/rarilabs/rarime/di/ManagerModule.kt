@@ -52,7 +52,6 @@ import com.rarilabs.rarime.store.room.notifications.AppDatabase
 import com.rarilabs.rarime.store.room.notifications.NotificationsDao
 import com.rarilabs.rarime.store.room.notifications.NotificationsRepository
 import com.rarilabs.rarime.store.room.transactons.TransactionDao
-import com.rarilabs.rarime.store.room.transactons.TransactionRepository
 import com.rarilabs.rarime.store.room.voting.VotingDao
 import com.rarilabs.rarime.store.room.voting.VotingRepository
 import com.squareup.moshi.Moshi
@@ -397,7 +396,6 @@ class APIModule {
         identityManager: IdentityManager,
         pointsManager: PointsManager,
         @Named("RARIMO") web3j: Web3j,
-        transactionRepository: TransactionRepository,
         nativeTokenAPIManager: NativeTokenAPIManager
     ): WalletManager {
         return WalletManager(
@@ -405,7 +403,6 @@ class APIModule {
             identityManager = identityManager,
             pointsManager = pointsManager,
             web3j = web3j,
-            transactionRepository = transactionRepository,
             nativeTokenAPIManager = nativeTokenAPIManager,
         )
     }
@@ -545,17 +542,6 @@ class APIModule {
         return NativeTokenAPIManager(nativeTokenAPI)
     }
 
-    @Provides
-    @Singleton
-    fun provideTransactionsRepository(
-        transactionDao: TransactionDao,
-        nativeTokenAPIManager: NativeTokenAPIManager
-    ): TransactionRepository {
-        return TransactionRepository(
-            transactionDao = transactionDao,
-            nativeTokenAPIManager = nativeTokenAPIManager
-        )
-    }
 
     @Provides
     @Singleton

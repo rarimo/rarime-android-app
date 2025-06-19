@@ -113,7 +113,7 @@ class WalletSendViewModel @Inject constructor(
                     BigInteger(humanAmount)
                 }
                 val transaction = it.token.transfer(to, bigIntAmount)
-                walletManager.insertTransaction(transaction)
+                    //walletManager.insertTransaction(transaction)
                 walletManager.loadBalances()
 
                 it.loadBalance()

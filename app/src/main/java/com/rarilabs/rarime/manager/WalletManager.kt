@@ -9,7 +9,6 @@ import com.rarilabs.rarime.data.tokens.Token
 import com.rarilabs.rarime.data.tokens.TokenType
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
-import com.rarilabs.rarime.store.room.transactons.TransactionRepository
 import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -53,7 +52,6 @@ class WalletManager @Inject constructor(
     private val dataStoreManager: SecureSharedPrefsManager,
     private val identityManager: IdentityManager,
     private val pointsManager: PointsManager,
-    private val transactionRepository: TransactionRepository,
     private val web3j: Web3j,
     private val nativeTokenAPIManager: NativeTokenAPIManager
 ) {
@@ -98,13 +96,17 @@ class WalletManager @Inject constructor(
     }
 
 
-    suspend fun insertTransaction(transaction: Transaction) {
-        transactionRepository.insertTransaction(transaction)
-    }
+//    suspend fun insertTransaction(transaction: Transaction) {
+//        transactionRepository.insertTransaction(transaction)
+//    }
 
     private suspend fun loadTransactionsByTokenType(tokenType: TokenType): List<Transaction> {
-        val allTransactions = transactionRepository.getAllTransactions(identityManager.evmAddress())
-        return allTransactions.filter { it.tokenType == tokenType }
+        _walletAssets.value.forEach {
+            if (it.token.tokenType == tokenType) {
+                return it.token.loadTransactions(it.userAddress)
+            }
+        }
+        return emptyList()
     }
 
     suspend fun loadBalances() = withContext(Dispatchers.IO) {
@@ -125,6 +127,7 @@ class WalletManager @Inject constructor(
 
             //Default token asset
             setSelectedWalletAsset(assets.first { it.token is NativeToken })
+
 
             Log.i("WalletManager", "Updating wallet assets")
             _walletAssets.value = assets

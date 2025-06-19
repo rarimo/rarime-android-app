@@ -69,7 +69,7 @@ val tempPointsBalances = PointsBalanceData(
 @Composable
 fun InviteOthersContent(
     modifier: Modifier = Modifier,
-    pointsBalance: PointsBalanceData, //TODO: remove default temp value
+    pointsBalance: PointsBalanceData,
     onClose: () -> Unit
 ) {
     val rewardPerInvite = pointsBalance.attributes.referral_codes?.size?.let {
