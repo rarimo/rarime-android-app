@@ -1,14 +1,20 @@
 package com.rarilabs.rarime.store.room.transactons
 
+import com.rarilabs.rarime.api.nativeToken.models.Address
+import com.rarilabs.rarime.api.nativeToken.models.NativeTokenAPIManager
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.store.room.transactons.models.TransactionEntityData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class TransactionRepository @Inject constructor(private val transactionDao: TransactionDao) {
+class TransactionRepository @Inject constructor(
+    private val transactionDao: TransactionDao,
+    private val nativeTokenAPIManager :NativeTokenAPIManager
+) {
 
-    suspend fun getAllTransactions(): List<Transaction> = withContext(Dispatchers.IO) {
+    suspend fun getAllTransactions(walletAddress: String): List<Transaction> = withContext(Dispatchers.IO) {
+        nativeTokenAPIManager.getAddressTransactions(walletAddress)?.items?.map {   }
         transactionDao.getAllTransactions().map { TransactionEntityData.toTransaction(it) }
     }
 

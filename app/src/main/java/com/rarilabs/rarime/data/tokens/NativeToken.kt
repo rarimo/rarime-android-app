@@ -23,7 +23,8 @@ import javax.inject.Inject
 
 class NativeToken @Inject constructor(
     private val web3j: Web3j,
-    private val identityManager: IdentityManager
+    private val identityManager: IdentityManager,
+    // explorer
 ) : Token(address = "") {
 
     override var name: String = "Ethereum"

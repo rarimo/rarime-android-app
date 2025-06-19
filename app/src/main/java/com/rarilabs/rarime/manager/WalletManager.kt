@@ -98,7 +98,7 @@ class WalletManager @Inject constructor(
 
     private suspend fun loadTransactionsByTokenType(tokenType: TokenType): List<Transaction> {
         val allTransactions = transactionRepository.getAllTransactions()
-
+//Todo change this to backend call
         return allTransactions.filter { it.tokenType == tokenType }
     }
 
