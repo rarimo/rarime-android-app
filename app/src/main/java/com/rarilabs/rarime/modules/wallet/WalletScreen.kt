@@ -128,20 +128,20 @@ fun WalletScreenContainer(
                     // TODO: rollback at next releases
                     if (filteredUserAssets.size > 1) {
                         TextDropdown(
-                            value = selectedUserAsset.token.symbol.uppercase(),
+                            value = selectedUserAsset.getTokenSymbol().uppercase(),
                             options = filteredUserAssets.map {
                                 DropdownOption(
-                                    label = it.token.symbol,
-                                    value = it.token.symbol
+                                    label = it.getTokenSymbol(),
+                                    value = it.getTokenSymbol()
                                 )
                             },
                             onChange = { symb ->
                                 run {
-                                    val asset = filteredUserAssets.find { it.token.symbol == symb.uppercase() }
+                                    val asset = filteredUserAssets.find { it.getTokenSymbol() == symb.uppercase() }
                                     ErrorHandler.logDebug("onChange: walletViewModel:", symb)
                                     ErrorHandler.logDebug(
                                         "onChange: asset:",
-                                        asset?.token?.symbol ?: "nope"
+                                        asset?.getTokenSymbol() ?: "nope"
                                     )
 
                                     asset?.let { newAsset ->
@@ -154,7 +154,7 @@ fun WalletScreenContainer(
                         )
                     } else {
                         Text(
-                            text = selectedUserAsset.token.symbol.uppercase(),
+                            text = selectedUserAsset.getTokenSymbol().uppercase(),
                             style = RarimeTheme.typography.overline2,
                             color = RarimeTheme.colors.textPrimary
                         )

@@ -67,8 +67,8 @@ class WalletSendViewModel @Inject constructor(
             return null
         }
 
-        val amount = (humanAmountNum * BigDecimal.TEN.pow(asset.token.decimals)).toBigInteger()
-        val feeWei = asset.token.estimateTransferFee(
+        val amount = (humanAmountNum * BigDecimal.TEN.pow(asset.getTokenDecimals())).toBigInteger()
+        val feeWei = asset.getToken().estimateTransferFee(
             asset.userAddress, to, amount
         )
 
@@ -107,12 +107,12 @@ class WalletSendViewModel @Inject constructor(
     private suspend fun sendTokens(to: String, humanAmount: String) {
         withContext(Dispatchers.IO) {
             selectedWalletAsset.value.let { it ->
-                val bigIntAmount: BigInteger = if (it.token !is Erc20Token) {
-                    NumberUtil.toBigIntAmount(humanAmount.toDouble(), it.token.decimals)
+                val bigIntAmount: BigInteger = if (it.getToken() !is Erc20Token) {
+                    NumberUtil.toBigIntAmount(humanAmount.toDouble(), it.getTokenDecimals())
                 } else {
                     BigInteger(humanAmount)
                 }
-                val transaction = it.token.transfer(to, bigIntAmount)
+                val transaction = it.getToken().transfer(to, bigIntAmount) //todo maybe change this
                     //walletManager.insertTransaction(transaction)
                 walletManager.loadBalances()
 

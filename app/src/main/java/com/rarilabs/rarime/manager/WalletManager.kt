@@ -42,8 +42,17 @@ class WalletAsset(//todo rewrite in private
     fun getToken():Token{
         return token
     }
+    fun getTokenName(): String{
+        return token.name
+    }
+    fun getTokenDecimals(): Int{
+        return token.decimals
+    }
     fun getTokenSymbol(): String{
         return token.symbol
+    }
+    fun getTokenIcon(): Int{
+        return token.icon
     }
 
     fun loadDetails(){
