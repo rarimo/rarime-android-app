@@ -48,7 +48,7 @@ fun WalletTokenCard(walletAsset: WalletAsset) {
                     .background(RarimeTheme.colors.baseBlack),
                 contentAlignment = Alignment.Center
             ) {
-                AppIcon(id = walletAsset.getToken().icon, tint = RarimeTheme.colors.baseWhite)
+                AppIcon(id = walletAsset.getTokenIcon(), tint = RarimeTheme.colors.baseWhite)
             }
 
             Text(

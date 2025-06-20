@@ -69,7 +69,7 @@ fun WalletTransactionCard(
 
         Text(
             text = "${amountSign}${
-                txHumanAmount.toBigDecimal().stripTrailingZeros().toPlainString()
+                txHumanAmount.toBigDecimal().stripTrailingZeros().toPlainString().replace(Regex("(\\.\\d{4})\\d+"), "$1")
             } ${asset.getTokenSymbol()}",
             style = RarimeTheme.typography.subtitle7,
             color = if (transaction.state == TransactionState.INCOMING) {

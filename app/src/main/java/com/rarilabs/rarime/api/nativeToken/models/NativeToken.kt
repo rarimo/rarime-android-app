@@ -25,32 +25,29 @@ data class TransactionResponse(
 
 @JsonClass(generateAdapter = true)
 data class TransactionItem(
-    val timestamp: String,
-    val status: String,
-    val method: String,
-    val confirmations: Int,
-    val type: Int,
-    @Json(name = "exchange_rate") val exchangeRate: String,
+    val timestamp: String?,
+    val status: String?,
+    val method: String?,
+    val confirmations: Int?,
+    val type: Int?,
+    @Json(name = "exchange_rate") val exchangeRate: String?,
     val to: Address,
-    @Json(name = "result") val result: String,
+    @Json(name = "result") val result: String?,
     val hash: String,
-    @Json(name = "gas_price") val gasPrice: String,
-    @Json(name = "priority_fee") val priorityFee: String,
-    @Json(name = "base_fee_per_gas") val baseFeePerGas: String,
     @Json(name = "from") val from: Address,
-    @Json(name = "token_transfers") val tokenTransfers: List<TokenTransfer> = emptyList(),
-    @Json(name = "transaction_types") val transactionTypes: List<String> = emptyList(),
-    @Json(name = "gas_used") val gasUsed: String,
+    @Json(name = "token_transfers") val tokenTransfers: List<TokenTransfer>? = emptyList(),
+    @Json(name = "transaction_types") val transactionTypes: List<String>? = emptyList(),
+    @Json(name = "gas_used") val gasUsed: String?,
     @Json(name = "created_contract") val createdContract: Address? = null,
-    val position: Int,
-    val nonce: Int,
-    @Json(name = "has_error_in_internal_transactions") val hasErrorInInternalTransactions: Boolean,
+    val position: Int?,
+    val nonce: Int?,
+    @Json(name = "has_error_in_internal_transactions") val hasErrorInInternalTransactions: Boolean?,
     val actions: List<Action> = emptyList(),
     val value: String,
-    @Json(name = "token_transfers_overflow") val tokenTransfersOverflow: Boolean,
+    @Json(name = "token_transfers_overflow") val tokenTransfersOverflow: Boolean?,
     @Json(name = "max_priority_fee_per_gas") val maxPriorityFeePerGas: String?,
     @Json(name = "revert_reason") val revertReason: String?,
-    @Json(name = "confirmation_duration") val confirmationDuration: List<Long> = emptyList(),
+    @Json(name = "confirmation_duration") val confirmationDuration: List<Long>? = emptyList(),
     @Json(name = "transaction_tag") val transactionTag: String?,
     @Json(name = "decoded_input") val decodedInput: DecodedInput? = null,
     @Json(name = "raw_input") val rawInput: String?
@@ -65,7 +62,7 @@ data class TransactionItem(
                 amount = entity.value.toBigDecimal().divide(BigDecimal.TEN.pow(18)).toDouble(),
                 date = Date.from(Instant.parse(entity.timestamp)),
                 state = if(walletAddress == entity.from.hash) TransactionState.OUTGOING else TransactionState.INCOMING,
-                id = entity.hash.toInt()
+                id = 600
             )
         }
     }

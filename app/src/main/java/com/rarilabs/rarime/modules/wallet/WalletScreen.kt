@@ -219,6 +219,7 @@ fun WalletScreenContainer(
         ) {
 
             CardContainer {
+
                 WalletTransactionsList(
                     modifier = Modifier.fillMaxSize(),
                     transactions = selectedUserAsset.transactions,

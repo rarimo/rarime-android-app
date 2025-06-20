@@ -524,7 +524,7 @@ class APIModule {
             MoshiConverterFactory.create(
                 Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
             )
-        ).baseUrl(BaseConfig.EVM_SERVICE_URL).client(
+        ).baseUrl("https://evmscan.l2.rarimo.com/").client(
             OkHttpClient.Builder()
                 .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build()

@@ -7,7 +7,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface NativeTokenAPI {
-    @GET("/addresses/{address_hash}/transactions")
+    @GET("api/v2/addresses/{address_hash}/transactions")
     suspend fun getTransactions(@Path("address_hash") addressHash: String): Response<TransactionResponse>
 
 }

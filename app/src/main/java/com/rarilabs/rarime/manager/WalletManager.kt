@@ -36,7 +36,9 @@ class WalletAsset(//todo rewrite in private
 ) {
     fun toJSON(): String = Gson().toJson(
         WalletAssetJSON(
-            tokenSymbol = token.symbol, balance = balance.toString(), transactions = transactions
+            tokenSymbol = token.symbol,
+            balance = balance.toString(),
+            transactions = transactions
         )
     )
     fun getToken():Token{
