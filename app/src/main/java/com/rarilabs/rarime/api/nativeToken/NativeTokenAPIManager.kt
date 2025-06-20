@@ -9,39 +9,40 @@ class NativeTokenAPIManager @Inject constructor(
     private val nativeTokenAPI: NativeTokenAPI
 ) {
     suspend fun getAddressTransactions(walletAddress: String): List<Transaction> {
-        val result = nativeTokenAPI.getTransactions(walletAddress)
-        when (result.code()) {
-            in 200..299 -> {
-                return result.body()?.items?.map {
-                    TransactionItem.toTransaction(
-                        entity = it,
-                        walletAddress = walletAddress
-                    )
-                } ?: emptyList()
-            }
+        val response = nativeTokenAPI.getTransactions(walletAddress)
 
+        if (response.isSuccessful) {
+            return response.body()?.items?.map {
+                TransactionItem.toTransaction(
+                    entity = it,
+                    walletAddress = walletAddress
+                )
+            } ?: emptyList()
+        }
+
+        when (response.code()) {
             404 -> {
-                ErrorHandler.logDebug("NativeTokenApi", "User has no transaction")
+                ErrorHandler.logDebug("NativeTokenApi", "User has no transactions")
                 return emptyList()
             }
 
             422 -> {
-                ErrorHandler.logError("NativeTokenApi", "Invalid address")
-                return emptyList()
+                ErrorHandler.logError("NativeTokenApi", "Invalid address provided: $walletAddress")
+                throw IllegalStateException("Invalid wallet address")
             }
 
             in 500..599 -> {
-                ErrorHandler.logError("NativeTokenApi", "Server is down")
-                return emptyList()
+                val errorMsg = response.errorBody()?.string().orEmpty()
+                ErrorHandler.logError("NativeTokenApi", "Server error: $errorMsg")
+                throw Exception("Server error: $errorMsg")
             }
 
             else -> {
-                ErrorHandler.logError("NativeTokenApi", "Something went wrong")
-                return emptyList()
+                val errorMsg = response.errorBody()?.string().orEmpty()
+                ErrorHandler.logError("NativeTokenApi", "Unexpected error: $errorMsg")
+                throw Exception("Unexpected error: $errorMsg")
             }
-
         }
-
     }
 
 }
