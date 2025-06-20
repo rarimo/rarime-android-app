@@ -524,7 +524,7 @@ class APIModule {
             MoshiConverterFactory.create(
                 Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
             )
-        ).baseUrl(BaseConfig.RELAYER_URL).client(
+        ).baseUrl(BaseConfig.EXPLORER_API_URL).client(
             OkHttpClient.Builder()
                 .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build()

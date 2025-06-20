@@ -27,7 +27,7 @@ data class WalletAssetJSON(
     val tokenSymbol: String, val balance: String, val transactions: List<Transaction>
 )
 
-class WalletAsset(//todo rewrite in private
+class WalletAsset(
     val userAddress: String,
     private val token: Token,
     var balance: BigInteger = BigInteger.ZERO,
@@ -41,23 +41,32 @@ class WalletAsset(//todo rewrite in private
             transactions = transactions
         )
     )
-    fun getToken():Token{
+
+    fun getToken(): Token {
         return token
     }
-    fun getTokenName(): String{
+
+    fun getTokenName(): String {
         return token.name
     }
-    fun getTokenDecimals(): Int{
+
+    fun getTokenDecimals(): Int {
         return token.decimals
     }
-    fun getTokenSymbol(): String{
+
+    fun getTokenSymbol(): String {
         return token.symbol
     }
-    fun getTokenIcon(): Int{
+
+    fun getTokenIcon(): Int {
         return token.icon
     }
 
-    fun loadDetails(){
+    suspend fun loadTransactions() {
+        transactions = token.loadTransactions(userAddress)
+    }
+
+    fun loadDetails() {
 
     }
 
@@ -69,8 +78,8 @@ class WalletAsset(//todo rewrite in private
         return token.tokenType
     }
 
-    suspend fun getTransactions() : List<Transaction> {
-       val result = token.loadTransactions(userAddress)
+    suspend fun getTransactions(): List<Transaction> {
+        val result = token.loadTransactions(userAddress)
         return result
     }
 
@@ -130,14 +139,7 @@ class WalletManager @Inject constructor(
         dataStoreManager.saveSelectedWalletAsset(walletAsset)
     }
 
-    private suspend fun loadTransactionsByTokenType(tokenType: TokenType): List<Transaction> {
-        _walletAssets.value.forEach {
-            if (it.getTokenType() == tokenType) {
-                return it.getTransactions()
-            }
-        }
-        return emptyList()
-    }
+
 
     suspend fun loadBalances() = withContext(Dispatchers.IO) {
         val assets = createWalletAssets()
@@ -148,7 +150,7 @@ class WalletManager @Inject constructor(
                     async {
                         asset.loadDetails()
                         asset.loadBalance()
-                        asset.transactions = loadTransactionsByTokenType(asset.getTokenType())
+                        asset.loadTransactions()
                         ErrorHandler.logDebug("Loaded asset", asset.getTokenSymbol())
                     }
                 }.awaitAll()
