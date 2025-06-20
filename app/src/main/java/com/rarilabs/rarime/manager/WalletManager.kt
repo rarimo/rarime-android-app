@@ -158,7 +158,6 @@ class WalletManager @Inject constructor(
             //Default token asset
             setSelectedWalletAsset(assets.first { it.getToken() is NativeToken })
 
-
             Log.i("WalletManager", "Updating wallet assets")
             _walletAssets.value = assets
             dataStoreManager.saveWalletAssets(assets)
