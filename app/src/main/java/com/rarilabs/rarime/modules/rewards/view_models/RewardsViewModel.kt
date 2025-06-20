@@ -438,7 +438,7 @@ class RewardsViewModel @Inject constructor(
     val isAuthorized = authManager.isAuthorized
 
     private fun getPointsWalletAsset(): WalletAsset? {
-        return walletManager.walletAssets.value.find { it.token is PointsToken }
+        return walletManager.walletAssets.value.find { it.getToken() is PointsToken }
     }
 
     var _pointsWalletAsset = MutableStateFlow(getPointsWalletAsset())

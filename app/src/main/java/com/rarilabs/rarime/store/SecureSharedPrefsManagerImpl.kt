@@ -235,7 +235,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
 
             return assetsToPopulate.map {
                 val walletAsset =
-                    parsedWalletAssets.find { asset -> asset.tokenSymbol == it.token.symbol }
+                    parsedWalletAssets.find { asset -> asset.tokenSymbol == it.getTokenSymbol() }
 
                 if (walletAsset != null) {
                     it.transactions = walletAsset.transactions
@@ -265,7 +265,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
             val parsedWalletAsset =
                 Gson().fromJson<WalletAssetJSON>(jsonWalletAsset, walletAssetType)
 
-            val walletAsset = walletAssets.find { it.token.symbol == parsedWalletAsset.tokenSymbol }
+            val walletAsset = walletAssets.find { it.getTokenSymbol() == parsedWalletAsset.tokenSymbol }
 
             if (walletAsset == null) {
                 return walletAssets.first()

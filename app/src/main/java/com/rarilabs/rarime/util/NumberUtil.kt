@@ -5,6 +5,8 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 import kotlin.math.floor
 import kotlin.math.pow
 
@@ -103,8 +105,9 @@ object NumberUtil {
 
     fun formatAmount(amount: BigDecimal, pattern: String = "#,###.####"): String {
         return try {
-            val rounded = amount.setScale(4, RoundingMode.DOWN) // 4 decimal places, always down
-            DecimalFormat(pattern).format(rounded)
+            val rounded = amount.setScale(4, RoundingMode.DOWN)
+            val format = DecimalFormat(pattern, DecimalFormatSymbols(Locale.US))
+            format.format(rounded)
         } catch (e: Exception) {
             ""
         }

@@ -139,8 +139,7 @@ dependencies {
 //    implementation("moe.banana:moshi-jsonapi:master-SNAPSHOT")
 
     implementation("androidx.compose.animation:animation:1.7.8")
-
-
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.34.0")
     implementation("com.github.jeziellago:compose-markdown:0.5.0")
     implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("io.coil-kt:coil-gif:2.6.0")
@@ -183,7 +182,6 @@ dependencies {
     //// ACCOMPANIST ////
     implementation("com.google.accompanist:accompanist-permissions:0.31.6-rc")
     implementation("org.jmrtd:jmrtd:0.7.27")
-
 
     implementation("com.github.mhshams:jnbis:1.1.0")
     implementation("dev.keiji.jp2:jp2-android:1.0.4")

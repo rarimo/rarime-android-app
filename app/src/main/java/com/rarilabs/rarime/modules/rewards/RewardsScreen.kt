@@ -275,7 +275,7 @@ fun RewardsScreenUserStatistic(
 //                            )
 //                        }
                         Text(
-                            text = pointsWalletAsset.token.name,
+                            text = pointsWalletAsset.getTokenName(),
                             color = RarimeTheme.colors.textSecondary,
                             style = RarimeTheme.typography.body3,
                         )
@@ -445,7 +445,7 @@ fun RewardsRatingBadge(
 ) {
     val leaderboardSheetState = rememberAppSheetState()
 
-    val pointsToken = walletAsset.token as PointsToken
+    val pointsToken = walletAsset.getToken() as PointsToken
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),

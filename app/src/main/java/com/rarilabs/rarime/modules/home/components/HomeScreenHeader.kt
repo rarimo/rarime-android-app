@@ -138,7 +138,7 @@ fun HomeScreenHeaderContent(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = stringResource(R.string.balance_rmo, walletAsset.token.name),
+                            text = stringResource(R.string.balance_rmo, walletAsset.getTokenName()),
                             style = RarimeTheme.typography.body3,
                             color = RarimeTheme.colors.textSecondary
                         )

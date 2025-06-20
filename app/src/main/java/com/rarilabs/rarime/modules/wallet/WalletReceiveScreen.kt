@@ -74,10 +74,10 @@ fun WalletReceiveScreenContent(
     }
 
     WalletRouteLayout(
-        title = stringResource(R.string.wallet_receive_title, selectedWalletAsset.token.symbol.uppercase()),
+        title = stringResource(R.string.wallet_receive_title, selectedWalletAsset.getTokenSymbol().uppercase()),
         description = stringResource(
             R.string.wallet_receive_description,
-            selectedWalletAsset.token.symbol.uppercase()
+            selectedWalletAsset.getTokenSymbol().uppercase()
         ),
         onBack = onBack
     ) {

@@ -115,23 +115,21 @@ class Erc20Token(
         )
     }
 
-    override suspend fun loadTransactions(sender: String?, receiver: String?): List<Transaction> {
-        if (sender == null || receiver == null) {
-            throw IllegalArgumentException("sender or receiver must be not null")
-        }
+    override suspend fun loadTransactions(address: String): List<Transaction> {
+        TODO()
 
-        return listOf(
-            Transaction(
-                id = 0,
-                amount = 0.0,
-                date = Date.from(Instant.now()),
-                state = TransactionState.INCOMING,
-                from = sender,
-                to = receiver,
-                tokenType = tokenType,
-                operationType = TransactionType.TRANSFER
-            )
-        )
+//        return listOf(
+//            Transaction(
+//                id = 0,
+//                amount = 0.0,
+//                date = Date.from(Instant.now()),
+//                state = TransactionState.INCOMING,
+//                from = sender,
+//                to = receiver,
+//                tokenType = tokenType,
+//                operationType = TransactionType.TRANSFER
+//            )
+//        )
     }
 
     override suspend fun estimateTransferFee(

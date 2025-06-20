@@ -33,7 +33,7 @@ fun WalletTransactionCard(
     asset: WalletAsset
 ) {
     val amountSign = if (transaction.state == TransactionState.INCOMING) "+" else "-"
-    val txHumanAmount = NumberUtil.toHumanAmount(transaction.amount, asset.token.decimals)
+    val txHumanAmount = NumberUtil.toHumanAmount(transaction.amount, asset.getTokenDecimals())
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -69,8 +69,8 @@ fun WalletTransactionCard(
 
         Text(
             text = "${amountSign}${
-                txHumanAmount.toBigDecimal().stripTrailingZeros().toPlainString()
-            } ${asset.token.symbol}",
+                txHumanAmount.toBigDecimal().stripTrailingZeros().toPlainString().replace(Regex("(\\.\\d{4})\\d+"), "$1")
+            } ${asset.getTokenSymbol()}",
             style = RarimeTheme.typography.subtitle7,
             color = if (transaction.state == TransactionState.INCOMING) {
                 RarimeTheme.colors.successMain

@@ -36,7 +36,7 @@ class HomeViewModel @Inject constructor(
     val notReadNotifications = notificationManager.notificationList
 
     private val _selectedWalletAsset =
-        MutableStateFlow(walletManager.walletAssets.value.find { it.token is PointsToken })
+        MutableStateFlow(walletManager.walletAssets.value.find { it.getToken() is PointsToken })
 
     val selectedWalletAsset: StateFlow<WalletAsset?>
         get() = _selectedWalletAsset.asStateFlow()

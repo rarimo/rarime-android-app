@@ -2,13 +2,13 @@ package com.rarilabs.rarime.manager
 
 import android.util.Log
 import com.google.gson.Gson
+import com.rarilabs.rarime.api.nativeToken.models.NativeTokenAPIManager
 import com.rarilabs.rarime.data.tokens.NativeToken
 import com.rarilabs.rarime.data.tokens.PointsToken
 import com.rarilabs.rarime.data.tokens.Token
 import com.rarilabs.rarime.data.tokens.TokenType
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
-import com.rarilabs.rarime.store.room.transactons.TransactionRepository
 import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -28,18 +28,61 @@ data class WalletAssetJSON(
     val tokenSymbol: String, val balance: String, val transactions: List<Transaction>
 )
 
-data class WalletAsset(
+class WalletAsset(
     val userAddress: String,
-    val token: Token,
+    private val token: Token,
     var balance: BigInteger = BigInteger.ZERO,
     var transactions: List<Transaction> = emptyList(),
     var showInAssets: Boolean = true
 ) {
     fun toJSON(): String = Gson().toJson(
         WalletAssetJSON(
-            tokenSymbol = token.symbol, balance = balance.toString(), transactions = transactions
+            tokenSymbol = token.symbol,
+            balance = balance.toString(),
+            transactions = transactions
         )
     )
+
+    fun getToken(): Token {
+        return token
+    }
+
+    fun getTokenName(): String {
+        return token.name
+    }
+
+    fun getTokenDecimals(): Int {
+        return token.decimals
+    }
+
+    fun getTokenSymbol(): String {
+        return token.symbol
+    }
+
+    fun getTokenIcon(): Int {
+        return token.icon
+    }
+
+    suspend fun loadTransactions() {
+        transactions = token.loadTransactions(userAddress)
+    }
+
+    fun loadDetails() {
+
+    }
+
+//    fun loadDetails() {
+//        return token.symbol
+//    }
+
+    fun getTokenType(): TokenType {
+        return token.tokenType
+    }
+
+    suspend fun getTransactions(): List<Transaction> {
+        val result = token.loadTransactions(userAddress)
+        return result
+    }
 
     suspend fun loadBalance() {
         balance = token.balanceOf(userAddress)
@@ -54,15 +97,20 @@ class WalletManager @Inject constructor(
     private val dataStoreManager: SecureSharedPrefsManager,
     private val identityManager: IdentityManager,
     private val pointsManager: PointsManager,
-    private val transactionRepository: TransactionRepository,
-    private val web3j: Web3j
+    private val web3j: Web3j,
+    private val nativeTokenAPIManager: NativeTokenAPIManager
 ) {
 
     private fun createWalletAssets(): List<WalletAsset> {
         val list = listOf(
+// not change before reclaim list
             WalletAsset(
                 identityManager.evmAddress(),
-                NativeToken(web3j, identityManager = identityManager),
+                NativeToken(
+                    web3j,
+                    identityManager = identityManager,
+                    nativeTokenAPIManager = nativeTokenAPIManager
+                ),
             ),
             WalletAsset(
                 identityManager.getUserPointsNullifierHex(), PointsToken(
@@ -85,24 +133,15 @@ class WalletManager @Inject constructor(
     val pointsToken: StateFlow<PointsToken?> = _pointsToken.asStateFlow()
 
     private fun getPointsToken(walletAssets: List<WalletAsset>) =
-        walletAssets.find { it.token is PointsToken }?.token as? PointsToken
+        walletAssets.find { it.getToken() is PointsToken }?.getToken() as? PointsToken
 
     fun setSelectedWalletAsset(walletAsset: WalletAsset) {
         _selectedWalletAsset.value = walletAsset
-        ErrorHandler.logDebug("setSelectedWalletAsset", walletAsset.token.symbol)
+        ErrorHandler.logDebug("setSelectedWalletAsset", walletAsset.getTokenSymbol())
         dataStoreManager.saveSelectedWalletAsset(walletAsset)
     }
 
 
-    suspend fun insertTransaction(transaction: Transaction) {
-        transactionRepository.insertTransaction(transaction)
-    }
-
-    private suspend fun loadTransactionsByTokenType(tokenType: TokenType): List<Transaction> {
-        val allTransactions = transactionRepository.getAllTransactions()
-
-        return allTransactions.filter { it.tokenType == tokenType }
-    }
 
     suspend fun loadBalances() = withContext(Dispatchers.IO) {
         val assets = createWalletAssets()
@@ -111,16 +150,17 @@ class WalletManager @Inject constructor(
             coroutineScope {
                 assets.map { asset ->
                     async {
-                        asset.token.loadDetails()
+                        asset.loadDetails()
                         asset.loadBalance()
-                        asset.transactions = loadTransactionsByTokenType(asset.token.tokenType)
+                        asset.loadTransactions()
+                        ErrorHandler.logDebug("Loaded asset", asset.getTokenSymbol())
                     }
                 }.awaitAll()
             }
 
 
             //Default token asset
-            setSelectedWalletAsset(assets.first { it.token is NativeToken })
+            setSelectedWalletAsset(assets.first { it.getToken() is NativeToken })
 
             Log.i("WalletManager", "Updating wallet assets")
             _walletAssets.value = assets

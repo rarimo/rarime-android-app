@@ -20,11 +20,11 @@ class RewardsClaimViewModel @Inject constructor(
     val walletAssets = walletManager.walletAssets
 
     fun getPointsWalletAsset(): WalletAsset? {
-        return walletManager.walletAssets.value.find { it.token is PointsToken }
+        return walletManager.walletAssets.value.find { it.getToken() is PointsToken }
     }
 
     fun getRarimoWalletAsset(): WalletAsset? {
-        return walletManager.walletAssets.value.find { it.token is RarimoToken }
+        return walletManager.walletAssets.value.find { it.getToken() is RarimoToken }
     }
 
     var _pointsWalletAsset = MutableStateFlow(getPointsWalletAsset())
