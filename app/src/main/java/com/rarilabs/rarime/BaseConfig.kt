@@ -35,7 +35,7 @@ interface IConfig {
     val REWARD_NOTIFICATION_TOPIC: String
     val GOOGLE_WEB_KEY: String
     val APP_ID_FIREBASE: String
-
+    val EXPLORER_URL: String
     val VOTING_RELAYER_URL: String
 
     val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String
@@ -136,7 +136,7 @@ object TestNetConfig : IConfig {
     override val MASTER_CERTIFICATES_BUCKETNAME = "rarimo-temp"
     override val EVM_STABLE_COIN_RPC = "https://ethereum-sepolia-rpc.publicnode.com"
     override val STABLE_COIN_ADDRESS = "0xbd03f0fC994fd1015eAdc37c943055330e238Ad9"
-
+    override val EXPLORER_URL ="https://scan.testnet.rarimo.com/txs"
 
     override val EVM_RPC_URL = "https://rpc.evm.mainnet.rarimo.com"
     override val REGISTER_CONTRACT_ADDRESS = "0x70aadcdb5624dC458c22D47f6c458d1D5cE1768C"
@@ -297,6 +297,7 @@ object MainnetConfig : IConfig {
 
     override val REGISTER_CONTRACT_ADDRESS = "0x11BB4B14AA6e4b836580F3DBBa741dD89423B971"
     override val STABLE_COIN_ADDRESS = "0xbd03f0fC994fd1015eAdc37c943055330e238Ad9"
+    override val EXPLORER_URL ="https://scan.rarimo.com/txs"
     override val CERTIFICATES_SMT_CONTRACT_ADDRESS = "0xA8b350d699632569D5351B20ffC1b31202AcEDD8"
     override val REGISTRATION_SMT_CONTRACT_ADDRESS = "0x479F84502Db545FA8d2275372E0582425204A879"
     override val STATE_KEEPER_CONTRACT_ADDRESS = "0x61aa5b68D811884dA4FEC2De4a7AA0464df166E1"
