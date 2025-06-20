@@ -22,6 +22,7 @@ import org.web3j.protocol.Web3j
 import java.math.BigDecimal
 import java.math.BigInteger
 import javax.inject.Inject
+import javax.inject.Singleton
 
 data class WalletAssetJSON(
     val tokenSymbol: String, val balance: String, val transactions: List<Transaction>
@@ -48,6 +49,7 @@ data class WalletAsset(
         .divide(BigDecimal.TEN.pow(token.decimals), token.decimals, java.math.RoundingMode.DOWN)
 }
 
+@Singleton
 class WalletManager @Inject constructor(
     private val dataStoreManager: SecureSharedPrefsManager,
     private val identityManager: IdentityManager,

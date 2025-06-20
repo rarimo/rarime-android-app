@@ -25,7 +25,7 @@ class HomeViewModel @Inject constructor(
     passportManager: PassportManager,
     private val walletManager: WalletManager,
     private val pointsManager: PointsManager,
-    widgetsManager: ManageWidgetsManager,
+    private val widgetsManager: ManageWidgetsManager,
     notificationManager: NotificationManager,
     settingsManager: SettingsManager,
     private val sharedPrefsManager: SecureSharedPrefsManager
@@ -51,7 +51,6 @@ class HomeViewModel @Inject constructor(
                 val pointsDeferred = async { loadPointsEvent() }
                 pointsDeferred.await()
             } catch (e: Exception) {
-
             }
         }
     }
