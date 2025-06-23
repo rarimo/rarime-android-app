@@ -116,20 +116,9 @@ class Erc20Token(
     }
 
     override suspend fun loadTransactions(address: String): List<Transaction> {
-        TODO()
 
-//        return listOf(
-//            Transaction(
-//                id = 0,
-//                amount = 0.0,
-//                date = Date.from(Instant.now()),
-//                state = TransactionState.INCOMING,
-//                from = sender,
-//                to = receiver,
-//                tokenType = tokenType,
-//                operationType = TransactionType.TRANSFER
-//            )
-//        )
+        return emptyList()
+
     }
 
     override suspend fun estimateTransferFee(

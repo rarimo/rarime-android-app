@@ -88,21 +88,7 @@ class RarimoToken @Inject constructor(
     }
 
     override suspend fun loadTransactions(address: String): List<Transaction> {
-
-        TODO()
-        //return emptyList()
-//        listOf(
-//            Transaction(
-//                id = 0,
-//                amount = 0.0,
-//                date = Date.from(Instant.now()),
-//                state = TransactionState.INCOMING,
-//                from = identityManager.rarimoAddress(),
-//                to = receiver,
-//                tokenType = tokenType,
-//                operationType = TransactionType.TRANSFER
-//            )
-//        )
+        return emptyList()
     }
 
     override suspend fun estimateTransferFee(
