@@ -1,6 +1,7 @@
 package com.rarilabs.rarime.api.nativeToken.models
 
 import android.text.format.DateUtils
+import android.util.Log
 import com.google.android.gms.common.util.DataUtils
 import com.rarilabs.rarime.data.tokens.NativeToken
 import com.rarilabs.rarime.data.tokens.TokenType
@@ -54,14 +55,17 @@ data class TransactionItem(
 ){
     companion object {
         fun toTransaction(entity: TransactionItem, walletAddress: String) : Transaction{
+            Log.d("Wallet Address:", walletAddress)
+            Log.d("From Address", entity.from.hash)
+            Log.d("To Address", entity.from.hash )
             return Transaction(
                 tokenType = TokenType.RARIMO_ETH,
                 operationType = TransactionType.TRANSFER,
                 from = entity.from.toString(),
                 to = entity.to.toString(),
-                amount = entity.value.toBigDecimal().divide(BigDecimal.TEN.pow(18)).toDouble(),
+                amount = entity.value.toDouble(),
                 date = Date.from(Instant.parse(entity.timestamp)),
-                state = if(walletAddress == entity.from.hash) TransactionState.OUTGOING else TransactionState.INCOMING,
+                state = if(walletAddress.lowercase() == entity.from.hash.lowercase()) TransactionState.OUTGOING else TransactionState.INCOMING,
                 id = 600
             )
         }
