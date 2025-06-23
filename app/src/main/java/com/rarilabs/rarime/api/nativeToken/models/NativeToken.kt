@@ -56,9 +56,7 @@ data class TransactionItem(
 ){
     companion object {
         fun toTransaction(entity: TransactionItem, walletAddress: String) : Transaction{
-            Log.d("Wallet Address:", walletAddress)
-            Log.d("From Address", entity.from.hash)
-            Log.d("To Address", entity.from.hash )
+
             return Transaction(
                 tokenType = TokenType.RARIMO_ETH,
                 operationType = TransactionType.TRANSFER,
