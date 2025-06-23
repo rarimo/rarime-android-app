@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -402,13 +404,13 @@ private fun Background(
         if (isDark) R.drawable.ic_bg_earn_widget_dark
         else R.drawable.ic_bg_earn_widget_light
     }
-
-
     with(sharedTransitionScope) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
                 .background(color = RarimeTheme.colors.backgroundPrimary)
+
+                .fillMaxSize()
+
         ) {
             Image(
                 painter = painterResource(backgroundRes),
@@ -416,6 +418,8 @@ private fun Background(
                 contentScale = ContentScale.FillWidth,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(450.dp)
+                    .clip(RoundedCornerShape(40.dp))
                     .sharedBounds(
                         rememberSharedContentState(
                             HomeSharedKeys.image(
@@ -424,11 +428,17 @@ private fun Background(
                         ),
                         animatedVisibilityScope = animatedVisibilityScope,
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(),
+                        clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(40.dp)),
                     )
-                    .clip(RoundedCornerShape(20.dp))
+
+
+
             )
+
+
         }
+
     }
 }
 
