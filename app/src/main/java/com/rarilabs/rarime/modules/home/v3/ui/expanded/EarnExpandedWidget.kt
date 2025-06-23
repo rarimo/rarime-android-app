@@ -347,9 +347,8 @@ private fun Footer(
                 modifier = Modifier.padding(bottom = 24.dp)
             )
             TaskCard(
-//todo in future used for implementing logic
                 taskIconId = R.drawable.ic_user_add_line,
-                rewardInRMO = 50,
+                rewardInRMO = 15,
                 title = stringResource(R.string.earn_title_of_task),
                 onClick = onClick,
                 description = stringResource(R.string.earn_invite_task_card_description),

@@ -21,7 +21,6 @@ import com.rarilabs.rarime.api.points.models.ReferralCode
 import com.rarilabs.rarime.api.points.models.ReferralCodeStatuses
 import com.rarilabs.rarime.data.tokens.PointsToken
 import com.rarilabs.rarime.modules.rewards.components.RewardsEventItemInvitesCard
-import com.rarilabs.rarime.modules.rewards.view_models.CONST_MOCKED_EVENTS_LIST
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
@@ -72,10 +71,6 @@ fun InviteOthersContent(
     onClose: () -> Unit
 ) {
 
-    val rewardPerInvite = pointsBalance.balanceDetails!!.attributes.referral_codes?.size?.let {
-        CONST_MOCKED_EVENTS_LIST[0].attributes.meta.static.reward.div(it)
-    } ?: 0L
-
     Column(
         modifier = Modifier
             .padding(horizontal = 20.dp)
@@ -110,14 +105,16 @@ fun InviteOthersContent(
 
         )
 
+
+
         Column(
             modifier = Modifier.padding(vertical = 17.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+
             pointsBalance.balanceDetails!!.attributes.referral_codes?.forEach {
                 RewardsEventItemInvitesCard(
                     code = it,
-                    rewardAmount = rewardPerInvite,
                     pointsBalance = pointsBalance.balanceDetails!!,
                 )
             }
