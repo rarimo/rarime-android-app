@@ -118,7 +118,7 @@ class NativeToken @Inject constructor(
 
 
         return Transaction(
-            id = BigInteger(Numeric.hexStringToByteArray(txHash)).toInt(),
+            id = BigInteger(Numeric.hexStringToByteArray(txHash)).toString(),
             amount = amount.toDouble(),
             date = Date.from(Instant.now()),
             state = TransactionState.OUTGOING,

@@ -12,6 +12,7 @@ import com.rarilabs.rarime.store.room.transactons.models.TransactionEntityData
 import com.rarilabs.rarime.util.WalletUtil
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import org.web3j.utils.Numeric
 import java.io.Serializable
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -66,7 +67,7 @@ data class TransactionItem(
                 amount = entity.value.toDouble(),
                 date = Date.from(Instant.parse(entity.timestamp)),
                 state = if(walletAddress.lowercase() == entity.from.hash.lowercase()) TransactionState.OUTGOING else TransactionState.INCOMING,
-                id = 600
+                id = entity.hash
             )
         }
     }

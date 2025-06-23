@@ -1,6 +1,8 @@
 package com.rarilabs.rarime.modules.wallet.components
 
+import android.content.Intent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,9 +13,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
+import androidx.core.net.toUri
+import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.data.tokens.Erc20Token
 import com.rarilabs.rarime.data.tokens.TokenType
 import com.rarilabs.rarime.manager.WalletAsset
@@ -25,6 +31,8 @@ import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.DateUtil
 import com.rarilabs.rarime.util.NumberUtil
+import org.web3j.utils.Numeric
+import java.math.BigInteger
 import java.util.Date
 
 @Composable
@@ -34,11 +42,20 @@ fun WalletTransactionCard(
 ) {
     val amountSign = if (transaction.state == TransactionState.INCOMING) "+" else "-"
     val txHumanAmount = NumberUtil.toHumanAmount(transaction.amount, asset.getTokenDecimals())
-
+    val context = LocalContext.current
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    (BaseConfig.RARIMO_EXPLORER +"/"+ transaction.id
+                    ).toUri()
+                )
+                context.startActivity(intent)
+            }
     ) {
 
         //TODO update item
@@ -69,7 +86,8 @@ fun WalletTransactionCard(
 
         Text(
             text = "${amountSign}${
-                txHumanAmount.toBigDecimal().stripTrailingZeros().toPlainString().replace(Regex("(\\.\\d{4})\\d+"), "$1")
+                txHumanAmount.toBigDecimal().stripTrailingZeros().toPlainString()
+                    .replace(Regex("(\\.\\d{4})\\d+"), "$1")
             } ${asset.getTokenSymbol()}",
             style = RarimeTheme.typography.subtitle7,
             color = if (transaction.state == TransactionState.INCOMING) {
@@ -92,7 +110,7 @@ fun WalletTransactionCardPreview() {
     ) {
         WalletTransactionCard(
             transaction = Transaction(
-                id = 1,
+                id = "1",
                 amount = Constants.AIRDROP_REWARD,
                 date = Date(),
                 state = TransactionState.INCOMING,

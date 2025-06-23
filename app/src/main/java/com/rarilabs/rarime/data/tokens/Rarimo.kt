@@ -76,7 +76,7 @@ class RarimoToken @Inject constructor(
         }
 
         return Transaction(
-            id = 12,
+            id = "12",
             amount = amount.toDouble(),
             date = Date.from(Instant.now()),
             state = TransactionState.INCOMING,

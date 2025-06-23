@@ -23,7 +23,7 @@ data class TransactionEntityData(
     companion object {
         fun fromTransaction(tx: Transaction): TransactionEntityData {
             return TransactionEntityData(
-                id = tx.id,
+                id = tx.id.toInt(),
                 tokenType = tx.tokenType.name,
                 operationType = tx.operationType.value,
                 from = tx.from,
@@ -36,7 +36,7 @@ data class TransactionEntityData(
 
         fun toTransaction(entity: TransactionEntityData): Transaction {
             return Transaction(
-                id = entity.id,
+                id = entity.id.toString(),
                 tokenType = TokenType.valueOf(entity.tokenType),
                 operationType = TransactionType.entries.first { it.value == entity.operationType },
                 from = entity.from,

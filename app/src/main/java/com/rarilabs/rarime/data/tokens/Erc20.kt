@@ -104,7 +104,7 @@ class Erc20Token(
         }
 
         return Transaction(
-            id = deadLine.toInt(),
+            id = deadLine.toString(),
             amount = res.data.attributes.amount.toDouble(),
             date = Date.from(Instant.now()),
             state = TransactionState.OUTGOING,

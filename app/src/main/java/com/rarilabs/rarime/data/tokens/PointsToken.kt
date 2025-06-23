@@ -65,7 +65,7 @@ class PointsToken @Inject constructor(
 
     override suspend fun transfer(to: String, amount: BigInteger): Transaction {
         return Transaction(
-            id = 25353,
+            id = "25353",
             amount = amount.toDouble(),
             date = Date.from(Instant.now()),
             state = TransactionState.OUTGOING,

@@ -25,7 +25,7 @@ class PreviewerToken(
 
     override suspend fun transfer(to: String, amount: BigInteger): Transaction {
         return Transaction(
-            id = 0,
+            id = "0",
             amount = 0.0,
             date = Date.from(Instant.now()),
             state = TransactionState.INCOMING,

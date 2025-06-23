@@ -37,7 +37,7 @@ interface IConfig {
     val APP_ID_FIREBASE: String
     val EXPLORER_API_URL: String
     val VOTING_RELAYER_URL: String
-
+    val RARIMO_EXPLORER: String
     val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String
 
     val VOTING_RPC_URL: String
@@ -136,8 +136,8 @@ object TestNetConfig : IConfig {
     override val MASTER_CERTIFICATES_BUCKETNAME = "rarimo-temp"
     override val EVM_STABLE_COIN_RPC = "https://ethereum-sepolia-rpc.publicnode.com"
     override val STABLE_COIN_ADDRESS = "0xbd03f0fC994fd1015eAdc37c943055330e238Ad9"
-    override val EXPLORER_API_URL ="https://scan.testnet.rarimo.com"
-
+    override val EXPLORER_API_URL = "https://scan.testnet.rarimo.com"
+    override val RARIMO_EXPLORER= "https://scan.testnet.rarimo.com/tx"
     override val EVM_RPC_URL = "https://rpc.evm.mainnet.rarimo.com/api/v2"
     override val REGISTER_CONTRACT_ADDRESS = "0x70aadcdb5624dC458c22D47f6c458d1D5cE1768C"
     override val REGISTRATION_SIMPLE_CONTRACT_ADRRESS = "0x7815E9d49Ce74ca1c56a7276CE7DCA61d4f9878d"
@@ -297,7 +297,7 @@ object MainnetConfig : IConfig {
 
     override val REGISTER_CONTRACT_ADDRESS = "0x11BB4B14AA6e4b836580F3DBBa741dD89423B971"
     override val STABLE_COIN_ADDRESS = "0xbd03f0fC994fd1015eAdc37c943055330e238Ad9"
-    override val EXPLORER_API_URL ="https://evmscan.l2.rarimo.com"
+    override val EXPLORER_API_URL = "https://evmscan.l2.rarimo.com"
     override val CERTIFICATES_SMT_CONTRACT_ADDRESS = "0xA8b350d699632569D5351B20ffC1b31202AcEDD8"
     override val REGISTRATION_SMT_CONTRACT_ADDRESS = "0x479F84502Db545FA8d2275372E0582425204A879"
     override val STATE_KEEPER_CONTRACT_ADDRESS = "0x61aa5b68D811884dA4FEC2De4a7AA0464df166E1"
@@ -310,7 +310,7 @@ object MainnetConfig : IConfig {
     override val lightVerificationSKHex = Keys.lightVerificationSKHex
     override val GOOGLE_WEB_KEY = Keys.GOOGLE_WEB_KEY
     override val APP_ID_FIREBASE = Keys.APP_ID
-
+    override val RARIMO_EXPLORER= "https://scan.rarimo.com/tx"
     override val GLOBAL_NOTIFICATION_TOPIC = "rarime"
     override val REWARD_NOTIFICATION_TOPIC: String = "rarime-rewardable"
     override val APPSFLYER_DEV_KEY = Keys.APPSFLYER_DEV_KEY
