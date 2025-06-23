@@ -43,9 +43,6 @@ fun RewardsEventItemInvites(
     pointsEvent: PointsEventData,
     pointsBalance: PointsBalanceData,
 ) {
-    val rewardPerInvite = pointsBalance.attributes.referral_codes?.size?.let {
-        pointsEvent.attributes.meta.static.reward.div(it)
-    } ?: 0
 
     WalletRouteLayout(
         headerModifier = Modifier
@@ -133,7 +130,6 @@ fun RewardsEventItemInvites(
                             pointsBalance.attributes.referral_codes?.forEach {
                                 RewardsEventItemInvitesCard(
                                     code = it,
-                                    rewardAmount = rewardPerInvite,
                                     pointsBalance = pointsBalance,
                                 )
                             }
