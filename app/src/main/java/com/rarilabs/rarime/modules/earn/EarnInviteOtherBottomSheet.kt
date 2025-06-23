@@ -112,10 +112,10 @@ fun InviteOthersContent(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
-            pointsBalance.balanceDetails!!.attributes.referral_codes?.forEach {
+            pointsBalance.balanceDetails?.attributes?.referral_codes?.forEach {
                 RewardsEventItemInvitesCard(
                     code = it,
-                    pointsBalance = pointsBalance.balanceDetails!!,
+                    pointsBalance = pointsBalance.balanceDetails,
                 )
             }
         }

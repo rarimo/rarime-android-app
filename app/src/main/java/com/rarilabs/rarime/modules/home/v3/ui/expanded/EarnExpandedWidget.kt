@@ -134,7 +134,7 @@ fun EarnExpandedWidgetContent(
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope,
                         innerPaddings = innerPaddings,
-                        balance = pointsBalance.balanceDetails!!.attributes.amount
+                        balance = pointsBalance.balanceDetails?.attributes?.amount
                     )
                 },
                 body = {
@@ -156,7 +156,7 @@ fun EarnExpandedWidgetContent(
                     Footer(
                         countOfTask = 1,
                         onClick = onClick,
-                        pointsBalances = pointsBalance.balanceDetails!!
+                        pointsBalances = pointsBalance.balanceDetails
                     )
                 })
         }
@@ -324,13 +324,14 @@ private fun Body(
 private fun Footer(
     countOfTask: Int,
     onClick: () -> Unit,
-    pointsBalances: PointsBalanceData
+    pointsBalances: PointsBalanceData?
 
 
 ) {
     val currentValue =
-        pointsBalances.attributes.referral_codes!!.count { it.status != ReferralCodeStatuses.ACTIVE.value }
-    val maxValue = pointsBalances.attributes.referral_codes.size
+        pointsBalances?.attributes?.referral_codes?.count { it.status != ReferralCodeStatuses.ACTIVE.value }
+            ?: 0
+    val maxValue = pointsBalances?.attributes?.referral_codes?.size ?: 0
     Column(modifier = Modifier.background(color = RarimeTheme.colors.backgroundSurface1)) {
 
 

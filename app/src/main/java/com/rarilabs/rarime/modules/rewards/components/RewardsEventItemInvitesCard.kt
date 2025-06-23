@@ -102,12 +102,12 @@ private fun RewardsEventItemInvitesCardContainer(
 @Composable
 fun RewardsEventItemInvitesCard(
     code: ReferralCode,
-    pointsBalance: PointsBalanceData,
+    pointsBalance: PointsBalanceData?,
 ) {
     val context = LocalContext.current
 
     val notActiveActionContent = @Composable {
-        if (pointsBalance.attributes.is_verified == true) {
+        if (pointsBalance?.attributes?.is_verified == true) {
             RewardAmountPreview(
                 amount = 3,
             )
