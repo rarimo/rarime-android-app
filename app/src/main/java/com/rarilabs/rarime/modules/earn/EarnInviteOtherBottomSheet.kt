@@ -66,7 +66,7 @@ val tempPointsBalances = PointsBalanceData(
 @Composable
 fun InviteOthersContent(
     modifier: Modifier = Modifier,
-    isVerifiedPointsBalance : Boolean?,
+    isVerifiedPointsBalance : Boolean,
     onClose: () -> Unit,
     referralCodes : List<ReferralCode>
 ) {

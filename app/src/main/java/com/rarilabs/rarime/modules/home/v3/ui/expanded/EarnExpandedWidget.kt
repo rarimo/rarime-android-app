@@ -82,7 +82,7 @@ fun EarnExpandedWidget(
     }
     val isVerifiedPointsBalance by remember {
         derivedStateOf {
-            pointsBalances?.balanceDetails?.attributes?.is_verified ?: true
+            pointsBalances?.balanceDetails?.attributes?.is_verified ?: false
         }
     }
     val pointsBalance by remember {
@@ -139,7 +139,7 @@ fun EarnExpandedWidgetContent(
     innerPaddings: Map<ScreenInsets, Number>,
     onClick: () -> Unit,
     colorScheme: AppColorScheme,
-    pointsBalance: Long?,
+    pointsBalance: Long,
     maxValueOfReferrals: Int,
     currentValueOfReferrals: Int
 ) {
@@ -200,7 +200,7 @@ private fun Header(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     innerPaddings: Map<ScreenInsets, Number>,
-    balance: Long?
+    balance: Long
 ) {
     with(sharedTransitionScope) {
         Row(
