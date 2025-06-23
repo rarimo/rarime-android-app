@@ -43,9 +43,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.points.models.PointsBalanceBody
+import com.rarilabs.rarime.api.points.models.PointsBalanceData
 import com.rarilabs.rarime.api.points.models.ReferralCodeStatuses
 import com.rarilabs.rarime.data.enums.AppColorScheme
+import com.rarilabs.rarime.data.tokens.PointsToken
+import com.rarilabs.rarime.data.tokens.PreviewerToken
 import com.rarilabs.rarime.modules.earn.EarnViewModel
 import com.rarilabs.rarime.modules.earn.InviteOthersContent
 import com.rarilabs.rarime.modules.earn.TaskCard
@@ -74,7 +76,7 @@ fun EarnExpandedWidget(
 ) {
     val inviteOthers = rememberAppSheetState()
     val colorScheme by viewModel.colorScheme.collectAsState()
-    val pointsBalances by viewModel.pointBalanceBody.collectAsState()
+    val pointsBalances by viewModel.pointsAsset.collectAsState()
     AppBottomSheet(
         state = inviteOthers,
         backgroundColor = RarimeTheme.colors.backgroundSurface1,
@@ -86,10 +88,9 @@ fun EarnExpandedWidget(
                 state = rememberScrollState(),
                 orientation = Orientation.Vertical
             ),
-            pointsBalance = pointsBalances!!.data,
+            pointsBalance = pointsBalances!!,
             onClose = { inviteOthers.hide() },
         )
-
     }
 
     EarnExpandedWidgetContent(
@@ -100,10 +101,8 @@ fun EarnExpandedWidget(
             inviteOthers.show()
         },
         colorScheme = colorScheme,
-        pointsBalance = pointsBalances
+        pointsBalance = pointsBalances!!
     )
-
-
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -114,7 +113,7 @@ fun EarnExpandedWidgetContent(
     innerPaddings: Map<ScreenInsets, Number>,
     onClick: () -> Unit,
     colorScheme: AppColorScheme,
-    pointsBalance: PointsBalanceBody?
+    pointsBalance: PointsToken
 
 ) {
     with(widgetProps) {
@@ -135,10 +134,8 @@ fun EarnExpandedWidgetContent(
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope,
                         innerPaddings = innerPaddings,
-                        pointsBalance = pointsBalance
+                        balance = pointsBalance.balanceDetails?.attributes?.amount
                     )
-
-
                 },
                 body = {
                     Body(
@@ -159,7 +156,7 @@ fun EarnExpandedWidgetContent(
                     Footer(
                         countOfTask = 1,
                         onClick = onClick,
-                        pointsBalances = pointsBalance
+                        pointsBalances = pointsBalance.balanceDetails
                     )
                 })
         }
@@ -174,9 +171,8 @@ private fun Header(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     innerPaddings: Map<ScreenInsets, Number>,
-    pointsBalance: PointsBalanceBody?
+    balance: Long?
 ) {
-    val balance = pointsBalance!!.data.attributes.amount
     with(sharedTransitionScope) {
         Row(
             modifier = Modifier
@@ -328,13 +324,14 @@ private fun Body(
 private fun Footer(
     countOfTask: Int,
     onClick: () -> Unit,
-    pointsBalances: PointsBalanceBody?
+    pointsBalances: PointsBalanceData?
 
 
 ) {
     val currentValue =
-        pointsBalances!!.data.attributes.referral_codes!!.count { it.status != ReferralCodeStatuses.ACTIVE.value }
-    val maxValue = pointsBalances.data.attributes.referral_codes!!.size
+        pointsBalances?.attributes?.referral_codes?.count { it.status != ReferralCodeStatuses.ACTIVE.value }
+            ?: 0
+    val maxValue = pointsBalances?.attributes?.referral_codes?.size ?: 0
     Column(modifier = Modifier.background(color = RarimeTheme.colors.backgroundSurface1)) {
 
 
@@ -351,9 +348,8 @@ private fun Footer(
                 modifier = Modifier.padding(bottom = 24.dp)
             )
             TaskCard(
-//todo in future used for implementing logic
                 taskIconId = R.drawable.ic_user_add_line,
-                rewardInRMO = 50,
+                rewardInRMO = 15,
                 title = stringResource(R.string.earn_title_of_task),
                 onClick = onClick,
                 description = stringResource(R.string.earn_invite_task_card_description),
@@ -427,7 +423,7 @@ fun EarnExpandedWidgetPreview() {
             innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
             onClick = {},
             colorScheme = AppColorScheme.LIGHT,
-            pointsBalance = null
+            pointsBalance = PreviewerToken("") as PointsToken
         )
     }
 }

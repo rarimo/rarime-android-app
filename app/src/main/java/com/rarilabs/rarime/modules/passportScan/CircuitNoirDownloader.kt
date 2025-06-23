@@ -70,7 +70,6 @@ class CircuitNoirDownloader(private val context: Context) {
             RegisterNoirCircuitData.REGISTER_IDENTITY_10_256_3_3_576_248_1_1184_5_264 -> BaseConfig.registerIdentity_10_256_3_3_576_248_1_1184_5_264
             RegisterNoirCircuitData.REGISTER_IDENTITY_21_256_3_3_336_232_NA -> BaseConfig.registerIdentity_21_256_3_3_336_232_NA
             RegisterNoirCircuitData.REGISTER_IDENTITY_21_256_3_4_576_232_NA -> BaseConfig.registerIdentity_21_256_3_4_576_232_NA
-            RegisterNoirCircuitData.REGISTER_IDENTITY_11_256_3_3_576_240_1_864_5_264 -> BaseConfig.registerIdentity_11_256_3_3_576_240_1_864_5_264
             RegisterNoirCircuitData.REGISTER_IDENTITY_11_256_3_3_576_248_NA -> BaseConfig.registerIdentity_11_256_3_3_576_248_NA
             RegisterNoirCircuitData.REGISTER_IDENTITY_2_256_3_6_576_248_1_2432_3_256 -> BaseConfig.registerIdentity_2_256_3_6_576_248_1_2432_3_256
             RegisterNoirCircuitData.REGISTER_IDENTITY_3_512_3_3_336_264_NA -> BaseConfig.registerIdentity_3_512_3_3_336_264_NA
@@ -91,6 +90,7 @@ class CircuitNoirDownloader(private val context: Context) {
             RegisterNoirCircuitData.REGISTER_IDENTITY_20_160_3_3_576_200_NA -> BaseConfig.registerIdentity_20_160_3_3_576_200_NA
             RegisterNoirCircuitData.REGISTER_IDENTITY_23_160_3_3_576_200_NA -> BaseConfig.registerIdentity_23_160_3_3_576_200_NA
             RegisterNoirCircuitData.REGISTER_IDENTITY_3_256_3_4_600_248_1_1496_3_256 -> BaseConfig.registerIdentity_3_256_3_4_600_248_1_1496_3_256
+            RegisterNoirCircuitData.REGISTER_IDENTITY_1_256_3_6_576_264_1_2448_3_256 -> BaseConfig.registerIdentity_1_256_3_6_576_264_1_2448_3_256
         }
     }
 

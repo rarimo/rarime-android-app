@@ -74,30 +74,8 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
-    external fun registerIdentity125635576248NA(
-        datFilePath: String,
-        datFileLen: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
-        wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
-        errorMsg: ByteArray,
-        errorMsgMaxSize: Long
-    ): Int
 
     external fun registerIdentity125636576248124325296(
-        datFilePath: String,
-        datFileLen: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
-        wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
-        errorMsg: ByteArray,
-        errorMsgMaxSize: Long
-    ): Int
-
-
-    external fun registerIdentity22563633626421244862008(
         datFilePath: String,
         datFileLen: Long,
         jsonBuffer: ByteArray,
@@ -120,29 +98,7 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
-    external fun registerIdentity225636336248124323256(
-        datFilePath: String,
-        datFileLen: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
-        wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
-        errorMsg: ByteArray,
-        errorMsgMaxSize: Long
-    ): Int
-
     external fun registerIdentity125636576264124483256(
-        datFilePath: String,
-        datFileLen: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
-        wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
-        errorMsg: ByteArray,
-        errorMsgMaxSize: Long
-    ): Int
-
-    external fun registerIdentity225636576248124323256(
         datFilePath: String,
         datFileLen: Long,
         jsonBuffer: ByteArray,
@@ -186,16 +142,6 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
-    external fun registerIdentity125634600248114963256(
-        datFilePath: String,
-        datFileLen: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
-        wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
-        errorMsg: ByteArray,
-        errorMsgMaxSize: Long
-    ): Int
 
 
     external fun registerIdentity116034576200NA(
@@ -209,27 +155,6 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
-    external fun registerIdentity2125633336232NA(
-        datFilePath: String,
-        datFileLen: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
-        wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
-        errorMsg: ByteArray,
-        errorMsgMaxSize: Long
-    ): Int
-
-    external fun registerIdentity2025633336224NA(
-        datFilePath: String,
-        datFileLen: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
-        wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
-        errorMsg: ByteArray,
-        errorMsgMaxSize: Long
-    ): Int
 
     external fun registerIdentity2425634336232NA(
         datFilePath: String,
@@ -264,16 +189,6 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
-    external fun registerIdentity1025633576248111845264(
-        datFilePath: String,
-        datFileLen: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
-        wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
-        errorMsg: ByteArray,
-        errorMsgMaxSize: Long
-    ): Int
 
     external fun registerIdentity1125635576248118084256(
         datFilePath: String,
@@ -332,16 +247,6 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
-    external fun registerIdentity2125634576232NA(
-        datFilePath: String,
-        datFileLen: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
-        wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
-        errorMsg: ByteArray,
-        errorMsgMaxSize: Long
-    ): Int
 
     external fun registerIdentity112563357624018645264(
         datFilePath: String,

@@ -95,16 +95,6 @@ class ProofGenerationManager @Inject constructor(
         _proofError.value = null
     }
 
-
-    suspend fun joinRewardProgram(eDocument: EDocument) {
-        try {
-            pointsManager.joinRewardProgram(eDocument)
-        } catch (e: Exception) {
-            ErrorHandler.logError(TAG, "Error joining reward program", e)
-            throw e
-        }
-    }
-
     private suspend fun registerCertificate(eDocument: EDocument) {
         try {
             val sodStream = eDocument.sod!!.decodeHexString().inputStream()
@@ -167,6 +157,7 @@ class ProofGenerationManager @Inject constructor(
                     eDocument, registerIdentityCircuitType = circuitType
                 )
             } else {
+
                 generateRegisterIdentityProofGroth(eDocument, circuitType)
             }
 
@@ -409,7 +400,7 @@ class ProofGenerationManager @Inject constructor(
 
         val circuitDownloader = CircuitNoirDownloader(application)
 
-        ErrorHandler.logDebug("Plonk", "Start registration")
+        ErrorHandler.logDebug("Plonk", "Plonk Start registration")
 
         val trustedSetupPath =
             circuitDownloader.downloadTrustedSetup(onProgressUpdate = { progress, isEnded ->
@@ -418,7 +409,7 @@ class ProofGenerationManager @Inject constructor(
                 }
             })
 
-        ErrorHandler.logDebug("Plonk", "Circuit downloaded")
+        ErrorHandler.logDebug("Plonk", "Plonk Circuit downloaded")
 
 
         val circuitData = RegisterNoirCircuitData.fromValue(registerIdentityCircuitType.buildName())
@@ -431,12 +422,14 @@ class ProofGenerationManager @Inject constructor(
                 }
             }
 
+
         _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
 
         val inputs = buildPlonkRegistrationInputs(eDocument, registerIdentityCircuitType)
 
         return withContext(customDispatcher) {
             val circuitByteCode = File(byteCodePath).readText()
+
 
             val circuit = Circuit.fromJsonManifest(circuitByteCode)
 
@@ -467,7 +460,7 @@ class ProofGenerationManager @Inject constructor(
             }
         } ?: throw DownloadCircuitError()
 
-        ErrorHandler.logDebug(TAG, "Generating full registration proof")
+        ErrorHandler.logDebug(TAG, "Generating Groth registration proof")
 
         _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
 

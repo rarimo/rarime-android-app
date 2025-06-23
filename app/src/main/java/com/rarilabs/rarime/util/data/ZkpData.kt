@@ -2,7 +2,6 @@ package com.rarilabs.rarime.util.data
 
 import com.google.gson.Gson
 import com.rarilabs.rarime.api.registration.models.LightRegistrationData
-import com.rarilabs.rarime.util.data.UniversalProofFactory.fromLight
 import org.web3j.utils.Numeric
 import java.math.BigInteger
 
@@ -62,11 +61,6 @@ sealed class UniversalProof {
 
 
 object UniversalProofFactory {
-    /**
-     * Try to parse Groth or Plonk from raw JSON.
-     * (LightProofs must be constructed via [fromLight] explicitly.)
-     */
-
     private val gson = Gson()
     fun fromRaw(raw: String): UniversalProof? {
         return try {

@@ -12,10 +12,8 @@ class ZkIdentityNoPassportViewModel @Inject constructor(val passportManager: Pas
     ViewModel() {
 
     fun setJsonEDocument(eDocument: EDocument) {
-
         passportManager.setPassport(eDocument)
         passportManager.updatePassportStatus(status = PassportStatus.UNREGISTERED)
-
     }
 
 }

@@ -125,12 +125,11 @@ class PassportManager @Inject constructor(
 
 
     fun getProofIndex(
-        passportInfoKey: String, lightProofData: LightRegistrationData? = getLightRegistrationData()
+        passportInfoKey: String
     ): ByteArray {
         return Identity.calculateProofIndex(
             passportInfoKey,
-            if (lightProofData == null) identityManager.registrationProof.value!!.getIdentityKey()
-            else identityManager.registrationProof.value!!.getIdentityKey()
+            identityManager.registrationProof.value!!.getIdentityKey()
         )
     }
 

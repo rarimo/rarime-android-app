@@ -592,6 +592,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
                 val groth = Gson().fromJson(jsonGroth, GrothProof::class.java)
                 if (groth?.pub_signals != null) return UniversalProof.fromGroth(groth)
             } catch (_: Exception) {
+
             }
         }
 

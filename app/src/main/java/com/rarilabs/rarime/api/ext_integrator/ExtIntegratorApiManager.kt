@@ -144,10 +144,12 @@ class ExtIntegratorApiManager @Inject constructor(
 
         val passportInfoKey = passportManager.getPassportInfoKey(
             passportManager.passport.value!!,
-            identityManager.registrationProof.value!!
+            identityManager.registrationProof.value!!,
         )
 
-        val proofIndex = passportManager.getProofIndex(passportInfoKey)
+        val proofIndex = passportManager.getProofIndex(
+            passportInfoKey
+        )
 
         val smtProofRaw = withContext(Dispatchers.IO) {
             registrationSmtContract.getProof(proofIndex).send()

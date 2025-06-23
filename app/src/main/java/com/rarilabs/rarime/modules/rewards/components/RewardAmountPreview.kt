@@ -35,7 +35,7 @@ fun RewardAmountPreview(
                 style = RarimeTheme.typography.subtitle5,
                 color = RarimeTheme.colors.textSecondary,
             )
-            AppIcon(id = tokenIconId, size = 14.dp, tint = RarimeTheme.colors.componentPrimary)
+            AppIcon(id = tokenIconId, size = 14.dp, tint = RarimeTheme.colors.primaryMain)
         }
     }
 }
