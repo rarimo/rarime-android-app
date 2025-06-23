@@ -8,7 +8,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -61,8 +60,7 @@ fun EarnCollapsedWidget(
                     .sharedElement(
                         state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
                         animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) }
-                    )
+                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) })
                     .clip(RoundedCornerShape(16.dp))
                     .padding(vertical = 8.dp)
                     .padding(horizontal = 16.dp)
@@ -83,19 +81,16 @@ fun EarnCollapsedWidget(
                         title = stringResource(R.string.earn),
                         accentTitle = stringResource(R.string.rmo)
                     )
-                },
-                header = {
+                }, header = {
                     Header(layoutId, sharedTransitionScope, animatedVisibilityScope)
-                },
-                background = {
+                }, background = {
                     Background(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope,
                         colorScheme = colorScheme
                     )
-                }
-            )
+                })
         }
     }
 }
@@ -159,25 +154,23 @@ private fun Footer(
                     title = title,
                     titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.invertedDark),
                     accentTitle = accentTitle,
-                    titleModifier =
-                        Modifier.sharedBounds(
-                            rememberSharedContentState(HomeSharedKeys.title(layoutId)),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                        ),
+                    titleModifier = Modifier.sharedBounds(
+                        rememberSharedContentState(HomeSharedKeys.title(layoutId)),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    ),
                     accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient13),
-                    accentTitleModifier =
-                        Modifier.sharedBounds(
-                            rememberSharedContentState(
-                                HomeSharedKeys.accentTitle(
-                                    layoutId
-                                )
-                            ),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    accentTitleModifier = Modifier.sharedBounds(
+                        rememberSharedContentState(
+                            HomeSharedKeys.accentTitle(
+                                layoutId
+                            )
                         ),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    ),
                     caption = stringResource(R.string.earn_collapsed_widget_caption),
                     captionStyle = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary),
                     captionModifier = Modifier.sharedBounds(
@@ -190,7 +183,7 @@ private fun Footer(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
-                    )
+                )
                 Spacer(modifier = Modifier.weight(1f))
                 AppIcon(
                     id = R.drawable.ic_arrow_right_up_line,
@@ -223,9 +216,7 @@ private fun Background(
     }
     with(sharedTransitionScope) {
         Box(
-            modifier = Modifier
-
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
             Image(
                 painter = painterResource(backgroundRes),
@@ -233,7 +224,6 @@ private fun Background(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
-
                     .sharedBounds(
                         rememberSharedContentState(
                             HomeSharedKeys.image(
@@ -267,9 +257,7 @@ fun ClaimCollapsedCardPreviewLight() {
                 layoutId = WidgetType.EARN.layoutId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope
-            ),
-            colorScheme = AppColorScheme.LIGHT,
-            modifier = Modifier
+            ), colorScheme = AppColorScheme.LIGHT, modifier = Modifier
                 .fillMaxWidth()
                 .height(450.dp)
         )
