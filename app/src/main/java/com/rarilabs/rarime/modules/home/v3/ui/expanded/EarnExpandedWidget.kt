@@ -30,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -43,11 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.points.models.PointsBalanceData
 import com.rarilabs.rarime.api.points.models.ReferralCodeStatuses
 import com.rarilabs.rarime.data.enums.AppColorScheme
-import com.rarilabs.rarime.data.tokens.PointsToken
-import com.rarilabs.rarime.data.tokens.PreviewerToken
 import com.rarilabs.rarime.modules.earn.EarnViewModel
 import com.rarilabs.rarime.modules.earn.InviteOthersContent
 import com.rarilabs.rarime.modules.earn.TaskCard
@@ -77,19 +75,45 @@ fun EarnExpandedWidget(
     val inviteOthers = rememberAppSheetState()
     val colorScheme by viewModel.colorScheme.collectAsState()
     val pointsBalances by viewModel.pointsAsset.collectAsState()
+    val referralCodes by remember {
+        derivedStateOf {
+            pointsBalances?.balanceDetails?.attributes?.referral_codes ?: emptyList()
+        }
+    }
+    val isVerifiedPointsBalance by remember {
+        derivedStateOf {
+            pointsBalances?.balanceDetails?.attributes?.is_verified ?: true
+        }
+    }
+    val pointsBalance by remember {
+        derivedStateOf {
+            pointsBalances?.balanceDetails?.attributes?.amount ?: 0L
+        }
+    }
+    val maxValueOfReferrals by remember {
+        derivedStateOf {
+            referralCodes.size
+        }
+    }
+    val currentValueOfReferrals by remember {
+        derivedStateOf {
+            referralCodes.count { it.status != ReferralCodeStatuses.ACTIVE.value }
+        }
+    }
     AppBottomSheet(
         state = inviteOthers,
         backgroundColor = RarimeTheme.colors.backgroundSurface1,
         isHeaderEnabled = false,
-        fullScreen = true
+        fullScreen = false,
     ) {
         InviteOthersContent(
             modifier = Modifier.scrollable(
                 state = rememberScrollState(),
                 orientation = Orientation.Vertical
             ),
-            pointsBalance = pointsBalances!!,
             onClose = { inviteOthers.hide() },
+            isVerifiedPointsBalance = isVerifiedPointsBalance,
+            referralCodes = referralCodes,
         )
     }
 
@@ -101,7 +125,9 @@ fun EarnExpandedWidget(
             inviteOthers.show()
         },
         colorScheme = colorScheme,
-        pointsBalance = pointsBalances!!
+        pointsBalance = pointsBalance,
+        maxValueOfReferrals = maxValueOfReferrals,
+        currentValueOfReferrals = currentValueOfReferrals,
     )
 }
 
@@ -113,8 +139,9 @@ fun EarnExpandedWidgetContent(
     innerPaddings: Map<ScreenInsets, Number>,
     onClick: () -> Unit,
     colorScheme: AppColorScheme,
-    pointsBalance: PointsToken
-
+    pointsBalance: Long?,
+    maxValueOfReferrals: Int,
+    currentValueOfReferrals: Int
 ) {
     with(widgetProps) {
         with(sharedTransitionScope) {
@@ -134,7 +161,7 @@ fun EarnExpandedWidgetContent(
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope,
                         innerPaddings = innerPaddings,
-                        balance = pointsBalance.balanceDetails?.attributes?.amount
+                        balance = pointsBalance
                     )
                 },
                 body = {
@@ -156,8 +183,10 @@ fun EarnExpandedWidgetContent(
                     Footer(
                         countOfTask = 1,
                         onClick = onClick,
-                        pointsBalances = pointsBalance.balanceDetails
+                        maxValueOfRefferals = maxValueOfReferrals,
+                        currentValueOfRefferals = currentValueOfReferrals
                     )
+
                 })
         }
     }
@@ -324,14 +353,9 @@ private fun Body(
 private fun Footer(
     countOfTask: Int,
     onClick: () -> Unit,
-    pointsBalances: PointsBalanceData?
-
-
+    maxValueOfRefferals: Int,
+    currentValueOfRefferals: Int
 ) {
-    val currentValue =
-        pointsBalances?.attributes?.referral_codes?.count { it.status != ReferralCodeStatuses.ACTIVE.value }
-            ?: 0
-    val maxValue = pointsBalances?.attributes?.referral_codes?.size ?: 0
     Column(modifier = Modifier.background(color = RarimeTheme.colors.backgroundSurface1)) {
 
 
@@ -353,8 +377,8 @@ private fun Footer(
                 title = stringResource(R.string.earn_title_of_task),
                 onClick = onClick,
                 description = stringResource(R.string.earn_invite_task_card_description),
-                currentVal = currentValue,
-                maxVal = maxValue,
+                currentVal = currentValueOfRefferals,
+                maxVal = maxValueOfRefferals,
             )
 
         }
@@ -423,7 +447,9 @@ fun EarnExpandedWidgetPreview() {
             innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
             onClick = {},
             colorScheme = AppColorScheme.LIGHT,
-            pointsBalance = PreviewerToken("") as PointsToken
+            pointsBalance = 1L,
+            maxValueOfReferrals = 5,
+            currentValueOfReferrals = 2,
         )
     }
 }

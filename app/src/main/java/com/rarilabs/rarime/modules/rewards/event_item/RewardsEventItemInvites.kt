@@ -130,7 +130,7 @@ fun RewardsEventItemInvites(
                             pointsBalance.attributes.referral_codes?.forEach {
                                 RewardsEventItemInvitesCard(
                                     code = it,
-                                    pointsBalance = pointsBalance,
+                                    isVerifiedPointsBalance = true,
                                 )
                             }
                         }

@@ -102,12 +102,12 @@ private fun RewardsEventItemInvitesCardContainer(
 @Composable
 fun RewardsEventItemInvitesCard(
     code: ReferralCode,
-    pointsBalance: PointsBalanceData?,
+    isVerifiedPointsBalance: Boolean?
 ) {
     val context = LocalContext.current
 
     val notActiveActionContent = @Composable {
-        if (pointsBalance?.attributes?.is_verified == true) {
+        if (isVerifiedPointsBalance == true) {
             RewardAmountPreview(
                 amount = 3,
             )
@@ -243,20 +243,7 @@ private fun RewardsEventItemInvitesCardPreview() {
         ).forEach {
             RewardsEventItemInvitesCard(
                 code = it,
-                pointsBalance = PointsBalanceData(
-                    id = "",
-                    type = "",
-                    attributes = PointsBalanceDataAttributes(
-                        amount = 0,
-                        is_disabled = false,
-                        is_verified = true,
-                        created_at = 0,
-                        updated_at = 0,
-                        rank = 0,
-                        referral_codes = listOf(),
-                        level = 1,
-                    )
-                )
+                isVerifiedPointsBalance = true,
             )
         }
     }
