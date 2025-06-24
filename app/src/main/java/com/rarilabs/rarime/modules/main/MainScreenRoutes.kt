@@ -34,12 +34,14 @@ import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.modules.home.v3.HomeScreenV3
 import com.rarilabs.rarime.modules.intro.IntroScreen
 import com.rarilabs.rarime.modules.main.guards.AuthGuard
+import com.rarilabs.rarime.modules.maintenance.MaintenanceScreen
 import com.rarilabs.rarime.modules.notifications.NotificationsScreen
 import com.rarilabs.rarime.modules.passportScan.ScanPassportScreen
 import com.rarilabs.rarime.modules.passportVerify.VerifyPassportScreen
 import com.rarilabs.rarime.modules.profile.AppIconScreen
 import com.rarilabs.rarime.modules.profile.AuthMethodScreen
 import com.rarilabs.rarime.modules.profile.ExportKeysScreen
+import com.rarilabs.rarime.modules.profile.LanguageScreen
 import com.rarilabs.rarime.modules.profile.ProfileScreen
 import com.rarilabs.rarime.modules.profile.ThemeScreen
 import com.rarilabs.rarime.modules.register.NewIdentityScreen
@@ -196,7 +198,9 @@ fun MainScreenRoutes(
             AppLoadingScreen()
         }
 
-//
+        composable(Screen.Maintenance.route) {
+            MaintenanceScreen()
+        }
 
         composable(Screen.LoadFailed.route) {
             AppLoadingFailedScreen()
@@ -445,6 +449,15 @@ fun MainScreenRoutes(
                 AuthGuard(navigate = navigateWithPopUp) {
                     ScreenInsetsContainer {
                         ExportKeysScreen({ navController.popBackStack() })
+                    }
+                }
+            }
+            composable(Screen.Main.Profile.Language.route) {
+                AuthGuard(navigate = navigateWithPopUp) {
+                    ScreenInsetsContainer {
+                        LanguageScreen(onLanguageChange = {
+                            LocaleUtil.updateLocale(context, it.localeTag)
+                        }, onBack = { navController.popBackStack() })
                     }
                 }
             }
