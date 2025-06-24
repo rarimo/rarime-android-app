@@ -52,7 +52,6 @@ fun RewardsClaimScreen(
     val walletAssets = rewardsClaimViewModel.walletAssets.collectAsState()
 
     val pointsWalletAsset = rewardsClaimViewModel.pointsWalletAsset.collectAsState()
-    val rarimoWalletAsset = rewardsClaimViewModel.rarimoWalletAsset.collectAsState()
 
     val amountInputState = rememberAppTextFieldNumberState("")
 
@@ -73,7 +72,7 @@ fun RewardsClaimScreen(
         rewardsClaimViewModel.updateScreenWalletAssets()
     }
 
-    if (pointsWalletAsset == null || rarimoWalletAsset == null) {
+    if (pointsWalletAsset == null) {
         // TODO: implement loader and error view
         Text(
             text = "Loading...",
@@ -83,7 +82,6 @@ fun RewardsClaimScreen(
         RewardsClaimScreenContent(
             onBack = onBack,
             pointsWalletAsset = pointsWalletAsset.value!!,
-            rarimoWalletAsset = rarimoWalletAsset.value!!,
             amountInputState = amountInputState,
             submit = { submit() }
         )
@@ -94,7 +92,6 @@ fun RewardsClaimScreen(
 private fun RewardsClaimScreenContent(
     onBack: () -> Unit,
     pointsWalletAsset: WalletAsset,
-    rarimoWalletAsset: WalletAsset,
     amountInputState: AppTextFieldNumberState,
     submit: () -> Unit,
 ) {
@@ -211,11 +208,6 @@ private fun RewardsClaimScreenContent(
                                             modifier = Modifier.padding(horizontal = 16.dp)
                                         )
 
-                                        Text(
-                                            text = "${NumberUtil.formatAmount(rarimoWalletAsset.humanBalance())} ${rarimoWalletAsset.token.symbol}",
-                                            style = RarimeTheme.typography.subtitle5,
-                                            color = RarimeTheme.colors.textPrimary,
-                                        )
                                     }
                                 }
                             }
@@ -279,10 +271,6 @@ fun RewardsClaimScreenPreview() {
         pointsWalletAsset = WalletAsset(
             "",
             PreviewerToken("", "Points token", "PTK", 0),
-        ),
-        rarimoWalletAsset = WalletAsset(
-            "",
-            PreviewerToken("", "Rarimo token", "RMO", 0),
         ),
         amountInputState = rememberAppTextFieldNumberState(""),
         submit = {}

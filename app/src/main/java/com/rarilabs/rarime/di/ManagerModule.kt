@@ -2,13 +2,9 @@ package com.rarilabs.rarime.di
 
 import android.content.Context
 import com.rarilabs.rarime.BaseConfig
-import com.rarilabs.rarime.api.airdrop.AirDropAPI
-import com.rarilabs.rarime.api.airdrop.AirDropAPIManager
 import com.rarilabs.rarime.api.auth.AuthAPI
 import com.rarilabs.rarime.api.auth.AuthAPIManager
 import com.rarilabs.rarime.api.auth.RefreshTokenInterceptor
-import com.rarilabs.rarime.api.cosmos.CosmosAPI
-import com.rarilabs.rarime.api.cosmos.CosmosAPIManager
 import com.rarilabs.rarime.api.erc20.Erc20API
 import com.rarilabs.rarime.api.erc20.Erc20ApiManager
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorAPI
@@ -25,9 +21,7 @@ import com.rarilabs.rarime.api.registration.RegistrationAPI
 import com.rarilabs.rarime.api.registration.RegistrationAPIManager
 import com.rarilabs.rarime.api.voting.VotingApi
 import com.rarilabs.rarime.api.voting.VotingApiManager
-import com.rarilabs.rarime.manager.AirDropManager
 import com.rarilabs.rarime.manager.AuthManager
-import com.rarilabs.rarime.manager.CosmosManager
 import com.rarilabs.rarime.manager.DriveBackupManager
 import com.rarilabs.rarime.manager.Erc20Manager
 import com.rarilabs.rarime.manager.IdentityManager
@@ -270,29 +264,6 @@ class APIModule {
 
     @Provides
     @Singleton
-    fun provideAirDropAPIManager(@Named("jsonApiRetrofit") retrofit: Retrofit): AirDropAPIManager =
-        AirDropAPIManager(
-            retrofit.create(AirDropAPI::class.java),
-        )
-
-    @Provides
-    @Singleton
-    fun provideAirDropManager(
-        @ApplicationContext context: Context,
-        airDropAPIManager: AirDropAPIManager,
-        rarimoContractManager: RarimoContractManager,
-        identityManager: IdentityManager,
-        dataStoreManager: SecureSharedPrefsManager,
-    ): AirDropManager = AirDropManager(
-        airDropAPIManager,
-        context,
-        rarimoContractManager,
-        identityManager,
-        dataStoreManager,
-    )
-
-    @Provides
-    @Singleton
     fun providePointsAPIManager(@Named("jsonApiRetrofit") retrofit: Retrofit): PointsAPIManager =
         PointsAPIManager(retrofit.create(PointsAPI::class.java))
 
@@ -361,20 +332,6 @@ class APIModule {
                 Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
             )
         ).baseUrl(BaseConfig.COSMOS_RPC_URL).client(okHttpClient).build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideCosmosAPIManager(
-        @Named("jsonApiCosmosRetrofit") retrofit: Retrofit
-    ): CosmosAPIManager = CosmosAPIManager(retrofit.create(CosmosAPI::class.java))
-
-    @Provides
-    @Singleton
-    fun provideCosmosManager(
-        cosmosAPIManager: CosmosAPIManager
-    ): CosmosManager {
-        return CosmosManager(cosmosAPIManager)
     }
 
     @Provides

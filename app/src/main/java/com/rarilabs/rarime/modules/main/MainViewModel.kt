@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.AndroidViewModel
 import com.rarilabs.rarime.data.enums.AppIcon
 import com.rarilabs.rarime.data.enums.SecurityCheckState
-import com.rarilabs.rarime.manager.AirDropManager
 import com.rarilabs.rarime.manager.AuthManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
@@ -44,7 +43,6 @@ class MainViewModel @Inject constructor(
     private val securityManager: SecurityManager,
     private val settingsManager: SettingsManager,
     private val walletManager: WalletManager,
-    private val airDropManager: AirDropManager,
     private val authManager: AuthManager,
     private val identityManager: IdentityManager,
     private val passportManager: PassportManager,

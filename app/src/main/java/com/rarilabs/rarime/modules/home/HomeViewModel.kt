@@ -5,7 +5,6 @@ import androidx.lifecycle.AndroidViewModel
 import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.tokens.PointsToken
-import com.rarilabs.rarime.manager.AirDropManager
 import com.rarilabs.rarime.manager.NotificationManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.RegistrationManager
@@ -26,7 +25,6 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val app: Application,
     private val passportManager: PassportManager,
-    private val airDropManager: AirDropManager,
     private val walletManager: WalletManager,
     private val notificationManager: NotificationManager,
     private val registrationManager: RegistrationManager,

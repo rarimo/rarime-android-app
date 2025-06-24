@@ -11,17 +11,11 @@
 
     <string name="invitation_about_step_link">Learn more about the program</string>
 
-    <string name="skip_btn">Skip</string>
-    <string name="next_btn">Next</string>
     <string name="continue_btn">Continue</string>
     <string name="wait_btn">Wait...</string>
     <string name="enable_btn">Enable</string>
     <string name="maybe_later_btn">Maybe Later</string>
     <string name="step_indicator">Step %1$s/%2$s</string>
-    <string name="new_identity_title">Your Private Key</string>
-    <string name="copy_to_clipboard_btn">Copy to clipboard</string>
-    <string name="copied_text">Copied</string>
-    <string name="new_identity_warning">Please store the private key safely and do not share it with anyone. If you lose this key, you will not be able to recover the account and will lose access forever.</string>
     <string name="enable_passcode_title">Enable\nPasscode</string>
     <string name="enable_passcode_text">Enable Passcode Login</string>
     <string name="enter_passcode_title">Enter Passcode</string>
@@ -34,7 +28,6 @@
     <string name="status_processing">PROCESSING</string>
     <string name="status_done">DONE</string>
     <string name="status_failed">FAILED</string>
-    <string name="lets_start_btn">Let\'s Start</string>
     <string name="scan_your_passport_title">Scan your Passport</string>
     <string name="scan_your_passport_text">Data never leaves this device</string>
     <string name="scan_your_passport_hint">Move your passport page inside the border</string>
@@ -62,7 +55,6 @@
     <string name="nfc_reader_title">NFC Reader</string>
     <string name="nfc_reader_text">Reading personal data</string>
     <string name="nfc_reader_hint_1">Place your passport cover to the back of your phone</string>
-    <string name="nfc_reader_hint_2">2. Place your Passport\/ID to the back of your phone</string>
     <string name="nfc_reader_scanning">Scanning…</string>
     <string name="nfc_error_interrupt">Scan interrupted, try again</string>
     <string name="nfc_error_unknown">Try again</string>
@@ -70,16 +62,9 @@
     <string name="nfc_reader_revoke">Revoke</string>
     <string name="nfc_reader_error">Scan again</string>
 
-    <string name="beta_launch">Beta launch</string>
-    <string name="create_account_btn">Create Account</string>
     <string name="what_is_rarime_title">What is RariMe?</string>
     <string name="settings_title">Settings</string>
     <string name="card_visual">CARD VISUAL</string>
-    <string name="other_passport_title">Other passport holders</string>
-    <string name="other_passport_text">Upcoming airdrops will include citizens from all over the world.\n\nCreate an incognito profile by scanning your passport, and we will notify you when you become eligible.</string>
-
-    <string name="join_waitlist_card_title">Join the waitlist</string>
-    <string name="join_waitlist_card_subtitle">Join the waitlist description</string>
 
     <string name="airdrop_intro_title">Programmable Airdrop</string>
     <string name="airdrop_intro_description">The beta launch is focused on distributing tokens to Ukrainian citizens</string>
@@ -114,8 +99,6 @@
     <string name="other_passport_card_title">Join Rewards Program</string>
     <string name="other_passport_card_description">Check your eligibility</string>
     <string name="greet_common_action_card_btn_text">Let\'s start</string>
-    <string name="rarime_card_title">RARIME</string>
-    <string name="rarime_card_description">Learn more about RariMe App</string>
 
     <string name="referal_code_exist_msg">Failed to verify code</string>
     <string name="referal_code_not_exist_msg">Invalid invitation code</string>
@@ -129,7 +112,6 @@
     <string name="claim_tokens_description">This airdrop is part of a humanitarian effort to help direct funds towards Ukraine.</string>
     <string name="claim_btn">Claim</string>
     <string name="claiming_btn">Claiming...</string>
-    <string name="airdrop_tx_title">Airdrop</string>
     <string name="scan_qr_title">Scan QR</string>
     <string name="scan_qr_description">Place QR code within the frame to scan</string>
     <string name="wallet_receive_title">Receive %1$s</string>
@@ -152,8 +134,6 @@
 
     <string name="rewards_screen_title">Rewards</string>
     <string name="rewards_claim_btn">Claim</string>
-    <string name="rewards_amount_overline_tooltip">Lorem ipsum dolor sit amet concestetur</string>
-    <string name="rewards_screen_statistics_unscanned">Please scan passport in the next 30 days to avoid losing %1$s</string>
 
     <string name="leaderboard_title">Leaderboard</string>
 
@@ -168,8 +148,6 @@
     <string name="rewards_claim_screen_warning">If you claim tokens for the Reserved pool, you will be downgraded in the leaderboard</string>
     <string name="rewards_claim_screen_claim_btn">Claim</string>
 
-    <string name="rewards_stub_title">Starting in July</string>
-    <string name="rewards_stub_description">The rewards program will allow you to receive weekly airdrops.\n\nYou can earn additional rewards by using RariMe’s incognito proofs with other ecosystem apps.</string>
     <string name="terms_of_use">Terms of Use</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="auth_method">Auth Method</string>
@@ -190,7 +168,6 @@
     <string name="try_again_msg">Please, try again</string>
     <string name="biometric_lock_title">Biometric Auth</string>
     <string name="unlock_btn">Unlock</string>
-    <string name="account_locked_title">Account Locked</string>
     <string name="account_locked_time_msg">Your entered wrong passcode.\n Loading time: %1$s</string>
     <string name="account_locked_msg">Account Locked</string>
     <string name="attempts_left_msg">Failed, %1$s Attempts left</string>
@@ -204,8 +181,6 @@
     <string name="what_is_rarime_text_item_2">With RariMe, identity becomes private but verifiable.</string>
     <string name="what_is_rarime_text_item_3">" ensures your history, reputation and actions are not lost, but remain confidential and under your control."</string>
     <string name="icon_white">White</string>
-    <string name="icon_black_and_green">Black &amp; Green</string>
-    <string name="icon_green_and_black">Green &amp; Black</string>
     <string name="app_icon">App Icon</string>
     <string name="birth_date">Birth date</string>
     <string name="passport_card_identifiers_title">DATA</string>
@@ -224,18 +199,13 @@
     <string name="reserve_tokens_description">The passport is in the allowlist</string>
     <string name="reserving_btn">Reserving...</string>
     <string name="reserv_btn">Reserve</string>
-    <string name="specific_citizens">Ukrainian Citizens</string>
-    <string name="programmable_rewards">Programmable rewards</string>
     <string name="learn_more_about_the_app">Learn more about the App</string>
-    <string name="about_the_program">About the program</string>
     <string name="checking_eligibility">Checking eligibility happens via a scan of your biometric passport.\n\nYour data never leaves the device or is shared with any third party. Proof of citizenship is generated locally using Zero-Knowledge technology.</string>
     <string name="reserve_tokens">Reserve tokens</string>
     <string name="you_re_entitled_of_x_rmo">Entitled of %1$s RMO</string>
 
     <string name="rewards_event_item_invites_title">Invite Friends</string>
-    <string name="rewards_event_item_invites_subtitle">Invite friends and get rewards</string>
     <string name="rewards_event_item_invites_status">Invited %1$s/%2$s</string>
-    <string name="rewards_event_item_invites_status_subtitle">Invite codes:</string>
 
     <string name="invite_status_rewarded_card_desc">Used • Passport scanned</string>
     <string name="invite_status_consumed_card_desc">Used • Need passport scan</string>
@@ -252,8 +222,6 @@
     <string name="you_have_already_registered_offer">Do you want to revoke your passport?</string>
     <string name="you_have_already_registered_confirm">Yes</string>
     <string name="you_have_already_registered_cancel">No</string>
-    <string name="send_us_feedback">Send feedback\n</string>
-    <string name="send_us_feedback_body">help us make the app better\n</string>
 
     <string name="get_in_touch_title">We’re working on a fix</string>
     <string name="get_in_touch_subtitle">Some passports have a problem \n with chip scans</string>
@@ -271,7 +239,6 @@
 
     <string name="field_type_date_picker_placeholder">Select date</string>
 
-    <string name="create_identity_selector_title">Get Started</string>
     <string name="create_identity_selector_subtitle">Select an authorization method</string>
     <string name="create_identity_selector_option_1">Create a new identity</string>
     <string name="create_identity_selector_option_2">Re-activate old profile</string>
@@ -280,43 +247,12 @@
     <string name="create_identity_creating_btn">Creating...</string>
     <string name="create_identity_import_title">Import keys</string>
     <string name="create_identity_import_placeholder">Your private key</string>
-    <string name="create_identity_import_btn">Continue</string>
     <string name="create_identity_title">Your Private key</string>
     <string name="create_identity_copy_btn">Copy to clipboard</string>
     <string name="create_identity_copied_msg">Copied</string>
     <string name="create_identity_warning">Please store the private key safely and do not share it with anyone. If you lose this key, you will not be able to recover the account and will lose access forever.</string>
 
     <string name="downloading_status">Downloading: %1$s\%%</string>
-    <string name="ext_action_sign_typed_data">Sign Typed Data</string>
-    <string name="ext_action_authorize">Authorize</string>
-    <string name="ext_action_query_proof_gen">Query Proof Generation</string>
-    <string name="ext_action_sign_typed_data_payload">Payload</string>
-    <string name="ext_action_sign_typed_data_callback_url">Callback URL</string>
-    <string name="ext_action_authorize_payload">Payload</string>
-    <string name="ext_action_authorize_callback_url">Callback URL</string>
-    <string name="ext_action_query_proof_gen_callback_url">Callback Url</string>
-    <string name="ext_action_query_proof_gen_data_url">Proof params URL</string>
-    <string name="ext_action_query_proof_gen_id">Id</string>
-    <string name="ext_action_sign_typed_data_success">Message Signed</string>
-    <string name="ext_action_authorize_success">Authorized</string>
-    <string name="ext_action_query_proof_gen_success">Proof generated</string>
-    <string name="ext_action_sign_typed_data_fail">Can\'t sign message</string>
-    <string name="ext_action_authorize_fail">Can\'t authorize</string>
-    <string name="ext_action_query_proof_gen_fail">Can\'t generate proof</string>
-
-    <string name="ext_action_query_proof_gen_birth_date_lower_bound">birth_date_lower_bound</string>
-    <string name="ext_action_query_proof_gen_birth_date_upper_bound">birth_date_upper_bound</string>
-    <string name="ext_action_query_proof_gen_citizenship_mask">citizenship_mask</string>
-    <string name="ext_action_query_proof_gen_event_data">event_data</string>
-    <string name="ext_action_query_proof_gen_event_id">event_id</string>
-    <string name="ext_action_query_proof_gen_expiration_date_lower_bound">expiration_date_lower_bound</string>
-    <string name="ext_action_query_proof_gen_expiration_date_upper_bound">expiration_date_upper_bound</string>
-    <string name="ext_action_query_proof_gen_identity_counter">identity_counter</string>
-    <string name="ext_action_query_proof_gen_identity_counter_lower_bound">identity_counter_lower_bound</string>
-    <string name="ext_action_query_proof_gen_identity_counter_upper_bound">identity_counter_upper_bound</string>
-    <string name="ext_action_query_proof_gen_selector">selector</string>
-    <string name="ext_action_query_proof_gen_timestamp_lower_bound">timestamp_lower_bound</string>
-    <string name="ext_action_query_proof_gen_timestamp_upper_bound">timestamp_upper_bound</string>
 
     <string name="snackbar_success_title">Success</string>
     <string name="snackbar_warning_title">Processing</string>
@@ -325,25 +261,15 @@
     <string name="snackbar_error_message">An error has occured, please try again</string>
     <string name="snackbar_warning_message">Please wait</string>
 
-    <string name="light_verification_sheet_title">Light Verification</string>
     <string name="light_verification_success_title">Success</string>
     <string name="light_verification_success_subtitle">The verification is successful</string>
-    <string name="light_verification_success_btn">Okay</string>
     <string name="light_verification_error_title">Error</string>
 
     <string name="light_verification_error_age">Your age does not meet the requirements</string>
     <string name="light_verification_error_citizenship">Your citizenship does not meet the requirements</string>
     <string name="light_verification_error_subtitle">Failed to submit verification</string>
 
-    <string name="light_verification_error_btn">Close</string>
-
-    <string name="query_proof_sheet_title">Query Proof Generation</string>
-    <string name="query_proof_success_title">Success</string>
-    <string name="query_proof_success_subtitle">Your request has been successfully submitted</string>
-    <string name="query_proof_success_btn">Okay</string>
-    <string name="query_proof_error_title">Error</string>
     <string name="query_proof_error_subtitle">Something went wrong. Please try again later</string>
-    <string name="query_proof_error_btn">Close</string>
     <string name="no_notifications">No notifications</string>
     <string name="default_duration_days">%1$s days</string>
     <string name="default_duration_hours">%1$s hours</string>
@@ -425,11 +351,7 @@
     <string name="zk_identity_no_passport_list_item_2">ZK Liveness</string>
     <string name="zk_identity_no_passport_list_item_3">ID Card</string>
     <string name="zk_identity_no_passport_list_item_4">X Verified Badge</string>
-    <string name="zk_identity_no_passport_list_item_5">Proof of employment</string>
-    <string name="unknown_error">Unknown error</string>
     <string name="error">Error</string>
-    <string name="retry">Retry</string>
-    <string name="please_try_again">Please try again</string>
     <string name="please_don_t_close_application">Please don’t close application</string>
     <string name="downloading">Downloading</string>
     <string name="applying_zk">Applying ZK</string>
@@ -437,14 +359,11 @@
     <string name="finishing">Finishing</string>
     <string name="select_icon_description">Select icon</string>
     <string name="from_json_test_only">FROM JSON (TEST ONLY)</string>
-    <string name="passport">passport</string>
     <string name="you">You</string>
     <string name="hi">Hi</string>
     <string name="stranger">Stranger</string>
     <string name="no_passport_error">First, scan your passport.</string>
     <string name="no_active_identity">No active identity. Please register first.</string>
-    <string name="reserved">Reserved</string>
-    <string name="upcoming">Upcoming</string>
     <string name="rmo">RMO</string>
 
 
@@ -453,26 +372,6 @@
     <string name="poll_voting_start_timer">Voting starts in %1$s</string>
     <string name="failed_to_parse_qr_code">Failed to parse QR-Code</string>
     <string name="hidden_price_expanded_cart_description">Somewhere out on the open web, one famous face carries a key sealed inside its ZK-vector. Test any image you find, and the first player to prove the match claims the prize. Ready to hunt?</string>
-    <string name="your_device">Your Device</string>
-    <string name="your_identity">Your Identity</string>
-    <string name="nothing_leaves_this_device">* Nothing leaves this device</string>
-    <string name="create_identity_details_description">This app is where you privately store your digital identities, enabling you to go incognito across the web.</string>
-    <string name="let_s_start">Let’s Start</string>
-    <string name="digital_likeness">Digital likeness</string>
-    <string name="set_a_rule">Set a rule</string>
-    <string name="first_human_ai_contract">First human-AI Contract</string>
-    <string name="digital_likeness_description_1">AI can now replicate your face, voice, and identity without asking for your permission. But you never agreed to that, raising a fundamental question: who owns your likeness?</string>
-    <string name="digital_likeness_description_2">Rarimo is building the infrastructure to give you back that control. With this app, you can create a private, verifiable record that defines how your likeness can and can’t be used.</string>
-    <string name="digital_likeness_description_3">Your face stays on your device. No company owns it. And over time, no AI model will be able to ignore your rule.</string>
-    <string name="digital_likeness_registered_lbl">Other already set</string>
-    <string name="freedomtool">Freedomtool</string>
-    <string name="voting">Voting</string>
-    <string name="set_the_rule">Set the rule</string>
-    <string name="save">Save</string>
-    <string name="use_my_likeness_and_pay_me">Use my likeness\nand pay me</string>
-    <string name="soon">Soon</string>
-    <string name="don_t_sell_my_face_data">Don’t use my\nface at all</string>
-    <string name="ask_me_every_time">Ask me\nfirst</string>
     <string name="hidden_prize_add_scans_description_enabled">Out of daily scans? Earn extra scans for every friend who joins and a one-time by sharing the hunt</string>
     <string name="add_scans_bottom_sheet_title_enebled">Bonus Scan</string>
     <string name="add_scans_bottom_sheet_title_disablet">Available scan</string>
@@ -481,7 +380,6 @@
     <string name="hidden_prize_share_row_description">+1 scan</string>
     <string name="hidden_prize_share_row_button_label">Share</string>
     <string name="hidden_prize_invite_row_title">Invite a friend</string>
-    <string name="hidden_prize_invite_row_description">+1 scan</string>
     <string name="hidden_prize_invite_row_button_label">Invite</string>
     <string name="hidden_prize_wrong_screen_description_1">Swing and a miss, this face isn’t hiding the key.</string>
     <string name="hidden_prize_wrong_screen_description_2">Keep scanning!</string>
@@ -508,7 +406,6 @@
     <string name="hidden_prize_prize_pool_value">0.03</string>
     <string name="ic_hidden_prize_congats_screen_button_label_while_creating_ZK">Please wait. Creating ZK</string>
     <string name="hidden_prize_congrats_share_btn_final">Claimed</string>
-    <string name="hidden_prize_camera_description">Your face never leaves the device. You create an anonymous record that carries your rules, so AI knows how to treat you.</string>
     <string name="welcome_card1_title">Welcome!</string>
     <string name="welcome_card2_title">Privacy</string>
     <string name="welcome_card3_title">Managing identity</string>
@@ -555,8 +452,6 @@
 
     <string name="freedomtool_widget_title">Freedomtool</string>
     <string name="freedomtool_widget_description">Revolutionizing polling, surveying \n and election processes</string>
-    <string name="digital_likeness_widget_title">Digital Likeness</string>
-    <string name="digital_likeness_widget_description">Your data, your rules</string>
     <string name="hidden_prize_widget_title">Hidden keys</string>
     <string name="hidden_prize_widget_description">Somewhere out on the open web, one famous \n face carries a key sealed inside its ZK-vector</string>
     <string name="recovery_method_widget_title">Recovery Method</string>
@@ -574,7 +469,6 @@
     <string name="digital_likeness_collapsed_widget_caption">Your data, your rules</string>
     <string name="digital_likeness_description">AI can now replicate your face, voice, and identity without asking for your permission. But you never agreed to that, raising a fundamental question: who owns your likeness?</string>
     <string name="recovery_method">Recovery Method</string>
-    <string name="export_keys">Export keys</string>
     <string name="icon_black">Black</string>
     <string name="icon_green">Green</string>
     <string name="icon_gradient">Gradient</string>
