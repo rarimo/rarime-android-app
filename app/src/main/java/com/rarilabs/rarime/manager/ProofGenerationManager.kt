@@ -196,9 +196,7 @@ class ProofGenerationManager @Inject constructor(
                         false,
                         circuitName
                     )
-                    delay(second)
                     _state.value = PassportProofState.FINALIZING
-                    delay(second)
                 } else {
                     registrationManager.setRegistrationProof(proof)
                     throw PassportAlreadyRegisteredByOtherPK()
@@ -211,11 +209,8 @@ class ProofGenerationManager @Inject constructor(
                     false,
                     circuitName
                 )
-                delay(second)
                 _state.value = PassportProofState.FINALIZING
-                delay(second)
             }
-            delay(second)
             return proof
         } catch (e: Exception) {
             ErrorHandler.logError(TAG, "Error in registerByDocument", e)
@@ -302,7 +297,11 @@ class ProofGenerationManager @Inject constructor(
             currentRegistration = managerScope.async {
                 try {
                     resetState()
-                    registerCertificate(eDocument)
+                    try {
+                        registerCertificate(eDocument)
+                    } catch (e: Exception) {
+                        ErrorHandler.logError("certificate registration", "smth went wrong", e)
+                    }
 
                     val proof = registerByDocument(eDocument)
                     identityManager.setRegistrationProof(proof)

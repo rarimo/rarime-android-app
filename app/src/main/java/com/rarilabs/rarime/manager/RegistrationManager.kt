@@ -147,7 +147,7 @@ class RegistrationManager @Inject constructor(
                 Log.i("UniversalProof.Plonk", zkProof.proof.proof)
 
                 callDataBuilder.buildNoirRegisterCalldata(
-                    zkProof.proof.proof.toByteArray(),
+                    zkProof.proof.rawProof,
                     eDocument.aaSignature,
                     pubKeyPem,
                     encapsulatedContent.size.toLong() * 8L,
