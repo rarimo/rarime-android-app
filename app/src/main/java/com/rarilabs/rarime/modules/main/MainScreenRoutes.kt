@@ -45,9 +45,6 @@ import com.rarilabs.rarime.modules.profile.LanguageScreen
 import com.rarilabs.rarime.modules.profile.ProfileScreen
 import com.rarilabs.rarime.modules.profile.ThemeScreen
 import com.rarilabs.rarime.modules.register.NewIdentityScreen
-import com.rarilabs.rarime.modules.rewards.RewardsClaimScreen
-import com.rarilabs.rarime.modules.rewards.RewardsScreen
-import com.rarilabs.rarime.modules.rewards.event_item.RewardsEventItemScreen
 import com.rarilabs.rarime.modules.security.EnableBiometricsScreen
 import com.rarilabs.rarime.modules.security.EnablePasscodeScreen
 import com.rarilabs.rarime.modules.security.LockScreen
@@ -404,31 +401,6 @@ fun MainScreenRoutes(
                     }
                 }
             }
-
-            navigation(
-                startDestination = Screen.Main.Rewards.RewardsMain.route,
-                route = Screen.Main.Rewards.route,
-            ) {
-                composable(Screen.Main.Rewards.RewardsMain.route) {
-                    AuthGuard(navigate = navigateWithPopUp) {
-                        RewardsScreen(navigate = { simpleNavigate(it) })
-                    }
-                }
-                composable(Screen.Main.Rewards.RewardsClaim.route) {
-                    AuthGuard(navigate = navigateWithPopUp) {
-                        RewardsClaimScreen(onBack = { navController.popBackStack() })
-                    }
-                }
-                composable(
-                    Screen.Main.Rewards.RewardsEventsItem.route,
-                    arguments = listOf(navArgument("item_id") { type = NavType.StringType })
-                ) {
-                    AuthGuard(navigate = navigateWithPopUp) {
-                        RewardsEventItemScreen(onBack = { navController.popBackStack() })
-                    }
-                }
-            }
-
             composable(Screen.Main.Profile.route) {
                 AuthGuard(navigate = navigateWithPopUp) {
                     ScreenInsetsContainer {

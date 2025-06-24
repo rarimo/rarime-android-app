@@ -1,4 +1,4 @@
-package com.rarilabs.rarime.modules.rewards.components
+package com.rarilabs.rarime.modules.earn.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.absolutePadding
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,12 +21,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.points.models.PointsBalanceData
-import com.rarilabs.rarime.api.points.models.PointsBalanceDataAttributes
 import com.rarilabs.rarime.api.points.models.ReferralCode
 import com.rarilabs.rarime.api.points.models.ReferralCodeStatuses
 import com.rarilabs.rarime.ui.components.AppIcon
@@ -108,7 +104,7 @@ fun RewardsEventItemInvitesCard(
 
     val notActiveActionContent = @Composable {
         if (isVerifiedPointsBalance) {
-            RewardAmountPreview(
+            RewardAmount(
                 amount = 3,
             )
         }
@@ -208,43 +204,4 @@ fun RewardsEventItemInvitesCard(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun RewardsEventItemInvitesCardPreview() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(40.dp)
-    ) {
-        listOf(
-            ReferralCode(
-                id = "QrisPfszkps_1",
-                status = ReferralCodeStatuses.REWARDED.value
-            ),
-            ReferralCode(
-                id = "QrisPfszkps_2",
-                status = ReferralCodeStatuses.CONSUMED.value,
-            ),
-            ReferralCode(
-                id = "QrisPfszkps_3",
-                status = ReferralCodeStatuses.ACTIVE.value
-            ),
-            ReferralCode(
-                id = "QrisPfszkps_4",
-                status = ReferralCodeStatuses.BANNED.value
-            ),
-            ReferralCode(
-                id = "QrisPfszkps_5",
-                status = ReferralCodeStatuses.LIMITED.value
-            ),
-            ReferralCode(
-                id = "QrisPfszkps_6",
-                status = ReferralCodeStatuses.AWAITING.value
-            )
-        ).forEach {
-            RewardsEventItemInvitesCard(
-                code = it,
-                isVerifiedPointsBalance = true,
-            )
-        }
-    }
-}
+

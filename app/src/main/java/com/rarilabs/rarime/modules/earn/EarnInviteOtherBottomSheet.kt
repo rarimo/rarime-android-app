@@ -19,7 +19,7 @@ import com.rarilabs.rarime.api.points.models.PointsBalanceData
 import com.rarilabs.rarime.api.points.models.PointsBalanceDataAttributes
 import com.rarilabs.rarime.api.points.models.ReferralCode
 import com.rarilabs.rarime.api.points.models.ReferralCodeStatuses
-import com.rarilabs.rarime.modules.rewards.components.RewardsEventItemInvitesCard
+import com.rarilabs.rarime.modules.earn.components.RewardsEventItemInvitesCard
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
