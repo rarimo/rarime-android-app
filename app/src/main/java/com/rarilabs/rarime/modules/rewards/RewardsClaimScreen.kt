@@ -102,7 +102,7 @@ private fun RewardsClaimScreenContent(
         headerModifier = Modifier.padding(horizontal = 20.dp),
         title = stringResource(
             id = R.string.rewards_claim_screen_title,
-            pointsWalletAsset.token.symbol
+            pointsWalletAsset.getTokenSymbol()
         ),
         description = stringResource(id = R.string.rewards_claim_screen_subtitle),
         onBack = onBack
@@ -161,7 +161,7 @@ private fun RewardsClaimScreenContent(
                                         )
 
                                         Text(
-                                            text = "${NumberUtil.formatAmount(pointsWalletAsset.humanBalance())} ${pointsWalletAsset.token.symbol}",
+                                            text = "${NumberUtil.formatAmount(pointsWalletAsset.humanBalance())} ${pointsWalletAsset.getTokenSymbol()}",
                                             style = RarimeTheme.typography.subtitle5,
                                             color = RarimeTheme.colors.textPrimary,
                                         )
@@ -212,7 +212,7 @@ private fun RewardsClaimScreenContent(
                                         )
 
                                         Text(
-                                            text = "${NumberUtil.formatAmount(rarimoWalletAsset.humanBalance())} ${rarimoWalletAsset.token.symbol}",
+                                            text = "${NumberUtil.formatAmount(rarimoWalletAsset.humanBalance())} ${rarimoWalletAsset.getTokenSymbol()}",
                                             style = RarimeTheme.typography.subtitle5,
                                             color = RarimeTheme.colors.textPrimary,
                                         )

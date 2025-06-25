@@ -54,7 +54,8 @@ class PointsManager @Inject constructor(
     private val passportManager: PassportManager,
     private val secureSharedPrefsManager: SecureSharedPrefsManager
 ) {
-    suspend fun createPointsBalance(referralCode: String?) {
+
+    suspend fun createPointsBalance(referralCode: String?) { 
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
         if (userNullifierHex.isEmpty()) {

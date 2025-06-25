@@ -145,7 +145,7 @@ class AirDropManager @Inject constructor(
             delay(10.seconds)
 
             val transaction = Transaction(
-                id = 1,
+                id = "1",
                 amount = Constants.AIRDROP_REWARD,
                 date = Date(),
                 state = TransactionState.INCOMING,
