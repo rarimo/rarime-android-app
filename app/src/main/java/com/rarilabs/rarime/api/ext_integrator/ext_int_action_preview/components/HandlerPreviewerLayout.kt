@@ -367,7 +367,7 @@ fun HandlerPreviewerLayoutContentPreview() {
         previewFields = mapOf(
             "Key 1" to "Value 1", "Key 2" to "Value 2", "Key 3" to "Value 3"
         ),
-        
+
 
         isSubmitting = false,
 

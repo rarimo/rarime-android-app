@@ -1,6 +1,6 @@
 package com.rarilabs.rarime.api.auth.models
 
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.GrothProof
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
@@ -18,7 +18,7 @@ data class RequestAuthorizeData(
 
 @JsonClass(generateAdapter = true)
 data class RequestAuthorizeDataAttributes(
-    val proof: ZkProof,
+    val proof: GrothProof,
 )
 
 @JsonClass(generateAdapter = true)

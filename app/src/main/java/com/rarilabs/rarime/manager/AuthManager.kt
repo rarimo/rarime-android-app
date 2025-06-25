@@ -14,7 +14,7 @@ import com.rarilabs.rarime.api.auth.models.RequestAuthorizeResponseBody
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.GrothProof
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -54,7 +54,7 @@ class AuthManager @Inject constructor(
         get() = _isAuthorized
 
     @OptIn(ExperimentalStdlibApi::class)
-    suspend fun getAuthQueryProof(nullifierHex: String): ZkProof {
+    suspend fun getAuthQueryProof(nullifierHex: String): GrothProof {
         val challengeBody = authAPIManager.getChallenge(nullifierHex)
 
         val decodedChallenge = Base64.getDecoder().decode(challengeBody.data.attributes.challenge)
@@ -86,7 +86,7 @@ class AuthManager @Inject constructor(
     suspend fun login() {
         val nullifierHex = identityManager.getUserPointsNullifierHex()
 
-        var queryProof: ZkProof
+        var queryProof: GrothProof
 
         withContext(Dispatchers.Default) {
             queryProof = getAuthQueryProof(nullifierHex)

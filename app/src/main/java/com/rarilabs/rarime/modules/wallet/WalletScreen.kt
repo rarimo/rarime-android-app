@@ -80,7 +80,7 @@ fun WalletScreen(
         updateSelectedWalletAsset = walletViewModel::updateSelectedWalletAsset,
         navigate = navigate,
         refreshWallet = {
-                walletViewModel.updateBalances()
+            walletViewModel.updateBalances()
         }
     )
 
@@ -284,6 +284,6 @@ private fun WalletScreenPreview() {
         ),
         updateSelectedWalletAsset = { selectedAsset = it },
         navigate = {},
-        refreshWallet = { delay(1500)},
+        refreshWallet = { delay(1500) },
     )
 }

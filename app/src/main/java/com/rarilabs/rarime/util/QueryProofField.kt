@@ -2,7 +2,10 @@ package com.rarilabs.rarime.util
 
 import java.math.BigInteger
 
-enum class QueryProofField(val bitIndex: Int, val displayName: String) { //not sure is this good for app architecture
+enum class QueryProofField(
+    val bitIndex: Int,
+    val displayName: String
+) { //not sure is this good for app architecture
     Nullifier(0, "Incognito ID"),
     BirthDate(1, "Birth date"),
     ExpirationDate(2, "Expiration date"),

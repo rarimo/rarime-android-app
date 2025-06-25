@@ -154,11 +154,11 @@ fun HiddenPrizeExpandedWidget(
 
     val launcherShare = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(), onResult = {
-           if(shares?.isSocialShare == false){
-               scope.launch {
-                   viewModel.addExtraAttempt()
-               }
-           }
+            if (shares?.isSocialShare == false) {
+                scope.launch {
+                    viewModel.addExtraAttempt()
+                }
+            }
         })
 
 

@@ -1,21 +1,11 @@
 package com.rarilabs.rarime.api.nativeToken.models
 
-import android.text.format.DateUtils
-import android.util.Log
-import com.google.android.gms.common.util.DataUtils
-import com.rarilabs.rarime.data.tokens.NativeToken
 import com.rarilabs.rarime.data.tokens.TokenType
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.modules.wallet.models.TransactionState
 import com.rarilabs.rarime.modules.wallet.models.TransactionType
-import com.rarilabs.rarime.store.room.transactons.models.TransactionEntityData
-import com.rarilabs.rarime.util.WalletUtil
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import org.web3j.utils.Numeric
-import java.io.Serializable
-import java.math.BigDecimal
-import java.math.BigInteger
 import java.time.Instant
 import java.util.Date
 
@@ -53,9 +43,9 @@ data class TransactionItem(
     @Json(name = "transaction_tag") val transactionTag: String?,
     @Json(name = "decoded_input") val decodedInput: DecodedInput? = null,
     @Json(name = "raw_input") val rawInput: String?
-){
+) {
     companion object {
-        fun toTransaction(entity: TransactionItem, walletAddress: String) : Transaction{
+        fun toTransaction(entity: TransactionItem, walletAddress: String): Transaction {
 
             return Transaction(
                 tokenType = TokenType.RARIMO_ETH,
@@ -64,13 +54,14 @@ data class TransactionItem(
                 to = entity.to.toString(),
                 amount = entity.value.toDouble(),
                 date = Date.from(Instant.parse(entity.timestamp)),
-                state = if(walletAddress.lowercase() == entity.from.hash.lowercase()) TransactionState.OUTGOING else TransactionState.INCOMING,
+                state = if (walletAddress.lowercase() == entity.from.hash.lowercase()) TransactionState.OUTGOING else TransactionState.INCOMING,
                 id = entity.hash
             )
         }
     }
 
 }
+
 @JsonClass(generateAdapter = true)
 data class DecodedInput(
     @Json(name = "method_call") val methodCall: String,

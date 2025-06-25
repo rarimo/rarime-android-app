@@ -73,7 +73,6 @@ import com.rarilabs.rarime.ui.base.BaseIconButton
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.Screen
@@ -392,11 +391,13 @@ fun OverlayControls(
                             disabledContainerColor = RarimeTheme.colors.componentDisabled,
                             disabledContentColor = RarimeTheme.colors.textDisabled
                         ),
-                        onClick =  {scope.launch {
+                        onClick = {
+                            scope.launch {
                             previewView.bitmap?.let {
                                 onSelectBitmap(it)
                             }
-                        } },
+                            }
+                        },
                         enabled = detectedMeshes.isNotEmpty(),
                         text = stringResource(R.string.take_a_picture)
                     )

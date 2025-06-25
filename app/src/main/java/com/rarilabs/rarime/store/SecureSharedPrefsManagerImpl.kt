@@ -24,7 +24,11 @@ import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.LocaleUtil
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.GrothProof
+import com.rarilabs.rarime.util.data.UniversalProof
+import com.rarilabs.rarime.util.data.UniversalProofWrapper
+import com.rarilabs.rarime.util.data.toProof
+import com.rarilabs.rarime.util.data.toWrapper
 import java.io.ByteArrayOutputStream
 import javax.crypto.AEADBadTagException
 import javax.inject.Inject
@@ -265,7 +269,8 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
             val parsedWalletAsset =
                 Gson().fromJson<WalletAssetJSON>(jsonWalletAsset, walletAssetType)
 
-            val walletAsset = walletAssets.find { it.getTokenSymbol() == parsedWalletAsset.tokenSymbol }
+            val walletAsset =
+                walletAssets.find { it.getTokenSymbol() == parsedWalletAsset.tokenSymbol }
 
             if (walletAsset == null) {
                 return walletAssets.first()
@@ -341,17 +346,19 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         }
     }
 
-    override fun saveRegistrationProof(proof: ZkProof) {
+
+    override fun saveRegistrationProof(proof: GrothProof) {
         val jsonProof = Gson().toJson(proof)
         val editor = getEditor()
         editor.putString(accessTokens["REGISTRATION_PROOF"], jsonProof)
         editor.apply()
     }
 
-    override fun readRegistrationProof(): ZkProof? {
+    override fun readRegistrationProof(): GrothProof? {
         val jsonProof = getSharedPreferences().getString(accessTokens["REGISTRATION_PROOF"], null)
             ?: return null
-        return Gson().fromJson(jsonProof, ZkProof::class.java)
+
+        return Gson().fromJson(jsonProof, GrothProof::class.java)
     }
 
     override fun readTransactions(): List<Transaction> {
@@ -490,10 +497,12 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     override fun getSelectedLikenessRule(): LikenessRule? {
 
         val enumValue = getSharedPreferences().getInt(
-            accessTokens["SELECTED_LIKENESS_OPTION"], -1
+            accessTokens["SELECTED_LIKENESS_OPTION"],
+            -1
         )
 
-        if (enumValue == -1) return null
+        if (enumValue == -1)
+            return null
 
         return LikenessRule.fromInt(
             enumValue
@@ -501,7 +510,7 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
     }
 
 
-    override fun saveLivenessProof(proof: ZkProof) {
+    override fun saveLivenessProof(proof: GrothProof) {
         val editor = getEditor()
 
         val proofjson = Gson().toJson(proof)
@@ -509,11 +518,11 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         editor.apply()
     }
 
-    override fun getLivenessProof(): ZkProof? {
-        val proofJson =
-            getSharedPreferences().getString(accessTokens["LIKENESS_DATA"], null) ?: return null
+    override fun getLivenessProof(): GrothProof? {
+        val proofJson = getSharedPreferences().getString(accessTokens["LIKENESS_DATA"], null)
+            ?: return null
 
-        return Gson().fromJson<ZkProof>(proofJson, ZkProof::class.java)
+        return Gson().fromJson<GrothProof>(proofJson, GrothProof::class.java)
     }
 
     override fun saveIsShownWelcome(isShown: Boolean) {
@@ -547,5 +556,47 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         val bytes = Base64.decode(encoded, Base64.DEFAULT)
 
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+    }
+
+    override fun saveUniversalProof(proof: UniversalProof) {
+        val wrapper = proof.toWrapper()
+        val jsonProof = Gson().toJson(wrapper)
+        val editor = getEditor()
+        editor.putString(accessTokens["REGISTRATION_PROOF"], jsonProof)
+        editor.apply()
+    }
+
+    override fun readUniversalProof(): UniversalProof? {
+        // 1. Try LightProof (LightRegistrationData + GrothProof, old format)
+        val jsonLight =
+            getSharedPreferences().getString(accessTokens["LIGHT_REGISTRATION_DATA"], null)
+        val jsonGroth = getSharedPreferences().getString(accessTokens["REGISTRATION_PROOF"], null)
+        if (jsonLight != null && jsonGroth != null) {
+            try {
+                val light = Gson().fromJson(jsonLight, LightRegistrationData::class.java)
+                val groth = Gson().fromJson(jsonGroth, GrothProof::class.java)
+                if (light != null && groth != null) return UniversalProof.fromLight(light, groth)
+            } catch (_: Exception) {
+            }
+        }
+
+        // 2. Try UniversalProofWrapper (new format)
+        if (jsonGroth != null) {
+            try {
+                val wrapper = Gson().fromJson(jsonGroth, UniversalProofWrapper::class.java)
+                if (wrapper?.type != null) return wrapper.toProof()
+            } catch (_: Exception) {
+            }
+
+            // 3. Try GrothProof (legacy format)
+            try {
+                val groth = Gson().fromJson(jsonGroth, GrothProof::class.java)
+                if (groth?.pub_signals != null) return UniversalProof.fromGroth(groth)
+            } catch (_: Exception) {
+
+            }
+        }
+
+        return null
     }
 }

@@ -6,7 +6,7 @@ import com.rarilabs.rarime.contracts.rarimo.FaceRegistry
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ErrorHandler
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.UniversalProof
 import com.rarilabs.rarime.util.decodeHexString
 import identity.Identity
 import identity.Profile
@@ -30,9 +30,9 @@ class IdentityManager @Inject constructor(
     val privateKey: StateFlow<String?>
         get() = _privateKey.asStateFlow()
 
-    var _registrationProof = MutableStateFlow(dataStoreManager.readRegistrationProof())
+    var _registrationProof = MutableStateFlow(dataStoreManager.readUniversalProof())
         private set
-    val registrationProof: StateFlow<ZkProof?>
+    val registrationProof: StateFlow<UniversalProof?>
         get() = _registrationProof.asStateFlow()
 
     val privateKeyBytes: ByteArray?
@@ -47,11 +47,11 @@ class IdentityManager @Inject constructor(
         dataStoreManager.saveIsLogsDeleted(isLogsDeleted)
     }
 
-    fun setRegistrationProof(proof: ZkProof?) {
+    fun setRegistrationProof(proof: UniversalProof?) {
         _registrationProof.value = proof
 
         proof?.let {
-            dataStoreManager.saveRegistrationProof(proof)
+            dataStoreManager.saveUniversalProof(proof)
         }
     }
 
@@ -73,12 +73,6 @@ class IdentityManager @Inject constructor(
         if (_privateKey.value != null)
             return Credentials.create(_privateKey.value).address
         return ""
-    }
-
-    fun getPassportNullifier(): String {
-        return registrationProof.value?.let {
-            it.pub_signals.get(0)
-        } ?: ""
     }
 
     fun getUserAirDropNullifier(): String {
@@ -120,10 +114,10 @@ class IdentityManager @Inject constructor(
     suspend fun getPassportActiveIdentity(eDocument: EDocument): String? {
 
         try {
-            val passportInfoKey: String? = if (eDocument.dg15?.isEmpty() == true) {
-                registrationProof.value?.pub_signals?.get(1)
+            val passportInfoKey: String = if (eDocument.dg15.isNullOrEmpty()) {
+                registrationProof.value!!.getPassportHash() //lightProofData.passport_hash
             } else {
-                registrationProof.value?.pub_signals?.get(0)
+                registrationProof.value!!.getPublicKey() //lightProofData.public_key
             }
 
             var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)

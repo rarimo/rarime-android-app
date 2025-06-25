@@ -9,7 +9,7 @@ import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.manager.RegistrationManager
 import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.util.ErrorHandler
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.UniversalProof
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -55,7 +55,7 @@ class ScanPassportScreenViewModel @Inject constructor(
         }
     }
 
-    fun saveRegistrationProof(registrationProof: ZkProof) {
+    fun saveRegistrationProof(registrationProof: UniversalProof) {
         ErrorHandler.logDebug("ScanPassportScreenViewModel", "saveRegistrationProof")
         identityManager.setRegistrationProof(registrationProof)
     }

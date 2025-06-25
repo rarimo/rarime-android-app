@@ -43,7 +43,7 @@ import com.rarilabs.rarime.ui.components.ProcessingStatus
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.ErrorHandler
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.UniversalProof
 import kotlinx.coroutines.launch
 
 enum class PassportProofState(val value: Int) {
@@ -53,10 +53,10 @@ enum class PassportProofState(val value: Int) {
 @Composable
 fun GenerateProofStep(
     eDocument: EDocument,
-    onClose: (zkp: ZkProof) -> Unit,
+    onClose: (zkp: UniversalProof) -> Unit,
     proofViewModel: ProofViewModel = hiltViewModel(),
-    onError: (e: Exception, regProof: ZkProof?) -> Unit,
-    onAlreadyRegistered: (zkp: ZkProof) -> Unit,
+    onError: (e: Exception, regProof: UniversalProof?) -> Unit,
+    onAlreadyRegistered: (zkp: UniversalProof) -> Unit,
 ) {
     val currentState by proofViewModel.state.collectAsState()
     val registrationProof = proofViewModel.regProof.collectAsState()
