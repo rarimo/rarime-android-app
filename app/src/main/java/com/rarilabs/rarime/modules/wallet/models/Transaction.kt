@@ -13,7 +13,7 @@ enum class TransactionType(val value: Int) {
 }
 
 data class Transaction(
-    val id: Int,
+    val id: String,
     val tokenType: TokenType,
     val operationType: TransactionType,
     val from: String,

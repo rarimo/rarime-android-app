@@ -5,7 +5,11 @@ import com.rarilabs.rarime.api.points.models.PointsBalanceData
 import com.rarilabs.rarime.config.Keys
 import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.modules.wallet.models.Transaction
+import com.rarilabs.rarime.modules.wallet.models.TransactionState
+import com.rarilabs.rarime.modules.wallet.models.TransactionType
 import java.math.BigInteger
+import java.time.Instant
+import java.util.Date
 import javax.inject.Inject
 
 class PointsToken @Inject constructor(
@@ -59,10 +63,19 @@ class PointsToken @Inject constructor(
     }
 
     override suspend fun transfer(to: String, amount: BigInteger): Transaction {
-        TODO("Not yet implemented")
+        return Transaction(
+            id = "25353",
+            amount = amount.toDouble(),
+            date = Date.from(Instant.now()),
+            state = TransactionState.OUTGOING,
+            to = to,
+            from = "",//TODO change this
+            tokenType = tokenType,
+            operationType = TransactionType.TRANSFER
+        )
     }
 
-    override suspend fun loadTransactions(sender: String?, receiver: String?): List<Transaction> {
-        TODO("Not yet implemented")
+    override suspend fun loadTransactions(address: String): List<Transaction> {
+        return emptyList()
     }
 }

@@ -104,7 +104,7 @@ class Erc20Token(
         }
 
         return Transaction(
-            id = deadLine.toInt(),
+            id = deadLine.toString(),
             amount = res.data.attributes.amount.toDouble(),
             date = Date.from(Instant.now()),
             state = TransactionState.OUTGOING,
@@ -115,23 +115,10 @@ class Erc20Token(
         )
     }
 
-    override suspend fun loadTransactions(sender: String?, receiver: String?): List<Transaction> {
-        if (sender == null || receiver == null) {
-            throw IllegalArgumentException("sender or receiver must be not null")
-        }
+    override suspend fun loadTransactions(address: String): List<Transaction> {
 
-        return listOf(
-            Transaction(
-                id = 0,
-                amount = 0.0,
-                date = Date.from(Instant.now()),
-                state = TransactionState.INCOMING,
-                from = sender,
-                to = receiver,
-                tokenType = tokenType,
-                operationType = TransactionType.TRANSFER
-            )
-        )
+        return emptyList()
+
     }
 
     override suspend fun estimateTransferFee(

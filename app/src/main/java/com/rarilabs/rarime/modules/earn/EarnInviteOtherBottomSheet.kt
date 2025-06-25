@@ -19,7 +19,6 @@ import com.rarilabs.rarime.api.points.models.PointsBalanceData
 import com.rarilabs.rarime.api.points.models.PointsBalanceDataAttributes
 import com.rarilabs.rarime.api.points.models.ReferralCode
 import com.rarilabs.rarime.api.points.models.ReferralCodeStatuses
-import com.rarilabs.rarime.data.tokens.PointsToken
 import com.rarilabs.rarime.modules.rewards.components.RewardsEventItemInvitesCard
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -67,8 +66,9 @@ val tempPointsBalances = PointsBalanceData(
 @Composable
 fun InviteOthersContent(
     modifier: Modifier = Modifier,
-    pointsBalance: PointsToken,
-    onClose: () -> Unit
+    isVerifiedPointsBalance: Boolean,
+    onClose: () -> Unit,
+    referralCodes: List<ReferralCode>
 ) {
 
     Column(
@@ -112,10 +112,10 @@ fun InviteOthersContent(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
-            pointsBalance.balanceDetails?.attributes?.referral_codes?.forEach {
+            referralCodes.forEach {
                 RewardsEventItemInvitesCard(
                     code = it,
-                    pointsBalance = pointsBalance.balanceDetails,
+                    isVerifiedPointsBalance = isVerifiedPointsBalance,
                 )
             }
         }

@@ -69,7 +69,7 @@ fun WalletTransactionsListPreview() {
         WalletTransactionsList(
             walletAsset = WalletAsset("0x000000", Erc20Token("0x00000000")), transactions = listOf(
                 Transaction(
-                    id = 1,
+                    id = "1",
                     amount = Constants.AIRDROP_REWARD,
                     date = Date(),
                     state = TransactionState.INCOMING,
@@ -79,7 +79,7 @@ fun WalletTransactionsListPreview() {
                     operationType = TransactionType.TRANSFER
                 ),
                 Transaction(
-                    id = 2,
+                    id = "2",
                     amount = Constants.AIRDROP_REWARD,
                     date = Date(),
                     state = TransactionState.INCOMING,
@@ -89,7 +89,7 @@ fun WalletTransactionsListPreview() {
                     operationType = TransactionType.TRANSFER
                 ),
                 Transaction(
-                    id = 3,
+                    id = "3",
                     amount = Constants.AIRDROP_REWARD,
                     date = Date(),
                     state = TransactionState.INCOMING,
@@ -99,7 +99,7 @@ fun WalletTransactionsListPreview() {
                     operationType = TransactionType.TRANSFER
                 ),
                 Transaction(
-                    id = 4,
+                    id = "4",
                     amount = Constants.AIRDROP_REWARD,
                     date = Date(),
                     state = TransactionState.INCOMING,

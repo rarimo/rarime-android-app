@@ -9,6 +9,9 @@ import com.rarilabs.rarime.api.points.PointsAPIManager
 import com.rarilabs.rarime.api.points.models.BaseEvents
 import com.rarilabs.rarime.api.points.models.ClaimEventBody
 import com.rarilabs.rarime.api.points.models.ClaimEventData
+import com.rarilabs.rarime.api.points.models.CreateBalanceAttributes
+import com.rarilabs.rarime.api.points.models.CreateBalanceBody
+import com.rarilabs.rarime.api.points.models.CreateBalanceData
 import com.rarilabs.rarime.api.points.models.JoinRewardsProgramRequest
 import com.rarilabs.rarime.api.points.models.JoinRewardsProgramRequestAttributes
 import com.rarilabs.rarime.api.points.models.JoinRewardsProgramRequestData
@@ -21,6 +24,9 @@ import com.rarilabs.rarime.api.points.models.PointsLeaderBoardBody
 import com.rarilabs.rarime.api.points.models.VerifyPassportAttributes
 import com.rarilabs.rarime.api.points.models.VerifyPassportBody
 import com.rarilabs.rarime.api.points.models.VerifyPassportData
+import com.rarilabs.rarime.api.points.models.WithdrawBody
+import com.rarilabs.rarime.api.points.models.WithdrawPayload
+import com.rarilabs.rarime.api.points.models.WithdrawPayloadAttributes
 import com.rarilabs.rarime.config.Keys
 import com.rarilabs.rarime.data.ProofTxFull
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
@@ -28,13 +34,15 @@ import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
-import com.rarilabs.rarime.util.data.GrothProof
+import com.rarilabs.rarime.util.data.ZkProof
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.hmacSha256
 import identity.Identity
 import identity.Profile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.web3j.utils.Numeric
+import java.math.BigInteger
 import javax.inject.Inject
 
 class PointsManager @Inject constructor(
@@ -46,26 +54,27 @@ class PointsManager @Inject constructor(
     private val passportManager: PassportManager,
     private val secureSharedPrefsManager: SecureSharedPrefsManager
 ) {
-    suspend fun createPointsBalance(referralCode: String?) { //todo not commented while testing
-//        val userNullifierHex = identityManager.getUserPointsNullifierHex()
-//
-//        if (userNullifierHex.isEmpty()) {
-//            throw Exception("user nullifier is null")
-//        }
-//
-//        withContext(Dispatchers.IO) {
-//            pointsAPIManager.createPointsBalance(
-//                CreateBalanceBody(
-//                    data = CreateBalanceData(
-//                        id = userNullifierHex,
-//                        type = "create_balance",
-//                        attributes = CreateBalanceAttributes(
-//                            referredBy = if (referralCode.isNullOrEmpty()) null else referralCode
-//                        )
-//                    )
-//                ), "Bearer ${authManager.accessToken}"
-//            )
-//        }
+
+    suspend fun createPointsBalance(referralCode: String?) {
+        val userNullifierHex = identityManager.getUserPointsNullifierHex()
+
+        if (userNullifierHex.isEmpty()) {
+            throw Exception("user nullifier is null")
+        }
+
+        withContext(Dispatchers.IO) {
+            pointsAPIManager.createPointsBalance(
+                CreateBalanceBody(
+                    data = CreateBalanceData(
+                        id = userNullifierHex,
+                        type = "create_balance",
+                        attributes = CreateBalanceAttributes(
+                            referredBy = if (referralCode.isNullOrEmpty()) null else referralCode
+                        )
+                    )
+                ), "Bearer ${authManager.accessToken}"
+            )
+        }
     }
 
 
@@ -151,7 +160,7 @@ class PointsManager @Inject constructor(
 
     private suspend fun generateVerifyPassportQueryProof(
         eDocument: EDocument, privateKey: ByteArray
-    ): GrothProof {
+    ): ZkProof {
 
         val lightProofData = secureSharedPrefsManager.getLightRegistrationData()
 
@@ -167,19 +176,24 @@ class PointsManager @Inject constructor(
             BaseConfig.REGISTRATION_SMT_CONTRACT_ADDRESS
         )
 
-        val passportInfoKey: String =
+        val passportInfoKey: String = if (lightProofData != null) {
             if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {
-                identityManager.registrationProof.value!!.getPassportHash() //lightProofData.passport_hash
+                BigInteger(Numeric.hexStringToByteArray(lightProofData.passport_hash)).toString()
             } else {
-                identityManager.registrationProof.value!!.getPublicKey() //lightProofData.public_key
+                BigInteger(Numeric.hexStringToByteArray(lightProofData.public_key)).toString()
             }
-
-        val identityKey = identityManager.registrationProof.value!!.getIdentityKey()
-
+        } else {
+            if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {
+                identityManager.registrationProof.value!!.pub_signals[1] //lightProofData.passport_hash
+            } else {
+                identityManager.registrationProof.value!!.pub_signals[0] //lightProofData.public_key
+            }
+        }
 
         val proofIndex = Identity.calculateProofIndex(
             passportInfoKey,
-            identityKey
+            if (lightProofData == null) identityManager.registrationProof.value!!.pub_signals[3]
+            else identityManager.registrationProof.value!!.pub_signals[2]
         )
 
         var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
@@ -260,8 +274,7 @@ class PointsManager @Inject constructor(
 
 
             pointsAPIManager.verifyPassport(
-                userNullifierHex,
-                VerifyPassportBody(
+                userNullifierHex, VerifyPassportBody(
                     data = VerifyPassportData(
                         id = userNullifierHex,
                         type = "verify_passport",
@@ -271,9 +284,7 @@ class PointsManager @Inject constructor(
                             anonymous_id = anonymousId.toHexString()
                         )
                     )
-                ),
-                "Bearer ${authManager.accessToken}",
-                signature = hmacSignature.toHexString()
+                ), "Bearer ${authManager.accessToken}", signature = hmacSignature.toHexString()
             )
         }
     }
@@ -285,19 +296,19 @@ class PointsManager @Inject constructor(
             throw Exception("user nullifier is null")
         }
 
-//        pointsAPIManager.withdrawPoints(
-//            userNullifierHex, WithdrawBody(
-//                data = WithdrawPayload(
-//                    id = userNullifierHex,
-//                    type = "withdraw",
-//                    attributes = WithdrawPayloadAttributes(
-//                        amount = amount.toLong(),
-//                        address = identityManager.rarimoAddress(),
-//                        proof = identityManager.registrationProof.value!!
-//                    )
-//                )
-//            )
-//        )
+        pointsAPIManager.withdrawPoints(
+            userNullifierHex, WithdrawBody(
+                data = WithdrawPayload(
+                    id = userNullifierHex,
+                    type = "withdraw",
+                    attributes = WithdrawPayloadAttributes(
+                        amount = amount.toLong(),
+                        address = identityManager.rarimoAddress(),
+                        proof = identityManager.registrationProof.value!!.proof
+                    )
+                )
+            )
+        )
     }
 
     suspend fun getEventTypes(): PointsEventsTypesBody {
