@@ -54,7 +54,8 @@ class PointsManager @Inject constructor(
     private val passportManager: PassportManager,
     private val secureSharedPrefsManager: SecureSharedPrefsManager
 ) {
-    suspend fun createPointsBalance(referralCode: String?) { //todo not commented while testing
+
+    suspend fun createPointsBalance(referralCode: String?) { 
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
         if (userNullifierHex.isEmpty()) {
@@ -175,20 +176,19 @@ class PointsManager @Inject constructor(
             BaseConfig.REGISTRATION_SMT_CONTRACT_ADDRESS
         )
 
-        val passportInfoKey: String =
-            if (lightProofData != null) {
-                if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {
-                    BigInteger(Numeric.hexStringToByteArray(lightProofData.passport_hash)).toString()
-                } else {
-                    BigInteger(Numeric.hexStringToByteArray(lightProofData.public_key)).toString()
-                }
+        val passportInfoKey: String = if (lightProofData != null) {
+            if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {
+                BigInteger(Numeric.hexStringToByteArray(lightProofData.passport_hash)).toString()
             } else {
-                if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {
-                    identityManager.registrationProof.value!!.pub_signals[1] //lightProofData.passport_hash
-                } else {
-                    identityManager.registrationProof.value!!.pub_signals[0] //lightProofData.public_key
-                }
+                BigInteger(Numeric.hexStringToByteArray(lightProofData.public_key)).toString()
             }
+        } else {
+            if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {
+                identityManager.registrationProof.value!!.pub_signals[1] //lightProofData.passport_hash
+            } else {
+                identityManager.registrationProof.value!!.pub_signals[0] //lightProofData.public_key
+            }
+        }
 
         val proofIndex = Identity.calculateProofIndex(
             passportInfoKey,
@@ -274,8 +274,7 @@ class PointsManager @Inject constructor(
 
 
             pointsAPIManager.verifyPassport(
-                userNullifierHex,
-                VerifyPassportBody(
+                userNullifierHex, VerifyPassportBody(
                     data = VerifyPassportData(
                         id = userNullifierHex,
                         type = "verify_passport",
@@ -285,9 +284,7 @@ class PointsManager @Inject constructor(
                             anonymous_id = anonymousId.toHexString()
                         )
                     )
-                ),
-                "Bearer ${authManager.accessToken}",
-                signature = hmacSignature.toHexString()
+                ), "Bearer ${authManager.accessToken}", signature = hmacSignature.toHexString()
             )
         }
     }

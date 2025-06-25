@@ -30,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -43,15 +44,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.points.models.PointsBalanceData
 import com.rarilabs.rarime.api.points.models.ReferralCodeStatuses
 import com.rarilabs.rarime.data.enums.AppColorScheme
-import com.rarilabs.rarime.data.tokens.PointsToken
-import com.rarilabs.rarime.data.tokens.PreviewerToken
 import com.rarilabs.rarime.modules.earn.EarnViewModel
 import com.rarilabs.rarime.modules.earn.InviteOthersContent
 import com.rarilabs.rarime.modules.earn.TaskCard
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
+import com.rarilabs.rarime.modules.home.v3.model.BG_EARN_HEIGHT
 import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.HomeSharedKeys
 import com.rarilabs.rarime.modules.home.v3.model.WidgetType
@@ -77,19 +76,44 @@ fun EarnExpandedWidget(
     val inviteOthers = rememberAppSheetState()
     val colorScheme by viewModel.colorScheme.collectAsState()
     val pointsBalances by viewModel.pointsAsset.collectAsState()
+    val referralCodes by remember {
+        derivedStateOf {
+            pointsBalances?.balanceDetails?.attributes?.referral_codes ?: emptyList()
+        }
+    }
+    val isVerifiedPointsBalance by remember {
+        derivedStateOf {
+            pointsBalances?.balanceDetails?.attributes?.is_verified == true
+        }
+    }
+    val pointsBalance by remember {
+        derivedStateOf {
+            pointsBalances?.balanceDetails?.attributes?.amount ?: 0L
+        }
+    }
+    val maxValueOfReferrals by remember {
+        derivedStateOf {
+            referralCodes.size
+        }
+    }
+    val currentValueOfReferrals by remember {
+        derivedStateOf {
+            referralCodes.count { it.status != ReferralCodeStatuses.ACTIVE.value }
+        }
+    }
     AppBottomSheet(
         state = inviteOthers,
         backgroundColor = RarimeTheme.colors.backgroundSurface1,
         isHeaderEnabled = false,
-        fullScreen = true
+        fullScreen = false,
     ) {
         InviteOthersContent(
             modifier = Modifier.scrollable(
-                state = rememberScrollState(),
-                orientation = Orientation.Vertical
+                state = rememberScrollState(), orientation = Orientation.Vertical
             ),
-            pointsBalance = pointsBalances!!,
             onClose = { inviteOthers.hide() },
+            isVerifiedPointsBalance = isVerifiedPointsBalance,
+            referralCodes = referralCodes,
         )
     }
 
@@ -101,7 +125,9 @@ fun EarnExpandedWidget(
             inviteOthers.show()
         },
         colorScheme = colorScheme,
-        pointsBalance = pointsBalances!!
+        pointsBalance = pointsBalance,
+        maxValueOfReferrals = maxValueOfReferrals,
+        currentValueOfReferrals = currentValueOfReferrals,
     )
 }
 
@@ -113,8 +139,9 @@ fun EarnExpandedWidgetContent(
     innerPaddings: Map<ScreenInsets, Number>,
     onClick: () -> Unit,
     colorScheme: AppColorScheme,
-    pointsBalance: PointsToken
-
+    pointsBalance: Long,
+    maxValueOfReferrals: Int,
+    currentValueOfReferrals: Int
 ) {
     with(widgetProps) {
         with(sharedTransitionScope) {
@@ -126,18 +153,16 @@ fun EarnExpandedWidgetContent(
                         boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) })
                     .padding(
                         bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp
-                    ),
-                header = {
+                    ), header = {
                     Header(
                         layoutId = layoutId,
                         onCollapse = onCollapse,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope,
                         innerPaddings = innerPaddings,
-                        balance = pointsBalance.balanceDetails!!.attributes.amount
+                        balance = pointsBalance
                     )
-                },
-                body = {
+                }, body = {
                     Body(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
@@ -151,13 +176,14 @@ fun EarnExpandedWidgetContent(
                         animatedVisibilityScope = animatedVisibilityScope,
                         colorScheme = colorScheme
                     )
-                },
-                footer = {
+                }, footer = {
                     Footer(
                         countOfTask = 1,
                         onClick = onClick,
-                        pointsBalances = pointsBalance.balanceDetails!!
+                        maxValueOfRefferals = maxValueOfReferrals,
+                        currentValueOfRefferals = currentValueOfReferrals
                     )
+
                 })
         }
     }
@@ -171,7 +197,7 @@ private fun Header(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     innerPaddings: Map<ScreenInsets, Number>,
-    balance: Long?
+    balance: Long
 ) {
     with(sharedTransitionScope) {
         Row(
@@ -278,25 +304,23 @@ private fun Body(
                     title = stringResource(R.string.earn),
                     titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.invertedDark),
                     accentTitle = stringResource(R.string.rmo),
-                    titleModifier =
-                        Modifier.sharedBounds(
-                            rememberSharedContentState(HomeSharedKeys.title(layoutId)),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                        ),
+                    titleModifier = Modifier.sharedBounds(
+                        rememberSharedContentState(HomeSharedKeys.title(layoutId)),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    ),
                     accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient13),
-                    accentTitleModifier =
-                        Modifier.sharedBounds(
-                            rememberSharedContentState(
-                                HomeSharedKeys.accentTitle(
-                                    layoutId
-                                )
-                            ),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    accentTitleModifier = Modifier.sharedBounds(
+                        rememberSharedContentState(
+                            HomeSharedKeys.accentTitle(
+                                layoutId
+                            )
                         ),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                    ),
                     caption = stringResource(R.string.earn_expanded_widget_caption),
                     captionStyle = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary),
                     captionModifier = Modifier.sharedBounds(
@@ -322,15 +346,8 @@ private fun Body(
 
 @Composable
 private fun Footer(
-    countOfTask: Int,
-    onClick: () -> Unit,
-    pointsBalances: PointsBalanceData
-
-
+    countOfTask: Int, onClick: () -> Unit, maxValueOfRefferals: Int, currentValueOfRefferals: Int
 ) {
-    val currentValue =
-        pointsBalances.attributes.referral_codes!!.count { it.status != ReferralCodeStatuses.ACTIVE.value }
-    val maxValue = pointsBalances.attributes.referral_codes.size
     Column(modifier = Modifier.background(color = RarimeTheme.colors.backgroundSurface1)) {
 
 
@@ -347,14 +364,13 @@ private fun Footer(
                 modifier = Modifier.padding(bottom = 24.dp)
             )
             TaskCard(
-//todo in future used for implementing logic
                 taskIconId = R.drawable.ic_user_add_line,
-                rewardInRMO = 50,
+                rewardInRMO = 15,
                 title = stringResource(R.string.earn_title_of_task),
                 onClick = onClick,
                 description = stringResource(R.string.earn_invite_task_card_description),
-                currentVal = currentValue,
-                maxVal = maxValue,
+                currentVal = currentValueOfRefferals,
+                maxVal = maxValueOfRefferals,
             )
 
         }
@@ -378,13 +394,11 @@ private fun Background(
         if (isDark) R.drawable.ic_bg_earn_widget_dark
         else R.drawable.ic_bg_earn_widget_light
     }
-
-
     with(sharedTransitionScope) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
                 .background(color = RarimeTheme.colors.backgroundPrimary)
+                .fillMaxSize()
         ) {
             Image(
                 painter = painterResource(backgroundRes),
@@ -392,6 +406,8 @@ private fun Background(
                 contentScale = ContentScale.FillWidth,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(BG_EARN_HEIGHT.dp)
+                    .clip(RoundedCornerShape(40.dp))
                     .sharedBounds(
                         rememberSharedContentState(
                             HomeSharedKeys.image(
@@ -400,11 +416,14 @@ private fun Background(
                         ),
                         animatedVisibilityScope = animatedVisibilityScope,
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(),
+                        clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(40.dp)),
                     )
-                    .clip(RoundedCornerShape(20.dp))
             )
+
+
         }
+
     }
 }
 
@@ -423,13 +442,9 @@ fun EarnExpandedWidgetPreview() {
             innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
             onClick = {},
             colorScheme = AppColorScheme.LIGHT,
-            pointsBalance = PreviewerToken("") as PointsToken
+            pointsBalance = 1L,
+            maxValueOfReferrals = 5,
+            currentValueOfReferrals = 2,
         )
     }
 }
-
-
-
-
-
-

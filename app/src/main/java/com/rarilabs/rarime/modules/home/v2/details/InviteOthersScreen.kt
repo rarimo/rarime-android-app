@@ -71,8 +71,7 @@ fun InviteOthersScreen(
                 pointsBalance?.attributes?.referral_codes?.forEach {
                     RewardsEventItemInvitesCard(
                         code = it,
-                        rewardAmount = rewardPerInvite,
-                        pointsBalance = pointsBalance,
+                        isVerifiedPointsBalance = true
                     )
                 }
             }
