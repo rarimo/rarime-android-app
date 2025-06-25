@@ -1,6 +1,8 @@
 package com.rarilabs.rarime.data.tokens
 
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.api.nativeToken.models.Address
+import com.rarilabs.rarime.api.nativeToken.models.NativeTokenAPIManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.modules.wallet.models.TransactionState
@@ -23,7 +25,8 @@ import javax.inject.Inject
 
 class NativeToken @Inject constructor(
     private val web3j: Web3j,
-    private val identityManager: IdentityManager
+    private val identityManager: IdentityManager,
+    private val nativeTokenAPIManager: NativeTokenAPIManager
 ) : Token(address = "") {
 
     override var name: String = "Ethereum"
@@ -115,7 +118,7 @@ class NativeToken @Inject constructor(
 
 
         return Transaction(
-            id = BigInteger(Numeric.hexStringToByteArray(txHash)).toInt(),
+            id = BigInteger(Numeric.hexStringToByteArray(txHash)).toString(),
             amount = amount.toDouble(),
             date = Date.from(Instant.now()),
             state = TransactionState.OUTGOING,
@@ -127,8 +130,9 @@ class NativeToken @Inject constructor(
 
     }
 
-    override suspend fun loadTransactions(sender: String?, receiver: String?): List<Transaction> {
-        return listOf()
+    override suspend fun loadTransactions(address: String): List<Transaction> {
+
+        return nativeTokenAPIManager.getAddressTransactions(address)
     }
 
     private suspend fun checkIsTransactionSuccessful(txHash: String): Boolean {

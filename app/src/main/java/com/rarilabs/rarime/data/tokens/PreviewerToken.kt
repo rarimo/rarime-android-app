@@ -25,7 +25,7 @@ class PreviewerToken(
 
     override suspend fun transfer(to: String, amount: BigInteger): Transaction {
         return Transaction(
-            id = 0,
+            id = "0",
             amount = 0.0,
             date = Date.from(Instant.now()),
             state = TransactionState.INCOMING,
@@ -46,22 +46,7 @@ class PreviewerToken(
         return BigInteger.ZERO
     }
 
-    override suspend fun loadTransactions(sender: String?, receiver: String?): List<Transaction> {
-        if (sender == null || receiver == null) {
-            throw IllegalArgumentException("sender or receiver must be not null")
-        }
-
-        return listOf(
-            Transaction(
-                id = 0,
-                amount = 0.0,
-                date = Date.from(Instant.now()),
-                state = TransactionState.INCOMING,
-                from = sender,
-                to = receiver,
-                tokenType = tokenType,
-                operationType = TransactionType.TRANSFER
-            )
-        )
+    override suspend fun loadTransactions(address: String): List<Transaction> {
+       return emptyList()
     }
 }
