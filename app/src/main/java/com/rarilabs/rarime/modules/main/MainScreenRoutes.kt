@@ -217,7 +217,7 @@ fun MainScreenRoutes(
                     NewIdentityScreen(onNext = {
                         coroutineScope.launch {
                             mainViewModel.finishIntro()
-                            navigateWithPopUp(Screen.Passcode.route)
+                            //navigateWithPopUp(Screen.Passcode.route)
                         }
                     }, onBack = { navController.popBackStack() })
                 }
@@ -230,7 +230,7 @@ fun MainScreenRoutes(
                         onNext = {
                             coroutineScope.launch {
                                 mainViewModel.finishIntro()
-                                navigateWithPopUp(Screen.Passcode.route)
+                                navigateWithPopUp(Screen.Main.Home.route)
                             }
                         },
                     )
