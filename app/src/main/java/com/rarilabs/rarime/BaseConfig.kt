@@ -138,7 +138,7 @@ object TestNetConfig : IConfig {
     override val STABLE_COIN_ADDRESS = "0xbd03f0fC994fd1015eAdc37c943055330e238Ad9"
     override val EXPLORER_API_URL = "https://scan.testnet.rarimo.com"
     override val RARIMO_EXPLORER= "https://scan.testnet.rarimo.com/tx"
-    override val EVM_RPC_URL = "https://rpc.evm.mainnet.rarimo.com/api/v2"
+    override val EVM_RPC_URL = "https://rpc.evm.mainnet.rarimo.com"
     override val REGISTER_CONTRACT_ADDRESS = "0x70aadcdb5624dC458c22D47f6c458d1D5cE1768C"
     override val REGISTRATION_SIMPLE_CONTRACT_ADRRESS = "0x7815E9d49Ce74ca1c56a7276CE7DCA61d4f9878d"
     override val CERTIFICATES_SMT_CONTRACT_ADDRESS = "0x3DA489Eca2E8BC19cF8E5a9B60a7BE87f8D54fc0"
