@@ -62,11 +62,11 @@ private enum class IntroStep(
 
 @Composable
 fun IntroScreen(
-    navigate: (String) -> Unit,
+    onFinish: (String) -> Unit,
     viewModel: IntroViewModel = hiltViewModel()
 ) {
 
-    IntroScreenContent(navigate, genPrivateKey = viewModel::savePrivateKey)
+    IntroScreenContent(onFinish, genPrivateKey = viewModel::savePrivateKey)
 }
 
 @Composable

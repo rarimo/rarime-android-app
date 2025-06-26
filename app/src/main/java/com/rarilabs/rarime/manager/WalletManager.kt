@@ -152,7 +152,7 @@ class WalletManager @Inject constructor(
                     async {
                         asset.loadDetails()
                         asset.loadBalance()
-                        asset.loadTransactions()
+                        // asset.loadTransactions() //ToDo uncomment after testing
                         ErrorHandler.logDebug("Loaded asset", asset.getTokenSymbol())
                     }
                 }.awaitAll()
