@@ -308,7 +308,7 @@ fun NewIdentityScreenContent(
                         modifier = Modifier.fillMaxWidth(),
                         size = ButtonSize.Large,
                         text = if (isSubmitting) {
-                            stringResource(R.string.create_identity_creating_btn)
+                            stringResource(R.string.create_identity_processing_btn)
                         } else {
                             stringResource(R.string.create_identity_continue_btn)
                         },

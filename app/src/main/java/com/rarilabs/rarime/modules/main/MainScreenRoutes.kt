@@ -211,7 +211,9 @@ fun MainScreenRoutes(
                         mainViewModel.finishIntro()
                     }
                     simpleNavigate(Screen.Main.Home.route)
-                })
+                },
+                    onNavigate = simpleNavigate
+                )
             }
         }
 
@@ -225,6 +227,7 @@ fun MainScreenRoutes(
                             mainViewModel.finishIntro()
                             navigateWithPopUp(Screen.Main.Home.route)
                         }
+
                     }, onBack = { navController.popBackStack() })
                 }
             }
@@ -238,6 +241,7 @@ fun MainScreenRoutes(
                                 mainViewModel.finishIntro()
                                 navigateWithPopUp(Screen.Main.Home.route)
                             }
+
                         },
                     )
                 }
