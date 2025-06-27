@@ -182,10 +182,11 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun loadUserDetails() = coroutineScope {
-        //val walletDeferred = async { walletManager.loadBalances() }
+        android.util.Log.d("User Details", "LOAD USER DETAILS")
+        val walletDeferred = async { walletManager.loadBalances() }
         val passportDeferred = async { passportManager.loadPassportStatus() }
 
-        awaitAll(passportDeferred)
+        awaitAll(passportDeferred, walletDeferred)
     }
 
     suspend fun tryLogin() = runCatching {

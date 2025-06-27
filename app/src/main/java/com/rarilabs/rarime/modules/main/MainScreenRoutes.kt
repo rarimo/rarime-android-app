@@ -62,6 +62,7 @@ import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.LocaleUtil
 import com.rarilabs.rarime.util.Screen
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -205,7 +206,12 @@ fun MainScreenRoutes(
 
         composable(Screen.Intro.route) {
             ScreenInsetsContainer {
-                IntroScreen(navigate = simpleNavigate)
+                IntroScreen(onFinish = {
+                    coroutineScope.launch(Dispatchers.IO) {
+                        mainViewModel.finishIntro()
+                    }
+                    simpleNavigate(Screen.Main.Home.route)
+                })
             }
         }
 
