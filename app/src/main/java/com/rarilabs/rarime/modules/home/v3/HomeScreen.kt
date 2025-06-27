@@ -84,9 +84,6 @@ fun HomeScreenV3(
 
     val welcomeAppSheetState = rememberAppSheetState(isWelcomeVisible)
 
-    LaunchedEffect(Unit) {
-        viewModel.initHomeData()
-    }
 
     val sheetManageWidgets = rememberAppSheetState()
     AppBottomSheet(
