@@ -23,15 +23,12 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     app: Application,
     passportManager: PassportManager,
-    private val walletManager: WalletManager,
     private val pointsManager: PointsManager,
     private val widgetsManager: ManageWidgetsManager,
     notificationManager: NotificationManager,
     settingsManager: SettingsManager,
     private val sharedPrefsManager: SecureSharedPrefsManager
 ) : AndroidViewModel(app) {
-
-    val pointsToken = walletManager.pointsToken
 
     val colorScheme = settingsManager.colorScheme
     var visibleWidgets = widgetsManager.visibleWidgets
@@ -47,7 +44,6 @@ class HomeViewModel @Inject constructor(
     suspend fun initHomeData() = withContext(Dispatchers.IO) {
         coroutineScope {
             try {
-                walletManager.loadBalances()
                 val pointsDeferred = async { loadPointsEvent() }
                 pointsDeferred.await()
             } catch (e: Exception) {
