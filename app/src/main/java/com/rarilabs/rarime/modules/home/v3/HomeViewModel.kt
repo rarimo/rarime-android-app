@@ -5,7 +5,6 @@ import androidx.lifecycle.AndroidViewModel
 import com.rarilabs.rarime.api.points.models.PointsEventData
 import com.rarilabs.rarime.manager.NotificationManager
 import com.rarilabs.rarime.manager.PassportManager
-import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.manager.SettingsManager
 import com.rarilabs.rarime.modules.manageWidgets.ManageWidgetsManager
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
@@ -17,7 +16,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     app: Application,
     passportManager: PassportManager,
-    private val pointsManager: PointsManager,
+    // private val pointsManager: PointsManager,
     private val widgetsManager: ManageWidgetsManager,
     notificationManager: NotificationManager,
     settingsManager: SettingsManager,
