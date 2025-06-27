@@ -244,7 +244,7 @@
     <string name="create_identity_selector_option_2">Re-activate old profile</string>
 
     <string name="create_identity_continue_btn">Continue</string>
-    <string name="create_identity_creating_btn">Creating...</string>
+    <string name="create_identity_processing_btn">Signing in...</string>
     <string name="create_identity_import_title">Import keys</string>
     <string name="create_identity_import_placeholder">Your private key</string>
     <string name="create_identity_title">Your Private key</string>
