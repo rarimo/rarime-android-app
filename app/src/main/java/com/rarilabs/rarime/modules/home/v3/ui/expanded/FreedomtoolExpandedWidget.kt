@@ -63,8 +63,7 @@ import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
-import com.rarilabs.rarime.modules.votes.ActiveVotesList
-import com.rarilabs.rarime.modules.votes.HistoryVotesList
+import com.rarilabs.rarime.modules.votes.VoteResultsCard
 import com.rarilabs.rarime.modules.votes.VotesLoadingSkeleton
 import com.rarilabs.rarime.modules.votes.VotesScreenViewModel
 import com.rarilabs.rarime.modules.votes.voteProcessScreen.VotingAppSheet
@@ -392,6 +391,7 @@ private fun VoteTabs(
     }
 }
 
+
 @Composable
 private fun EmptyState(text: String) {
     Row(
@@ -463,6 +463,34 @@ fun FreedomtoolExpandedWidgetPreview_light() {
                 onScan = {},
                 onVoteClick = {}
             )
+        }
+    }
+}
+
+@Composable
+fun ActiveVotesList(
+    onClick: (Poll) -> Unit,
+    votes: List<Poll>
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        votes.forEach {
+            VoteResultsCard(it, onCLick = onClick)
+        }
+    }
+}
+
+@Composable
+fun HistoryVotesList(
+    votes: List<Poll>,
+    onClick: (Poll) -> Unit
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        votes.forEach {
+            VoteResultsCard(it, onCLick = onClick)
         }
     }
 }
