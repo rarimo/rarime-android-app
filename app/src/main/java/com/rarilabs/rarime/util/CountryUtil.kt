@@ -345,6 +345,7 @@ enum class Country(val flag: String, val localizedName: String) {
                 "GEO" -> GEORGIA
                 "DEU" -> GERMANY
                 "D" -> GERMANY
+                "D<<" -> GERMANY
                 "GHA" -> GHANA
                 "GIB" -> GIBRALTAR
                 "GRC" -> GREECE
