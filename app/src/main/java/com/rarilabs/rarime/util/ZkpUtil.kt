@@ -7,8 +7,8 @@ import com.google.gson.Gson
 import com.rarilabs.bionet.Bionet
 import com.rarilabs.rarime.util.ZkpUtil.groth16InternalStorage
 import com.rarilabs.rarime.util.ZkpUtil.groth16ProverBig
-import com.rarilabs.rarime.util.data.Proof
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.GrothProof
+import com.rarilabs.rarime.util.data.GrothProofData
 import java.io.ByteArrayOutputStream
 
 object ZkpUtil {
@@ -74,30 +74,8 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
-    external fun registerIdentity125635576248NA(
-        datFilePath: String,
-        datFileLen: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
-        wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
-        errorMsg: ByteArray,
-        errorMsgMaxSize: Long
-    ): Int
 
     external fun registerIdentity125636576248124325296(
-        datFilePath: String,
-        datFileLen: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
-        wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
-        errorMsg: ByteArray,
-        errorMsgMaxSize: Long
-    ): Int
-
-
-    external fun registerIdentity22563633626421244862008(
         datFilePath: String,
         datFileLen: Long,
         jsonBuffer: ByteArray,
@@ -120,29 +98,7 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
-    external fun registerIdentity225636336248124323256(
-        datFilePath: String,
-        datFileLen: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
-        wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
-        errorMsg: ByteArray,
-        errorMsgMaxSize: Long
-    ): Int
-
     external fun registerIdentity125636576264124483256(
-        datFilePath: String,
-        datFileLen: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
-        wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
-        errorMsg: ByteArray,
-        errorMsgMaxSize: Long
-    ): Int
-
-    external fun registerIdentity225636576248124323256(
         datFilePath: String,
         datFileLen: Long,
         jsonBuffer: ByteArray,
@@ -186,16 +142,6 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
-    external fun registerIdentity125634600248114963256(
-        datFilePath: String,
-        datFileLen: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
-        wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
-        errorMsg: ByteArray,
-        errorMsgMaxSize: Long
-    ): Int
 
 
     external fun registerIdentity116034576200NA(
@@ -209,27 +155,6 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
-    external fun registerIdentity2125633336232NA(
-        datFilePath: String,
-        datFileLen: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
-        wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
-        errorMsg: ByteArray,
-        errorMsgMaxSize: Long
-    ): Int
-
-    external fun registerIdentity2025633336224NA(
-        datFilePath: String,
-        datFileLen: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
-        wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
-        errorMsg: ByteArray,
-        errorMsgMaxSize: Long
-    ): Int
 
     external fun registerIdentity2425634336232NA(
         datFilePath: String,
@@ -264,16 +189,6 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
-    external fun registerIdentity1025633576248111845264(
-        datFilePath: String,
-        datFileLen: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
-        wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
-        errorMsg: ByteArray,
-        errorMsgMaxSize: Long
-    ): Int
 
     external fun registerIdentity1125635576248118084256(
         datFilePath: String,
@@ -332,16 +247,6 @@ object ZkpUtil {
         errorMsgMaxSize: Long
     ): Int
 
-    external fun registerIdentity2125634576232NA(
-        datFilePath: String,
-        datFileLen: Long,
-        jsonBuffer: ByteArray,
-        jsonSize: Long,
-        wtnsBuffer: ByteArray,
-        wtnsSize: LongArray,
-        errorMsg: ByteArray,
-        errorMsgMaxSize: Long
-    ): Int
 
     external fun registerIdentity112563357624018645264(
         datFilePath: String,
@@ -541,7 +446,7 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         zkeyFilePath: String,
         zkeyFileLen: Long,
         inputs: String
-    ): ZkProof {
+    ): GrothProof {
 
         val errBuf = ByteArray(256)
 
@@ -620,9 +525,9 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         val formatedPubData = pubData.decodeToString().slice(0..indexPubData)
 
         val foramtedProof = proofDataZip.toString(Charsets.UTF_8).slice(0..index)
-        val proof = Proof.fromJson(foramtedProof)
+        val proof = GrothProofData.fromJson(foramtedProof)
 
-        return ZkProof(
+        return GrothProof(
             proof = proof, pub_signals = getPubSignals(formatedPubData).toList()
         )
     }
@@ -637,7 +542,7 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         proofFunction: (
             datFilePath: String, datFileLen: Long, jsonBuffer: ByteArray, jsonSize: Long, wtnsBuffer: ByteArray, wtnsSize: LongArray, errorMsg: ByteArray, errorMsgMaxSize: Long
         ) -> Int
-    ): ZkProof {
+    ): GrothProof {
 
 
         val msg = ByteArray(256)
@@ -724,9 +629,9 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         val formatedPubData = pubData.decodeToString().slice(0..indexPubData)
 
         val foramtedProof = proofDataZip.toString(Charsets.UTF_8).slice(0..index)
-        val proof = Proof.fromJson(foramtedProof)
+        val proof = GrothProofData.fromJson(foramtedProof)
 
-        return ZkProof(
+        return GrothProof(
             proof = proof, pub_signals = getPubSignals(formatedPubData).toList()
         )
     }
@@ -735,7 +640,7 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         zkeyFileName: String, datFile: Int, inputs: ByteArray, proofFunction: (
             circuitBuffer: ByteArray, circuitSize: Long, jsonBuffer: ByteArray, jsonSize: Long, wtnsBuffer: ByteArray, wtnsSize: LongArray, errorMsg: ByteArray, errorMsgMaxSize: Long
         ) -> Int
-    ): ZkProof {
+    ): GrothProof {
         val datFile = openRawResourceAsByteArray(datFile)
 
         val msg = ByteArray(256)
@@ -817,9 +722,9 @@ class ZKPUseCase(val context: Context, val assetManager: AssetManager) {
         val formatedPubData = pubData.decodeToString().slice(0..indexPubData)
 
         val foramtedProof = proofDataZip.toString(Charsets.UTF_8).slice(0..index)
-        val proof = Proof.fromJson(foramtedProof)
+        val proof = GrothProofData.fromJson(foramtedProof)
 
-        return ZkProof(
+        return GrothProof(
             proof = proof, pub_signals = getPubSignals(formatedPubData).toList()
         )
     }

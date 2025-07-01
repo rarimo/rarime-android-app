@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.rarilabs.rarime.BuildConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.RarimeTheme
@@ -60,6 +61,11 @@ enum class BottomTab(
         Screen.Main.Profile.route,
         R.drawable.ic_user,
         R.drawable.ic_user_fill
+    ),
+    Debug(
+        Screen.Main.DebugIdentity.route,
+        R.drawable.welcome_cat,
+        R.drawable.welcome_cat
     )
 }
 
@@ -82,12 +88,20 @@ fun BottomTabBar(
                 .padding(vertical = 12.dp)
         ) {
             BottomTab.entries.forEach { tab ->
-                TabItem(
-                    tab = tab,
-                    isSelected = currentRoute == tab.route,
-                    onTabSelected = { onRouteSelected(it.route) },
-                    onQrCodeRouteSelected = { onQrCodeRouteSelected(it.route) }
-                )
+                val shouldDraw = when {
+                    tab == BottomTab.Debug && BuildConfig.isTestnet -> true
+                    tab != BottomTab.Debug -> true
+                    else -> false
+                }
+
+                if (shouldDraw) {
+                    TabItem(
+                        tab = tab,
+                        isSelected = currentRoute == tab.route,
+                        onTabSelected = { onRouteSelected(it.route) },
+                        onQrCodeRouteSelected = { onQrCodeRouteSelected(it.route) }
+                    )
+                }
             }
         }
     }

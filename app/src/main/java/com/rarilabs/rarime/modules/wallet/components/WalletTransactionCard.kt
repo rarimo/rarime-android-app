@@ -51,8 +51,8 @@ fun WalletTransactionCard(
             .clickable {
                 val intent = Intent(
                     Intent.ACTION_VIEW,
-                    (BaseConfig.RARIMO_EXPLORER +"/"+ transaction.id
-                    ).toUri()
+                    (BaseConfig.RARIMO_EXPLORER + "/" + transaction.id
+                            ).toUri()
                 )
                 context.startActivity(intent)
             }

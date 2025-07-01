@@ -7,7 +7,6 @@ import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.modules.wallet.models.TransactionState
 import com.rarilabs.rarime.modules.wallet.models.TransactionType
-import org.web3j.utils.Numeric
 import java.math.BigInteger
 import java.time.Instant
 import java.util.Date

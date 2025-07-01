@@ -34,7 +34,8 @@ import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.GrothProof
+import com.rarilabs.rarime.util.data.UniversalProof
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.hmacSha256
 import identity.Identity
@@ -55,7 +56,7 @@ class PointsManager @Inject constructor(
     private val secureSharedPrefsManager: SecureSharedPrefsManager
 ) {
 
-    suspend fun createPointsBalance(referralCode: String?) { 
+    suspend fun createPointsBalance(referralCode: String?) {
         val userNullifierHex = identityManager.getUserPointsNullifierHex()
 
         if (userNullifierHex.isEmpty()) {
@@ -160,7 +161,7 @@ class PointsManager @Inject constructor(
 
     private suspend fun generateVerifyPassportQueryProof(
         eDocument: EDocument, privateKey: ByteArray
-    ): ZkProof {
+    ): GrothProof {
 
         val lightProofData = secureSharedPrefsManager.getLightRegistrationData()
 
@@ -184,16 +185,16 @@ class PointsManager @Inject constructor(
             }
         } else {
             if (passportManager.passport.value!!.dg15.isNullOrEmpty()) {
-                identityManager.registrationProof.value!!.pub_signals[1] //lightProofData.passport_hash
+                identityManager.registrationProof.value!!.getPassportHash() //lightProofData.passport_hash
             } else {
-                identityManager.registrationProof.value!!.pub_signals[0] //lightProofData.public_key
+                identityManager.registrationProof.value!!.getPublicKey() //lightProofData.public_key
             }
         }
 
         val proofIndex = Identity.calculateProofIndex(
             passportInfoKey,
-            if (lightProofData == null) identityManager.registrationProof.value!!.pub_signals[3]
-            else identityManager.registrationProof.value!!.pub_signals[2]
+            if (lightProofData == null) identityManager.registrationProof.value!!.getIdentityKey()
+            else identityManager.registrationProof.value!!.getIdentityKey()
         )
 
         var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
@@ -295,6 +296,7 @@ class PointsManager @Inject constructor(
         if (userNullifierHex.isEmpty()) {
             throw Exception("user nullifier is null")
         }
+        identityManager.registrationProof.value
 
         pointsAPIManager.withdrawPoints(
             userNullifierHex, WithdrawBody(
@@ -304,7 +306,7 @@ class PointsManager @Inject constructor(
                     attributes = WithdrawPayloadAttributes(
                         amount = amount.toLong(),
                         address = identityManager.rarimoAddress(),
-                        proof = identityManager.registrationProof.value!!.proof
+                        proof = (identityManager.registrationProof.value as UniversalProof.Groth).proof.proof
                     )
                 )
             )

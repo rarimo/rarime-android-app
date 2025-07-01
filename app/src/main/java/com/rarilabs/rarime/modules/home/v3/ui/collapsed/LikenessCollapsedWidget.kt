@@ -158,7 +158,6 @@ private fun Header(
 }
 
 
-
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun Footer(

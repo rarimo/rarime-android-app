@@ -67,7 +67,7 @@ fun WalletTokenCard(walletAsset: WalletAsset) {
                 color = RarimeTheme.colors.textPrimary,
                 style = RarimeTheme.typography.subtitle4
             )
- 
+
         }
     }
 }

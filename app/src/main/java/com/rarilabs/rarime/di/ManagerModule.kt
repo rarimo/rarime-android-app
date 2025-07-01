@@ -487,15 +487,16 @@ class APIModule {
                 .build()
         ).build()
     }
+
     @Provides
     @Singleton
-    fun provideNativeTokenAPI(@Named("nativeTokenRetrofit")retrofit: Retrofit): NativeTokenAPI {
+    fun provideNativeTokenAPI(@Named("nativeTokenRetrofit") retrofit: Retrofit): NativeTokenAPI {
         return retrofit.create(NativeTokenAPI::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideNativeTokenAPIManager(nativeTokenAPI:NativeTokenAPI): NativeTokenAPIManager {
+    fun provideNativeTokenAPIManager(nativeTokenAPI: NativeTokenAPI): NativeTokenAPIManager {
         return NativeTokenAPIManager(nativeTokenAPI)
     }
 

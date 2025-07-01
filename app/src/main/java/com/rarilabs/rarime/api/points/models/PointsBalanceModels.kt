@@ -1,7 +1,7 @@
 package com.rarilabs.rarime.api.points.models
 
-import com.rarilabs.rarime.util.data.Proof
-import com.rarilabs.rarime.util.data.ZkProof
+import com.rarilabs.rarime.util.data.GrothProof
+import com.rarilabs.rarime.util.data.GrothProofData
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -120,7 +120,7 @@ data class VerifyPassportData(
 
 @JsonClass(generateAdapter = true)
 data class VerifyPassportAttributes(
-    val proof: ZkProof,
+    val proof: GrothProof,
     val country: String,
     val anonymous_id: String
 )
@@ -142,6 +142,6 @@ data class WithdrawPayload(
 data class WithdrawPayloadAttributes(
     val amount: Long,
     val address: String,
-    val proof: Proof, // FIXME: is it correct?
+    val proof: GrothProofData, // FIXME: is it correct?
 )
 

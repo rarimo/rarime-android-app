@@ -36,7 +36,11 @@ fun AppRadioButton(
         modifier = modifier
             .fillMaxWidth()
             .background(RarimeTheme.colors.backgroundPrimary, RoundedCornerShape(12.dp))
-            .border(width = 1.dp, color = RarimeTheme.colors.componentPrimary, shape = RoundedCornerShape(12.dp))
+            .border(
+                width = 1.dp,
+                color = RarimeTheme.colors.componentPrimary,
+                shape = RoundedCornerShape(12.dp)
+            )
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,

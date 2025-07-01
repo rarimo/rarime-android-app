@@ -53,6 +53,7 @@ import com.rarilabs.rarime.modules.votes.voteProcessScreen.VoteProcessScreen
 import com.rarilabs.rarime.modules.wallet.WalletReceiveScreen
 import com.rarilabs.rarime.modules.wallet.WalletScreen
 import com.rarilabs.rarime.modules.wallet.WalletSendScreen
+import com.rarilabs.rarime.modules.you.ZkIdentityDebugScreen
 import com.rarilabs.rarime.modules.you.ZkIdentityScreen
 import com.rarilabs.rarime.ui.components.AppWebView
 import com.rarilabs.rarime.ui.components.CongratsInvitationModalContent
@@ -126,9 +127,7 @@ fun MainScreenRoutes(
                         context.startActivity(intent)
                     } catch (e: ActivityNotFoundException) {
                         Toast.makeText(
-                            context,
-                            "No app available to open this link.",
-                            Toast.LENGTH_SHORT
+                            context, "No app available to open this link.", Toast.LENGTH_SHORT
                         ).show()
                     }
                 }
@@ -206,12 +205,13 @@ fun MainScreenRoutes(
 
         composable(Screen.Intro.route) {
             ScreenInsetsContainer {
-                IntroScreen(onFinish = {
-                    coroutineScope.launch(Dispatchers.IO) {
-                        mainViewModel.finishIntro()
-                    }
-                    simpleNavigate(Screen.Main.Home.route)
-                },
+                IntroScreen(
+                    onFinish = {
+                        coroutineScope.launch(Dispatchers.IO) {
+                            mainViewModel.finishIntro()
+                        }
+                        simpleNavigate(Screen.Main.Home.route)
+                    },
                     onNavigate = simpleNavigate
                 )
             }
@@ -357,12 +357,24 @@ fun MainScreenRoutes(
                 }
             }
 
+            composable(Screen.Main.DebugIdentity.route) {
+                AuthGuard(navigate = simpleNavigate) {
+                    ZkIdentityDebugScreen(
+                        navigate = simpleNavigate,
+                        onClose = {
+                            coroutineScope.launch {
+                                navigateWithPopUp(Screen.Main.route)
+                            }
+                        },
+                        setBottomBarVisibility = { mainViewModel.setBottomBarVisibility(it) })
+                }
+            }
+
             composable(Screen.Main.Identity.route) {
                 AuthGuard(navigate = simpleNavigate) {
                     ZkIdentityScreen(navigate = simpleNavigate, onClose = {
                         coroutineScope.launch {
                             navigateWithPopUp(Screen.Main.route)
-
                         }
                     }, onClaim = {
                         coroutineScope.launch {

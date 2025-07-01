@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.data.tokens
 
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.nativeToken.models.Address
 import com.rarilabs.rarime.api.nativeToken.models.NativeTokenAPIManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.modules.wallet.models.Transaction

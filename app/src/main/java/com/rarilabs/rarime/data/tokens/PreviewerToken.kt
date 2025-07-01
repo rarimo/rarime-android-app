@@ -47,6 +47,6 @@ class PreviewerToken(
     }
 
     override suspend fun loadTransactions(address: String): List<Transaction> {
-       return emptyList()
+        return emptyList()
     }
 }

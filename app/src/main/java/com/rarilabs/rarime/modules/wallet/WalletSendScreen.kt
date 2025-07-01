@@ -185,7 +185,10 @@ private fun WalletSendScreenContent(
     }
 
     WalletRouteLayout(
-        title = stringResource(R.string.wallet_send_title, selectedWalletAsset.getTokenSymbol().uppercase()),
+        title = stringResource(
+            R.string.wallet_send_title,
+            selectedWalletAsset.getTokenSymbol().uppercase()
+        ),
         description = stringResource(
             R.string.wallet_send_description, selectedWalletAsset.getTokenSymbol().uppercase()
         ),
@@ -211,7 +214,8 @@ private fun WalletSendScreenContent(
                         label = stringResource(R.string.amount_lbl),
                         enabled = !isSubmitting,
                         placeholder = stringResource(
-                            R.string.amount_placeholder, selectedWalletAsset.getTokenSymbol().uppercase()
+                            R.string.amount_placeholder,
+                            selectedWalletAsset.getTokenSymbol().uppercase()
                         ),
                         hint = {
                             Row(
@@ -274,7 +278,9 @@ private fun WalletSendScreenContent(
                         )
                     } else {
                         Text(
-                            text = "${calculateWithFee(humanAmountState.text)} ${selectedWalletAsset.getTokenSymbol().uppercase()}",
+                            text = "${calculateWithFee(humanAmountState.text)} ${
+                                selectedWalletAsset.getTokenSymbol().uppercase()
+                            }",
                             style = RarimeTheme.typography.subtitle5,
                             color = RarimeTheme.colors.textPrimary
                         )
@@ -300,8 +306,12 @@ private fun WalletSendScreenContent(
             TxConfirmBottomSheet(
                 sheetState = confirmationSheetState, totalDetails = mapOf(
                     "Address" to WalletUtil.formatAddress(addressState.text, 4, 4),
-                    "Send amount" to "${humanAmountState.text} ${selectedWalletAsset.getTokenSymbol().uppercase()}",
-                    "Fee" to "${fee?.toPlainString()} ${selectedWalletAsset.getTokenSymbol().uppercase()}"
+                    "Send amount" to "${humanAmountState.text} ${
+                        selectedWalletAsset.getTokenSymbol().uppercase()
+                    }",
+                    "Fee" to "${fee?.toPlainString()} ${
+                        selectedWalletAsset.getTokenSymbol().uppercase()
+                    }"
                 ), onConfirm = {
 
                     submit(calculateWithFee(humanAmountState.text))

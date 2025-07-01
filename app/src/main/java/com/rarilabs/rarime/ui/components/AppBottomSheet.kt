@@ -78,8 +78,7 @@ fun AppBottomSheet(
     val modalState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { newValue ->
-            if (disablePullClose && newValue == SheetValue.Hidden) false
-            else true
+            !(disablePullClose && newValue == SheetValue.Hidden)
         }
     )
     val coroutineScope = rememberCoroutineScope()
@@ -101,12 +100,12 @@ fun AppBottomSheet(
 
     if (state.showSheet) {
         ModalBottomSheet(
-            modifier     = modifier,
-            sheetState   = modalState,
-            shape        = shape,
-            dragHandle   = null,
+            modifier = modifier,
+            sheetState = modalState,
+            shape = shape,
+            dragHandle = null,
             containerColor = backgroundColor,
-            scrimColor   = scrimColor,
+            scrimColor = scrimColor,
             onDismissRequest = { hide() },
             windowInsets = WindowInsets.systemBars,
         ) {

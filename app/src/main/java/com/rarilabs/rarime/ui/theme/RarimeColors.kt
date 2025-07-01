@@ -635,7 +635,7 @@ fun darkColors() = RarimeColors(
             Color(0xFF338D3A),
         )
     ),
-    gradient12 =  Brush.linearGradient(
+    gradient12 = Brush.linearGradient(
         colors = listOf(
             Color(0xFF8AFECC),
             Color(0xFF9AFE8A),
@@ -788,7 +788,7 @@ fun lightColors() = RarimeColors(
             Color(0xFF338D3A),
         )
     ),
-    gradient12 =  Brush.linearGradient(
+    gradient12 = Brush.linearGradient(
         colors = listOf(
             Color(0xFF8AFECC),
             Color(0xFF9AFE8A),

@@ -27,7 +27,7 @@ fun PrimaryButton(
     enabled: Boolean = true,
     size: ButtonSize = ButtonSize.Medium,
     text: String? = null,
-    colors : ButtonColors =ButtonDefaults.buttonColors(
+    colors: ButtonColors = ButtonDefaults.buttonColors(
         containerColor = RarimeTheme.colors.textPrimary,
         contentColor = RarimeTheme.colors.invertedLight,
         disabledContainerColor = RarimeTheme.colors.componentDisabled,
