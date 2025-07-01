@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.ui.components
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -71,61 +72,58 @@ fun AppBottomSheet(
     scrimColor: Color = Color.Black.copy(alpha = 0.5f),
     backgroundColor: Color = RarimeTheme.colors.backgroundPure,
     disablePullClose: Boolean = false,
+    onClose: () -> Unit = {},
     content: @Composable (HideSheetFn) -> Unit,
 ) {
     val modalState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { newValue ->
-            if (disablePullClose) {
-                newValue != SheetValue.Hidden
-            } else {
-                true
-            }
+            !(disablePullClose && newValue == SheetValue.Hidden)
         }
     )
     val coroutineScope = rememberCoroutineScope()
 
-
     fun hide(callback: () -> Unit = {}) {
-        coroutineScope.launch { modalState.hide() }.invokeOnCompletion {
-            if (!modalState.isVisible) {
-                state.hide()
-                callback()
-            }
+        coroutineScope.launch {
+            onClose()
+            modalState.hide()
+            state.hide()
+            callback()
+        }
+    }
+
+    BackHandler(enabled = state.showSheet) {
+        if (!disablePullClose) {
+            hide()
         }
     }
 
     if (state.showSheet) {
         ModalBottomSheet(
-            //modifier = modifier.padding(top = systemBarPaddings.calculateTopPadding()),
+            modifier = modifier,
             sheetState = modalState,
             shape = shape,
             dragHandle = null,
             containerColor = backgroundColor,
-            onDismissRequest = { hide() },
             scrimColor = scrimColor,
-            // This forces the scrim to be drawn edge-to-edge, covering the status bar.
+            onDismissRequest = { hide() },
             windowInsets = WindowInsets.systemBars,
         ) {
-
-            Box(
-                modifier = Modifier
-
+            Column(
+                modifier = if (fullScreen) Modifier.fillMaxSize() else Modifier.fillMaxWidth()
             ) {
-                Column(
-                    modifier = (if (fullScreen) Modifier.fillMaxSize() else Modifier
-                        .fillMaxWidth()
-                            )
-                ) {
-                    if (isHeaderEnabled) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 20.dp, vertical = 10.dp),
-                            horizontalArrangement = Arrangement.End
-                        ) {}
+                if (isHeaderEnabled) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp, vertical = 10.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+
                     }
-                    content { callback -> hide(callback) }
+                }
+                content { afterHide ->
+                    hide(afterHide)
                 }
             }
         }

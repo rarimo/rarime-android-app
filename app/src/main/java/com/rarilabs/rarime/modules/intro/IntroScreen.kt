@@ -62,17 +62,23 @@ private enum class IntroStep(
 
 @Composable
 fun IntroScreen(
-    navigate: (String) -> Unit,
+    onFinish: (String) -> Unit,
+    onNavigate: (String) -> Unit,
     viewModel: IntroViewModel = hiltViewModel()
 ) {
 
-    IntroScreenContent(navigate, genPrivateKey = viewModel::savePrivateKey)
+    IntroScreenContent(
+        onFinish = onFinish,
+        genPrivateKey = viewModel::savePrivateKey,
+        navigate = onNavigate
+    )
 }
 
 @Composable
 fun IntroScreenContent(
     navigate: (String) -> Unit,
     genPrivateKey: () -> Unit,
+    onFinish: (String) -> Unit
 ) {
     val introSteps = rememberSaveable {
         listOf(
@@ -110,7 +116,7 @@ fun IntroScreenContent(
                         icon = R.drawable.ic_plus,
                         onSelect = {
                             genPrivateKey()
-                            navigate(Screen.Main.Home.route)
+                            onFinish(Screen.Main.Home.route)
                         }),
                     AuthorizationMethod(
                         title = stringResource(id = R.string.create_identity_selector_option_2),
@@ -165,5 +171,5 @@ private fun StepView(step: IntroStep) {
 @Preview
 @Composable
 private fun IntroScreenPreview() {
-    IntroScreenContent(navigate = {}, genPrivateKey = {})
+    IntroScreenContent(navigate = {}, genPrivateKey = {}, onFinish = {})
 }

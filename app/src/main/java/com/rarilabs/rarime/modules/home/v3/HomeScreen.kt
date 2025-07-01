@@ -84,9 +84,6 @@ fun HomeScreenV3(
 
     val welcomeAppSheetState = rememberAppSheetState(isWelcomeVisible)
 
-    LaunchedEffect(Unit) {
-        viewModel.initHomeData()
-    }
 
     val sheetManageWidgets = rememberAppSheetState()
     AppBottomSheet(
@@ -115,7 +112,11 @@ fun HomeScreenV3(
 
     AppBottomSheet(
         state = welcomeAppSheetState, isHeaderEnabled = false,
-        disablePullClose = true
+        disablePullClose = true,
+        onClose = {
+            viewModel.saveIsShownWelcome(true)
+            welcomeAppSheetState.hide()
+        }
     ) {
         WelcomeBottomSheet {
             welcomeAppSheetState.hide()

@@ -34,10 +34,9 @@ import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.modules.home.v3.HomeScreenV3
 import com.rarilabs.rarime.modules.intro.IntroScreen
 import com.rarilabs.rarime.modules.main.guards.AuthGuard
-import com.rarilabs.rarime.modules.maintenanceScreen.MaintenanceScreen
+import com.rarilabs.rarime.modules.maintenance.MaintenanceScreen
 import com.rarilabs.rarime.modules.notifications.NotificationsScreen
 import com.rarilabs.rarime.modules.passportScan.ScanPassportScreen
-import com.rarilabs.rarime.modules.passportVerify.ClaimAirdropScreen
 import com.rarilabs.rarime.modules.passportVerify.VerifyPassportScreen
 import com.rarilabs.rarime.modules.profile.AppIconScreen
 import com.rarilabs.rarime.modules.profile.AuthMethodScreen
@@ -46,9 +45,6 @@ import com.rarilabs.rarime.modules.profile.LanguageScreen
 import com.rarilabs.rarime.modules.profile.ProfileScreen
 import com.rarilabs.rarime.modules.profile.ThemeScreen
 import com.rarilabs.rarime.modules.register.NewIdentityScreen
-import com.rarilabs.rarime.modules.rewards.RewardsClaimScreen
-import com.rarilabs.rarime.modules.rewards.RewardsScreen
-import com.rarilabs.rarime.modules.rewards.event_item.RewardsEventItemScreen
 import com.rarilabs.rarime.modules.security.EnableBiometricsScreen
 import com.rarilabs.rarime.modules.security.EnablePasscodeScreen
 import com.rarilabs.rarime.modules.security.LockScreen
@@ -67,6 +63,7 @@ import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.LocaleUtil
 import com.rarilabs.rarime.util.Screen
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -208,7 +205,15 @@ fun MainScreenRoutes(
 
         composable(Screen.Intro.route) {
             ScreenInsetsContainer {
-                IntroScreen(navigate = simpleNavigate)
+                IntroScreen(
+                    onFinish = {
+                        coroutineScope.launch(Dispatchers.IO) {
+                            mainViewModel.finishIntro()
+                        }
+                        simpleNavigate(Screen.Main.Home.route)
+                    },
+                    onNavigate = simpleNavigate
+                )
             }
         }
 
@@ -220,8 +225,9 @@ fun MainScreenRoutes(
                     NewIdentityScreen(onNext = {
                         coroutineScope.launch {
                             mainViewModel.finishIntro()
-                            navigateWithPopUp(Screen.Passcode.route)
+                            navigateWithPopUp(Screen.Main.Home.route)
                         }
+
                     }, onBack = { navController.popBackStack() })
                 }
             }
@@ -233,8 +239,9 @@ fun MainScreenRoutes(
                         onNext = {
                             coroutineScope.launch {
                                 mainViewModel.finishIntro()
-                                navigateWithPopUp(Screen.Passcode.route)
+                                navigateWithPopUp(Screen.Main.Home.route)
                             }
+
                         },
                     )
                 }
@@ -309,20 +316,6 @@ fun MainScreenRoutes(
         }
 
         //Scan Flow
-        composable(Screen.ScanPassport.ScanPassportSpecific.route) {
-            ScreenInsetsContainer {
-
-                ScanPassportScreen(onClose = {
-                    coroutineScope.launch {
-                        navController.popBackStack()
-                    }
-                }, onClaim = {
-                    coroutineScope.launch {
-                        navigateWithPopUp(Screen.Claim.Specific.route)
-                    }
-                }, setVisibilityOfBottomBar = { })
-            }
-        }
 
         composable(Screen.ScanPassport.ScanPassportPoints.route) {
             ScreenInsetsContainer {
@@ -335,12 +328,6 @@ fun MainScreenRoutes(
                         navigateWithPopUp(Screen.Claim.Reserve.route)
                     }
                 }, setVisibilityOfBottomBar = {})
-            }
-        }
-
-        composable(Screen.Claim.Specific.route) {
-            ClaimAirdropScreen {
-                navigateWithPopUp(Screen.Main.route)
             }
         }
 
@@ -436,31 +423,6 @@ fun MainScreenRoutes(
                     }
                 }
             }
-
-            navigation(
-                startDestination = Screen.Main.Rewards.RewardsMain.route,
-                route = Screen.Main.Rewards.route,
-            ) {
-                composable(Screen.Main.Rewards.RewardsMain.route) {
-                    AuthGuard(navigate = navigateWithPopUp) {
-                        RewardsScreen(navigate = { simpleNavigate(it) })
-                    }
-                }
-                composable(Screen.Main.Rewards.RewardsClaim.route) {
-                    AuthGuard(navigate = navigateWithPopUp) {
-                        RewardsClaimScreen(onBack = { navController.popBackStack() })
-                    }
-                }
-                composable(
-                    Screen.Main.Rewards.RewardsEventsItem.route,
-                    arguments = listOf(navArgument("item_id") { type = NavType.StringType })
-                ) {
-                    AuthGuard(navigate = navigateWithPopUp) {
-                        RewardsEventItemScreen(onBack = { navController.popBackStack() })
-                    }
-                }
-            }
-
             composable(Screen.Main.Profile.route) {
                 AuthGuard(navigate = navigateWithPopUp) {
                     ScreenInsetsContainer {
@@ -484,7 +446,6 @@ fun MainScreenRoutes(
                     }
                 }
             }
-
             composable(Screen.Main.Profile.Language.route) {
                 AuthGuard(navigate = navigateWithPopUp) {
                     ScreenInsetsContainer {
