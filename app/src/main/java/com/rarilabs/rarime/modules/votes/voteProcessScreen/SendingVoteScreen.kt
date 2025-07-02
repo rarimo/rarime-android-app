@@ -58,7 +58,7 @@ fun SendingVoteScreen(
             coroutineScope.launch {
                 progress.animateTo(
                     targetValue = 1f,
-                    animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing)
+                    animationSpec = tween(durationMillis = 5000, easing = FastOutSlowInEasing)
                 )
                 updateIsAnimated(true)
             }
@@ -80,7 +80,7 @@ fun SendingVoteScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            VoteLoadingScreen()
+            //VoteLoadingScreen()
             //AppAnimation(id = R.raw.anim_dots)
             Spacer(modifier = Modifier.height(32.dp))
             Text(
