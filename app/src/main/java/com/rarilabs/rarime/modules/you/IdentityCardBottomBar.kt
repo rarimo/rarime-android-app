@@ -155,7 +155,10 @@ fun IdentityCardBottomBarContentLoading(
     }
     val animatedProgress by animateFloatAsState(
         targetValue = progress,
-        animationSpec = tween(easing = LinearEasing),
+        animationSpec = tween(
+            easing = LinearEasing,
+            durationMillis = 60000
+        ),
     )
 
     LaunchedEffect(stage) {

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -145,7 +144,7 @@ private fun ReadEDocStepContent(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 100.dp),
+                    .padding(top = 50.dp),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -195,25 +194,21 @@ private fun ReadEDocStepContent(
                     }
 
                 }
-
                 Spacer(modifier = Modifier.weight(1f))
-
-                Column(Modifier.padding(start = 24.dp, end = 24.dp)) {
-                    ScanGuidesTrigger(type = hintType)
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(RarimeTheme.colors.backgroundPure)
-                        .padding(top = 12.dp, bottom = 20.dp)
+                        .padding(bottom = 20.dp)
                         .padding(horizontal = 20.dp)
                 ) {
+
+                    ScanGuidesTrigger(
+                        type = hintType,
+                    )
                     PrimaryButton(
                         modifier = Modifier
+                            .padding(top = 24.dp)
                             .fillMaxWidth(),
                         onClick = { scanSheetState.show() },
                         size = ButtonSize.Large,
