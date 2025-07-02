@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.rarilabs.rarime"
-    compileSdk = 34
+    compileSdk = 35
 
     bundle {
         language {
@@ -29,9 +29,9 @@ android {
 
         applicationId = "com.rarilabs.rarime"
         minSdk = 27
-        targetSdk = 34
-        versionCode = 110
-        versionName = "2.3.3"
+        targetSdk = 35
+        versionCode = 113
+        versionName = "2.3.6"
 
         externalNativeBuild {
             cmake {
