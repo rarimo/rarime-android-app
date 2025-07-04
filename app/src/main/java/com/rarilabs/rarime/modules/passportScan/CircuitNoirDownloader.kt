@@ -86,11 +86,19 @@ class CircuitNoirDownloader(private val context: Context) {
             RegisterNoirCircuitData.REGISTER_IDENTITY_14_256_3_4_336_232_1_1480_5_296 -> BaseConfig.registerIdentity_14_256_3_4_336_232_1_1480_5_296
             RegisterNoirCircuitData.REGISTER_IDENTITY_1_256_3_4_576_232_1_1480_3_256 -> BaseConfig.registerIdentity_1_256_3_4_576_232_1_1480_3_256
             RegisterNoirCircuitData.REGISTER_IDENTITY_1_256_3_5_576_248_NA -> BaseConfig.registerIdentity_1_256_3_5_576_248_NA
-            //RegisterNoirCircuitData.REGISTER_IDENTITY_1_256_3_6_576_248_1_2432_3_256 -> BaseConfig.registerIdentity_1_256_3_6_576_248_1_2432_3_256
             RegisterNoirCircuitData.REGISTER_IDENTITY_20_160_3_3_576_200_NA -> BaseConfig.registerIdentity_20_160_3_3_576_200_NA
             RegisterNoirCircuitData.REGISTER_IDENTITY_23_160_3_3_576_200_NA -> BaseConfig.registerIdentity_23_160_3_3_576_200_NA
             RegisterNoirCircuitData.REGISTER_IDENTITY_3_256_3_4_600_248_1_1496_3_256 -> BaseConfig.registerIdentity_3_256_3_4_600_248_1_1496_3_256
             RegisterNoirCircuitData.REGISTER_IDENTITY_1_256_3_6_576_264_1_2448_3_256 -> BaseConfig.registerIdentity_1_256_3_6_576_264_1_2448_3_256
+            RegisterNoirCircuitData.REGISTER_IDENTITY_11_256_3_5_584_264_1_2136_4_256 -> BaseConfig.registerIdentity_11_256_3_5_584_264_1_2136_4_256
+            RegisterNoirCircuitData.REGISTER_IDENTITY_11_256_3_5_576_264_NA -> BaseConfig.registerIdentity_11_256_3_5_576_264_NA
+            RegisterNoirCircuitData.REGISTER_IDENTITY_2_256_3_4_336_248_22_1496_7_2408 -> BaseConfig.registerIdentity_2_256_3_4_336_248_22_1496_7_2408
+            RegisterNoirCircuitData.REGISTER_IDENTITY_1_256_3_4_336_232_NA -> BaseConfig.registerIdentity_1_256_3_4_336_232_NA
+            RegisterNoirCircuitData.REGISTER_IDENTITY_25_384_3_3_336_232_NA -> BaseConfig.registerIdentity_25_384_3_3_336_232_NA
+            RegisterNoirCircuitData.REGISTER_IDENTITY_25_384_3_4_336_264_1_2904_2_256 -> BaseConfig.registerIdentity_25_384_3_4_336_264_1_2904_2_256
+            RegisterNoirCircuitData.REGISTER_IDENTITY_26_512_3_3_336_248_NA -> BaseConfig.registerIdentity_26_512_3_3_336_248_NA
+            RegisterNoirCircuitData.REGISTER_IDENTITY_26_512_3_3_336_264_1_1968_2_256 -> BaseConfig.registerIdentity_26_512_3_3_336_264_1_1968_2_256
+            RegisterNoirCircuitData.REGISTER_IDENTITY_27_512_3_4_336_248_NA -> BaseConfig.registerIdentity_27_512_3_4_336_248_NA
         }
     }
 
