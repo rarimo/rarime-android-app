@@ -137,7 +137,7 @@ enum class CircuitKeySizeType {
 }
 
 enum class CircuitExponentType {
-    E3, E65537
+    E3, E65537, E5833
 }
 
 enum class CircuitSaltType {
@@ -152,7 +152,9 @@ enum class CircuitCurveType {
     BRAINPOOLP384R1,
     SECP224R1,
     PRIME256V1,
-    BRAINPOOLP512R1
+    BRAINPOOLP512R1,
+    SECP521R1,
+    SECP384R1
 }
 
 enum class CircuitHashAlgorithmType {

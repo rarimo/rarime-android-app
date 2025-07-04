@@ -89,7 +89,6 @@ data class EDocument(
 
     fun getRegisterIdentityCircuitType(): RegisterIdentityCircuitType {
         try {
-            // Initialize DataGroup1 and SOD using jMRTD
             val dg1Group = getDg1File()
             val sodFile = getSodFile()
 
@@ -336,6 +335,7 @@ data class EDocument(
         return when (exponentBN) {
             BigInteger.valueOf(3L) -> CircuitExponentType.E3
             BigInteger.valueOf(65537L) -> CircuitExponentType.E65537
+            BigInteger.valueOf(5833L) -> CircuitExponentType.E5833
             else -> null
         }
     }
@@ -353,6 +353,8 @@ data class EDocument(
             "prime256v1" -> CircuitCurveType.PRIME256V1
             "prime256v2" -> CircuitCurveType.PRIME256V1 // prime256v2 --> prime256v1 with seed
             "brainpoolp512r1" -> CircuitCurveType.BRAINPOOLP512R1
+            "secp521r1" -> CircuitCurveType.SECP521R1
+            "secp384r1" -> CircuitCurveType.SECP384R1
             else -> throw IllegalArgumentException("Unsupported curve: " + curve.lowercase())
         }
 
@@ -477,12 +479,6 @@ object CryptoUtilsPassport {
             bytes.size < length -> ByteArray(length - bytes.size) + bytes
             else -> bytes.takeLast(length).toByteArray() // Truncate if longer
         }
-    }
-
-    fun ByteArray.padLeft(targetSize: Int): ByteArray {
-        if (this.size >= targetSize) return this
-        val padding = ByteArray(targetSize - this.size) { 0x00 }
-        return padding + this
     }
 
     fun getCurveOidFromPublicKey(publicKey: ECPublicKey): String {
