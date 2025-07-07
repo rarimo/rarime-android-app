@@ -414,7 +414,7 @@ private fun Background(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = RarimeTheme.colors.backgroundPrimary)
+                .background(RarimeTheme.colors.backgroundPrimary)
         ) {
             Image(
                 painter = painterResource(backgroundRes),

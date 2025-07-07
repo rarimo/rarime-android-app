@@ -1,10 +1,5 @@
 package com.rarilabs.rarime.modules.passportScan.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,15 +12,15 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,6 +40,7 @@ import com.rarilabs.rarime.ui.components.GifViewer
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+import kotlinx.coroutines.launch
 
 enum class SpecificPassportGuide {
     Other,
@@ -74,6 +70,7 @@ fun ScanGuidesTrigger(
     val guideSheetState = rememberAppSheetState(false)
 
     ActionCard(
+        isNextIconEnabled = false,
         title = stringResource(id = R.string.scan_mrzstep_content_tutorial_title),
         description = stringResource(id = R.string.scan_mrzstep_content_tutorial_desc),
         leadingContent = {
@@ -103,53 +100,60 @@ fun ScanGuidesTrigger(
         onClick = { guideSheetState.show() }
     )
 
+
+    val scope = rememberCoroutineScope()
+    val pagerState = rememberPagerState(initialPage = 0) { 3 }
+
     AppBottomSheet(
         state = guideSheetState,
         fullScreen = true,
     ) { hide ->
-        var step by remember { mutableStateOf(1) }
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize()
+        ) { page ->
+            when (page) {
+                0 -> ScanGuides(
+                    mediaId = R.raw.phone_case_warning,
+                    title = stringResource(id = R.string.scan_mrzstep_content_bottom_sheet_case_title),
+                    desc = stringResource(id = R.string.scan_mrzstep_content_bottom_sheet_case_description),
+                    btnText = stringResource(id = R.string.scan_mrzstep_content_bottom_sheet_case_btn),
+                    onPress = {
+                        scope.launch {
+                            pagerState.animateScrollToPage(1)
+                        }
+                    }
+                )
 
-        AnimatedVisibility(
-            visible = step.equals(1),
-            enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
-            exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
-        ) {
-            ScanGuides(
-                mediaId = R.raw.phone_case_warning,
-                title = stringResource(id = R.string.scan_mrzstep_content_bottom_sheet_case_title),
-                desc = stringResource(id = R.string.scan_mrzstep_content_bottom_sheet_case_description),
-                btnText = stringResource(id = R.string.scan_mrzstep_content_bottom_sheet_case_btn),
-                onPress = { step += 1 }
-            )
-        }
-        AnimatedVisibility(
-            visible = step.equals(2),
-            enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
-            exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
-        ) {
-            ScanGuides(
-                mediaId = getMrzHintType(type = type),
-                title = stringResource(id = R.string.scan_mrzstep_content_bottom_sheet_mrz_title),
-                desc = stringResource(id = R.string.scan_mrzstep_content_bottom_sheet_mrz_description),
-                btnText = stringResource(id = R.string.scan_mrzstep_content_bottom_sheet_mrz_btn),
-                onPress = { step += 1 }
-            )
-        }
-        AnimatedVisibility(
-            visible = step.equals(3),
-            enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
-            exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it })
-        ) {
+                1 -> ScanGuides(
+                    mediaId = getMrzHintType(type),
+                    title = stringResource(id = R.string.scan_mrzstep_content_bottom_sheet_mrz_title),
+                    desc = stringResource(id = R.string.scan_mrzstep_content_bottom_sheet_mrz_description),
+                    btnText = stringResource(id = R.string.scan_mrzstep_content_bottom_sheet_mrz_btn),
+                    onPress = {
+                        scope.launch {
+                            pagerState.animateScrollToPage(2)
+                        }
+                    }
+                )
 
-            ScanGuides(
-                mediaId = getNFCHintType(type),
-                title = stringResource(id = R.string.scan_mrzstep_content_bottom_sheet_nfc_title),
-                desc = stringResource(id = R.string.scan_mrzstep_content_bottom_sheet_nfc_description),
-                btnText = stringResource(id = R.string.scan_mrzstep_content_bottom_sheet_nfc_btn),
-                onPress = { hide {} }
-            )
+                2 -> ScanGuides(
+                    mediaId = getNFCHintType(type),
+                    title = stringResource(id = R.string.scan_mrzstep_content_bottom_sheet_nfc_title),
+                    desc = stringResource(id = R.string.scan_mrzstep_content_bottom_sheet_nfc_description),
+                    btnText = stringResource(id = R.string.scan_mrzstep_content_bottom_sheet_nfc_btn),
+                    onPress = {
+                        hide {
+                            scope.launch {
+                                pagerState.animateScrollToPage(0)
+                            }
+                        }
+                    }
+                )
+            }
         }
     }
+
 }
 
 @Composable
@@ -206,4 +210,13 @@ private fun ScanGuidesPreview() {
         btnText = stringResource(id = R.string.scan_mrzstep_content_bottom_sheet_nfc_btn),
         onPress = { }
     )
+}
+
+
+@Preview
+@Composable
+private fun ScanGuidesTriggerPreview() {
+    Surface {
+        ScanGuidesTrigger()
+    }
 }

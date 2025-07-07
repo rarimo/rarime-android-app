@@ -70,7 +70,8 @@ fun RecoveryMethodCollapsedWidget(
                     ) {
                         onExpand()
                     }
-                    .then(modifier), header = {
+                    .then(modifier),
+                header = {
                     Header(
                         layoutId = layoutId,
                         sharedTransitionScope = sharedTransitionScope,
@@ -217,7 +218,6 @@ private fun Background(
         Box(
             modifier = Modifier
                 .background(color = RarimeTheme.colors.backgroundPrimary)
-
                 .fillMaxSize()
         ) {
             Image(
@@ -262,7 +262,8 @@ fun RecoveryMethodCollapsedWidgetPreview_LightMode() {
                     layoutId = WidgetType.RECOVERY_METHOD.layoutId,
                     animatedVisibilityScope = animatedVisibilityScope,
                     sharedTransitionScope = sharedTransitionScope
-                ), modifier = Modifier
+                ),
+                modifier = Modifier
                     .fillMaxWidth()
                     .height(500.dp)
             )

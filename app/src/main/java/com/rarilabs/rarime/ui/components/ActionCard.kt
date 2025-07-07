@@ -41,6 +41,7 @@ fun ActionCardContent(
     title: String,
     description: String,
     leadingContent: @Composable (() -> Unit)? = null,
+    isNextIconEnabled: Boolean = true
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -66,14 +67,17 @@ fun ActionCardContent(
                 color = RarimeTheme.colors.textSecondary
             )
         }
-        AppIcon(
-            id = R.drawable.ic_caret_right,
-            size = 16.dp,
-            tint = RarimeTheme.colors.invertedLight,
-            modifier = Modifier
-                .background(RarimeTheme.colors.primaryMain, CircleShape)
-                .padding(4.dp)
-        )
+        if (isNextIconEnabled) {
+            AppIcon(
+                id = R.drawable.ic_caret_right,
+                size = 16.dp,
+                tint = RarimeTheme.colors.invertedLight,
+                modifier = Modifier
+                    .background(RarimeTheme.colors.primaryMain, CircleShape)
+                    .padding(4.dp)
+            )
+        }
+
     }
 }
 
@@ -83,6 +87,7 @@ fun ActionCard(
     description: String,
     leadingContent: @Composable (() -> Unit)? = null,
     variant: ActionCardVariants = ActionCardVariants.Filled,
+    isNextIconEnabled: Boolean = true,
     onClick: () -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -99,7 +104,8 @@ fun ActionCard(
             ActionCardContent(
                 title = title,
                 description = description,
-                leadingContent = leadingContent
+                leadingContent = leadingContent,
+                isNextIconEnabled = isNextIconEnabled
             )
         }
     } else if (variant == ActionCardVariants.Outlined) {
@@ -120,7 +126,8 @@ fun ActionCard(
             ActionCardContent(
                 title = title,
                 description = description,
-                leadingContent = leadingContent
+                leadingContent = leadingContent,
+                isNextIconEnabled = isNextIconEnabled
             )
         }
     }

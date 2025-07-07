@@ -309,6 +309,8 @@ object SupportRegisterIdentityCircuitAAType {
 
     fun getSupportedSignatureTypeId(type: CircuitAAAlgorithm): UInt? {
         return supported.firstOrNull {
+            it.keySize == type.keySize &&
+                    it.curve == type.curve &&
             it.algorithm == type.algorithm &&
                     it.hashAlgorithm == type.hashAlgorithm
         }?.staticId
