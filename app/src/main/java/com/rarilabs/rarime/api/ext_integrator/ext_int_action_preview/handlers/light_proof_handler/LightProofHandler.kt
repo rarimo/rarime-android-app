@@ -17,6 +17,7 @@ import com.rarilabs.rarime.api.ext_integrator.models.YourCitizenshipDoesNotMeetT
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.ui.components.SnackbarSeverity
 import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
+import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -79,6 +80,9 @@ fun LightProofHandler(
                 is NoPassport -> context.getString(R.string.no_passport_error)
                 else -> context.getString(R.string.light_verification_error_subtitle)
             }
+
+            ErrorHandler.logError("Light", "error", e)
+
 
             mainViewModel.showSnackbar(
                 options = getSnackbarDefaultShowOptions(

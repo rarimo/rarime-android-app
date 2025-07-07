@@ -135,6 +135,8 @@ fun ExtIntQueryProofHandler(
                 else -> context.getString(R.string.light_verification_error_subtitle)
             }
 
+            ErrorHandler.logError("Ext", "error", e)
+
             mainViewModel.showSnackbar(
                 options = getSnackbarDefaultShowOptions(
                     severity = SnackbarSeverity.Error,

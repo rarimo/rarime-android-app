@@ -53,15 +53,13 @@ fun FreedomtoolCollapsedWidget(
         with(sharedTransitionScope) {
             BaseCollapsedWidget(
                 modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(20.dp))
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
                     .sharedElement(
                         state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
                         animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) }
                     )
-                    .clip(RoundedCornerShape(16.dp))
-                    .padding(vertical = 8.dp)
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth()
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
@@ -215,6 +213,7 @@ private fun Background(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     )
+                    .clip(RoundedCornerShape(20.dp))
             )
         }
     }

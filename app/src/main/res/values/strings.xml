@@ -54,7 +54,7 @@
     <!--SCAN PASSPORT : NFC-->
     <string name="nfc_reader_title">NFC Reader</string>
     <string name="nfc_reader_text">Reading personal data</string>
-    <string name="nfc_reader_hint_1">Place your passport cover to the back of your phone</string>
+    <string name="nfc_reader_hint_1">Press Scan and place your passport cover to the back of your phone</string>
     <string name="nfc_reader_scanning">Scanning…</string>
     <string name="nfc_error_interrupt">Scan interrupted, try again</string>
     <string name="nfc_error_unknown">Try again</string>

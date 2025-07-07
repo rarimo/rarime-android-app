@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -41,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -146,6 +148,7 @@ fun FreedomtoolExpandedWidgetContent(
                     .sharedElement(
                         state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
                         animatedVisibilityScope = animatedVisibilityScope,
+                        clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(40.dp)),
                         boundsTransform = { _, _ -> tween(ANIMATION_DURATION_MS) }
                     ),
                 header = {
@@ -242,6 +245,7 @@ private fun Body(
     with(sharedTransitionScope) {
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .sharedBounds(
                     rememberSharedContentState(HomeSharedKeys.content(layoutId)),
                     animatedVisibilityScope = animatedVisibilityScope,
@@ -249,8 +253,6 @@ private fun Body(
                     exit = fadeOut(),
                     resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
                 )
-
-                .fillMaxSize()
         ) {
 
             Spacer(Modifier.height((BG_DOT_MAP_HEIGHT - 80).dp))
@@ -421,9 +423,10 @@ private fun Background(
             Image(
                 painter = painterResource(R.drawable.ic_bg_freedomtool_voting),
                 contentDescription = null,
+                contentScale = ContentScale.FillWidth,
                 modifier = Modifier
-                    .fillMaxWidth()
                     .height(BG_DOT_MAP_HEIGHT.dp)
+                    .fillMaxWidth()
                     .sharedBounds(
                         rememberSharedContentState(
                             HomeSharedKeys.image(
@@ -432,9 +435,15 @@ private fun Background(
                         ),
                         animatedVisibilityScope = animatedVisibilityScope,
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
-                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                        resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(),
+                        placeHolderSize = animatedSize
+
+
                     )
+                    .clip(RoundedCornerShape(20.dp))
+
             )
+
         }
     }
 }
