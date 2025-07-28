@@ -198,6 +198,9 @@ class ProofGenerationManager @Inject constructor(
                     )
                     _state.value = PassportProofState.FINALIZING
                 } else {
+                    if (!eDocument.dg15.isNullOrEmpty()) {
+                        return registerByDocument(eDocument.copy(dg15 = ""))
+                    }
                     registrationManager.setRegistrationProof(proof)
                     throw PassportAlreadyRegisteredByOtherPK()
                 }
