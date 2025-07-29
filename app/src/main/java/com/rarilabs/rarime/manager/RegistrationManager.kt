@@ -19,7 +19,6 @@ import com.rarilabs.rarime.util.data.UniversalProof
 import com.rarilabs.rarime.util.decodeHexString
 import com.rarilabs.rarime.util.publicKeyToPem
 import identity.CallDataBuilder
-import identity.Identity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -176,43 +175,21 @@ class RegistrationManager @Inject constructor(
         eDocument: EDocument,
         zkProof: UniversalProof,
     ): Tuple2<StateKeeper.PassportInfo, StateKeeper.IdentityInfo>? {
-        val stateKeeperContract = rarimoContractManager.getStateKeeper()
+        try {
+            val stateKeeperContract = rarimoContractManager.getStateKeeper()
 
-        val passportInfoKeyBytes =
-            passportManager.getPassportInfoKeyBytes(eDocument, zkProof)
+            val passportInfoKeyBytes =
+                passportManager.getPassportInfoKeyBytes(eDocument, zkProof)
 
-        val passportInfo = withContext(Dispatchers.IO) {
-            stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()
+            val passportInfo = withContext(Dispatchers.IO) {
+                stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()
+            }
+
+            return passportInfo
+        } catch (e: Exception) {
+            ErrorHandler.logError("RegistrationManager", "Error getting passport info", e)
+            throw e
         }
-
-        return passportInfo
-    }
-
-    suspend fun getPassportInfoWithoutDG15(
-        eDocument: EDocument,
-        zkProof: UniversalProof,
-    ): Tuple2<StateKeeper.PassportInfo, StateKeeper.IdentityInfo>? {
-        val stateKeeperContract = rarimoContractManager.getStateKeeper()
-
-        val passportInfoKey: String = zkProof.getPassportHash()
-
-
-        var passportInfoKeyBytes = Identity.bigIntToBytes(passportInfoKey)
-
-        if (passportInfoKeyBytes.size > 32) {
-            passportInfoKeyBytes = ByteArray(32 - passportInfoKeyBytes.size) + passportInfoKeyBytes
-        } else if (passportInfoKeyBytes.size < 32) {
-            val len = 32 - passportInfoKeyBytes.size
-            var tempByteArray = ByteArray(len) { 0 }
-            tempByteArray += passportInfoKeyBytes
-            passportInfoKeyBytes = tempByteArray
-        }
-
-        val passportInfo = withContext(Dispatchers.IO) {
-            stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()
-        }
-
-        return passportInfo
     }
 
     suspend fun lightRegisterRelayer(zkProof: GrothProof, verifySodResponse: VerifySodResponse) {
