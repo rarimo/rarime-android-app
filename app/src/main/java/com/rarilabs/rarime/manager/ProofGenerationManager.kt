@@ -6,6 +6,7 @@ import CircuitAlgorithmType
 import CircuitPassportHashType
 import RegisterIdentityCircuitType
 import android.content.Context
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.noirandroid.lib.Circuit
@@ -199,10 +200,30 @@ class ProofGenerationManager @Inject constructor(
                     _state.value = PassportProofState.FINALIZING
                 } else {
                     if (!eDocument.dg15.isNullOrEmpty()) {
-                        return registerByDocument(eDocument.copy(dg15 = ""))
+                        val passportInfo = try {
+                            registrationManager.getPassportInfoWithoutDG15(eDocument, proof)
+                        } catch (e: Exception) {
+                            ErrorHandler.logError(TAG, "Error getting passport info without DG15", e)
+                            null
+                        }
+                        passportInfo?.let {
+                            if (it.component1()?.activeIdentity?.toHexString() == currentIdentityKey.toHexString()) {
+                                ErrorHandler.logDebug(TAG, "Passport is already registered with this PK")
+                            } else if (passportInfo.component1().activeIdentity.contentEquals(ZERO_BYTES32)) {
+                                registrationManager.register(
+                                    proof,
+                                    eDocument,
+                                    registrationManager.masterCertProof.value!!,
+                                    false,
+                                    circuitName
+                                )
+                                _state.value = PassportProofState.FINALIZING
+                            } else {
+                                registrationManager.setRegistrationProof(proof)
+                                throw PassportAlreadyRegisteredByOtherPK()
+                            }
+                        }
                     }
-                    registrationManager.setRegistrationProof(proof)
-                    throw PassportAlreadyRegisteredByOtherPK()
                 }
             } ?: run {
                 registrationManager.register(
