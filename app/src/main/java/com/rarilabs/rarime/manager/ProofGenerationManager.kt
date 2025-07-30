@@ -191,11 +191,7 @@ class ProofGenerationManager @Inject constructor(
             if (!isDocumentRegistered) {
                 Log.d("Before registration", doc.dg15.toString())
                 registrationManager.register(
-                    proof,
-                    doc,
-                    registrationManager.masterCertProof.value!!,
-                    false,
-                    circuitName
+                    proof, doc, registrationManager.masterCertProof.value!!, false, circuitName
                 )
             }
 
@@ -210,14 +206,18 @@ class ProofGenerationManager @Inject constructor(
     private suspend fun isDocumentRegistered(eDocument: EDocument, proof: UniversalProof): Boolean {
         Log.d("DG15", eDocument.dg15.toString())
         val passportInfo = registrationManager.getPassportInfo(eDocument, proof)
-        val passportInfoIdentity = passportInfo?.component1()?.activeIdentity
-
-        val ZERO_BYTES32 = ByteArray(32) { 0 }
-        val currentIdentityKey = identityManager.getProfiler().publicKeyHash
-
-        if (passportInfo == null || passportInfoIdentity.contentEquals(ZERO_BYTES32)) {
+        if (passportInfo == null) {
             return false
         }
+        val passportInfoIdentity = passportInfo.component1()?.activeIdentity
+
+        val ZERO_BYTES32 = ByteArray(32) { 0 }
+
+        if (passportInfoIdentity.contentEquals(ZERO_BYTES32)) {
+            return false
+        }
+
+        val currentIdentityKey = identityManager.getProfiler().publicKeyHash
 
         if (passportInfoIdentity?.toHexString() == currentIdentityKey.toHexString()) {
             ErrorHandler.logDebug(TAG, "Passport is already registered with this PK")
