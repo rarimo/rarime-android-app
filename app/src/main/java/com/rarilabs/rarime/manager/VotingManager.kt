@@ -56,6 +56,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.withContext
 import org.web3j.utils.Numeric
 import java.math.BigInteger
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class VotingManager @Inject constructor(
@@ -209,8 +211,13 @@ class VotingManager @Inject constructor(
                 decodedGenderAscii == passportManager.passport.value!!.personDetails!!.gender!![0].toString()
             } else false
 
-        val isExpirationDateEligible =
-            rawMinExpirationDate.isEmpty() || userExpiryDate.toLong() >= rawMinExpirationDate.toLong()
+        val isExpirationDateEligible = rawMinExpirationDate.isEmpty() || !LocalDate.parse(
+            userExpiryDate, DateTimeFormatter.ofPattern("dd.MM.yyyy")
+        ).isBefore(
+            LocalDate.parse(
+                rawMinExpirationDate, DateTimeFormatter.ofPattern("yyMMdd")
+            )
+        )
 
         val countriesString =
             decodedCountries.toSet().joinToString(", ") { it.name.replace("_", " ") }
@@ -230,7 +237,7 @@ class VotingManager @Inject constructor(
             else -> "-"
         }
 
-        val expirationDateString = when (decodedMinExpirationDate) {
+        val expirationDateString = when (rawMinExpirationDate) {
             "000000" -> "-"
             else -> "Valid until ${decodedMinExpirationDate}"
         }
