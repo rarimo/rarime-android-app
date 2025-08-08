@@ -72,7 +72,7 @@ class VotingManager @Inject constructor(
 
     private val ZERO_IN_HEX: String = "0x303030303030"
     private val EMPTY_VALUE: String = "0x302020202020"
-
+    private val ZERO_MRZ_DATE :String = "000000"
 
     private val _historyVotes = MutableStateFlow<List<Poll>>(emptyList())
     val historyVotes: StateFlow<List<Poll>>
@@ -170,7 +170,7 @@ class VotingManager @Inject constructor(
         val decodedMaxAgeAscii = DateUtil.convertFromMrzDate(rawMaxAgeString)
         val decodedGenderAscii = votingData.sex.toByteArray().decodeToString()
         val decodedMinExpirationDate = DateUtil.convertFromMrzDate(
-            mrzDate = rawMinExpirationDate, dataFormatType = DateFormatType.DEFAULT
+            mrzDate = rawMinExpirationDate, dateFormatType = DateFormatType.DEFAULT
         )
 
         fun isEmptyAgeValue(value: BigInteger): Boolean {
@@ -238,7 +238,7 @@ class VotingManager @Inject constructor(
         }
 
         val expirationDateString = when (rawMinExpirationDate) {
-            "000000" -> "-"
+            ZERO_MRZ_DATE -> "-"
             else -> "Valid until ${decodedMinExpirationDate}"
         }
 
@@ -270,7 +270,7 @@ class VotingManager @Inject constructor(
             )
         }
 
-        if (decodedMinExpirationDate != "000000" && !decodedMinExpirationDate.isEmpty()) {
+        if (decodedMinExpirationDate != ZERO_MRZ_DATE && !decodedMinExpirationDate.isEmpty()) {
             requirements.add(
                 PollCriteria(
                     title = expirationDateString, accomplished = isExpirationDateEligible
