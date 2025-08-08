@@ -217,8 +217,8 @@ class VotingManager @Inject constructor(
             userExpiryDate, DateTimeFormatter.ofPattern(DateFormatType.DMY.pattern)
         ).isBefore(
             LocalDate.parse(
-                formatedMinExpirationDate,
-                DateTimeFormatter.ofPattern(DateFormatType.DEFAULT.pattern)
+                rawMinExpirationDate,
+                DateTimeFormatter.ofPattern(DateFormatType.MRZ.pattern)
             )
         )
 
@@ -270,9 +270,11 @@ class VotingManager @Inject constructor(
         }
 
         if (formatedMinExpirationDate != ZERO_MRZ_DATE && !formatedMinExpirationDate.isEmpty()) {
+            requirements.add(
             PollCriteria(
                 title = (appContext.getString((R.string.label_expiration_criteria)) + " " + formatedMinExpirationDate),
                 accomplished = isExpirationDateEligible
+            )
             )
         }
 
