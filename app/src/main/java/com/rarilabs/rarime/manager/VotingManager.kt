@@ -35,6 +35,7 @@ import com.rarilabs.rarime.modules.passportScan.calculateAgeFromBirthDate
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.room.voting.VotingRepository
 import com.rarilabs.rarime.util.Country
+import com.rarilabs.rarime.util.DateFormatType
 import com.rarilabs.rarime.util.DateUtil
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.ZKPUseCase
@@ -160,11 +161,15 @@ class VotingManager @Inject constructor(
 
         val rawMinAgeString = votingData.birthDateUpperbound.toByteArray().decodeToString()
         val rawMaxAgeString = votingData.birthDateLowerbound.toByteArray().decodeToString()
-
+        val rawMinExpirationDate =
+            votingData.expirationDateLowerBound.toByteArray().decodeToString()
 
         val decodedMinAgeAscii = DateUtil.convertFromMrzDate(rawMinAgeString)
         val decodedMaxAgeAscii = DateUtil.convertFromMrzDate(rawMaxAgeString)
         val decodedGenderAscii = votingData.sex.toByteArray().decodeToString()
+        val decodedMinExpirationDate = DateUtil.convertFromMrzDate(
+            mrzDate = rawMinExpirationDate, dataFormatType = DateFormatType.DEFAULT
+        )
 
         fun isEmptyAgeValue(value: BigInteger): Boolean {
             return value == BigInteger.valueOf(52983525027888L)
@@ -185,7 +190,7 @@ class VotingManager @Inject constructor(
 
         val userAge =
             calculateAgeFromBirthDate(passportManager.passport.value?.personDetails?.birthDate!!)
-
+        val userExpiryDate = passportManager.passport.value?.personDetails?.expiryDate!!
         // Nationality eligibility.
         val isNationalityEligible = decodedCountries.contains(
             Country.fromISOCode(passport.personDetails!!.nationality)
@@ -204,6 +209,8 @@ class VotingManager @Inject constructor(
                 decodedGenderAscii == passportManager.passport.value!!.personDetails!!.gender!![0].toString()
             } else false
 
+        val isExpirationDateEligible =
+            rawMinExpirationDate.isEmpty() || userExpiryDate.toLong() >= rawMinExpirationDate.toLong()
 
         val countriesString =
             decodedCountries.toSet().joinToString(", ") { it.name.replace("_", " ") }
@@ -222,6 +229,12 @@ class VotingManager @Inject constructor(
             "F" -> "Female only"
             else -> "-"
         }
+
+        val expirationDateString = when (decodedMinExpirationDate) {
+            "000000" -> "-"
+            else -> "Valid until ${decodedMinExpirationDate}"
+        }
+
 
         val requirements = mutableListOf<PollCriteria>()
 
@@ -246,6 +259,14 @@ class VotingManager @Inject constructor(
             requirements.add(
                 PollCriteria(
                     title = genderString, accomplished = isGenderEligible
+                )
+            )
+        }
+
+        if (decodedMinExpirationDate != "000000" && !decodedMinExpirationDate.isEmpty()) {
+            requirements.add(
+                PollCriteria(
+                    title = expirationDateString, accomplished = isExpirationDateEligible
                 )
             )
         }
@@ -488,7 +509,7 @@ class VotingManager @Inject constructor(
             throw VoteError.NetworkError("Error during checkIsTransactionSuccessful")
         }
 
-        val wait = votingRepository.insertVoting(selectedPoll.value!!.poll)
+        votingRepository.insertVoting(selectedPoll.value!!.poll)
         refreshVotes(votingRepository.getAllVoting())
     }
 
@@ -528,9 +549,7 @@ class VotingManager @Inject constructor(
         if (identityInfo.issueTimestamp > votingData.identityCreationTimestampUpperBound) {
             if (passportInfo.identityReissueCounter > votingData.identityCounterUpperBound) {
                 throw VoteError.UniquenessError(
-                    "Your identity can not be uniquely verified for voting: " +
-                            "identityInfo.issueTimestamp > votingData.identityCreationTimestampUpperBound:  ${identityInfo.issueTimestamp} > ${votingData.identityCreationTimestampUpperBound}." +
-                            " passportInfo.identityReissueCounter > votingData.identityCounterUpperBound ${passportInfo.identityReissueCounter} > ${votingData.identityCounterUpperBound}"
+                    "Your identity can not be uniquely verified for voting: " + "identityInfo.issueTimestamp > votingData.identityCreationTimestampUpperBound:  ${identityInfo.issueTimestamp} > ${votingData.identityCreationTimestampUpperBound}." + " passportInfo.identityReissueCounter > votingData.identityCounterUpperBound ${passportInfo.identityReissueCounter} > ${votingData.identityCounterUpperBound}"
                 )
             }
 
