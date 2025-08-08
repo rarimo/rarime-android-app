@@ -72,7 +72,7 @@ class VotingManager @Inject constructor(
 
     private val ZERO_IN_HEX: String = "0x303030303030"
     private val EMPTY_VALUE: String = "0x302020202020"
-    private val ZERO_MRZ_DATE :String = "000000"
+    private val ZERO_MRZ_DATE: String = "000000"
 
     private val _historyVotes = MutableStateFlow<List<Poll>>(emptyList())
     val historyVotes: StateFlow<List<Poll>>
@@ -212,10 +212,10 @@ class VotingManager @Inject constructor(
             } else false
 
         val isExpirationDateEligible = rawMinExpirationDate.isEmpty() || !LocalDate.parse(
-            userExpiryDate, DateTimeFormatter.ofPattern("dd.MM.yyyy")
+            userExpiryDate, DateTimeFormatter.ofPattern(DateFormatType.DMY.pattern)
         ).isBefore(
             LocalDate.parse(
-                rawMinExpirationDate, DateTimeFormatter.ofPattern("yyMMdd")
+                rawMinExpirationDate, DateTimeFormatter.ofPattern(DateFormatType.MRZ.pattern)
             )
         )
 
