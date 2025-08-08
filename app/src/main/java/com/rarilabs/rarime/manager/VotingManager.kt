@@ -42,6 +42,7 @@ import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
 import com.rarilabs.rarime.util.data.GrothProof
 import com.rarilabs.rarime.util.decodeHexString
+import dagger.hilt.android.qualifiers.ApplicationContext
 import identity.CallDataBuilder
 import identity.Identity
 import identity.Profile
@@ -67,7 +68,8 @@ class VotingManager @Inject constructor(
     private val testnetContractManager: TestContractManager,
     private val passportManager: PassportManager,
     private val identityManager: IdentityManager,
-    private val votingRepository: VotingRepository
+    private val votingRepository: VotingRepository,
+     @ApplicationContext private val appContext: Context
 ) {
 
     private val ZERO_IN_HEX: String = "0x303030303030"
@@ -169,7 +171,7 @@ class VotingManager @Inject constructor(
         val decodedMinAgeAscii = DateUtil.convertFromMrzDate(rawMinAgeString)
         val decodedMaxAgeAscii = DateUtil.convertFromMrzDate(rawMaxAgeString)
         val decodedGenderAscii = votingData.sex.toByteArray().decodeToString()
-        val decodedMinExpirationDate = DateUtil.convertFromMrzDate(
+        val formatedMinExpirationDate = DateUtil.convertFromMrzDate(
             mrzDate = rawMinExpirationDate, dateFormatType = DateFormatType.DEFAULT
         )
 
@@ -192,7 +194,7 @@ class VotingManager @Inject constructor(
 
         val userAge =
             calculateAgeFromBirthDate(passportManager.passport.value?.personDetails?.birthDate!!)
-        val userExpiryDate = passportManager.passport.value?.personDetails?.expiryDate!!
+        val userExpiryDate = passport.personDetails?.expiryDate!!
         // Nationality eligibility.
         val isNationalityEligible = decodedCountries.contains(
             Country.fromISOCode(passport.personDetails!!.nationality)
@@ -237,10 +239,6 @@ class VotingManager @Inject constructor(
             else -> "-"
         }
 
-        val expirationDateString = when (rawMinExpirationDate) {
-            ZERO_MRZ_DATE -> "-"
-            else -> "Valid until ${decodedMinExpirationDate}"
-        }
 
 
         val requirements = mutableListOf<PollCriteria>()
@@ -270,11 +268,10 @@ class VotingManager @Inject constructor(
             )
         }
 
-        if (decodedMinExpirationDate != ZERO_MRZ_DATE && !decodedMinExpirationDate.isEmpty()) {
-            requirements.add(
-                PollCriteria(
-                    title = expirationDateString, accomplished = isExpirationDateEligible
-                )
+        if (formatedMinExpirationDate != ZERO_MRZ_DATE && !formatedMinExpirationDate.isEmpty()) {
+            PollCriteria(
+                title = (appContext.getString((R.string.label_expiration_criteria)) + " " + formatedMinExpirationDate),
+                accomplished = isExpirationDateEligible
             )
         }
 
