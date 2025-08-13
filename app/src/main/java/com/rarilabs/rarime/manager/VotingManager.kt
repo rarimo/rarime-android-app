@@ -35,12 +35,14 @@ import com.rarilabs.rarime.modules.passportScan.calculateAgeFromBirthDate
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.room.voting.VotingRepository
 import com.rarilabs.rarime.util.Country
+import com.rarilabs.rarime.util.DateFormatType
 import com.rarilabs.rarime.util.DateUtil
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.ZKPUseCase
 import com.rarilabs.rarime.util.ZkpUtil
 import com.rarilabs.rarime.util.data.GrothProof
 import com.rarilabs.rarime.util.decodeHexString
+import dagger.hilt.android.qualifiers.ApplicationContext
 import identity.CallDataBuilder
 import identity.Identity
 import identity.Profile
@@ -55,6 +57,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.withContext
 import org.web3j.utils.Numeric
 import java.math.BigInteger
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class VotingManager @Inject constructor(
@@ -64,12 +68,13 @@ class VotingManager @Inject constructor(
     private val testnetContractManager: TestContractManager,
     private val passportManager: PassportManager,
     private val identityManager: IdentityManager,
-    private val votingRepository: VotingRepository
+    private val votingRepository: VotingRepository,
+    @ApplicationContext private val appContext: Context
 ) {
 
     private val ZERO_IN_HEX: String = "0x303030303030"
     private val EMPTY_VALUE: String = "0x302020202020"
-
+    private val ZERO_MRZ_DATE: String = "000000"
 
     private val _historyVotes = MutableStateFlow<List<Poll>>(emptyList())
     val historyVotes: StateFlow<List<Poll>>
@@ -160,11 +165,15 @@ class VotingManager @Inject constructor(
 
         val rawMinAgeString = votingData.birthDateUpperbound.toByteArray().decodeToString()
         val rawMaxAgeString = votingData.birthDateLowerbound.toByteArray().decodeToString()
-
+        val rawMinExpirationDate =
+            votingData.expirationDateLowerBound.toByteArray().decodeToString()
 
         val decodedMinAgeAscii = DateUtil.convertFromMrzDate(rawMinAgeString)
         val decodedMaxAgeAscii = DateUtil.convertFromMrzDate(rawMaxAgeString)
         val decodedGenderAscii = votingData.sex.toByteArray().decodeToString()
+        val decodedMinExpirationDate = DateUtil.convertFromMrzDate(
+            mrzDate = rawMinExpirationDate, dateFormatType = DateFormatType.DEFAULT
+        )
 
         fun isEmptyAgeValue(value: BigInteger): Boolean {
             return value == BigInteger.valueOf(52983525027888L)
@@ -185,7 +194,7 @@ class VotingManager @Inject constructor(
 
         val userAge =
             calculateAgeFromBirthDate(passportManager.passport.value?.personDetails?.birthDate!!)
-
+        val userExpiryDate = passport.personDetails?.expiryDate!!
         // Nationality eligibility.
         val isNationalityEligible = decodedCountries.contains(
             Country.fromISOCode(passport.personDetails!!.nationality)
@@ -204,6 +213,13 @@ class VotingManager @Inject constructor(
                 decodedGenderAscii == passportManager.passport.value!!.personDetails!!.gender!![0].toString()
             } else false
 
+        val isExpirationDateEligible = rawMinExpirationDate.isEmpty() || !LocalDate.parse(
+            userExpiryDate, DateTimeFormatter.ofPattern(DateFormatType.DMY.pattern)
+        ).isBefore(
+            LocalDate.parse(
+                rawMinExpirationDate, DateTimeFormatter.ofPattern(DateFormatType.MRZ.pattern)
+            )
+        )
 
         val countriesString =
             decodedCountries.toSet().joinToString(", ") { it.name.replace("_", " ") }
@@ -222,6 +238,7 @@ class VotingManager @Inject constructor(
             "F" -> "Female only"
             else -> "-"
         }
+
 
         val requirements = mutableListOf<PollCriteria>()
 
@@ -246,6 +263,15 @@ class VotingManager @Inject constructor(
             requirements.add(
                 PollCriteria(
                     title = genderString, accomplished = isGenderEligible
+                )
+            )
+        }
+
+        if (decodedMinExpirationDate != ZERO_MRZ_DATE && decodedMinExpirationDate.isNotEmpty()) {
+            requirements.add(
+                PollCriteria(
+                    title = (appContext.getString((R.string.label_expiration_criteria)) + " " + decodedMinExpirationDate),
+                    accomplished = isExpirationDateEligible
                 )
             )
         }
@@ -488,7 +514,7 @@ class VotingManager @Inject constructor(
             throw VoteError.NetworkError("Error during checkIsTransactionSuccessful")
         }
 
-        val wait = votingRepository.insertVoting(selectedPoll.value!!.poll)
+        votingRepository.insertVoting(selectedPoll.value!!.poll)
         refreshVotes(votingRepository.getAllVoting())
     }
 
@@ -528,9 +554,7 @@ class VotingManager @Inject constructor(
         if (identityInfo.issueTimestamp > votingData.identityCreationTimestampUpperBound) {
             if (passportInfo.identityReissueCounter > votingData.identityCounterUpperBound) {
                 throw VoteError.UniquenessError(
-                    "Your identity can not be uniquely verified for voting: " +
-                            "identityInfo.issueTimestamp > votingData.identityCreationTimestampUpperBound:  ${identityInfo.issueTimestamp} > ${votingData.identityCreationTimestampUpperBound}." +
-                            " passportInfo.identityReissueCounter > votingData.identityCounterUpperBound ${passportInfo.identityReissueCounter} > ${votingData.identityCounterUpperBound}"
+                    "Your identity can not be uniquely verified for voting: " + "identityInfo.issueTimestamp > votingData.identityCreationTimestampUpperBound:  ${identityInfo.issueTimestamp} > ${votingData.identityCreationTimestampUpperBound}." + " passportInfo.identityReissueCounter > votingData.identityCounterUpperBound ${passportInfo.identityReissueCounter} > ${votingData.identityCounterUpperBound}"
                 )
             }
 

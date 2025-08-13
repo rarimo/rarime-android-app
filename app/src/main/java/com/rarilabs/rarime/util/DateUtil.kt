@@ -100,10 +100,13 @@ object DateUtil {
         }
     }
 
-    fun convertFromMrzDate(mrzDate: String?): String {
+    fun convertFromMrzDate(
+        mrzDate: String?,
+        dateFormatType: DateFormatType = DateFormatType.DMY
+    ): String {
         val date = stringToDate(mrzDate, SimpleDateFormat(DateFormatType.MRZ.pattern, Locale.US))
             ?: return ""
-        return formatDate(date, DateFormatType.DMY)
+        return formatDate(date, dateFormatType)
     }
 
     fun convertToMrzDate(date: String?): String {

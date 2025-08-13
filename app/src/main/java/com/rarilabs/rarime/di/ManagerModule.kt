@@ -172,13 +172,14 @@ class APIModule {
     @Provides
     @Singleton
     fun provideVotingManager(
+        @ApplicationContext context: Context,
         votingApiManager: VotingApiManager,
         votingContractManager: TestContractManager,
         rarimoContractManager: RarimoContractManager,
         passportManager: PassportManager,
         identityManager: IdentityManager,
         votingRepository: VotingRepository,
-        testContractManager: TestContractManager,
+        testContractManager: TestContractManager
     ): VotingManager {
         return VotingManager(
             votingApiManager,
@@ -187,7 +188,8 @@ class APIModule {
             testContractManager,
             passportManager,
             identityManager,
-            votingRepository
+            votingRepository,
+            context,
         )
     }
 
