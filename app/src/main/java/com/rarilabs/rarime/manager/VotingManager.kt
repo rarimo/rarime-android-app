@@ -69,7 +69,7 @@ class VotingManager @Inject constructor(
     private val passportManager: PassportManager,
     private val identityManager: IdentityManager,
     private val votingRepository: VotingRepository,
-     @ApplicationContext private val appContext: Context
+    @ApplicationContext private val appContext: Context
 ) {
 
     private val ZERO_IN_HEX: String = "0x303030303030"
@@ -171,7 +171,7 @@ class VotingManager @Inject constructor(
         val decodedMinAgeAscii = DateUtil.convertFromMrzDate(rawMinAgeString)
         val decodedMaxAgeAscii = DateUtil.convertFromMrzDate(rawMaxAgeString)
         val decodedGenderAscii = votingData.sex.toByteArray().decodeToString()
-        val formatedMinExpirationDate = DateUtil.convertFromMrzDate(
+        val decodedMinExpirationDate = DateUtil.convertFromMrzDate(
             mrzDate = rawMinExpirationDate, dateFormatType = DateFormatType.DEFAULT
         )
 
@@ -217,8 +217,7 @@ class VotingManager @Inject constructor(
             userExpiryDate, DateTimeFormatter.ofPattern(DateFormatType.DMY.pattern)
         ).isBefore(
             LocalDate.parse(
-                rawMinExpirationDate,
-                DateTimeFormatter.ofPattern(DateFormatType.MRZ.pattern)
+                rawMinExpirationDate, DateTimeFormatter.ofPattern(DateFormatType.MRZ.pattern)
             )
         )
 
@@ -239,7 +238,6 @@ class VotingManager @Inject constructor(
             "F" -> "Female only"
             else -> "-"
         }
-
 
 
         val requirements = mutableListOf<PollCriteria>()
@@ -269,12 +267,12 @@ class VotingManager @Inject constructor(
             )
         }
 
-        if (formatedMinExpirationDate != ZERO_MRZ_DATE && !formatedMinExpirationDate.isEmpty()) {
+        if (decodedMinExpirationDate != ZERO_MRZ_DATE && decodedMinExpirationDate.isNotEmpty()) {
             requirements.add(
-            PollCriteria(
-                title = (appContext.getString((R.string.label_expiration_criteria)) + " " + formatedMinExpirationDate),
-                accomplished = isExpirationDateEligible
-            )
+                PollCriteria(
+                    title = (appContext.getString((R.string.label_expiration_criteria)) + " " + decodedMinExpirationDate),
+                    accomplished = isExpirationDateEligible
+                )
             )
         }
 
