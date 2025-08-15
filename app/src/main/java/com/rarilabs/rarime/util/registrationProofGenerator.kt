@@ -187,17 +187,6 @@ suspend fun generateRegistrationProofByCircuitType(
 //                )
 //            }
 
-            RegisteredCircuitData.REGISTER_IDENTITY_3_160_3_3_336_200_NA -> {
-                zkp.generateRegisterZKP(
-                    filePaths!!.zkey,
-                    filePaths.zkeyLen,
-                    filePaths.dat,
-                    filePaths.datLen,
-                    inputs,
-                    ZkpUtil::registerIdentity316033336200NA
-                )
-            }
-
             RegisteredCircuitData.REGISTER_IDENTITY_3_160_3_4_576_216_1_1512_3_256 -> {
                 zkp.generateRegisterZKP(
                     filePaths!!.zkey,
@@ -209,16 +198,6 @@ suspend fun generateRegistrationProofByCircuitType(
                 )
             }
 
-            RegisteredCircuitData.REGISTER_IDENTITY_2_256_3_6_336_264_1_2448_3_256 -> {
-                zkp.generateRegisterZKP(
-                    filePaths!!.zkey,
-                    filePaths.zkeyLen,
-                    filePaths.dat,
-                    filePaths.datLen,
-                    inputs,
-                    ZkpUtil::registerIdentity225636336264124483256
-                )
-            }
 
 //            RegisteredCircuitData.REGISTER_IDENTITY_21_256_3_4_576_232_NA -> {
 //                zkp.generateRegisterZKP(
@@ -342,19 +321,6 @@ suspend fun generateRegistrationProofByCircuitType(
                     ZkpUtil::registerIdentity125636336560127444256
                 )
             }
-
-            RegisteredCircuitData.REGISTER_IDENTITY_1_256_3_6_336_248_1_2744_4_256 -> {
-                zkp.generateRegisterZKP(
-                    filePaths!!.zkey,
-                    filePaths.zkeyLen,
-                    filePaths.dat,
-                    filePaths.datLen,
-                    inputs,
-                    ZkpUtil::registerIdentity125636336248127444256
-                )
-            }
-
-
             else -> throw IllegalStateException("You are not allowed to be here")
         }
     }
