@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.util.circuits
 
 enum class RegisteredCircuitData(val value: String) {
-    REGISTER_IDENTITY_1_256_3_6_576_248_1_2432_5_296("registerIdentity_1_256_3_6_576_248_1_2432_5_296"),
     REGISTER_IDENTITY_21_256_3_7_336_264_21_3072_6_2008("registerIdentity_21_256_3_7_336_264_21_3072_6_2008"),
     REGISTER_IDENTITY_11_256_3_3_576_248_1_1184_5_264("registerIdentity_11_256_3_3_576_248_1_1184_5_264"),
     REGISTER_IDENTITY_12_256_3_3_336_232_NA("registerIdentity_12_256_3_3_336_232_NA"),
@@ -37,7 +36,6 @@ enum class RegisteredCircuitData(val value: String) {
 
         fun getMD5Checksum(item: RegisteredCircuitData): String {
             return when (item) {
-                REGISTER_IDENTITY_1_256_3_6_576_248_1_2432_5_296 -> "4c8a1ce87221bcf66105a87ea575f759"
                 REGISTER_IDENTITY_21_256_3_7_336_264_21_3072_6_2008 -> "511f124fb8609d82040b1a11fc7cd40d"
                 REGISTER_IDENTITY_11_256_3_3_576_248_1_1184_5_264 -> "b4c5509a00817d56a0550ccb3ac305a4"
                 REGISTER_IDENTITY_12_256_3_3_336_232_NA -> "08bc36b05da033c929248d792a4931dc"
@@ -119,7 +117,11 @@ enum class RegisterNoirCircuitData(val value: String) {
 
     REGISTER_IDENTITY_3_256_3_3_576_248_NA("registerIdentity_3_256_3_3_576_248_NA"),
 
-    REGISTER_IDENTITY_25_384_3_3_336_264_1_2024_3_296("registerIdentity_25_384_3_3_336_264_1_2024_3_296");
+    REGISTER_IDENTITY_25_384_3_3_336_264_1_2024_3_296("registerIdentity_25_384_3_3_336_264_1_2024_3_296"),
+
+    REGISTER_IDENTITY_28_384_3_3_576_264_24_2024_4_2792("registerIdentity_28_384_3_3_576_264_24_2024_4_2792"),
+    REGISTER_IDENTITY_1_256_3_6_576_248_1_2432_5_296("registerIdentity_1_256_3_6_576_248_1_2432_5_296"),
+    REGISTER_IDENTITY_25_384_3_3_336_248_NA("registerIdentity_25_384_3_3_336_248_NA");
 
     companion object {
         private val map =

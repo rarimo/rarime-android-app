@@ -3,7 +3,6 @@
 #include "witnesscalc_auth.h"
 #include "witnesscalc_faceRegistryNoInclusion.h"
 
-#include "witnesscalc_registerIdentity_1_256_3_6_576_248_1_2432_5_296.h"
 #include "witnesscalc_registerIdentity_21_256_3_7_336_264_21_3072_6_2008.h"
 #include "witnesscalc_registerIdentity_11_256_3_3_576_248_1_1184_5_264.h"
 #include "witnesscalc_registerIdentity_12_256_3_3_336_232_NA.h"
@@ -275,71 +274,6 @@ Java_com_rarilabs_rarime_util_ZkpUtil_auth(JNIEnv *env, jobject thiz,
 
     return result;
 }
-
-extern "C"
-JNIEXPORT jint JNICALL
-Java_com_rarilabs_rarime_util_ZkpUtil_registerIdentity125636576248124325296(JNIEnv *env,
-                                                                            jobject thiz,
-                                                                            jstring filePath,
-                                                                            jlong fileSizeJ,
-                                                                            jbyteArray json_buffer,
-                                                                            jlong json_size,
-                                                                            jbyteArray wtns_buffer,
-                                                                            jlongArray wtns_size,
-                                                                            jbyteArray error_msg,
-                                                                            jlong error_msg_max_size) {
-    const char *nativeFilePath = env->GetStringUTFChars(filePath, nullptr);
-    unsigned long fileSize = static_cast<unsigned long>(fileSizeJ);
-
-    // Allocate buffer for the file content
-    char *circuitBuffer = new char[fileSize];
-
-    // Read the file from the internal storage
-    std::ifstream file(nativeFilePath, std::ios::binary);
-    if (!file.is_open()) {
-        LOGE("Failed to open file: %s", nativeFilePath);
-        env->ReleaseStringUTFChars(filePath, nativeFilePath);
-        delete[] circuitBuffer;
-        return -1; // Error code for file opening failure
-    }
-
-    // Read the file content into the buffer
-    file.read(circuitBuffer, fileSize);
-    if (!file) {
-        LOGE("Failed to read file: %s", nativeFilePath);
-        env->ReleaseStringUTFChars(filePath, nativeFilePath);
-        delete[] circuitBuffer;
-        return -2; // Error code for file reading failure
-    }
-    file.close();
-
-    env->ReleaseStringUTFChars(filePath, nativeFilePath);
-
-    // Get the JSON buffer
-    const char *jsonBuffer = reinterpret_cast<const char *>(env->GetByteArrayElements(json_buffer,
-                                                                                      nullptr));
-    char *wtnsBuffer = reinterpret_cast<char *>(env->GetByteArrayElements(wtns_buffer, nullptr));
-    char *errorMsg = reinterpret_cast<char *>(env->GetByteArrayElements(error_msg, nullptr));
-
-    unsigned long wtnsSize = env->GetLongArrayElements(wtns_size, nullptr)[0];
-
-    int result = witnesscalc_registerIdentity_1_256_3_6_576_248_1_2432_5_296(
-            circuitBuffer, static_cast<unsigned long>(fileSize),
-            jsonBuffer, static_cast<unsigned long>(json_size),
-            wtnsBuffer, &wtnsSize,
-            errorMsg, static_cast<unsigned long>(error_msg_max_size)
-    );
-
-    // Set the result and release the resources
-    env->SetLongArrayRegion(wtns_size, 0, 1, reinterpret_cast<jlong *>(&wtnsSize));
-    env->ReleaseByteArrayElements(json_buffer,
-                                  reinterpret_cast<jbyte *>(const_cast<char *>(jsonBuffer)), 0);
-    env->ReleaseByteArrayElements(wtns_buffer, reinterpret_cast<jbyte *>(wtnsBuffer), 0);
-    env->ReleaseByteArrayElements(error_msg, reinterpret_cast<jbyte *>(errorMsg), 0);
-    delete[] circuitBuffer;
-    return result;
-}
-
 
 extern "C"
 JNIEXPORT jint JNICALL
