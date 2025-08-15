@@ -16,11 +16,8 @@ set(NORMAL_LIB_FILES
         libwitnesscalc_registerIdentity_21_256_3_7_336_264_21_3072_6_2008.so
         libwitnesscalc_registerIdentity_11_256_3_3_576_248_1_1184_5_264.so
         libwitnesscalc_registerIdentity_12_256_3_3_336_232_NA.so
-        libwitnesscalc_registerIdentity_1_256_3_4_336_232_1_1480_5_296.so
         libwitnesscalc_registerIdentity_1_160_3_4_576_200_NA.so
         libwitnesscalc_registerIdentity_24_256_3_4_336_232_NA.so
-        libwitnesscalc_registerIdentity_1_160_3_3_576_200_NA.so
-        libwitnesscalc_registerIdentity_1_256_3_3_576_248_NA.so
         libwitnesscalc_registerIdentity_11_256_3_5_576_248_1_1808_4_256.so
         libwitnesscalc_registerIdentity_21_256_3_3_576_232_NA.so
 
