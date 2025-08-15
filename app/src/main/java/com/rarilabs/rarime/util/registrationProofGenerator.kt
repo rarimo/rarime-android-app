@@ -165,29 +165,7 @@ suspend fun generateRegistrationProofByCircuitType(
 //                    ZkpUtil::registerIdentity2025633336224NA
 //                )
 //            }
-
-            RegisteredCircuitData.REGISTER_IDENTITY_1_256_3_3_576_248_NA -> {
-                zkp.generateRegisterZKP(
-                    filePaths!!.zkey,
-                    filePaths.zkeyLen,
-                    filePaths.dat,
-                    filePaths.datLen,
-                    inputs,
-                    ZkpUtil::registerIdentity125633576248NA
-                )
-            }
-
-            RegisteredCircuitData.REGISTER_IDENTITY_1_160_3_3_576_200_NA -> {
-                zkp.generateRegisterZKP(
-                    filePaths!!.zkey,
-                    filePaths.zkeyLen,
-                    filePaths.dat,
-                    filePaths.datLen,
-                    inputs,
-                    ZkpUtil::registerIdentity116033576200NA
-                )
-            }
-
+//
 //            RegisteredCircuitData.REGISTER_IDENTITY_10_256_3_3_576_248_1_1184_5_264 -> {
 //                zkp.generateRegisterZKP(
 //                    filePaths!!.zkey,
