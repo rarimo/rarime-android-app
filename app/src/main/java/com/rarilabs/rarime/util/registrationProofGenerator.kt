@@ -77,17 +77,6 @@ suspend fun generateRegistrationProofByCircuitType(
 //                    ZkpUtil::registerIdentity225636576248124323256
 //                )
 //            }
-
-            RegisteredCircuitData.REGISTER_IDENTITY_12_256_3_3_336_232_NA -> {
-                zkp.generateRegisterZKP(
-                    filePaths!!.zkey,
-                    filePaths.zkeyLen,
-                    filePaths.dat,
-                    filePaths.datLen,
-                    inputs,
-                    ZkpUtil::registerIdentity1225633336232NA
-                )
-            }
 //            RegisteredCircuitData.REGISTER_IDENTITY_1_256_3_4_600_248_1_1496_3_256 -> {
 //                zkp.generateRegisterZKP(
 //                    filePaths!!.zkey,
@@ -186,17 +175,6 @@ suspend fun generateRegistrationProofByCircuitType(
 //                )
 //            }
 
-            RegisteredCircuitData.REGISTER_IDENTITY_11_256_3_5_576_248_1_1808_5_296 -> {
-                zkp.generateRegisterZKP(
-                    filePaths!!.zkey,
-                    filePaths.zkeyLen,
-                    filePaths.dat,
-                    filePaths.datLen,
-                    inputs,
-                    ZkpUtil::registerIdentity1125635576248118085296
-                )
-            }
-
 
             RegisteredCircuitData.REGISTER_IDENTITY_14_256_3_4_336_64_1_1480_5_296 -> {
                 zkp.generateRegisterZKP(
@@ -209,16 +187,6 @@ suspend fun generateRegistrationProofByCircuitType(
                 )
             }
 
-            RegisteredCircuitData.REGISTER_IDENTITY_15_512_3_3_336_248_NA -> {
-                zkp.generateRegisterZKP(
-                    filePaths!!.zkey,
-                    filePaths.zkeyLen,
-                    filePaths.dat,
-                    filePaths.datLen,
-                    inputs,
-                    ZkpUtil::registerIdentity1551233336248NA
-                )
-            }
 
 
             RegisteredCircuitData.REGISTER_IDENTITY_20_160_3_3_736_200_NA -> {
