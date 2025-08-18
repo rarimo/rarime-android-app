@@ -2,7 +2,6 @@ package com.rarilabs.rarime.util.circuits
 
 enum class RegisteredCircuitData(val value: String) {
     REGISTER_IDENTITY_21_256_3_7_336_264_21_3072_6_2008("registerIdentity_21_256_3_7_336_264_21_3072_6_2008"),
-    REGISTER_IDENTITY_11_256_3_3_576_248_1_1184_5_264("registerIdentity_11_256_3_3_576_248_1_1184_5_264"),
     REGISTER_IDENTITY_12_256_3_3_336_232_NA("registerIdentity_12_256_3_3_336_232_NA"),
     REGISTER_IDENTITY_1_160_3_4_576_200_NA("registerIdentity_1_160_3_4_576_200_NA"),
     REGISTER_IDENTITY_24_256_3_4_336_232_NA("registerIdentity_24_256_3_4_336_232_NA"),
@@ -14,7 +13,6 @@ enum class RegisteredCircuitData(val value: String) {
     REGISTER_IDENTITY_20_256_3_5_336_72_NA("registerIdentity_20_256_3_5_336_72_NA"),
     REGISTER_IDENTITY_4_160_3_3_336_216_1_1296_3_256("registerIdentity_4_160_3_3_336_216_1_1296_3_256"),
     REGISTER_IDENTITY_1_256_3_6_336_560_1_2744_4_256("registerIdentity_1_256_3_6_336_560_1_2744_4_256"),
-    REGISTER_IDENTITY_11_256_3_3_576_240_1_864_5_264("registerIdentity_11_256_3_3_576_240_1_864_5_264"),
     REGISTER_IDENTITY_160("registerIdentityLight160"),
     REGISTER_IDENTITY_224("registerIdentityLight224"),
     REGISTER_IDENTITY_256("registerIdentityLight256"),
@@ -29,7 +27,6 @@ enum class RegisteredCircuitData(val value: String) {
         fun getMD5Checksum(item: RegisteredCircuitData): String {
             return when (item) {
                 REGISTER_IDENTITY_21_256_3_7_336_264_21_3072_6_2008 -> "511f124fb8609d82040b1a11fc7cd40d"
-                REGISTER_IDENTITY_11_256_3_3_576_248_1_1184_5_264 -> "b4c5509a00817d56a0550ccb3ac305a4"
                 REGISTER_IDENTITY_12_256_3_3_336_232_NA -> "08bc36b05da033c929248d792a4931dc"
                 REGISTER_IDENTITY_1_160_3_4_576_200_NA -> "9960ebf7217bb5e16ab4c00316950fd2"
                 REGISTER_IDENTITY_24_256_3_4_336_232_NA -> "087818466bf2e66787d2fa9f85b3e1d7"
@@ -41,7 +38,6 @@ enum class RegisteredCircuitData(val value: String) {
                 REGISTER_IDENTITY_384 -> "fc9897bb18cfe4bd1d0e57b27985f02d"
                 REGISTER_IDENTITY_512 -> "b9130f5087ad5424b9d058c2ab3c469b"
                 REGISTER_IDENTITY_14_256_3_4_336_64_1_1480_5_296 -> ""
-                REGISTER_IDENTITY_11_256_3_3_576_240_1_864_5_264 -> ""
                 REGISTER_IDENTITY_15_512_3_3_336_248_NA -> ""
                 REGISTER_IDENTITY_20_160_3_3_736_200_NA -> ""
                 REGISTER_IDENTITY_20_256_3_5_336_72_NA -> ""
@@ -117,7 +113,11 @@ enum class RegisterNoirCircuitData(val value: String) {
 
     REGISTER_IDENTITY_3_160_3_4_576_216_1_1512_3_256("registerIdentity_3_160_3_4_576_216_1_1512_3_256"),
     REGISTER_IDENTITY_11_256_3_2_336_216_NA("registerIdentity_11_256_3_2_336_216_NA"),
-    REGISTER_IDENTITY_11_256_3_3_336_248_NA("registerIdentity_11_256_3_3_336_248_NA");
+    REGISTER_IDENTITY_11_256_3_3_336_248_NA("registerIdentity_11_256_3_3_336_248_NA"),
+
+    REGISTER_IDENTITY_11_256_3_3_576_240_1_864_5_264("registerIdentity_11_256_3_3_576_240_1_864_5_264"),
+    REGISTER_IDENTITY_11_256_3_3_576_248_1_1184_5_264("registerIdentity_11_256_3_3_576_248_1_1184_5_264"),
+    REGISTER_IDENTITY_11_256_3_4_584_248_1_1496_4_256("registerIdentity_11_256_3_4_584_248_1_1496_4_256");
 
 
     companion object {
