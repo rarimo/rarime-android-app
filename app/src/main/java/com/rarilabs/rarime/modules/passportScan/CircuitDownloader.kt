@@ -87,8 +87,6 @@ class CircuitDownloader(private val context: Context) {
             //RegisteredCircuitData.REGISTER_IDENTITY_2_256_3_6_576_248_1_2432_3_256 -> BaseConfig.registerIdentity_2_256_3_6_576_248_1_2432_3_256
             //RegisteredCircuitData.REGISTER_IDENTITY_1_256_3_4_600_248_1_1496_3_256 -> BaseConfig.registerIdentity_1_256_3_4_600_248_1_1496_3_256
             RegisteredCircuitData.REGISTER_IDENTITY_1_160_3_4_576_200_NA -> BaseConfig.registerIdentity_1_160_3_4_576_200_NA
-            //RegisteredCircuitData.REGISTER_IDENTITY_21_256_3_3_336_232_NA -> BaseConfig.registerIdentity_21_256_3_3_336_232_NA
-            RegisteredCircuitData.REGISTER_IDENTITY_24_256_3_4_336_232_NA -> BaseConfig.registerIdentity_24_256_3_4_336_232_NA
             //RegisteredCircuitData.REGISTER_IDENTITY_20_256_3_3_336_224_NA -> BaseConfig.registerIdentity_20_256_3_3_336_224_NA
             //RegisteredCircuitData.REGISTER_IDENTITY_10_256_3_3_576_248_1_1184_5_264 -> BaseConfig.registerIdentity_10_256_3_3_576_248_1_1184_5_264
             RegisteredCircuitData.REGISTER_IDENTITY_11_256_3_5_576_248_1_1808_4_256 -> BaseConfig.registerIdentity_11_256_3_5_576_248_1_1808_4_256
@@ -102,7 +100,6 @@ class CircuitDownloader(private val context: Context) {
             RegisteredCircuitData.REGISTER_IDENTITY_14_256_3_4_336_64_1_1480_5_296 -> BaseConfig.registerIdentity_14_256_3_4_336_64_1_1480_5_296
             RegisteredCircuitData.REGISTER_IDENTITY_20_160_3_3_736_200_NA -> BaseConfig.registerIdentity_20_160_3_3_736_200_NA
             RegisteredCircuitData.REGISTER_IDENTITY_20_256_3_5_336_72_NA -> BaseConfig.registerIdentity_20_256_3_5_336_72_NA
-            //RegisteredCircuitData.REGISTER_IDENTITY_21_256_3_5_576_232_NA -> BaseConfig.registerIdentity_21_256_3_5_576_232_NA
             RegisteredCircuitData.REGISTER_IDENTITY_4_160_3_3_336_216_1_1296_3_256 -> BaseConfig.registerIdentity_4_160_3_3_336_216_1_1296_3_256
             RegisteredCircuitData.REGISTER_IDENTITY_1_256_3_6_336_560_1_2744_4_256 -> BaseConfig.registerIdentity_1_256_3_6_336_560_1_2744_4_256
         }

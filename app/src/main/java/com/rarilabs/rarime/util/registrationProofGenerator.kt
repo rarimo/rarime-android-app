@@ -109,18 +109,6 @@ suspend fun generateRegistrationProofByCircuitType(
 //                    ZkpUtil::registerIdentity2125633336232NA
 //                )
 //            }
-
-            RegisteredCircuitData.REGISTER_IDENTITY_24_256_3_4_336_232_NA -> {
-                zkp.generateRegisterZKP(
-                    filePaths!!.zkey,
-                    filePaths.zkeyLen,
-                    filePaths.dat,
-                    filePaths.datLen,
-                    inputs,
-                    ZkpUtil::registerIdentity2425634336232NA
-                )
-            }
-
 //            RegisteredCircuitData.REGISTER_IDENTITY_20_256_3_3_336_224_NA -> {
 //                zkp.generateRegisterZKP(
 //                    filePaths!!.zkey,
