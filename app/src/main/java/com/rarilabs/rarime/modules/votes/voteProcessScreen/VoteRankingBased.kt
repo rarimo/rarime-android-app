@@ -21,7 +21,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,16 +46,28 @@ import com.rarilabs.rarime.ui.base.BaseIconButton
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
+import com.rarilabs.rarime.ui.components.SecondaryButton
 import com.rarilabs.rarime.ui.components.VerticalDivider
 import com.rarilabs.rarime.ui.theme.RarimeTheme
+
+private enum class RankingBaseVoteState {
+    RANKING_VOTE,
+    PREVIEW_RESPONSE
+}
+
+data class VariantItem(val origIndex: Int, val text: String)
 
 @Composable
 fun VoteRankingBasedScreen(
     modifier: Modifier = Modifier,
     selectedPoll: Poll,
     onBackClick: () -> Unit,
-    onVote: (List<PollResult>) -> Unit
+    onClick: (List<PollResult>) -> Unit
 ) {
+
+    var currentState by remember { mutableStateOf(RankingBaseVoteState.RANKING_VOTE) }
+    val currentRanking = remember { mutableStateListOf<PollResult>() }
+
     Column(
         modifier = Modifier
             .background(RarimeTheme.colors.backgroundPrimary)
@@ -80,11 +91,27 @@ fun VoteRankingBasedScreen(
             )
         }
 
-        VoteRankingCard(
-            voteOption = selectedPoll.questionList[0],
-            onClick = onVote
-        )
+        when (currentState) {
+            RankingBaseVoteState.RANKING_VOTE -> {
+                VoteRankingCard(
+                    voteOption = selectedPoll.questionList[0],
+                    onClick = { resultList ->
+                        currentRanking.clear()
+                        currentRanking.addAll(resultList)
+                        currentState = RankingBaseVoteState.PREVIEW_RESPONSE
+                    }
+                )
+            }
 
+            RankingBaseVoteState.PREVIEW_RESPONSE -> {
+                PreviewRankingPollCard(
+                    voteOption = selectedPoll.questionList[0],
+                    ranking = currentRanking.toList(),
+                    onEdit = { currentState = RankingBaseVoteState.RANKING_VOTE },
+                    onSubmit = { onClick.invoke(currentRanking.toList()) }
+                )
+            }
+        }
     }
 }
 
@@ -93,8 +120,8 @@ fun VoteRankingCard(
     modifier: Modifier = Modifier,
     voteOption: Question,
     onClick: (List<PollResult>) -> Unit,
+
 ) {
-    data class VariantItem(val origIndex: Int, val text: String)
 
     val items = remember {
         mutableStateListOf<VariantItem>().apply {
@@ -144,30 +171,31 @@ fun VoteRankingCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(12.dp))
+                            .zIndex(if (isDragging) 100f else 0f)
                             .graphicsLayer {
                                 translationY = translation
-                                scaleX = if (isDragging) 1f else 0.95f
-                                scaleY = if (isDragging) 1f else 0.95f
+                                scaleX = if (isDragging) 1f else 0.98f
+                                scaleY = if (isDragging) 1f else 0.98f
                             }
                             .background(
                                 RarimeTheme.colors.componentPrimary,
                                 RoundedCornerShape(12.dp)
                             )
-                            .border(1.dp, RarimeTheme.colors.textPrimary, RoundedCornerShape(12.dp))
+                            .border(
+                                1.dp,
+                                color = if (isDragging) RarimeTheme.colors.textPrimary
+                                else RarimeTheme.colors.textSecondary,
+                                RoundedCornerShape(12.dp)
+                            )
                             .pointerInput(Unit) {
                                 detectDragGestures(
                                     onDragStart = { draggingIndex = index },
                                     onDrag = { change: PointerInputChange, dragAmount ->
-
                                         change.consume()
 
                                         dragOffsetY += dragAmount.y
-
                                         val from = draggingIndex ?: return@detectDragGestures
-
-
                                         val offsetPositions = (dragOffsetY / itemHeightPx).toInt()
-
                                         if (offsetPositions != 0) {
                                             val to = (from + offsetPositions).coerceIn(
                                                 0,
@@ -198,9 +226,10 @@ fun VoteRankingCard(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Icon(
-                                painter = painterResource( R.drawable.ic_expand_vertical_line),
+                                painter = painterResource(R.drawable.ic_expand_vertical_line),
                                 contentDescription = "",
-                                tint = RarimeTheme.colors.textPrimary
+                                tint = RarimeTheme.colors.textPrimary,
+                                modifier = Modifier.size(20.dp)
                             )
 
                             VerticalDivider(
@@ -232,17 +261,91 @@ fun VoteRankingCard(
                 text = "Next",
                 onClick = {
                     val rankingOrder: MutableList<PollResult> = mutableListOf()
-                    for(i in 0 .. voteOption.variants.size ){
-                       val item = PollResult(
-                           questionIndex = i,
-                           answerIndex = items.get(i).origIndex,
-                       )
+                    for (i in 0 until items.size) {
+                        val item = PollResult(
+                            questionIndex = voteOption.id.toInt(),
+                            answerIndex = items[i].origIndex,
+                        )
                         rankingOrder.add(item)
                     }
                     onClick.invoke(rankingOrder.toList())
                 },
                 size = ButtonSize.Large,
                 rightIcon = R.drawable.ic_arrow_right,
+            )
+        }
+    }
+}
+
+
+@Composable
+fun PreviewRankingPollCard(
+    voteOption: Question,
+    ranking: List<PollResult>,
+    onEdit: () -> Unit,
+    onSubmit: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .padding(24.dp)
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = voteOption.title,
+            style = RarimeTheme.typography.h4,
+            color = RarimeTheme.colors.textPrimary
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+        HorizontalDivider()
+        Spacer(modifier = Modifier.height(16.dp))
+
+
+        ranking.forEachIndexed { idx, pr ->
+            val answerText = voteOption.variants[pr.answerIndex!!]
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                Text(
+                    text = "${idx + 1}.",
+                    style = RarimeTheme.typography.overline2,
+                    color = RarimeTheme.colors.textSecondary,
+                    modifier = Modifier.size(28.dp)
+                )
+
+                VerticalDivider(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = answerText,
+                    style = RarimeTheme.typography.buttonMedium,
+                    color = RarimeTheme.colors.textPrimary
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            SecondaryButton(
+                modifier = Modifier.weight(1f),
+                text = "Edit",
+                onClick = onEdit,
+                size = ButtonSize.Large,
+                leftIcon = R.drawable.ic_arrow_left
+            )
+
+            PrimaryButton(
+                modifier = Modifier.weight(1f),
+                text = "Submit",
+                onClick = { onSubmit() },
+                size = ButtonSize.Large,
+                rightIcon = R.drawable.ic_arrow_right
             )
         }
     }
@@ -255,6 +358,6 @@ private fun VoteRankingBasedScreenPreview() {
         VoteRankingBasedScreen(
             selectedPoll = MOCKED_RANKING_BASED_VOTE_ITEM,
             onBackClick = {},
-            onVote = {})
+            onClick = {})
     }
 }

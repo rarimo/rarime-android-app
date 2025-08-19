@@ -138,7 +138,7 @@ fun VotingAppSheet(
                     onBackClick = {
                         currentState = VoteAppSheetState.INFO_VOTE
                     },
-                    onVote = {
+                    onClick = {
                         scope.launch {
                             currentState = VoteAppSheetState.PROCESSING_VOTE
                             vote(it)
