@@ -25,6 +25,7 @@ private enum class VoteAppSheetState {
     LOADING_VOTE,
     INFO_VOTE,
     SELECT_OPTION_VOTE,
+    RANKING_BASED_VOTE,
     PROCESSING_VOTE,
     ERROR_VOTE,
     FINISH_VOTE
@@ -106,7 +107,9 @@ fun VotingAppSheet(
                         voteSheetState.hide()
                         viewModel.setSelectedPoll(null)
                     },
-                    onClick = { currentState = VoteAppSheetState.SELECT_OPTION_VOTE },
+                    onClick = {
+                        currentState = VoteAppSheetState.SELECT_OPTION_VOTE
+                    },//TODO Add conditions to move ranking based voting
                     checkIsVoted = viewModel.checkIsVoted,
                     colorMode = currentSchema
                 )
@@ -127,6 +130,8 @@ fun VotingAppSheet(
                     }
                 )
             }
+
+            VoteAppSheetState.RANKING_BASED_VOTE -> TODO()
 
             VoteAppSheetState.PROCESSING_VOTE -> {
                 SendingVoteScreen()
