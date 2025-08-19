@@ -89,7 +89,6 @@ class CircuitDownloader(private val context: Context) {
             RegisteredCircuitData.REGISTER_IDENTITY_1_160_3_4_576_200_NA -> BaseConfig.registerIdentity_1_160_3_4_576_200_NA
             //RegisteredCircuitData.REGISTER_IDENTITY_20_256_3_3_336_224_NA -> BaseConfig.registerIdentity_20_256_3_3_336_224_NA
             //RegisteredCircuitData.REGISTER_IDENTITY_10_256_3_3_576_248_1_1184_5_264 -> BaseConfig.registerIdentity_10_256_3_3_576_248_1_1184_5_264
-            RegisteredCircuitData.REGISTER_IDENTITY_11_256_3_5_576_248_1_1808_4_256 -> BaseConfig.registerIdentity_11_256_3_5_576_248_1_1808_4_256
             //RegisteredCircuitData.REGISTER_IDENTITY_21_256_3_3_576_232_NA -> BaseConfig.registerIdentity_21_256_3_3_576_232_NA
             RegisteredCircuitData.REGISTER_IDENTITY_160 -> BaseConfig.registerIdentityLight160
             RegisteredCircuitData.REGISTER_IDENTITY_224 -> BaseConfig.registerIdentityLight224

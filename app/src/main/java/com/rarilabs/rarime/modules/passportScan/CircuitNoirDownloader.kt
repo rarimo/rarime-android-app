@@ -134,6 +134,8 @@ class CircuitNoirDownloader(private val context: Context) {
             RegisterNoirCircuitData.REGISTER_IDENTITY_21_256_3_3_336_232_NA -> BaseConfig.registerIdentity_21_256_3_3_336_232_NA
             RegisterNoirCircuitData.REGISTER_IDENTITY_21_256_3_5_576_232_NA -> BaseConfig.registerIdentity_21_256_3_5_576_232_NA
             RegisterNoirCircuitData.REGISTER_IDENTITY_24_256_3_4_336_232_NA -> BaseConfig.registerIdentity_24_256_3_4_336_232_NA
+
+            RegisterNoirCircuitData.REGISTER_IDENTITY_11_256_3_5_576_248_1_1808_4_256 -> BaseConfig.registerIdentity_11_256_3_5_576_248_1_1808_4_256
         }
     }
 
