@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +33,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -55,15 +57,6 @@ fun VoteRankingBasedScreen(
     onBackClick: () -> Unit,
     onVote: (List<PollResult>) -> Unit
 ) {
-
-    val selectedAnswers: MutableList<PollResult> = remember {
-        mutableStateListOf()
-    }
-
-    var passedCount by remember {
-        mutableIntStateOf(0)
-    }
-
     Column(
         modifier = Modifier
             .background(RarimeTheme.colors.backgroundPrimary)
@@ -78,7 +71,6 @@ fun VoteRankingBasedScreen(
         ) {
             Text("Ranking based voting")
             BaseIconButton(
-                modifier = Modifier.zIndex(2f),
                 onClick = { onBackClick.invoke() },
                 icon = R.drawable.ic_close,
                 colors = ButtonDefaults.buttonColors(
@@ -89,23 +81,9 @@ fun VoteRankingBasedScreen(
         }
 
         VoteRankingCard(
-            voteOption = selectedPoll.questionList[passedCount],
-            isLastOption = passedCount + 1 == selectedPoll.questionList.size
-        ) { rankingOrder ->
-            val topChoiceIndex = rankingOrder.firstOrNull() ?: 0
-            val pr = PollResult(
-                questionIndex = selectedPoll.questionList[passedCount].id.toInt(),
-                answerIndex = topChoiceIndex
-            )
-            selectedAnswers.add(pr)
-
-            val currentQuestion = passedCount + 1
-            if (currentQuestion >= selectedPoll.questionList.size) {
-                onVote(selectedAnswers.toList())
-            } else {
-                passedCount++
-            }
-        }
+            voteOption = selectedPoll.questionList[0],
+            onClick = onVote
+        )
 
     }
 }
@@ -113,9 +91,8 @@ fun VoteRankingBasedScreen(
 @Composable
 fun VoteRankingCard(
     modifier: Modifier = Modifier,
-    isLastOption: Boolean,
     voteOption: Question,
-    onClick: (List<Int>) -> Unit,
+    onClick: (List<PollResult>) -> Unit,
 ) {
     data class VariantItem(val origIndex: Int, val text: String)
 
@@ -169,15 +146,14 @@ fun VoteRankingCard(
                             .clip(RoundedCornerShape(12.dp))
                             .graphicsLayer {
                                 translationY = translation
-                                shadowElevation = if (isDragging) 8f else 0f
-                                scaleX = if (isDragging) 1.02f else 1f
-                                scaleY = if (isDragging) 1.02f else 1f
+                                scaleX = if (isDragging) 1f else 0.95f
+                                scaleY = if (isDragging) 1f else 0.95f
                             }
                             .background(
                                 RarimeTheme.colors.componentPrimary,
                                 RoundedCornerShape(12.dp)
                             )
-                            .border(1.dp, RarimeTheme.colors.primaryMain, RoundedCornerShape(12.dp))
+                            .border(1.dp, RarimeTheme.colors.textPrimary, RoundedCornerShape(12.dp))
                             .pointerInput(Unit) {
                                 detectDragGestures(
                                     onDragStart = { draggingIndex = index },
@@ -221,11 +197,10 @@ fun VoteRankingCard(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(
-                                text = "${index + 1}.",
-                                style = RarimeTheme.typography.overline2,
-                                color = RarimeTheme.colors.textSecondary,
-                                modifier = Modifier.size(28.dp)
+                            Icon(
+                                painter = painterResource( R.drawable.ic_expand_vertical_line),
+                                contentDescription = "",
+                                tint = RarimeTheme.colors.textPrimary
                             )
 
                             VerticalDivider(
@@ -254,14 +229,20 @@ fun VoteRankingCard(
         ) {
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
-                text = if (isLastOption) "Confirm" else "Next",
+                text = "Next",
                 onClick = {
-                    val rankingOrder: List<Int> = items.map { it.origIndex }
-                    onClick.invoke(rankingOrder)
+                    val rankingOrder: MutableList<PollResult> = mutableListOf()
+                    for(i in 0 .. voteOption.variants.size ){
+                       val item = PollResult(
+                           questionIndex = i,
+                           answerIndex = items.get(i).origIndex,
+                       )
+                        rankingOrder.add(item)
+                    }
+                    onClick.invoke(rankingOrder.toList())
                 },
                 size = ButtonSize.Large,
-                rightIcon = if (isLastOption) null else R.drawable.ic_arrow_right,
-                enabled = items.isNotEmpty()
+                rightIcon = R.drawable.ic_arrow_right,
             )
         }
     }

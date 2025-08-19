@@ -131,7 +131,21 @@ fun VotingAppSheet(
                 )
             }
 
-            VoteAppSheetState.RANKING_BASED_VOTE -> TODO()
+            VoteAppSheetState.RANKING_BASED_VOTE -> {
+                VoteRankingBasedScreen(
+                    selectedPoll = selectedPoll!!.poll,
+
+                    onBackClick = {
+                        currentState = VoteAppSheetState.INFO_VOTE
+                    },
+                    onVote = {
+                        scope.launch {
+                            currentState = VoteAppSheetState.PROCESSING_VOTE
+                            vote(it)
+                        }
+                    }
+                )
+            }
 
             VoteAppSheetState.PROCESSING_VOTE -> {
                 SendingVoteScreen()
