@@ -21,6 +21,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +35,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -51,8 +53,7 @@ import com.rarilabs.rarime.ui.components.VerticalDivider
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 
 private enum class RankingBaseVoteState {
-    RANKING_VOTE,
-    PREVIEW_RESPONSE
+    RANKING_VOTE, PREVIEW_RESPONSE
 }
 
 data class VariantItem(val origIndex: Int, val text: String)
@@ -93,14 +94,16 @@ fun VoteRankingBasedScreen(
 
         when (currentState) {
             RankingBaseVoteState.RANKING_VOTE -> {
+                val question = selectedPoll.questionList[0]
+                val initialOrder = if (currentRanking.isNotEmpty()) {
+                    currentRanking.map { it.answerIndex ?: 0 }
+                } else null
                 VoteRankingCard(
-                    voteOption = selectedPoll.questionList[0],
-                    onClick = { resultList ->
+                    voteOption = question, initialOrder = initialOrder, onClick = { resultList ->
                         currentRanking.clear()
                         currentRanking.addAll(resultList)
                         currentState = RankingBaseVoteState.PREVIEW_RESPONSE
-                    }
-                )
+                    })
             }
 
             RankingBaseVoteState.PREVIEW_RESPONSE -> {
@@ -108,8 +111,7 @@ fun VoteRankingBasedScreen(
                     voteOption = selectedPoll.questionList[0],
                     ranking = currentRanking.toList(),
                     onEdit = { currentState = RankingBaseVoteState.RANKING_VOTE },
-                    onSubmit = { onClick.invoke(currentRanking.toList()) }
-                )
+                    onSubmit = { onClick.invoke(currentRanking.toList()) })
             }
         }
     }
@@ -119,18 +121,29 @@ fun VoteRankingBasedScreen(
 fun VoteRankingCard(
     modifier: Modifier = Modifier,
     voteOption: Question,
+    initialOrder: List<Int>? = null,
     onClick: (List<PollResult>) -> Unit,
 
-) {
+    ) {
 
-    val items = remember {
+    val items = remember(initialOrder, voteOption) {
         mutableStateListOf<VariantItem>().apply {
-            addAll(voteOption.variants.mapIndexed { idx, s -> VariantItem(idx, s) })
+            if (!initialOrder.isNullOrEmpty()) {
+                addAll(initialOrder.mapNotNull { idx ->
+                    voteOption.variants.getOrNull(idx)?.let { VariantItem(idx, it) }
+                })
+                val present = initialOrder.toSet()
+                voteOption.variants.forEachIndexed { idx, s ->
+                    if (!present.contains(idx)) add(VariantItem(idx, s))
+                }
+            } else {
+                addAll(voteOption.variants.mapIndexed { idx, s -> VariantItem(idx, s) })
+            }
         }
     }
 
     var draggingIndex by remember { mutableStateOf<Int?>(null) }
-    var dragOffsetY by remember { mutableStateOf(0f) }
+    var dragOffsetY by remember { mutableFloatStateOf(0f) }
 
     val itemHeightDp = 64.dp
     val density = LocalDensity.current
@@ -159,9 +172,7 @@ fun VoteRankingCard(
             Spacer(modifier = Modifier.height(16.dp))
 
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 itemsIndexed(items, key = { _, v -> v.origIndex }) { index, item ->
                     val isDragging = draggingIndex == index
@@ -174,18 +185,15 @@ fun VoteRankingCard(
                             .zIndex(if (isDragging) 100f else 0f)
                             .graphicsLayer {
                                 translationY = translation
-                                scaleX = if (isDragging) 1f else 0.98f
-                                scaleY = if (isDragging) 1f else 0.98f
+                                scaleX = if (isDragging) 1f else 0.95f
+                                scaleY = if (isDragging) 1f else 0.95f
                             }
                             .background(
-                                RarimeTheme.colors.componentPrimary,
-                                RoundedCornerShape(12.dp)
+                                RarimeTheme.colors.componentPrimary, RoundedCornerShape(12.dp)
                             )
                             .border(
-                                1.dp,
-                                color = if (isDragging) RarimeTheme.colors.textPrimary
-                                else RarimeTheme.colors.textSecondary,
-                                RoundedCornerShape(12.dp)
+                                1.dp, color = if (isDragging) RarimeTheme.colors.textPrimary
+                                else RarimeTheme.colors.textSecondary, RoundedCornerShape(12.dp)
                             )
                             .pointerInput(Unit) {
                                 detectDragGestures(
@@ -198,8 +206,7 @@ fun VoteRankingCard(
                                         val offsetPositions = (dragOffsetY / itemHeightPx).toInt()
                                         if (offsetPositions != 0) {
                                             val to = (from + offsetPositions).coerceIn(
-                                                0,
-                                                items.lastIndex
+                                                0, items.lastIndex
                                             )
                                             if (to != from) {
                                                 val moved = items.removeAt(from)
@@ -216,11 +223,9 @@ fun VoteRankingCard(
                                     onDragCancel = {
                                         draggingIndex = null
                                         dragOffsetY = 0f
-                                    }
-                                )
+                                    })
                             }
-                            .padding(16.dp)
-                    ) {
+                            .padding(16.dp)) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
@@ -277,7 +282,6 @@ fun VoteRankingCard(
     }
 }
 
-
 @Composable
 fun PreviewRankingPollCard(
     voteOption: Question,
@@ -300,30 +304,44 @@ fun PreviewRankingPollCard(
         HorizontalDivider()
         Spacer(modifier = Modifier.height(16.dp))
 
-
         ranking.forEachIndexed { idx, pr ->
-            val answerText = voteOption.variants[pr.answerIndex!!]
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            ) {
-                Text(
-                    text = "${idx + 1}.",
-                    style = RarimeTheme.typography.overline2,
-                    color = RarimeTheme.colors.textSecondary,
-                    modifier = Modifier.size(28.dp)
-                )
+            val answerText = voteOption.variants.getOrNull(pr.answerIndex ?: -1) ?: "—"
 
-                VerticalDivider(modifier = Modifier.height(24.dp))
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .fillMaxWidth()
+                    .background(RarimeTheme.colors.componentPrimary)
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                Box(
+                    modifier = Modifier.size(28.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = (idx + 1).toString(),
+                        color = RarimeTheme.colors.textSecondary,
+                        style = RarimeTheme.typography.overline2,
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                VerticalDivider(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .height(20.dp)
+                )
 
                 Text(
                     text = answerText,
-                    style = RarimeTheme.typography.buttonMedium,
-                    color = RarimeTheme.colors.textPrimary
+                    color = RarimeTheme.colors.textPrimary,
+                    style = RarimeTheme.typography.buttonMedium
                 )
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -350,6 +368,7 @@ fun PreviewRankingPollCard(
         }
     }
 }
+
 
 @Preview
 @Composable

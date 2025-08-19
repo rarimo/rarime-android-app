@@ -2,9 +2,9 @@ package com.rarilabs.rarime.api.voting.models
 
 import java.math.BigInteger
 
-enum class PollType {
-    STUB_POLL
-}
+//enum class PollType {
+//    STUB_POLL
+//}
 
 enum class PollCriteriaStatus {
     NEED_VERIFICATION, VERIFIED,
@@ -123,7 +123,7 @@ val MOCKED_RANKING_BASED_VOTE_ITEM = Poll(
     questionList = listOf(
         Question(
             id = 1,
-            title = "What drink is tastier",
+            title = "What drink is tastier?",
             IsSkippable = false,
             variants = listOf("Cola", "Pepsi", "Sprite")
         ), Question(
