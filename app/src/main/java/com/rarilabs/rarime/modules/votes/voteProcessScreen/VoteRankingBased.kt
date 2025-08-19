@@ -81,7 +81,7 @@ fun VoteRankingBasedScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Ranking based voting")
+            Text(stringResource(R.string.ranking_based_voting_title))
             BaseIconButton(
                 onClick = { onBackClick.invoke() },
                 icon = R.drawable.ic_close,
@@ -263,7 +263,7 @@ fun VoteRankingCard(
         ) {
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Next",
+                text = stringResource(R.string.ranking_based_vote_submit_rating_btn_lbl),
                 onClick = {
                     val rankingOrder: MutableList<PollResult> = mutableListOf()
                     for (i in 0 until items.size) {
@@ -352,7 +352,7 @@ fun PreviewRankingPollCard(
         ) {
             SecondaryButton(
                 modifier = Modifier.weight(1f),
-                text = "Edit",
+                text = stringResource(R.string.preview_rating_edit_rating_btn_lbl),
                 onClick = onEdit,
                 size = ButtonSize.Large,
                 leftIcon = R.drawable.ic_arrow_left
@@ -360,7 +360,7 @@ fun PreviewRankingPollCard(
 
             PrimaryButton(
                 modifier = Modifier.weight(1f),
-                text = "Submit",
+                text = stringResource(R.string.preview_rating_submit_rating_btn_lbl),
                 onClick = { onSubmit() },
                 size = ButtonSize.Large,
                 rightIcon = R.drawable.ic_arrow_right
