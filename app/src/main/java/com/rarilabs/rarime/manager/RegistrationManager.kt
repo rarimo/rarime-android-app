@@ -175,16 +175,21 @@ class RegistrationManager @Inject constructor(
         eDocument: EDocument,
         zkProof: UniversalProof,
     ): Tuple2<StateKeeper.PassportInfo, StateKeeper.IdentityInfo>? {
-        val stateKeeperContract = rarimoContractManager.getStateKeeper()
+        try {
+            val stateKeeperContract = rarimoContractManager.getStateKeeper()
 
-        val passportInfoKeyBytes =
-            passportManager.getPassportInfoKeyBytes(eDocument, zkProof)
+            val passportInfoKeyBytes =
+                passportManager.getPassportInfoKeyBytes(eDocument, zkProof)
 
-        val passportInfo = withContext(Dispatchers.IO) {
-            stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()
+            val passportInfo = withContext(Dispatchers.IO) {
+                stateKeeperContract.getPassportInfo(passportInfoKeyBytes).send()
+            }
+
+            return passportInfo
+        } catch (e: Exception) {
+            ErrorHandler.logError("RegistrationManager", "Error getting passport info", e)
+            throw e
         }
-
-        return passportInfo
     }
 
     suspend fun lightRegisterRelayer(zkProof: GrothProof, verifySodResponse: VerifySodResponse) {
