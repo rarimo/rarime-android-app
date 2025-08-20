@@ -167,6 +167,7 @@ interface IConfig {
     val registerIdentity_24_256_3_4_336_232_NA: String
 
     val registerIdentity_11_256_3_5_576_248_1_1808_4_256: String
+
 }
 
 /* TESTNET */
@@ -422,6 +423,7 @@ object TestNetConfig : IConfig {
 
     override val registerIdentity_11_256_3_5_576_248_1_1808_4_256: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits-noir/v0.1.29/registerIdentity_11_256_3_5_576_248_1_1808_4_256.json"
+
 
 }
 
