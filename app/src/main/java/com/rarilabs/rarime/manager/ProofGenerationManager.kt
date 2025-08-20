@@ -6,6 +6,7 @@ import CircuitAlgorithmType
 import CircuitPassportHashType
 import RegisterIdentityCircuitType
 import android.content.Context
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.noirandroid.lib.Circuit
@@ -172,53 +173,58 @@ class ProofGenerationManager @Inject constructor(
             }
 
             registrationManager.setRegistrationProof(proof)
-
-            // Get passport info
-            val passportInfo = try {
-                registrationManager.getPassportInfo(eDocument, proof)
-            } catch (e: Exception) {
-                ErrorHandler.logError(TAG, "Error getting passport info", e)
-                null
-            }
-
-            val ZERO_BYTES32 = ByteArray(32) { 0 }
-            val currentIdentityKey = identityManager.getProfiler().publicKeyHash
             _state.value = PassportProofState.CREATING_CONFIDENTIAL_PROFILE
 
-            passportInfo?.let {
-                if (it.component1()?.activeIdentity?.toHexString() == currentIdentityKey.toHexString()) {
-                    ErrorHandler.logDebug(TAG, "Passport is already registered with this PK")
-                } else if (passportInfo.component1().activeIdentity.contentEquals(ZERO_BYTES32)) {
-                    registrationManager.register(
-                        proof,
-                        eDocument,
-                        registrationManager.masterCertProof.value!!,
-                        false,
-                        circuitName
-                    )
-                    _state.value = PassportProofState.FINALIZING
-                } else {
-                    if (!eDocument.dg15.isNullOrEmpty()) {
-                        return registerByDocument(eDocument.copy(dg15 = ""))
-                    }
-                    registrationManager.setRegistrationProof(proof)
-                    throw PassportAlreadyRegisteredByOtherPK()
+            var doc = eDocument.copy()
+            val isDocumentRegistered = try {
+                isDocumentRegistered(eDocument, proof)
+            } catch (e: Exception) {
+                if (e is PassportAlreadyRegisteredByOtherPK && !eDocument.dg15.isNullOrEmpty()) {
+                    Log.d("Second without DG15", "without dg 15")
+                    doc = eDocument.copy(dg15 = "")
+                    isDocumentRegistered(doc, proof)
                 }
-            } ?: run {
-                registrationManager.register(
-                    proof,
-                    eDocument,
-                    registrationManager.masterCertProof.value!!,
-                    false,
-                    circuitName
-                )
-                _state.value = PassportProofState.FINALIZING
+
+                throw e
             }
+
+            if (!isDocumentRegistered) {
+                Log.d("Before registration", doc.dg15.toString())
+                registrationManager.register(
+                    proof, doc, registrationManager.masterCertProof.value!!, false, circuitName
+                )
+            }
+
+            _state.value = PassportProofState.FINALIZING
             return proof
         } catch (e: Exception) {
             ErrorHandler.logError(TAG, "Error in registerByDocument", e)
             throw e
         }
+    }
+
+    private suspend fun isDocumentRegistered(eDocument: EDocument, proof: UniversalProof): Boolean {
+        Log.d("DG15", eDocument.dg15.toString())
+        val passportInfo = registrationManager.getPassportInfo(eDocument, proof)
+        if (passportInfo == null) {
+            return false
+        }
+        val passportInfoIdentity = passportInfo.component1()?.activeIdentity
+
+        val ZERO_BYTES32 = ByteArray(32) { 0 }
+
+        if (passportInfoIdentity.contentEquals(ZERO_BYTES32)) {
+            return false
+        }
+
+        val currentIdentityKey = identityManager.getProfiler().publicKeyHash
+
+        if (passportInfoIdentity?.toHexString() == currentIdentityKey.toHexString()) {
+            ErrorHandler.logDebug(TAG, "Passport is already registered with this PK")
+            return true
+        }
+
+        throw PassportAlreadyRegisteredByOtherPK()
     }
 
     private suspend fun lightRegistration(eDocument: EDocument): UniversalProof.Light {
