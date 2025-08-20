@@ -266,4 +266,6 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.0.0-rc01")
 
     implementation("nl.dionsegijn:konfetti-compose:2.0.5")
+
+    implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
 }
