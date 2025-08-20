@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.modules.votes.voteProcessScreen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -268,11 +269,13 @@ fun VoteRankingCard(
                     val rankingOrder: MutableList<PollResult> = mutableListOf()
                     for (i in 0 until items.size) {
                         val item = PollResult(
-                            questionIndex = voteOption.id.toInt(),
+                            questionIndex = voteOption.id.toInt() - 1,
                             answerIndex = items[i].origIndex,
                         )
+
                         rankingOrder.add(item)
                     }
+                    Log.d("rankingOrder", rankingOrder.toString())
                     onClick.invoke(rankingOrder.toList())
                 },
                 size = ButtonSize.Large,

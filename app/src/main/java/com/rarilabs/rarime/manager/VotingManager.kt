@@ -407,7 +407,8 @@ class VotingManager @Inject constructor(
                         proposalSMT = proposalSMT,
                         proposalStatus = proposalStatus,
                         proposalResults = proposalInfo.VotingResults,
-                        imageUrl = rawData.imageCid
+                        imageUrl = rawData.imageCid,
+                        isRankingBased = rawData.rankingBased
                     )
                 }
             }

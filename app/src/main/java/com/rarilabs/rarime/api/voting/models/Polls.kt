@@ -44,7 +44,8 @@ data class Poll(
     val proposalSMT: String,
     val proposalResults: List<List<Long>>,
     val proposalStatus: ProposalStatus,
-    val imageUrl: String?
+    val imageUrl: String?,
+    val isRankingBased: Boolean = false
 )
 
 data class Question(
@@ -146,5 +147,6 @@ val MOCKED_RANKING_BASED_VOTE_ITEM = Poll(
         listOf(5, 2, 4),
         listOf(1, 2, 5),
         listOf(8, 2, 5)
-    )
+    ),
+    isRankingBased = true
 )

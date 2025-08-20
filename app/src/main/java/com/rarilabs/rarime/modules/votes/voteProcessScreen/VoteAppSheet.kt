@@ -108,8 +108,11 @@ fun VotingAppSheet(
                         viewModel.setSelectedPoll(null)
                     },
                     onClick = {
-                        currentState = VoteAppSheetState.SELECT_OPTION_VOTE
-                    },//TODO Add conditions to move ranking based voting
+                        currentState = if (selectedPoll.poll.isRankingBased)
+                            VoteAppSheetState.RANKING_BASED_VOTE
+                        else
+                            VoteAppSheetState.SELECT_OPTION_VOTE
+                    },
                     checkIsVoted = viewModel.checkIsVoted,
                     colorMode = currentSchema
                 )
