@@ -1,6 +1,5 @@
 package com.rarilabs.rarime.modules.votes.voteProcessScreen
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -145,7 +144,7 @@ fun VoteRankingCard(
 
     Column(
         modifier = Modifier
-            .padding(24.dp)
+            .padding(vertical = 24.dp, horizontal = 20.dp)
             .then(modifier)
     ) {
         Text(
@@ -166,7 +165,7 @@ fun VoteRankingCard(
 
         LazyColumn(
             state = state.listState,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .reorderable(state)
@@ -178,6 +177,9 @@ fun VoteRankingCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(12.dp))
+                            .background(
+                                RarimeTheme.colors.baseWhite, RoundedCornerShape(12.dp)
+                            )
                             .background(
                                 RarimeTheme.colors.componentPrimary, RoundedCornerShape(12.dp)
                             )
@@ -222,7 +224,6 @@ fun VoteRankingCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp, bottom = 24.dp),
         ) {
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
@@ -234,7 +235,6 @@ fun VoteRankingCard(
                             answerIndex = it.origIndex,
                         )
                     }
-                    Log.d("rankingOrder", rankingOrder.toString())
                     onClick(rankingOrder)
                 },
                 size = ButtonSize.Large,
@@ -264,7 +264,7 @@ fun PreviewRankingPollCard(
         Spacer(modifier = Modifier.height(16.dp))
 
         ranking.forEachIndexed { idx, pr ->
-            val answerText = voteOption.variants.getOrNull(pr.answerIndex ?: -1) ?: "—"
+            val answerText = pr.answerIndex?.let { voteOption.variants.getOrNull(it) } ?: "—"
 
             Row(
                 modifier = Modifier
