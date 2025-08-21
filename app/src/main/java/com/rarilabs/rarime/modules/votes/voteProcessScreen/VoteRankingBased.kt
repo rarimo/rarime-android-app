@@ -178,7 +178,7 @@ fun VoteRankingCard(
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(12.dp))
                             .background(
-                                RarimeTheme.colors.baseWhite, RoundedCornerShape(12.dp)
+                                RarimeTheme.colors.backgroundPrimary, RoundedCornerShape(12.dp)
                             )
                             .background(
                                 RarimeTheme.colors.componentPrimary, RoundedCornerShape(12.dp)
