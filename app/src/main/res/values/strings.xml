@@ -499,6 +499,11 @@
     <string name="querry_prooof_generate_proof_btn_label">Generate Proof</string>
     <string name="querry_proof_cancel_btn_label">Cancel</string>
     <string name="label_expiration_criteria">Valid until</string>
+    <string name="ranking_based_tip">Rank these options by priority. Drag and drop to sort them from your most preferred to least preferred choice.</string>
+    <string name="ranking_based_vote_submit_rating_btn_lbl">Next</string>
+    <string name="preview_rating_edit_rating_btn_lbl">Edit</string>
+    <string name="preview_rating_submit_rating_btn_lbl">Submit</string>
+    <string name="ranking_based_voting_title">Ranking based voting</string>
 
 
 </resources>

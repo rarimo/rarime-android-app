@@ -18,12 +18,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.voting.models.MOCKED_POLL_ITEM
+import com.rarilabs.rarime.api.voting.models.MOCKED_RANKING_BASED_VOTE_ITEM
 import com.rarilabs.rarime.api.voting.models.Poll
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppSkeleton
@@ -44,6 +47,10 @@ import com.rarilabs.rarime.ui.theme.AppTheme
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.DateUtil.convertToDate
 
+private enum class PollType {
+    CHOICE_BASED,
+    RANKING_BASED,
+}
 
 @Composable
 fun VoteResultsCard(
@@ -51,6 +58,7 @@ fun VoteResultsCard(
 ) {
 
     val pageState = rememberPagerState { voteData.proposalResults.size }
+    val pollType = if (voteData.isRankingBased) PollType.RANKING_BASED else PollType.CHOICE_BASED
 
     Card(
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
@@ -145,35 +153,72 @@ fun VoteResultsCard(
                 )
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    when (pollType) {
+                        PollType.CHOICE_BASED -> {
+                            HorizontalPager(state = pageState, pageSpacing = 12.dp) {
+                                Column {
+                                    Text(
+                                        text = voteData.questionList[pageState.currentPage].title,
+                                        style = RarimeTheme.typography.body4,
+                                        color = RarimeTheme.colors.textPrimary,
+                                        modifier = Modifier.padding(vertical = 16.dp)
 
-                    HorizontalPager(state = pageState, pageSpacing = 12.dp) {
-                        Column {
-                            Text(
-                                text = voteData.questionList[pageState.currentPage].title,
-                                style = RarimeTheme.typography.body4,
-                                color = RarimeTheme.colors.textPrimary,
-                                modifier = Modifier.padding(vertical = 16.dp)
-
-                            )
-                            VoteResultsCardStatistics(
-                                variants = voteData.questionList[pageState.currentPage].variants.mapIndexed { index, it ->
-                                    mapOf(
-                                        it to voteData.proposalResults[pageState.currentPage][index].toDouble()
                                     )
-                                })
+                                    OptionBasedVoteResultsCardStatistics(
+                                        variants = voteData.questionList[pageState.currentPage].variants.mapIndexed { index, it ->
+                                            mapOf(
+                                                it to voteData.proposalResults[pageState.currentPage][index].toDouble()
+                                            )
+                                        })
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            HorizontalPageIndicator(
+                                numberOfPages = pageState.pageCount,
+                                selectedPage = pageState.currentPage,
+                                selectedColor = RarimeTheme.colors.primaryMain,
+                                defaultRadius = 6.dp,
+                                selectedLength = 16.dp,
+                                space = 8.dp
+                            )
+                        }
+
+                        PollType.RANKING_BASED -> {
+
+                            Column {
+                                Text(
+                                    text = voteData.questionList[0].title,
+                                    style = RarimeTheme.typography.body4,
+                                    color = RarimeTheme.colors.textPrimary,
+                                    modifier = Modifier.padding(vertical = 16.dp)
+
+                                )
+                                RankingBasedVoteResultsCardStatistics(
+                                    variants = voteData.questionList.mapIndexed { questionIndex, question ->
+                                        question.variants.mapIndexed { variantIndex, variant ->
+                                            mapOf(variant to voteData.proposalResults[questionIndex][variantIndex].toDouble())
+                                        }
+                                    },
+                                    pageState = pageState
+                                )
+
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            HorizontalPageIndicator(
+                                numberOfPages = pageState.pageCount,
+                                selectedPage = pageState.currentPage,
+                                selectedColor = RarimeTheme.colors.primaryMain,
+                                defaultRadius = 6.dp,
+                                selectedLength = 16.dp,
+                                space = 8.dp
+                            )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    HorizontalPageIndicator(
-                        numberOfPages = pageState.pageCount,
-                        selectedPage = pageState.currentPage,
-                        selectedColor = RarimeTheme.colors.primaryMain,
-                        defaultRadius = 6.dp,
-                        selectedLength = 16.dp,
-                        space = 8.dp
-                    )
                 }
             }
         }
@@ -181,7 +226,89 @@ fun VoteResultsCard(
 }
 
 @Composable
-fun VoteResultsCardStatistics(
+fun RankingBasedVoteResultsCardStatistics(
+    variants: List<List<Map<String, Double>>>,
+    pageState: PagerState
+) {
+    val candidateScores = remember(variants) {
+        val scores = mutableMapOf<String, Double>()
+        val totalRanks = variants.size
+
+        variants.forEachIndexed { rankIndex, rankVotes ->
+            val scoreForRank = (totalRanks - rankIndex).toDouble()
+
+            rankVotes.forEach { voteMap ->
+                val (candidateName, count) = voteMap.entries.first()
+                val candidateScore = count * scoreForRank
+
+                scores[candidateName] = scores.getOrDefault(candidateName, 0.0) + candidateScore
+            }
+        }
+        scores
+    }
+
+    val sortedResults = candidateScores.entries.sortedByDescending { it.value }
+    val totalScore = sortedResults.sumOf { it.value }
+
+    HorizontalPager(
+        state = pageState,
+        pageSpacing = 12.dp,
+    ) { page ->
+        val currentResult = sortedResults[page]
+
+        Column(
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .border(1.dp, RarimeTheme.colors.componentPrimary, RoundedCornerShape(16.dp))
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+            ) {
+                val percentage = (currentResult.value / totalScore) * 100.0
+                val progressWidth = (percentage / 100f).toFloat()
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth(progressWidth)
+                        .background(RarimeTheme.colors.successLight)
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 8.dp, horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = currentResult.key,
+                        color = RarimeTheme.colors.textPrimary,
+                        style = RarimeTheme.typography.overline1
+                    )
+
+                    Column(
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        Text(
+                            text = "${percentage.toInt()}%",
+                            color = RarimeTheme.colors.textPrimary,
+                            style = RarimeTheme.typography.subtitle6
+                        )
+                        Text(
+                            text = currentResult.value.toInt().toString(),
+                            color = RarimeTheme.colors.textSecondary,
+                            style = RarimeTheme.typography.caption3
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun OptionBasedVoteResultsCardStatistics(
     variants: List<Map<String, Double>>,
 ) {
     val totalVotes = variants.sumOf { it.values.first() }
@@ -190,12 +317,6 @@ fun VoteResultsCardStatistics(
         val percentage = (amount.toFloat() / totalVotes.toFloat()) * 100.0
 
         return percentage
-    }
-
-    fun getIsLargestOption(amount: Number): Boolean {
-        val largestOption = variants.maxByOrNull { it.values.first() }
-
-        return largestOption?.values?.first() == amount
     }
 
     val largestOption = variants.maxBy { it.values.first() }
@@ -214,7 +335,6 @@ fun VoteResultsCardStatistics(
         ) {
 
             val percentage = getPercentageOfOverallVotes(largestOption.values.first())
-            val isWinner = getIsLargestOption(largestOption.values.first())
 
             val progressWidth = (percentage.toFloat() / 100f)
 
@@ -322,6 +442,7 @@ fun VotesLoadingSkeleton() {
                                 .width(30.dp)
                                 .clip(RoundedCornerShape(4.dp))
                                 .background(RarimeTheme.colors.componentDisabled)
+                                .padding(top = 4.dp)
                         )
                     }
                 }
@@ -402,7 +523,7 @@ fun VotesLoadingSkeleton() {
 @Preview(name = "Light Mode")
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_UNDEFINED)
 @Composable
-fun VoteResultsCardPreview() {
+fun VoteResultsChoseBasedCardPreview() {
     AppTheme {
         VoteResultsCard(
             voteData = MOCKED_POLL_ITEM
@@ -410,8 +531,20 @@ fun VoteResultsCardPreview() {
     }
 }
 
+@Preview(name = "Light Mode")
+@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_UNDEFINED)
+@Composable
+fun VoteResultsRankedBasedCardPreview() {
+    AppTheme {
+        VoteResultsCard(
+            voteData = MOCKED_RANKING_BASED_VOTE_ITEM
+        ) {}
+    }
+}
 
-@Preview
+
+@Preview(name = "Light Mode")
+@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_UNDEFINED)
 @Composable
 fun VotesLoadingSkeletonPreview() {
     VotesLoadingSkeleton()

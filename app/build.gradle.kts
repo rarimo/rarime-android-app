@@ -30,8 +30,8 @@ android {
         applicationId = "com.rarilabs.rarime"
         minSdk = 27
         targetSdk = 35
-        versionCode = 114
-        versionName = "2.3.7"
+        versionCode = 117
+        versionName = "2.3.7-internal-2"
 
         externalNativeBuild {
             cmake {
@@ -266,4 +266,6 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.0.0-rc01")
 
     implementation("nl.dionsegijn:konfetti-compose:2.0.5")
+
+    implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
 }

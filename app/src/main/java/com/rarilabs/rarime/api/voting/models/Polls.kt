@@ -2,10 +2,6 @@ package com.rarilabs.rarime.api.voting.models
 
 import java.math.BigInteger
 
-enum class PollType {
-    STUB_POLL
-}
-
 enum class PollCriteriaStatus {
     NEED_VERIFICATION, VERIFIED,
 }
@@ -44,7 +40,8 @@ data class Poll(
     val proposalSMT: String,
     val proposalResults: List<List<Long>>,
     val proposalStatus: ProposalStatus,
-    val imageUrl: String?
+    val imageUrl: String?,
+    val isRankingBased: Boolean = false
 )
 
 data class Question(
@@ -107,4 +104,45 @@ val MOCKED_POLL_ITEM = Poll(
         listOf(8, 2, 5),
         listOf(8, 2, 5)
     )
+)
+
+val MOCKED_RANKING_BASED_VOTE_ITEM = Poll(
+
+    id = 1,
+    title = "Mocked Ranking Based Poll",
+    description = "This is a mocked ranking based poll for testing purposes.",
+
+    reward = 0,
+
+    voteStartDate = 1723125259,
+    voteEndDate = 1630458000000,
+
+    questionList = listOf(
+        Question(
+            id = 1,
+            title = "What drink is tastier?",
+            IsSkippable = false,
+            variants = listOf("Cola", "Pepsi", "Sprite")
+        ), Question(
+            id = 2, title = "What drink is tastier",
+            IsSkippable = false,
+            variants = listOf("Cola", "Pepsi", "Sprite")
+        ), Question(
+            id = 3, title = "What drink is tastier",
+            IsSkippable = false,
+            variants = listOf("Cola", "Pepsi", "Sprite")
+        )
+    ),
+    eventId = BigInteger.ONE,
+    votingAddresses = listOf(),
+    votingData = listOf(),
+    proposalStatus = ProposalStatus.Started,
+    proposalSMT = "",
+    imageUrl = null,
+    proposalResults = listOf(
+        listOf(5, 2, 4),
+        listOf(1, 2, 5),
+        listOf(8, 2, 5)
+    ),
+    isRankingBased = true
 )

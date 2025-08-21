@@ -34,10 +34,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.ScreenInsets
+import com.rarilabs.rarime.modules.votes.OptionBasedVoteResultsCardStatistics
 import com.rarilabs.rarime.modules.votes.QuestionAnswerVariant
 import com.rarilabs.rarime.modules.votes.VoteData
 import com.rarilabs.rarime.modules.votes.VoteQuestion
-import com.rarilabs.rarime.modules.votes.VoteResultsCardStatistics
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
@@ -151,7 +151,7 @@ fun VoteProcessScreenContent(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     voteData.questions.forEachIndexed { _, question ->
-                        VoteResultsCardStatistics(
+                        OptionBasedVoteResultsCardStatistics(
                             variants = question.variants
                                 .sortedByDescending { it.votedCount }
                                 .map { option ->

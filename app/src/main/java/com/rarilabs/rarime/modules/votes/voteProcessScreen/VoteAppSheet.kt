@@ -25,6 +25,7 @@ private enum class VoteAppSheetState {
     LOADING_VOTE,
     INFO_VOTE,
     SELECT_OPTION_VOTE,
+    RANKING_BASED_VOTE,
     PROCESSING_VOTE,
     ERROR_VOTE,
     FINISH_VOTE
@@ -106,7 +107,12 @@ fun VotingAppSheet(
                         voteSheetState.hide()
                         viewModel.setSelectedPoll(null)
                     },
-                    onClick = { currentState = VoteAppSheetState.SELECT_OPTION_VOTE },
+                    onClick = {
+                        currentState = if (selectedPoll.poll.isRankingBased)
+                            VoteAppSheetState.RANKING_BASED_VOTE
+                        else
+                            VoteAppSheetState.SELECT_OPTION_VOTE
+                    },
                     checkIsVoted = viewModel.checkIsVoted,
                     colorMode = currentSchema
                 )
@@ -120,6 +126,22 @@ fun VotingAppSheet(
                         currentState = VoteAppSheetState.INFO_VOTE
                     },
                     onVote = {
+                        scope.launch {
+                            currentState = VoteAppSheetState.PROCESSING_VOTE
+                            vote(it)
+                        }
+                    }
+                )
+            }
+
+            VoteAppSheetState.RANKING_BASED_VOTE -> {
+                VoteRankingBasedScreen(
+                    selectedPoll = selectedPoll!!.poll,
+
+                    onBackClick = {
+                        currentState = VoteAppSheetState.INFO_VOTE
+                    },
+                    onClick = {
                         scope.launch {
                             currentState = VoteAppSheetState.PROCESSING_VOTE
                             vote(it)
