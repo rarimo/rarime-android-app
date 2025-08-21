@@ -319,12 +319,6 @@ fun OptionBasedVoteResultsCardStatistics(
         return percentage
     }
 
-    fun getIsLargestOption(amount: Number): Boolean {
-        val largestOption = variants.maxByOrNull { it.values.first() }
-
-        return largestOption?.values?.first() == amount
-    }
-
     val largestOption = variants.maxBy { it.values.first() }
 
 
@@ -341,7 +335,6 @@ fun OptionBasedVoteResultsCardStatistics(
         ) {
 
             val percentage = getPercentageOfOverallVotes(largestOption.values.first())
-            getIsLargestOption(largestOption.values.first())
 
             val progressWidth = (percentage.toFloat() / 100f)
 
