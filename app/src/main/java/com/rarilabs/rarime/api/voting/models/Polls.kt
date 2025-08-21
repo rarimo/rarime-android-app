@@ -2,10 +2,6 @@ package com.rarilabs.rarime.api.voting.models
 
 import java.math.BigInteger
 
-//enum class PollType {
-//    STUB_POLL
-//}
-
 enum class PollCriteriaStatus {
     NEED_VERIFICATION, VERIFIED,
 }

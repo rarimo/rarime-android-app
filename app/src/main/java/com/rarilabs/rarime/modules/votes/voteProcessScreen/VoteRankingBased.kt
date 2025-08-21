@@ -196,7 +196,7 @@ fun VoteRankingCard(
                                 .detectReorder(state)
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_expand_vertical_line),
+                                painter = painterResource(R.drawable.ic_draggable),
                                 contentDescription = "",
                                 tint = RarimeTheme.colors.textPrimary,
                                 modifier = Modifier.size(20.dp)
