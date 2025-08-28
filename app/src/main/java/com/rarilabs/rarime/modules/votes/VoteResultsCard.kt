@@ -296,7 +296,7 @@ fun RankingBasedVoteResultsCardStatistics(
                             style = RarimeTheme.typography.subtitle6
                         )
                         Text(
-                            text = currentResult.value.toInt().toString(),
+                            text = currentResult.value.toInt().toString() + " points",
                             color = RarimeTheme.colors.textSecondary,
                             style = RarimeTheme.typography.caption3
                         )
@@ -367,7 +367,7 @@ fun OptionBasedVoteResultsCardStatistics(
                         style = RarimeTheme.typography.subtitle6
                     )
                     Text(
-                        text = largestOption.values.first().toInt().toString(),
+                        text = largestOption.values.first().toInt().toString() + " votes",
                         color = RarimeTheme.colors.textSecondary,
                         style = RarimeTheme.typography.caption3
                     )

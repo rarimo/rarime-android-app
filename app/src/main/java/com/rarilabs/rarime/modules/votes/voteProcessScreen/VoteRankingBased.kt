@@ -5,8 +5,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -32,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.voting.models.MOCKED_RANKING_BASED_VOTE_ITEM
 import com.rarilabs.rarime.api.voting.models.Poll
@@ -142,32 +145,17 @@ fun VoteRankingCard(
             items.add(to.index, items.removeAt(from.index))
         })
 
-    Column(
+    Box(
         modifier = Modifier
             .padding(vertical = 24.dp, horizontal = 20.dp)
-            .then(modifier)
     ) {
-        Text(
-            voteOption.title,
-            style = RarimeTheme.typography.h4,
-            color = RarimeTheme.colors.textPrimary
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-        HorizontalDivider()
-        Spacer(modifier = Modifier.height(24.dp))
-        Text(
-            stringResource(R.string.ranking_based_tip),
-            style = RarimeTheme.typography.subtitle5,
-            color = RarimeTheme.colors.textPrimary
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         LazyColumn(
             state = state.listState,
+            contentPadding = PaddingValues(top = 150.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
+                .zIndex(4f)
                 .reorderable(state)
 
         ) {
@@ -218,28 +206,43 @@ fun VoteRankingCard(
                 }
             }
         }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            PrimaryButton(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(R.string.ranking_based_vote_submit_rating_btn_lbl),
-                onClick = {
-                    val rankingOrder: List<PollResult> = items.map {
-                        PollResult(
-                            questionIndex = voteOption.id.toInt() - 1,
-                            answerIndex = it.origIndex,
-                        )
-                    }
-                    onClick(rankingOrder)
-                },
-                size = ButtonSize.Large,
-                rightIcon = R.drawable.ic_arrow_right,
+        Column(modifier = Modifier) {
+            Text(
+                voteOption.title,
+                style = RarimeTheme.typography.h4,
+                color = RarimeTheme.colors.textPrimary
             )
+            Spacer(modifier = Modifier.height(24.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                stringResource(R.string.ranking_based_tip),
+                style = RarimeTheme.typography.subtitle5,
+                color = RarimeTheme.colors.textPrimary
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                PrimaryButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(R.string.ranking_based_vote_submit_rating_btn_lbl),
+                    onClick = {
+                        val rankingOrder: List<PollResult> = items.map {
+                            PollResult(
+                                questionIndex = voteOption.id.toInt() - 1,
+                                answerIndex = it.origIndex,
+                            )
+                        }
+                        onClick(rankingOrder)
+                    },
+                    size = ButtonSize.Large,
+                    rightIcon = R.drawable.ic_arrow_right,
+                )
+            }
         }
     }
 }
