@@ -88,7 +88,7 @@ fun IdentityCard(
     registrationStatus: IdentityCardBottomBarUiState,
     retryRegistration: () -> Unit
 ) {
-    val context = LocalContext.current
+    LocalContext.current
     val haptic = LocalHapticFeedback.current
 
     val settingsSheetState = rememberAppSheetState()
@@ -189,13 +189,19 @@ fun IdentityCard(
 
                 Text(
                     modifier = Modifier.padding(start = 24.dp),
-                    text = if (isInfoHidden) "•••••" else passport.personDetails!!.name!!,
+                    text = if (isInfoHidden) "•••••" else passport.personDetails!!.name!!.substringBefore(
+                        " ",
+                        passport.personDetails!!.name!!
+                    ),
                     style = RarimeTheme.typography.h2,
                     color = RarimeTheme.colors.textPrimary
                 )
                 Text(
                     modifier = Modifier.padding(start = 24.dp),
-                    text = if (isInfoHidden) "•••••" else passport.personDetails!!.surname!!,
+                    text = if (isInfoHidden) "•••••" else passport.personDetails!!.surname!!.substringBefore(
+                        " ",
+                        passport.personDetails!!.surname!!
+                    ),
                     style = RarimeTheme.typography.additional2,
                     color = RarimeTheme.colors.textPlaceholder
                 )
@@ -586,7 +592,6 @@ private fun IdentityCardPreview() {
 @Preview
 @Composable
 private fun SettingsPreview() {
-    var isIncognito by remember { mutableStateOf(false) }
     var look by remember { mutableStateOf(PassportCardLook.BLACK) }
     var identifier by remember {
         mutableStateOf(

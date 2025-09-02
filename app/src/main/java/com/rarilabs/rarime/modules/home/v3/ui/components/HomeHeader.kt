@@ -45,7 +45,7 @@ fun HomeHeader(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = name ?: stringResource(R.string.stranger),
+                text = name?.substringBefore(" ") ?: stringResource(R.string.stranger),
                 style = RarimeTheme.typography.subtitle4,
                 color = RarimeTheme.colors.textPrimary,
                 maxLines = 1,

@@ -47,7 +47,8 @@ data class ProposalMetadataOption(
 data class ProposalMetadata(
     val title: String,
     val description: String,
-    val acceptedOptions: List<ProposalMetadataOption>
+    val acceptedOptions: List<ProposalMetadataOption>,
+    val rankingBased: Boolean?
 )
 
 data class VoteSelections(

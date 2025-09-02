@@ -182,13 +182,13 @@ fun VoteProcessInfoScreen(
                 color = RarimeTheme.colors.textSecondary
             )
             Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = userInPoll.poll.questionList.size.toString() + " questions",
-                style = RarimeTheme.typography.body4,
-                color = RarimeTheme.colors.textSecondary
-            )
-
+            if (!userInPoll.poll.isRankingBased) {
+                Text(
+                    text = userInPoll.poll.questionList.size.toString() + " questions",
+                    style = RarimeTheme.typography.body4,
+                    color = RarimeTheme.colors.textSecondary
+                )
+            }
             Spacer(modifier = Modifier.height(24.dp))
             HorizontalDivider()
 
