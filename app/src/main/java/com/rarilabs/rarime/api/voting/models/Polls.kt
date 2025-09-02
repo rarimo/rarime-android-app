@@ -122,15 +122,108 @@ val MOCKED_RANKING_BASED_VOTE_ITEM = Poll(
             id = 1,
             title = "What drink is tastier?",
             IsSkippable = false,
-            variants = listOf("Cola", "Pepsi", "Sprite")
+            variants = listOf(
+                "Cola",
+                "Pepsi",
+                "Sprite",
+                "Wine",
+                "Beer",
+                "Fanta",
+                "Combucha",
+                "Juice"
+            )
         ), Question(
-            id = 2, title = "What drink is tastier",
+            id = 2,
+            title = "What drink is tastier?",
             IsSkippable = false,
-            variants = listOf("Cola", "Pepsi", "Sprite")
+            variants = listOf(
+                "Cola",
+                "Pepsi",
+                "Sprite",
+                "Wine",
+                "Beer",
+                "Fanta",
+                "Combucha",
+                "Juice"
+            )
         ), Question(
-            id = 3, title = "What drink is tastier",
+            id = 3, title = "What drink is tastier?",
             IsSkippable = false,
-            variants = listOf("Cola", "Pepsi", "Sprite")
+            variants = listOf(
+                "Cola",
+                "Pepsi",
+                "Sprite",
+                "Wine",
+                "Beer",
+                "Fanta",
+                "Combucha",
+                "Juice"
+            )
+        ), Question(
+            id = 4, title = "What drink is tastier?",
+            IsSkippable = false,
+            variants = listOf(
+                "Cola",
+                "Pepsi",
+                "Sprite",
+                "Wine",
+                "Beer",
+                "Fanta",
+                "Combucha",
+                "Juice"
+            )
+        ), Question(
+            id = 5, title = "What drink is tastier?",
+            IsSkippable = false,
+            variants = listOf(
+                "Cola",
+                "Pepsi",
+                "Sprite",
+                "Wine",
+                "Beer",
+                "Fanta",
+                "Combucha",
+                "Juice"
+            )
+        ), Question(
+            id = 6, title = "What drink is tastier?",
+            IsSkippable = false,
+            variants = listOf(
+                "Cola",
+                "Pepsi",
+                "Sprite",
+                "Wine",
+                "Beer",
+                "Fanta",
+                "Combucha",
+                "Juice"
+            )
+        ), Question(
+            id = 7, title = "What drink is tastier?",
+            IsSkippable = false,
+            variants = listOf(
+                "Cola",
+                "Pepsi",
+                "Sprite",
+                "Wine",
+                "Beer",
+                "Fanta",
+                "Combucha",
+                "Juice"
+            )
+        ), Question(
+            id = 8, title = "What drink is tastier?",
+            IsSkippable = false,
+            variants = listOf(
+                "Cola",
+                "Pepsi",
+                "Sprite",
+                "Wine",
+                "Beer",
+                "Fanta",
+                "Combucha",
+                "Juice"
+            )
         )
     ),
     eventId = BigInteger.ONE,

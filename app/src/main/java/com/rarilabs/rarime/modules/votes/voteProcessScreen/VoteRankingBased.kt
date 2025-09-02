@@ -5,7 +5,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -48,7 +48,7 @@ import com.rarilabs.rarime.ui.components.SecondaryButton
 import com.rarilabs.rarime.ui.components.VerticalDivider
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import org.burnoutcrew.reorderable.ReorderableItem
-import org.burnoutcrew.reorderable.detectReorder
+import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
 
@@ -145,27 +145,42 @@ fun VoteRankingCard(
             items.add(to.index, items.removeAt(from.index))
         })
 
-    Box(
+    Column(
         modifier = Modifier
             .padding(vertical = 24.dp, horizontal = 20.dp)
+            .fillMaxSize()
+            .then(modifier)
     ) {
+        Text(
+            voteOption.title,
+            style = RarimeTheme.typography.h4,
+            color = RarimeTheme.colors.textPrimary
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        HorizontalDivider()
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            stringResource(R.string.ranking_based_tip),
+            style = RarimeTheme.typography.subtitle5,
+            color = RarimeTheme.colors.textPrimary
+        )
+        Spacer(modifier = Modifier.height(16.dp))
         LazyColumn(
             state = state.listState,
-            contentPadding = PaddingValues(top = 150.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier
-                .fillMaxSize()
-                .zIndex(1f)
+                .fillMaxWidth()
+                .weight(1f)
                 .reorderable(state)
-
         ) {
             items(items, key = { it.origIndex }) { item ->
                 ReorderableItem(state, key = item.origIndex) { isDragging ->
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .zIndex(if (isDragging) 1f else 0f)
                             .background(
-                                RarimeTheme.colors.componentPrimary.copy(alpha = 0.12f),
+                                if (isDragging) RarimeTheme.colors.componentPrimary else RarimeTheme.colors.backgroundPrimary,
                                 RoundedCornerShape(12.dp)
                             )
                             .clip(RoundedCornerShape(12.dp))
@@ -179,7 +194,7 @@ fun VoteRankingCard(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .detectReorder(state)
+                                .detectReorderAfterLongPress(state)
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_draggable),
@@ -187,13 +202,11 @@ fun VoteRankingCard(
                                 tint = RarimeTheme.colors.textPrimary,
                                 modifier = Modifier.size(20.dp)
                             )
-
                             VerticalDivider(
                                 modifier = Modifier
                                     .padding(horizontal = 12.dp)
                                     .height(24.dp)
                             )
-
                             Text(
                                 item.text,
                                 color = RarimeTheme.colors.textPrimary,
@@ -204,43 +217,25 @@ fun VoteRankingCard(
                 }
             }
         }
-        Column(modifier = Modifier.zIndex(5f)) {
-            Text(
-                voteOption.title,
-                style = RarimeTheme.typography.h4,
-                color = RarimeTheme.colors.textPrimary
+        Spacer(modifier = Modifier.height(10.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            PrimaryButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.ranking_based_vote_submit_rating_btn_lbl),
+                onClick = {
+                    val rankingOrder: List<PollResult> = items.map {
+                        PollResult(
+                            questionIndex = voteOption.id.toInt() - 1,
+                            answerIndex = it.origIndex,
+                        )
+                    }
+                    onClick(rankingOrder)
+                },
+                size = ButtonSize.Large,
+                rightIcon = R.drawable.ic_arrow_right,
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                stringResource(R.string.ranking_based_tip),
-                style = RarimeTheme.typography.subtitle5,
-                color = RarimeTheme.colors.textPrimary
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                PrimaryButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = stringResource(R.string.ranking_based_vote_submit_rating_btn_lbl),
-                    onClick = {
-                        val rankingOrder: List<PollResult> = items.map {
-                            PollResult(
-                                questionIndex = voteOption.id.toInt() - 1,
-                                answerIndex = it.origIndex,
-                            )
-                        }
-                        onClick(rankingOrder)
-                    },
-                    size = ButtonSize.Large,
-                    rightIcon = R.drawable.ic_arrow_right,
-                )
-            }
         }
     }
 }
@@ -252,7 +247,7 @@ fun PreviewRankingPollCard(
     Column(
         modifier = Modifier
             .padding(vertical = 24.dp, horizontal = 20.dp)
-            .fillMaxWidth()
+            .fillMaxSize()
     ) {
         Text(
             text = voteOption.title,
@@ -263,47 +258,51 @@ fun PreviewRankingPollCard(
         Spacer(modifier = Modifier.height(16.dp))
         HorizontalDivider()
         Spacer(modifier = Modifier.height(16.dp))
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        ) {
+            itemsIndexed(ranking) { idx, pr ->
+                val answerText = pr.answerIndex?.let { voteOption.variants.getOrNull(it) } ?: "—"
 
-        ranking.forEachIndexed { idx, pr ->
-            val answerText = pr.answerIndex?.let { voteOption.variants.getOrNull(it) } ?: "—"
-
-            Row(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(16.dp))
-                    .fillMaxWidth()
-                    .background(RarimeTheme.colors.componentPrimary)
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                Box(
-                    modifier = Modifier.size(28.dp), contentAlignment = Alignment.Center
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(16.dp))
+                        .fillMaxWidth()
+                        .background(RarimeTheme.colors.componentPrimary)
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
                 ) {
+                    Box(
+                        modifier = Modifier.size(28.dp), contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = (idx + 1).toString(),
+                            color = RarimeTheme.colors.textSecondary,
+                            style = RarimeTheme.typography.overline2,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                    VerticalDivider(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .height(20.dp)
+                    )
+
                     Text(
-                        text = (idx + 1).toString(),
-                        color = RarimeTheme.colors.textSecondary,
-                        style = RarimeTheme.typography.overline2,
-                        textAlign = TextAlign.Center
+                        text = answerText,
+                        color = RarimeTheme.colors.textPrimary,
+                        style = RarimeTheme.typography.buttonMedium
                     )
                 }
-
-                VerticalDivider(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .height(20.dp)
-                )
-
-                Text(
-                    text = answerText,
-                    color = RarimeTheme.colors.textPrimary,
-                    style = RarimeTheme.typography.buttonMedium
-                )
+                Spacer(modifier = Modifier.height(8.dp))
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()
