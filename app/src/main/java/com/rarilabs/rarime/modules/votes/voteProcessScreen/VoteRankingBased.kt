@@ -155,7 +155,7 @@ fun VoteRankingCard(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier
                 .fillMaxSize()
-                .zIndex(4f)
+                .zIndex(1f)
                 .reorderable(state)
 
         ) {
@@ -164,13 +164,11 @@ fun VoteRankingCard(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .background(
+                                RarimeTheme.colors.componentPrimary.copy(alpha = 0.12f),
+                                RoundedCornerShape(12.dp)
+                            )
                             .clip(RoundedCornerShape(12.dp))
-                            .background(
-                                RarimeTheme.colors.backgroundPrimary, RoundedCornerShape(12.dp)
-                            )
-                            .background(
-                                RarimeTheme.colors.componentPrimary, RoundedCornerShape(12.dp)
-                            )
                             .border(
                                 1.dp, color = if (isDragging) RarimeTheme.colors.textPrimary
                                 else RarimeTheme.colors.textSecondary, RoundedCornerShape(12.dp)
@@ -206,15 +204,15 @@ fun VoteRankingCard(
                 }
             }
         }
-        Column(modifier = Modifier) {
+        Column(modifier = Modifier.zIndex(5f)) {
             Text(
                 voteOption.title,
                 style = RarimeTheme.typography.h4,
                 color = RarimeTheme.colors.textPrimary
             )
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             HorizontalDivider()
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 stringResource(R.string.ranking_based_tip),
                 style = RarimeTheme.typography.subtitle5,
@@ -253,7 +251,7 @@ fun PreviewRankingPollCard(
 ) {
     Column(
         modifier = Modifier
-            .padding(24.dp)
+            .padding(vertical = 24.dp, horizontal = 20.dp)
             .fillMaxWidth()
     ) {
         Text(
