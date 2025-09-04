@@ -99,7 +99,8 @@ fun FreedomtoolExpandedWidget(
     VotingAppSheet(
         navigate = navigate,
         voteSheetState = voteSheetState,
-        selectedPoll = selectedPoll
+        selectedPoll = selectedPoll,
+        onClose = {}
     )
 
     var showQrScan by remember { mutableStateOf(false) }

@@ -96,7 +96,6 @@ fun ExtIntQueryProofHandler(
 
     var isSubmitting by remember { mutableStateOf(false) }
     var isLoaded by remember { mutableStateOf(false) }
-    val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
     val sheetState = rememberAppSheetState(false)
 
     if (isLoaded) {
@@ -186,7 +185,8 @@ fun ExtIntQueryProofHandler(
     AppBottomSheet(
         state = sheetState,
         isHeaderEnabled = false,
-        backgroundColor = RarimeTheme.colors.backgroundSurface1
+        backgroundColor = RarimeTheme.colors.backgroundSurface1,
+        onClose = { onCancel.invoke() }
     ) {
         ExtIntQueryProofHandlerContent(
             previewFields = previewFields,
