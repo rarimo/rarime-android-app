@@ -227,8 +227,12 @@ class LightProofHandlerViewModel @Inject constructor(
         if (passportManager.passport.value == null) {
             throw NoPassport()
         }
+        try {
+            _queryProofParametersRequest.value = extIntegratorApiManager.queryProofData(proofParamsUrl)
+        } catch (e : Exception ){
+            throw e
+        }
 
-        _queryProofParametersRequest.value = extIntegratorApiManager.queryProofData(proofParamsUrl)
 
         val tempMap = mutableMapOf<String, String>()
 

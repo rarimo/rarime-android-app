@@ -55,7 +55,7 @@ class ExtIntegratorApiManager @Inject constructor(
                     payload
                 )
             } catch (e: Exception) {
-                throw Exception(e.toString())
+                throw e
             }
         }
     }
@@ -81,7 +81,7 @@ class ExtIntegratorApiManager @Inject constructor(
                     )
                 )
             } catch (e: Exception) {
-                throw Exception(e.toString())
+                throw e
             }
         }
     }
@@ -91,7 +91,7 @@ class ExtIntegratorApiManager @Inject constructor(
             try {
                 extIntegratorAPI.queryProofData(url)
             } catch (e: Exception) {
-                throw Exception(e.toString())
+                throw e
             }
         }
     }
@@ -103,7 +103,7 @@ class ExtIntegratorApiManager @Inject constructor(
 
                 Gson().toJson(response)
             } catch (e: Exception) {
-                throw Exception(e.toString())
+                throw e
             }
         }
     }
