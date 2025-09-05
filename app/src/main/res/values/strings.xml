@@ -504,6 +504,8 @@
     <string name="preview_rating_edit_rating_btn_lbl">Edit</string>
     <string name="preview_rating_submit_rating_btn_lbl">Submit</string>
     <string name="ranking_based_voting_title">Ranking based voting</string>
+    <string name="bad_internet_connection">There was an issue with your internet connection. Please check your network settings.</string>
+    <string name="error_get_params_no_internet_connection">Failed get proof params. Please check you internet connection</string>
 
 
 </resources>

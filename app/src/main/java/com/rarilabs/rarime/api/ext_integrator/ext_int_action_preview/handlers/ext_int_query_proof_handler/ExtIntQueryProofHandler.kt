@@ -61,7 +61,11 @@ import com.rarilabs.rarime.util.WalletUtil.formatAddress
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import java.net.ConnectException
+import java.net.NoRouteToHostException
+import java.net.SocketTimeoutException
 import java.net.URL
+import java.net.UnknownHostException
 
 
 @Composable
@@ -131,6 +135,38 @@ fun ExtIntQueryProofHandler(
                 is YourCitizenshipDoesNotMeetTheRequirements -> context.getString(R.string.light_verification_error_citizenship)
                 is NoPassport -> context.getString(R.string.no_passport_error)
                 is NoActiveIdentity -> context.getString(R.string.no_active_identity)
+                is UnknownHostException -> context.getString(R.string.bad_internet_connection)
+                is ConnectException -> context.getString(R.string.bad_internet_connection)
+                is NoRouteToHostException -> context.getString(R.string.bad_internet_connection)
+                is SocketTimeoutException -> context.getString(R.string.bad_internet_connection)
+                else -> context.getString(R.string.light_verification_error_subtitle)
+            }
+
+            ErrorHandler.logError("Ext", "error", e)
+
+            mainViewModel.showSnackbar(
+                options = getSnackbarDefaultShowOptions(
+                    severity = SnackbarSeverity.Error,
+                    duration = SnackbarDuration.Long,
+                    title = context.getString(R.string.light_verification_error_title),
+                    message = message,
+                )
+            )
+        }
+        onFail.invoke()
+    }
+
+    fun onFailGetHandler(e: Exception) {
+        scope.launch {
+            val message = when (e) {
+                is YourAgeDoesNotMeetTheRequirements -> context.getString(R.string.light_verification_error_age)
+                is YourCitizenshipDoesNotMeetTheRequirements -> context.getString(R.string.light_verification_error_citizenship)
+                is NoPassport -> context.getString(R.string.no_passport_error)
+                is NoActiveIdentity -> context.getString(R.string.no_active_identity)
+                is UnknownHostException -> context.getString(R.string.error_get_params_no_internet_connection)
+                is ConnectException ->context.getString(R.string.error_get_params_no_internet_connection)
+                is NoRouteToHostException -> context.getString(R.string.error_get_params_no_internet_connection)
+                is SocketTimeoutException -> context.getString(R.string.error_get_params_no_internet_connection)
                 else -> context.getString(R.string.light_verification_error_subtitle)
             }
 
@@ -176,7 +212,7 @@ fun ExtIntQueryProofHandler(
 
                 viewModel.loadDetails(proofParamsUrl, redirectUrl)
             } catch (e: Exception) {
-                onFailHandler(e)
+                onFailGetHandler(e)
             }
 
             isLoaded = true
@@ -225,12 +261,11 @@ private fun ExtIntQueryProofHandlerContent(
                     text = stringResource(R.string.querry_proof_header),
                     style = RarimeTheme.typography.h3,
                     color = RarimeTheme.colors.textPrimary,
-                    modifier = Modifier
-                        .padding(top = 30.dp)
+                    modifier = Modifier.padding(top = 30.dp)
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
-                    onClick = onCancel,
+                    onClick = { onCancel() },
                     modifier = Modifier
                         .padding(top = 24.dp)
                         .size(40.dp)
@@ -296,9 +331,7 @@ private fun ExtIntQueryProofHandlerContent(
                     )
                     Text(
                         text = formatAddress(
-                            address = requestorId,
-                            charsStartAmount = 8,
-                            charsEndAmount = 8
+                            address = requestorId, charsStartAmount = 8, charsEndAmount = 8
                         ),
                         style = RarimeTheme.typography.body4,
                         color = RarimeTheme.colors.textPrimary
@@ -364,12 +397,10 @@ private fun ExtIntQueryProofHandlerContent(
                     text = stringResource(R.string.querry_prooof_generate_proof_btn_label),
                     size = ButtonSize.Large,
                     enabled = !isSubmitting,
-                    onClick = { handleAccept() }
-                )
+                    onClick = { handleAccept() })
                 Spacer(modifier = Modifier.height(8.dp))
                 TransparentButton(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     text = stringResource(R.string.querry_proof_cancel_btn_label),
                     size = ButtonSize.Large,
                     onClick = { onCancel() },
@@ -391,9 +422,7 @@ private fun ExtIntQueryProofHandlerContent(
 
 @Composable
 fun ExtIntActionPreviewRow(
-    modifier: Modifier = Modifier,
-    key: String,
-    value: String
+    modifier: Modifier = Modifier, key: String, value: String
 ) {
     Row(
         modifier = Modifier
@@ -424,9 +453,7 @@ fun ExtIntActionPreviewRow(
 private fun ExtIntQueryProofHandlerContentPreview() {
     ExtIntQueryProofHandlerContent(
         previewFields = mapOf(
-            "Key 1" to "Value 1",
-            "Key 2" to "Value 2",
-            "Key 3" to "Value 3"
+            "Key 1" to "Value 1", "Key 2" to "Value 2", "Key 3" to "Value 3"
         ),
         isSubmitting = false,
         handleAccept = { },
