@@ -4,7 +4,7 @@ plugins {
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
     id("kotlin-parcelize")
-    id("com.google.gms.google-services")
+    // id("com.google.gms.google-services")  // ЗАКОМЕНТОВАНО ДЛЯ ТЕСТУВАННЯ
 }
 
 android {
@@ -32,6 +32,10 @@ android {
         targetSdk = 35
         versionCode = 121
         versionName = "2.3.8"
+
+        // ДОДАНО BuildConfig поля для config
+        buildConfigField("String", "config", "\"debug\"")
+        buildConfigField("Boolean", "isTestnet", "true")
 
         externalNativeBuild {
             cmake {
@@ -69,13 +73,19 @@ android {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
+            buildConfigField("String", "config", "\"release\"")
+            buildConfigField("Boolean", "isTestnet", "false")
         }
 
-        debug { }
+        debug {
+            buildConfigField("String", "config", "\"debug\"")
+            buildConfigField("Boolean", "isTestnet", "true")
+        }
 
         create("debug_mainnet") {
             initWith(getByName("debug"))
             buildConfigField("Boolean", "isTestnet", "false")
+            buildConfigField("String", "config", "\"debug_mainnet\"")
         }
         create("release_mainnet") {
             initWith(getByName("release"))
@@ -84,10 +94,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
             buildConfigField("Boolean", "isTestnet", "false")
+            buildConfigField("String", "config", "\"release_mainnet\"")
         }
         create("debug_testnet") {
             initWith(getByName("debug"))
             buildConfigField("Boolean", "isTestnet", "true")
+            buildConfigField("String", "config", "\"debug_testnet\"")
             signingConfig = signingConfigs.getByName("debug")
         }
         create("release_testnet") {
@@ -97,6 +109,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
             buildConfigField("Boolean", "isTestnet", "true")
+            buildConfigField("String", "config", "\"release_testnet\"")
         }
     }
 
@@ -128,6 +141,11 @@ android {
             path = file("src/main/cpp/CMakeLists.txt")
             version = "3.22.1"
         }
+    }
+
+    // ДОДАНО resolution strategy для виправлення конфлікту Espresso
+    configurations.all {
+        resolutionStrategy.force("androidx.test.espresso:espresso-core:3.5.1")
     }
 }
 

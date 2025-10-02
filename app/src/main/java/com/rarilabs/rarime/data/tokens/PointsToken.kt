@@ -2,7 +2,7 @@ package com.rarilabs.rarime.data.tokens
 
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.points.models.PointsBalanceData
-import com.rarilabs.rarime.config.Keys
+import com.rarilabs.rarime.Keys
 import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.modules.wallet.models.TransactionState

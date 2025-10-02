@@ -1,7 +1,9 @@
 package com.rarilabs.rarime
 
-import com.rarilabs.rarime.config.Keys
+
+import com.rarilabs.rarime.Keys
 import com.rarilabs.rarime.data.RarimoChains
+
 
 val BaseConfig: IConfig = if (BuildConfig.isTestnet) TestNetConfig else MainnetConfig
 
@@ -681,3 +683,9 @@ object MainnetConfig : IConfig {
     override val registerIdentity_11_256_3_5_576_248_1_1808_4_256: String =
         "https://storage.googleapis.com/rarimo-store/passport-zk-circuits-noir/v0.1.29/registerIdentity_11_256_3_5_576_248_1_1808_4_256.json"
 }
+
+
+
+
+
+

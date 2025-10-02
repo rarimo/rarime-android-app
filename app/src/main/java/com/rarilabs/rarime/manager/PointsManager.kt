@@ -27,7 +27,7 @@ import com.rarilabs.rarime.api.points.models.VerifyPassportData
 import com.rarilabs.rarime.api.points.models.WithdrawBody
 import com.rarilabs.rarime.api.points.models.WithdrawPayload
 import com.rarilabs.rarime.api.points.models.WithdrawPayloadAttributes
-import com.rarilabs.rarime.config.Keys
+import com.rarilabs.rarime.Keys
 import com.rarilabs.rarime.data.ProofTxFull
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
