@@ -506,6 +506,8 @@
     <string name="ranking_based_voting_title">Ranking based voting</string>
     <string name="bad_internet_connection">There was an issue with your internet connection. Please check your network settings.</string>
     <string name="error_get_params_no_internet_connection">Failed to get proof params. Please check your internet connection.</string>
+    <string name="nfc_is_not_available_on_this_device">NFC is not available on this device.</string>
+    <string name="disablet_nfc_error">NFC is disabled. Please enable it in your device settings.</string>
 
 
 </resources>
