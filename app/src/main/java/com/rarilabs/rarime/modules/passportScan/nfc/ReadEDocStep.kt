@@ -80,6 +80,8 @@ fun ReadEDocStep(
             readEDocStepViewModel.resetNfcScanStep()
             val errorMessage = when (scanExceptionInstance.value) {
                 is IOException -> stringResource(id = R.string.nfc_error_interrupt)
+                is UnsupportedOperationException -> stringResource(R.string.nfc_is_not_available_on_this_device)
+                is IllegalStateException -> stringResource(R.string.disablet_nfc_error)
                 else -> stringResource(id = R.string.nfc_error_unknown)
             }
 
@@ -89,8 +91,9 @@ fun ReadEDocStep(
                 errorMessage,
                 Toast.LENGTH_SHORT
             ).show()
-
-            onError(scanExceptionInstance.value!!)
+            if (scanExceptionInstance.value !is UnsupportedOperationException && scanExceptionInstance.value !is IllegalStateException) {
+                onError(scanExceptionInstance.value!!)
+            }
         }
     }
 
@@ -189,6 +192,7 @@ private fun ReadEDocStepContent(
                         }
 
                         ScanNFCState.ERROR -> {
+                            scanSheetState.hide()
                             handleScanPassportLayoutError()
                         }
                     }

@@ -43,6 +43,12 @@ class NfcManager @Inject constructor(
     private fun enableForegroundDispatch() {
         ErrorHandler.logDebug("NfcManager", "Enabling NFC foreground dispatch")
         adapter = NfcAdapter.getDefaultAdapter(activity)
+        if (adapter == null) {
+            throw UnsupportedOperationException("NFC is not supported on this device.")
+        }
+        if (!adapter.isEnabled) {
+            throw IllegalStateException("NFC is disabled.")
+        }
         val intent = Intent(context, activity.javaClass)
         intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         val pendingIntent =
@@ -98,6 +104,7 @@ class NfcManager @Inject constructor(
         } catch (e: Exception) {
             ErrorHandler.logError("NfcManager", "Error starting NFC scanning", e)
             _state.value = ScanNFCState.ERROR
+            onError(e)
             disableForegroundDispatch()
         }
     }
