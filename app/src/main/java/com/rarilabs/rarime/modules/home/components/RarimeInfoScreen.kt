@@ -46,15 +46,15 @@ fun RarimeInfoScreen(onClose: () -> Unit) {
                 )
             }
         },
-        title = stringResource(R.string.what_is_rarime_title)
+        title = stringResource(R.string.what_is_rarimo_title)
     ) {
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxHeight()
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                DescriptionStepRow(text = stringResource(R.string.what_is_rarime_text_item_1))
-                DescriptionStepRow(text = stringResource(R.string.what_is_rarime_text_item_2))
+                DescriptionStepRow(text = stringResource(R.string.what_is_rarimo_text_item_1))
+                DescriptionStepRow(text = stringResource(R.string.what_is_rarimo_text_item_2))
                 DescriptionStepRow(annotatedText = buildAnnotatedString {
                     withStyle(
                         SpanStyle(
@@ -62,9 +62,9 @@ fun RarimeInfoScreen(onClose: () -> Unit) {
                             color = RarimeTheme.colors.textPrimary
                         )
                     ) {
-                        append(stringResource(R.string.what_is_rarime_text_item_3_accent))
+                        append(stringResource(R.string.what_is_rarimo_text_item_3_accent))
                     }
-                    append(stringResource(R.string.what_is_rarime_text_item_3))
+                    append(stringResource(R.string.what_is_rarimo_text_item_3))
                 })
             }
             PrimaryButton(

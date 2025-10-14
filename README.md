@@ -1,10 +1,10 @@
-# RariMe Android App
+# Rarimo Android App
 
 [![Kotlin 1.9.0](https://img.shields.io/badge/Kotlin-1.9.0-B125EA.svg?style=flat&logo=kotlin)](https://swift.org/download/)
 [![Android 8.1+](https://img.shields.io/badge/Android-8.1+-3DDC84.svg?style=flat&logo=android)](https://developer.apple.com/ios/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](/LICENSE)
 
-RariMe is a self-custody identity wallet, that unlocks private but verifiable identities.
+Rarimo App is a self-custody identity wallet, that unlocks private but verifiable identities.
 
 ![App Image](images/app.png)
 
@@ -35,4 +35,4 @@ Requires Android 8.1 or higher.
 
 ## License
 
-RariMe is available under the MIT license. See the [LICENSE](/LICENSE) file for more info.
+Rarimo App is available under the MIT license. See the [LICENSE](/LICENSE) file for more info.
