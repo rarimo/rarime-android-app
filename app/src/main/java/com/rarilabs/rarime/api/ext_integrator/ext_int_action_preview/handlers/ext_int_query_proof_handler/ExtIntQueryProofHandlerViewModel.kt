@@ -42,7 +42,12 @@ class ExtIntQueryProofHandlerViewModel @Inject constructor(
 
 
         _queryProofParametersRequest.value = withContext(Dispatchers.IO) {
-            extIntegratorApiManager.queryProofData(proofParamsUrl)
+            try{
+                extIntegratorApiManager.queryProofData(proofParamsUrl)
+            }catch (e: Exception){
+                throw e
+            }
+
         }
 
         extIntegratorApiManager.loadPassportInfo()

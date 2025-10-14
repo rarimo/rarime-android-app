@@ -116,9 +116,11 @@ fun MainScreenRoutes(
             ExtIntActionPreview(navigate = navigateWithPopUp, dataUri = uri, onError = {
                 extIntDataURIState = null
                 mainViewModel.setExtIntDataURI(null)
+                navigateWithPopUp(Screen.Main.Home.route)
             }, onCancel = {
                 extIntDataURIState = null
                 mainViewModel.setExtIntDataURI(null)
+                navigateWithPopUp(Screen.Main.Home.route)
             }, onSuccess = { extDestination, localDestination ->
                 if (!extDestination.isNullOrEmpty()) {
                     val intent = Intent(Intent.ACTION_VIEW, extDestination.toUri())
@@ -137,6 +139,7 @@ fun MainScreenRoutes(
                 }
                 extIntDataURIState = null
                 mainViewModel.setExtIntDataURI(null)
+                navigateWithPopUp(Screen.Main.Home.route)
             })
         }
     }

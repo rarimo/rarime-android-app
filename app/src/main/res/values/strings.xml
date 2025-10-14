@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">RariMe</string>
-    <string name="intro_step_1_title">RariMe</string>
+    <string name="app_name">Rarimo</string>
+    <string name="intro_step_1_title">Rarimo</string>
     <string name="intro_step_1_text">Welcome to</string>
     <string name="intro_step_2_title">Go Incognito</string>
-    <string name="intro_step_2_text">RariMe ensures your history, reputation and actions are not lost, and remain under your control.</string>
+    <string name="intro_step_2_text">Rarimo ensures your history, reputation and actions are not lost, and remain under your control.</string>
     <string name="intro_step_3_title">Proofs</string>
     <string name="intro_step_3_text">Prove your eligibility, belonging, identity, and contributions — all without revealing your personal details.</string>
     <string name="intro_step_4_title">Get Rewarded</string>
@@ -62,7 +62,7 @@
     <string name="nfc_reader_revoke">Revoke</string>
     <string name="nfc_reader_error">Scan again</string>
 
-    <string name="what_is_rarime_title">What is RariMe?</string>
+    <string name="what_is_rarimo_title">What is Rarimo?</string>
     <string name="settings_title">Settings</string>
     <string name="card_visual">CARD VISUAL</string>
 
@@ -71,8 +71,8 @@
     <string name="airdrop_intro_text_title">WHAT’S THAT?</string>
     <string name="airdrop_intro_text">This airdrop is part of a humanitarian effort to help direct funds towards Ukraine.\n\nIt showcases Rarimo’s identity infrastructure. and how it can be used by projects and organizations to directly reach civilians.</string>
     <string name="terms_check_agreement">"By checking this box, you are agreeing to "</string>
-    <string name="rarime_general_terms_conditions"><![CDATA[RariMe General Terms & Conditions]]></string>
-    <string name="rarime_privacy_notice">RariMe Privacy Notice</string>
+    <string name="rarimo_general_terms_conditions"><![CDATA[Rarimo General Terms & Conditions]]></string>
+    <string name="rarimo_privacy_notice">Rarimo Privacy Notice</string>
     <string name="rarimo_airdrop_program_terms_conditions"><![CDATA[Rarimo Airdrop Program Terms & Conditions]]></string>
     <string name="and">" and "</string>
 
@@ -176,10 +176,10 @@
     <string name="biometric_authentication_subtitle">Scan your fingerprint to continue</string>
     <string name="use_passcode_btn">Use passcode</string>
     <string name="cancel_btn">Cancel</string>
-    <string name="what_is_rarime_text_item_3_accent">Incognito mode</string>
-    <string name="what_is_rarime_text_item_1">RariMe is a self-custody identity wallet where no personal data ever leaves the device and everything is processed locally.</string>
-    <string name="what_is_rarime_text_item_2">With RariMe, identity becomes private but verifiable.</string>
-    <string name="what_is_rarime_text_item_3">" ensures your history, reputation and actions are not lost, but remain confidential and under your control."</string>
+    <string name="what_is_rarimo_text_item_3_accent">Incognito mode</string>
+    <string name="what_is_rarimo_text_item_1">Rarimo is a self-custody identity wallet where no personal data ever leaves the device and everything is processed locally.</string>
+    <string name="what_is_rarimo_text_item_2">With Rarimo, identity becomes private but verifiable.</string>
+    <string name="what_is_rarimo_text_item_3">" ensures your history, reputation and actions are not lost, but remain confidential and under your control."</string>
     <string name="icon_white">White</string>
     <string name="app_icon">App Icon</string>
     <string name="birth_date">Birth date</string>
@@ -412,7 +412,7 @@
     <string name="welcome_card4_title">Add widgets</string>
     <string name="welcome_card1_description">This app is where you privately store your digital identities, enabling you to go incognito across the web</string>
     <string name="welcome_card2_description">No one can trace your actions\nNo system can connect the dots\nNo data ever leaves your phone</string>
-    <string name="welcome_card3_description">RariMe lets you prove your identity - without giving anything away\n</string>
+    <string name="welcome_card3_description">Rarimo lets you prove your identity - without giving anything away\n</string>
     <string name="welcome_card4_description">Add different type of applications that you can interact with anonymously\n</string>
     <string name="wallet_success_title">Transaction Successful</string>
     <string name="wallet_success_message">Your transaction has been sent successfully.</string>
@@ -477,7 +477,7 @@
     <string name="fredomtool_accent_title">Voting</string>
     <string name="hidden_prize_on_win_description">Hidden keys: found. Prize: secured. Who’s next to join the winners’ circle? 🔑🏆</string>
     <string name="share_via">Share via</string>
-    <string name="hidden_prize_on_social_share_description">Think you can spot the famous face and unlock the key? Join the hunt in rariMe now!\n</string>
+    <string name="hidden_prize_on_social_share_description">Think you can spot the famous face and unlock the key? Join the hunt in Rarimo now!\n</string>
     <string name="invite_via">Invite via</string>
     <string name="hidden_prize_on_invite_description">Ready to test faces for hidden keys? Tap my invite, get free scans, and let’s race for the prize.\n</string>
     <string name="take_a_picture">Take a picture</string>
@@ -504,6 +504,10 @@
     <string name="preview_rating_edit_rating_btn_lbl">Edit</string>
     <string name="preview_rating_submit_rating_btn_lbl">Submit</string>
     <string name="ranking_based_voting_title">Ranking based voting</string>
+    <string name="bad_internet_connection">There was an issue with your internet connection. Please check your network settings.</string>
+    <string name="error_get_params_no_internet_connection">Failed to get proof params. Please check your internet connection.</string>
+    <string name="nfc_is_not_available_on_this_device">NFC is not available on this device.</string>
+    <string name="disablet_nfc_error">NFC is disabled. Please enable it in your device settings.</string>
 
 
 </resources>

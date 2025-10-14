@@ -35,6 +35,7 @@ private enum class VoteAppSheetState {
 fun VotingAppSheet(
     modifier: Modifier = Modifier,
     navigate: (String) -> Unit,
+    onClose: () -> Unit,
     voteSheetState: AppSheetState,
     selectedPoll: UserInPoll?,
     viewModel: VoteAppSheetViewModel = hiltViewModel(),
@@ -93,6 +94,7 @@ fun VotingAppSheet(
         scrimColor = Color.Transparent,
         fullScreen = true,
         disablePullClose = true,
+        onClose = onClose
     ) {
 
         when (currentState) {
@@ -105,6 +107,7 @@ fun VotingAppSheet(
                 VoteProcessInfoScreen(
                     userInPoll = selectedPoll!!,
                     onClose = {
+                        onClose()
                         voteSheetState.hide()
                         viewModel.setSelectedPoll(null)
                     },
@@ -164,6 +167,7 @@ fun VotingAppSheet(
 
             VoteAppSheetState.FINISH_VOTE -> {
                 PollsItemVoteFinishedScreen {
+                    onClose()
                     voteSheetState.hide()
                 }
             }

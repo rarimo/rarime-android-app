@@ -40,7 +40,8 @@ fun VoteHandler(
     VotingAppSheet(
         voteSheetState = voteSheetState,
         selectedPoll = selectedVote,
-        navigate = onSuccess
+        navigate = onSuccess,
+        onClose = { onCancel.invoke() }
     )
 
 
