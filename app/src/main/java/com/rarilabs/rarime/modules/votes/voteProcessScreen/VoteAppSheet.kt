@@ -118,7 +118,14 @@ fun VotingAppSheet(
                             VoteAppSheetState.SELECT_OPTION_VOTE
                     },
                     checkIsVoted = viewModel.checkIsVoted,
-                    colorMode = currentSchema
+                    colorMode = currentSchema,
+                    navigate = { destination ->
+                        onClose()
+                        voteSheetState.hide()
+                        viewModel.setSelectedPoll(null)
+                        navigate(destination)
+                    }
+
                 )
             }
 

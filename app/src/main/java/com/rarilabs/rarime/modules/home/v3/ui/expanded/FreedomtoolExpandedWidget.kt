@@ -97,7 +97,10 @@ fun FreedomtoolExpandedWidget(
 
     LaunchedEffect(Unit) { viewModel.loadPolls() }
     VotingAppSheet(
-        navigate = navigate,
+        navigate = { destination ->
+            mainViewModel.setBottomBarVisibility(true)
+            navigate(destination)
+        },
         voteSheetState = voteSheetState,
         selectedPoll = selectedPoll,
         onClose = {}

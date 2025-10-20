@@ -56,7 +56,7 @@ fun ExtIntActionPreview(
                 VoteHandler(
                     queryParams = queryParams,
                     onCancel = onCancel,
-                    onSuccess = { destination -> onSuccess(destination, null) },
+                    onSuccess = { destination -> onSuccess(null, destination) },
                     onFail = { onError() }
                 )
             }
