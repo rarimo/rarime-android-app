@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -42,6 +43,7 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.theme.RarimeTheme
 import com.rarilabs.rarime.util.DateUtil.getDateMessage
+import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.launch
 
 private enum class VotingStatus {
@@ -54,12 +56,16 @@ fun VoteProcessInfoScreen(
     userInPoll: UserInPoll,
     onClose: () -> Unit,
     onClick: () -> Unit,
+    navigate: (String) -> Unit,
     checkIsVoted: suspend () -> Boolean,
     colorMode: AppColorScheme
 ) {
+    val isPassportVerified = remember {
+        userInPoll.userVerificationStatus == PollCriteriaStatus.VERIFIED
+    }
 
     val isEligible = remember {
-        userInPoll.userVerificationStatus == PollCriteriaStatus.VERIFIED && userInPoll.pollCriteriaList.none { !it.accomplished }
+        userInPoll.pollCriteriaList.none { !it.accomplished }
     }
 
     val context = LocalContext.current
@@ -77,6 +83,10 @@ fun VoteProcessInfoScreen(
 
             if (!userInPoll.poll.isStarted) {
                 voteState = VotingStatus.NOT_STARTED
+                return@launch
+            }
+            if (!isPassportVerified) {
+                voteState = VotingStatus.NO_PASSPORT
                 return@launch
             }
             if (!isEligible) {
@@ -220,7 +230,15 @@ fun VoteProcessInfoScreen(
             when (voteState) {
 
                 VotingStatus.NO_PASSPORT -> {
-
+                    PrimaryButton(
+                        enabled = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(R.string.vote_button_label_passport_not_verified),
+                        onClick = {
+                            navigate(Screen.Main.Identity.route)
+                        },
+                        size = ButtonSize.Large
+                    )
                 }
 
                 VotingStatus.NO_IDENTITY -> {
@@ -289,6 +307,7 @@ private fun VoteProcessInfoScreenPreview() {
             ),
             onClose = {},
             onClick = {},
+            navigate = {},
             checkIsVoted = { false },
             colorMode = AppColorScheme.DARK
         )
