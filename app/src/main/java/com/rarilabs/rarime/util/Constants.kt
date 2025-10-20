@@ -23,6 +23,7 @@ object Constants {
     const val MAX_PASSPORT_IDENTIFIERS = 2
 
     val NOT_ALLOWED_COUNTRIES = listOf(
+        "UKR", //TODO: delete before release
         "RUS",
         "USA",
         "CAN",
