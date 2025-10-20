@@ -318,7 +318,7 @@ class ProofGenerationManager @Inject constructor(
                     if (!NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
                         passportManager.updatePassportStatus(PassportStatus.ALLOWED)
                     } else {
-                        passportManager.updatePassportStatus(PassportStatus.NOT_ALLOWED)
+                        passportManager.updatePassportStatus(PassportStatus.UNSUPPORTED_FOR_REWARDS)
                     }
 
                     proof
@@ -351,7 +351,7 @@ class ProofGenerationManager @Inject constructor(
                                 if (!NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
                                     passportManager.updatePassportStatus(PassportStatus.ALLOWED)
                                 } else {
-                                    passportManager.updatePassportStatus(PassportStatus.NOT_ALLOWED)
+                                    passportManager.updatePassportStatus(PassportStatus.UNSUPPORTED_FOR_REWARDS)
                                 }
 
                                 lightProof
@@ -383,7 +383,7 @@ class ProofGenerationManager @Inject constructor(
                                         if (!NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
                                             passportManager.updatePassportStatus(PassportStatus.WAITLIST)
                                         } else {
-                                            passportManager.updatePassportStatus(PassportStatus.WAITLIST_NOT_ALLOWED)
+                                            passportManager.updatePassportStatus(PassportStatus.WAITLIST_UNSUPPORTED_FOR_REWARDS)
                                         }
                                         ErrorHandler.logError(TAG, "Light registration failed", e2)
                                         _proofError.value = e2

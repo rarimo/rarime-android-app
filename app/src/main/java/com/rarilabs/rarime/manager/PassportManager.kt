@@ -117,10 +117,10 @@ class PassportManager @Inject constructor(
         }
 
         if (isIdentityCreated) {
-            updatePassportStatus(if (isUnsupported) PassportStatus.NOT_ALLOWED else PassportStatus.ALLOWED)
+            updatePassportStatus(if (isUnsupported) PassportStatus.UNSUPPORTED_FOR_REWARDS else PassportStatus.ALLOWED)
             return
         }
-        updatePassportStatus(if (isUnsupported) PassportStatus.WAITLIST_NOT_ALLOWED else PassportStatus.WAITLIST)
+        updatePassportStatus(if (isUnsupported) PassportStatus.WAITLIST_UNSUPPORTED_FOR_REWARDS else PassportStatus.WAITLIST)
     }
 
 

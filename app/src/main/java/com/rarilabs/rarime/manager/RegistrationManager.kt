@@ -328,7 +328,7 @@ class RegistrationManager @Inject constructor(
             if (!NOT_ALLOWED_COUNTRIES.contains(eDocument.value!!.personDetails?.nationality)) {
                 passportManager.updatePassportStatus(PassportStatus.ALLOWED)
             } else {
-                passportManager.updatePassportStatus(PassportStatus.NOT_ALLOWED)
+                passportManager.updatePassportStatus(PassportStatus.UNSUPPORTED_FOR_REWARDS)
             }
 
         } catch (e: Exception) {
