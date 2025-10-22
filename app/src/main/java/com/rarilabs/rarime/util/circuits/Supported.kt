@@ -61,6 +61,36 @@ object SupportRegisterIdentityCircuitSignatureType {
             hashAlgorithm = CircuitHashAlgorithmType.HA512
         ),
 
+        CircuitSignatureType(
+            staticId = 6u,
+            algorithm = CircuitAlgorithmType.RSA,
+            keySize = CircuitKeySizeType.B2048,
+            exponent = CircuitExponentType.E58333,
+            salt = null,
+            curve = null,
+            hashAlgorithm = CircuitHashAlgorithmType.HA160
+        ),
+
+        CircuitSignatureType(
+            staticId = 7u,
+            algorithm = CircuitAlgorithmType.RSA,
+            keySize = CircuitKeySizeType.B3072,
+            exponent = CircuitExponentType.E45347,
+            salt = null,
+            curve = null,
+            hashAlgorithm = CircuitHashAlgorithmType.HA160
+        ),
+
+        CircuitSignatureType(
+            staticId = 7u,
+            algorithm = CircuitAlgorithmType.RSA,
+            keySize = CircuitKeySizeType.B3072,
+            exponent = CircuitExponentType.E46271,
+            salt = null,
+            curve = null,
+            hashAlgorithm = CircuitHashAlgorithmType.HA160
+        ),
+
 
         // RSAPSS
         CircuitSignatureType(
@@ -72,6 +102,7 @@ object SupportRegisterIdentityCircuitSignatureType {
             curve = null,
             hashAlgorithm = CircuitHashAlgorithmType.HA256
         ),
+
         CircuitSignatureType(
             staticId = 11u,
             algorithm = CircuitAlgorithmType.RSAPSS,
@@ -81,6 +112,7 @@ object SupportRegisterIdentityCircuitSignatureType {
             curve = null,
             hashAlgorithm = CircuitHashAlgorithmType.HA256
         ),
+
         CircuitSignatureType(
             staticId = 12u,
             algorithm = CircuitAlgorithmType.RSAPSS,
@@ -90,6 +122,7 @@ object SupportRegisterIdentityCircuitSignatureType {
             curve = null,
             hashAlgorithm = CircuitHashAlgorithmType.HA256
         ),
+
         CircuitSignatureType(
             staticId = 13u,
             algorithm = CircuitAlgorithmType.RSAPSS,
@@ -130,15 +163,44 @@ object SupportRegisterIdentityCircuitSignatureType {
             curve = CircuitCurveType.SECP256R1,
             hashAlgorithm = CircuitHashAlgorithmType.HA256
         ),
-
         CircuitSignatureType(
-            staticId = 27u,
+            staticId = 20u,
             algorithm = CircuitAlgorithmType.ECDSA,
-            keySize = CircuitKeySizeType.B521,
+            keySize = CircuitKeySizeType.B256,
             exponent = null,
             salt = null,
-            curve = CircuitCurveType.SECP521R1,
-            hashAlgorithm = CircuitHashAlgorithmType.HA512
+            curve = CircuitCurveType.PRIME256V1,
+            hashAlgorithm = CircuitHashAlgorithmType.HA256
+        ),
+
+        CircuitSignatureType(
+            staticId = 21u,
+            algorithm = CircuitAlgorithmType.ECDSA,
+            keySize = CircuitKeySizeType.B256,
+            exponent = null,
+            salt = null,
+            curve = CircuitCurveType.BRAINPOOLP256,
+            hashAlgorithm = CircuitHashAlgorithmType.HA256
+        ),
+
+        CircuitSignatureType(
+            staticId = 22u,
+            algorithm = CircuitAlgorithmType.ECDSA,
+            keySize = CircuitKeySizeType.B320,
+            exponent = null,
+            salt = null,
+            curve = CircuitCurveType.BRAINPOOL320R1,
+            hashAlgorithm = CircuitHashAlgorithmType.HA256
+        ),
+
+        CircuitSignatureType(
+            staticId = 23u,
+            algorithm = CircuitAlgorithmType.ECDSA,
+            keySize = CircuitKeySizeType.B192,
+            exponent = null,
+            salt = null,
+            curve = CircuitCurveType.SECP192R1,
+            hashAlgorithm = CircuitHashAlgorithmType.HA160
         ),
 
         CircuitSignatureType(
@@ -152,42 +214,6 @@ object SupportRegisterIdentityCircuitSignatureType {
         ),
 
         CircuitSignatureType(
-            staticId = 21u,
-            algorithm = CircuitAlgorithmType.ECDSA,
-            keySize = CircuitKeySizeType.B256,
-            exponent = null,
-            salt = null,
-            curve = CircuitCurveType.BRAINPOOLP256,
-            hashAlgorithm = CircuitHashAlgorithmType.HA256
-        ),
-        CircuitSignatureType(
-            staticId = 22u,
-            algorithm = CircuitAlgorithmType.ECDSA,
-            keySize = CircuitKeySizeType.B320,
-            exponent = null,
-            salt = null,
-            curve = CircuitCurveType.BRAINPOOL320R1,
-            hashAlgorithm = CircuitHashAlgorithmType.HA256
-        ),
-        CircuitSignatureType(
-            staticId = 23u,
-            algorithm = CircuitAlgorithmType.ECDSA,
-            keySize = CircuitKeySizeType.B192,
-            exponent = null,
-            salt = null,
-            curve = CircuitCurveType.SECP192R1,
-            hashAlgorithm = CircuitHashAlgorithmType.HA160
-        ),
-        CircuitSignatureType(
-            staticId = 20u,
-            algorithm = CircuitAlgorithmType.ECDSA,
-            keySize = CircuitKeySizeType.B256,
-            exponent = null,
-            salt = null,
-            curve = CircuitCurveType.PRIME256V1,
-            hashAlgorithm = CircuitHashAlgorithmType.HA256
-        ),
-        CircuitSignatureType(
             staticId = 25u,
             algorithm = CircuitAlgorithmType.ECDSA,
             keySize = CircuitKeySizeType.B384,
@@ -196,6 +222,7 @@ object SupportRegisterIdentityCircuitSignatureType {
             curve = CircuitCurveType.BRAINPOOLP384R1,
             hashAlgorithm = CircuitHashAlgorithmType.HA384
         ),
+
         CircuitSignatureType(
             staticId = 26u,
             algorithm = CircuitAlgorithmType.ECDSA,
@@ -205,6 +232,17 @@ object SupportRegisterIdentityCircuitSignatureType {
             curve = CircuitCurveType.BRAINPOOLP512R1,
             hashAlgorithm = CircuitHashAlgorithmType.HA512
         ),
+
+        CircuitSignatureType(
+            staticId = 27u,
+            algorithm = CircuitAlgorithmType.ECDSA,
+            keySize = CircuitKeySizeType.B521,
+            exponent = null,
+            salt = null,
+            curve = CircuitCurveType.SECP521R1,
+            hashAlgorithm = CircuitHashAlgorithmType.HA512
+        ),
+
         CircuitSignatureType(
             staticId = 28u,
             algorithm = CircuitAlgorithmType.ECDSA,
@@ -232,7 +270,9 @@ object SupportRegisterIdentityCircuitSignatureType {
 
 object SupportRegisterIdentityCircuitAAType {
     val supported: List<CircuitAAAlgorithm> = listOf(
+
         // RSA
+
         CircuitAAAlgorithm(
             staticId = 1u,
             algorithm = CircuitAlgorithmType.RSA,
