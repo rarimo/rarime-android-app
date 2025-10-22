@@ -335,7 +335,7 @@ data class EDocument(
         return when (exponentBN) {
             BigInteger.valueOf(3L) -> CircuitExponentType.E3
             BigInteger.valueOf(65537L) -> CircuitExponentType.E65537
-            BigInteger.valueOf(5833L) -> CircuitExponentType.E5833
+            BigInteger.valueOf(58333L) -> CircuitExponentType.E58333
             else -> null
         }
     }
