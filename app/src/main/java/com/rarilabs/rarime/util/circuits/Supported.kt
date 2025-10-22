@@ -62,17 +62,6 @@ object SupportRegisterIdentityCircuitSignatureType {
         ),
 
 
-        CircuitSignatureType(
-            staticId = 6u,
-            algorithm = CircuitAlgorithmType.RSA,
-            keySize = CircuitKeySizeType.B2048,
-            exponent = CircuitExponentType.E65537,
-            salt = null,
-            curve = null,
-            hashAlgorithm = CircuitHashAlgorithmType.HA160
-        ),
-
-
         // RSAPSS
         CircuitSignatureType(
             staticId = 10u,
@@ -254,15 +243,6 @@ object SupportRegisterIdentityCircuitAAType {
             hashAlgorithm = CircuitHashAlgorithmType.HA160
         ),
 
-        CircuitAAAlgorithm(
-            staticId = 2u,
-            algorithm = CircuitAlgorithmType.RSA,
-            keySize = CircuitKeySizeType.B1024,
-            exponent = CircuitExponentType.E3,
-            salt = null,
-            curve = null,
-            hashAlgorithm = CircuitHashAlgorithmType.HA160
-        ),
 
         // ECDSA
 
@@ -305,15 +285,31 @@ object SupportRegisterIdentityCircuitAAType {
             curve = CircuitCurveType.SECP192R1,
             hashAlgorithm = CircuitHashAlgorithmType.HA160
         ),
+
+        CircuitAAAlgorithm(
+            staticId = 24u,
+            algorithm = CircuitAlgorithmType.ECDSA,
+            keySize = null,
+            exponent = null,
+            salt = null,
+            curve = CircuitCurveType.SECP384R1,
+            hashAlgorithm = CircuitHashAlgorithmType.HA384
+        ),
     )
 
     fun getSupportedSignatureTypeId(type: CircuitAAAlgorithm): UInt? {
-        return supported.firstOrNull {
+        val result = supported.firstOrNull {
             it.keySize == type.keySize &&
                     it.curve == type.curve &&
-            it.algorithm == type.algorithm &&
+                    it.algorithm == type.algorithm &&
                     it.hashAlgorithm == type.hashAlgorithm
         }?.staticId
+
+        if (result == null && type.algorithm == CircuitAlgorithmType.RSA) {
+            return 1u
+        }
+
+        return result
     }
 }
 
