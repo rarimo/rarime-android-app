@@ -130,7 +130,9 @@ enum class RegisterNoirCircuitData(val value: String) {
 
     REGISTER_IDENTITY_1_256_3_5_336_232_NA("registerIdentity_1_256_3_5_336_232_NA"),
 
-    REGISTER_IDENTITY_1_256_3_7_336_264_20_2760_6_2008("registerIdentity_1_256_3_7_336_264_20_2760_6_2008");
+    REGISTER_IDENTITY_1_256_3_7_336_264_20_2760_6_2008("registerIdentity_1_256_3_7_336_264_20_2760_6_2008"),
+
+    REGISTER_IDENTITY_1_256_3_4_336_232_1_1480_4_256("registerIdentity_1_256_3_4_336_232_1_1480_4_256");
 
     companion object {
         private val map =
