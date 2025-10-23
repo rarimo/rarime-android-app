@@ -81,7 +81,7 @@ enum class RegisterNoirCircuitData(val value: String) {
     REGISTER_IDENTITY_27_512_3_4_336_248_NA("registerIdentity_27_512_3_4_336_248_NA"),
 
     REGISTER_IDENTITY_1_256_3_5_336_248_1_2120_3_256("registerIdentity_1_256_3_5_336_248_1_2120_3_256"),
-  
+
     REGISTER_IDENTITY_7_160_3_3_336_216_1_1080_3_256("registerIdentity_7_160_3_3_336_216_1_1080_3_256"),
 
     REGISTER_IDENTITY_8_160_3_3_336_216_1_1080_3_256("registerIdentity_8_160_3_3_336_216_1_1080_3_256"),
@@ -118,7 +118,11 @@ enum class RegisterNoirCircuitData(val value: String) {
     REGISTER_IDENTITY_21_256_3_5_576_232_NA("registerIdentity_21_256_3_5_576_232_NA"),
     REGISTER_IDENTITY_24_256_3_4_336_232_NA("registerIdentity_24_256_3_4_336_232_NA"),
 
-    REGISTER_IDENTITY_11_256_3_5_576_248_1_1808_4_256("registerIdentity_11_256_3_5_576_248_1_1808_4_256");
+    REGISTER_IDENTITY_11_256_3_5_576_248_1_1808_4_256("registerIdentity_11_256_3_5_576_248_1_1808_4_256"),
+
+    REGISTER_IDENTITY_25_384_3_5_576_248_20_3768_3_2008("registerIdentity_25_384_3_5_576_248_20_3768_3_2008"),
+    REGISTER_IDENTITY_1_256_3_6_336_248_1_2432_3_256("registerIdentity_1_256_3_6_336_248_1_2432_3_256"),
+    REGISTER_IDENTITY_2_256_3_5_336_248_22_1808_7_2408("registerIdentity_2_256_3_5_336_248_22_1808_7_2408");
 
     companion object {
         private val map =
