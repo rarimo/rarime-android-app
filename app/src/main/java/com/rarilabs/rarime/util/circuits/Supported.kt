@@ -82,7 +82,7 @@ object SupportRegisterIdentityCircuitSignatureType {
         ),
 
         CircuitSignatureType(
-            staticId = 7u,
+            staticId = 8u,
             algorithm = CircuitAlgorithmType.RSA,
             keySize = CircuitKeySizeType.B3072,
             exponent = CircuitExponentType.E46271,
@@ -164,7 +164,7 @@ object SupportRegisterIdentityCircuitSignatureType {
             hashAlgorithm = CircuitHashAlgorithmType.HA256
         ),
         CircuitSignatureType(
-            staticId = 20u,
+            staticId = 20u, // prime256v1 is the same as secp256r1
             algorithm = CircuitAlgorithmType.ECDSA,
             keySize = CircuitKeySizeType.B256,
             exponent = null,

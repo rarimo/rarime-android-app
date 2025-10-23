@@ -336,6 +336,8 @@ data class EDocument(
             BigInteger.valueOf(3L) -> CircuitExponentType.E3
             BigInteger.valueOf(65537L) -> CircuitExponentType.E65537
             BigInteger.valueOf(58333L) -> CircuitExponentType.E58333
+            BigInteger.valueOf(45347L) -> CircuitExponentType.E45347
+            BigInteger.valueOf(46271L) -> CircuitExponentType.E46271
             else -> null
         }
     }
