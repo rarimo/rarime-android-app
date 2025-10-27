@@ -165,7 +165,7 @@ private fun ZkIdentityPassportPreview() {
             onIncognitoChange = { isIncognito = it },
             registrationStatus = IdentityCardBottomBarUiState(),
             retryRegistration = {},
-            passportStatus = PassportStatus.NOT_ALLOWED,
+            passportStatus = PassportStatus.UNSUPPORTED_FOR_REWARDS,
             innerPaddings = mapOf(ScreenInsets.TOP to 23, ScreenInsets.BOTTOM to 12),
             onIdentifierChange = { identifiers = it }
         )

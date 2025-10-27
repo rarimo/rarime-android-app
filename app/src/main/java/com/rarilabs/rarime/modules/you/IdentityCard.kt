@@ -132,8 +132,8 @@ fun IdentityCard(
 
         if (listOf(
                 PassportStatus.WAITLIST,
-                PassportStatus.NOT_ALLOWED,
-                PassportStatus.WAITLIST_NOT_ALLOWED
+                PassportStatus.UNSUPPORTED_FOR_REWARDS,
+                PassportStatus.WAITLIST_UNSUPPORTED_FOR_REWARDS
             ).contains(passportStatus)
         ) {
             StatusCard(
@@ -498,7 +498,7 @@ fun StatusCard(modifier: Modifier = Modifier, passportStatus: PassportStatus) {
     }
 
     when (passportStatus) {
-        PassportStatus.WAITLIST_NOT_ALLOWED -> {
+        PassportStatus.WAITLIST_UNSUPPORTED_FOR_REWARDS -> {
             statusIcon = R.drawable.ic_globe_simple_x
             statusTitle = R.string.unsupported_card_title
         }
@@ -509,7 +509,7 @@ fun StatusCard(modifier: Modifier = Modifier, passportStatus: PassportStatus) {
             statusDescription = R.string.waitlist_card_subtitle
         }
 
-        PassportStatus.NOT_ALLOWED -> {
+        PassportStatus.UNSUPPORTED_FOR_REWARDS -> {
             statusIcon = R.drawable.ic_globe_simple_x
             statusTitle = R.string.unsupported_card_title
         }
@@ -528,7 +528,7 @@ fun StatusCard(modifier: Modifier = Modifier, passportStatus: PassportStatus) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             AppIcon(
                 id = statusIcon,
-                tint = if (passportStatus == PassportStatus.NOT_ALLOWED) RarimeTheme.colors.errorMain else RarimeTheme.colors.warningMain,
+                tint = if (passportStatus == PassportStatus.UNSUPPORTED_FOR_REWARDS) RarimeTheme.colors.errorMain else RarimeTheme.colors.warningMain,
                 modifier = Modifier.padding(vertical = 4.dp),
                 size = 24.dp
             )
@@ -539,7 +539,7 @@ fun StatusCard(modifier: Modifier = Modifier, passportStatus: PassportStatus) {
                     style = RarimeTheme.typography.subtitle5,
                     color = RarimeTheme.colors.textPrimary
                 )
-                if (passportStatus == PassportStatus.WAITLIST || passportStatus == PassportStatus.WAITLIST_NOT_ALLOWED) {
+                if (passportStatus == PassportStatus.WAITLIST || passportStatus == PassportStatus.WAITLIST_UNSUPPORTED_FOR_REWARDS) {
                     Text(
                         text = stringResource(id = statusDescription),
                         style = RarimeTheme.typography.body4,
@@ -583,7 +583,7 @@ private fun IdentityCardPreview() {
         isIncognito = isIncognito,
         onLookChange = { look = it },
         onIncognitoChange = { isIncognito = it },
-        passportStatus = PassportStatus.NOT_ALLOWED,
+        passportStatus = PassportStatus.UNSUPPORTED_FOR_REWARDS,
         registrationStatus = IdentityCardBottomBarUiState(),
         retryRegistration = {},
         onIdentifierChange = { identifier = it })

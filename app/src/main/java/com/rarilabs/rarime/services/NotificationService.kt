@@ -109,7 +109,7 @@ class NotificationService :
 
         val circuitName = universalContent.new_supported_circuit
 
-        val eventType = universalContent.event_type
+        universalContent.event_type
 
         val userStatus = universalContent.user_statuses
 
@@ -137,8 +137,8 @@ class NotificationService :
                 PassportStatus.UNSCANNED -> UserStatus.UNSCANNED
                 PassportStatus.ALLOWED -> UserStatus.VERIFIED
                 PassportStatus.WAITLIST -> UserStatus.WAITLIST
-                PassportStatus.NOT_ALLOWED -> UserStatus.VERIFIED
-                PassportStatus.WAITLIST_NOT_ALLOWED -> UserStatus.WAITLIST
+                PassportStatus.UNSUPPORTED_FOR_REWARDS -> UserStatus.VERIFIED
+                PassportStatus.WAITLIST_UNSUPPORTED_FOR_REWARDS -> UserStatus.WAITLIST
                 PassportStatus.UNREGISTERED -> UserStatus.UNSCANNED
                 PassportStatus.ALREADY_REGISTERED_BY_OTHER_PK -> UserStatus.UNSCANNED
             }

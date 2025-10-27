@@ -136,10 +136,11 @@ fun MainScreenRoutes(
 
                 if (!localDestination.isNullOrEmpty()) {
                     navigateWithPopUp(localDestination)
+                } else {
+                    navigateWithPopUp(Screen.Main.Home.route)
                 }
                 extIntDataURIState = null
                 mainViewModel.setExtIntDataURI(null)
-                navigateWithPopUp(Screen.Main.Home.route)
             })
         }
     }

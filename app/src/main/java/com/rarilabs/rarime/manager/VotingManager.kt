@@ -143,7 +143,7 @@ class VotingManager @Inject constructor(
     }
 
     private fun getUserStatus(): PollCriteriaStatus {
-        return if (passportManager.passportStatus.value == PassportStatus.ALLOWED) {
+        return if (passportManager.passportStatus.value == PassportStatus.ALLOWED || passportManager.passportStatus.value == PassportStatus.UNSUPPORTED_FOR_REWARDS) {
             PollCriteriaStatus.VERIFIED
         } else {
             PollCriteriaStatus.NEED_VERIFICATION
