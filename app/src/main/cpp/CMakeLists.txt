@@ -13,7 +13,6 @@ set(NORMAL_LIB_FILES
         libwitnesscalc_auth.so
         libwitnesscalc_faceRegistryNoInclusion.so
 
-        libwitnesscalc_registerIdentity_21_256_3_7_336_264_21_3072_6_2008.so
         libwitnesscalc_registerIdentity_1_160_3_4_576_200_NA.so
         libwitnesscalc_registerIdentity_21_256_3_3_576_232_NA.so
 

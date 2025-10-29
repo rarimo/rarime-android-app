@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.util.circuits
 
 enum class RegisteredCircuitData(val value: String) {
-    REGISTER_IDENTITY_21_256_3_7_336_264_21_3072_6_2008("registerIdentity_21_256_3_7_336_264_21_3072_6_2008"),
     REGISTER_IDENTITY_1_160_3_4_576_200_NA("registerIdentity_1_160_3_4_576_200_NA"),
     REGISTER_IDENTITY_14_256_3_4_336_64_1_1480_5_296("registerIdentity_14_256_3_4_336_64_1_1480_5_296"),
 
@@ -22,7 +21,6 @@ enum class RegisteredCircuitData(val value: String) {
 
         fun getMD5Checksum(item: RegisteredCircuitData): String {
             return when (item) {
-                REGISTER_IDENTITY_21_256_3_7_336_264_21_3072_6_2008 -> "511f124fb8609d82040b1a11fc7cd40d"
                 REGISTER_IDENTITY_1_160_3_4_576_200_NA -> "9960ebf7217bb5e16ab4c00316950fd2"
                 REGISTER_IDENTITY_160 -> "1a99142a2a23d507b06a551bf1ee0fd8"
                 REGISTER_IDENTITY_224 -> "cc50d457d404b034c3fc17225046aa64"
@@ -81,7 +79,7 @@ enum class RegisterNoirCircuitData(val value: String) {
     REGISTER_IDENTITY_27_512_3_4_336_248_NA("registerIdentity_27_512_3_4_336_248_NA"),
 
     REGISTER_IDENTITY_1_256_3_5_336_248_1_2120_3_256("registerIdentity_1_256_3_5_336_248_1_2120_3_256"),
-  
+
     REGISTER_IDENTITY_7_160_3_3_336_216_1_1080_3_256("registerIdentity_7_160_3_3_336_216_1_1080_3_256"),
 
     REGISTER_IDENTITY_8_160_3_3_336_216_1_1080_3_256("registerIdentity_8_160_3_3_336_216_1_1080_3_256"),
@@ -118,7 +116,27 @@ enum class RegisterNoirCircuitData(val value: String) {
     REGISTER_IDENTITY_21_256_3_5_576_232_NA("registerIdentity_21_256_3_5_576_232_NA"),
     REGISTER_IDENTITY_24_256_3_4_336_232_NA("registerIdentity_24_256_3_4_336_232_NA"),
 
-    REGISTER_IDENTITY_11_256_3_5_576_248_1_1808_4_256("registerIdentity_11_256_3_5_576_248_1_1808_4_256");
+    REGISTER_IDENTITY_11_256_3_5_576_248_1_1808_4_256("registerIdentity_11_256_3_5_576_248_1_1808_4_256"),
+
+    REGISTER_IDENTITY_25_384_3_5_576_248_20_3768_3_2008("registerIdentity_25_384_3_5_576_248_20_3768_3_2008"),
+    REGISTER_IDENTITY_1_256_3_6_336_248_1_2432_3_256("registerIdentity_1_256_3_6_336_248_1_2432_3_256"),
+    REGISTER_IDENTITY_2_256_3_5_336_248_22_1808_7_2408("registerIdentity_2_256_3_5_336_248_22_1808_7_2408"),
+
+    REGISTER_IDENTITY_1_256_3_4_336_248_1_1496_4_256("registerIdentity_1_256_3_4_336_248_1_1496_4_256"),
+    REGISTER_IDENTITY_11_256_3_4_576_248_1_1496_5_296("registerIdentity_11_256_3_4_576_248_1_1496_5_296"),
+
+    REGISTER_IDENTITY_1_256_3_5_344_232_NA("registerIdentity_1_256_3_5_344_232_NA"),
+    REGISTER_IDENTITY_21_256_3_7_336_264_21_3072_6_2008("registerIdentity_21_256_3_7_336_264_21_3072_6_2008"),
+
+    REGISTER_IDENTITY_1_256_3_5_336_232_NA("registerIdentity_1_256_3_5_336_232_NA"),
+
+    REGISTER_IDENTITY_1_256_3_7_336_264_20_2760_6_2008("registerIdentity_1_256_3_7_336_264_20_2760_6_2008"),
+
+    REGISTER_IDENTITY_1_256_3_4_336_232_1_1480_4_256("registerIdentity_1_256_3_4_336_232_1_1480_4_256"),
+
+    REGISTER_IDENTITY_1_256_3_4_336_248_1_560_4_256("registerIdentity_1_256_3_4_336_248_1_560_4_256"),
+
+    REGISTER_IDENTITY_26_512_3_2_336_248_1_1384_2_256("registerIdentity_26_512_3_2_336_248_1_1384_2_256");
 
     companion object {
         private val map =
