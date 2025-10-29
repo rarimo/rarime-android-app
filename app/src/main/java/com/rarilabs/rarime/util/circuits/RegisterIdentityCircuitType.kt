@@ -137,7 +137,7 @@ enum class CircuitKeySizeType {
 }
 
 enum class CircuitExponentType {
-    E3, E65537, E5833
+    E3, E65537, E58333, E45347, E46271
 }
 
 enum class CircuitSaltType {

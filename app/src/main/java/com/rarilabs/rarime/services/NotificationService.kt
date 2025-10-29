@@ -109,7 +109,6 @@ class NotificationService :
 
         val circuitName = universalContent.new_supported_circuit
 
-        universalContent.event_type
 
         val userStatus = universalContent.user_statuses
 
